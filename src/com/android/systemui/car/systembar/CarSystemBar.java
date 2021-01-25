@@ -183,8 +183,8 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
             ex.rethrowFromSystemServer();
         }
 
-        onSystemBarAppearanceChanged(mDisplayId, result.mAppearance, result.mAppearanceRegions,
-                result.mNavbarColorManagedByIme);
+        onSystemBarAttributesChanged(mDisplayId, result.mAppearance, result.mAppearanceRegions,
+                result.mNavbarColorManagedByIme, result.mBehavior, result.mAppFullscreen);
 
         // StatusBarManagerService has a back up of IME token and it's restored here.
         setImeWindowStatus(mDisplayId, result.mImeToken, result.mImeWindowVis,
@@ -349,28 +349,24 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
         mTopSystemBarView = mCarSystemBarController.getTopBar(isDeviceSetupForUser());
         if (mTopSystemBarView != null) {
             mSystemBarConfigs.insetSystemBar(SystemBarConfigs.TOP, mTopSystemBarView);
-            mSystemBarConfigs.setInsetUpdater(SystemBarConfigs.TOP, mTopSystemBarView);
             mTopSystemBarWindow.addView(mTopSystemBarView);
         }
 
         mBottomSystemBarView = mCarSystemBarController.getBottomBar(isDeviceSetupForUser());
         if (mBottomSystemBarView != null) {
             mSystemBarConfigs.insetSystemBar(SystemBarConfigs.BOTTOM, mBottomSystemBarView);
-            mSystemBarConfigs.setInsetUpdater(SystemBarConfigs.BOTTOM, mBottomSystemBarView);
             mBottomSystemBarWindow.addView(mBottomSystemBarView);
         }
 
         mLeftSystemBarView = mCarSystemBarController.getLeftBar(isDeviceSetupForUser());
         if (mLeftSystemBarView != null) {
             mSystemBarConfigs.insetSystemBar(SystemBarConfigs.LEFT, mLeftSystemBarView);
-            mSystemBarConfigs.setInsetUpdater(SystemBarConfigs.LEFT, mLeftSystemBarView);
             mLeftSystemBarWindow.addView(mLeftSystemBarView);
         }
 
         mRightSystemBarView = mCarSystemBarController.getRightBar(isDeviceSetupForUser());
         if (mRightSystemBarView != null) {
             mSystemBarConfigs.insetSystemBar(SystemBarConfigs.RIGHT, mRightSystemBarView);
-            mSystemBarConfigs.setInsetUpdater(SystemBarConfigs.RIGHT, mRightSystemBarView);
             mRightSystemBarWindow.addView(mRightSystemBarView);
         }
     }
@@ -447,11 +443,13 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
     }
 
     @Override
-    public void onSystemBarAppearanceChanged(
+    public void onSystemBarAttributesChanged(
             int displayId,
             @WindowInsetsController.Appearance int appearance,
             AppearanceRegion[] appearanceRegions,
-            boolean navbarColorManagedByIme) {
+            boolean navbarColorManagedByIme,
+            @WindowInsetsController.Behavior int behavior,
+            boolean isFullscreen) {
         if (displayId != mDisplayId) {
             return;
         }

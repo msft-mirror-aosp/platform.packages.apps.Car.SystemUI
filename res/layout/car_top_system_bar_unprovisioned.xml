@@ -48,7 +48,6 @@
                 android:gravity="center_vertical"
             />
         </FrameLayout>
-
         <FrameLayout
             android:id="@+id/clock_container"
             android:layout_width="wrap_content"
@@ -72,4 +71,74 @@
 
     </RelativeLayout>
 
+    <FrameLayout
+        android:id="@+id/clock_container"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true">
+      <com.android.systemui.car.systembar.CarSystemBarButton
+          android:id="@+id/qs"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@null"/>
+      <com.android.systemui.statusbar.policy.Clock
+          android:id="@+id/clock"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:elevation="5dp"
+          android:singleLine="true"
+          android:textAppearance="@style/TextAppearance.StatusBar.Clock"/>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/system_icon_area"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/clock_container"
+        android:paddingStart="@*android:dimen/car_padding_1"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        >
+
+      <include
+          layout="@layout/system_icons"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:paddingStart="4dp"
+          android:gravity="center_vertical"
+          />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/right_hvac_container"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        >
+
+      <com.android.systemui.car.systembar.CarSystemBarButton
+          android:id="@+id/hvacright"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:background="@null"
+          systemui:broadcast="true"
+          />
+
+      <com.android.systemui.car.hvac.AnimatedTemperatureView
+          android:id="@+id/righttext"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:paddingStart="16dp"
+          android:paddingEnd="@*android:dimen/car_padding_4"
+          android:gravity="center_vertical|end"
+          android:minEms="4"
+          android:textAppearance="@style/TextAppearance.CarStatus"
+          systemui:hvacAreaId="68"
+          systemui:hvacPivotOffset="60dp"
+          />
+    </FrameLayout>
 </com.android.systemui.car.systembar.CarSystemBarView>

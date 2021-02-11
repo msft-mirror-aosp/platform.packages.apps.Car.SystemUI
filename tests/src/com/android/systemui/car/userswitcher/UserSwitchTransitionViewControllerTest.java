@@ -56,6 +56,7 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
     private UserSwitchTransitionViewController mCarUserSwitchingDialogController;
     private TestableResources mTestableResources;
     private FakeExecutor mExecutor;
+    private FakeSystemClock mClock;
     @Mock
     private OverlayViewGlobalStateController mOverlayViewGlobalStateController;
     @Mock
@@ -65,7 +66,8 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mTestableResources = mContext.getOrCreateTestableResources();
-        mExecutor = new FakeExecutor(new FakeSystemClock());
+        mClock = new FakeSystemClock();
+        mExecutor = new FakeExecutor(mClock);
         mCarUserSwitchingDialogController = new UserSwitchTransitionViewController(
                 mContext,
                 mTestableResources.getResources(),
@@ -157,10 +159,10 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
         mExecutor.runAllReady();
         reset(mOverlayViewGlobalStateController);
 
-        getContext().getMainThreadHandler().postDelayed(() -> {
-            verify(mOverlayViewGlobalStateController).hideView(
-                    eq(mCarUserSwitchingDialogController), any());
-        }, mCarUserSwitchingDialogController.getWindowShownTimeoutMs() + 10);
+        mClock.advanceTime(mCarUserSwitchingDialogController.getWindowShownTimeoutMs() + 10);
+
+        verify(mOverlayViewGlobalStateController).hideView(
+                eq(mCarUserSwitchingDialogController), any());
     }
 
     @Test
@@ -173,9 +175,9 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
         mExecutor.runAllReady();
         reset(mOverlayViewGlobalStateController);
 
-        getContext().getMainThreadHandler().postDelayed(() -> {
-            verify(mOverlayViewGlobalStateController, never()).hideView(
-                    eq(mCarUserSwitchingDialogController), any());
-        }, mCarUserSwitchingDialogController.getWindowShownTimeoutMs() + 10);
+        mClock.advanceTime(mCarUserSwitchingDialogController.getWindowShownTimeoutMs() + 10);
+
+        verify(mOverlayViewGlobalStateController, never()).hideView(
+                eq(mCarUserSwitchingDialogController), any());
     }
 }

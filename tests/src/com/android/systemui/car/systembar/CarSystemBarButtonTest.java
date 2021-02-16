@@ -52,8 +52,6 @@ import org.mockito.ArgumentMatcher;
 @SmallTest
 public class CarSystemBarButtonTest extends SysuiTestCase {
 
-    private static final String DEFAULT_BUTTON_ACTIVITY_NAME =
-            "com.android.car.carlauncher/.CarLauncher";
     private static final String APP_GRID_BUTTON_ACTIVITY_NAME =
             "com.android.car.carlauncher/.AppGridActivity";
     private static final String BROADCAST_ACTION_NAME =
@@ -231,8 +229,6 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
     public void onClick_launchesIntentActivity() {
         mDefaultButton.performClick();
 
-        assertThat(getCurrentActivityName()).isEqualTo(DEFAULT_BUTTON_ACTIVITY_NAME);
-
         CarSystemBarButton appGridButton = mTestView.findViewById(R.id.app_grid_activity);
         appGridButton.performClick();
 
@@ -242,8 +238,6 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
     @Test
     public void onLongClick_longIntentDefined_launchesLongIntentActivity() {
         mDefaultButton.performClick();
-
-        assertThat(getCurrentActivityName()).isEqualTo(DEFAULT_BUTTON_ACTIVITY_NAME);
 
         CarSystemBarButton appGridButton = mTestView.findViewById(
                 R.id.long_click_app_grid_activity);

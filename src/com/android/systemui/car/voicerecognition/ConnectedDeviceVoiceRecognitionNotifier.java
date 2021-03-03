@@ -31,6 +31,7 @@ import com.android.systemui.R;
 import com.android.systemui.SysUIToast;
 import com.android.systemui.SystemUI;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.util.concurrency.DelayableExecutor;
 
 import javax.inject.Inject;
 
@@ -46,7 +47,7 @@ public class ConnectedDeviceVoiceRecognitionNotifier extends SystemUI {
     @VisibleForTesting
     static final int VOICE_RECOGNITION_STARTED = 1;
 
-    private Handler mHandler;
+    private final DelayableExecutor mExecutor;
 
     private final BroadcastReceiver mVoiceRecognitionReceiver = new BroadcastReceiver() {
         @Override
@@ -71,14 +72,17 @@ public class ConnectedDeviceVoiceRecognitionNotifier extends SystemUI {
     };
 
     private void showToastMessage() {
-        mHandler.post(() -> SysUIToast.makeText(mContext, R.string.voice_recognition_toast,
+        mExecutor.execute(() -> SysUIToast.makeText(mContext, R.string.voice_recognition_toast,
                 Toast.LENGTH_LONG).show());
     }
 
     @Inject
-    public ConnectedDeviceVoiceRecognitionNotifier(Context context, @Main Handler handler) {
+    public ConnectedDeviceVoiceRecognitionNotifier(
+            Context context,
+            @Main DelayableExecutor mainExecutor
+    ) {
         super(context);
-        mHandler = handler;
+        mExecutor = mainExecutor;
     }
 
     @Override

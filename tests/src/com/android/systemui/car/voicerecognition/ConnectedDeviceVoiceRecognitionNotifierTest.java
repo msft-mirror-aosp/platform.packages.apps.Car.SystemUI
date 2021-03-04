@@ -30,14 +30,15 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadsetClient;
 import android.content.Intent;
-import android.os.Handler;
+import android.os.Looper;
 import android.testing.AndroidTestingRunner;
-import android.testing.TestableLooper;
 
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.util.concurrency.FakeExecutor;
+import com.android.systemui.util.time.FakeSystemClock;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +47,6 @@ import org.mockito.ArgumentCaptor;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
-@TestableLooper.RunWithLooper
 @SmallTest
 // TODO(b/162866441): Refactor to use the Executor pattern instead.
 public class ConnectedDeviceVoiceRecognitionNotifierTest extends SysuiTestCase {
@@ -55,20 +55,18 @@ public class ConnectedDeviceVoiceRecognitionNotifierTest extends SysuiTestCase {
     private static final String BLUETOOTH_REMOTE_ADDRESS = "00:11:22:33:44:55";
 
     private ConnectedDeviceVoiceRecognitionNotifier mVoiceRecognitionNotifier;
-    private TestableLooper mTestableLooper;
-    private Handler mHandler;
-    private Handler mTestHandler;
+    private FakeSystemClock mClock;
+    private FakeExecutor mExecutor;
     private BluetoothDevice mBluetoothDevice;
 
     @Before
     public void setUp() throws Exception {
-        mTestableLooper = TestableLooper.get(this);
-        mHandler = new Handler(mTestableLooper.getLooper());
-        mTestHandler = spy(mHandler);
+        mClock = new FakeSystemClock();
+        mExecutor = spy(new FakeExecutor(mClock));
         mBluetoothDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(
                 BLUETOOTH_REMOTE_ADDRESS);
         mVoiceRecognitionNotifier = new ConnectedDeviceVoiceRecognitionNotifier(
-                mContext, mTestHandler);
+                mContext, mExecutor);
         mVoiceRecognitionNotifier.onBootCompleted();
     }
 
@@ -77,17 +75,16 @@ public class ConnectedDeviceVoiceRecognitionNotifierTest extends SysuiTestCase {
         Intent intent = new Intent(BluetoothHeadsetClient.ACTION_AG_EVENT);
         intent.putExtra(BluetoothHeadsetClient.EXTRA_VOICE_RECOGNITION, VOICE_RECOGNITION_STARTED);
         intent.putExtra(BluetoothDevice.EXTRA_DEVICE, mBluetoothDevice);
+        Looper.prepare();
 
         mContext.sendBroadcast(intent, BLUETOOTH_PERM);
-        mTestableLooper.processAllMessages();
         waitForIdleSync();
+        waitForDelayableExecutor();
 
-        mHandler.post(() -> {
-            ArgumentCaptor<Runnable> argumentCaptor = ArgumentCaptor.forClass(Runnable.class);
-            verify(mTestHandler).post(argumentCaptor.capture());
-            assertThat(argumentCaptor.getValue()).isNotNull();
-            assertThat(argumentCaptor.getValue()).isNotEqualTo(this);
-        });
+        ArgumentCaptor<Runnable> argumentCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mExecutor).execute(argumentCaptor.capture());
+        assertThat(argumentCaptor.getValue()).isNotNull();
+        assertThat(argumentCaptor.getValue()).isNotEqualTo(this);
     }
 
     @Test
@@ -97,12 +94,10 @@ public class ConnectedDeviceVoiceRecognitionNotifierTest extends SysuiTestCase {
         intent.putExtra(BluetoothDevice.EXTRA_DEVICE, mBluetoothDevice);
 
         mContext.sendBroadcast(intent, BLUETOOTH_PERM);
-        mTestableLooper.processAllMessages();
         waitForIdleSync();
+        waitForDelayableExecutor();
 
-        mHandler.post(() -> {
-            verify(mTestHandler, never()).post(any());
-        });
+        verify(mExecutor, never()).execute(any());
     }
 
     @Test
@@ -111,12 +106,10 @@ public class ConnectedDeviceVoiceRecognitionNotifierTest extends SysuiTestCase {
         intent.putExtra(BluetoothDevice.EXTRA_DEVICE, mBluetoothDevice);
 
         mContext.sendBroadcast(intent, BLUETOOTH_PERM);
-        mTestableLooper.processAllMessages();
         waitForIdleSync();
+        waitForDelayableExecutor();
 
-        mHandler.post(() -> {
-            verify(mTestHandler, never()).post(any());
-        });
+        verify(mExecutor, never()).execute(any());
     }
 
     @Test
@@ -125,11 +118,14 @@ public class ConnectedDeviceVoiceRecognitionNotifierTest extends SysuiTestCase {
         intent.putExtra(BluetoothDevice.EXTRA_DEVICE, mBluetoothDevice);
 
         mContext.sendBroadcast(intent, BLUETOOTH_PERM);
-        mTestableLooper.processAllMessages();
         waitForIdleSync();
+        waitForDelayableExecutor();
 
-        mHandler.post(() -> {
-            verify(mTestHandler, never()).post(any());
-        });
+        verify(mExecutor, never()).execute(any());
+    }
+
+    private void waitForDelayableExecutor() {
+        mExecutor.advanceClockToLast();
+        mExecutor.runAllReady();
     }
 }

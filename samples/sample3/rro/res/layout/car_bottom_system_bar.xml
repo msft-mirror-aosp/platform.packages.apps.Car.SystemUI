@@ -82,6 +82,7 @@
                 style="@style/SystemBarButton"
                 systemui:highlightWhenSelected="true"
                 systemui:icon="@drawable/car_ic_hvac"
+                systemui:intent="intent:#Intent;action=android.car.intent.action.TOGGLE_HVAC_CONTROLS;end"
                 systemui:broadcast="true"/>
 
             <com.android.systemui.car.systembar.CarSystemBarButton

@@ -63,6 +63,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Mock
     private ButtonRoleHolderController mButtonRoleHolderController;
     @Mock
+    private HvacController mHvacController;
+    @Mock
     private UserNameViewController mUserNameViewController;
     @Mock
     private PrivacyChipViewController mPrivacyChipViewController;
@@ -80,10 +82,30 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     private CarSystemBarController createSystemBarController() {
         return new CarSystemBarController(mContext, mCarSystemBarViewFactory,
-                mButtonSelectionStateController, () -> mUserNameViewController,
-                () -> mPrivacyChipViewController, mButtonRoleHolderController,
+                mButtonSelectionStateController, () -> mHvacController,
+                () -> mUserNameViewController, () -> mPrivacyChipViewController,
+                mButtonRoleHolderController,
                 new SystemBarConfigs(mTestableResources.getResources()));
     }
+
+    @Test
+    public void testConnectToHvac_callsConnect() {
+        mCarSystemBar = createSystemBarController();
+
+        mCarSystemBar.connectToHvac();
+
+        verify(mHvacController).connectToCarService();
+    }
+
+    @Test
+    public void testRemoveAll_callsHvacControllerRemoveAllComponents() {
+        mCarSystemBar = createSystemBarController();
+
+        mCarSystemBar.removeAll();
+
+        verify(mHvacController).removeAllComponents();
+    }
+
 
     @Test
     public void testRemoveAll_callsButtonRoleHolderControllerRemoveAll() {

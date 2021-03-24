@@ -44,7 +44,6 @@ import com.android.internal.view.AppearanceRegion;
 import com.android.systemui.SystemUI;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
-import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -84,7 +83,6 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
     private final Lazy<KeyguardStateController> mKeyguardStateControllerLazy;
     private final Lazy<PhoneStatusBarPolicy> mIconPolicyLazy;
     private final Lazy<StatusBarIconController> mIconControllerLazy;
-    private final HvacController mHvacController;
 
     private final int mDisplayId;
     private final SystemBarConfigs mSystemBarConfigs;
@@ -140,7 +138,6 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
             Lazy<KeyguardStateController> keyguardStateControllerLazy,
             Lazy<PhoneStatusBarPolicy> iconPolicyLazy,
             Lazy<StatusBarIconController> iconControllerLazy,
-            HvacController hvacController,
             SystemBarConfigs systemBarConfigs
     ) {
         super(context);
@@ -157,7 +154,6 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
         mKeyguardStateControllerLazy = keyguardStateControllerLazy;
         mIconPolicyLazy = iconPolicyLazy;
         mIconControllerLazy = iconControllerLazy;
-        mHvacController = hvacController;
         mSystemBarConfigs = systemBarConfigs;
 
         mDisplayId = context.getDisplayId();
@@ -257,6 +253,8 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
         mActivityManagerWrapper = ActivityManagerWrapper.getInstance();
         mActivityManagerWrapper.registerTaskStackListener(mButtonSelectionStateListener);
 
+        mUiBgExecutor.execute(mCarSystemBarController::connectToHvac);
+
         // Lastly, call to the icon policy to install/update all the icons.
         // Must be called on the main thread due to the use of observeForever() in
         // mIconPolicy.init().
@@ -291,25 +289,21 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
 
         if (mTopSystemBarWindow != null) {
             mTopSystemBarWindow.removeAllViews();
-            mHvacController.unregisterView(mTopSystemBarView);
             mTopSystemBarView = null;
         }
 
         if (mBottomSystemBarWindow != null) {
             mBottomSystemBarWindow.removeAllViews();
-            mHvacController.unregisterView(mBottomSystemBarView);
             mBottomSystemBarView = null;
         }
 
         if (mLeftSystemBarWindow != null) {
             mLeftSystemBarWindow.removeAllViews();
-            mHvacController.unregisterView(mLeftSystemBarView);
             mLeftSystemBarView = null;
         }
 
         if (mRightSystemBarWindow != null) {
             mRightSystemBarWindow.removeAllViews();
-            mHvacController.unregisterView(mRightSystemBarView);
             mRightSystemBarView = null;
         }
 
@@ -355,28 +349,24 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
         mTopSystemBarView = mCarSystemBarController.getTopBar(isDeviceSetupForUser());
         if (mTopSystemBarView != null) {
             mSystemBarConfigs.insetSystemBar(SystemBarConfigs.TOP, mTopSystemBarView);
-            mHvacController.registerHvacView(mTopSystemBarView);
             mTopSystemBarWindow.addView(mTopSystemBarView);
         }
 
         mBottomSystemBarView = mCarSystemBarController.getBottomBar(isDeviceSetupForUser());
         if (mBottomSystemBarView != null) {
             mSystemBarConfigs.insetSystemBar(SystemBarConfigs.BOTTOM, mBottomSystemBarView);
-            mHvacController.registerHvacView(mBottomSystemBarView);
             mBottomSystemBarWindow.addView(mBottomSystemBarView);
         }
 
         mLeftSystemBarView = mCarSystemBarController.getLeftBar(isDeviceSetupForUser());
         if (mLeftSystemBarView != null) {
             mSystemBarConfigs.insetSystemBar(SystemBarConfigs.LEFT, mLeftSystemBarView);
-            mHvacController.registerHvacView(mLeftSystemBarView);
             mLeftSystemBarWindow.addView(mLeftSystemBarView);
         }
 
         mRightSystemBarView = mCarSystemBarController.getRightBar(isDeviceSetupForUser());
         if (mRightSystemBarView != null) {
             mSystemBarConfigs.insetSystemBar(SystemBarConfigs.RIGHT, mRightSystemBarView);
-            mHvacController.registerHvacView(mRightSystemBarView);
             mRightSystemBarWindow.addView(mRightSystemBarView);
         }
     }

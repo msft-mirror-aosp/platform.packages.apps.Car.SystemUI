@@ -60,6 +60,7 @@
         android:layout_height="match_parent"
         android:background="@null"
         systemui:broadcast="true"
+        systemui:intent="intent:#Intent;action=android.car.intent.action.TOGGLE_HVAC_CONTROLS;end"
     />
 
     <com.android.systemui.car.systembar.CarSystemBarButton

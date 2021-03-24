@@ -89,6 +89,15 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     }
 
     @Test
+    public void testConnectToHvac_callsConnect() {
+        mCarSystemBar = createSystemBarController();
+
+        mCarSystemBar.connectToHvac();
+
+        verify(mHvacController).connectToCarService();
+    }
+
+    @Test
     public void testRemoveAll_callsHvacControllerRemoveAllComponents() {
         mCarSystemBar = createSystemBarController();
 

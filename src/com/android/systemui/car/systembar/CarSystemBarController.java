@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
+import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.statusbar.PrivacyChipViewController;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.dagger.SysUISingleton;
@@ -38,6 +39,7 @@ public class CarSystemBarController {
     private final CarSystemBarViewFactory mCarSystemBarViewFactory;
     private final ButtonSelectionStateController mButtonSelectionStateController;
     private final ButtonRoleHolderController mButtonRoleHolderController;
+    private final Lazy<HvacController> mHvacControllerLazy;
     private final Lazy<UserNameViewController> mUserNameViewControllerLazy;
     private final Lazy<PrivacyChipViewController> mPrivacyChipViewControllerLazy;
 
@@ -61,6 +63,7 @@ public class CarSystemBarController {
     public CarSystemBarController(Context context,
             CarSystemBarViewFactory carSystemBarViewFactory,
             ButtonSelectionStateController buttonSelectionStateController,
+            Lazy<HvacController> hvacControllerLazy,
             Lazy<UserNameViewController> userNameViewControllerLazy,
             Lazy<PrivacyChipViewController> privacyChipViewControllerLazy,
             ButtonRoleHolderController buttonRoleHolderController,
@@ -68,6 +71,7 @@ public class CarSystemBarController {
         mContext = context;
         mCarSystemBarViewFactory = carSystemBarViewFactory;
         mButtonSelectionStateController = buttonSelectionStateController;
+        mHvacControllerLazy = hvacControllerLazy;
         mUserNameViewControllerLazy = userNameViewControllerLazy;
         mPrivacyChipViewControllerLazy = privacyChipViewControllerLazy;
         mButtonRoleHolderController = buttonRoleHolderController;
@@ -99,8 +103,14 @@ public class CarSystemBarController {
         setRightWindowVisibility(View.VISIBLE);
     }
 
+    /** Connect to hvac service. */
+    public void connectToHvac() {
+        mHvacControllerLazy.get().connectToCarService();
+    }
+
     /** Clean up */
     public void removeAll() {
+        mHvacControllerLazy.get().removeAllComponents();
         mButtonSelectionStateController.removeAll();
         mButtonRoleHolderController.removeAll();
         mUserNameViewControllerLazy.get().removeAll();
@@ -218,6 +228,7 @@ public class CarSystemBarController {
         view.setNotificationsPanelController(notifShadeController);
         mButtonSelectionStateController.addAllButtonsWithSelectionState(view);
         mButtonRoleHolderController.addAllButtonsWithRoleName(view);
+        mHvacControllerLazy.get().addTemperatureViewToController(view);
         mUserNameViewControllerLazy.get().addUserNameView(view);
         mPrivacyChipViewControllerLazy.get().addPrivacyChipView(view);
     }

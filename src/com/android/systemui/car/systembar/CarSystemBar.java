@@ -249,8 +249,6 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
         mActivityManagerWrapper = ActivityManagerWrapper.getInstance();
         mActivityManagerWrapper.registerTaskStackListener(mButtonSelectionStateListener);
 
-        mUiBgExecutor.execute(mCarSystemBarController::connectToHvac);
-
         // Lastly, call to the icon policy to install/update all the icons.
         // Must be called on the main thread due to the use of observeForever() in
         // mIconPolicy.init().

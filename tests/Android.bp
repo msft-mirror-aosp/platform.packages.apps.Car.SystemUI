@@ -1,0 +1,54 @@
+// Copyright (C) 2021 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Convert class name list to jacoco exclude list
+// This appends a * to all classes and replace the space separators with commas.
+jacoco_exclude = ["__builtin_func:subst <'space' unset> <'comma' unset> __builtin_func:patsubst % %* <'local_classes' unset>"]
+android_test {
+    name: "CarSystemUITests",
+
+    dxflags: ["--multi-dex"],
+
+    platform_apis: true,
+    test_suites: ["device-tests"],
+
+    static_libs: [
+        "CarSystemUI-tests",
+    ],
+
+    compile_multilib: "both",
+
+    jni_libs: [
+        "libdexmakerjvmtiagent",
+        "libmultiplejvmtiagentsinterferenceagent",
+    ],
+
+    libs: [
+        "android.test.runner",
+        "telephony-common",
+        "android.test.base",
+    ],
+
+    aaptflags: [
+        "--extra-packages",
+        "com.android.systemui",
+    ],
+
+    certificate: "platform",
+
+    jacoco: {
+        include_filter: ["com.android.systemui.*,com.android.keyguard.*"],
+        exclude_filter: jacoco_exclude,
+    },
+}

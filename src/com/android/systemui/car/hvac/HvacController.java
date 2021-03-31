@@ -190,24 +190,28 @@ public class HvacController implements HvacPropertySetter {
         }
 
         if (rootView instanceof HvacView) {
-            HvacView hvacView = (HvacView) rootView;
-            @HvacProperty Integer propId = hvacView.getHvacPropertyToView();
-            @AreaId Integer areaId = hvacView.getAreaId();
-            hvacView.setHvacPropertySetter(this);
+            try {
+                HvacView hvacView = (HvacView) rootView;
+                @HvacProperty Integer propId = hvacView.getHvacPropertyToView();
+                @AreaId Integer areaId = hvacView.getAreaId();
+                hvacView.setHvacPropertySetter(this);
 
-            addHvacViewToMap(propId, areaId, hvacView);
-            // Initialize the view with the initial value.
-            if (mCarPropertyManager != null) {
-                CarPropertyValue initValue = mCarPropertyManager.getProperty(propId, areaId);
-                boolean acOn = mCarPropertyManager.getBooleanProperty(HVAC_AC_ON,
-                        mCarPropertyManager.getAreaId(HVAC_AC_ON, areaId));
-                boolean usesFahrenheit = mCarPropertyManager.getIntProperty(
-                        HVAC_TEMPERATURE_DISPLAY_UNITS,
-                        mCarPropertyManager.getAreaId(HVAC_TEMPERATURE_DISPLAY_UNITS,
-                                areaId)) == VehicleUnit.FAHRENHEIT;
-                hvacView.onPropertyChanged(initValue);
-                hvacView.onAcOnOffChanged(acOn);
-                hvacView.onHvacTemperatureUnitChanged(usesFahrenheit);
+                addHvacViewToMap(propId, areaId, hvacView);
+                // Initialize the view with the initial value.
+                if (mCarPropertyManager != null) {
+                    CarPropertyValue initValue = mCarPropertyManager.getProperty(propId, areaId);
+                    boolean acOn = mCarPropertyManager.getBooleanProperty(HVAC_AC_ON,
+                            mCarPropertyManager.getAreaId(HVAC_AC_ON, areaId));
+                    boolean usesFahrenheit = mCarPropertyManager.getIntProperty(
+                            HVAC_TEMPERATURE_DISPLAY_UNITS,
+                            mCarPropertyManager.getAreaId(HVAC_TEMPERATURE_DISPLAY_UNITS,
+                                    areaId)) == VehicleUnit.FAHRENHEIT;
+                    hvacView.onPropertyChanged(initValue);
+                    hvacView.onAcOnOffChanged(acOn);
+                    hvacView.onHvacTemperatureUnitChanged(usesFahrenheit);
+                }
+            } catch (IllegalArgumentException ex) {
+                Log.e(TAG, "Can't register HVAC view", ex);
             }
         }
 

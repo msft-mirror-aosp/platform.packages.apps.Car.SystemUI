@@ -116,6 +116,11 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
         mHvacPropertySetter = hvacPropertySetter;
     }
 
+    @Override
+    public void onLocaleListChanged() {
+        updateTemperatureView();
+    }
+
     /**
      * Returns {@code true} if temperature should be available for change.
      */

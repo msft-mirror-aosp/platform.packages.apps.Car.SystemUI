@@ -25,9 +25,5 @@
             </shape>
         </aapt:attr>
     </item>
-    <item>
-        <aapt:attr name="android:drawable">
-            <ripple android:color="?android:attr/colorControlHighlight"/>
-        </aapt:attr>
-    </item>
+    <item android:drawable="@drawable/system_bar_pill_rotary_background"/>
 </layer-list>

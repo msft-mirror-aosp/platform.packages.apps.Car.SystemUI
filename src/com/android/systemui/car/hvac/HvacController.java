@@ -52,6 +52,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.qualifiers.UiBackground;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
@@ -70,7 +71,8 @@ import javax.inject.Inject;
  * Grants {@link HvacView}s access to {@link HvacPropertySetter} with API's to write new values
  * for HVAC properties.
  */
-public class HvacController implements HvacPropertySetter {
+public class HvacController implements HvacPropertySetter,
+        ConfigurationController.ConfigurationListener {
     private static final String TAG = HvacController.class.getSimpleName();
     private static final Boolean DEBUG = false;
     private static final Integer[] HVAC_PROPERTIES =
@@ -139,11 +141,13 @@ public class HvacController implements HvacPropertySetter {
     private boolean mIsConnectedToCar;
 
     @Inject
-    public HvacController(CarServiceProvider carServiceProvider, @UiBackground Executor executor) {
+    public HvacController(CarServiceProvider carServiceProvider, @UiBackground Executor executor,
+            ConfigurationController configurationController) {
         mExecutor = executor;
         if (!mIsConnectedToCar) {
             carServiceProvider.addListener(mCarServiceLifecycleListener);
         }
+        configurationController.addCallback(this);
     }
 
     @Override
@@ -282,6 +286,18 @@ public class HvacController implements HvacPropertySetter {
     @VisibleForTesting
     Map<@HvacProperty Integer, Map<@AreaId Integer, List<HvacView>>> getHvacPropertyViewMap() {
         return mHvacPropertyViewMap;
+    }
+
+    @Override
+    public void onLocaleListChanged() {
+        // Call {@link HvacView#onLocaleListChanged} on all {@link HvacView} instances.
+        for (Map<@AreaId Integer, List<HvacView>> subMap : mHvacPropertyViewMap.values()) {
+            for (List<HvacView> views : subMap.values()) {
+                for (HvacView view : views) {
+                    view.onLocaleListChanged();
+                }
+            }
+        }
     }
 
     private void registerHvacPropertyEventListeners() {

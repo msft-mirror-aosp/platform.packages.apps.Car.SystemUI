@@ -59,4 +59,9 @@ public interface HvacView {
      * supported area ID's for the given property.
      */
     @HvacController.AreaId Integer getAreaId();
+
+    /**
+     * Performs any action needed when locale is changed.
+     */
+    default void onLocaleListChanged() {}
 }

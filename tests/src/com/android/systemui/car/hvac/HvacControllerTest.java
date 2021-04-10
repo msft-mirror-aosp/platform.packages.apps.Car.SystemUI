@@ -43,6 +43,7 @@ import android.view.View;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.util.concurrency.FakeExecutor;
 import com.android.systemui.util.time.FakeSystemClock;
 
@@ -77,6 +78,9 @@ public class HvacControllerTest extends SysuiTestCase {
     private TestHvacView mTestHvacView3;
     @Mock
     private CarPropertyValue mCarPropertyValue;
+    @Mock
+    private ConfigurationController mConfigurationController;
+
     private HvacController mHvacController;
     private FakeExecutor mExecutor;
 
@@ -86,7 +90,8 @@ public class HvacControllerTest extends SysuiTestCase {
         when(mCar.getCarManager(Car.PROPERTY_SERVICE)).thenReturn(mCarPropertyManager);
 
         mExecutor = new FakeExecutor(new FakeSystemClock());
-        mHvacController = new HvacController(mCarServiceProvider, mExecutor);
+        mHvacController = new HvacController(mCarServiceProvider, mExecutor,
+                mConfigurationController);
         mHvacController.mCarServiceLifecycleListener.onConnected(mCar);
         mExecutor.advanceClockToLast();
         mExecutor.runAllReady();

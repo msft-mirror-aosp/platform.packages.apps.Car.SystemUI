@@ -97,7 +97,7 @@ public class HvacPanelOverlayViewMediator implements OverlayViewMediator {
     }
 
     @Override
-    public void setupOverlayContentViewControllers() {
+    public void setUpOverlayContentViewControllers() {
         mHvacPanelOverlayViewController.setOverlayDirection(OVERLAY_FROM_BOTTOM_BAR);
     }
 }

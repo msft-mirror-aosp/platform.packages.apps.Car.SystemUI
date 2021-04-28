@@ -127,18 +127,5 @@
           android:background="@null"
           systemui:broadcast="true"
           />
-
-      <com.android.systemui.car.hvac.AnimatedTemperatureView
-          android:id="@+id/righttext"
-          android:layout_width="wrap_content"
-          android:layout_height="match_parent"
-          android:paddingStart="16dp"
-          android:paddingEnd="@*android:dimen/car_padding_4"
-          android:gravity="center_vertical|end"
-          android:minEms="4"
-          android:textAppearance="@style/TextAppearance.CarStatus"
-          systemui:hvacAreaId="68"
-          systemui:hvacPivotOffset="60dp"
-          />
     </FrameLayout>
 </com.android.systemui.car.systembar.CarSystemBarView>

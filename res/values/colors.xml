@@ -88,11 +88,13 @@
     <color name="hvac_module_background_color">#99222B31</color>
 
     <color name="hvac_icon_color">#F5F5F5</color>
+    <color name="hvac_master_switch_color">#000000</color>
     <color name="hvac_background_color">#FF172026</color>
     <color name="hvac_temperature_floating_text_color">#9FA2A5</color>
     <color name="hvac_temperature_off_text_bg_color">#9FA2A5</color>
     <color name="hvac_fanspeed_bg_color">#141C21</color>
     <color name="hvac_fanspeed_segment_color">#7FCAC3</color>
+    <color name="hvac_seat_heat_level_drawable_fill_color">#222B31</color>
 
     <color name="hvac_fanspeed_off_enabled_bg">#F5F6F5</color>
     <color name="hvac_fanspeed_off_enabled_text_color">#13181C</color>

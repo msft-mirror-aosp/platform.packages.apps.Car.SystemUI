@@ -44,6 +44,8 @@ import com.android.systemui.R;
 public class TemperatureControlView extends LinearLayout implements HvacView {
     protected static final int BUTTON_REPEAT_INTERVAL_MS = 500;
 
+    private static final int INVALID_ID = -1;
+
     private final int mAreaId;
     private final int mAvailableTextColor;
     private final int mUnavailableTextColor;
@@ -63,8 +65,8 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
 
     public TemperatureControlView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.TemperatureView);
-        mAreaId = typedArray.getInt(R.styleable.TemperatureView_hvacAreaId, -1);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.HvacView);
+        mAreaId = typedArray.getInt(R.styleable.HvacView_hvacAreaId, INVALID_ID);
         mTemperatureFormat = getResources().getString(R.string.hvac_temperature_format);
         mMinTempC = getResources().getFloat(R.dimen.hvac_min_value_celsius);
         mMaxTempC = getResources().getFloat(R.dimen.hvac_max_value_celsius);

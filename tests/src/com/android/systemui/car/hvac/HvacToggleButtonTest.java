@@ -20,7 +20,6 @@ import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
 import static android.car.VehiclePropertyIds.HVAC_DEFROSTER;
 import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;

@@ -313,4 +313,10 @@
 
     <dimen name="hvac_button_margin_start">10dp</dimen>
     <dimen name="hvac_button_margin_end">10dp</dimen>
+
+    <dimen name="hvac_fan_speed_bar_margin_top">12dp</dimen>
+    <dimen name="hvac_fan_speed_bar_margin_bottom">12dp</dimen>
+
+    <dimen name="hvac_fan_speed_text_margin_top">12dp</dimen>
+    <dimen name="hvac_fan_speed_text_margin_bottom">12dp</dimen>
 </resources>

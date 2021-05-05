@@ -31,11 +31,6 @@ public interface HvacView {
     void setHvacPropertySetter(HvacPropertySetter hvacPropertySetter);
 
     /**
-     * Called when the on/off state of the air conditioner is changed.
-     */
-    void onAcOnOffChanged(boolean acIsOn);
-
-    /**
      * Called when the temperature display unit (Celsius or Fahrenheit) is changed.
      */
     void onHvacTemperatureUnitChanged(boolean usesFahrenheit);
@@ -59,4 +54,10 @@ public interface HvacView {
      * supported area ID's for the given property.
      */
     @HvacController.AreaId Integer getAreaId();
+
+    /**
+     * Performs any action needed when locale is changed.
+     */
+    default void onLocaleListChanged() {}
+
 }

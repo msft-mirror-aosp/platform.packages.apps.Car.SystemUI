@@ -235,7 +235,7 @@
 
     <!-- dimensions for HVAC   -->
 
-    <dimen name="hvac_panel_full_expanded_height">600dp</dimen>
+    <dimen name="hvac_panel_full_expanded_height">500dp</dimen>
 
     <dimen name="hvac_center_panel_width">760dp</dimen>
 
@@ -246,6 +246,7 @@
     <dimen name="hvac_panel_handle_bar_margin_top">10dp</dimen>
     <dimen name="hvac_panel_handle_bar_margin_bottom">10dp</dimen>
     <dimen name="hvac_panel_list_padding_bottom">50dp</dimen>
+    <dimen name="hvac_panel_button_dimen">96dp</dimen>
 
     <dimen name="temperature_side_margin">32dp</dimen>
 
@@ -300,4 +301,16 @@
     <dimen name="hvac_floating_text_left_margin">31dp</dimen>
     <dimen name="hvac_text_left_margin">26dp</dimen>
     <dimen name="hvac_close_button_bottom_margin">0dp</dimen>
+
+    <dimen name="hvac_turned_on_alpha">1</dimen>
+    <dimen name="hvac_turned_off_alpha">0.5</dimen>
+
+    <dimen name="hvac_icon_drawable_width">108dp</dimen>
+    <dimen name="hvac_icon_drawable_height">108dp</dimen>
+
+    <dimen name="hvac_power_icon_drawable_width">48dp</dimen>
+    <dimen name="hvac_power_icon_drawable_height">48dp</dimen>
+
+    <dimen name="hvac_button_margin_start">10dp</dimen>
+    <dimen name="hvac_button_margin_end">10dp</dimen>
 </resources>

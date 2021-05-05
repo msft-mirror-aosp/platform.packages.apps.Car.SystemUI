@@ -19,12 +19,12 @@ package com.android.systemui.car.hvac;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
-import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 /** A view that contains interfaces for the HVAC Panel application and intercepts the key events. */
-public class HvacPanelView extends FrameLayout {
+public class HvacPanelView extends ConstraintLayout {
     private KeyEventHandler mKeyEventHandler;
 
     public HvacPanelView(Context context) {

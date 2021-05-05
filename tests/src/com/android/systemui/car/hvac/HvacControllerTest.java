@@ -16,8 +16,6 @@
 
 package com.android.systemui.car.hvac;
 
-import static android.car.VehicleAreaType.VEHICLE_AREA_TYPE_GLOBAL;
-import static android.car.VehiclePropertyIds.HVAC_AC_ON;
 import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
 import static android.car.VehiclePropertyIds.HVAC_DEFROSTER;
 import static android.car.VehiclePropertyIds.HVAC_TEMPERATURE_DISPLAY_UNITS;

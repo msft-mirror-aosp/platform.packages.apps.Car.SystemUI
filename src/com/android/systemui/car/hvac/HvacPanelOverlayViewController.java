@@ -35,17 +35,21 @@ import javax.inject.Inject;
 public class HvacPanelOverlayViewController extends OverlayPanelViewController {
 
     private final Resources mResources;
+    private final HvacController mHvacController;
+
     private HvacPanelView mHvacPanelView;
 
     @Inject
     public HvacPanelOverlayViewController(Context context,
             @Main Resources resources,
+            HvacController hvacController,
             OverlayViewGlobalStateController overlayViewGlobalStateController,
             FlingAnimationUtils.Builder flingAnimationUtilsBuilder,
             CarDeviceProvisionedController carDeviceProvisionedController) {
         super(context, resources, R.id.hvac_panel_stub, overlayViewGlobalStateController,
                 flingAnimationUtilsBuilder, carDeviceProvisionedController);
         mResources = resources;
+        mHvacController = hvacController;
     }
 
     @Override
@@ -53,6 +57,8 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController {
         super.onFinishInflate();
 
         mHvacPanelView = getLayout().findViewById(R.id.hvac_panel);
+        mHvacController.registerHvacViews(mHvacPanelView);
+
         mHvacPanelView.setKeyEventHandler((event) -> {
             if (event.getKeyCode() != KeyEvent.KEYCODE_BACK) {
                 return false;

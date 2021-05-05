@@ -70,6 +70,15 @@
                         android:layout_centerVertical="true"
                         android:layout_centerHorizontal="true"
                         android:orientation="vertical">
+                        <com.android.systemui.car.hvac.referenceui.FanSpeedBar
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"/>
+                        <com.android.systemui.car.hvac.referenceui.FanDirectionButtons
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:orientation="horizontal"/>
                     </LinearLayout>
                     <com.android.systemui.car.hvac.HvacToggleButton
                         android:layout_width="@dimen/hvac_panel_button_dimen"

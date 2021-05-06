@@ -258,8 +258,8 @@
 
     <dimen name="hvac_panel_row_animation_height_shift">0dp</dimen>
 
-    <dimen name="temperature_bar_width_collapsed">96dp</dimen>
-    <dimen name="temperature_bar_width_expanded">96dp</dimen>
+    <dimen name="temperature_bar_collapsed_width">96dp</dimen>
+    <dimen name="temperature_bar_expanded_width">96dp</dimen>
     <dimen name="temperature_bar_collapsed_height">96dp</dimen>
     <dimen name="temperature_bar_expanded_height">356dp</dimen>
     <dimen name="temperature_bar_icon_margin">20dp</dimen>
@@ -319,4 +319,7 @@
 
     <dimen name="hvac_fan_speed_text_margin_top">12dp</dimen>
     <dimen name="hvac_fan_speed_text_margin_bottom">12dp</dimen>
+
+    <dimen name="hvac_temperature_control_button_width">48dp</dimen>
+    <dimen name="hvac_temperature_control_button_height">48dp</dimen>
 </resources>

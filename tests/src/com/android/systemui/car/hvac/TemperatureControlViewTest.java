@@ -16,12 +16,17 @@
 
 package com.android.systemui.car.hvac;
 
+import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
+import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 import static android.car.VehiclePropertyIds.HVAC_TEMPERATURE_SET;
 import static android.view.MotionEvent.ACTION_DOWN;
 import static android.view.MotionEvent.ACTION_UP;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,12 +56,17 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 public class TemperatureControlViewTest extends SysuiTestCase {
+    private static final int GLOBAL_AREA_ID = 117;
     private static final int AREA_ID = 99;
+    private static final int PROPERTY_ID = HVAC_TEMPERATURE_SET;
+
     private TemperatureControlView mTemperatureControlView;
     @Mock
     private HvacPropertySetter mHvacPropertySetter;
     @Mock
     private CarPropertyValue mCarPropertyValue;
+    @Mock
+    private CarPropertyValue mHvacPowerProperty;
     @Mock
     private MotionEvent mDownMotionEvent;
     @Mock
@@ -82,6 +92,8 @@ public class TemperatureControlViewTest extends SysuiTestCase {
     @Test
     public void onPropertyChanged_inCelsius_displaysSetTemperatureInCelsius()
             throws InterruptedException {
+        setPowerPropertyValue(true);
+        mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ false);
 
@@ -91,6 +103,8 @@ public class TemperatureControlViewTest extends SysuiTestCase {
 
     @Test
     public void onPropertyChanged_inFahrenheit_displaysSetTemperatureInFahrenheit() {
+        setPowerPropertyValue(true);
+        mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
 
@@ -101,6 +115,8 @@ public class TemperatureControlViewTest extends SysuiTestCase {
 
     @Test
     public void onTouchIncreaseButtonThreeTimes_inCelsius_increasesThreeDegreesCelsius() {
+        setPowerPropertyValue(true);
+        mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
         View increaseButton = mTemperatureControlView.findViewById(R.id.hvac_increase_button);
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
@@ -118,6 +134,8 @@ public class TemperatureControlViewTest extends SysuiTestCase {
 
     @Test
     public void onTouchDecreaseButtonThreeTimes_inCelsius_decreasesThreeDegreesCelsius() {
+        setPowerPropertyValue(true);
+        mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
         View decreaseButton = mTemperatureControlView.findViewById(R.id.hvac_decrease_button);
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
@@ -135,6 +153,8 @@ public class TemperatureControlViewTest extends SysuiTestCase {
 
     @Test
     public void onTouchIncreaseButtonThreeTimes_inFahrenheit_increasesThreeDegreesFahrenheit() {
+        setPowerPropertyValue(true);
+        mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
         View increaseButton = mTemperatureControlView.findViewById(R.id.hvac_increase_button);
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
@@ -153,6 +173,8 @@ public class TemperatureControlViewTest extends SysuiTestCase {
 
     @Test
     public void onTouchDecreaseButtonThreeTimes_inFahrenheit_decreasesThreeDegreesFahrenheit() {
+        setPowerPropertyValue(true);
+        mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
         View decreaseButton = mTemperatureControlView.findViewById(R.id.hvac_decrease_button);
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
@@ -167,6 +189,38 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         verify(mHvacPropertySetter, times(intervalTimes)).setHvacProperty(HVAC_TEMPERATURE_SET,
                 AREA_ID,
                 fahrenheitToCelsius(celsiusToFahrenheit((float) mCarPropertyValue.getValue()) - 1));
+    }
+
+    @Test
+    public void onTouchIncreaseButtonThreeTimes_powerOff_doesNotSetNewValues() {
+        setPowerPropertyValue(false);
+        mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
+        View increaseButton = mTemperatureControlView.findViewById(R.id.hvac_increase_button);
+        int intervalTimes = 3;
+
+        // Subtract 10ms so the click will be performed exactly intervalTimes.
+        // The first click occurs when the button is pressed, and so after interval * n
+        // milliseconds, n + 1 clicks happen in total.
+        touchViewForDurationMs(increaseButton,
+                TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * intervalTimes - 10);
+
+        verify(mHvacPropertySetter, never()).setHvacProperty(anyInt(), anyInt(), anyFloat());
+    }
+
+    @Test
+    public void onTouchDecreaseButtonThreeTimes_powerOff_doesNotSetNewValues() {
+        setPowerPropertyValue(false);
+        mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
+        View decreaseButton = mTemperatureControlView.findViewById(R.id.hvac_decrease_button);
+        int intervalTimes = 3;
+
+        // Subtract 10ms so the click will be performed exactly intervalTimes.
+        // The first click occurs when the button is pressed, and so after interval * n
+        // milliseconds, n + 1 clicks happen in total.
+        touchViewForDurationMs(decreaseButton,
+                TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * intervalTimes - 10);
+
+        verify(mHvacPropertySetter, never()).setHvacProperty(anyInt(), anyInt(), anyFloat());
     }
 
     private void touchViewForDurationMs(View view, long duration) {
@@ -191,5 +245,11 @@ public class TemperatureControlViewTest extends SysuiTestCase {
     }
     private static float fahrenheitToCelsius(float tempF) {
         return (tempF - 32) * 5f / 9f;
+    }
+
+    private void setPowerPropertyValue(boolean value) {
+        when(mHvacPowerProperty.getAreaId()).thenReturn(GLOBAL_AREA_ID);
+        when(mHvacPowerProperty.getPropertyId()).thenReturn(HVAC_POWER_ON);
+        when(mHvacPowerProperty.getValue()).thenReturn(value);
     }
 }

@@ -23,16 +23,12 @@
     android:paddingStart="20dp"
     android:paddingEnd="20dp"
     android:gravity="center">
-
-    <com.android.systemui.car.hvac.TemperatureControlView
-        android:id="@+id/test_hvac"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
-        android:gravity="center_vertical"
+    <com.android.systemui.car.hvac.referenceui.BackgroundAdjustingTemperatureControlView
+        android:id="@+id/temperature_control_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         systemui:hvacAreaId="99"
         systemui:hvacTempFormat="%.0f\u00B0">
-        <include layout="@layout/adjustable_temperature_view"/>
-    </com.android.systemui.car.hvac.TemperatureControlView>
-
+        <include layout="@layout/hvac_temperature_bar_overlay"/>
+    </com.android.systemui.car.hvac.referenceui.BackgroundAdjustingTemperatureControlView>
 </LinearLayout>

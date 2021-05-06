@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.hvac;
 
+import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 import static android.car.VehiclePropertyIds.HVAC_TEMPERATURE_SET;
 
 import static com.android.systemui.car.hvac.HvacUtils.celsiusToFahrenheit;
@@ -46,7 +47,7 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     private final int mAvailableTextColor;
     private final int mUnavailableTextColor;
 
-    private boolean mAcOn;
+    private boolean mPowerOn;
     private boolean mTemperatureSetAvailable;
     private HvacPropertySetter mHvacPropertySetter;
     private TextView mTempTextView;
@@ -74,8 +75,6 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-        LayoutInflater.from(getContext()).inflate(R.layout.adjustable_temperature_view,
-                /* root= */ this);
         mTempTextView = findViewById(R.id.hvac_temperature_text);
         mIncreaseButton = findViewById(R.id.hvac_increase_button);
         mDecreaseButton = findViewById(R.id.hvac_decrease_button);
@@ -94,6 +93,11 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
             mCurrentTempC = (Float) value.getValue();
             mTemperatureSetAvailable = value.getStatus() == CarPropertyValue.STATUS_AVAILABLE;
         }
+
+        if (value.getPropertyId() == HVAC_POWER_ON) {
+            mPowerOn = (Boolean) value.getValue();
+        }
+
         updateTemperatureView();
     }
 
@@ -120,13 +124,26 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     /**
      * Returns {@code true} if temperature should be available for change.
      */
-    boolean isTemperatureAvailableForChange() {
-        return mTemperatureSetAvailable && mHvacPropertySetter != null;
+    public boolean isTemperatureAvailableForChange() {
+        return mPowerOn && mTemperatureSetAvailable && mHvacPropertySetter != null;
     }
 
-    @VisibleForTesting
-    String getTempInDisplay() {
+    /**
+     * View update logic that will be executed on the UI Thread.
+     */
+    protected void updateTemperatureViewUiThread() {
+        mTempTextView.setText(mTempInDisplay);
+        mTempTextView.setTextColor(mPowerOn && mTemperatureSetAvailable
+                ? mAvailableTextColor
+                : mUnavailableTextColor);
+    }
+
+    protected String getTempInDisplay() {
         return mTempInDisplay;
+    }
+
+    protected float getCurrentTempC() {
+        return mCurrentTempC;
     }
 
     @VisibleForTesting
@@ -143,6 +160,8 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     }
 
     private void incrementTemperature(boolean increment) {
+        if (!mPowerOn) return;
+
         float newTempC;
         if (mDisplayInFahrenheit) {
             float currentTempF = celsiusToFahrenheit(mCurrentTempC);
@@ -157,11 +176,7 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     private void updateTemperatureView() {
         mTempInDisplay = String.format(mTemperatureFormat,
                 mDisplayInFahrenheit ? celsiusToFahrenheit(mCurrentTempC) : mCurrentTempC);
-        getContext().getMainExecutor().execute(() -> {
-            mTempTextView.setText(mTempInDisplay);
-            mTempTextView.setTextColor(mAcOn && mTemperatureSetAvailable ? mAvailableTextColor
-                    : mUnavailableTextColor);
-        });
+        getContext().getMainExecutor().execute(this::updateTemperatureViewUiThread);
     }
 
     private void setTemperature(float tempC) {

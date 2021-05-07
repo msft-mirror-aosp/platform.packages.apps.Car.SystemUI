@@ -25,9 +25,7 @@ import static com.android.systemui.statusbar.phone.BarTransitions.MODE_SEMI_TRAN
 import static com.android.systemui.statusbar.phone.BarTransitions.MODE_TRANSPARENT;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.inputmethodservice.InputMethodService;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.Display;
@@ -55,7 +53,6 @@ import com.android.systemui.statusbar.phone.AutoHideController;
 import com.android.systemui.statusbar.phone.BarTransitions;
 import com.android.systemui.statusbar.phone.LightBarController;
 import com.android.systemui.statusbar.phone.PhoneStatusBarPolicy;
-import com.android.systemui.statusbar.phone.StatusBarIconController;
 import com.android.systemui.statusbar.phone.StatusBarSignalPolicy;
 import com.android.systemui.statusbar.phone.SysuiDarkIconDispatcher;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
@@ -83,7 +80,6 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
     private final IStatusBarService mBarService;
     private final Lazy<KeyguardStateController> mKeyguardStateControllerLazy;
     private final Lazy<PhoneStatusBarPolicy> mIconPolicyLazy;
-    private final Lazy<StatusBarIconController> mIconControllerLazy;
     private final HvacController mHvacController;
 
     private final int mDisplayId;
@@ -139,8 +135,8 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
             IStatusBarService barService,
             Lazy<KeyguardStateController> keyguardStateControllerLazy,
             Lazy<PhoneStatusBarPolicy> iconPolicyLazy,
-            Lazy<StatusBarIconController> iconControllerLazy,
             HvacController hvacController,
+            StatusBarSignalPolicy signalPolicy,
             SystemBarConfigs systemBarConfigs
     ) {
         super(context);
@@ -156,10 +152,9 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
         mBarService = barService;
         mKeyguardStateControllerLazy = keyguardStateControllerLazy;
         mIconPolicyLazy = iconPolicyLazy;
-        mIconControllerLazy = iconControllerLazy;
         mHvacController = hvacController;
         mSystemBarConfigs = systemBarConfigs;
-
+        mSignalPolicy = signalPolicy;
         mDisplayId = context.getDisplayId();
     }
 
@@ -262,9 +257,6 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
         // mIconPolicy.init().
         mExecutor.execute(() -> {
             mIconPolicyLazy.get().init();
-            if (mSignalPolicy == null) {
-                mSignalPolicy = new StatusBarSignalPolicy(mContext, mIconControllerLazy.get());
-            }
         });
     }
 

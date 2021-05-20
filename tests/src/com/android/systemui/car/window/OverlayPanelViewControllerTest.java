@@ -468,6 +468,11 @@ public class OverlayPanelViewControllerTest extends SysuiTestCase {
         }
 
         @Override
+        protected int getSettleClosePercentage() {
+            return 50;
+        }
+
+        @Override
         protected void onCollapseAnimationEnd() {
             mOnCollapseAnimationEndCalled = true;
         }
@@ -494,6 +499,11 @@ public class OverlayPanelViewControllerTest extends SysuiTestCase {
         @Override
         protected boolean shouldAllowClosingScroll() {
             return mShouldAllowClosingScroll;
+        }
+
+        @Override
+        protected Integer getHandleBarViewId() {
+            return null;
         }
     }
 }

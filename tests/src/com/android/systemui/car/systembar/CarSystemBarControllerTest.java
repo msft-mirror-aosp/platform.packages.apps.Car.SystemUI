@@ -388,6 +388,34 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     }
 
     @Test
+    public void testRegisterHvacController_createViewFirst_registrationSuccessful() {
+        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
+        mCarSystemBar = createSystemBarController();
+
+        CarSystemBarView bottomBar = mCarSystemBar.getBottomBar(/* isSetUp= */ true);
+        CarSystemBarController.HvacPanelController controller = bottomBar.getHvacPanelController();
+        assertThat(controller).isNull();
+        mCarSystemBar.registerHvacPanelController(
+                mock(CarSystemBarController.HvacPanelController.class));
+        controller = bottomBar.getHvacPanelController();
+
+        assertThat(controller).isNotNull();
+    }
+
+    @Test
+    public void testRegisterHvacController_registerFirst_registrationSuccessful() {
+        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
+        mCarSystemBar = createSystemBarController();
+
+        mCarSystemBar.registerHvacPanelController(
+                mock(CarSystemBarController.HvacPanelController.class));
+        CarSystemBarView bottomBar = mCarSystemBar.getBottomBar(/* isSetUp= */ true);
+        CarSystemBarController.HvacPanelController controller = bottomBar.getHvacPanelController();
+
+        assertThat(controller).isNotNull();
+    }
+
+    @Test
     public void testShowAllNavigationButtons_bottomEnabled_bottomNavigationButtonsVisible() {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         mCarSystemBar = createSystemBarController();

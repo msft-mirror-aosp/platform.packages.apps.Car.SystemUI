@@ -31,6 +31,8 @@
         android:layout_alignParentEnd="true"
         android:gravity="center_vertical"
         systemui:hvacAreaId="99"
-        systemui:hvacTempFormat="%.0f\u00B0" />
+        systemui:hvacTempFormat="%.0f\u00B0">
+        <include layout="@layout/adjustable_temperature_view"/>
+    </com.android.systemui.car.hvac.TemperatureControlView>
 
 </LinearLayout>

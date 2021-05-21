@@ -19,6 +19,12 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="hvac_min_text" msgid="866677328637088715">"সর্বনিম্ন"</string>
     <string name="hvac_max_text" msgid="7627950157128770380">"সৰ্বাধিক"</string>
+    <!-- no translation found for fan_speed_max (956683571700419211) -->
+    <skip />
+    <!-- no translation found for fan_speed_off (3860115181014880798) -->
+    <skip />
+    <!-- no translation found for hvac_temperature_off (8370977023494579242) -->
+    <skip />
     <string name="voice_recognition_toast" msgid="7579725862117020349">"কণ্ঠস্বৰৰ চিনাক্তকৰণ এতিয়া সংযুক্ত ব্লুটুথ ডিভাইচে নিয়ন্ত্ৰণ কৰে"</string>
     <string name="car_guest" msgid="768913000117469596">"অতিথি"</string>
     <string name="start_guest_session" msgid="2759367183497948650">"অতিথি"</string>

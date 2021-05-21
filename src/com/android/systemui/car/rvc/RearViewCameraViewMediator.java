@@ -127,5 +127,5 @@ public class RearViewCameraViewMediator implements OverlayViewMediator {
     }
 
     @Override
-    public void setupOverlayContentViewControllers() {}
+    public void setUpOverlayContentViewControllers() {}
 }

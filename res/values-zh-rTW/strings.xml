@@ -19,6 +19,12 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="hvac_min_text" msgid="866677328637088715">"最小"</string>
     <string name="hvac_max_text" msgid="7627950157128770380">"最大"</string>
+    <!-- no translation found for fan_speed_max (956683571700419211) -->
+    <skip />
+    <!-- no translation found for fan_speed_off (3860115181014880798) -->
+    <skip />
+    <!-- no translation found for hvac_temperature_off (8370977023494579242) -->
+    <skip />
     <string name="voice_recognition_toast" msgid="7579725862117020349">"現在由已連線的藍牙裝置處理語音辨識作業"</string>
     <string name="car_guest" msgid="768913000117469596">"訪客"</string>
     <string name="start_guest_session" msgid="2759367183497948650">"訪客"</string>

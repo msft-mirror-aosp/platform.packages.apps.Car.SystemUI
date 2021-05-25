@@ -16,7 +16,8 @@
   -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_margin="@dimen/hvac_temperature_bar_margin"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent">
     <FrameLayout
         android:id="@+id/hvac_temperature_bar"
@@ -29,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/temperature_bar_icon_margin"
-            android:layout_gravity="top"
+            android:layout_gravity="top|center"
             android:src="@drawable/ic_increase_icon"
             style="@style/HvacTemperatureControlIcon"/>
         <TextView
@@ -44,7 +45,7 @@
             android:id="@+id/hvac_decrease_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
+            android:layout_gravity="bottom|center"
             android:layout_marginBottom="@dimen/temperature_bar_icon_margin"
             android:src="@drawable/ic_decrease_icon" />
     </FrameLayout>

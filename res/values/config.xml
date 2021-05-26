@@ -163,6 +163,9 @@
         <item>@*android:string/status_bar_microphone</item>
     </string-array>
 
+    <!-- Specifies the component name of the app grid activity -->
+    <string name="config_appGridComponentName" translatable="false">com.android.car.carlauncher/.AppGridActivity</string>
+
     <!--Percentage of the screen height, from the top, where the border between HVAC panel closing
         or opening, depending on where its handle bar is released after being dragged, would be
         drawn.

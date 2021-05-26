@@ -19,12 +19,9 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="hvac_min_text" msgid="866677328637088715">"Mín"</string>
     <string name="hvac_max_text" msgid="7627950157128770380">"Máx"</string>
-    <!-- no translation found for fan_speed_max (956683571700419211) -->
-    <skip />
-    <!-- no translation found for fan_speed_off (3860115181014880798) -->
-    <skip />
-    <!-- no translation found for hvac_temperature_off (8370977023494579242) -->
-    <skip />
+    <string name="fan_speed_max" msgid="956683571700419211">"MÁXIMA"</string>
+    <string name="fan_speed_off" msgid="3860115181014880798">"DESLIGADO"</string>
+    <string name="hvac_temperature_off" msgid="8370977023494579242">"DESLIGADO"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Reconhecimento de voz com dispositivo Bluetooth conectado"</string>
     <string name="car_guest" msgid="768913000117469596">"Convidado"</string>
     <string name="start_guest_session" msgid="2759367183497948650">"Convidado"</string>

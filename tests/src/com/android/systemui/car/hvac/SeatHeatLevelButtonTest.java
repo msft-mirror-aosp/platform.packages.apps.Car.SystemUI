@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.hvac;
 
-import static android.car.VehiclePropertyIds.HVAC_DEFROSTER;
 import static android.car.VehiclePropertyIds.HVAC_SEAT_TEMPERATURE;
 
 import static org.mockito.Mockito.verify;
@@ -101,6 +100,46 @@ public class SeatHeatLevelButtonTest extends SysuiTestCase {
         mSeatHeatLevelButton.onPropertyChanged(mCarPropertyValue);
 
         mSeatHeatLevelButton.performClick();
+
+        verify(mHvacPropertySetter).setHvacProperty(PROPERTY_ID, AREA_ID, 0);
+    }
+
+    @Test
+    public void onLongClick_currentLevelZero_setsHeatLevelToThree() {
+        setCarPropertyValue(0);
+        mSeatHeatLevelButton.onPropertyChanged(mCarPropertyValue);
+
+        mSeatHeatLevelButton.performLongClick();
+
+        verify(mHvacPropertySetter).setHvacProperty(PROPERTY_ID, AREA_ID, 3);
+    }
+
+    @Test
+    public void onLongClick_currentLevelOne_setsHeatLevelToZero() {
+        setCarPropertyValue(1);
+        mSeatHeatLevelButton.onPropertyChanged(mCarPropertyValue);
+
+        mSeatHeatLevelButton.performLongClick();
+
+        verify(mHvacPropertySetter).setHvacProperty(PROPERTY_ID, AREA_ID, 0);
+    }
+
+    @Test
+    public void onLongClick_currentLevelTwo_setsHeatLevelToZero() {
+        setCarPropertyValue(2);
+        mSeatHeatLevelButton.onPropertyChanged(mCarPropertyValue);
+
+        mSeatHeatLevelButton.performLongClick();
+
+        verify(mHvacPropertySetter).setHvacProperty(PROPERTY_ID, AREA_ID, 0);
+    }
+
+    @Test
+    public void onLongClick_currentLevelThree_setsHeatLevelToZero() {
+        setCarPropertyValue(3);
+        mSeatHeatLevelButton.onPropertyChanged(mCarPropertyValue);
+
+        mSeatHeatLevelButton.performLongClick();
 
         verify(mHvacPropertySetter).setHvacProperty(PROPERTY_ID, AREA_ID, 0);
     }

@@ -23,7 +23,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ImageButton;
 
 import com.android.systemui.R;
@@ -66,6 +65,14 @@ public class SeatHeatLevelButton extends ImageButton implements HvacView {
                 mHvacPropertySetter.setHvacProperty(getHvacPropertyToView(), mAreaId,
                         (mCurrentLevel + 1) % mTotalLevelCount);
             }
+        });
+        setOnLongClickListener(v -> {
+            if (mHvacPropertySetter != null) {
+                mHvacPropertySetter.setHvacProperty(getHvacPropertyToView(), mAreaId,
+                        mCurrentLevel == 0 ? mTotalLevelCount - 1 : 0);
+                return true;
+            }
+            return false;
         });
         getIconDrawables();
         updateIcon();

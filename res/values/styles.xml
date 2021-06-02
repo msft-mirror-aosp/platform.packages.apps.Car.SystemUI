@@ -56,6 +56,8 @@
         <item name="android:layout_width">@dimen/hvac_panel_button_dimen</item>
         <item name="android:layout_height">@dimen/hvac_panel_button_dimen</item>
         <item name="android:scaleType">centerInside</item>
+        <item name="android:layout_marginTop">@dimen/hvac_button_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/hvac_button_margin_bottom</item>
         <item name="android:layout_marginStart">@dimen/hvac_button_margin_start</item>
         <item name="android:layout_marginEnd">@dimen/hvac_button_margin_end</item>
     </style>

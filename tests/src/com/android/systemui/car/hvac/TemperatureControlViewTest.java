@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.hvac;
 
-import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
 import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 import static android.car.VehiclePropertyIds.HVAC_TEMPERATURE_SET;
 import static android.view.MotionEvent.ACTION_DOWN;
@@ -98,7 +97,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ false);
 
         assertThat(mTemperatureControlView.getTempInDisplay()).isEqualTo(
-                String.format(mTemperatureControlView.getTempFormat(), 20f));
+                String.format(mTemperatureControlView.getTempFormatInCelsius(), 20f));
     }
 
     @Test
@@ -109,7 +108,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
 
         assertThat(mTemperatureControlView.getTempInDisplay()).isEqualTo(
-                String.format(mTemperatureControlView.getTempFormat(),
+                String.format(mTemperatureControlView.getTempFormatInFahrenheit(),
                         celsiusToFahrenheit(20f)));
     }
 
@@ -121,6 +120,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ false);
+        float increment = mTemperatureControlView.getTemperatureIncrementInCelsius();
 
         // Subtract 10ms so the click will be performed exactly intervalTimes.
         // The first click occurs when the button is pressed, and so after interval * n
@@ -129,7 +129,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
                 TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * intervalTimes - 10);
 
         verify(mHvacPropertySetter, times(intervalTimes)).setHvacProperty(HVAC_TEMPERATURE_SET,
-                AREA_ID, (float) mCarPropertyValue.getValue() + 1f);
+                AREA_ID, (float) mCarPropertyValue.getValue() + increment);
     }
 
     @Test
@@ -140,6 +140,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ false);
+        float increment = mTemperatureControlView.getTemperatureIncrementInCelsius();
 
         // Subtract 10ms so the click will be performed exactly intervalTimes.
         // The first click occurs when the button is pressed, and so after interval * n
@@ -148,7 +149,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
                 TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * intervalTimes - 10);
 
         verify(mHvacPropertySetter, times(intervalTimes)).setHvacProperty(HVAC_TEMPERATURE_SET,
-                AREA_ID, (float) mCarPropertyValue.getValue() - 1f);
+                AREA_ID, (float) mCarPropertyValue.getValue() - increment);
     }
 
     @Test
@@ -159,6 +160,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
+        float increment = mTemperatureControlView.getTemperatureIncrementInFahrenheit();
 
         // Subtract 10ms so the click will be performed exactly intervalTimes.
         // The first click occurs when the button is pressed, and so after interval * n
@@ -168,7 +170,8 @@ public class TemperatureControlViewTest extends SysuiTestCase {
 
         verify(mHvacPropertySetter, times(intervalTimes)).setHvacProperty(HVAC_TEMPERATURE_SET,
                 AREA_ID,
-                fahrenheitToCelsius(celsiusToFahrenheit((float) mCarPropertyValue.getValue()) + 1));
+                fahrenheitToCelsius(
+                        celsiusToFahrenheit((float) mCarPropertyValue.getValue()) + increment));
     }
 
     @Test
@@ -179,6 +182,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
+        float increment = mTemperatureControlView.getTemperatureIncrementInFahrenheit();
 
         // Subtract 10ms so the click will be performed exactly intervalTimes.
         // The first click occurs when the button is pressed, and so after interval * n
@@ -188,7 +192,8 @@ public class TemperatureControlViewTest extends SysuiTestCase {
 
         verify(mHvacPropertySetter, times(intervalTimes)).setHvacProperty(HVAC_TEMPERATURE_SET,
                 AREA_ID,
-                fahrenheitToCelsius(celsiusToFahrenheit((float) mCarPropertyValue.getValue()) - 1));
+                fahrenheitToCelsius(
+                        celsiusToFahrenheit((float) mCarPropertyValue.getValue()) - increment));
     }
 
     @Test

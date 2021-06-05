@@ -506,6 +506,8 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
     protected void onScroll(int y) {
         if (getHandleBarViewId() == null) return;
         View handleBar = getLayout().findViewById(getHandleBarViewId());
+        if (handleBar == null) return;
+
         ViewGroup.MarginLayoutParams lp =
                 (ViewGroup.MarginLayoutParams) handleBar.getLayoutParams();
         // Adjust handlebar to new pointer position, and a little more depending on the

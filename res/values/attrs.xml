@@ -39,6 +39,13 @@
         <attr name="android:textAppearance"/>
     </declare-styleable>
 
+    <declare-styleable name="SeatHeatLevelButton">
+        <!-- List of drawables that will be shown when the seat heat level button is clicked.
+             This list should have exactly R.integer.hvac_seat_heat_level_count items.
+             The first item should have the "off" drawable. -->
+        <attr name="seatHeaterIconDrawableList" format="reference"/>
+    </declare-styleable>
+
     <!-- Allow for custom attribs to be added to a nav button -->
     <declare-styleable name="CarSystemBarButton">
         <!-- intent to start when button is click -->

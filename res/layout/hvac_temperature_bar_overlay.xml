@@ -19,7 +19,7 @@
     android:layout_margin="@dimen/hvac_temperature_bar_margin"
     android:layout_width="wrap_content"
     android:layout_height="match_parent">
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/hvac_temperature_bar"
         android:layout_width="@dimen/temperature_bar_expanded_width"
         android:layout_height="@dimen/temperature_bar_expanded_height"
@@ -30,23 +30,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/temperature_bar_icon_margin"
-            android:layout_gravity="top|center"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
             android:src="@drawable/ic_increase_icon"
             style="@style/HvacTemperatureControlIcon"/>
         <TextView
             android:id="@+id/hvac_temperature_text"
-            android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/hvac_text_left_margin"
-            android:textSize="@dimen/temperature_bar_text_size"
+            android:singleLine="true"
+            android:layout_centerInParent="true"
             style="@style/HvacTemperature"/>
         <ImageView
             android:id="@+id/hvac_decrease_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center"
             android:layout_marginBottom="@dimen/temperature_bar_icon_margin"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
             android:src="@drawable/ic_decrease_icon" />
-    </FrameLayout>
+    </RelativeLayout>
 </FrameLayout>

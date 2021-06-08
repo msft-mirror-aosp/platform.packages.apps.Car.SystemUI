@@ -30,7 +30,6 @@ import android.view.View;
 
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.hvac.referenceui.SeatHeatLevelButton;
 import com.android.systemui.tests.R;
 
 import org.junit.Before;
@@ -43,12 +42,12 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class SeatHeatLevelButtonTest extends SysuiTestCase {
+public class SeatTemperatureLevelButtonTest extends SysuiTestCase {
     private static final int GLOBAL_AREA_ID = 117;
     private static final int AREA_ID = 1;
     private static final int PROPERTY_ID = HVAC_SEAT_TEMPERATURE;
 
-    private SeatHeatLevelButton mSeatHeatLevelButton;
+    private SeatTemperatureLevelButton mSeatTemperatureLevelButton;
 
     @Mock
     private HvacPropertySetter mHvacPropertySetter;
@@ -60,16 +59,16 @@ public class SeatHeatLevelButtonTest extends SysuiTestCase {
         MockitoAnnotations.initMocks(this);
         View testView = LayoutInflater.from(getContext()).inflate(
                 R.layout.seat_heat_level_button_test, /* root= */ null);
-        mSeatHeatLevelButton = testView.findViewById(R.id.seat_heat_button);
-        mSeatHeatLevelButton.setHvacPropertySetter(mHvacPropertySetter);
+        mSeatTemperatureLevelButton = testView.findViewById(R.id.seat_heat_button);
+        mSeatTemperatureLevelButton.setHvacPropertySetter(mHvacPropertySetter);
     }
 
     @Test
     public void onClick_currentLevelZero_setsHeatLevelToOne() {
         setCarPropertyValue(0);
-        mSeatHeatLevelButton.onPropertyChanged(mCarPropertyValue);
+        mSeatTemperatureLevelButton.onPropertyChanged(mCarPropertyValue);
 
-        mSeatHeatLevelButton.performClick();
+        mSeatTemperatureLevelButton.performClick();
 
         verify(mHvacPropertySetter).setHvacProperty(PROPERTY_ID, AREA_ID, 1);
     }
@@ -77,9 +76,9 @@ public class SeatHeatLevelButtonTest extends SysuiTestCase {
     @Test
     public void onClick_currentLevelOne_setsHeatLevelToTwo() {
         setCarPropertyValue(1);
-        mSeatHeatLevelButton.onPropertyChanged(mCarPropertyValue);
+        mSeatTemperatureLevelButton.onPropertyChanged(mCarPropertyValue);
 
-        mSeatHeatLevelButton.performClick();
+        mSeatTemperatureLevelButton.performClick();
 
         verify(mHvacPropertySetter).setHvacProperty(PROPERTY_ID, AREA_ID, 2);
     }
@@ -87,9 +86,9 @@ public class SeatHeatLevelButtonTest extends SysuiTestCase {
     @Test
     public void onClick_currentLevelTwo_setsHeatLevelToThree() {
         setCarPropertyValue(2);
-        mSeatHeatLevelButton.onPropertyChanged(mCarPropertyValue);
+        mSeatTemperatureLevelButton.onPropertyChanged(mCarPropertyValue);
 
-        mSeatHeatLevelButton.performClick();
+        mSeatTemperatureLevelButton.performClick();
 
         verify(mHvacPropertySetter).setHvacProperty(PROPERTY_ID, AREA_ID, 3);
     }
@@ -97,9 +96,9 @@ public class SeatHeatLevelButtonTest extends SysuiTestCase {
     @Test
     public void onClick_currentLevelThree_setsHeatLevelToZero() {
         setCarPropertyValue(3);
-        mSeatHeatLevelButton.onPropertyChanged(mCarPropertyValue);
+        mSeatTemperatureLevelButton.onPropertyChanged(mCarPropertyValue);
 
-        mSeatHeatLevelButton.performClick();
+        mSeatTemperatureLevelButton.performClick();
 
         verify(mHvacPropertySetter).setHvacProperty(PROPERTY_ID, AREA_ID, 0);
     }
@@ -107,9 +106,9 @@ public class SeatHeatLevelButtonTest extends SysuiTestCase {
     @Test
     public void onLongClick_currentLevelZero_setsHeatLevelToThree() {
         setCarPropertyValue(0);
-        mSeatHeatLevelButton.onPropertyChanged(mCarPropertyValue);
+        mSeatTemperatureLevelButton.onPropertyChanged(mCarPropertyValue);
 
-        mSeatHeatLevelButton.performLongClick();
+        mSeatTemperatureLevelButton.performLongClick();
 
         verify(mHvacPropertySetter).setHvacProperty(PROPERTY_ID, AREA_ID, 3);
     }
@@ -117,9 +116,9 @@ public class SeatHeatLevelButtonTest extends SysuiTestCase {
     @Test
     public void onLongClick_currentLevelOne_setsHeatLevelToZero() {
         setCarPropertyValue(1);
-        mSeatHeatLevelButton.onPropertyChanged(mCarPropertyValue);
+        mSeatTemperatureLevelButton.onPropertyChanged(mCarPropertyValue);
 
-        mSeatHeatLevelButton.performLongClick();
+        mSeatTemperatureLevelButton.performLongClick();
 
         verify(mHvacPropertySetter).setHvacProperty(PROPERTY_ID, AREA_ID, 0);
     }
@@ -127,9 +126,9 @@ public class SeatHeatLevelButtonTest extends SysuiTestCase {
     @Test
     public void onLongClick_currentLevelTwo_setsHeatLevelToZero() {
         setCarPropertyValue(2);
-        mSeatHeatLevelButton.onPropertyChanged(mCarPropertyValue);
+        mSeatTemperatureLevelButton.onPropertyChanged(mCarPropertyValue);
 
-        mSeatHeatLevelButton.performLongClick();
+        mSeatTemperatureLevelButton.performLongClick();
 
         verify(mHvacPropertySetter).setHvacProperty(PROPERTY_ID, AREA_ID, 0);
     }
@@ -137,9 +136,9 @@ public class SeatHeatLevelButtonTest extends SysuiTestCase {
     @Test
     public void onLongClick_currentLevelThree_setsHeatLevelToZero() {
         setCarPropertyValue(3);
-        mSeatHeatLevelButton.onPropertyChanged(mCarPropertyValue);
+        mSeatTemperatureLevelButton.onPropertyChanged(mCarPropertyValue);
 
-        mSeatHeatLevelButton.performLongClick();
+        mSeatTemperatureLevelButton.performLongClick();
 
         verify(mHvacPropertySetter).setHvacProperty(PROPERTY_ID, AREA_ID, 0);
     }

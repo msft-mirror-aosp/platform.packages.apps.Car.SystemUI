@@ -98,6 +98,12 @@
         <attr name="hvacTurnOffIfAutoOn" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="HvacIntegerToggleButton">
+        <attr name="invalidValue" format="integer"/>
+        <attr name="onValue" format="integer"/>
+        <attr name="offValue" format="integer"/>
+    </declare-styleable>
+
     <declare-styleable name="carVolumeItems"/>
     <declare-styleable name="carVolumeItems_item">
         <!-- Align with AudioAttributes.USAGE_* -->

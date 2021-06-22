@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.hvac;
+package com.android.systemui.car.hvac.toggle;
 
 import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
 import static android.car.VehiclePropertyIds.HVAC_DEFROSTER;
 import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -35,6 +34,7 @@ import android.view.View;
 
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.hvac.HvacPropertySetter;
 import com.android.systemui.tests.R;
 
 import org.junit.Before;
@@ -47,15 +47,17 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class HvacToggleButtonTest extends SysuiTestCase {
+public class HvacIntegerToggleButtonTest extends SysuiTestCase {
     private static final int GLOBAL_AREA_ID = 117;
     private static final int AREA_ID = 1;
     private static final int PROPERTY_ID = HVAC_DEFROSTER;
+    private static final int ON_VALUE = 1;
+    private static final int OFF_VALUE = 0;
 
     private View mTestLayout;
-    private HvacToggleButton mDefaultButton;
-    private HvacToggleButton mTurnOnWhenPowerOffButton;
-    private HvacToggleButton mTurnOffWhenAutoOnButton;
+    private HvacIntegerToggleButton mDefaultButton;
+    private HvacIntegerToggleButton mTurnOnWhenPowerOffButton;
+    private HvacIntegerToggleButton mTurnOffWhenAutoOnButton;
     @Mock
     private HvacPropertySetter mHvacPropertySetterDefault;
     @Mock
@@ -74,11 +76,11 @@ public class HvacToggleButtonTest extends SysuiTestCase {
         MockitoAnnotations.initMocks(this);
         mTestLayout = LayoutInflater.from(getContext()).inflate(
                 R.layout.hvac_toggle_button_view, /* root= */ null);
-        mDefaultButton = mTestLayout.findViewById(R.id.toggle_button_default);
+        mDefaultButton = mTestLayout.findViewById(R.id.int_toggle_button_default);
         mTurnOnWhenPowerOffButton = mTestLayout.findViewById(
-                R.id.toggle_button_do_not_turn_off_when_power_off);
+                R.id.int_toggle_button_do_not_turn_off_when_power_off);
         mTurnOffWhenAutoOnButton = mTestLayout.findViewById(
-                R.id.toggle_button_turn_off_when_auto_on);
+                R.id.int_toggle_button_turn_off_when_auto_on);
 
         mDefaultButton.setHvacPropertySetter(mHvacPropertySetterDefault);
         mTurnOnWhenPowerOffButton.setHvacPropertySetter(mHvacPropertySetterTurnOnWhenPowerOff);
@@ -91,12 +93,12 @@ public class HvacToggleButtonTest extends SysuiTestCase {
         mDefaultButton.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(false);
         mDefaultButton.onPropertyChanged(mHvacAutoProperty);
-        setCarPropertyValue(false);
+        setCarPropertyValue(OFF_VALUE);
         mDefaultButton.onPropertyChanged(mCarPropertyValue);
 
         mDefaultButton.performClick();
 
-        verify(mHvacPropertySetterDefault).setHvacProperty(PROPERTY_ID, AREA_ID, true);
+        verify(mHvacPropertySetterDefault).setHvacProperty(PROPERTY_ID, AREA_ID, ON_VALUE);
     }
 
     @Test
@@ -105,12 +107,12 @@ public class HvacToggleButtonTest extends SysuiTestCase {
         mDefaultButton.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(false);
         mDefaultButton.onPropertyChanged(mHvacAutoProperty);
-        setCarPropertyValue(true);
+        setCarPropertyValue(ON_VALUE);
         mDefaultButton.onPropertyChanged(mCarPropertyValue);
 
         mDefaultButton.callOnClick();
 
-        verify(mHvacPropertySetterDefault).setHvacProperty(PROPERTY_ID, AREA_ID, false);
+        verify(mHvacPropertySetterDefault).setHvacProperty(PROPERTY_ID, AREA_ID, OFF_VALUE);
     }
 
     @Test
@@ -119,13 +121,13 @@ public class HvacToggleButtonTest extends SysuiTestCase {
         mDefaultButton.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(false);
         mDefaultButton.onPropertyChanged(mHvacAutoProperty);
-        setCarPropertyValue(false);
+        setCarPropertyValue(OFF_VALUE);
         mDefaultButton.onPropertyChanged(mCarPropertyValue);
 
         mDefaultButton.performClick();
 
         verify(mHvacPropertySetterDefault, never()).setHvacProperty(anyInt(), anyInt(),
-                anyBoolean());
+                anyInt());
     }
 
     @Test
@@ -134,13 +136,13 @@ public class HvacToggleButtonTest extends SysuiTestCase {
         mDefaultButton.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(false);
         mDefaultButton.onPropertyChanged(mHvacAutoProperty);
-        setCarPropertyValue(true);
+        setCarPropertyValue(ON_VALUE);
         mDefaultButton.onPropertyChanged(mCarPropertyValue);
 
         mDefaultButton.performClick();
 
         verify(mHvacPropertySetterDefault, never()).setHvacProperty(anyInt(), anyInt(),
-                anyBoolean());
+                anyInt());
     }
 
     @Test
@@ -149,12 +151,12 @@ public class HvacToggleButtonTest extends SysuiTestCase {
         mDefaultButton.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(true);
         mDefaultButton.onPropertyChanged(mHvacAutoProperty);
-        setCarPropertyValue(false);
+        setCarPropertyValue(OFF_VALUE);
         mDefaultButton.onPropertyChanged(mCarPropertyValue);
 
         mDefaultButton.performClick();
 
-        verify(mHvacPropertySetterDefault).setHvacProperty(PROPERTY_ID, AREA_ID, true);
+        verify(mHvacPropertySetterDefault).setHvacProperty(PROPERTY_ID, AREA_ID, ON_VALUE);
     }
 
     @Test
@@ -163,12 +165,12 @@ public class HvacToggleButtonTest extends SysuiTestCase {
         mDefaultButton.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(true);
         mDefaultButton.onPropertyChanged(mHvacAutoProperty);
-        setCarPropertyValue(true);
+        setCarPropertyValue(ON_VALUE);
         mDefaultButton.onPropertyChanged(mCarPropertyValue);
 
         mDefaultButton.performClick();
 
-        verify(mHvacPropertySetterDefault).setHvacProperty(PROPERTY_ID, AREA_ID, false);
+        verify(mHvacPropertySetterDefault).setHvacProperty(PROPERTY_ID, AREA_ID, OFF_VALUE);
     }
 
     @Test
@@ -177,12 +179,13 @@ public class HvacToggleButtonTest extends SysuiTestCase {
         mTurnOnWhenPowerOffButton.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(true);
         mTurnOnWhenPowerOffButton.onPropertyChanged(mHvacAutoProperty);
-        setCarPropertyValue(true);
+        setCarPropertyValue(ON_VALUE);
         mTurnOnWhenPowerOffButton.onPropertyChanged(mCarPropertyValue);
 
         mTurnOnWhenPowerOffButton.performClick();
 
-        verify(mHvacPropertySetterTurnOnWhenPowerOff).setHvacProperty(PROPERTY_ID, AREA_ID, false);
+        verify(mHvacPropertySetterTurnOnWhenPowerOff).setHvacProperty(PROPERTY_ID, AREA_ID,
+                OFF_VALUE);
     }
 
     @Test
@@ -191,12 +194,13 @@ public class HvacToggleButtonTest extends SysuiTestCase {
         mTurnOnWhenPowerOffButton.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(true);
         mTurnOnWhenPowerOffButton.onPropertyChanged(mHvacAutoProperty);
-        setCarPropertyValue(false);
+        setCarPropertyValue(OFF_VALUE);
         mTurnOnWhenPowerOffButton.onPropertyChanged(mCarPropertyValue);
 
         mTurnOnWhenPowerOffButton.performClick();
 
-        verify(mHvacPropertySetterTurnOnWhenPowerOff).setHvacProperty(PROPERTY_ID, AREA_ID, true);
+        verify(mHvacPropertySetterTurnOnWhenPowerOff).setHvacProperty(PROPERTY_ID, AREA_ID,
+                ON_VALUE);
     }
 
     @Test
@@ -205,13 +209,13 @@ public class HvacToggleButtonTest extends SysuiTestCase {
         mTurnOffWhenAutoOnButton.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(true);
         mTurnOffWhenAutoOnButton.onPropertyChanged(mHvacAutoProperty);
-        setCarPropertyValue(true);
+        setCarPropertyValue(ON_VALUE);
         mTurnOffWhenAutoOnButton.onPropertyChanged(mCarPropertyValue);
 
         mTurnOffWhenAutoOnButton.performClick();
 
         verify(mHvacPropertySetterTurnOffWhenAutoOn, never()).setHvacProperty(anyInt(), anyInt(),
-                anyBoolean());
+                anyInt());
     }
 
     @Test
@@ -220,16 +224,16 @@ public class HvacToggleButtonTest extends SysuiTestCase {
         mTurnOffWhenAutoOnButton.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(true);
         mTurnOffWhenAutoOnButton.onPropertyChanged(mHvacAutoProperty);
-        setCarPropertyValue(false);
+        setCarPropertyValue(OFF_VALUE);
         mTurnOffWhenAutoOnButton.onPropertyChanged(mCarPropertyValue);
 
         mTurnOffWhenAutoOnButton.performClick();
 
         verify(mHvacPropertySetterTurnOffWhenAutoOn, never()).setHvacProperty(anyInt(), anyInt(),
-                anyBoolean());
+                anyInt());
     }
 
-    private void setCarPropertyValue(boolean value) {
+    private void setCarPropertyValue(int value) {
         when(mCarPropertyValue.getAreaId()).thenReturn(AREA_ID);
         when(mCarPropertyValue.getPropertyId()).thenReturn(PROPERTY_ID);
         when(mCarPropertyValue.getValue()).thenReturn(value);

@@ -21,7 +21,6 @@ import com.android.systemui.car.keyguard.CarKeyguardViewMediator;
 import com.android.systemui.car.notification.BottomNotificationPanelViewMediator;
 import com.android.systemui.car.notification.NotificationPanelViewMediator;
 import com.android.systemui.car.notification.TopNotificationPanelViewMediator;
-import com.android.systemui.car.rvc.RearViewCameraViewMediator;
 import com.android.systemui.car.userswitcher.FullscreenUserSwitcherViewMediator;
 import com.android.systemui.car.userswitcher.UserSwitchTransitionViewMediator;
 
@@ -77,13 +76,6 @@ public abstract class OverlayWindowModule {
     @ClassKey(UserSwitchTransitionViewMediator.class)
     public abstract OverlayViewMediator bindUserSwitchTransitionViewMediator(
             UserSwitchTransitionViewMediator userSwitchTransitionViewMediator);
-
-    /** Injects RearViewCameraViewMediator. */
-    @Binds
-    @IntoMap
-    @ClassKey(RearViewCameraViewMediator.class)
-    public abstract OverlayViewMediator bindRearViewCameraViewMediator(
-            RearViewCameraViewMediator overlayViewsMediator);
 
     /** Injects HvacPanelOverlayViewMediator. */
     @Binds

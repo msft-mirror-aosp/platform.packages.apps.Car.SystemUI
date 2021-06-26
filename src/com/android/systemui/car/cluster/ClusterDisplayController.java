@@ -26,6 +26,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.Slog;
 import android.view.Display;
+import android.view.SurfaceControl;
 import android.window.DisplayAreaInfo;
 import android.window.WindowContainerToken;
 import android.window.WindowContainerTransaction;
@@ -108,7 +109,7 @@ public class ClusterDisplayController extends SystemUI {
                 }
             }
             if ((changes & CONFIG_DISPLAY_BOUNDS) != 0 && mRootTDAToken != null) {
-                resizeTDA(mRootTDAToken, state.bounds);
+                resizeTDA(mRootTDAToken, state.bounds, state.displayId);
             }
             mClusterState = state;
         }
@@ -123,7 +124,7 @@ public class ClusterDisplayController extends SystemUI {
         public void onDisplayAreaAppeared(DisplayAreaInfo displayAreaInfo) {
             if (DBG) Slog.d(TAG, "onDisplayAreaAppeared: " + displayAreaInfo);
             if (mClusterState != null) {
-                resizeTDA(displayAreaInfo.token, mClusterState.bounds);
+                resizeTDA(displayAreaInfo.token, mClusterState.bounds, mClusterState.displayId);
             }
             mRootTDAToken = displayAreaInfo.token;
         }
@@ -141,11 +142,15 @@ public class ClusterDisplayController extends SystemUI {
         }
     };
 
-    private void resizeTDA(WindowContainerToken token, Rect bounds) {
+    private void resizeTDA(WindowContainerToken token, Rect bounds, int displayId) {
         if (DBG) Slog.d(TAG, "resizeTDA: token=" + token + ", bounds=" + bounds);
         WindowContainerTransaction wct = new WindowContainerTransaction();
         wct.setBounds(token, bounds);
         wct.setAppBounds(token, bounds);
         mRootTDAOrganizer.applyTransaction(wct);
+
+        SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
+        mRootTDAOrganizer.setPosition(tx, displayId, bounds.left, bounds.top);
+        tx.apply();
     }
 }

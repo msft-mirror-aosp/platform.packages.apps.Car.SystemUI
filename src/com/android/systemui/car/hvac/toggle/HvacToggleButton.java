@@ -104,8 +104,11 @@ public abstract class HvacToggleButton<PropertyType> extends ImageButton impleme
 
     @CallSuper
     protected void updateUIState() {
-        setAlpha(shouldAllowControl() ? mOnAlpha : mOffAlpha);
-        setImageDrawable(isToggleOn() ? mOnDrawable : mOffDrawable);
+        mContext.getMainThreadHandler().post(() -> {
+            setAlpha(shouldAllowControl() ? mOnAlpha : mOffAlpha);
+            setImageDrawable(isToggleOn() ? mOnDrawable : mOffDrawable);
+            setSelected(isToggleOn());
+        });
     }
 
     /** Handles when the toggle button is clicked. */

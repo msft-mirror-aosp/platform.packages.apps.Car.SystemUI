@@ -127,7 +127,10 @@ public class SeatTemperatureLevelButton extends ImageButton implements HvacView 
     }
 
     private void updateIcon() {
-        setImageDrawable(mCurrentIcon);
+        mContext.getMainThreadHandler().post(() -> {
+            setSelected(mCurrentLevel != 0);
+            setImageDrawable(mCurrentIcon);
+        });
     }
 
     private void parseAttributes(AttributeSet attrs) {

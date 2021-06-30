@@ -39,11 +39,15 @@
         <attr name="android:textAppearance"/>
     </declare-styleable>
 
-    <declare-styleable name="SeatHeatLevelButton">
+    <declare-styleable name="SeatTemperatureLevelButton">
+        <attr name="seatTemperatureType">
+            <enum name="heating" value="1"/>
+            <enum name="cooling" value="-1"/>
+        </attr>
         <!-- List of drawables that will be shown when the seat heat level button is clicked.
              This list should have exactly R.integer.hvac_seat_heat_level_count items.
              The first item should have the "off" drawable. -->
-        <attr name="seatHeaterIconDrawableList" format="reference"/>
+        <attr name="seatTemperatureIconDrawableList" format="reference"/>
     </declare-styleable>
 
     <!-- Allow for custom attribs to be added to a nav button -->
@@ -96,6 +100,12 @@
         <!-- Whether the given HvacView must be turned off if the HVAC Auto mode is on.
                Defaults to false. -->
         <attr name="hvacTurnOffIfAutoOn" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="HvacIntegerToggleButton">
+        <attr name="invalidValue" format="integer"/>
+        <attr name="onValue" format="integer"/>
+        <attr name="offValue" format="integer"/>
     </declare-styleable>
 
     <declare-styleable name="carVolumeItems"/>

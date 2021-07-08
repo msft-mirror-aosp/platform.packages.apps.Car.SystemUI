@@ -29,7 +29,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Rect;
-import android.os.Handler;
 import android.os.RemoteException;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
@@ -134,7 +133,8 @@ public class CarSystemBarTest extends SysuiTestCase {
                 /* imeToken= */ null,
                 /* navbarColorMangedByIme= */ false,
                 BEHAVIOR_DEFAULT,
-                /* appFullscreen= */ false,
+                /* requestedState= */ null,
+                /* packageName= */ null,
                 /* transientBarTypes= */ new int[]{});
         try {
             when(mBarService.registerStatusBar(any())).thenReturn(mBarResult);

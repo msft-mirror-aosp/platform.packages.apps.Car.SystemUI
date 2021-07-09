@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.hvac;
 
-import static android.car.VehicleAreaType.VEHICLE_AREA_TYPE_GLOBAL;
 import static android.car.VehiclePropertyIds.HVAC_ACTUAL_FAN_SPEED_RPM;
 import static android.car.VehiclePropertyIds.HVAC_AC_ON;
 import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
@@ -69,8 +68,8 @@ import java.util.concurrent.Executor;
 import javax.inject.Inject;
 
 /**
- * Connects to {@link CarPropertyManager} to subscribe to HVAC property change events and propagate
- * them to subscribing {@link HvacView}s by property ID and area ID.
+ * A controller that connects to {@link CarPropertyManager} to subscribe to HVAC property change
+ * events and propagate them to subscribing {@link HvacView}s by property ID and area ID.
  *
  * Grants {@link HvacView}s access to {@link HvacPropertySetter} with API's to write new values
  * for HVAC properties.
@@ -103,13 +102,19 @@ public class HvacController implements HvacPropertySetter,
     }
 
     private Executor mExecutor;
+    private CarPropertyManager mCarPropertyManager;
+    private boolean mIsConnectedToCar;
+    @Nullable
+    private Integer mHvacGlobalAreaId;
+
     /**
      * Contains views to init until car service is connected.
-     * This must be connected via {@link #mExecutor} to ensure thread safety.
+     * This must be accessed via {@link #mExecutor} to ensure thread safety.
      */
     private final ArrayList<View> mViewsToInit = new ArrayList<>();
     private final Map<@HvacProperty Integer, Map<@AreaId Integer, List<HvacView>>>
             mHvacPropertyViewMap = new HashMap<>();
+
     private final CarPropertyManager.CarPropertyEventCallback mPropertyEventCallback =
             new CarPropertyManager.CarPropertyEventCallback() {
                 @Override
@@ -122,6 +127,7 @@ public class HvacController implements HvacPropertySetter,
                     Log.w(TAG, "Could not handle " + propId + " change event in zone " + zone);
                 }
             };
+
     @UiBackground
     @VisibleForTesting
     final CarServiceProvider.CarServiceOnConnectedListener mCarServiceLifecycleListener =
@@ -140,12 +146,6 @@ public class HvacController implements HvacPropertySetter,
                     mIsConnectedToCar = false;
                 }
             };
-
-
-    private CarPropertyManager mCarPropertyManager;
-    private boolean mIsConnectedToCar;
-    @Nullable
-    private Integer mHvacGlobalAreaId;
 
     @Inject
     public HvacController(CarServiceProvider carServiceProvider,
@@ -211,16 +211,17 @@ public class HvacController implements HvacPropertySetter,
                 hvacView.setHvacPropertySetter(this);
 
                 addHvacViewToMap(propId, areaId, hvacView);
-                // Initialize the view with the initial value.
+
                 if (mCarPropertyManager != null) {
                     CarPropertyValue initValue = mCarPropertyManager.getProperty(propId, areaId);
                     boolean usesFahrenheit = mCarPropertyManager.getIntProperty(
                             HVAC_TEMPERATURE_DISPLAY_UNITS,
                             mCarPropertyManager.getAreaId(HVAC_TEMPERATURE_DISPLAY_UNITS,
                                     areaId)) == VehicleUnit.FAHRENHEIT;
+
+                    // Initialize the view with the initial value.
                     hvacView.onPropertyChanged(initValue);
                     hvacView.onHvacTemperatureUnitChanged(usesFahrenheit);
-
                     for (int propToGetOnInitId : HVAC_PROPERTIES_TO_GET_ON_INIT) {
                         CarPropertyValue propToGetOnInitValue = mCarPropertyManager.getProperty(
                                 propToGetOnInitId, mHvacGlobalAreaId);

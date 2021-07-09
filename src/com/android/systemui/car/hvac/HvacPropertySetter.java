@@ -16,22 +16,25 @@
 
 package com.android.systemui.car.hvac;
 
+/**
+ * An interface that enables {@link HvacView}s to set new HVAC properties.
+ */
 public interface HvacPropertySetter {
 
     /**
-     * Sets a {@link HvacController.HvacProperty} of integer type for a given {@link
+     * Sets an {@link HvacController.HvacProperty} of integer type for a given {@link
      * HvacController.AreaId}.
      */
     void setHvacProperty(@HvacController.HvacProperty Integer propertyId, int areaId, int val);
 
     /**
-     * Sets a {@link HvacController.HvacProperty} of float type for a given {@link
+     * Sets an {@link HvacController.HvacProperty} of float type for a given {@link
      * HvacController.AreaId}.
      */
     void setHvacProperty(@HvacController.HvacProperty Integer propertyId, int areaId, float val);
 
     /**
-     * Sets a {@link HvacController.HvacProperty} of boolean type for a given {@link
+     * Sets an {@link HvacController.HvacProperty} of boolean type for a given {@link
      * HvacController.AreaId}.
      */
     void setHvacProperty(@HvacController.HvacProperty Integer propertyId, int areaId, boolean val);

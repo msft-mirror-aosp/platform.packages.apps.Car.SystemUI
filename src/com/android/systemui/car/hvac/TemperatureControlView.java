@@ -95,9 +95,9 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-        mTempTextView = findViewById(R.id.hvac_temperature_text);
-        mIncreaseButton = findViewById(R.id.hvac_increase_button);
-        mDecreaseButton = findViewById(R.id.hvac_decrease_button);
+        mTempTextView = requireViewById(R.id.hvac_temperature_text);
+        mIncreaseButton = requireViewById(R.id.hvac_increase_button);
+        mDecreaseButton = requireViewById(R.id.hvac_decrease_button);
         initButtons();
     }
 
@@ -229,7 +229,7 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     }
 
     /**
-     * Configures the {@code button} to be clicked repeatedly if clicked and held with
+     * Configures the {@code button} to perform its click action repeatedly if pressed and held with
      * {@link #BUTTON_REPEAT_INTERVAL_MS}.
      */
     private void setHoldToRepeatButton(View button) {
@@ -245,6 +245,7 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
             int action = event.getAction();
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
+                    // Handle click action here since click listener is suppressed.
                     repeatClickRunnable.run();
                     break;
                 case MotionEvent.ACTION_UP:

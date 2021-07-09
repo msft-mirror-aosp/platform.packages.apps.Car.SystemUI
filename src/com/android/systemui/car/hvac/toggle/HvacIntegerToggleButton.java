@@ -32,6 +32,7 @@ public class HvacIntegerToggleButton extends HvacToggleButton<Integer> {
     private int mOnValue;
     private int mOffValue;
     private int mCurrentValue;
+    private boolean mPreventToggleOff;
 
     public HvacIntegerToggleButton(Context context) {
         super(context);
@@ -59,11 +60,19 @@ public class HvacIntegerToggleButton extends HvacToggleButton<Integer> {
                 DEFAULT_INVALID_VALUE);
         mOnValue = typedArray.getInt(R.styleable.HvacIntegerToggleButton_onValue, invalidValue);
         mOffValue = typedArray.getInt(R.styleable.HvacIntegerToggleButton_offValue, invalidValue);
+        mPreventToggleOff = typedArray.getBoolean(
+                R.styleable.HvacIntegerToggleButton_preventToggleOff, false);
         typedArray.recycle();
     }
 
     @Override
     protected void handleClick(HvacPropertySetter propertySetter) {
+        // If {@code mPreventToggleOff} is {@code true}, then this toggle button is meant to be used
+        // like a radio button. If the toggle is already on, don't do anything.
+        if (mPreventToggleOff && isToggleOn()) {
+            return;
+        }
+
         int newValue = isToggleOn() ? mOffValue : mOnValue;
         propertySetter.setHvacProperty(getHvacPropertyToView(), getAreaId(), newValue);
     }

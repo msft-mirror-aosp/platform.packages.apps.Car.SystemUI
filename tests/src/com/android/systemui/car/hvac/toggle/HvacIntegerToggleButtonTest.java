@@ -17,7 +17,7 @@
 package com.android.systemui.car.hvac.toggle;
 
 import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
-import static android.car.VehiclePropertyIds.HVAC_DEFROSTER;
+import static android.car.VehiclePropertyIds.HVAC_FAN_SPEED;
 import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -50,7 +50,7 @@ import org.mockito.MockitoAnnotations;
 public class HvacIntegerToggleButtonTest extends SysuiTestCase {
     private static final int GLOBAL_AREA_ID = 117;
     private static final int AREA_ID = 1;
-    private static final int PROPERTY_ID = HVAC_DEFROSTER;
+    private static final int PROPERTY_ID = HVAC_FAN_SPEED;
     private static final int ON_VALUE = 1;
     private static final int OFF_VALUE = 0;
 
@@ -58,12 +58,15 @@ public class HvacIntegerToggleButtonTest extends SysuiTestCase {
     private HvacIntegerToggleButton mDefaultButton;
     private HvacIntegerToggleButton mTurnOnWhenPowerOffButton;
     private HvacIntegerToggleButton mTurnOffWhenAutoOnButton;
+    private HvacIntegerToggleButton mKeepOnPreventOffButton;
     @Mock
     private HvacPropertySetter mHvacPropertySetterDefault;
     @Mock
     private HvacPropertySetter mHvacPropertySetterTurnOnWhenPowerOff;
     @Mock
     private HvacPropertySetter mHvacPropertySetterTurnOffWhenAutoOn;
+    @Mock
+    private HvacPropertySetter mHvacPropertySetterKeepOnPreventOff;
     @Mock
     private CarPropertyValue mCarPropertyValue;
     @Mock
@@ -81,10 +84,13 @@ public class HvacIntegerToggleButtonTest extends SysuiTestCase {
                 R.id.int_toggle_button_do_not_turn_off_when_power_off);
         mTurnOffWhenAutoOnButton = mTestLayout.findViewById(
                 R.id.int_toggle_button_turn_off_when_auto_on);
+        mKeepOnPreventOffButton = mTestLayout.findViewById(
+                R.id.int_toggle_button_keep_on_prevent_off);
 
         mDefaultButton.setHvacPropertySetter(mHvacPropertySetterDefault);
         mTurnOnWhenPowerOffButton.setHvacPropertySetter(mHvacPropertySetterTurnOnWhenPowerOff);
         mTurnOffWhenAutoOnButton.setHvacPropertySetter(mHvacPropertySetterTurnOffWhenAutoOn);
+        mKeepOnPreventOffButton.setHvacPropertySetter(mHvacPropertySetterKeepOnPreventOff);
     }
 
     @Test
@@ -230,6 +236,35 @@ public class HvacIntegerToggleButtonTest extends SysuiTestCase {
         mTurnOffWhenAutoOnButton.performClick();
 
         verify(mHvacPropertySetterTurnOffWhenAutoOn, never()).setHvacProperty(anyInt(), anyInt(),
+                anyInt());
+    }
+
+    @Test
+    public void onClickKeepOnPreventOffButton_currentValueOff_turnOn() {
+        setPowerPropertyValue(true);
+        mKeepOnPreventOffButton.onPropertyChanged(mHvacPowerProperty);
+        setAutoPropertyValue(false);
+        mKeepOnPreventOffButton.onPropertyChanged(mHvacAutoProperty);
+        setCarPropertyValue(OFF_VALUE);
+        mKeepOnPreventOffButton.onPropertyChanged(mCarPropertyValue);
+
+        mKeepOnPreventOffButton.performClick();
+
+        verify(mHvacPropertySetterKeepOnPreventOff).setHvacProperty(PROPERTY_ID, AREA_ID, ON_VALUE);
+    }
+
+    @Test
+    public void onClickKeepOnPreventOffButton_currentValueOn_preventOff() {
+        setPowerPropertyValue(true);
+        mKeepOnPreventOffButton.onPropertyChanged(mHvacPowerProperty);
+        setAutoPropertyValue(false);
+        mKeepOnPreventOffButton.onPropertyChanged(mHvacAutoProperty);
+        setCarPropertyValue(ON_VALUE);
+        mKeepOnPreventOffButton.onPropertyChanged(mCarPropertyValue);
+
+        mKeepOnPreventOffButton.performClick();
+
+        verify(mHvacPropertySetterKeepOnPreventOff, never()).setHvacProperty(anyInt(), anyInt(),
                 anyInt());
     }
 

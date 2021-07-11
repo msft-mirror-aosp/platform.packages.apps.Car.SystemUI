@@ -62,6 +62,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="attr" name="offValue"/>
       <item type="attr" name="onValue"/>
       <item type="attr" name="packages"/>
+      <item type="attr" name="preventToggleOff"/>
       <item type="attr" name="seatTemperatureIconDrawableList"/>
       <item type="attr" name="seatTemperatureType"/>
       <item type="attr" name="selectedAlpha"/>

@@ -29,6 +29,7 @@ import android.inputmethodservice.InputMethodService;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.Display;
+import android.view.InsetsState;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsetsController;
@@ -176,7 +177,8 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
         }
 
         onSystemBarAttributesChanged(mDisplayId, result.mAppearance, result.mAppearanceRegions,
-                result.mNavbarColorManagedByIme, result.mBehavior, result.mAppFullscreen);
+                result.mNavbarColorManagedByIme, result.mBehavior, result.mRequestedState,
+                result.mPackageName);
 
         // StatusBarManagerService has a back up of IME token and it's restored here.
         setImeWindowStatus(mDisplayId, result.mImeToken, result.mImeWindowVis,
@@ -440,7 +442,8 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
             AppearanceRegion[] appearanceRegions,
             boolean navbarColorManagedByIme,
             @WindowInsetsController.Behavior int behavior,
-            boolean isFullscreen) {
+            InsetsState requestedState,
+            String packageName) {
         if (displayId != mDisplayId) {
             return;
         }

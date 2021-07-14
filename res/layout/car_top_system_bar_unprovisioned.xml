@@ -66,9 +66,8 @@
         </com.android.systemui.car.systembar.CarSystemBarButton>
 
         <include layout="@layout/mic_privacy_chip"
-           android:layout_width="@dimen/privacy_chip_width"
-           android:layout_height="match_parent"
-           android:layout_alignParentEnd="true"/>
-  </RelativeLayout>
-
+                 android:layout_width="@dimen/privacy_chip_width"
+                 android:layout_height="match_parent"
+                 android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
 </com.android.systemui.car.systembar.CarSystemBarView>

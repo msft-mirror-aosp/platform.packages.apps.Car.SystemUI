@@ -46,6 +46,7 @@ import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.phone.AutoHideController;
 import com.android.systemui.statusbar.phone.LightBarController;
@@ -105,6 +106,8 @@ public class CarSystemBarTest extends SysuiTestCase {
     private StatusBarIconController mIconController;
     @Mock
     private StatusBarSignalPolicy mSignalPolicy;
+    @Mock
+    private HvacController mHvacController;
 
     private RegisterStatusBarResult mBarResult;
     private AppearanceRegion[] mAppearanceRegions;
@@ -145,7 +148,7 @@ public class CarSystemBarTest extends SysuiTestCase {
                 mStatusBarIconController, mWindowManager, mDeviceProvisionedController,
                 new CommandQueue(mContext), mAutoHideController, mButtonSelectionStateListener,
                 mExecutor, mUiBgExecutor, mBarService, () -> mKeyguardStateController,
-                () -> mIconPolicy, mSignalPolicy,
+                () -> mIconPolicy, mSignalPolicy, mHvacController,
                 new SystemBarConfigs(mTestableResources.getResources()));
         mCarSystemBar.setSignalPolicy(mSignalPolicy);
     }

@@ -106,6 +106,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="color" name="system_bar_background_pill_color"/>
       <item type="color" name="system_bar_icon_color"/>
       <item type="color" name="system_bar_text_color"/>
+      <item type="color" name="system_bar_text_unavailable_color"/>
       <item type="dimen" name="car_action1_size"/>
       <item type="dimen" name="car_action2_size"/>
       <item type="dimen" name="car_body1_size"/>

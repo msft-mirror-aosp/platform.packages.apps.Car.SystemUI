@@ -38,6 +38,7 @@
     <color name="mic_privacy_chip_dark_icon_color">#000000</color>
     <color name="system_bar_icon_color">#FFFFFF</color>
     <color name="system_bar_text_color">#FFFFFF</color>
+    <color name="system_bar_text_unavailable_color">#B0B0B0</color>
     <color name="status_bar_background_color">#33000000</color>
     <drawable name="system_bar_background">@color/status_bar_background_color</drawable>
 

@@ -44,4 +44,8 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"마이크 사용 중지됨"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"최근 마이크를 사용함"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"확인"</string>
+    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (2609868628872435121) -->
+    <skip />
+    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (5546778445306036986) -->
+    <skip />
 </resources>

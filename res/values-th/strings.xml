@@ -41,4 +41,8 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"ปิดไมโครโฟนแล้ว"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"การใช้ไมโครโฟนครั้งล่าสุด"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ตกลง"</string>
+    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (2609868628872435121) -->
+    <skip />
+    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (5546778445306036986) -->
+    <skip />
 </resources>

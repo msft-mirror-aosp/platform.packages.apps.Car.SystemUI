@@ -588,6 +588,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="mic_privacy_chip_off_toast"/>
       <item type="string" name="mic_privacy_chip_on_toast"/>
       <item type="string" name="mic_privacy_chip_privacy_settings"/>
+      <item type="string" name="sensor_privacy_start_use_mic_dialog_content"/>
+      <item type="string" name="sensor_privacy_start_use_mic_dialog_title"/>
       <item type="string" name="start_guest_session"/>
       <item type="string" name="user_add_user_message_setup"/>
       <item type="string" name="user_add_user_message_update"/>

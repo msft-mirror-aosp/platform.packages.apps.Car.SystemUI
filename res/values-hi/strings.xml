@@ -44,4 +44,8 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"माइक्रोफ़ोन बंद किया गया"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"ऐप्लिकेशन जिनमें अभी माइक्रोफ़ोन इस्तेमाल हुआ है"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ठीक है"</string>
+    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (2609868628872435121) -->
+    <skip />
+    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (5546778445306036986) -->
+    <skip />
 </resources>

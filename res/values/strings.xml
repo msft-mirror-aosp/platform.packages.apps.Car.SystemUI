@@ -68,4 +68,8 @@
     <string name="mic_privacy_chip_dialog_title_mic">Recent use of microphone</string>
     <!-- Ok button for dialog that shows which apps have recently used microphone [CHAR LIMIT=10]-->
     <string name="mic_privacy_chip_dialog_ok">OK</string>
+    <!--- Title of dialog triggered if the microphone is disabled but an app tried to access it. [CHAR LIMIT=75] -->
+    <string name="sensor_privacy_start_use_mic_dialog_title">Enable vehicle microphone?</string>
+    <!--- Content of dialog triggered if the microphone is disabled but an app tried to access it. [CHAR LIMIT=NONE] -->
+    <string name="sensor_privacy_start_use_mic_dialog_content">This gives apps and services the option to access your microphone.</string>
 </resources>

@@ -49,8 +49,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            systemui:hvacAreaId="49"
-            systemui:hvacTempFormat="%.0f\u00B0">
+            systemui:hvacAreaId="49">
             <include layout="@layout/hvac_temperature_bar_overlay"/>
         </com.android.systemui.car.hvac.referenceui.BackgroundAdjustingTemperatureControlView>
         <com.android.systemui.car.hvac.HvacToggleButton
@@ -108,8 +107,7 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            systemui:hvacAreaId="68"
-            systemui:hvacTempFormat="%.0f\u00B0">
+            systemui:hvacAreaId="68">
             <include layout="@layout/hvac_temperature_bar_overlay"/>
         </com.android.systemui.car.hvac.referenceui.BackgroundAdjustingTemperatureControlView>
         <com.android.systemui.car.hvac.HvacToggleButton

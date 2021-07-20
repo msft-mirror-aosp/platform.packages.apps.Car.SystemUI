@@ -99,5 +99,9 @@
     <color name="hvac_fanspeed_off_enabled_bg">#F5F6F5</color>
     <color name="hvac_fanspeed_off_enabled_text_color">#13181C</color>
     <color name="hvac_fanspeed_off_disabled_text_color">#89F5F5F5</color>
+    <color name="hvac_fan_drawable_fill_color">#F5F5F5</color>
+    <color name="hvac_fanspeed_off_active_bg">#F5F6F5</color>
+    <color name="hvac_fanspeed_off_active_text_color">#13181C</color>
+    <color name="hvac_fanspeed_off_inactive_text_color">#89F5F5F5</color>
     <color name="hvac_scrim_color">#3F000000</color>
 </resources>

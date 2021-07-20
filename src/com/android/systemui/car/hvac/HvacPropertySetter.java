@@ -16,7 +16,7 @@
 
 package com.android.systemui.car.hvac;
 
-interface HvacPropertySetter {
+public interface HvacPropertySetter {
 
     /**
      * Sets a {@link HvacController.HvacProperty} of integer type for a given {@link

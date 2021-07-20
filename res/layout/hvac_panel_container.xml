@@ -40,6 +40,14 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1">
+                <com.android.systemui.car.hvac.referenceui.BackgroundAdjustingTemperatureControlView
+                    android:id="@+id/driver_hvac"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    systemui:hvacAreaId="49"
+                    systemui:hvacTempFormat="%.0f\u00B0">
+                    <include layout="@layout/hvac_temperature_bar_overlay"/>
+                </com.android.systemui.car.hvac.referenceui.BackgroundAdjustingTemperatureControlView>
             </LinearLayout>
             <LinearLayout
                 android:layout_weight="5"
@@ -147,6 +155,14 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1">
+                <com.android.systemui.car.hvac.referenceui.BackgroundAdjustingTemperatureControlView
+                    android:id="@+id/driver_hvac"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    systemui:hvacAreaId="68"
+                    systemui:hvacTempFormat="%.0f\u00B0">
+                    <include layout="@layout/hvac_temperature_bar_overlay"/>
+                </com.android.systemui.car.hvac.referenceui.BackgroundAdjustingTemperatureControlView>
             </LinearLayout>
         </LinearLayout>
         <include layout="@layout/hvac_panel_handle_bar" />

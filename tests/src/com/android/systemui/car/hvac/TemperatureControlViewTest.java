@@ -68,7 +68,6 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         mTemperatureControlView = LayoutInflater.from(getContext()).inflate(
                 R.layout.temperature_control_view, /* root= */ null).findViewById(R.id.test_hvac);
         mTemperatureControlView.setHvacPropertySetter(mHvacPropertySetter);
-        mTemperatureControlView.onAcOnOffChanged(true);
         mTemperatureControlView.onFinishInflate();
 
         when(mCarPropertyValue.getAreaId()).thenReturn(AREA_ID);

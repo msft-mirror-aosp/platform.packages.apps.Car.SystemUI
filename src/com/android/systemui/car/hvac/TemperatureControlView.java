@@ -85,12 +85,6 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     }
 
     @Override
-    public void onAcOnOffChanged(boolean acIsOn) {
-        mAcOn = acIsOn;
-        updateTemperatureView();
-    }
-
-    @Override
     public void onHvacTemperatureUnitChanged(boolean usesFahrenheit) {
         mDisplayInFahrenheit = usesFahrenheit;
         updateTemperatureView();

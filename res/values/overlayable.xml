@@ -426,6 +426,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="integer" name="config_topSystemBarType"/>
       <item type="integer" name="config_topSystemBarZOrder"/>
       <item type="integer" name="config_userSwitchTransitionViewShownTimeoutMs"/>
+      <item type="integer" name="hvac_global_area_id"/>
       <item type="integer" name="hvac_panel_settle_close_percentage"/>
       <item type="integer" name="notification_settle_close_percentage"/>
       <item type="integer" name="notification_settle_open_percentage"/>

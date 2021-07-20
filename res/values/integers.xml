@@ -43,4 +43,16 @@
     <integer name="hvac_global_area_id">117</integer>
     <!-- The total number of seat heat levels supported by VHAL. -->
     <integer name="hvac_seat_heat_level_count">4</integer>
+
+    <!-- The upper bounds for background colors used in Adjustable Background Temperature Control
+    View. Note that these integers should be in Celsius and will be divided by 10 so that the first
+    decimal can be expressed. The corresponding background color for each level is defined in
+    colors.xml (see hvac_temperature_level_backgrounds). -->
+    <integer-array name="hvac_temperature_control_levels">
+        <item>180</item>
+        <item>200</item>
+        <item>220</item>
+        <item>250</item>
+        <item>999</item>
+    </integer-array>
 </resources>

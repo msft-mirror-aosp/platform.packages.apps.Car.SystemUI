@@ -26,7 +26,6 @@ import android.car.hardware.CarPropertyValue;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -60,7 +59,12 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     private View mDecreaseButton;
     private float mMinTempC;
     private float mMaxTempC;
-    private String mTemperatureFormat;
+    private String mTemperatureFormatCelsius;
+    private String mTemperatureFormatFahrenheit;
+    private int mTemperatureIncrementFractionCelsius;
+    private int mTemperatureIncrementFractionFahrenheit;
+    private float mTemperatureIncrementCelsius;
+    private float mTemperatureIncrementFahrenheit;
     private float mCurrentTempC;
     private boolean mDisplayInFahrenheit;
 
@@ -68,7 +72,19 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
         super(context, attrs);
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.HvacView);
         mAreaId = typedArray.getInt(R.styleable.HvacView_hvacAreaId, INVALID_ID);
-        mTemperatureFormat = getResources().getString(R.string.hvac_temperature_format);
+        mTemperatureFormatCelsius = getResources().getString(
+                R.string.hvac_temperature_format_celsius);
+        mTemperatureFormatFahrenheit = getResources().getString(
+                R.string.hvac_temperature_format_fahrenheit);
+        mTemperatureIncrementFractionCelsius = getResources().getInteger(
+                R.integer.celsius_increment_fraction);
+        mTemperatureIncrementFractionFahrenheit = getResources().getInteger(
+                R.integer.fahrenheit_increment_fraction);
+        mTemperatureIncrementCelsius =
+                1f / mTemperatureIncrementFractionCelsius;
+        mTemperatureIncrementFahrenheit =
+                1f / mTemperatureIncrementFractionFahrenheit;
+
         mMinTempC = getResources().getFloat(R.dimen.hvac_min_value_celsius);
         mMaxTempC = getResources().getFloat(R.dimen.hvac_max_value_celsius);
         mAvailableTextColor = ContextCompat.getColor(getContext(), R.color.system_bar_text_color);
@@ -101,7 +117,6 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
         if (value.getPropertyId() == HVAC_POWER_ON) {
             mPowerOn = (Boolean) value.getValue();
         }
-
         updateTemperatureView();
     }
 
@@ -133,8 +148,7 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     protected void updateTemperatureViewUiThread() {
         mTempTextView.setText(mTempInDisplay);
         mTempTextView.setTextColor(mPowerOn && mTemperatureSetAvailable
-                ? mAvailableTextColor
-                : mUnavailableTextColor);
+                ? mAvailableTextColor : mUnavailableTextColor);
     }
 
     protected String getTempInDisplay() {
@@ -146,8 +160,23 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     }
 
     @VisibleForTesting
-    String getTempFormat() {
-        return mTemperatureFormat;
+    String getTempFormatInFahrenheit() {
+        return mTemperatureFormatFahrenheit;
+    }
+
+    @VisibleForTesting
+    String getTempFormatInCelsius() {
+        return mTemperatureFormatCelsius;
+    }
+
+    @VisibleForTesting
+    float getTemperatureIncrementInCelsius() {
+        return mTemperatureIncrementCelsius;
+    }
+
+    @VisibleForTesting
+    float getTemperatureIncrementInFahrenheit() {
+        return mTemperatureIncrementFahrenheit;
     }
 
     private void initButtons() {
@@ -164,18 +193,31 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
         float newTempC;
         if (mDisplayInFahrenheit) {
             float currentTempF = celsiusToFahrenheit(mCurrentTempC);
-            float newTempF = increment ? currentTempF + 1 : currentTempF - 1;
+            float newTempF = increment
+                    ? currentTempF + mTemperatureIncrementFahrenheit
+                    : currentTempF - mTemperatureIncrementFahrenheit;
             newTempC = fahrenheitToCelsius(newTempF);
         } else {
-            newTempC = increment ? mCurrentTempC + 1 : mCurrentTempC - 1;
+            newTempC = increment
+                    ? mCurrentTempC + mTemperatureIncrementCelsius
+                    : mCurrentTempC - mTemperatureIncrementCelsius;
         }
+
         setTemperature(newTempC);
     }
 
     private void updateTemperatureView() {
-        mTempInDisplay = String.format(mTemperatureFormat,
+        float tempToDisplayUnformatted = roundToClosestFraction(
                 mDisplayInFahrenheit ? celsiusToFahrenheit(mCurrentTempC) : mCurrentTempC);
-        getContext().getMainExecutor().execute(this::updateTemperatureViewUiThread);
+        // Set mCurrentTempC value to tempToDisplayUnformatted so their values sync in the next
+        // setTemperature call.
+        mCurrentTempC = mDisplayInFahrenheit ? fahrenheitToCelsius(tempToDisplayUnformatted)
+                : tempToDisplayUnformatted;
+
+        mTempInDisplay = String.format(
+                mDisplayInFahrenheit ? mTemperatureFormatFahrenheit : mTemperatureFormatCelsius,
+                tempToDisplayUnformatted);
+        mContext.getMainExecutor().execute(this::updateTemperatureViewUiThread);
     }
 
     private void setTemperature(float tempC) {
@@ -213,5 +255,15 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
             // Return true so on click listener is not called superfluously.
             return true;
         });
+    }
+
+    private float roundToClosestFraction(float rawFloat) {
+        if (mDisplayInFahrenheit) {
+            return Math.round(rawFloat * (float) mTemperatureIncrementFractionFahrenheit)
+                    / (float) mTemperatureIncrementFractionFahrenheit;
+        } else {
+            return Math.round(rawFloat * (float) mTemperatureIncrementFractionCelsius)
+                    / (float) mTemperatureIncrementFractionCelsius;
+        }
     }
 }

@@ -500,6 +500,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="integer" name="car_volume_dialog_display_expanded_normal_timeout"/>
       <item type="integer" name="car_volume_dialog_display_hovering_timeout"/>
       <item type="integer" name="car_volume_dialog_display_normal_timeout"/>
+      <item type="integer" name="celsius_increment_fraction"/>
       <item type="integer" name="config_bottomSystemBarType"/>
       <item type="integer" name="config_bottomSystemBarZOrder"/>
       <item type="integer" name="config_finalNotificationBackgroundAlpha"/>
@@ -511,6 +512,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="integer" name="config_topSystemBarType"/>
       <item type="integer" name="config_topSystemBarZOrder"/>
       <item type="integer" name="config_userSwitchTransitionViewShownTimeoutMs"/>
+      <item type="integer" name="fahrenheit_increment_fraction"/>
       <item type="integer" name="hvac_global_area_id"/>
       <item type="integer" name="hvac_panel_settle_close_percentage"/>
       <item type="integer" name="hvac_seat_heat_level_count"/>
@@ -562,7 +564,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="hvac_max_text"/>
       <item type="string" name="hvac_min_text"/>
       <item type="string" name="hvac_null_temp_text"/>
-      <item type="string" name="hvac_temperature_format"/>
+      <item type="string" name="hvac_temperature_format_celsius"/>
+      <item type="string" name="hvac_temperature_format_fahrenheit"/>
       <item type="string" name="hvac_temperature_off"/>
       <item type="string" name="mic_privacy_chip_app_recently_used_mic_suffix"/>
       <item type="string" name="mic_privacy_chip_app_using_mic_suffix"/>

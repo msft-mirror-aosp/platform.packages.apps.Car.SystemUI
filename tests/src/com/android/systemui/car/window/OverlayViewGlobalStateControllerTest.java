@@ -105,7 +105,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
     public void registerMediator_overlayViewMediatorViewControllerSetup() {
         mOverlayViewGlobalStateController.registerMediator(mOverlayViewMediator);
 
-        verify(mOverlayViewMediator).setupOverlayContentViewControllers();
+        verify(mOverlayViewMediator).setUpOverlayContentViewControllers();
     }
 
     @Test

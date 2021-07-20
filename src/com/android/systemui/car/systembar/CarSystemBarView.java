@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.android.systemui.R;
+import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
 import com.android.systemui.car.systembar.CarSystemBarController.NotificationsShadeController;
 import com.android.systemui.statusbar.FeatureFlags;
 import com.android.systemui.statusbar.phone.StatusBarIconController;
@@ -53,7 +54,9 @@ public class CarSystemBarView extends LinearLayout {
 
     private View mNavButtons;
     private CarSystemBarButton mNotificationsButton;
+    private CarSystemBarButton mHvacButton;
     private NotificationsShadeController mNotificationsShadeController;
+    private HvacPanelController mHvacPanelController;
     private View mLockScreenButtons;
     private View mOcclusionButtons;
     // used to wire in open/close gestures for notifications
@@ -72,6 +75,7 @@ public class CarSystemBarView extends LinearLayout {
         mLockScreenButtons = findViewById(R.id.lock_screen_nav_buttons);
         mOcclusionButtons = findViewById(R.id.occlusion_buttons);
         mNotificationsButton = findViewById(R.id.notifications);
+        mHvacButton = findViewById(R.id.hvac);
         if (mNotificationsButton != null) {
             mNotificationsButton.setOnClickListener(this::onNotificationsClick);
         }
@@ -82,6 +86,9 @@ public class CarSystemBarView extends LinearLayout {
     }
 
     void setupIconController(FeatureFlags featureFlags, StatusBarIconController iconController) {
+        if (mHvacButton != null) {
+            mHvacButton.setOnClickListener(this::onHvacClick);
+        }
         View mStatusIcons = findViewById(R.id.statusIcons);
         if (mStatusIcons != null) {
             // Attach the controllers for Status icons such as wifi and bluetooth if the standard
@@ -120,9 +127,19 @@ public class CarSystemBarView extends LinearLayout {
         mNotificationsShadeController = controller;
     }
 
+    /** Sets the HVAC panel controller. */
+    public void setHvacPanelController(HvacPanelController controller) {
+        mHvacPanelController = controller;
+    }
+
     /** Gets the notifications panel controller. */
     public NotificationsShadeController getNotificationsPanelController() {
         return mNotificationsShadeController;
+    }
+
+    /** Gets the HVAC panel controller. */
+    public HvacPanelController getHvacPanelController() {
+        return mHvacPanelController;
     }
 
     /**
@@ -150,6 +167,12 @@ public class CarSystemBarView extends LinearLayout {
     protected void onNotificationsClick(View v) {
         if (mNotificationsShadeController != null) {
             mNotificationsShadeController.togglePanel();
+        }
+    }
+
+    protected void onHvacClick(View v) {
+        if (mHvacPanelController != null) {
+            mHvacPanelController.togglePanel();
         }
     }
 

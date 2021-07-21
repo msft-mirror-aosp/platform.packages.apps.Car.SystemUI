@@ -44,8 +44,6 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"បានបិទ​មីក្រូហ្វូន"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"ការប្រើប្រាស់​មីក្រូហ្វូនថ្មីៗ"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"អូខេ"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (2609868628872435121) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (5546778445306036986) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"បើក​មីក្រូហ្វូន​របស់យានជំនិះឬ?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"ការធ្វើបែបនេះ​ផ្ដល់ជម្រើសឱ្យ​កម្មវិធី និងសេវាកម្មនានា​ចូលប្រើ​មីក្រូហ្វូន​របស់អ្នក។"</string>
 </resources>

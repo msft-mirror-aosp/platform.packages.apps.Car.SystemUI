@@ -36,6 +36,7 @@ import android.content.Intent;
 import android.hardware.SensorPrivacyManager;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -113,7 +114,9 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
         MockitoAnnotations.initMocks(/* testClass= */ this);
 
         mFrameLayout = new FrameLayout(mContext);
-        mMicPrivacyChip = spy(new MicPrivacyChip(mContext));
+        mMicPrivacyChip = spy((MicPrivacyChip) LayoutInflater.from(mContext)
+                .inflate(R.layout.mic_privacy_chip, /* root= */ null));
+        mFrameLayout.addView(mMicPrivacyChip);
         mContext = spy(mContext);
 
         when(mContext.getMainExecutor()).thenReturn(mExecutor);
@@ -126,8 +129,6 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
                 new PrivacyChipViewController(mContext, mPrivacyItemController, carServiceProvider,
                         mBroadcastDispatcher, mSensorPrivacyManager,
                         mCarDeviceProvisionedController, mMicPrivacyChipDialogController);
-        mMicPrivacyChip.setId(R.id.privacy_chip);
-        mFrameLayout.addView(mMicPrivacyChip);
         when(mCarDeviceProvisionedController.getCurrentUser()).thenReturn(0);
     }
 

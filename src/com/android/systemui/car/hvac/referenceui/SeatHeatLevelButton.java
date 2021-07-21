@@ -23,7 +23,11 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.util.SparseArray;
 import android.widget.ImageButton;
+
+import androidx.annotation.ArrayRes;
 
 import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacController;
@@ -31,14 +35,14 @@ import com.android.systemui.car.hvac.HvacPropertySetter;
 import com.android.systemui.car.hvac.HvacView;
 
 public class SeatHeatLevelButton extends ImageButton implements HvacView {
-    private static int INVALID_ID = -1;
+    private static final String TAG = "SeatHeatLevelButton";
+    private static final int DEFAULT_SEAT_HEAT_LEVEL_COUNT = 4;
+    private static final int INVALID_ID = -1;
+
+    private final SparseArray<Drawable> mIcons = new SparseArray<>();
 
     private int mAreaId;
     private HvacPropertySetter mHvacPropertySetter;
-    private Drawable mIconOff;
-    private Drawable mIconOne;
-    private Drawable mIconTwo;
-    private Drawable mIconThree;
     private Drawable mCurrentIcon;
     private int mCurrentLevel;
     private int mTotalLevelCount;
@@ -74,7 +78,6 @@ public class SeatHeatLevelButton extends ImageButton implements HvacView {
             }
             return false;
         });
-        getIconDrawables();
         updateIcon();
     }
 
@@ -86,24 +89,8 @@ public class SeatHeatLevelButton extends ImageButton implements HvacView {
     @Override
     public void onPropertyChanged(CarPropertyValue value) {
         if (value.getPropertyId() == getHvacPropertyToView() && value.getAreaId() == getAreaId()) {
-            switch ((Integer) value.getValue()) {
-                case 0:
-                    mCurrentLevel = 0;
-                    mCurrentIcon = mIconOff;
-                    break;
-                case 1:
-                    mCurrentLevel = 1;
-                    mCurrentIcon = mIconOne;
-                    break;
-                case 2:
-                    mCurrentLevel = 2;
-                    mCurrentIcon = mIconTwo;
-                    break;
-                case 3:
-                    mCurrentLevel = 3;
-                    mCurrentIcon = mIconThree;
-                    break;
-            }
+            mCurrentLevel = (int) value.getValue();
+            mCurrentIcon = mIcons.get(mCurrentLevel);
             updateIcon();
         }
     }
@@ -133,15 +120,43 @@ public class SeatHeatLevelButton extends ImageButton implements HvacView {
     }
 
     private void parseAttributes(AttributeSet attrs) {
+        mIcons.clear();
+
+        mTotalLevelCount = mContext.getResources().getInteger(R.integer.hvac_seat_heat_level_count);
+
         TypedArray typedArray = mContext.obtainStyledAttributes(attrs, R.styleable.HvacView);
         mAreaId = typedArray.getInt(R.styleable.HvacView_hvacAreaId, INVALID_ID);
-        mTotalLevelCount = mContext.getResources().getInteger(R.integer.hvac_seat_heat_level_count);
-    }
+        typedArray.recycle();
 
-    private void getIconDrawables() {
-        mIconOff = mContext.getDrawable(R.drawable.ic_seat_heat_off);
-        mIconOne = mContext.getDrawable(R.drawable.ic_seat_heat_level_1);
-        mIconTwo = mContext.getDrawable(R.drawable.ic_seat_heat_level_2);
-        mIconThree = mContext.getDrawable(R.drawable.ic_seat_heat_level_3);
+        typedArray = mContext.obtainStyledAttributes(attrs, R.styleable.SeatHeatLevelButton);
+        @ArrayRes int drawableListRes = typedArray.getResourceId(
+                R.styleable.SeatHeatLevelButton_seatHeaterIconDrawableList, INVALID_ID);
+        if (drawableListRes == INVALID_ID) {
+            if (mTotalLevelCount != DEFAULT_SEAT_HEAT_LEVEL_COUNT) {
+                throw new IllegalArgumentException(
+                        "R.styeable.SeatHeatLevelButton_seatHeaterIconDrawableList should be "
+                                + "defined if R.integer.hvac_seat_heat_level_count is updated");
+            }
+
+            Log.d(TAG, "Using default seat heater icon drawables.");
+            mIcons.set(0, mContext.getDrawable(R.drawable.ic_seat_heat_off));
+            mIcons.set(1, mContext.getDrawable(R.drawable.ic_seat_heat_level_1));
+            mIcons.set(2, mContext.getDrawable(R.drawable.ic_seat_heat_level_2));
+            mIcons.set(3, mContext.getDrawable(R.drawable.ic_seat_heat_level_3));
+            return;
+        }
+
+        TypedArray seatHeatIcons = mContext.getResources().obtainTypedArray(drawableListRes);
+        if (seatHeatIcons.length() != mTotalLevelCount) {
+            throw new IllegalArgumentException(
+                    "R.styeable.SeatHeatLevelButton_seatHeaterIconDrawableList should have the "
+                            + "same length as R.integer.hvac_seat_heat_level_count");
+        }
+
+        for (int i = 0; i < mTotalLevelCount; i++) {
+            mIcons.set(i, seatHeatIcons.getDrawable(i));
+        }
+        seatHeatIcons.recycle();
+        typedArray.recycle();
     }
 }

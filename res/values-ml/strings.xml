@@ -19,6 +19,9 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="hvac_min_text" msgid="866677328637088715">"മിനിമം"</string>
     <string name="hvac_max_text" msgid="7627950157128770380">"മാക്സിമം"</string>
+    <string name="fan_speed_max" msgid="956683571700419211">"പരമാവധി"</string>
+    <string name="fan_speed_off" msgid="3860115181014880798">"ഓഫാണ്"</string>
+    <string name="hvac_temperature_off" msgid="8370977023494579242">"ഓഫാണ്"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"കണക്റ്റ് ചെയ്ത Bluetooth ഉപകരണം വഴി ഇപ്പോൾ വോയ്‌സ് തിരിച്ചറിയൽ കെെകാര്യം ചെയ്യുന്നു"</string>
     <string name="car_guest" msgid="768913000117469596">"അതിഥി"</string>
     <string name="start_guest_session" msgid="2759367183497948650">"അതിഥി"</string>
@@ -41,8 +44,6 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"മൈക്രോഫോൺ ഓഫാക്കി"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"മൈക്രോഫോണിന്റെ സമീപകാല ഉപയോഗം"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ശരി"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (2609868628872435121) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (5546778445306036986) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"വാഹനത്തിലെ മെെക്രോഫോൺ പ്രവർത്തനക്ഷമമാക്കണോ?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"ആപ്പുകൾക്കും സേവനങ്ങൾക്കും നിങ്ങളുടെ മെെക്രോഫോൺ ആക്‌സസ് ചെയ്യാനുള്ള ഓപ്‌ഷൻ ഇത് നൽകുന്നു."</string>
 </resources>

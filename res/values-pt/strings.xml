@@ -19,6 +19,9 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="hvac_min_text" msgid="866677328637088715">"Mín"</string>
     <string name="hvac_max_text" msgid="7627950157128770380">"Máx"</string>
+    <string name="fan_speed_max" msgid="956683571700419211">"MÁXIMA"</string>
+    <string name="fan_speed_off" msgid="3860115181014880798">"DESLIGADO"</string>
+    <string name="hvac_temperature_off" msgid="8370977023494579242">"DESLIGADO"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Reconhecimento de voz com dispositivo Bluetooth conectado"</string>
     <string name="car_guest" msgid="768913000117469596">"Convidado"</string>
     <string name="start_guest_session" msgid="2759367183497948650">"Convidado"</string>
@@ -41,8 +44,6 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Microfone desativado"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"Uso recente do microfone"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"OK"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (2609868628872435121) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (5546778445306036986) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"Ativar o microfone do veículo?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"Isso permite que apps e serviços acessem seu microfone."</string>
 </resources>

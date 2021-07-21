@@ -19,6 +19,9 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="hvac_min_text" msgid="866677328637088715">"Najn."</string>
     <string name="hvac_max_text" msgid="7627950157128770380">"Najv."</string>
+    <string name="fan_speed_max" msgid="956683571700419211">"NAJVEČJA"</string>
+    <string name="fan_speed_off" msgid="3860115181014880798">"IZKL."</string>
+    <string name="hvac_temperature_off" msgid="8370977023494579242">"IZKL."</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Prepoznavanje glasu zdaj izvaja povezana naprava Bluetooth"</string>
     <string name="car_guest" msgid="768913000117469596">"Gost"</string>
     <string name="start_guest_session" msgid="2759367183497948650">"Gost"</string>
@@ -41,8 +44,6 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Mikrofon je izklopljen."</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"Nedavna uporaba mikrofona"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"V redu"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (2609868628872435121) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (5546778445306036986) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"Želite omogočiti mikrofon vozila?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"S tem imajo aplikacije in storitve možnost dostopa do mikrofona."</string>
 </resources>

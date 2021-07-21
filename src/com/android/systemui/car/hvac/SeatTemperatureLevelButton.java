@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.hvac.referenceui;
+package com.android.systemui.car.hvac;
 
 import static android.car.VehiclePropertyIds.HVAC_SEAT_TEMPERATURE;
 
@@ -23,21 +23,23 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseArray;
 import android.widget.ImageButton;
 
 import androidx.annotation.ArrayRes;
 
 import com.android.systemui.R;
-import com.android.systemui.car.hvac.HvacController;
-import com.android.systemui.car.hvac.HvacPropertySetter;
-import com.android.systemui.car.hvac.HvacView;
 
-public class SeatHeatLevelButton extends ImageButton implements HvacView {
+/**
+ * An image button that allows for multiple seat heating/cooling states based on
+ * {@link R.integer.hvac_seat_heat_level_count}.
+ */
+public class SeatTemperatureLevelButton extends ImageButton implements HvacView {
     private static final String TAG = "SeatHeatLevelButton";
-    private static final int DEFAULT_SEAT_HEAT_LEVEL_COUNT = 4;
+
     private static final int INVALID_ID = -1;
+    private static final int HEATING = 1;
+    private static final int COOLING = -1;
 
     private final SparseArray<Drawable> mIcons = new SparseArray<>();
 
@@ -46,17 +48,18 @@ public class SeatHeatLevelButton extends ImageButton implements HvacView {
     private Drawable mCurrentIcon;
     private int mCurrentLevel;
     private int mTotalLevelCount;
+    private int mTemperatureLevelType;
 
-    public SeatHeatLevelButton(Context context) {
+    public SeatTemperatureLevelButton(Context context) {
         super(context);
     }
 
-    public SeatHeatLevelButton(Context context, AttributeSet attrs) {
+    public SeatTemperatureLevelButton(Context context, AttributeSet attrs) {
         super(context, attrs);
         parseAttributes(attrs);
     }
 
-    public SeatHeatLevelButton(Context context, AttributeSet attrs, int defStyleAttr) {
+    public SeatTemperatureLevelButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         parseAttributes(attrs);
     }
@@ -67,13 +70,13 @@ public class SeatHeatLevelButton extends ImageButton implements HvacView {
         setOnClickListener(v -> {
             if (mHvacPropertySetter != null) {
                 mHvacPropertySetter.setHvacProperty(getHvacPropertyToView(), mAreaId,
-                        (mCurrentLevel + 1) % mTotalLevelCount);
+                        mTemperatureLevelType * (mCurrentLevel + 1) % mTotalLevelCount);
             }
         });
         setOnLongClickListener(v -> {
             if (mHvacPropertySetter != null) {
                 mHvacPropertySetter.setHvacProperty(getHvacPropertyToView(), mAreaId,
-                        mCurrentLevel == 0 ? mTotalLevelCount - 1 : 0);
+                        mTemperatureLevelType * (mCurrentLevel == 0 ? mTotalLevelCount - 1 : 0));
                 return true;
             }
             return false;
@@ -90,6 +93,14 @@ public class SeatHeatLevelButton extends ImageButton implements HvacView {
     public void onPropertyChanged(CarPropertyValue value) {
         if (value.getPropertyId() == getHvacPropertyToView() && value.getAreaId() == getAreaId()) {
             mCurrentLevel = (int) value.getValue();
+            if (mTemperatureLevelType == COOLING && mCurrentLevel > 0) {
+                mCurrentLevel = 0;
+            } else if (mTemperatureLevelType == HEATING && mCurrentLevel < 0) {
+                mCurrentLevel = 0;
+            }
+
+            mCurrentLevel = Math.abs(mCurrentLevel);
+
             mCurrentIcon = mIcons.get(mCurrentLevel);
             updateIcon();
         }
@@ -128,35 +139,25 @@ public class SeatHeatLevelButton extends ImageButton implements HvacView {
         mAreaId = typedArray.getInt(R.styleable.HvacView_hvacAreaId, INVALID_ID);
         typedArray.recycle();
 
-        typedArray = mContext.obtainStyledAttributes(attrs, R.styleable.SeatHeatLevelButton);
+        typedArray = mContext.obtainStyledAttributes(attrs, R.styleable.SeatTemperatureLevelButton);
+        mTemperatureLevelType = typedArray.getInt(
+                R.styleable.SeatTemperatureLevelButton_seatTemperatureType, HEATING);
+
         @ArrayRes int drawableListRes = typedArray.getResourceId(
-                R.styleable.SeatHeatLevelButton_seatHeaterIconDrawableList, INVALID_ID);
-        if (drawableListRes == INVALID_ID) {
-            if (mTotalLevelCount != DEFAULT_SEAT_HEAT_LEVEL_COUNT) {
-                throw new IllegalArgumentException(
-                        "R.styeable.SeatHeatLevelButton_seatHeaterIconDrawableList should be "
-                                + "defined if R.integer.hvac_seat_heat_level_count is updated");
-            }
+                R.styleable.SeatTemperatureLevelButton_seatTemperatureIconDrawableList,
+                R.array.hvac_heated_seat_default_icons);
 
-            Log.d(TAG, "Using default seat heater icon drawables.");
-            mIcons.set(0, mContext.getDrawable(R.drawable.ic_seat_heat_off));
-            mIcons.set(1, mContext.getDrawable(R.drawable.ic_seat_heat_level_1));
-            mIcons.set(2, mContext.getDrawable(R.drawable.ic_seat_heat_level_2));
-            mIcons.set(3, mContext.getDrawable(R.drawable.ic_seat_heat_level_3));
-            return;
-        }
-
-        TypedArray seatHeatIcons = mContext.getResources().obtainTypedArray(drawableListRes);
-        if (seatHeatIcons.length() != mTotalLevelCount) {
+        TypedArray seatTemperatureIcons = mContext.getResources().obtainTypedArray(drawableListRes);
+        if (seatTemperatureIcons.length() != mTotalLevelCount) {
             throw new IllegalArgumentException(
                     "R.styeable.SeatHeatLevelButton_seatHeaterIconDrawableList should have the "
                             + "same length as R.integer.hvac_seat_heat_level_count");
         }
 
         for (int i = 0; i < mTotalLevelCount; i++) {
-            mIcons.set(i, seatHeatIcons.getDrawable(i));
+            mIcons.set(i, seatTemperatureIcons.getDrawable(i));
         }
-        seatHeatIcons.recycle();
+        seatTemperatureIcons.recycle();
         typedArray.recycle();
     }
 }

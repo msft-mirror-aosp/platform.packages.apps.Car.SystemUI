@@ -36,16 +36,16 @@ public class FanSpeedBarSegment extends ImageView {
 
     private ValueAnimator mDotWidthExpandAnimator;
 
-    private final ValueAnimator.AnimatorUpdateListener mExpandListener
-            = new ValueAnimator.AnimatorUpdateListener() {
-        @Override
-        public void onAnimationUpdate(ValueAnimator animation) {
-            int size = (int) animation.getAnimatedValue();
-            GradientDrawable drawable = (GradientDrawable) getDrawable();
-            drawable.setCornerRadius(size / 2);
-            drawable.setSize(size, size);
-        }
-    };
+    private final ValueAnimator.AnimatorUpdateListener mExpandListener =
+            new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    int size = (int) animation.getAnimatedValue();
+                    GradientDrawable drawable = (GradientDrawable) getDrawable();
+                    drawable.setCornerRadius(size / 2);
+                    drawable.setSize(size, size);
+                }
+            };
 
     public FanSpeedBarSegment(Context context) {
         super(context);
@@ -62,6 +62,9 @@ public class FanSpeedBarSegment extends ImageView {
         initView();
     }
 
+    /**
+     * Plays the animation for the fan speed bar segment to be turned on.
+     */
     public void playTurnOnAnimation(int delayMs, int duration) {
         getContext().getMainExecutor().execute(() -> {
             mDotWidthExpandAnimator.setStartDelay(delayMs);
@@ -71,6 +74,9 @@ public class FanSpeedBarSegment extends ImageView {
         });
     }
 
+    /**
+     * Plays the animation for the fan speed bar segment to be turned off.
+     */
     public void playTurnOffAnimation(int delayMs, int duration) {
         getContext().getMainExecutor().execute(() -> {
             mDotWidthExpandAnimator.setStartDelay(delayMs);

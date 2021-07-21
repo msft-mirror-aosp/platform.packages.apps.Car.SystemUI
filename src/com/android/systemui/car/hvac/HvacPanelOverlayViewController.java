@@ -19,6 +19,7 @@ package com.android.systemui.car.hvac;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.WindowInsets;
 
 import com.android.systemui.R;
@@ -58,6 +59,11 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+
+        View closeButton = getLayout().findViewById(R.id.hvac_panel_close_button);
+        if (closeButton != null) {
+            closeButton.setOnClickListener(v -> toggle());
+        }
 
         mHvacPanelView = getLayout().findViewById(R.id.hvac_panel);
         mHvacController.registerHvacViews(mHvacPanelView);

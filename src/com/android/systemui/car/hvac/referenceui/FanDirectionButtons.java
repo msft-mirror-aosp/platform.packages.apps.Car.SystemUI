@@ -39,6 +39,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A group of buttons that allows users to select the fan direction. Only one button can be
+ * activated at a time.
+ */
 public class FanDirectionButtons extends LinearLayout implements HvacView {
 
     /**

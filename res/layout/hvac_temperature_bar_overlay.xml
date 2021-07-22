@@ -16,9 +16,9 @@
   -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_margin="@dimen/hvac_temperature_bar_margin"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/hvac_temperature_bar_margin">
     <RelativeLayout
         android:id="@+id/hvac_temperature_bar"
         android:layout_width="@dimen/temperature_bar_expanded_width"

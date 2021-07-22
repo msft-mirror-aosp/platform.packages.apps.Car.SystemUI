@@ -44,8 +44,6 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"மைக்ரோஃபோன் முடக்கப்பட்டது"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"சமீபத்தில் மைக்ரோஃபோனைப் பயன்படுத்தியது"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"சரி"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (2609868628872435121) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (5546778445306036986) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"வாகன மைக்ரோஃபோனை இயக்கவா?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"உங்கள் மைக்ரோஃபோனை அணுகுவதற்கான விருப்பத்தை ஆப்ஸுக்கும் சேவைகளுக்கும் இது வழங்குகிறது."</string>
 </resources>

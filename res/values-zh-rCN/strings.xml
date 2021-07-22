@@ -44,8 +44,6 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"麦克风已关闭"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"最近使用麦克风的应用"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"确定"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (2609868628872435121) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (5546778445306036986) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"要启用车辆麦克风吗？"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"这会使应用和服务可以选择使用您的麦克风。"</string>
 </resources>

@@ -474,7 +474,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
      * of the percentage of the total height of the screen.
      */
     protected void calculatePercentageCursorPositionOnScreen(float y) {
-        mPercentageCursorPositionOnScreen = (int) Math.abs(y / mScreenHeightPx * 100);
+        mPercentageCursorPositionOnScreen = Math.round(Math.abs(y / mScreenHeightPx * 100));
     }
 
     private float getVisiblePanelHeight(float y) {

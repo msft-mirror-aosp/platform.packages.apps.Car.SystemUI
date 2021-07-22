@@ -35,6 +35,9 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="array" name="config_statusBarIconsToExclude"/>
       <item type="array" name="config_systemUIServiceComponentsExclude"/>
       <item type="array" name="config_systemUIServiceComponentsInclude"/>
+      <item type="array" name="hvac_heated_seat_default_icons"/>
+      <item type="array" name="hvac_temperature_control_levels"/>
+      <item type="array" name="hvac_temperature_level_backgrounds"/>
       <item type="attr" name="broadcast"/>
       <item type="attr" name="categories"/>
       <item type="attr" name="clearBackStack"/>
@@ -48,10 +51,20 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="attr" name="hvacPivotOffset"/>
       <item type="attr" name="hvacPropertyId"/>
       <item type="attr" name="hvacTempFormat"/>
+      <item type="attr" name="hvacToggleOffButtonDrawable"/>
+      <item type="attr" name="hvacToggleOnButtonDrawable"/>
+      <item type="attr" name="hvacTurnOffIfAutoOn"/>
+      <item type="attr" name="hvacTurnOffIfPowerOff"/>
       <item type="attr" name="icon"/>
       <item type="attr" name="intent"/>
+      <item type="attr" name="invalidValue"/>
       <item type="attr" name="longIntent"/>
+      <item type="attr" name="offValue"/>
+      <item type="attr" name="onValue"/>
       <item type="attr" name="packages"/>
+      <item type="attr" name="preventToggleOff"/>
+      <item type="attr" name="seatTemperatureIconDrawableList"/>
+      <item type="attr" name="seatTemperatureType"/>
       <item type="attr" name="selectedAlpha"/>
       <item type="attr" name="selectedIcon"/>
       <item type="attr" name="showMoreWhenSelected"/>
@@ -90,9 +103,28 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="color" name="car_volume_item_background_color"/>
       <item type="color" name="car_volume_item_divider_color"/>
       <item type="color" name="docked_divider_background"/>
+      <item type="color" name="hvac_background_color"/>
+      <item type="color" name="hvac_fan_drawable_fill_color"/>
+      <item type="color" name="hvac_fanspeed_bg_color"/>
+      <item type="color" name="hvac_fanspeed_off_active_bg"/>
+      <item type="color" name="hvac_fanspeed_off_active_text_color"/>
+      <item type="color" name="hvac_fanspeed_off_disabled_text_color"/>
+      <item type="color" name="hvac_fanspeed_off_enabled_bg"/>
+      <item type="color" name="hvac_fanspeed_off_enabled_text_color"/>
+      <item type="color" name="hvac_fanspeed_off_inactive_text_color"/>
+      <item type="color" name="hvac_fanspeed_segment_color"/>
+      <item type="color" name="hvac_icon_color"/>
+      <item type="color" name="hvac_master_switch_color"/>
+      <item type="color" name="hvac_module_background_color"/>
+      <item type="color" name="hvac_panel_handle_bar_color"/>
+      <item type="color" name="hvac_scrim_color"/>
+      <item type="color" name="hvac_seat_heat_level_drawable_fill_color"/>
       <item type="color" name="hvac_temperature_adjust_button_color"/>
+      <item type="color" name="hvac_temperature_control_icon_fill_color"/>
       <item type="color" name="hvac_temperature_decrease_arrow_color"/>
+      <item type="color" name="hvac_temperature_floating_text_color"/>
       <item type="color" name="hvac_temperature_increase_arrow_color"/>
+      <item type="color" name="hvac_temperature_off_text_bg_color"/>
       <item type="color" name="keyguard_button_text_color"/>
       <item type="color" name="list_divider_color"/>
       <item type="color" name="mic_privacy_chip_dark_icon_color"/>
@@ -101,6 +133,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="color" name="notification_divider_color"/>
       <item type="color" name="notification_ripple_untinted_color"/>
       <item type="color" name="notification_shade_background_color"/>
+      <item type="color" name="rear_view_camera_button_background"/>
       <item type="color" name="status_bar_background_color"/>
       <item type="color" name="system_bar_background_opaque"/>
       <item type="color" name="system_bar_background_pill_color"/>
@@ -168,12 +201,65 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_volume_item_seekbar_margin_vertical"/>
       <item type="dimen" name="car_volume_item_seekbar_padding_vertical"/>
       <item type="dimen" name="close_handle_underlap"/>
+      <item type="dimen" name="hvac_button_margin_bottom"/>
+      <item type="dimen" name="hvac_button_margin_end"/>
+      <item type="dimen" name="hvac_button_margin_start"/>
+      <item type="dimen" name="hvac_button_margin_top"/>
+      <item type="dimen" name="hvac_center_panel_width"/>
+      <item type="dimen" name="hvac_close_button_bottom_margin"/>
       <item type="dimen" name="hvac_container_padding"/>
+      <item type="dimen" name="hvac_fan_speed_bar_corner_radius"/>
+      <item type="dimen" name="hvac_fan_speed_bar_end_button_margin"/>
+      <item type="dimen" name="hvac_fan_speed_bar_height"/>
+      <item type="dimen" name="hvac_fan_speed_bar_margin"/>
+      <item type="dimen" name="hvac_fan_speed_bar_margin_bottom"/>
+      <item type="dimen" name="hvac_fan_speed_bar_margin_top"/>
+      <item type="dimen" name="hvac_fan_speed_bar_segment_margin"/>
+      <item type="dimen" name="hvac_fan_speed_bar_text_size"/>
+      <item type="dimen" name="hvac_fan_speed_bar_vertical_inset"/>
+      <item type="dimen" name="hvac_fan_speed_bar_width"/>
+      <item type="dimen" name="hvac_fan_speed_dot_expanded_size"/>
+      <item type="dimen" name="hvac_fan_speed_dot_size"/>
+      <item type="dimen" name="hvac_fan_speed_text_margin_bottom"/>
+      <item type="dimen" name="hvac_fan_speed_text_margin_top"/>
+      <item type="dimen" name="hvac_fan_speed_top_margin"/>
+      <item type="dimen" name="hvac_floating_text_left_margin"/>
+      <item type="dimen" name="hvac_icon_drawable_height"/>
+      <item type="dimen" name="hvac_icon_drawable_width"/>
       <item type="dimen" name="hvac_max_value_celsius"/>
       <item type="dimen" name="hvac_min_value_celsius"/>
+      <item type="dimen" name="hvac_panel_bottom_padding"/>
+      <item type="dimen" name="hvac_panel_button_dimen"/>
+      <item type="dimen" name="hvac_panel_button_height"/>
+      <item type="dimen" name="hvac_panel_button_radius"/>
+      <item type="dimen" name="hvac_panel_button_width"/>
+      <item type="dimen" name="hvac_panel_center_group_margin"/>
+      <item type="dimen" name="hvac_panel_center_group_width"/>
+      <item type="dimen" name="hvac_panel_fan_direction_margin"/>
+      <item type="dimen" name="hvac_panel_full_expanded_height"/>
+      <item type="dimen" name="hvac_panel_group_height"/>
+      <item type="dimen" name="hvac_panel_handle_bar_height"/>
+      <item type="dimen" name="hvac_panel_handle_bar_margin_bottom"/>
+      <item type="dimen" name="hvac_panel_handle_bar_margin_end"/>
+      <item type="dimen" name="hvac_panel_handle_bar_margin_start"/>
+      <item type="dimen" name="hvac_panel_handle_bar_margin_top"/>
+      <item type="dimen" name="hvac_panel_handle_bar_radius"/>
+      <item type="dimen" name="hvac_panel_list_padding_bottom"/>
+      <item type="dimen" name="hvac_panel_margin"/>
+      <item type="dimen" name="hvac_panel_row_animation_height_shift"/>
+      <item type="dimen" name="hvac_panel_row_margin"/>
+      <item type="dimen" name="hvac_panel_top_padding"/>
+      <item type="dimen" name="hvac_power_icon_drawable_height"/>
+      <item type="dimen" name="hvac_power_icon_drawable_width"/>
+      <item type="dimen" name="hvac_temperature_bar_margin"/>
       <item type="dimen" name="hvac_temperature_button_size"/>
+      <item type="dimen" name="hvac_temperature_control_button_height"/>
+      <item type="dimen" name="hvac_temperature_control_button_width"/>
       <item type="dimen" name="hvac_temperature_text_padding"/>
       <item type="dimen" name="hvac_temperature_text_size"/>
+      <item type="dimen" name="hvac_text_left_margin"/>
+      <item type="dimen" name="hvac_turned_off_alpha"/>
+      <item type="dimen" name="hvac_turned_on_alpha"/>
       <item type="dimen" name="line_item_height"/>
       <item type="dimen" name="max_avatar_size"/>
       <item type="dimen" name="notification_child_width"/>
@@ -204,6 +290,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="privacy_chip_icon_size"/>
       <item type="dimen" name="privacy_chip_indicator_circle_diameter"/>
       <item type="dimen" name="privacy_chip_width"/>
+      <item type="dimen" name="rear_view_camera_height"/>
+      <item type="dimen" name="rear_view_camera_width"/>
       <item type="dimen" name="scrim_behind_alpha"/>
       <item type="dimen" name="side_margin"/>
       <item type="dimen" name="signal_icon_size"/>
@@ -218,6 +306,22 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="system_bar_pill_radius"/>
       <item type="dimen" name="system_bar_user_icon_drawing_size"/>
       <item type="dimen" name="system_bar_user_icon_padding"/>
+      <item type="dimen" name="temperature_bar_bg_radius"/>
+      <item type="dimen" name="temperature_bar_close_icon_dimen"/>
+      <item type="dimen" name="temperature_bar_collapsed_height"/>
+      <item type="dimen" name="temperature_bar_collapsed_width"/>
+      <item type="dimen" name="temperature_bar_expanded_height"/>
+      <item type="dimen" name="temperature_bar_expanded_width"/>
+      <item type="dimen" name="temperature_bar_floating_text_bottom_margin"/>
+      <item type="dimen" name="temperature_bar_floating_text_size"/>
+      <item type="dimen" name="temperature_bar_icon_margin"/>
+      <item type="dimen" name="temperature_bar_off_text_bottom_margin"/>
+      <item type="dimen" name="temperature_bar_off_text_size"/>
+      <item type="dimen" name="temperature_bar_text_size"/>
+      <item type="dimen" name="temperature_control_arrow_height"/>
+      <item type="dimen" name="temperature_off_text_bg_height"/>
+      <item type="dimen" name="temperature_off_text_bg_width"/>
+      <item type="dimen" name="temperature_side_margin"/>
       <item type="dimen" name="volume_button_size"/>
       <item type="dimen" name="volume_dialog_elevation"/>
       <item type="dimen" name="volume_dialog_panel_width"/>
@@ -225,6 +329,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="volume_dialog_row_padding_end"/>
       <item type="dimen" name="volume_dialog_side_margin"/>
       <item type="dimen" name="volume_icon_size"/>
+      <item type="drawable" name="ac_master_switch_off"/>
+      <item type="drawable" name="ac_master_switch_on"/>
       <item type="drawable" name="car_add_circle_round"/>
       <item type="drawable" name="car_ic_add_white"/>
       <item type="drawable" name="car_ic_apps"/>
@@ -252,11 +358,43 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_rounded_bg_bottom"/>
       <item type="drawable" name="car_seekbar_thumb"/>
       <item type="drawable" name="car_stat_sys_data_bluetooth_indicator"/>
+      <item type="drawable" name="fan_speed_inset"/>
       <item type="drawable" name="hvac_decrease_button"/>
       <item type="drawable" name="hvac_increase_button"/>
+      <item type="drawable" name="hvac_panel_button_bg"/>
+      <item type="drawable" name="hvac_panel_handle_bar"/>
+      <item type="drawable" name="ic_ac_off"/>
+      <item type="drawable" name="ic_ac_on"/>
+      <item type="drawable" name="ic_auto_off"/>
+      <item type="drawable" name="ic_auto_on"/>
+      <item type="drawable" name="ic_decrease_icon"/>
+      <item type="drawable" name="ic_fan_direction_defrost"/>
+      <item type="drawable" name="ic_fan_direction_defrost_off"/>
+      <item type="drawable" name="ic_fan_direction_defrost_on"/>
+      <item type="drawable" name="ic_fan_direction_face"/>
+      <item type="drawable" name="ic_fan_direction_face_and_floor"/>
+      <item type="drawable" name="ic_fan_direction_face_and_floor_off"/>
+      <item type="drawable" name="ic_fan_direction_face_and_floor_on"/>
+      <item type="drawable" name="ic_fan_direction_face_off"/>
+      <item type="drawable" name="ic_fan_direction_face_on"/>
+      <item type="drawable" name="ic_fan_direction_floor"/>
+      <item type="drawable" name="ic_fan_direction_floor_off"/>
+      <item type="drawable" name="ic_fan_direction_floor_on"/>
+      <item type="drawable" name="ic_fan_speed_bg"/>
+      <item type="drawable" name="ic_front_defroster_off"/>
+      <item type="drawable" name="ic_front_defroster_on"/>
+      <item type="drawable" name="ic_increase_icon"/>
       <item type="drawable" name="ic_mic_dark"/>
       <item type="drawable" name="ic_mic_light"/>
       <item type="drawable" name="ic_mic_off_light"/>
+      <item type="drawable" name="ic_rear_defroster_off"/>
+      <item type="drawable" name="ic_rear_defroster_on"/>
+      <item type="drawable" name="ic_recycle_air_off"/>
+      <item type="drawable" name="ic_recycle_air_on"/>
+      <item type="drawable" name="ic_seat_heat_level_1"/>
+      <item type="drawable" name="ic_seat_heat_level_2"/>
+      <item type="drawable" name="ic_seat_heat_level_3"/>
+      <item type="drawable" name="ic_seat_heat_off"/>
       <item type="drawable" name="mic_privacy_chip_background_pill"/>
       <item type="drawable" name="notification_handle_bar"/>
       <item type="drawable" name="notification_material_bg"/>
@@ -266,8 +404,13 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="system_bar_background_pill"/>
       <item type="drawable" name="system_bar_button_background"/>
       <item type="drawable" name="system_bar_pill_rotary_background"/>
+      <item type="drawable" name="temperature_bar_background"/>
       <item type="drawable" name="volume_dialog_background"/>
+      <item type="id" name="ac_button"/>
+      <item type="id" name="ac_master_switch"/>
       <item type="id" name="active_background"/>
+      <item type="id" name="auto_button"/>
+      <item type="id" name="bottom_guideline"/>
       <item type="id" name="car_nav_button_icon"/>
       <item type="id" name="car_nav_button_icon_image"/>
       <item type="id" name="car_nav_button_more_icon"/>
@@ -279,8 +422,20 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="clock_container"/>
       <item type="id" name="connected_device_signals_stub"/>
       <item type="id" name="dark_icon"/>
+      <item type="id" name="defroster_button"/>
+      <item type="id" name="direction_defrost"/>
+      <item type="id" name="direction_face"/>
+      <item type="id" name="direction_face_and_floor"/>
+      <item type="id" name="direction_floor"/>
       <item type="id" name="driver_hvac"/>
       <item type="id" name="empty_notification_text"/>
+      <item type="id" name="fan_control"/>
+      <item type="id" name="fan_max"/>
+      <item type="id" name="fan_off"/>
+      <item type="id" name="fan_speed_1"/>
+      <item type="id" name="fan_speed_2"/>
+      <item type="id" name="fan_speed_3"/>
+      <item type="id" name="fan_speed_4"/>
       <item type="id" name="focus_view"/>
       <item type="id" name="fullscreen_user_switcher_stub"/>
       <item type="id" name="glass_pane"/>
@@ -292,6 +447,11 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="hvac"/>
       <item type="id" name="hvac_decrease_button"/>
       <item type="id" name="hvac_increase_button"/>
+      <item type="id" name="hvac_panel"/>
+      <item type="id" name="hvac_panel_close_button"/>
+      <item type="id" name="hvac_panel_container"/>
+      <item type="id" name="hvac_panel_stub"/>
+      <item type="id" name="hvac_temperature_bar"/>
       <item type="id" name="hvac_temperature_text"/>
       <item type="id" name="inactive_background"/>
       <item type="id" name="inout_container"/>
@@ -313,12 +473,18 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="primary_icon"/>
       <item type="id" name="privacy_chip"/>
       <item type="id" name="qs_car_top_bar"/>
+      <item type="id" name="rear_defroster_button"/>
+      <item type="id" name="recycle_air_button"/>
+      <item type="id" name="seat_heat_level_button_left"/>
+      <item type="id" name="seat_heat_level_button_right"/>
+      <item type="id" name="segment_container"/>
       <item type="id" name="settingsIcon"/>
       <item type="id" name="statusIcons"/>
       <item type="id" name="supplemental_icon"/>
       <item type="id" name="supplemental_icon_divider"/>
       <item type="id" name="system_icon_area"/>
       <item type="id" name="system_icons"/>
+      <item type="id" name="top_guideline"/>
       <item type="id" name="user_avatar"/>
       <item type="id" name="user_grid"/>
       <item type="id" name="user_loading"/>
@@ -342,6 +508,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="integer" name="car_volume_dialog_display_expanded_normal_timeout"/>
       <item type="integer" name="car_volume_dialog_display_hovering_timeout"/>
       <item type="integer" name="car_volume_dialog_display_normal_timeout"/>
+      <item type="integer" name="celsius_increment_fraction"/>
       <item type="integer" name="config_bottomSystemBarType"/>
       <item type="integer" name="config_bottomSystemBarZOrder"/>
       <item type="integer" name="config_finalNotificationBackgroundAlpha"/>
@@ -353,6 +520,10 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="integer" name="config_topSystemBarType"/>
       <item type="integer" name="config_topSystemBarZOrder"/>
       <item type="integer" name="config_userSwitchTransitionViewShownTimeoutMs"/>
+      <item type="integer" name="fahrenheit_increment_fraction"/>
+      <item type="integer" name="hvac_global_area_id"/>
+      <item type="integer" name="hvac_panel_settle_close_percentage"/>
+      <item type="integer" name="hvac_seat_heat_level_count"/>
       <item type="integer" name="notification_settle_close_percentage"/>
       <item type="integer" name="notification_settle_open_percentage"/>
       <item type="integer" name="privacy_chip_animation_transition_duration"/>
@@ -375,6 +546,11 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="layout" name="car_user_switching_dialog"/>
       <item type="layout" name="car_volume_dialog"/>
       <item type="layout" name="car_volume_item"/>
+      <item type="layout" name="fan_direction"/>
+      <item type="layout" name="fan_speed"/>
+      <item type="layout" name="hvac_panel_container"/>
+      <item type="layout" name="hvac_panel_handle_bar"/>
+      <item type="layout" name="hvac_temperature_bar_overlay"/>
       <item type="layout" name="mic_privacy_chip"/>
       <item type="layout" name="notification_center_activity"/>
       <item type="layout" name="notification_handle_bar"/>
@@ -391,10 +567,14 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="config_notificationPanelViewMediator"/>
       <item type="string" name="config_statusBarComponent"/>
       <item type="string" name="config_systemUIFactoryComponent"/>
+      <item type="string" name="fan_speed_max"/>
+      <item type="string" name="fan_speed_off"/>
       <item type="string" name="hvac_max_text"/>
       <item type="string" name="hvac_min_text"/>
       <item type="string" name="hvac_null_temp_text"/>
-      <item type="string" name="hvac_temperature_format"/>
+      <item type="string" name="hvac_temperature_format_celsius"/>
+      <item type="string" name="hvac_temperature_format_fahrenheit"/>
+      <item type="string" name="hvac_temperature_off"/>
       <item type="string" name="mic_privacy_chip_app_recently_used_mic_suffix"/>
       <item type="string" name="mic_privacy_chip_app_using_mic_suffix"/>
       <item type="string" name="mic_privacy_chip_apps_using_mic_suffix"/>
@@ -414,6 +594,14 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="user_add_user_message_setup"/>
       <item type="string" name="user_add_user_message_update"/>
       <item type="string" name="voice_recognition_toast"/>
+      <item type="style" name="HvacButton"/>
+      <item type="style" name="HvacButton.FanDirection"/>
+      <item type="style" name="HvacFanSpeedBar"/>
+      <item type="style" name="HvacFanSpeedText"/>
+      <item type="style" name="HvacSpacerView"/>
+      <item type="style" name="HvacTemperature"/>
+      <item type="style" name="HvacTemperatureControlIcon"/>
+      <item type="style" name="HvacTemperatureFont"/>
       <item type="style" name="SystemBarButton"/>
       <item type="style" name="TextAppearance.CarStatus"/>
       <item type="style" name="TextAppearance.SystemBar.Clock"/>

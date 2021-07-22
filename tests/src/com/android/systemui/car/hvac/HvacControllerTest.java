@@ -16,8 +16,6 @@
 
 package com.android.systemui.car.hvac;
 
-import static android.car.VehicleAreaType.VEHICLE_AREA_TYPE_GLOBAL;
-import static android.car.VehiclePropertyIds.HVAC_AC_ON;
 import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
 import static android.car.VehiclePropertyIds.HVAC_DEFROSTER;
 import static android.car.VehiclePropertyIds.HVAC_TEMPERATURE_DISPLAY_UNITS;
@@ -43,6 +41,7 @@ import android.view.View;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.util.concurrency.FakeExecutor;
 import com.android.systemui.util.time.FakeSystemClock;
 
@@ -77,6 +76,9 @@ public class HvacControllerTest extends SysuiTestCase {
     private TestHvacView mTestHvacView3;
     @Mock
     private CarPropertyValue mCarPropertyValue;
+    @Mock
+    private ConfigurationController mConfigurationController;
+
     private HvacController mHvacController;
     private FakeExecutor mExecutor;
 
@@ -86,7 +88,9 @@ public class HvacControllerTest extends SysuiTestCase {
         when(mCar.getCarManager(Car.PROPERTY_SERVICE)).thenReturn(mCarPropertyManager);
 
         mExecutor = new FakeExecutor(new FakeSystemClock());
-        mHvacController = new HvacController(mCarServiceProvider, mExecutor);
+        mHvacController = new HvacController(mCarServiceProvider, mExecutor,
+                getContext().getOrCreateTestableResources().getResources(),
+                mConfigurationController);
         mHvacController.mCarServiceLifecycleListener.onConnected(mCar);
         mExecutor.advanceClockToLast();
         mExecutor.runAllReady();
@@ -146,49 +150,6 @@ public class HvacControllerTest extends SysuiTestCase {
         when(mCarPropertyValue.getAreaId()).thenReturn(AREA_1);
 
         mHvacController.handleHvacPropertyChange(HVAC_DEFROSTER, mCarPropertyValue);
-    }
-
-    @Test
-    public void hvacPropertyChanged_hvacPropertyAffectsGlobal_allSubscribingViewsHandleChange() {
-        registerAllTestHvacViews();
-        when(mCarPropertyValue.getAreaId()).thenReturn(VEHICLE_AREA_TYPE_GLOBAL);
-
-        mHvacController.handleHvacPropertyChange(HVAC_TEMPERATURE_SET, mCarPropertyValue);
-
-        verify(mTestHvacView1).onPropertyChanged(mCarPropertyValue);
-        verify(mTestHvacView2).onPropertyChanged(mCarPropertyValue);
-    }
-
-    @Test
-    public void hvacPropertyChanged_hvacTurnedOn_allViewsHandleChange() {
-        registerAllTestHvacViews();
-        when(mCarPropertyValue.getPropertyId()).thenReturn(HVAC_AC_ON);
-        when(mCarPropertyValue.getValue()).thenReturn(true);
-        reset(mTestHvacView1);
-        reset(mTestHvacView2);
-        reset(mTestHvacView3);
-
-        mHvacController.handleHvacPropertyChange(HVAC_AC_ON, mCarPropertyValue);
-
-        verify(mTestHvacView1).onAcOnOffChanged(true);
-        verify(mTestHvacView2).onAcOnOffChanged(true);
-        verify(mTestHvacView3).onAcOnOffChanged(true);
-    }
-
-    @Test
-    public void hvacPropertyChanged_hvacTurnedOff_allViewsHandleChange() {
-        registerAllTestHvacViews();
-        when(mCarPropertyValue.getPropertyId()).thenReturn(HVAC_AC_ON);
-        when(mCarPropertyValue.getValue()).thenReturn(false);
-        reset(mTestHvacView1);
-        reset(mTestHvacView2);
-        reset(mTestHvacView3);
-
-        mHvacController.handleHvacPropertyChange(HVAC_AC_ON, mCarPropertyValue);
-
-        verify(mTestHvacView1).onAcOnOffChanged(false);
-        verify(mTestHvacView2).onAcOnOffChanged(false);
-        verify(mTestHvacView3).onAcOnOffChanged(false);
     }
 
     @Test
@@ -256,11 +217,6 @@ public class HvacControllerTest extends SysuiTestCase {
 
         @Override
         public void setHvacPropertySetter(HvacPropertySetter hvacPropertySetter) {
-            // no-op.
-        }
-
-        @Override
-        public void onAcOnOffChanged(boolean acIsOn) {
             // no-op.
         }
 

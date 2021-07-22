@@ -144,7 +144,7 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     }
 
     /**
-     * View update logic that will be executed on the UI Thread.
+     * Updates the temperature view logic on the UI thread.
      */
     protected void updateTemperatureViewUiThread() {
         mTempTextView.setText(mTempInDisplay);
@@ -212,7 +212,8 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
                 mDisplayInFahrenheit ? celsiusToFahrenheit(mCurrentTempC) : mCurrentTempC);
         // Set mCurrentTempC value to tempToDisplayUnformatted so their values sync in the next
         // setTemperature call.
-        mCurrentTempC = mDisplayInFahrenheit ? fahrenheitToCelsius(tempToDisplayUnformatted)
+        mCurrentTempC = mDisplayInFahrenheit
+                ? fahrenheitToCelsius(tempToDisplayUnformatted)
                 : tempToDisplayUnformatted;
 
         mTempInDisplay = String.format(
@@ -260,12 +261,9 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     }
 
     private float roundToClosestFraction(float rawFloat) {
-        if (mDisplayInFahrenheit) {
-            return Math.round(rawFloat * (float) mTemperatureIncrementFractionFahrenheit)
-                    / (float) mTemperatureIncrementFractionFahrenheit;
-        } else {
-            return Math.round(rawFloat * (float) mTemperatureIncrementFractionCelsius)
-                    / (float) mTemperatureIncrementFractionCelsius;
-        }
+        float incrementFraction = mDisplayInFahrenheit
+                ? mTemperatureIncrementFractionFahrenheit
+                : mTemperatureIncrementFractionCelsius;
+        return Math.round(rawFloat * incrementFraction) / incrementFraction;
     }
 }

@@ -290,8 +290,6 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="privacy_chip_icon_size"/>
       <item type="dimen" name="privacy_chip_indicator_circle_diameter"/>
       <item type="dimen" name="privacy_chip_width"/>
-      <item type="dimen" name="rear_view_camera_height"/>
-      <item type="dimen" name="rear_view_camera_width"/>
       <item type="dimen" name="scrim_behind_alpha"/>
       <item type="dimen" name="side_margin"/>
       <item type="dimen" name="signal_icon_size"/>

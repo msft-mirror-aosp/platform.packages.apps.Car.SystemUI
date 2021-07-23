@@ -25,6 +25,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -47,6 +48,7 @@ import com.android.systemui.tests.R;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.AdditionalMatchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -66,10 +68,6 @@ public class TemperatureControlViewTest extends SysuiTestCase {
     private CarPropertyValue mCarPropertyValue;
     @Mock
     private CarPropertyValue mHvacPowerProperty;
-    @Mock
-    private MotionEvent mDownMotionEvent;
-    @Mock
-    private MotionEvent mUpMotionEvent;
 
     @Before
     public void setUp() {
@@ -83,9 +81,6 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         when(mCarPropertyValue.getPropertyId()).thenReturn(HVAC_TEMPERATURE_SET);
         when(mCarPropertyValue.getStatus()).thenReturn(CarPropertyValue.STATUS_AVAILABLE);
         when(mCarPropertyValue.getValue()).thenReturn(20f);
-
-        when(mDownMotionEvent.getAction()).thenReturn(MotionEvent.ACTION_DOWN);
-        when(mUpMotionEvent.getAction()).thenReturn(ACTION_UP);
     }
 
     @Test
@@ -113,7 +108,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
     }
 
     @Test
-    public void onTouchIncreaseButtonThreeTimes_inCelsius_increasesThreeDegreesCelsius() {
+    public void onHoldIncreaseButtonDown_inCelsius_increasesThreeDegreesCelsius() {
         setPowerPropertyValue(true);
         mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
         View increaseButton = mTemperatureControlView.findViewById(R.id.hvac_increase_button);
@@ -121,19 +116,20 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ false);
         float increment = mTemperatureControlView.getTemperatureIncrementInCelsius();
+        float expectedNewTemperature = (float) mCarPropertyValue.getValue() + increment;
 
-        // Subtract 10ms so the click will be performed exactly intervalTimes.
-        // The first click occurs when the button is pressed, and so after interval * n
-        // milliseconds, n + 1 clicks happen in total.
+        // Hold the button down for more than BUTTON_REPEAT_INTERVAL_MS * 2 but less than
+        // BUTTON_REPEAT_INTERVAL_MS * 3 so that the temperature is incremented twice after the
+        // initial increment when the button is first pressed.
         touchViewForDurationMs(increaseButton,
-                TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * intervalTimes - 10);
+                (long) (TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * (intervalTimes - 0.5)));
 
-        verify(mHvacPropertySetter, times(intervalTimes)).setHvacProperty(HVAC_TEMPERATURE_SET,
-                AREA_ID, (float) mCarPropertyValue.getValue() + increment);
+        verify(mHvacPropertySetter, times(intervalTimes)).setHvacProperty(eq(HVAC_TEMPERATURE_SET),
+                eq(AREA_ID), AdditionalMatchers.eq(expectedNewTemperature, 0.1f));
     }
 
     @Test
-    public void onTouchDecreaseButtonThreeTimes_inCelsius_decreasesThreeDegreesCelsius() {
+    public void onHoldDecreaseButtonDown_inCelsius_decreasesThreeDegreesCelsius() {
         setPowerPropertyValue(true);
         mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
         View decreaseButton = mTemperatureControlView.findViewById(R.id.hvac_decrease_button);
@@ -141,19 +137,20 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ false);
         float increment = mTemperatureControlView.getTemperatureIncrementInCelsius();
+        float expectedNewTemperature = (float) mCarPropertyValue.getValue() - increment;
 
-        // Subtract 10ms so the click will be performed exactly intervalTimes.
-        // The first click occurs when the button is pressed, and so after interval * n
-        // milliseconds, n + 1 clicks happen in total.
+        // Hold the button down for more than BUTTON_REPEAT_INTERVAL_MS * 2 but less than
+        // BUTTON_REPEAT_INTERVAL_MS * 3 so that the temperature is decremented twice after the
+        // initial decrement when the button is first pressed.
         touchViewForDurationMs(decreaseButton,
-                TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * intervalTimes - 10);
+                (long) (TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * (intervalTimes - 0.5)));
 
-        verify(mHvacPropertySetter, times(intervalTimes)).setHvacProperty(HVAC_TEMPERATURE_SET,
-                AREA_ID, (float) mCarPropertyValue.getValue() - increment);
+        verify(mHvacPropertySetter, times(intervalTimes)).setHvacProperty(eq(HVAC_TEMPERATURE_SET),
+                eq(AREA_ID), AdditionalMatchers.eq(expectedNewTemperature, 0.1f));
     }
 
     @Test
-    public void onTouchIncreaseButtonThreeTimes_inFahrenheit_increasesThreeDegreesFahrenheit() {
+    public void onHoldIncreaseButtonDown_inFahrenheit_increasesThreeDegreesFahrenheit() {
         setPowerPropertyValue(true);
         mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
         View increaseButton = mTemperatureControlView.findViewById(R.id.hvac_increase_button);
@@ -161,69 +158,69 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
         float increment = mTemperatureControlView.getTemperatureIncrementInFahrenheit();
+        float expectedNewTemperature = fahrenheitToCelsius(
+                celsiusToFahrenheit((float) mCarPropertyValue.getValue()) + increment);
 
-        // Subtract 10ms so the click will be performed exactly intervalTimes.
-        // The first click occurs when the button is pressed, and so after interval * n
-        // milliseconds, n + 1 clicks happen in total.
+        // Hold the button down for more than BUTTON_REPEAT_INTERVAL_MS * 2 but less than
+        // BUTTON_REPEAT_INTERVAL_MS * 3 so that the temperature is incremented twice after the
+        // initial increment when the button is first pressed.
         touchViewForDurationMs(increaseButton,
-                TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * intervalTimes - 10);
+                (long) (TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * (intervalTimes - 0.5)));
 
-        verify(mHvacPropertySetter, times(intervalTimes)).setHvacProperty(HVAC_TEMPERATURE_SET,
-                AREA_ID,
-                fahrenheitToCelsius(
-                        celsiusToFahrenheit((float) mCarPropertyValue.getValue()) + increment));
+        verify(mHvacPropertySetter, times(intervalTimes)).setHvacProperty(eq(HVAC_TEMPERATURE_SET),
+                eq(AREA_ID), AdditionalMatchers.eq(expectedNewTemperature, 0.1f));
     }
 
     @Test
-    public void onTouchDecreaseButtonThreeTimes_inFahrenheit_decreasesThreeDegreesFahrenheit() {
+    public void onHoldDecreaseButtonDown_inFahrenheit_decreasesThreeDegreesFahrenheit() {
         setPowerPropertyValue(true);
         mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
         View decreaseButton = mTemperatureControlView.findViewById(R.id.hvac_decrease_button);
-        int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
+        int intervalTimes = 3;
         float increment = mTemperatureControlView.getTemperatureIncrementInFahrenheit();
+        float expectedNewTemperature = fahrenheitToCelsius(
+                celsiusToFahrenheit((float) mCarPropertyValue.getValue()) - increment);
 
-        // Subtract 10ms so the click will be performed exactly intervalTimes.
-        // The first click occurs when the button is pressed, and so after interval * n
-        // milliseconds, n + 1 clicks happen in total.
+        // Hold the button down for more than BUTTON_REPEAT_INTERVAL_MS * 2 but less than
+        // BUTTON_REPEAT_INTERVAL_MS * 3 so that the temperature is decremented twice after the
+        // initial decrement when the button is first pressed.
         touchViewForDurationMs(decreaseButton,
-                TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * intervalTimes - 10);
+                (long) (TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * (intervalTimes - 0.5)));
 
-        verify(mHvacPropertySetter, times(intervalTimes)).setHvacProperty(HVAC_TEMPERATURE_SET,
-                AREA_ID,
-                fahrenheitToCelsius(
-                        celsiusToFahrenheit((float) mCarPropertyValue.getValue()) - increment));
+        verify(mHvacPropertySetter, times(intervalTimes)).setHvacProperty(eq(HVAC_TEMPERATURE_SET),
+                eq(AREA_ID), AdditionalMatchers.eq(expectedNewTemperature, 0.1f));
     }
 
     @Test
-    public void onTouchIncreaseButtonThreeTimes_powerOff_doesNotSetNewValues() {
+    public void onHoldIncreaseButtonDown_powerOff_doesNotSetNewValues() {
         setPowerPropertyValue(false);
         mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
         View increaseButton = mTemperatureControlView.findViewById(R.id.hvac_increase_button);
         int intervalTimes = 3;
 
-        // Subtract 10ms so the click will be performed exactly intervalTimes.
-        // The first click occurs when the button is pressed, and so after interval * n
-        // milliseconds, n + 1 clicks happen in total.
+        // Hold the button down for more than BUTTON_REPEAT_INTERVAL_MS * 2 but less than
+        // BUTTON_REPEAT_INTERVAL_MS * 3 so that the temperature is incremented twice after the
+        // initial increment when the button is first pressed.
         touchViewForDurationMs(increaseButton,
-                TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * intervalTimes - 10);
+                (long) (TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * (intervalTimes - 0.5)));
 
         verify(mHvacPropertySetter, never()).setHvacProperty(anyInt(), anyInt(), anyFloat());
     }
 
     @Test
-    public void onTouchDecreaseButtonThreeTimes_powerOff_doesNotSetNewValues() {
+    public void onHoldDecreaseButtonDown_powerOff_doesNotSetNewValues() {
         setPowerPropertyValue(false);
         mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
         View decreaseButton = mTemperatureControlView.findViewById(R.id.hvac_decrease_button);
         int intervalTimes = 3;
 
-        // Subtract 10ms so the click will be performed exactly intervalTimes.
-        // The first click occurs when the button is pressed, and so after interval * n
-        // milliseconds, n + 1 clicks happen in total.
+        // Hold the button down for more than BUTTON_REPEAT_INTERVAL_MS * 2 but less than
+        // BUTTON_REPEAT_INTERVAL_MS * 3 so that the temperature is decremented twice after the
+        // initial decrement when the button is first pressed.
         touchViewForDurationMs(decreaseButton,
-                TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * intervalTimes - 10);
+                (long) (TemperatureControlView.BUTTON_REPEAT_INTERVAL_MS * (intervalTimes - 0.5)));
 
         verify(mHvacPropertySetter, never()).setHvacProperty(anyInt(), anyInt(), anyFloat());
     }
@@ -244,7 +241,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         return MotionEvent.obtain(0, eventTime, action, 0, 0, 0);
     }
 
-    // This test suite does not use HvacUtils to not assume HvacUtils is implemented correctly.
+    // This test suite does not use HvacUtils to avoid assuming HvacUtils is implemented correctly.
     private static float celsiusToFahrenheit(float tempC) {
         return (tempC * 9f / 5f) + 32;
     }

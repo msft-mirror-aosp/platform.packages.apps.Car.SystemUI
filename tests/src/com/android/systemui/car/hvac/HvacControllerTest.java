@@ -163,9 +163,9 @@ public class HvacControllerTest extends SysuiTestCase {
 
         mHvacController.handleHvacPropertyChange(HVAC_TEMPERATURE_DISPLAY_UNITS, mCarPropertyValue);
 
-        verify(mTestHvacView1).onHvacTemperatureUnitChanged(/* usesFahrenheit= */true);
-        verify(mTestHvacView2).onHvacTemperatureUnitChanged(/* usesFahrenheit= */true);
-        verify(mTestHvacView3).onHvacTemperatureUnitChanged(/* usesFahrenheit= */true);
+        verify(mTestHvacView1).onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
+        verify(mTestHvacView2).onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
+        verify(mTestHvacView3).onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
     }
 
     @Test
@@ -179,9 +179,9 @@ public class HvacControllerTest extends SysuiTestCase {
 
         mHvacController.handleHvacPropertyChange(HVAC_TEMPERATURE_DISPLAY_UNITS, mCarPropertyValue);
 
-        verify(mTestHvacView1).onHvacTemperatureUnitChanged(/* usesFahrenheit= */false);
-        verify(mTestHvacView2).onHvacTemperatureUnitChanged(/* usesFahrenheit= */false);
-        verify(mTestHvacView3).onHvacTemperatureUnitChanged(/* usesFahrenheit= */false);
+        verify(mTestHvacView1).onHvacTemperatureUnitChanged(/* usesFahrenheit= */ false);
+        verify(mTestHvacView2).onHvacTemperatureUnitChanged(/* usesFahrenheit= */ false);
+        verify(mTestHvacView3).onHvacTemperatureUnitChanged(/* usesFahrenheit= */ false);
     }
 
     private void registerAllTestHvacViews() {

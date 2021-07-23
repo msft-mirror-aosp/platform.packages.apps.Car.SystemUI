@@ -16,30 +16,20 @@
 
 package com.android.systemui.car.hvac.referenceui;
 
-import static android.car.VehiclePropertyIds.HVAC_DEFROSTER;
-import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 import static android.car.VehiclePropertyIds.HVAC_TEMPERATURE_SET;
-import static android.view.MotionEvent.ACTION_UP;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.mockito.Mockito.when;
-
-import android.annotation.ColorInt;
 import android.car.hardware.CarPropertyValue;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.hvac.HvacPropertySetter;
-import com.android.systemui.car.hvac.referenceui.BackgroundAdjustingTemperatureControlView;
 import com.android.systemui.tests.R;
 
 import org.junit.Before;

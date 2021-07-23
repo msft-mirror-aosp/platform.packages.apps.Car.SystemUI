@@ -31,8 +31,7 @@ public class HvacPanelView extends ConstraintLayout {
         super(context);
     }
 
-    public HvacPanelView(Context context,
-            @Nullable AttributeSet attrs) {
+    public HvacPanelView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -65,8 +64,8 @@ public class HvacPanelView extends ConstraintLayout {
     /** An interface to help interact with the HVAC panel. */
     public interface KeyEventHandler {
         /**
-         * Allows handling of a {@link KeyEvent} if it isn't already handled by the superclass.
-         * Returns {@code true} if the event is handled and false otherwise.
+         * Allows handling of a {@link KeyEvent} if it wasn't already handled by the superclass.
+         * Returns {@code true} if the event was handled and false otherwise.
          */
         boolean dispatchKeyEvent(KeyEvent event);
     }

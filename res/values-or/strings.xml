@@ -19,6 +19,9 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="hvac_min_text" msgid="866677328637088715">"ସର୍ବନିମ୍ନ"</string>
     <string name="hvac_max_text" msgid="7627950157128770380">"ସର୍ବାଧିକ"</string>
+    <string name="fan_speed_max" msgid="956683571700419211">"ସର୍ବାଧିକ"</string>
+    <string name="fan_speed_off" msgid="3860115181014880798">"ବନ୍ଦ ଅଛି"</string>
+    <string name="hvac_temperature_off" msgid="8370977023494579242">"ବନ୍ଦ ଅଛି"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"ଭଏସ ଚିହ୍ନଟକରଣ ଏବେ ସଂଯୁକ୍ତ ଥିବା ବ୍ଲୁଟୁଥ ଡିଭାଇସ ଦ୍ୱାରା ପରିଚାଳିତ"</string>
     <string name="car_guest" msgid="768913000117469596">"ଅତିଥି"</string>
     <string name="start_guest_session" msgid="2759367183497948650">"ଅତିଥି"</string>
@@ -41,8 +44,6 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"ମାଇକ୍ରୋଫୋନ୍ ବନ୍ଦ କରାଯାଇଛି"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"ମାଇକ୍ରୋଫୋନର ବର୍ତ୍ତମାନ ବ୍ୟବହାର"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ଠିକ୍ ଅଛି"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (2609868628872435121) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (5546778445306036986) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"ଗାଡ଼ି ମାଇକ୍ରୋଫୋନକୁ ସକ୍ଷମ କରିବେ?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"ଏହା ଆପ୍ ଓ ସେବାଗୁଡ଼ିକୁ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ଆକ୍ସେସ୍ କରିବାର ବିକଳ୍ପ ଦେଇଥାଏ।"</string>
 </resources>

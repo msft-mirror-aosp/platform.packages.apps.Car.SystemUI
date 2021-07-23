@@ -19,6 +19,9 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="hvac_min_text" msgid="866677328637088715">"Мин."</string>
     <string name="hvac_max_text" msgid="7627950157128770380">"Maкс."</string>
+    <string name="fan_speed_max" msgid="956683571700419211">"MАКС."</string>
+    <string name="fan_speed_off" msgid="3860115181014880798">"ИСКЉУЧЕНО"</string>
+    <string name="hvac_temperature_off" msgid="8370977023494579242">"ИСКЉУЧЕНО"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Препознавањем гласа сада управља повезани Bluetooth уређај"</string>
     <string name="car_guest" msgid="768913000117469596">"Гост"</string>
     <string name="start_guest_session" msgid="2759367183497948650">"Гост"</string>
@@ -41,8 +44,6 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Микрофон је искључен"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"Недавно коришћење микрофона"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"Потврди"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (2609868628872435121) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (5546778445306036986) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"Желите да омогућите микрофон у возилу?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"Ово даје апликацијама и услугама опцију да приступају микрофону."</string>
 </resources>

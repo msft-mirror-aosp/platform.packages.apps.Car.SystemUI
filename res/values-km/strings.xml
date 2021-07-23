@@ -19,6 +19,9 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="hvac_min_text" msgid="866677328637088715">"អប្បបរមា"</string>
     <string name="hvac_max_text" msgid="7627950157128770380">"អតិបរិមា"</string>
+    <string name="fan_speed_max" msgid="956683571700419211">"អតិ"</string>
+    <string name="fan_speed_off" msgid="3860115181014880798">"បិទ"</string>
+    <string name="hvac_temperature_off" msgid="8370977023494579242">"បិទ"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"ឥឡូវនេះ ការសម្គាល់សំឡេងត្រូវបានចាត់ចែងដោយឧបករណ៍ដែលបានភ្ជាប់ប៊្លូធូស"</string>
     <string name="car_guest" msgid="768913000117469596">"ភ្ញៀវ"</string>
     <string name="start_guest_session" msgid="2759367183497948650">"ភ្ញៀវ"</string>
@@ -41,8 +44,6 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"បានបិទ​មីក្រូហ្វូន"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"ការប្រើប្រាស់​មីក្រូហ្វូនថ្មីៗ"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"អូខេ"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (2609868628872435121) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (5546778445306036986) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"បើក​មីក្រូហ្វូន​របស់យានជំនិះឬ?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"ការធ្វើបែបនេះ​ផ្ដល់ជម្រើសឱ្យ​កម្មវិធី និងសេវាកម្មនានា​ចូលប្រើ​មីក្រូហ្វូន​របស់អ្នក។"</string>
 </resources>

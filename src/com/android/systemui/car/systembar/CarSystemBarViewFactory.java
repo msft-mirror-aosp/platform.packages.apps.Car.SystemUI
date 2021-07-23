@@ -26,9 +26,9 @@ import androidx.annotation.LayoutRes;
 
 import com.android.car.ui.FocusParkingView;
 import com.android.systemui.R;
+import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.flags.FeatureFlags;
-import com.android.systemui.statusbar.phone.StatusBarIconController;
 
 import javax.inject.Inject;
 
@@ -57,7 +57,7 @@ public class CarSystemBarViewFactory {
             Type.values().length);
     private final ArrayMap<Type, ViewGroup> mCachedContainerMap = new ArrayMap<>();
     private final FeatureFlags mFeatureFlags;
-    private final StatusBarIconController mIconController;
+    private final QuickControlsEntryPointsController mQuickControlsEntryPointsController;
 
     /** Type of navigation bar to be created. */
     private enum Type {
@@ -75,11 +75,11 @@ public class CarSystemBarViewFactory {
     public CarSystemBarViewFactory(
             Context context,
             FeatureFlags featureFlags,
-            StatusBarIconController iconController
+            QuickControlsEntryPointsController quickControlsEntryPointsController
     ) {
         mContext = context;
         mFeatureFlags = featureFlags;
-        mIconController = iconController;
+        mQuickControlsEntryPointsController = quickControlsEntryPointsController;
     }
 
     /** Gets the top window. */
@@ -158,11 +158,14 @@ public class CarSystemBarViewFactory {
         CarSystemBarView view = (CarSystemBarView) View.inflate(mContext, barLayout,
                 /* root= */ null);
 
-        view.setupIconController(mFeatureFlags, mIconController);
-
         // Include a FocusParkingView at the beginning. The rotary controller "parks" the focus here
         // when the user navigates to another window. This is also used to prevent wrap-around.
         view.addView(new FocusParkingView(mContext), 0);
+
+        ViewGroup qcEntryPointsContainer = view.findViewById(R.id.qc_entry_points_container);
+        if (qcEntryPointsContainer != null) {
+            mQuickControlsEntryPointsController.addQuickControlEntryPoints(qcEntryPointsContainer);
+        }
 
         mCachedViewMap.put(type, view);
         return mCachedViewMap.get(type);

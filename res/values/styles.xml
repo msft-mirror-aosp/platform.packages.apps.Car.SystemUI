@@ -52,6 +52,19 @@
         <item name="unselectedAlpha">0.56</item>
     </style>
 
+    <style name="QuickControlEntryPointButton">
+        <item name="android:layout_width">@dimen/car_quick_controls_entry_points_button_width</item>
+        <item name="android:layout_height">@dimen/car_quick_controls_entry_points_button_height</item>
+        <item name="android:layout_marginEnd">@dimen/car_padding_2</item>
+        <item name="android:background">@drawable/system_bar_background_pill</item>
+    </style>
+
+    <style name="QuickControlEntryPointIcon">
+        <item name="android:layout_width">@dimen/car_quick_controls_entry_points_icon_width</item>
+        <item name="android:layout_height">@dimen/car_quick_controls_entry_points_icon_height</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
     <style name="HvacButton">
         <item name="android:layout_width">@dimen/hvac_panel_button_dimen</item>
         <item name="android:layout_height">@dimen/hvac_panel_button_dimen</item>

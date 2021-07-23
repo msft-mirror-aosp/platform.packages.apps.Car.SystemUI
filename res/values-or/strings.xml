@@ -44,8 +44,6 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"ମାଇକ୍ରୋଫୋନ୍ ବନ୍ଦ କରାଯାଇଛି"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"ମାଇକ୍ରୋଫୋନର ବର୍ତ୍ତମାନ ବ୍ୟବହାର"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ଠିକ୍ ଅଛି"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (2609868628872435121) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (5546778445306036986) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"ଗାଡ଼ି ମାଇକ୍ରୋଫୋନକୁ ସକ୍ଷମ କରିବେ?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"ଏହା ଆପ୍ ଓ ସେବାଗୁଡ଼ିକୁ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ଆକ୍ସେସ୍ କରିବାର ବିକଳ୍ପ ଦେଇଥାଏ।"</string>
 </resources>

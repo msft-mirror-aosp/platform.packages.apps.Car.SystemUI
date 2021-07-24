@@ -45,5 +45,5 @@
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"การใช้ไมโครโฟนครั้งล่าสุด"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ตกลง"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"เปิดใช้ไมโครโฟนในรถไหม"</string>
-    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"การดำเนินการนี้มอบตัวเลือกการเข้าถึงไมโครโฟนสำหรับแอปและบริการนี้"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"การดำเนินการนี้ช่วยให้แอปและบริการมีตัวเลือกในการเข้าถึงไมโครโฟนของคุณ"</string>
 </resources>

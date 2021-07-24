@@ -44,8 +44,6 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"माइक्रोफोन अफ गरियो"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"हालसालै माइक्रोफोन प्रयोग गरेका एपहरू"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ठिक छ"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (2609868628872435121) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (5546778445306036986) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"सवारीसाधनको माइक्रोफोन अन गर्ने हो?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"तपाईंले यसो गर्नुभयो भने एप तथा सेवाहरूले तपाईंको माइक्रोफोन प्रयोग गर्न पाउँछन्।"</string>
 </resources>

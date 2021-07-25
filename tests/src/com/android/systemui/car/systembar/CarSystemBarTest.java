@@ -136,7 +136,7 @@ public class CarSystemBarTest extends SysuiTestCase {
                 /* imeToken= */ null,
                 /* navbarColorMangedByIme= */ false,
                 BEHAVIOR_DEFAULT,
-                /* requestedState= */ null,
+                /* requestedVisibilities= */ null,
                 /* packageName= */ null,
                 /* transientBarTypes= */ new int[]{});
         try {

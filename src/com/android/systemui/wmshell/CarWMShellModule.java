@@ -28,6 +28,7 @@ import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayImeController;
+import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.common.TransactionPool;
 import com.android.wm.shell.pip.Pip;
 import com.android.wm.shell.startingsurface.StartingWindowTypeAlgorithm;
@@ -44,9 +45,10 @@ public abstract class CarWMShellModule {
     @Provides
     static DisplayImeController provideDisplayImeController(Context context,
             IWindowManager wmService, DisplayController displayController,
+            DisplayInsetsController displayInsetsController,
             @Main Handler mainHandler, TransactionPool transactionPool) {
         return new DisplaySystemBarsController(context, wmService, displayController,
-                mainHandler, transactionPool);
+                displayInsetsController, mainHandler, transactionPool);
     }
 
     @BindsOptionalOf

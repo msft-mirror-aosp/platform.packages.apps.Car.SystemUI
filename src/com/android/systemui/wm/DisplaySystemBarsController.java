@@ -25,9 +25,9 @@ import android.util.SparseArray;
 import android.view.IDisplayWindowInsetsController;
 import android.view.IWindowManager;
 import android.view.InsetsController;
-import android.view.InsetsSourceControl;
 import android.view.InsetsState;
-import android.view.WindowInsets;
+import android.view.InsetsVisibilities;
+import android.view.WindowInsets.Type;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -76,7 +76,7 @@ public class DisplaySystemBarsController extends DisplayImeController {
             BarControlPolicy.registerContentObserver(mContext, mHandler, () -> {
                 int size = mPerDisplaySparseArray.size();
                 for (int i = 0; i < size; i++) {
-                    mPerDisplaySparseArray.valueAt(i).modifyDisplayWindowInsets();
+                    mPerDisplaySparseArray.valueAt(i).updateDisplayWindowRequestedVisibilities();
                 }
             });
         }
@@ -98,32 +98,29 @@ public class DisplaySystemBarsController extends DisplayImeController {
 
         int mDisplayId;
         InsetsController mInsetsController;
-        InsetsState mInsetsState = new InsetsState();
+        InsetsVisibilities mRequestedVisibilities = new InsetsVisibilities();
         String mPackageName;
 
         PerDisplay(int displayId) {
             super(displayId, mDisplayController.getDisplayLayout(displayId).rotation());
             mDisplayId = displayId;
             mInsetsController = new InsetsController(
-                    new DisplaySystemBarsInsetsControllerHost(mHandler, mInsetsControllerImpl));
+                    new DisplaySystemBarsInsetsControllerHost(mHandler, visibilities -> {
+                        mRequestedVisibilities.set(visibilities);
+                        updateDisplayWindowRequestedVisibilities();
+                    }));
         }
 
         @Override
         public void insetsChanged(InsetsState insetsState) {
             super.insetsChanged(insetsState);
-            if (mInsetsState.equals(insetsState)) {
-                return;
-            }
-            mInsetsState.set(insetsState, true /* copySources */);
             mInsetsController.onStateChanged(insetsState);
-            if (mPackageName != null) {
-                modifyDisplayWindowInsets();
-            }
+            updateDisplayWindowRequestedVisibilities();
         }
 
         @Override
-        public void hideInsets(@WindowInsets.Type.InsetsType int types, boolean fromIme) {
-            if ((types & WindowInsets.Type.ime()) == 0) {
+        public void hideInsets(@Type.InsetsType int types, boolean fromIme) {
+            if ((types & Type.ime()) == 0) {
                 mInsetsController.hide(types);
             } else {
                 super.hideInsets(types, fromIme);
@@ -132,8 +129,8 @@ public class DisplaySystemBarsController extends DisplayImeController {
         }
 
         @Override
-        public void showInsets(@WindowInsets.Type.InsetsType int types, boolean fromIme) {
-            if ((types & WindowInsets.Type.ime()) == 0) {
+        public void showInsets(@Type.InsetsType int types, boolean fromIme) {
+            if ((types & Type.ime()) == 0) {
                 mInsetsController.show(types);
             } else {
                 super.showInsets(types, fromIme);
@@ -147,29 +144,30 @@ public class DisplaySystemBarsController extends DisplayImeController {
                 return;
             }
             mPackageName = packageName;
-            modifyDisplayWindowInsets();
+            updateDisplayWindowRequestedVisibilities();
         }
 
-        private void modifyDisplayWindowInsets() {
+        private void updateDisplayWindowRequestedVisibilities() {
             if (mPackageName == null) {
                 return;
             }
             int[] barVisibilities = BarControlPolicy.getBarVisibilities(mPackageName);
-            updateInsetsState(barVisibilities[0], /* visible= */ true);
-            updateInsetsState(barVisibilities[1], /* visible= */ false);
+            updateRequestedVisibilities(barVisibilities[0], /* visible= */ true);
+            updateRequestedVisibilities(barVisibilities[1], /* visible= */ false);
             showInsets(barVisibilities[0], /* fromIme= */ false);
             hideInsets(barVisibilities[1], /* fromIme= */ false);
             try {
-                mWmService.modifyDisplayWindowInsets(mDisplayId, mInsetsState);
+                mWmService.updateDisplayWindowRequestedVisibilities(mDisplayId,
+                        mRequestedVisibilities);
             } catch (RemoteException e) {
                 Slog.w(TAG, "Unable to update window manager service.");
             }
         }
 
-        private void updateInsetsState(@WindowInsets.Type.InsetsType int types, boolean visible) {
+        private void updateRequestedVisibilities(@Type.InsetsType int types, boolean visible) {
             ArraySet<Integer> internalTypes = InsetsState.toInternalType(types);
             for (int i = internalTypes.size() - 1; i >= 0; i--) {
-                mInsetsState.getSource(internalTypes.valueAt(i)).setVisible(visible);
+                mRequestedVisibilities.setVisibility(internalTypes.valueAt(i), visible);
             }
         }
     }

@@ -26,7 +26,7 @@ import android.widget.LinearLayout;
 import com.android.systemui.R;
 import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
 import com.android.systemui.car.systembar.CarSystemBarController.NotificationsShadeController;
-import com.android.systemui.statusbar.FeatureFlags;
+import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.statusbar.phone.StatusBarIconController;
 
 import java.lang.annotation.ElementType;

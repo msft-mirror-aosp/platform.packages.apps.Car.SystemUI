@@ -80,4 +80,13 @@
     <string name="sensor_privacy_start_use_mic_dialog_title">Enable vehicle microphone?</string>
     <!--- Content of dialog triggered if the microphone is disabled but an app tried to access it. [CHAR LIMIT=NONE] -->
     <string name="sensor_privacy_start_use_mic_dialog_content">This gives apps and services the option to access your microphone.</string>
+
+    <!-- Blocking activity: Message to show to user when a feature of current application is not allowed. [CHAR LIMIT=120] -->
+    <string name="activity_blocked_text">You can\u2019t use this feature while driving</string>
+    <!-- Blocking activity: Text for button that closes current blocked application. [CHAR LIMIT=20] -->
+    <string name="exit_button_close_application">Close app</string>
+    <!-- Blocking activity: Text for button that closes current blocked application. [CHAR LIMIT=15] -->
+    <string name="exit_button_go_back">Back</string>
+    <!-- Blocking activity: Text for button that shows debug info in non-user build. -->
+    <string name="debug_button_text" translatable="false">Debug Info</string>
 </resources>

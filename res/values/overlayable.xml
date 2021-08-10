@@ -59,6 +59,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="attr" name="intent"/>
       <item type="attr" name="invalidValue"/>
       <item type="attr" name="longIntent"/>
+      <item type="attr" name="mute_icon"/>
       <item type="attr" name="offValue"/>
       <item type="attr" name="onValue"/>
       <item type="attr" name="packages"/>
@@ -356,14 +357,18 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_ic_hvac_selected"/>
       <item type="drawable" name="car_ic_keyboard_arrow_down"/>
       <item type="drawable" name="car_ic_music"/>
+      <item type="drawable" name="car_ic_music_mute"/>
       <item type="drawable" name="car_ic_music_selected"/>
       <item type="drawable" name="car_ic_navigation"/>
+      <item type="drawable" name="car_ic_navigation_mute"/>
       <item type="drawable" name="car_ic_navigation_selected"/>
       <item type="drawable" name="car_ic_notification"/>
       <item type="drawable" name="car_ic_overview"/>
       <item type="drawable" name="car_ic_overview_selected"/>
       <item type="drawable" name="car_ic_phone"/>
       <item type="drawable" name="car_ic_phone_selected"/>
+      <item type="drawable" name="car_ic_phone_volume"/>
+      <item type="drawable" name="car_ic_phone_volume_mute"/>
       <item type="drawable" name="car_ic_selection_bg"/>
       <item type="drawable" name="car_ic_settings_icon"/>
       <item type="drawable" name="car_ic_unseen_indicator"/>

@@ -324,4 +324,21 @@
 
     <dimen name="hvac_temperature_control_button_width">48dp</dimen>
     <dimen name="hvac_temperature_control_button_height">48dp</dimen>
+
+    <!-- Text size in ActivityBlockingActivity. -->
+    <dimen name="blocking_text_size">@*android:dimen/car_body1_size</dimen>
+    <dimen name="blocking_text_width">706dp</dimen>
+
+    <dimen name="common_margin">32dp</dimen>
+
+    <dimen name="ic_ux_restricted_size">48dp</dimen>
+
+    <!-- Dimensions for the Buttons in ActivityBlockingActivity -->
+    <dimen name="activity_blocking_action_button_height">76dp</dimen>
+    <dimen name="activity_blocking_action_button_top_margin">48dp</dimen>
+    <dimen name="activity_blocking_action_button_corner_radius">38dp</dimen>
+    <dimen name="activity_blocking_action_button_max_width">268dp</dimen>
+    <dimen name="activity_blocking_action_button_min_width">@*android:dimen/car_button_min_width</dimen>
+    <dimen name="activity_blocking_action_button_text_size">@*android:dimen/car_body3_size</dimen>
+    <dimen name="activity_blocking_action_button_padding_horizontal">@*android:dimen/car_padding_4</dimen>
 </resources>

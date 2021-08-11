@@ -17,6 +17,7 @@
 
 <resources>
     <attr name="icon" format="reference"/>
+    <attr name="mute_icon" format="reference"/>
     <attr name="selectedIcon" format="reference"/>
     <attr name="intent" format="string"/>
     <attr name="longIntent" format="string"/>
@@ -144,5 +145,6 @@
 
         <!-- Icon resource ids to render on UI -->
         <attr name="icon" />
+        <attr name="mute_icon" />
     </declare-styleable>
 </resources>

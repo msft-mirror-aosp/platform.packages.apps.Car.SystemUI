@@ -46,4 +46,7 @@
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"OK"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"Aktiveer voertuigmikrofoon?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"Die gee programme en dienste die opsie om toegang tot jou mikrofoon te kry."</string>
+    <string name="activity_blocked_text" msgid="5353157279548801554">"Jy kan nie hierdie kenmerk gebruik terwyl jy bestuur nie"</string>
+    <string name="exit_button_close_application" msgid="112227710467017144">"Maak program toe"</string>
+    <string name="exit_button_go_back" msgid="7988866855775300902">"Terug"</string>
 </resources>

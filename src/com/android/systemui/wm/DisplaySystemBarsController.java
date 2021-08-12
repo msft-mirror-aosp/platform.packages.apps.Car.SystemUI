@@ -34,6 +34,7 @@ import androidx.annotation.VisibleForTesting;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayImeController;
+import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.common.TransactionPool;
 
 import java.util.Objects;
@@ -57,9 +58,11 @@ public class DisplaySystemBarsController extends DisplayImeController {
             Context context,
             IWindowManager wmService,
             DisplayController displayController,
+            DisplayInsetsController displayInsetsController,
             @Main Handler mainHandler,
             TransactionPool transactionPool) {
-        super(wmService, displayController, (r) -> mainHandler.post(r), transactionPool);
+        super(wmService, displayController, displayInsetsController, (r) -> mainHandler.post(r),
+                transactionPool);
         mContext = context;
         mDisplayController = displayController;
         mHandler = mainHandler;

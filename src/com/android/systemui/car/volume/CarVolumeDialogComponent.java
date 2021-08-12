@@ -22,7 +22,11 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.demomode.DemoModeController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
+import com.android.systemui.plugins.ActivityStarter;
+import com.android.systemui.plugins.PluginDependencyProvider;
 import com.android.systemui.plugins.VolumeDialog;
+import com.android.systemui.statusbar.policy.ExtensionController;
+import com.android.systemui.tuner.TunerService;
 import com.android.systemui.volume.VolumeDialogComponent;
 import com.android.systemui.volume.VolumeDialogControllerImpl;
 
@@ -38,10 +42,22 @@ public class CarVolumeDialogComponent extends VolumeDialogComponent {
 
     @Inject
     public CarVolumeDialogComponent(Context context, KeyguardViewMediator keyguardViewMediator,
+            ActivityStarter activityStarter,
             VolumeDialogControllerImpl volumeDialogController,
             DemoModeController demoModeController,
+            PluginDependencyProvider pluginDependencyProvider,
+            ExtensionController extensionController,
+            TunerService tunerService,
             CarServiceProvider carServiceProvider) {
-        super(context, keyguardViewMediator, volumeDialogController, demoModeController);
+        super(
+                context,
+                keyguardViewMediator,
+                activityStarter,
+                volumeDialogController,
+                demoModeController,
+                pluginDependencyProvider,
+                extensionController,
+                tunerService);
         mCarVolumeDialog.setCarServiceProvider(carServiceProvider);
     }
 

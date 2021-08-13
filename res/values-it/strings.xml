@@ -46,4 +46,7 @@
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"OK"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"Vuoi attivare il microfono del veicolo?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"Le app e i servizi hanno la possibilità di accedere al microfono."</string>
+    <string name="activity_blocked_text" msgid="5353157279548801554">"Non è possibile usare questa funzionalità durante la guida"</string>
+    <string name="exit_button_close_application" msgid="112227710467017144">"Chiudi app"</string>
+    <string name="exit_button_go_back" msgid="7988866855775300902">"Indietro"</string>
 </resources>

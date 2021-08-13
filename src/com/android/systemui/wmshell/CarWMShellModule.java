@@ -16,12 +16,9 @@
 
 package com.android.systemui.wmshell;
 
-import static android.view.Display.DEFAULT_DISPLAY;
-
 import android.content.Context;
 import android.os.Handler;
 import android.view.IWindowManager;
-import android.window.StartingWindowInfo;
 
 import com.android.systemui.dagger.WMSingleton;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -57,17 +54,6 @@ public abstract class CarWMShellModule {
     @WMSingleton
     @Provides
     static StartingWindowTypeAlgorithm provideStartingWindowTypeAlgorithm() {
-        return new CarStartingWindowTypeAlgorithm();
-    }
-
-    private static class CarStartingWindowTypeAlgorithm extends PhoneStartingWindowTypeAlgorithm {
-        @Override
-        public int getSuggestedWindowType(StartingWindowInfo windowInfo) {
-            if (windowInfo.taskInfo != null && windowInfo.taskInfo.displayId != DEFAULT_DISPLAY) {
-                // TODO(b/194420095): Remove this as soon as the bug is fixed.
-                return StartingWindowInfo.STARTING_WINDOW_TYPE_NONE;
-            }
-            return super.getSuggestedWindowType(windowInfo);
-        }
+        return new PhoneStartingWindowTypeAlgorithm();
     }
 }

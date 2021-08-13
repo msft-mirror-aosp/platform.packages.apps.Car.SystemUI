@@ -126,7 +126,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="color" name="hvac_temperature_floating_text_color"/>
       <item type="color" name="hvac_temperature_increase_arrow_color"/>
       <item type="color" name="hvac_temperature_off_text_bg_color"/>
-      <item type="color" name="keyguard_button_text_color"/>
+      <item type="color" name="keyguard_keypad_image_color"/>
       <item type="color" name="list_divider_color"/>
       <item type="color" name="mic_privacy_chip_dark_icon_color"/>
       <item type="color" name="mic_privacy_chip_indicator_color"/>

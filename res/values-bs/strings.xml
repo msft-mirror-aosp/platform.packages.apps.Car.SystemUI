@@ -46,4 +46,7 @@
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"Uredu"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"Omogućiti mikrofon u vozilu?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"Ovim se aplikacijama i uslugama daje mogućnost da pristupe mikrofonu."</string>
+    <string name="activity_blocked_text" msgid="5353157279548801554">"Tu značajku ne možete upotrebljavati tijekom vožnje"</string>
+    <string name="exit_button_close_application" msgid="112227710467017144">"Zatvori aplikaciju"</string>
+    <string name="exit_button_go_back" msgid="7988866855775300902">"Natrag"</string>
 </resources>

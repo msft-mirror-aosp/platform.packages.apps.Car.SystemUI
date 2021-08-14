@@ -46,4 +46,7 @@
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ઓકે"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"શું વાહનનો માઇક્રોફોન ચાલુ કરીએ?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"આ ઍપ અને સેવાઓને તમારો માઇક્રોફોન ઍક્સેસ કરવાનો વિકલ્પ આપે છે."</string>
+    <string name="activity_blocked_text" msgid="5353157279548801554">"ડ્રાઇવ કરતી વખતે તમે આ સુવિધાનો ઉપયોગ કરી શકતા નથી"</string>
+    <string name="exit_button_close_application" msgid="112227710467017144">"ઍપ બંધ કરો"</string>
+    <string name="exit_button_go_back" msgid="7988866855775300902">"પાછળ"</string>
 </resources>

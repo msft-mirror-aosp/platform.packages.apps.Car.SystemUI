@@ -62,10 +62,8 @@
     <com.android.keyguard.NumPadButton
         android:id="@+id/delete_button"
         style="@style/NumPadKeyButton.LastRow"
-        android:gravity="center_vertical"
-        android:src="@drawable/ic_backspace"
-        android:clickable="true"
-        android:tint="?android:attr/textColorSecondary"
+        android:src="@drawable/ic_delete"
+        android:tint="@color/keyguard_keypad_image_color"
         android:contentDescription="@string/keyboardview_keycode_delete" />
     <com.android.keyguard.NumPadKey
         android:id="@+id/key0"
@@ -74,8 +72,8 @@
     <com.android.keyguard.NumPadButton
         android:id="@+id/key_enter"
         style="@style/NumPadKeyButton.LastRow"
-        android:src="@drawable/ic_done"
-        android:tint="?android:attr/textColorSecondary"
+        android:src="@drawable/ic_enter"
+        android:tint="@color/keyguard_keypad_image_color"
         android:contentDescription="@string/keyboardview_keycode_enter" />
 </merge>
 

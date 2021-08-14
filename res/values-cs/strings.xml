@@ -46,4 +46,7 @@
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"OK"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"Aktivovat mikrofon v autě?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"Aplikace a služby budou mít přístup k mikrofonu."</string>
+    <string name="activity_blocked_text" msgid="5353157279548801554">"Tuto funkci nelze používat při řízení"</string>
+    <string name="exit_button_close_application" msgid="112227710467017144">"Zavřít aplikaci"</string>
+    <string name="exit_button_go_back" msgid="7988866855775300902">"Zpět"</string>
 </resources>

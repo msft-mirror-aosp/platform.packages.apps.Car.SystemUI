@@ -54,7 +54,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
@@ -510,7 +509,7 @@ public class UserGridRecyclerView extends RecyclerView {
                 return null;
             }
 
-            return userCreationResult.getUser();
+            return mUserManager.getUserInfo(userCreationResult.getUser().getIdentifier());
         }
 
         private boolean switchUser(@UserIdInt int userId) {

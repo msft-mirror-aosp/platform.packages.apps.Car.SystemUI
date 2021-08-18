@@ -32,7 +32,6 @@ import android.app.Dialog;
 import android.car.user.CarUserManager;
 import android.car.user.UserCreationResult;
 import android.car.user.UserSwitchResult;
-import android.car.userlib.UserHelper;
 import android.car.util.concurrent.AsyncFuture;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -54,7 +53,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
@@ -63,6 +61,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.admin.ui.UserAvatarView;
+import com.android.car.internal.user.UserHelper;
 import com.android.internal.util.UserIcons;
 import com.android.systemui.R;
 

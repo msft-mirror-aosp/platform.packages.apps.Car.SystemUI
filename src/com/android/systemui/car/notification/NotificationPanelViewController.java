@@ -313,8 +313,12 @@ public class NotificationPanelViewController extends OverlayPanelViewController
 
         mNotificationDataManager.setOnUnseenCountUpdateListener(() -> {
             if (mUnseenCountUpdateListener != null) {
-                mUnseenCountUpdateListener.onUnseenCountUpdate(
-                        mNotificationDataManager.getUnseenNotificationCount());
+                // Don't show unseen markers for <= LOW importance notifications to be consistent
+                // with how these notifications are handled on phones
+                int unseenCount =
+                        mNotificationDataManager.getNonLowImportanceUnseenNotificationCount(
+                                mCarNotificationListener.getCurrentRanking());
+                mUnseenCountUpdateListener.onUnseenCountUpdate(unseenCount);
             }
             mCarNotificationListener.setNotificationsShown(
                     mNotificationDataManager.getSeenNotifications());
@@ -323,9 +327,7 @@ public class NotificationPanelViewController extends OverlayPanelViewController
             mNotificationVisibilityLogger.log(isPanelExpanded());
         });
 
-        mNotificationClickHandlerFactory.setNotificationDataManager(mNotificationDataManager);
         mNotificationView.setClickHandlerFactory(mNotificationClickHandlerFactory);
-        mNotificationView.setNotificationDataManager(mNotificationDataManager);
 
         mCarServiceProvider.addListener(car -> {
             CarUxRestrictionsManager carUxRestrictionsManager =
@@ -338,8 +340,7 @@ public class NotificationPanelViewController extends OverlayPanelViewController
                     mNotificationView,
                     PreprocessingManager.getInstance(mContext),
                     mCarNotificationListener,
-                    mCarUxRestrictionManagerWrapper,
-                    mNotificationDataManager);
+                    mCarUxRestrictionManagerWrapper);
             mNotificationViewController.enable();
         });
     }
@@ -453,7 +454,9 @@ public class NotificationPanelViewController extends OverlayPanelViewController
 
     @Override
     protected void onAnimateCollapsePanel() {
-        // No op.
+        // Due to grouping nature of seen/unseen notifications, we only want to set seen
+        // notifications on collapse rather than expand.
+        mNotificationView.setVisibleNotificationsAsSeen();
     }
 
     @Override
@@ -479,7 +482,6 @@ public class NotificationPanelViewController extends OverlayPanelViewController
     @Override
     protected void onExpandAnimationEnd() {
         mNotificationViewController.onVisibilityChanged(true);
-        mNotificationView.setVisibleNotificationsAsSeen();
     }
 
     @Override

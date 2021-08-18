@@ -509,7 +509,7 @@ public class UserGridRecyclerView extends RecyclerView {
                 return null;
             }
 
-            return userCreationResult.getUser();
+            return mUserManager.getUserInfo(userCreationResult.getUser().getIdentifier());
         }
 
         private boolean switchUser(@UserIdInt int userId) {

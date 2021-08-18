@@ -46,10 +46,7 @@
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"확인"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"차량용 마이크를 사용하시겠습니까?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"이렇게 하면 앱과 서비스에 마이크에 액세스할 수 있는 옵션이 제공됩니다."</string>
-    <!-- no translation found for activity_blocked_text (5353157279548801554) -->
-    <skip />
-    <!-- no translation found for exit_button_close_application (112227710467017144) -->
-    <skip />
-    <!-- no translation found for exit_button_go_back (7988866855775300902) -->
-    <skip />
+    <string name="activity_blocked_text" msgid="5353157279548801554">"운전 중에는 이 기능을 사용하실 수 없습니다."</string>
+    <string name="exit_button_close_application" msgid="112227710467017144">"앱 닫기"</string>
+    <string name="exit_button_go_back" msgid="7988866855775300902">"뒤로"</string>
 </resources>

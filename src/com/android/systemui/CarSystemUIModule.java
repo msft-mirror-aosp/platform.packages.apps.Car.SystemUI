@@ -32,7 +32,7 @@ import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
 import com.android.systemui.car.statusbar.DozeServiceHost;
-import com.android.systemui.car.volume.CarVolumeDialogComponent;
+import com.android.systemui.car.volume.CarVolumeModule;
 import com.android.systemui.dagger.GlobalRootComponent;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Background;
@@ -70,7 +70,6 @@ import com.android.systemui.statusbar.policy.IndividualSensorPrivacyController;
 import com.android.systemui.statusbar.policy.IndividualSensorPrivacyControllerImpl;
 import com.android.systemui.statusbar.policy.SensorPrivacyController;
 import com.android.systemui.statusbar.policy.SensorPrivacyControllerImpl;
-import com.android.systemui.volume.VolumeDialogComponent;
 
 import java.util.concurrent.Executor;
 
@@ -83,7 +82,8 @@ import dagger.Provides;
 @Module(
         includes = {
                 PowerModule.class,
-                QSModule.class
+                QSModule.class,
+                CarVolumeModule.class
         })
 abstract class CarSystemUIModule {
 
@@ -185,10 +185,6 @@ abstract class CarSystemUIModule {
     @Binds
     abstract GlobalRootComponent bindGlobalRootComponent(
             CarGlobalRootComponent globalRootComponent);
-
-    @Binds
-    abstract VolumeDialogComponent bindVolumeDialogComponent(
-            CarVolumeDialogComponent carVolumeDialogComponent);
 
     @Binds
     abstract KeyguardViewController bindKeyguardViewController(

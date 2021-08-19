@@ -23,7 +23,7 @@
     android:paddingStart="20dp"
     android:paddingEnd="20dp"
     android:gravity="center">
-    <com.android.systemui.car.hvac.referenceui.SeatHeatLevelButton
+    <com.android.systemui.car.hvac.SeatTemperatureLevelButton
         android:id="@+id/seat_heat_button"
         android:background="@drawable/hvac_panel_button_bg"
         style="@style/HvacButton"

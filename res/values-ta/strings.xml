@@ -46,10 +46,7 @@
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"சரி"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"வாகன மைக்ரோஃபோனை இயக்கவா?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"உங்கள் மைக்ரோஃபோனை அணுகுவதற்கான விருப்பத்தை ஆப்ஸுக்கும் சேவைகளுக்கும் இது வழங்குகிறது."</string>
-    <!-- no translation found for activity_blocked_text (5353157279548801554) -->
-    <skip />
-    <!-- no translation found for exit_button_close_application (112227710467017144) -->
-    <skip />
-    <!-- no translation found for exit_button_go_back (7988866855775300902) -->
-    <skip />
+    <string name="activity_blocked_text" msgid="5353157279548801554">"வாகனம் ஓட்டும்போது இந்த அம்சத்தைப் பயன்படுத்த முடியாது"</string>
+    <string name="exit_button_close_application" msgid="112227710467017144">"ஆப்ஸை மூடு"</string>
+    <string name="exit_button_go_back" msgid="7988866855775300902">"பின்செல்"</string>
 </resources>

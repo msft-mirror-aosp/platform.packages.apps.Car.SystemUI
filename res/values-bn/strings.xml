@@ -46,10 +46,7 @@
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ঠিক আছে"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"গাড়ির মাইক্রোফোন চালু করবেন?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"এটি অ্যাপ ও পরিষেবাগুলিকে আপনার মাইক্রোফোন অ্যাক্সেস করার বিকল্প দেয়।"</string>
-    <!-- no translation found for activity_blocked_text (5353157279548801554) -->
-    <skip />
-    <!-- no translation found for exit_button_close_application (112227710467017144) -->
-    <skip />
-    <!-- no translation found for exit_button_go_back (7988866855775300902) -->
-    <skip />
+    <string name="activity_blocked_text" msgid="5353157279548801554">"ড্রাইভ করার সময় আপনি এই ফিচারটি ব্যবহার করতে পারবেন না"</string>
+    <string name="exit_button_close_application" msgid="112227710467017144">"অ্যাপ বন্ধ করুন"</string>
+    <string name="exit_button_go_back" msgid="7988866855775300902">"ফিরুন"</string>
 </resources>

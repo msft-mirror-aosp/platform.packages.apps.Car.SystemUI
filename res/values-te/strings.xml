@@ -46,10 +46,7 @@
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"సరే"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"వాహన మైక్రోఫోన్‌ను ఎనేబుల్ చేయాలా?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"ఇది యాప్‌లు, సర్వీస్‌లకు మీ మైక్రోఫోన్‌ను యాక్సెస్ చేసే ఆప్షన్‌ను ఇస్తుంది."</string>
-    <!-- no translation found for activity_blocked_text (5353157279548801554) -->
-    <skip />
-    <!-- no translation found for exit_button_close_application (112227710467017144) -->
-    <skip />
-    <!-- no translation found for exit_button_go_back (7988866855775300902) -->
-    <skip />
+    <string name="activity_blocked_text" msgid="5353157279548801554">"డ్రైవింగ్‌లో ఉండగా మీరు ఈ ఫీచర్‌ను ఉపయోగించలేరు"</string>
+    <string name="exit_button_close_application" msgid="112227710467017144">"యాప్‌ను మూసివేయండి"</string>
+    <string name="exit_button_go_back" msgid="7988866855775300902">"వెనుకకు"</string>
 </resources>

@@ -545,9 +545,9 @@ public class UserGridRecyclerView extends RecyclerView {
                 try {
                     UserInfo user = getUserInfo(future);
                     if (user != null) {
-                        UserHelper.setDefaultNonAdminRestrictions(mContext, user,
+                        UserHelper.setDefaultNonAdminRestrictions(mContext, user.getUserHandle(),
                                 /* enable= */ true);
-                        UserHelper.assignDefaultIcon(mContext, user);
+                        UserHelper.assignDefaultIcon(mContext, user.getUserHandle());
                         mAddUserRecord = new UserRecord(user, UserRecord.ADD_USER);
                         return user;
                     } else {

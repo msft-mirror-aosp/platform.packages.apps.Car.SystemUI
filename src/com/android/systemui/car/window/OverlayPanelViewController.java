@@ -27,7 +27,6 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.CallSuper;
@@ -509,15 +508,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
         View handleBar = getLayout().findViewById(getHandleBarViewId());
         if (handleBar == null) return;
 
-        ViewGroup.MarginLayoutParams lp =
-                (ViewGroup.MarginLayoutParams) handleBar.getLayoutParams();
-        // Adjust handlebar to new pointer position, and a little more depending on the
-        // animate direction so the bar can be seen fully.
-        if (mAnimateDirection > 0) {
-            handleBar.setTranslationY(y - handleBar.getHeight() - lp.bottomMargin);
-        } else {
-            handleBar.setTranslationY(y + handleBar.getHeight() + lp.topMargin);
-        }
+        handleBar.setTranslationY(y);
     }
 
     /* ***************************************************************************************** *

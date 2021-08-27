@@ -31,6 +31,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="anim" name="car_user_switcher_open_pod_animation"/>
       <item type="array" name="config_allowedAppInstallSources"/>
       <item type="array" name="config_carSystemUIOverlayViewsMediators"/>
+      <item type="array" name="config_quickControlsEntryPointIconControllers"/>
       <item type="array" name="config_restrictedToastsPackageNameAllowList"/>
       <item type="array" name="config_statusBarIconsToExclude"/>
       <item type="array" name="config_systemUIServiceComponentsExclude"/>
@@ -181,6 +182,10 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_padding_5"/>
       <item type="dimen" name="car_padding_6"/>
       <item type="dimen" name="car_primary_icon_size"/>
+      <item type="dimen" name="car_quick_controls_entry_points_button_height"/>
+      <item type="dimen" name="car_quick_controls_entry_points_button_width"/>
+      <item type="dimen" name="car_quick_controls_entry_points_icon_height"/>
+      <item type="dimen" name="car_quick_controls_entry_points_icon_width"/>
       <item type="dimen" name="car_right_system_bar_width"/>
       <item type="dimen" name="car_system_bar_button_icon_height"/>
       <item type="dimen" name="car_system_bar_button_width"/>
@@ -386,6 +391,9 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_ac_on"/>
       <item type="drawable" name="ic_auto_off"/>
       <item type="drawable" name="ic_auto_on"/>
+      <item type="drawable" name="ic_bluetooth_status_off"/>
+      <item type="drawable" name="ic_bluetooth_status_on_connected"/>
+      <item type="drawable" name="ic_bluetooth_status_on_disconnected"/>
       <item type="drawable" name="ic_decrease_icon"/>
       <item type="drawable" name="ic_fan_direction_defrost"/>
       <item type="drawable" name="ic_fan_direction_defrost_off"/>
@@ -498,6 +506,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="phone_nav"/>
       <item type="id" name="primary_icon"/>
       <item type="id" name="privacy_chip"/>
+      <item type="id" name="qc_entry_points_container"/>
       <item type="id" name="qs"/>
       <item type="id" name="qs_car_top_bar"/>
       <item type="id" name="rear_defroster_button"/>
@@ -569,6 +578,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="layout" name="car_fullscreen_user_switcher"/>
       <item type="layout" name="car_left_system_bar"/>
       <item type="layout" name="car_left_system_bar_unprovisioned"/>
+      <item type="layout" name="car_qc_entry_points_button"/>
       <item type="layout" name="car_right_system_bar"/>
       <item type="layout" name="car_right_system_bar_unprovisioned"/>
       <item type="layout" name="car_status_bar_header"/>
@@ -624,6 +634,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="mic_privacy_chip_off_toast"/>
       <item type="string" name="mic_privacy_chip_on_toast"/>
       <item type="string" name="mic_privacy_chip_privacy_settings"/>
+      <item type="string" name="qc_icon_tag"/>
       <item type="string" name="sensor_privacy_start_use_mic_dialog_content"/>
       <item type="string" name="sensor_privacy_start_use_mic_dialog_title"/>
       <item type="string" name="start_guest_session"/>
@@ -641,6 +652,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="style" name="HvacTemperature"/>
       <item type="style" name="HvacTemperatureControlIcon"/>
       <item type="style" name="HvacTemperatureFont"/>
+      <item type="style" name="QuickControlEntryPointButton"/>
+      <item type="style" name="QuickControlEntryPointIcon"/>
       <item type="style" name="SystemBarButton"/>
       <item type="style" name="TextAppearance.CarStatus"/>
       <item type="style" name="TextAppearance.SystemBar.Clock"/>

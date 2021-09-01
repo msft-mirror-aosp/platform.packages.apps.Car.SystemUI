@@ -40,6 +40,7 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
@@ -82,7 +83,7 @@ import java.util.List;
 public class CarVolumeDialogImpl implements VolumeDialog {
 
     private static final String TAG = "CarVolumeDialog";
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = Build.IS_USERDEBUG || Build.IS_ENG;
 
     private static final String XML_TAG_VOLUME_ITEMS = "carVolumeItems";
     private static final String XML_TAG_VOLUME_ITEM = "item";
@@ -103,6 +104,7 @@ public class CarVolumeDialogImpl implements VolumeDialog {
     private final int mHoveringTimeout;
     private final int mExpNormalTimeout;
     private final int mExpHoveringTimeout;
+    private final CarServiceProvider mCarServiceProvider;
 
     private Window mWindow;
     private CustomDialog mDialog;
@@ -193,8 +195,9 @@ public class CarVolumeDialogImpl implements VolumeDialog {
         }
     };
 
-    public CarVolumeDialogImpl(Context context) {
+    public CarVolumeDialogImpl(Context context, CarServiceProvider carServiceProvider) {
         mContext = context;
+        mCarServiceProvider = carServiceProvider;
         mKeyguard = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
         mNormalTimeout = mContext.getResources().getInteger(
                 R.integer.car_volume_dialog_display_normal_timeout);
@@ -204,11 +207,6 @@ public class CarVolumeDialogImpl implements VolumeDialog {
                 R.integer.car_volume_dialog_display_expanded_normal_timeout);
         mExpHoveringTimeout = mContext.getResources().getInteger(
                 R.integer.car_volume_dialog_display_expanded_hovering_timeout);
-    }
-
-    /** Sets a {@link CarServiceProvider} which connects to the audio service. */
-    public void setCarServiceProvider(CarServiceProvider carServiceProvider) {
-        carServiceProvider.addListener(mCarServiceOnConnectedListener);
     }
 
     private static int getSeekbarValue(CarAudioManager carAudioManager, int volumeGroupId) {
@@ -233,6 +231,7 @@ public class CarVolumeDialogImpl implements VolumeDialog {
     @Override
     public void init(int windowType, Callback callback) {
         initDialog();
+        mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
 
         mContext.registerReceiverAsUser(mHomeButtonPressedBroadcastReceiver, UserHandle.CURRENT,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* broadcastPermission= */
@@ -412,6 +411,10 @@ public class CarVolumeDialogImpl implements VolumeDialog {
     }
 
     private void loadAudioUsageItems() {
+        if (DEBUG) {
+            Log.i(TAG, "loadAudioUsageItems start");
+        }
+
         try (XmlResourceParser parser = mContext.getResources().getXml(R.xml.car_volume_items)) {
             AttributeSet attrs = Xml.asAttributeSet(parser);
             int type;
@@ -452,6 +455,11 @@ public class CarVolumeDialogImpl implements VolumeDialog {
         } catch (XmlPullParserException | IOException e) {
             Log.e(TAG, "Error parsing volume groups configuration", e);
         }
+
+        if (DEBUG) {
+            Log.i(TAG,
+                    "loadAudioUsageItems finished. Number of volume items: " + mVolumeItems.size());
+        }
     }
 
     private VolumeItem getVolumeItemForUsages(int[] usages) {
@@ -459,6 +467,9 @@ public class CarVolumeDialogImpl implements VolumeDialog {
         VolumeItem result = null;
         for (int usage : usages) {
             VolumeItem volumeItem = mVolumeItems.get(usage);
+            if (DEBUG) {
+                Log.i(TAG, "getVolumeItemForUsage: " + usage + ": " + volumeItem);
+            }
             if (volumeItem.mRank < rank) {
                 rank = volumeItem.mRank;
                 result = volumeItem;

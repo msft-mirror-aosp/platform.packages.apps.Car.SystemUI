@@ -39,11 +39,8 @@ public interface CarVolumeModule {
 
     /** */
     @Provides
-    static VolumeDialog provideVolumeDialog(
-            Context context,
+    static VolumeDialog provideVolumeDialog(Context context,
             CarServiceProvider carServiceProvider) {
-        CarVolumeDialogImpl dialog = new CarVolumeDialogImpl(context);
-        dialog.setCarServiceProvider(carServiceProvider);
-        return dialog;
+        return new CarVolumeDialogImpl(context, carServiceProvider);
     }
 }

@@ -231,6 +231,14 @@
     <dimen name="car_user_switching_dialog_loading_text_margin_top">@*android:dimen/car_padding_4</dimen>
     <dimen name="car_user_switching_dialog_loading_text_font_size">@*android:dimen/car_body1_size</dimen>
 
+    <!-- dimensions for Quick Controls entry points   -->
+
+    <dimen name="car_quick_controls_entry_points_button_width">84dp</dimen>
+    <dimen name="car_quick_controls_entry_points_icon_width">36dp</dimen>
+
+    <dimen name="car_quick_controls_icon_drawable_width">24dp</dimen>
+    <dimen name="car_quick_controls_icon_drawable_height">24dp</dimen>
+
     <!-- dimensions for HVAC   -->
 
     <dimen name="hvac_panel_full_expanded_height">500dp</dimen>

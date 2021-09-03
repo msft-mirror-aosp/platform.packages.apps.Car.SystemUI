@@ -21,9 +21,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.android.systemui.R;
+import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
 import com.android.systemui.car.systembar.CarSystemBarController.NotificationsShadeController;
 import com.android.systemui.flags.FeatureFlags;
@@ -59,6 +61,7 @@ public class CarSystemBarView extends LinearLayout {
     private HvacPanelController mHvacPanelController;
     private View mLockScreenButtons;
     private View mOcclusionButtons;
+    private ViewGroup mQcEntryPointsContainer;
     // used to wire in open/close gestures for notifications
     private OnTouchListener mStatusBarWindowTouchListener;
 
@@ -76,6 +79,7 @@ public class CarSystemBarView extends LinearLayout {
         mOcclusionButtons = findViewById(R.id.occlusion_buttons);
         mNotificationsButton = findViewById(R.id.notifications);
         mHvacButton = findViewById(R.id.hvac);
+        mQcEntryPointsContainer = findViewById(R.id.qc_entry_points_container);
         if (mNotificationsButton != null) {
             mNotificationsButton.setOnClickListener(this::onNotificationsClick);
         }
@@ -85,10 +89,20 @@ public class CarSystemBarView extends LinearLayout {
         setFocusable(false);
     }
 
-    void setupIconController(FeatureFlags featureFlags, StatusBarIconController iconController) {
+    void setupHvacButton() {
         if (mHvacButton != null) {
             mHvacButton.setOnClickListener(this::onHvacClick);
         }
+    }
+
+    void setupQuickControlsEntryPoints(
+            QuickControlsEntryPointsController quickControlsEntryPointsController) {
+        if (mQcEntryPointsContainer != null) {
+            quickControlsEntryPointsController.addIconViews(mQcEntryPointsContainer);
+        }
+    }
+
+    void setupIconController(FeatureFlags featureFlags, StatusBarIconController iconController) {
         View mStatusIcons = findViewById(R.id.statusIcons);
         if (mStatusIcons != null) {
             // Attach the controllers for Status icons such as wifi and bluetooth if the standard

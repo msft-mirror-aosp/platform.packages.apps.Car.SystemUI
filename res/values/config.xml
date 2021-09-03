@@ -118,6 +118,13 @@
         <item>com.android.systemui.car.userswitcher.UserSwitchTransitionViewMediator</item>
     </string-array>
 
+    <!-- List of StatusIconControllers associated with icons to display for QC entry points.
+         The icons will be added to the view in the order their controllers appear on this list. -->
+    <string-array name="config_quickControlsEntryPointIconControllers" translatable="false">
+        <item>com.android.systemui.car.statusicon.ui.BluetoothStatusIconController</item>
+        <item>com.android.systemui.car.statusicon.ui.SignalStatusIconController</item>
+    </string-array>
+
     <!-- List of package names that are allowed sources of app installation. -->
     <string-array name="config_allowedAppInstallSources" translatable="false">
         <item>com.android.vending</item>

@@ -17,6 +17,7 @@
 package com.android.systemui.car.statusicon.ui;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
@@ -24,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 import com.android.settingslib.graph.SignalDrawable;
 import com.android.systemui.R;
 import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.statusbar.policy.HotspotController;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.NetworkControllerImpl;
@@ -37,11 +39,13 @@ public class SignalStatusIconController extends StatusIconController implements
         NetworkControllerImpl.SignalCallback, HotspotController.Callback {
 
     private final Context mContext;
+    private final Resources mResources;
     private final HotspotController mHotspotController;
     private final NetworkController mNetworkController;
 
     private SignalDrawable mMobileSignalIconDrawable;
     private Drawable mWifiSignalIconDrawable;
+    private Drawable mWifiDisabledIconDrawable;
     private Drawable mHotSpotIconDrawable;
     private boolean mIsWifiEnabled;
     private boolean mIsHotspotEnabled;
@@ -49,11 +53,18 @@ public class SignalStatusIconController extends StatusIconController implements
     @Inject
     SignalStatusIconController(
             Context context,
+            @Main Resources resources,
             NetworkController networkController,
             HotspotController hotspotController) {
         mContext = context;
+        mResources = resources;
         mHotspotController = hotspotController;
         mNetworkController = networkController;
+
+        mMobileSignalIconDrawable = new SignalDrawable(mContext);
+        mWifiDisabledIconDrawable = mResources.getDrawable(R.drawable.ic_qs_no_internet_available,
+                mContext.getTheme());
+        mHotSpotIconDrawable = mResources.getDrawable(R.drawable.ic_hotspot, mContext.getTheme());
 
         mNetworkController.addCallback(this);
         mHotspotController.addCallback(this);
@@ -74,10 +85,6 @@ public class SignalStatusIconController extends StatusIconController implements
     @Override
     public void setMobileDataIndicators(
             NetworkController.MobileDataIndicators mobileDataIndicators) {
-        if (mMobileSignalIconDrawable == null) {
-            mMobileSignalIconDrawable = new SignalDrawable(mContext);
-        }
-
         mMobileSignalIconDrawable.setLevel(mobileDataIndicators.statusIcon.icon);
         updateStatus();
     }
@@ -86,17 +93,14 @@ public class SignalStatusIconController extends StatusIconController implements
     public void setWifiIndicators(NetworkController.WifiIndicators indicators) {
         mIsWifiEnabled = indicators.enabled;
         mWifiSignalIconDrawable = mIsWifiEnabled
-                ? mContext.getDrawable(indicators.statusIcon.icon)
-                : mContext.getDrawable(R.drawable.ic_qs_no_internet_available);
+                ? mResources.getDrawable(indicators.statusIcon.icon, mContext.getTheme())
+                : mWifiDisabledIconDrawable;
         updateStatus();
     }
 
     @Override
     public void onHotspotChanged(boolean enabled, int numDevices) {
         mIsHotspotEnabled = enabled;
-        if (mHotSpotIconDrawable == null) {
-            mHotSpotIconDrawable = mContext.getDrawable(R.drawable.ic_hotspot);
-        }
         updateStatus();
     }
 

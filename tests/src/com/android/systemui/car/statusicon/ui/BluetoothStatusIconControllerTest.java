@@ -20,6 +20,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.Mockito.when;
 
+import android.content.res.Resources;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 
@@ -45,17 +46,19 @@ import java.util.List;
 @SmallTest
 public class BluetoothStatusIconControllerTest extends SysuiTestCase {
 
-    private BluetoothStatusIconController mBluetoothStatusIconController;
+    @Mock
+    Resources mResources;
     @Mock
     BluetoothController mBluetoothController;
     @Mock
     CachedBluetoothDevice mDevice;
+    private BluetoothStatusIconController mBluetoothStatusIconController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mBluetoothStatusIconController = new BluetoothStatusIconController(mContext,
+        mBluetoothStatusIconController = new BluetoothStatusIconController(mContext, mResources,
                 mBluetoothController);
     }
 

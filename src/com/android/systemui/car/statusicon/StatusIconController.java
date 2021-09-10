@@ -41,7 +41,7 @@ public abstract class StatusIconController {
     public final void registerIconView(ImageView view) {
         if (mObserverMap.containsKey(view)) return;
 
-        Observer<StatusIconData> observer = getStatusIconViewObserver(view);
+        Observer<StatusIconData> observer = statusIconData -> updateIconView(view, statusIconData);
         mObserverMap.put(view, observer);
         mStatusIconLiveData.observeForever(observer);
     }
@@ -94,14 +94,5 @@ public abstract class StatusIconController {
     @VisibleForTesting
     boolean isViewRegistered(ImageView view) {
         return mObserverMap.containsKey(view);
-    }
-
-    private Observer<StatusIconData> getStatusIconViewObserver(ImageView view) {
-        return new Observer<StatusIconData>() {
-            @Override
-            public void onChanged(StatusIconData statusIconData) {
-                updateIconView(view, statusIconData);
-            }
-        };
     }
 }

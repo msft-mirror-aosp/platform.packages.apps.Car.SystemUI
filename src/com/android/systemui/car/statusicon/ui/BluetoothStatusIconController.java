@@ -17,12 +17,14 @@
 package com.android.systemui.car.statusicon.ui;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
 
 import com.android.systemui.R;
 import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.statusbar.policy.BluetoothController;
 
 import javax.inject.Inject;
@@ -44,15 +46,17 @@ public class BluetoothStatusIconController extends StatusIconController implemen
     @Inject
     BluetoothStatusIconController(
             Context context,
+            @Main Resources resources,
             BluetoothController bluetoothController) {
         mContext = context;
         mBluetoothController = bluetoothController;
 
-        mBluetoothOffDrawable = mContext.getDrawable(R.drawable.ic_bluetooth_status_off);
-        mBluetoothOnDisconnectedDrawable = mContext.getDrawable(
-                R.drawable.ic_bluetooth_status_on_disconnected);
-        mBluetoothOnConnectedDrawable = mContext.getDrawable(
-                R.drawable.ic_bluetooth_status_on_connected);
+        mBluetoothOffDrawable = resources.getDrawable(
+                R.drawable.ic_bluetooth_status_off, /* theme= */ null);
+        mBluetoothOnDisconnectedDrawable = resources.getDrawable(
+                R.drawable.ic_bluetooth_status_on_disconnected, /* theme= */ null);
+        mBluetoothOnConnectedDrawable = resources.getDrawable(
+                R.drawable.ic_bluetooth_status_on_connected, /* theme= */ null);
 
         mBluetoothController.addCallback(this);
     }

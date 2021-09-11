@@ -18,6 +18,7 @@ package com.android.systemui.car.statusicon.ui;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import android.content.res.Resources;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 
@@ -41,19 +42,20 @@ import org.mockito.MockitoAnnotations;
 @SmallTest
 public class SignalStatusIconControllerTest extends SysuiTestCase {
 
-    private SignalStatusIconController mSignalStatusIconController;
-
+    @Mock
+    Resources mResources;
     @Mock
     NetworkController mNetworkController;
     @Mock
     HotspotController mHotspotController;
+    private SignalStatusIconController mSignalStatusIconController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mSignalStatusIconController = new SignalStatusIconController(mContext, mNetworkController,
-                mHotspotController);
+        mSignalStatusIconController = new SignalStatusIconController(mContext, mResources,
+                mNetworkController, mHotspotController);
     }
 
     @Test
@@ -105,7 +107,6 @@ public class SignalStatusIconControllerTest extends SysuiTestCase {
     private NetworkController.WifiIndicators getWifiIndicator(boolean enabled) {
         NetworkController.IconState iconState =
                 new NetworkController.IconState(true, R.drawable.icon, "");
-
         return new NetworkController.WifiIndicators(enabled, iconState, null, false, false, "",
                 false, "");
     }

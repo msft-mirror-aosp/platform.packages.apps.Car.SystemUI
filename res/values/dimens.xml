@@ -74,8 +74,8 @@
     <dimen name="hvac_temperature_text_padding">8dp</dimen>
     <dimen name="hvac_temperature_button_size">76dp</dimen>
     <!--These values represent MIN and MAX for hvac-->
-    <item name="hvac_min_value_celsius" format="float" type="dimen">10</item>
-    <item name="hvac_max_value_celsius" format="float" type="dimen">35</item>
+    <item name="hvac_min_value_celsius" format="float" type="dimen">16</item>
+    <item name="hvac_max_value_celsius" format="float" type="dimen">28</item>
 
     <!-- Largest size an avatar might need to be drawn in the user picker, status bar, or
          quick settings header -->
@@ -232,10 +232,12 @@
     <dimen name="car_user_switching_dialog_loading_text_font_size">@*android:dimen/car_body1_size</dimen>
 
     <!-- dimensions for Quick Controls entry points   -->
+
     <dimen name="car_quick_controls_entry_points_button_width">84dp</dimen>
-    <dimen name="car_quick_controls_entry_points_button_height">@dimen/car_top_system_bar_height</dimen>
     <dimen name="car_quick_controls_entry_points_icon_width">36dp</dimen>
-    <dimen name="car_quick_controls_entry_points_icon_height">@dimen/car_quick_controls_entry_points_button_height</dimen>
+
+    <dimen name="car_quick_controls_icon_drawable_width">24dp</dimen>
+    <dimen name="car_quick_controls_icon_drawable_height">24dp</dimen>
 
     <!-- dimensions for HVAC   -->
 

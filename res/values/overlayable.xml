@@ -95,6 +95,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="color" name="car_nav_icon_fill_color"/>
       <item type="color" name="car_nav_icon_fill_color_selected"/>
       <item type="color" name="car_nav_unseen_indicator_color"/>
+      <item type="color" name="car_quick_controls_icon_drawable_color"/>
       <item type="color" name="car_seekbar_track_background"/>
       <item type="color" name="car_seekbar_track_secondary_progress"/>
       <item type="color" name="car_user_switcher_add_user_add_sign_color"/>
@@ -182,10 +183,10 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_padding_5"/>
       <item type="dimen" name="car_padding_6"/>
       <item type="dimen" name="car_primary_icon_size"/>
-      <item type="dimen" name="car_quick_controls_entry_points_button_height"/>
       <item type="dimen" name="car_quick_controls_entry_points_button_width"/>
-      <item type="dimen" name="car_quick_controls_entry_points_icon_height"/>
       <item type="dimen" name="car_quick_controls_entry_points_icon_width"/>
+      <item type="dimen" name="car_quick_controls_icon_drawable_height"/>
+      <item type="dimen" name="car_quick_controls_icon_drawable_width"/>
       <item type="dimen" name="car_right_system_bar_width"/>
       <item type="dimen" name="car_system_bar_button_icon_height"/>
       <item type="dimen" name="car_system_bar_button_width"/>
@@ -588,6 +589,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="layout" name="car_user_switching_dialog"/>
       <item type="layout" name="car_volume_dialog"/>
       <item type="layout" name="car_volume_item"/>
+      <item type="layout" name="default_status_icon"/>
       <item type="layout" name="fan_direction"/>
       <item type="layout" name="fan_speed"/>
       <item type="layout" name="hvac_panel_container"/>
@@ -653,7 +655,6 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="style" name="HvacTemperatureControlIcon"/>
       <item type="style" name="HvacTemperatureFont"/>
       <item type="style" name="QuickControlEntryPointButton"/>
-      <item type="style" name="QuickControlEntryPointIcon"/>
       <item type="style" name="SystemBarButton"/>
       <item type="style" name="TextAppearance.CarStatus"/>
       <item type="style" name="TextAppearance.SystemBar.Clock"/>

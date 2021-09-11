@@ -158,14 +158,12 @@ public class CarSystemBarViewFactory {
         CarSystemBarView view = (CarSystemBarView) View.inflate(mContext, barLayout,
                 /* root= */ null);
 
+        view.setupHvacButton();
+        view.setupQuickControlsEntryPoints(mQuickControlsEntryPointsController);
+
         // Include a FocusParkingView at the beginning. The rotary controller "parks" the focus here
         // when the user navigates to another window. This is also used to prevent wrap-around.
         view.addView(new FocusParkingView(mContext), 0);
-
-        ViewGroup qcEntryPointsContainer = view.findViewById(R.id.qc_entry_points_container);
-        if (qcEntryPointsContainer != null) {
-            mQuickControlsEntryPointsController.addQuickControlEntryPoints(qcEntryPointsContainer);
-        }
 
         mCachedViewMap.put(type, view);
         return mCachedViewMap.get(type);

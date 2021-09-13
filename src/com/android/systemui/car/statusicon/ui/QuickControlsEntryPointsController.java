@@ -22,6 +22,8 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import com.android.systemui.R;
+import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.statusicon.StatusIconController;
 import com.android.systemui.car.statusicon.StatusIconGroupContainerController;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -39,8 +41,10 @@ public class QuickControlsEntryPointsController extends StatusIconGroupContainer
     QuickControlsEntryPointsController(
             Context context,
             @Main Resources resources,
+            CarServiceProvider carServiceProvider,
+            BroadcastDispatcher broadcastDispatcher,
             Map<Class<?>, Provider<StatusIconController>> iconControllerCreators) {
-        super(context, resources, iconControllerCreators);
+        super(context, resources, carServiceProvider, broadcastDispatcher, iconControllerCreators);
     }
 
     @Override

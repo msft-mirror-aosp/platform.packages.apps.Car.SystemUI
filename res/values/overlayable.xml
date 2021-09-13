@@ -139,6 +139,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="color" name="notification_shade_background_color"/>
       <item type="color" name="rear_view_camera_button_background"/>
       <item type="color" name="status_bar_background_color"/>
+      <item type="color" name="status_icon_panel_bg_color"/>
       <item type="color" name="system_bar_background_opaque"/>
       <item type="color" name="system_bar_background_pill_color"/>
       <item type="color" name="system_bar_icon_color"/>
@@ -177,6 +178,11 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_quick_controls_icon_drawable_height"/>
       <item type="dimen" name="car_quick_controls_icon_drawable_width"/>
       <item type="dimen" name="car_right_system_bar_width"/>
+      <item type="dimen" name="car_status_icon_panel_border_radius"/>
+      <item type="dimen" name="car_status_icon_panel_default_width"/>
+      <item type="dimen" name="car_status_icon_panel_dim"/>
+      <item type="dimen" name="car_status_icon_panel_padding_bottom"/>
+      <item type="dimen" name="car_status_icon_panel_padding_top"/>
       <item type="dimen" name="car_system_bar_button_icon_height"/>
       <item type="dimen" name="car_system_bar_button_width"/>
       <item type="dimen" name="car_system_bar_user_name_max_width"/>
@@ -413,6 +419,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="notification_material_bg"/>
       <item type="drawable" name="notification_material_bg_dim"/>
       <item type="drawable" name="stat_sys_signal_null"/>
+      <item type="drawable" name="status_icon_panel_bg"/>
       <item type="drawable" name="system_bar_background"/>
       <item type="drawable" name="system_bar_background_pill"/>
       <item type="drawable" name="system_bar_button_background"/>

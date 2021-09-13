@@ -16,12 +16,16 @@
 
 package com.android.systemui.car.statusicon;
 
+import android.annotation.DimenRes;
+import android.annotation.LayoutRes;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
+
+import com.android.systemui.R;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +34,8 @@ import java.util.Map;
  * Abstract class to extend to control views that display a certain status icon.
  */
 public abstract class StatusIconController {
+    public static final int PANEL_CONTENT_LAYOUT_NONE = -1;
+
     private final StatusIconData mStatusIconData = new StatusIconData();
     private final MutableLiveData<StatusIconData> mStatusIconLiveData =
             new MutableLiveData<>(mStatusIconData);
@@ -83,6 +89,26 @@ public abstract class StatusIconController {
      */
     protected void updateIconView(ImageView view, StatusIconData data) {
         view.setImageDrawable(data.getIconDrawable());
+    }
+
+    /**
+     * Returns the resource id of the layout to be drawn inside the panel associated with this
+     * status icon.
+     *
+     * By default, {@link #PANEL_CONTENT_LAYOUT_NONE} is returned and no panel will be attached to
+     * the status icon.
+     */
+    @LayoutRes
+    protected int getPanelContentLayout() {
+        return PANEL_CONTENT_LAYOUT_NONE;
+    }
+
+    /**
+     * Returns the resource id of the width for the panel associated with this status icon.
+     */
+    @DimenRes
+    protected int getPanelWidth() {
+        return R.dimen.car_status_icon_panel_default_width;
     }
 
     /**

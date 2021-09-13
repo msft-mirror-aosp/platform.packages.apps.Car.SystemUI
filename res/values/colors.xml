@@ -117,4 +117,7 @@
     <!-- Color of text in blocking activity. -->
     <color name="blocking_text">@android:color/white</color>
     <color name="ic_ux_restricted_color">@android:color/white</color>
+
+    <!-- Color for status icon panel background -->
+    <color name="status_icon_panel_bg_color">#282A2D</color>
 </resources>

@@ -72,6 +72,7 @@ public class CarSystemBarButton extends LinearLayout {
     private int mIconResourceId;
     private Drawable mAppIcon;
     private boolean mIsDefaultAppIconForRoleEnabled;
+    private boolean mToggleSelectedState;
     private String[] mComponentNames;
     /** App categories that are to be used with this widget */
     private String[] mButtonCategories;
@@ -112,6 +113,11 @@ public class CarSystemBarButton extends LinearLayout {
             mMoreIcon.setVisibility(selected ? VISIBLE : GONE);
         }
         updateImage();
+    }
+
+    /** Gets whether the icon is in a selected state. */
+    public boolean getSelected() {
+        return mSelected;
     }
 
     /**
@@ -265,6 +271,7 @@ public class CarSystemBarButton extends LinearLayout {
     /** Defines the behavior of a button click. */
     protected OnClickListener getButtonClickListener(Intent toSend) {
         return v -> {
+            boolean startState = mSelected;
             mContext.sendBroadcastAsUser(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
                     UserHandle.CURRENT);
             try {
@@ -289,6 +296,10 @@ public class CarSystemBarButton extends LinearLayout {
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Failed to launch intent", e);
+            }
+
+            if (mToggleSelectedState && (startState == mSelected)) {
+                setSelected(!mSelected);
             }
         };
     }
@@ -332,6 +343,8 @@ public class CarSystemBarButton extends LinearLayout {
                 R.styleable.CarSystemBarButton_selectedIcon, mIconResourceId);
         mIsDefaultAppIconForRoleEnabled = typedArray.getBoolean(
                 R.styleable.CarSystemBarButton_useDefaultAppIconForRole, false);
+        mToggleSelectedState = typedArray.getBoolean(
+                R.styleable.CarSystemBarButton_toggleSelected, false);
         mIcon = findViewById(R.id.car_nav_button_icon_image);
         // Always apply un-selected alpha regardless of if the button toggles alpha based on
         // selection state.

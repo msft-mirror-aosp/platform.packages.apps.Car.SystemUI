@@ -86,6 +86,8 @@
              (i.e. CarSystemBarButton_intent is defined, CarSystemBarButton_broadcast is false).
              Defaults false. -->
         <attr name="clearBackStack" format="boolean"/>
+        <!-- whether to toggle selected state when button is clicked. Defaults false -->
+        <attr name="toggleSelected" format="boolean" />
     </declare-styleable>
 
     <!-- Custom attributes to configure HVAC values -->

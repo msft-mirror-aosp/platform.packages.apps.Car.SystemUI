@@ -70,6 +70,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="attr" name="selectedAlpha"/>
       <item type="attr" name="selectedIcon"/>
       <item type="attr" name="showMoreWhenSelected"/>
+      <item type="attr" name="toggleSelected"/>
       <item type="attr" name="unselectedAlpha"/>
       <item type="attr" name="usage"/>
       <item type="attr" name="useDefaultAppIconForRole"/>

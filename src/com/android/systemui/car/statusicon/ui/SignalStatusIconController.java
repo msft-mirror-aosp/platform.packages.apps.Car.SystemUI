@@ -104,6 +104,11 @@ public class SignalStatusIconController extends StatusIconController implements
         updateStatus();
     }
 
+    @Override
+    protected int getPanelContentLayout() {
+        return R.layout.qc_connectivity_panel;
+    }
+
     @VisibleForTesting
     SignalDrawable getMobileSignalIconDrawable() {
         return mMobileSignalIconDrawable;

@@ -149,4 +149,13 @@
         <attr name="icon" />
         <attr name="mute_icon" />
     </declare-styleable>
+
+    <declare-styleable name="SystemUIQCView">
+        <attr name="remoteQCProvider" format="string"/>
+        <attr name="localQCProvider" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="QCFooterButton">
+        <attr name="intent" format="string"/>
+    </declare-styleable>
 </resources>

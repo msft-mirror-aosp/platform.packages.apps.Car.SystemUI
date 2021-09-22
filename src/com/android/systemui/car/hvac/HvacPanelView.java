@@ -19,6 +19,7 @@ package com.android.systemui.car.hvac;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -26,6 +27,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 /** A view that contains interfaces for the HVAC Panel application and intercepts the key events. */
 public class HvacPanelView extends ConstraintLayout {
     private KeyEventHandler mKeyEventHandler;
+    private MotionEventHandler mMotionEventHandler;
 
     public HvacPanelView(Context context) {
         super(context);
@@ -41,6 +43,17 @@ public class HvacPanelView extends ConstraintLayout {
 
     public HvacPanelView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        boolean result = super.onInterceptTouchEvent(ev);
+
+        if (mMotionEventHandler != null) {
+            mMotionEventHandler.onInterceptTouchEvent(ev);
+        }
+
+        return result;
     }
 
     @Override
@@ -68,5 +81,19 @@ public class HvacPanelView extends ConstraintLayout {
          * Returns {@code true} if the event was handled and false otherwise.
          */
         boolean dispatchKeyEvent(KeyEvent event);
+    }
+
+    /** Sets a {@link MotionEventHandler} to help process motion events in the HVAC panel. */
+    public void setMotionEventHandler(MotionEventHandler motionEventHandler) {
+        mMotionEventHandler = motionEventHandler;
+    }
+
+    /** An interface to help process motion events in the HVAC panel. */
+    public interface MotionEventHandler {
+        /**
+         * Intercepts incoming events of type {@link MotionEvent}. This can be used to know when the
+         * last interaction with the HVAC panel might have happened.
+         */
+        void onInterceptTouchEvent(MotionEvent event);
     }
 }

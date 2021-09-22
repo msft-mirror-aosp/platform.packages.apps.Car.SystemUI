@@ -22,53 +22,18 @@
 -->
 
 <com.android.keyguard.KeyguardPINView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/keyguard_pin_view"
-        android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/keyguard_pin_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:paddingHorizontal="@dimen/keyguard_pin_view_padding_horizontal">
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="match_parent">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/num_pad_margin_left"
-        android:layout_marginRight="@dimen/num_pad_margin_right"
-        android:orientation="vertical"
-        android:gravity="center">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <com.android.keyguard.PasswordTextView
-                android:id="@+id/pinEntry"
-                android:layout_width="@dimen/keyguard_security_width"
-                android:layout_height="@dimen/pin_entry_height"
-                android:gravity="center"
-                android:focusedByDefault="true"
-                app:scaledTextSize="@integer/password_text_view_scale"
-                android:contentDescription="@string/keyguard_accessibility_pin_area" />
-
-            <View
-                android:id="@+id/divider"
-                android:layout_width="@dimen/keyguard_security_width"
-                android:layout_height="@dimen/divider_height"
-                android:background="@android:color/white" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@*android:dimen/car_padding_2"
-                android:gravity="center"
-                android:textColor="@android:color/white"
-                android:textSize="@*android:dimen/car_body1_size"
-                android:text="@string/keyguard_enter_your_pin" />
-
-            <include layout="@layout/keyguard_message_area" />
-
-        </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/pin_container"
@@ -78,15 +43,6 @@
             android:layout_weight="1"
             android:layoutDirection="ltr"
             android:orientation="vertical">
-
-            <!-- Guideline used to place the top row of keys relative to the screen height.
-                This will be updated in KeyguardPINView to reduce the height of the PIN pad. -->
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/pin_pad_top_guideline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintGuide_percent="0"/>
 
             <androidx.constraintlayout.helper.widget.Flow
                 android:id="@+id/flow1"
@@ -101,18 +57,50 @@
                 app:flow_horizontalStyle="packed"
                 app:flow_maxElementsWrap="3"
 
-                app:flow_verticalBias="0.5"
-                app:flow_verticalGap="@dimen/num_pad_key_margin_bottom"
                 app:flow_verticalStyle="packed"
 
                 app:flow_wrapMode="aligned"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/pin_pad_top_guideline" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <include layout="@layout/num_pad_keys"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <com.android.keyguard.PasswordTextView
+            android:id="@+id/pinEntry"
+            android:layout_width="@dimen/keyguard_security_width"
+            android:layout_height="@dimen/pin_entry_height"
+            android:gravity="center"
+            android:focusedByDefault="true"
+            app:scaledTextSize="@integer/password_text_view_scale"
+            android:contentDescription="@string/keyguard_accessibility_pin_area" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="@dimen/keyguard_security_width"
+            android:layout_height="@dimen/divider_height"
+            android:background="@android:color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@*android:dimen/car_padding_2"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="@*android:dimen/car_body1_size"
+            android:text="@string/keyguard_enter_your_pin" />
+
+        <include layout="@layout/keyguard_message_area" />
 
         <Button
             android:id="@+id/cancel_button"
@@ -121,7 +109,6 @@
             android:layout_gravity="center"
             style="@style/KeyguardButton"
             android:text="@string/cancel"/>
-
     </LinearLayout>
 
     <!-- KeyguardPinView references these resources ids in code so removing them will cause the
@@ -153,10 +140,9 @@
         android:layout_height="0dp"
         android:visibility="gone" />
 
-    <include
-        layout="@layout/keyguard_eca"
+    <include layout="@layout/keyguard_eca"
         android:id="@+id/keyguard_selector_fade_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 </com.android.keyguard.KeyguardPINView>

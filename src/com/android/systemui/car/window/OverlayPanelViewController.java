@@ -308,6 +308,8 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
             float from = getCurrentStartPosition(rect);
             if (from != to) {
                 animate(from, to, velocity, isClosing);
+            } else if (isClosing) {
+                resetPanelVisibility();
             }
 
             // If we swipe down the notification panel all the way to the bottom of the screen
@@ -371,10 +373,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
                 mOpeningVelocity = DEFAULT_FLING_VELOCITY;
                 mClosingVelocity = DEFAULT_FLING_VELOCITY;
                 if (isClosing) {
-                    setPanelVisible(false);
-                    getLayout().setClipBounds(null);
-                    onCollapseAnimationEnd();
-                    setPanelExpanded(false);
+                    resetPanelVisibility();
                 } else {
                     onExpandAnimationEnd();
                     setPanelExpanded(true);
@@ -383,6 +382,13 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
         });
         getFlingAnimationUtils().apply(animator, from, to, Math.abs(velocity));
         animator.start();
+    }
+
+    private void resetPanelVisibility() {
+        setPanelVisible(false);
+        getLayout().setClipBounds(null);
+        onCollapseAnimationEnd();
+        setPanelExpanded(false);
     }
 
     /**

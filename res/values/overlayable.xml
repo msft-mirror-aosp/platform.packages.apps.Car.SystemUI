@@ -59,12 +59,14 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="attr" name="icon"/>
       <item type="attr" name="intent"/>
       <item type="attr" name="invalidValue"/>
+      <item type="attr" name="localQCProvider"/>
       <item type="attr" name="longIntent"/>
       <item type="attr" name="mute_icon"/>
       <item type="attr" name="offValue"/>
       <item type="attr" name="onValue"/>
       <item type="attr" name="packages"/>
       <item type="attr" name="preventToggleOff"/>
+      <item type="attr" name="remoteQCProvider"/>
       <item type="attr" name="seatTemperatureIconDrawableList"/>
       <item type="attr" name="seatTemperatureType"/>
       <item type="attr" name="selectedAlpha"/>
@@ -142,6 +144,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="color" name="notification_ripple_untinted_color"/>
       <item type="color" name="notification_shade_background_color"/>
       <item type="color" name="status_bar_background_color"/>
+      <item type="color" name="status_icon_panel_bg_color"/>
       <item type="color" name="system_bar_background_opaque"/>
       <item type="color" name="system_bar_background_pill_color"/>
       <item type="color" name="system_bar_icon_color"/>
@@ -189,6 +192,11 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_quick_controls_icon_drawable_height"/>
       <item type="dimen" name="car_quick_controls_icon_drawable_width"/>
       <item type="dimen" name="car_right_system_bar_width"/>
+      <item type="dimen" name="car_status_icon_panel_border_radius"/>
+      <item type="dimen" name="car_status_icon_panel_default_width"/>
+      <item type="dimen" name="car_status_icon_panel_dim"/>
+      <item type="dimen" name="car_status_icon_panel_padding_bottom"/>
+      <item type="dimen" name="car_status_icon_panel_padding_top"/>
       <item type="dimen" name="car_system_bar_button_icon_height"/>
       <item type="dimen" name="car_system_bar_button_width"/>
       <item type="dimen" name="car_system_bar_user_name_max_width"/>
@@ -429,6 +437,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="notification_material_bg"/>
       <item type="drawable" name="notification_material_bg_dim"/>
       <item type="drawable" name="stat_sys_signal_null"/>
+      <item type="drawable" name="status_icon_panel_bg"/>
       <item type="drawable" name="system_bar_background"/>
       <item type="drawable" name="system_bar_background_pill"/>
       <item type="drawable" name="system_bar_button_background"/>
@@ -600,6 +609,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="layout" name="notification_center_activity"/>
       <item type="layout" name="notification_handle_bar"/>
       <item type="layout" name="notification_panel_container"/>
+      <item type="layout" name="qc_bluetooth_panel"/>
+      <item type="layout" name="qc_connectivity_panel"/>
       <item type="layout" name="status_bar_wifi_group"/>
       <item type="layout" name="system_icons"/>
       <item type="layout" name="sysui_overlay_window"/>
@@ -637,6 +648,12 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="mic_privacy_chip_off_toast"/>
       <item type="string" name="mic_privacy_chip_on_toast"/>
       <item type="string" name="mic_privacy_chip_privacy_settings"/>
+      <item type="string" name="qc_footer_bluetooth_settings"/>
+      <item type="string" name="qc_footer_display_settings"/>
+      <item type="string" name="qc_footer_network_internet_settings"/>
+      <item type="string" name="qc_footer_network_sound_settings"/>
+      <item type="string" name="qc_footer_profiles_accounts_settings"/>
+      <item type="string" name="qc_footer_settings"/>
       <item type="string" name="qc_icon_tag"/>
       <item type="string" name="sensor_privacy_start_use_mic_dialog_content"/>
       <item type="string" name="sensor_privacy_start_use_mic_dialog_title"/>

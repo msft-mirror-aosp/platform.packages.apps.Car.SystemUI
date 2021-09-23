@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.statusicon;
 
+import static com.android.systemui.car.statusicon.StatusIconController.PANEL_CONTENT_LAYOUT_NONE;
+
 import android.annotation.ArrayRes;
 import android.annotation.LayoutRes;
 import android.content.Context;
@@ -25,6 +27,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.systemui.R;
+import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.qualifiers.Main;
 
 import java.lang.reflect.Constructor;
@@ -41,6 +45,8 @@ import javax.inject.Provider;
 public abstract class StatusIconGroupContainerController {
     private final Context mContext;
     private final Resources mResources;
+    private final CarServiceProvider mCarServiceProvider;
+    private final BroadcastDispatcher mBroadcastDispatcher;
     private final Map<Class<?>, Provider<StatusIconController>> mIconControllerCreators;
     private final String mIconTag;
     private final String[] mStatusIconControllerNames;
@@ -48,9 +54,13 @@ public abstract class StatusIconGroupContainerController {
     public StatusIconGroupContainerController(
             Context context,
             @Main Resources resources,
+            CarServiceProvider carServiceProvider,
+            BroadcastDispatcher broadcastDispatcher,
             Map<Class<?>, Provider<StatusIconController>> iconControllerCreators) {
         mContext = context;
         mResources = resources;
+        mCarServiceProvider = carServiceProvider;
+        mBroadcastDispatcher = broadcastDispatcher;
         mIconControllerCreators = iconControllerCreators;
         mIconTag = mResources.getString(R.string.qc_icon_tag);
         mStatusIconControllerNames = mResources.getStringArray(
@@ -86,6 +96,13 @@ public abstract class StatusIconGroupContainerController {
             View entryPointView = li.inflate(getButtonViewLayout(),
                     containerViewGroup, /* attachToRoot= */ false);
             statusIconController.registerIconView(entryPointView.findViewWithTag(mIconTag));
+            if (statusIconController.getPanelContentLayout() != PANEL_CONTENT_LAYOUT_NONE) {
+                StatusIconPanelController panelController = new StatusIconPanelController(mContext,
+                        mCarServiceProvider, mBroadcastDispatcher);
+                panelController.attachPanel(entryPointView,
+                        statusIconController.getPanelContentLayout(),
+                        statusIconController.getPanelWidth());
+            }
             containerViewGroup.addView(entryPointView);
         }
     }

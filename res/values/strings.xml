@@ -91,4 +91,18 @@
     <string name="exit_button_go_back">Back</string>
     <!-- Blocking activity: Text for button that shows debug info in non-user build. -->
     <string name="debug_button_text" translatable="false">Debug Info</string>
+
+    <!-- Quick Controls: Message to be displayed as the footer button to launch the settings application [CHAR LIMIT=45] -->
+    <string name="qc_footer_settings">Settings</string>
+    <!-- Quick Controls: Message to be displayed as the footer button to launch bluetooth settings [CHAR LIMIT=45] -->
+    <string name="qc_footer_bluetooth_settings">Bluetooth settings</string>
+    <!-- Quick Controls: Message to be displayed as the footer button to launch network and internet settings [CHAR LIMIT=45] -->
+    <string name="qc_footer_network_internet_settings">Network &amp; internet settings</string>
+    <!-- Quick Controls: Message to be displayed as the footer button to launch display settings [CHAR LIMIT=45] -->
+    <string name="qc_footer_display_settings">Display settings</string>
+    <!-- Quick Controls: Message to be displayed as the footer button to launch sound settings [CHAR LIMIT=45] -->
+    <string name="qc_footer_network_sound_settings">Sound settings</string>
+    <!-- Quick Controls: Message to be displayed as the footer button to launch profiles and accounts settings [CHAR LIMIT=45] -->
+    <string name="qc_footer_profiles_accounts_settings">Profiles &amp; accounts settings</string>
+
 </resources>

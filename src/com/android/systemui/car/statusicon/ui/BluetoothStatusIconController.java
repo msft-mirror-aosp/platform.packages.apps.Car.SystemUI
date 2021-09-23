@@ -90,6 +90,11 @@ public class BluetoothStatusIconController extends StatusIconController implemen
         return mBluetoothOffDrawable;
     }
 
+    @Override
+    protected int getPanelContentLayout() {
+        return R.layout.qc_bluetooth_panel;
+    }
+
     @VisibleForTesting
     Drawable getBluetoothOnDisconnectedDrawable() {
         return mBluetoothOnDisconnectedDrawable;

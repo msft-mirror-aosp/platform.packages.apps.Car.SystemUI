@@ -366,6 +366,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_ic_apps_selected"/>
       <item type="drawable" name="car_ic_arrow"/>
       <item type="drawable" name="car_ic_arrow_drop_up"/>
+      <item type="drawable" name="car_ic_brightness"/>
       <item type="drawable" name="car_ic_home"/>
       <item type="drawable" name="car_ic_home_selected"/>
       <item type="drawable" name="car_ic_hvac"/>
@@ -611,6 +612,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="layout" name="notification_panel_container"/>
       <item type="layout" name="qc_bluetooth_panel"/>
       <item type="layout" name="qc_connectivity_panel"/>
+      <item type="layout" name="qc_display_panel"/>
       <item type="layout" name="status_bar_wifi_group"/>
       <item type="layout" name="system_icons"/>
       <item type="layout" name="sysui_overlay_window"/>

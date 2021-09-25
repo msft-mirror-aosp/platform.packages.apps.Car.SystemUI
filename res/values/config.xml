@@ -123,6 +123,7 @@
     <string-array name="config_quickControlsEntryPointIconControllers" translatable="false">
         <item>com.android.systemui.car.statusicon.ui.BluetoothStatusIconController</item>
         <item>com.android.systemui.car.statusicon.ui.SignalStatusIconController</item>
+        <item>com.android.systemui.car.statusicon.ui.DisplayStatusIconController</item>
     </string-array>
 
     <!-- List of package names that are allowed sources of app installation. -->

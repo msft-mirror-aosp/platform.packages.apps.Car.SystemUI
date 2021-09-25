@@ -109,4 +109,7 @@
     <color name="hvac_fanspeed_off_active_text_color">#13181C</color>
     <color name="hvac_fanspeed_off_inactive_text_color">#89F5F5F5</color>
     <color name="hvac_scrim_color">#3F000000</color>
+
+    <!-- Color for status icon panel background -->
+    <color name="status_icon_panel_bg_color">#282A2D</color>
 </resources>

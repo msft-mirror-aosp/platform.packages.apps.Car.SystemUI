@@ -82,4 +82,18 @@
     <string name="sensor_privacy_start_use_mic_dialog_title">Enable vehicle microphone?</string>
     <!--- Content of dialog triggered if the microphone is disabled but an app tried to access it. [CHAR LIMIT=NONE] -->
     <string name="sensor_privacy_start_use_mic_dialog_content">This gives apps and services the option to access your microphone.</string>
+
+    <!-- Quick Controls: Message to be displayed as the footer button to launch the settings application [CHAR LIMIT=45] -->
+    <string name="qc_footer_settings">Settings</string>
+    <!-- Quick Controls: Message to be displayed as the footer button to launch bluetooth settings [CHAR LIMIT=45] -->
+    <string name="qc_footer_bluetooth_settings">Bluetooth settings</string>
+    <!-- Quick Controls: Message to be displayed as the footer button to launch network and internet settings [CHAR LIMIT=45] -->
+    <string name="qc_footer_network_internet_settings">Network &amp; internet settings</string>
+    <!-- Quick Controls: Message to be displayed as the footer button to launch display settings [CHAR LIMIT=45] -->
+    <string name="qc_footer_display_settings">Display settings</string>
+    <!-- Quick Controls: Message to be displayed as the footer button to launch sound settings [CHAR LIMIT=45] -->
+    <string name="qc_footer_network_sound_settings">Sound settings</string>
+    <!-- Quick Controls: Message to be displayed as the footer button to launch profiles and accounts settings [CHAR LIMIT=45] -->
+    <string name="qc_footer_profiles_accounts_settings">Profiles &amp; accounts settings</string>
+
 </resources>

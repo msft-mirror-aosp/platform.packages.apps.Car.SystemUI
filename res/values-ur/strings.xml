@@ -49,4 +49,16 @@
     <string name="activity_blocked_text" msgid="5353157279548801554">"ڈرائیونگ کے دوران آپ یہ خصوصیت استعمال نہیں کر سکتے"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"ایپ بند کریں"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"واپس جائیں"</string>
+    <!-- no translation found for qc_footer_settings (5471523941092316743) -->
+    <skip />
+    <!-- no translation found for qc_footer_bluetooth_settings (2870204430643762847) -->
+    <skip />
+    <!-- no translation found for qc_footer_network_internet_settings (2480582764252681575) -->
+    <skip />
+    <!-- no translation found for qc_footer_display_settings (2950539240110437704) -->
+    <skip />
+    <!-- no translation found for qc_footer_network_sound_settings (5117011034908775097) -->
+    <skip />
+    <!-- no translation found for qc_footer_profiles_accounts_settings (4456419248123950232) -->
+    <skip />
 </resources>

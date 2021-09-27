@@ -100,7 +100,13 @@ public class ClusterDisplayController extends SystemUI {
             new ClusterHomeManager.ClusterHomeCallback() {
         @Override
         public void onClusterStateChanged(ClusterState state, int changes) {
-            if (DBG) Slog.d(TAG, "onClusterStateChanged: changes=" + changes + ", state=" + state);
+            // Need to update mClusterState first, since mClusterState will be referenced during
+            // registerListener() -> onDisplayAreaAppeared() -> resizeTDA().
+            mClusterState = state;
+            if (DBG) {
+                Slog.d(TAG, "onClusterStateChanged: changes=" + changes
+                        + ", displayId=" + state.displayId);
+            }
             if ((changes & CONFIG_DISPLAY_ID) != 0) {
                 if (state.displayId != Display.INVALID_DISPLAY) {
                     mRootTDAOrganizer.registerListener(state.displayId, mRootTDAListener);
@@ -111,7 +117,6 @@ public class ClusterDisplayController extends SystemUI {
             if ((changes & CONFIG_DISPLAY_BOUNDS) != 0 && mRootTDAToken != null) {
                 resizeTDA(mRootTDAToken, state.bounds, state.displayId);
             }
-            mClusterState = state;
         }
 
         @Override
@@ -123,7 +128,7 @@ public class ClusterDisplayController extends SystemUI {
         @Override
         public void onDisplayAreaAppeared(DisplayAreaInfo displayAreaInfo) {
             if (DBG) Slog.d(TAG, "onDisplayAreaAppeared: " + displayAreaInfo);
-            if (mClusterState != null) {
+            if (mClusterState != null && mClusterState.displayId != Display.INVALID_DISPLAY) {
                 resizeTDA(displayAreaInfo.token, mClusterState.bounds, mClusterState.displayId);
             }
             mRootTDAToken = displayAreaInfo.token;
@@ -143,7 +148,10 @@ public class ClusterDisplayController extends SystemUI {
     };
 
     private void resizeTDA(WindowContainerToken token, Rect bounds, int displayId) {
-        if (DBG) Slog.d(TAG, "resizeTDA: token=" + token + ", bounds=" + bounds);
+        if (DBG) {
+            Slog.d(TAG, "resizeTDA: token=" + token + ", bounds=" + bounds
+                    + ", displayId=" + displayId);
+        }
         WindowContainerTransaction wct = new WindowContainerTransaction();
         wct.setBounds(token, bounds);
         wct.setAppBounds(token, bounds);

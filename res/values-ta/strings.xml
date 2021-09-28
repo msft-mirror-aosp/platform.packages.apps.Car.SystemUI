@@ -32,20 +32,25 @@
     <string name="car_loading_profile" msgid="458961191993686065">"ஏற்றுகிறது"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"பயனர் தகவலை ஏற்றுகிறது (<xliff:g id="FROM_USER">%1$d</xliff:g>லிருந்து <xliff:g id="TO_USER">%2$d</xliff:g> வரை)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"மைக்ரோஃபோன் முடக்கத்தில் உள்ளது."</string>
-    <string name="mic_privacy_chip_mic_enabled" msgid="5667789064187849349">"மைக்ரோஃபோன் இயக்கப்பட்டுள்ளது"</string>
-    <string name="mic_privacy_chip_mic_enabled_subtext" msgid="815124399469247109">"ஆப்ஸால் மைக்ரோஃபோனை அணுக முடியும்"</string>
-    <string name="mic_privacy_chip_mic_disabled" msgid="2709173475947157320">"மைக்ரோஃபோன் முடக்கப்பட்டுள்ளது"</string>
-    <string name="mic_privacy_chip_mic_disabled_subtext" msgid="9059745506470016701">"மைக்ரோஃபோனை அணுக எந்த ஆப்ஸிற்கும் அனுமதியில்லை"</string>
-    <string name="mic_privacy_chip_privacy_settings" msgid="719293067082198224">"தனியுரிமை அமைப்புகள்"</string>
+    <!-- no translation found for mic_privacy_chip_use_microphone (6766440136862693589) -->
+    <skip />
+    <!-- no translation found for mic_privacy_chip_use_microphone_subtext (3953394014360603987) -->
+    <skip />
+    <!-- no translation found for mic_privacy_chip_microphone_settings (4520886720588226450) -->
+    <skip />
     <string name="mic_privacy_chip_app_using_mic_suffix" msgid="8355462601492180023">"<xliff:g id="APP">%s</xliff:g> ஆப்ஸ் மைக்ரோஃபோனை உபயோகிக்கிறது"</string>
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> மைக்ரோஃபோனை உபயோகிக்கின்றன"</string>
     <string name="mic_privacy_chip_app_recently_used_mic_suffix" msgid="1819299821245419382">"<xliff:g id="APP">%s</xliff:g> ஆப்ஸ் சமீபத்தில் மைக்ரோஃபோனை உபயோகித்தது"</string>
+    <!-- no translation found for mic_privacy_chip_apps_recently_used_mic_suffix (3451383324549295901) -->
+    <skip />
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"மைக்ரோஃபோன் இயக்கப்பட்டது"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"மைக்ரோஃபோன் முடக்கப்பட்டது"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"சமீபத்தில் மைக்ரோஃபோனைப் பயன்படுத்தியது"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"சரி"</string>
-    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"வாகன மைக்ரோஃபோனை இயக்கவா?"</string>
-    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"உங்கள் மைக்ரோஃபோனை அணுகுவதற்கான விருப்பத்தை ஆப்ஸுக்கும் சேவைகளுக்கும் இது வழங்குகிறது."</string>
+    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (8774244900043105266) -->
+    <skip />
+    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (8382980879434990801) -->
+    <skip />
     <string name="qc_footer_settings" msgid="5471523941092316743">"அமைப்புகள்"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"புளூடூத் அமைப்புகள்"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"நெட்வொர்க் &amp; இணைய அமைப்புகள்"</string>

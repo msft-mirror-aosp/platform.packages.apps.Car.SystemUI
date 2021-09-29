@@ -62,6 +62,7 @@ public class CarSystemBarController {
     private NotificationsShadeController mNotificationsShadeController;
     private HvacPanelController mHvacPanelController;
     private StatusIconPanelController mMicPanelController;
+    private StatusIconPanelController mProfilePanelController;
     private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
 
     private CarSystemBarView mTopView;
@@ -193,6 +194,12 @@ public class CarSystemBarController {
         setupBar(mTopView, mTopBarTouchListener, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController);
         setupMicQcPanel();
+        if (mProfilePanelController == null) {
+            mProfilePanelController = new StatusIconPanelController(
+                    mContext, mCarServiceProvider, mBroadcastDispatcher);
+            mProfilePanelController.attachPanel(mTopView.requireViewById(R.id.user_name),
+                    R.layout.qc_profile_switcher, R.dimen.car_profile_quick_controls_panel_width);
+        }
         return mTopView;
     }
 

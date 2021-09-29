@@ -247,6 +247,8 @@
     <dimen name="car_status_icon_panel_padding_bottom">12dp</dimen>
     <dimen name="car_status_icon_panel_dim" format="float">0.5</dimen>
 
+    <dimen name="car_profile_quick_controls_panel_width">480dp</dimen>
+
     <!-- dimensions for HVAC   -->
 
     <dimen name="hvac_panel_full_expanded_height">500dp</dimen>

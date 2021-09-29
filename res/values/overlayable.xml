@@ -639,17 +639,16 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="hvac_temperature_off"/>
       <item type="string" name="mic_privacy_chip_app_recently_used_mic_suffix"/>
       <item type="string" name="mic_privacy_chip_app_using_mic_suffix"/>
+      <item type="string" name="mic_privacy_chip_apps_recently_used_mic_suffix"/>
       <item type="string" name="mic_privacy_chip_apps_using_mic_suffix"/>
       <item type="string" name="mic_privacy_chip_dialog_ok"/>
       <item type="string" name="mic_privacy_chip_dialog_title_mic"/>
-      <item type="string" name="mic_privacy_chip_mic_disabled"/>
-      <item type="string" name="mic_privacy_chip_mic_disabled_subtext"/>
-      <item type="string" name="mic_privacy_chip_mic_enabled"/>
-      <item type="string" name="mic_privacy_chip_mic_enabled_subtext"/>
+      <item type="string" name="mic_privacy_chip_microphone_settings"/>
       <item type="string" name="mic_privacy_chip_off_content"/>
       <item type="string" name="mic_privacy_chip_off_toast"/>
       <item type="string" name="mic_privacy_chip_on_toast"/>
-      <item type="string" name="mic_privacy_chip_privacy_settings"/>
+      <item type="string" name="mic_privacy_chip_use_microphone"/>
+      <item type="string" name="mic_privacy_chip_use_microphone_subtext"/>
       <item type="string" name="qc_footer_bluetooth_settings"/>
       <item type="string" name="qc_footer_display_settings"/>
       <item type="string" name="qc_footer_network_internet_settings"/>

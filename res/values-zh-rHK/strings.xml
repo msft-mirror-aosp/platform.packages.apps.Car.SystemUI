@@ -32,20 +32,25 @@
     <string name="car_loading_profile" msgid="458961191993686065">"正在載入"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"正在載入使用者 (由 <xliff:g id="FROM_USER">%1$d</xliff:g> 至 <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"個咪閂咗。"</string>
-    <string name="mic_privacy_chip_mic_enabled" msgid="5667789064187849349">"麥克風已啟用"</string>
-    <string name="mic_privacy_chip_mic_enabled_subtext" msgid="815124399469247109">"應用程式可存取麥克風"</string>
-    <string name="mic_privacy_chip_mic_disabled" msgid="2709173475947157320">"麥克風已停用"</string>
-    <string name="mic_privacy_chip_mic_disabled_subtext" msgid="9059745506470016701">"沒有應用程式可存取麥克風"</string>
-    <string name="mic_privacy_chip_privacy_settings" msgid="719293067082198224">"私隱設定"</string>
+    <!-- no translation found for mic_privacy_chip_use_microphone (6766440136862693589) -->
+    <skip />
+    <!-- no translation found for mic_privacy_chip_use_microphone_subtext (3953394014360603987) -->
+    <skip />
+    <!-- no translation found for mic_privacy_chip_microphone_settings (4520886720588226450) -->
+    <skip />
     <string name="mic_privacy_chip_app_using_mic_suffix" msgid="8355462601492180023">"「<xliff:g id="APP">%s</xliff:g>」正在使用麥克風"</string>
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"「<xliff:g id="APP_LIST">%s</xliff:g>」正在使用麥克風"</string>
     <string name="mic_privacy_chip_app_recently_used_mic_suffix" msgid="1819299821245419382">"「<xliff:g id="APP">%s</xliff:g>」最近曾使用麥克風"</string>
+    <!-- no translation found for mic_privacy_chip_apps_recently_used_mic_suffix (3451383324549295901) -->
+    <skip />
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"麥克風已開啟"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"麥克風已關閉"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"最近使用麥克風的應用程式"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"確定"</string>
-    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2609868628872435121">"要啟用車輛麥克風嗎？"</string>
-    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="5546778445306036986">"這使應用程式和服務可以選擇存取麥克風。"</string>
+    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (8774244900043105266) -->
+    <skip />
+    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (8382980879434990801) -->
+    <skip />
     <string name="activity_blocked_text" msgid="5353157279548801554">"您無法在駕駛時使用此功能"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"關閉應用程式"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"返回"</string>

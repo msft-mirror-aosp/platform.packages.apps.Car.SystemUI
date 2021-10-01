@@ -97,8 +97,8 @@ public abstract class StatusIconGroupContainerController {
                     containerViewGroup, /* attachToRoot= */ false);
             statusIconController.registerIconView(entryPointView.findViewWithTag(mIconTag));
             if (statusIconController.getPanelContentLayout() != PANEL_CONTENT_LAYOUT_NONE) {
-                StatusIconPanelController panelController = new StatusIconPanelController(mContext,
-                        mCarServiceProvider, mBroadcastDispatcher);
+                QuickControlPanelController panelController = new QuickControlPanelController(
+                        mContext, mCarServiceProvider, mBroadcastDispatcher);
                 panelController.attachPanel(entryPointView,
                         statusIconController.getPanelContentLayout(),
                         statusIconController.getPanelWidth());

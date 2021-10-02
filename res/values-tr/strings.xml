@@ -32,25 +32,19 @@
     <string name="car_loading_profile" msgid="458961191993686065">"Yükleniyor"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Kullanıcı yükleniyor (<xliff:g id="FROM_USER">%1$d</xliff:g> kullanıcısından <xliff:g id="TO_USER">%2$d</xliff:g> kullanıcısına)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"Mikrofon kapalı."</string>
-    <!-- no translation found for mic_privacy_chip_use_microphone (6766440136862693589) -->
-    <skip />
-    <!-- no translation found for mic_privacy_chip_use_microphone_subtext (3953394014360603987) -->
-    <skip />
-    <!-- no translation found for mic_privacy_chip_microphone_settings (4520886720588226450) -->
-    <skip />
+    <string name="mic_privacy_chip_use_microphone" msgid="6766440136862693589">"Mikrofonu kullan"</string>
+    <string name="mic_privacy_chip_use_microphone_subtext" msgid="3953394014360603987">"İzne sahip uygulamalar için"</string>
+    <string name="mic_privacy_chip_microphone_settings" msgid="4520886720588226450">"Mikrofon ayarları"</string>
     <string name="mic_privacy_chip_app_using_mic_suffix" msgid="8355462601492180023">"<xliff:g id="APP">%s</xliff:g>, mikrofonu kullanıyor"</string>
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g>, mikrofonu kullanıyor"</string>
     <string name="mic_privacy_chip_app_recently_used_mic_suffix" msgid="1819299821245419382">"<xliff:g id="APP">%s</xliff:g>, kısa süre önce mikrofonu kullandı"</string>
-    <!-- no translation found for mic_privacy_chip_apps_recently_used_mic_suffix (3451383324549295901) -->
-    <skip />
+    <string name="mic_privacy_chip_apps_recently_used_mic_suffix" msgid="3451383324549295901">"<xliff:g id="APP_0">%1$s</xliff:g> ve <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> uygulama daha yakın zamanda mikrofonu kullandı"</string>
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"Mikrofon açık"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Mikrofon kapalı"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"Mikrofonun son kullanımı"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"Tamam"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (8774244900043105266) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (8382980879434990801) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Araç mikrofonu açılsın mı?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Devam etmek için bilgi-eğlence sistemi mikrofonunu açın. Bu şekilde, izni olan tüm uygulamalar için mikrofon açılır."</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"Ayarlar"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Bluetooth ayarları"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"Ağ ve internet ayarları"</string>

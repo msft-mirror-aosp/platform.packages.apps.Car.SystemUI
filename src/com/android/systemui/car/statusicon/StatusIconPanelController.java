@@ -37,12 +37,16 @@ import android.widget.PopupWindow;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.qc.SystemUIQCView;
+
+import java.util.ArrayList;
 
 /**
- * A controller for a panel view.
+ * A controller for a panel view associated with a status icon.
  */
-public class ControlPanelController {
+public class StatusIconPanelController {
     private final Context mContext;
+    private final ArrayList<SystemUIQCView> mQCViews = new ArrayList<>();
 
     private PopupWindow mPanel;
     private ViewGroup mPanelContent;
@@ -54,7 +58,6 @@ public class ControlPanelController {
             reset();
         }
     };
-
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -67,7 +70,7 @@ public class ControlPanelController {
         }
     };
 
-    public ControlPanelController(
+    public StatusIconPanelController(
             Context context,
             CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher) {
@@ -87,17 +90,29 @@ public class ControlPanelController {
         });
     }
 
-    /**
-     * Attaches a panel to a root view that toggles the panel visibility when clicked.
-     */
-    public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes) {
-        view.setOnClickListener((v) -> onPanelRootViewClicked(v, layoutRes, widthRes));
+    protected void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes) {
+        view.setOnClickListener((v) -> {
+            if (mPanel == null) {
+                mPanel = createPanel(layoutRes, widthRes);
+            }
+
+            if (mPanel.isShowing()) {
+                mPanel.dismiss();
+                return;
+            }
+
+            mQCViews.forEach(qcView -> qcView.listen(true));
+            mPanel.showAsDropDown(view);
+
+            dimBehind(mPanel);
+        });
     }
 
-    protected PopupWindow createPanel(@LayoutRes int layoutRes, @DimenRes int widthRes) {
+    private PopupWindow createPanel(@LayoutRes int layoutRes, @DimenRes int widthRes) {
         int panelWidth = mContext.getResources().getDimensionPixelSize(widthRes);
         mPanelContent = (ViewGroup) LayoutInflater.from(mContext).inflate(layoutRes, /* root= */
                 null);
+        findQcViews(mPanelContent);
         PopupWindow panel = new PopupWindow(mPanelContent, panelWidth, WRAP_CONTENT);
         panel.setBackgroundDrawable(
                 mContext.getResources().getDrawable(R.drawable.status_icon_panel_bg,
@@ -105,45 +120,14 @@ public class ControlPanelController {
         panel.setWindowLayoutType(TYPE_STATUS_BAR_SUB_PANEL);
         panel.setFocusable(true);
         panel.setOutsideTouchable(false);
-        panel.setOnDismissListener(this::onPanelDismissed);
+        panel.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                mQCViews.forEach(qcView -> qcView.listen(false));
+            }
+        });
 
         return panel;
-    }
-
-    protected void reset() {
-        if (mPanel == null) return;
-
-        mPanel.dismiss();
-        mPanel = null;
-        mPanelContent = null;
-    }
-
-    protected void onPanelRootViewClicked(View rootView, @LayoutRes int layoutRes,
-            @DimenRes int widthRes) {
-        if (mPanel == null) {
-            mPanel = createPanel(layoutRes, widthRes);
-        }
-
-        if (mPanel.isShowing()) {
-            mPanel.dismiss();
-            return;
-        }
-
-        mPanel.showAsDropDown(rootView);
-
-        dimBehind(mPanel);
-    }
-
-    protected void onPanelDismissed() {
-        // no-op.
-    }
-
-    protected PopupWindow getPanel() {
-        return mPanel;
-    }
-
-    protected ViewGroup getPanelContentView() {
-        return mPanelContent;
     }
 
     private void dimBehind(PopupWindow popupWindow) {
@@ -160,5 +144,26 @@ public class ControlPanelController {
         lp.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
         lp.dimAmount = mDimValue;
         wm.updateViewLayout(container, lp);
+    }
+
+    private void reset() {
+        if (mPanel == null) return;
+
+        mPanel.dismiss();
+        mPanel = null;
+        mPanelContent = null;
+        mQCViews.forEach(v -> v.destroy());
+        mQCViews.clear();
+    }
+
+    private void findQcViews(ViewGroup rootView) {
+        for (int i = 0; i < rootView.getChildCount(); i++) {
+            View v = rootView.getChildAt(i);
+            if (v instanceof SystemUIQCView) {
+                mQCViews.add((SystemUIQCView) v);
+            } else if (v instanceof ViewGroup) {
+                this.findQcViews((ViewGroup) v);
+            }
+        }
     }
 }

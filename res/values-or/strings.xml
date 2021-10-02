@@ -32,25 +32,19 @@
     <string name="car_loading_profile" msgid="458961191993686065">"ଲୋଡ୍ କରାଯାଉଛି"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ଲୋଡ୍ କରାଯାଉଛି (<xliff:g id="FROM_USER">%1$d</xliff:g>ଙ୍କ ଠାରୁ <xliff:g id="TO_USER">%2$d</xliff:g> ପର୍ଯ୍ୟନ୍ତ)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"ମାଇକ୍ରୋଫୋନ୍ ବନ୍ଦ ଅଛି।"</string>
-    <!-- no translation found for mic_privacy_chip_use_microphone (6766440136862693589) -->
-    <skip />
-    <!-- no translation found for mic_privacy_chip_use_microphone_subtext (3953394014360603987) -->
-    <skip />
-    <!-- no translation found for mic_privacy_chip_microphone_settings (4520886720588226450) -->
-    <skip />
+    <string name="mic_privacy_chip_use_microphone" msgid="6766440136862693589">"ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରନ୍ତୁ"</string>
+    <string name="mic_privacy_chip_use_microphone_subtext" msgid="3953394014360603987">"ଅନୁମତି ଥିବା ଆପଗୁଡ଼ିକ ପାଇଁ"</string>
+    <string name="mic_privacy_chip_microphone_settings" msgid="4520886720588226450">"ମାଇକ୍ରୋଫୋନ ସେଟିଂସ"</string>
     <string name="mic_privacy_chip_app_using_mic_suffix" msgid="8355462601492180023">"<xliff:g id="APP">%s</xliff:g> ମାଇକ୍ ବ୍ୟବହାର କରୁଛି"</string>
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> ମାଇକ୍ ବ୍ୟବହାର କରୁଛନ୍ତି"</string>
     <string name="mic_privacy_chip_app_recently_used_mic_suffix" msgid="1819299821245419382">"ନିକଟରେ <xliff:g id="APP">%s</xliff:g> ମାଇକ୍ ବ୍ୟବହାର କରିଥିଲା"</string>
-    <!-- no translation found for mic_privacy_chip_apps_recently_used_mic_suffix (3451383324549295901) -->
-    <skip />
+    <string name="mic_privacy_chip_apps_recently_used_mic_suffix" msgid="3451383324549295901">"<xliff:g id="APP_0">%1$s</xliff:g> ଏବଂ <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g>ଟି ଅଧିକ ଆପ ଦ୍ୱାରା ବର୍ତ୍ତମାନ ମାଇକ ବ୍ୟବହାର କରାଯାଇଛି"</string>
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"ମାଇକ୍ରୋଫୋନ୍ ଚାଲୁ କରାଯାଇଛି"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"ମାଇକ୍ରୋଫୋନ୍ ବନ୍ଦ କରାଯାଇଛି"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"ମାଇକ୍ରୋଫୋନର ବର୍ତ୍ତମାନ ବ୍ୟବହାର"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ଠିକ୍ ଅଛି"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (8774244900043105266) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (8382980879434990801) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"ଗାଡ଼ିର ମାଇକ୍ରୋଫୋନ ଚାଲୁ କରିବେ କି?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"ଜାରି ରଖିବା ପାଇଁ, ଇନଫୋଟେନମେଣ୍ଟ ସିଷ୍ଟମ ମାଇକ୍ରୋଫୋନକୁ ଚାଲୁ କରନ୍ତୁ। ଏହା ଅନୁମତି ଥିବା ସମସ୍ତ ଆପ ପାଇଁ ମାଇକ୍ରୋଫୋନ ଚାଲୁ କରିବ।"</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"ସେଟିଂସ"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"ବ୍ଲୁଟୁଥ ସେଟିଂସ"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"ନେଟୱାର୍କ ଏବଂ ଇଣ୍ଟରନେଟ ସେଟିଂସ"</string>

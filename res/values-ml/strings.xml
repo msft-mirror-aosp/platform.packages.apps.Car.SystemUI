@@ -32,25 +32,19 @@
     <string name="car_loading_profile" msgid="458961191993686065">"ലോഡ് ചെയ്യുന്നു"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"ഉപയോക്തൃ പ്രൊഫൈൽ ലോഡ് ചെയ്യുന്നു (<xliff:g id="FROM_USER">%1$d</xliff:g> എന്നതിൽ നിന്ന് <xliff:g id="TO_USER">%2$d</xliff:g> എന്നതിലേക്ക്)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"മൈക്രോഫോൺ ഓഫാണ്."</string>
-    <!-- no translation found for mic_privacy_chip_use_microphone (6766440136862693589) -->
-    <skip />
-    <!-- no translation found for mic_privacy_chip_use_microphone_subtext (3953394014360603987) -->
-    <skip />
-    <!-- no translation found for mic_privacy_chip_microphone_settings (4520886720588226450) -->
-    <skip />
+    <string name="mic_privacy_chip_use_microphone" msgid="6766440136862693589">"മൈക്രോഫോൺ ഉപയോഗിക്കുക"</string>
+    <string name="mic_privacy_chip_use_microphone_subtext" msgid="3953394014360603987">"അനുമതിയുള്ള ആപ്പുകൾക്ക്"</string>
+    <string name="mic_privacy_chip_microphone_settings" msgid="4520886720588226450">"മൈക്രോഫോൺ ക്രമീകരണങ്ങൾ"</string>
     <string name="mic_privacy_chip_app_using_mic_suffix" msgid="8355462601492180023">"<xliff:g id="APP">%s</xliff:g> , മൈക്ക് ഉപയോഗിക്കുന്നു"</string>
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> എന്നിവ മൈക്ക് ഉപയോഗിക്കുന്നു"</string>
     <string name="mic_privacy_chip_app_recently_used_mic_suffix" msgid="1819299821245419382">"<xliff:g id="APP">%s</xliff:g>, അടുത്തിടെ മൈക്ക് ഉപയോഗിച്ചു"</string>
-    <!-- no translation found for mic_privacy_chip_apps_recently_used_mic_suffix (3451383324549295901) -->
-    <skip />
+    <string name="mic_privacy_chip_apps_recently_used_mic_suffix" msgid="3451383324549295901">"<xliff:g id="APP_0">%1$s</xliff:g> എന്ന ആപ്പും മറ്റ് <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> ആപ്പുകളും അടുത്തിടെ ഈ മൈക്ക് ഉപയോഗിച്ചു"</string>
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"മൈക്രോഫോൺ ഓണാക്കി"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"മൈക്രോഫോൺ ഓഫാക്കി"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"മൈക്രോഫോണിന്റെ സമീപകാല ഉപയോഗം"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ശരി"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (8774244900043105266) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (8382980879434990801) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"വാഹനത്തിന്റെ മൈക്രോഫോൺ ഓണാക്കണോ?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"തുടരാൻ, ഇൻഫോറ്റേയിൻമെന്റ് സി‌സ്‌റ്റം മൈക്രോഫോൺ ഓണാക്കുക. ഇത് അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും മൈക്രോഫോൺ ഓണാക്കും."</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"ക്രമീകരണം"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Bluetooth ക്രമീകരണം"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"നെറ്റ്‌വർക്കും ഇന്റർനെറ്റും ക്രമീകരണം"</string>

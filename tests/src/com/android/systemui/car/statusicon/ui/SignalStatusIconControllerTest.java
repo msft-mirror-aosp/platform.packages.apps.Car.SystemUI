@@ -27,8 +27,8 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.statusbar.connectivity.NetworkController;
 import com.android.systemui.statusbar.policy.HotspotController;
-import com.android.systemui.statusbar.policy.NetworkController;
 
 import org.junit.Before;
 import org.junit.Test;

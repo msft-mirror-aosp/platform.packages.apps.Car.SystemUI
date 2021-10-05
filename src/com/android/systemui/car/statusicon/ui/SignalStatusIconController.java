@@ -26,9 +26,9 @@ import com.android.settingslib.graph.SignalDrawable;
 import com.android.systemui.R;
 import com.android.systemui.car.statusicon.StatusIconController;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.statusbar.connectivity.NetworkController;
+import com.android.systemui.statusbar.connectivity.NetworkControllerImpl;
 import com.android.systemui.statusbar.policy.HotspotController;
-import com.android.systemui.statusbar.policy.NetworkController;
-import com.android.systemui.statusbar.policy.NetworkControllerImpl;
 
 import javax.inject.Inject;
 

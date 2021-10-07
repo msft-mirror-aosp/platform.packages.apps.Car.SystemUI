@@ -19,7 +19,6 @@ package com.android.systemui.car.keyguard;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewRootImpl;
 
 import androidx.annotation.VisibleForTesting;
@@ -342,7 +341,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     }
 
     @Override
-    public void registerStatusBar(StatusBar statusBar, ViewGroup container,
+    public void registerStatusBar(StatusBar statusBar,
             NotificationPanelViewController notificationPanelViewController,
             BiometricUnlockController biometricUnlockController,
             View notificationContainer, KeyguardBypassController bypassController) {

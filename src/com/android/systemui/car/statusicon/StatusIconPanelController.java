@@ -34,6 +34,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 
+import com.android.car.ui.utils.ViewUtils;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
@@ -102,6 +103,13 @@ public class StatusIconPanelController {
             }
 
             mQCViews.forEach(qcView -> qcView.listen(true));
+
+            // Clear the focus highlight in this window since a dialog window is about to show.
+            // TODO(b/201700195): remove this workaround once the window focus issue is fixed.
+            if (view.isFocused()) {
+                ViewUtils.hideFocus(view.getRootView());
+            }
+
             mPanel.showAsDropDown(view);
 
             dimBehind(mPanel);

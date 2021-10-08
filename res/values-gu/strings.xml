@@ -32,25 +32,19 @@
     <string name="car_loading_profile" msgid="458961191993686065">"લોડ કરી રહ્યાં છીએ"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"વપરાશકર્તાને લોડ કરી રહ્યાં છીએ (<xliff:g id="FROM_USER">%1$d</xliff:g>માંથી <xliff:g id="TO_USER">%2$d</xliff:g>માં)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"માઇક્રોફોન બંધ છે."</string>
-    <!-- no translation found for mic_privacy_chip_use_microphone (6766440136862693589) -->
-    <skip />
-    <!-- no translation found for mic_privacy_chip_use_microphone_subtext (3953394014360603987) -->
-    <skip />
-    <!-- no translation found for mic_privacy_chip_microphone_settings (4520886720588226450) -->
-    <skip />
+    <string name="mic_privacy_chip_use_microphone" msgid="6766440136862693589">"માઇક્રોફોનનો ઉપયોગ કરો"</string>
+    <string name="mic_privacy_chip_use_microphone_subtext" msgid="3953394014360603987">"પરવાનગી ધરાવતી ઍપ માટે"</string>
+    <string name="mic_privacy_chip_microphone_settings" msgid="4520886720588226450">"માઇક્રોફોન સેટિંગ"</string>
     <string name="mic_privacy_chip_app_using_mic_suffix" msgid="8355462601492180023">"<xliff:g id="APP">%s</xliff:g> માઇકનો ઉપયોગ કરી રહી છે"</string>
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> માઇકનો ઉપયોગ કરી રહી છે"</string>
     <string name="mic_privacy_chip_app_recently_used_mic_suffix" msgid="1819299821245419382">"તાજેતરમાં <xliff:g id="APP">%s</xliff:g> દ્વારા માઇકનો ઉપયોગ થયો"</string>
-    <!-- no translation found for mic_privacy_chip_apps_recently_used_mic_suffix (3451383324549295901) -->
-    <skip />
+    <string name="mic_privacy_chip_apps_recently_used_mic_suffix" msgid="3451383324549295901">"તાજેતરમાં માઇકનો ઉપયોગ <xliff:g id="APP_0">%1$s</xliff:g> અને વધુ <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> ઍપ દ્વારા કરવામાં આવ્યો હતો"</string>
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"માઇક્રોફોન ચાલુ કર્યું"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"માઇક્રોફોન બંધ કર્યું"</string>
     <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"આ ઍપ માટે માઇક્રોફોનનો તાજેતરમાં ઉપયોગ થયો"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ઓકે"</string>
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_title (8774244900043105266) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_mic_dialog_content (8382980879434990801) -->
-    <skip />
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"શું વાહનનો માઇક્રોફોન ચાલુ કરીએ?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"આગળ વધવા માટે, ઇન્ફોટેનમેન્ટ સિસ્ટમનો માઇક્રોફોન ચાલુ કરો. આમ કરવાથી પરવાનગી ધરાવતી બધી ઍપ માટે માઇક્રોફોન ચાલુ થશે."</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"ડ્રાઇવ કરતી વખતે તમે આ સુવિધાનો ઉપયોગ કરી શકતા નથી"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"ઍપ બંધ કરો"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"પાછળ"</string>

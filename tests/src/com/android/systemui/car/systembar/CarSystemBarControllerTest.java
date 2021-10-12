@@ -31,7 +31,10 @@ import androidx.test.filters.SmallTest;
 
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
+import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.privacy.MicQcPanel;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.flags.FeatureFlags;
@@ -70,6 +73,12 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     private FeatureFlags mFeatureFlags;
     @Mock
     private QuickControlsEntryPointsController mQuickControlsEntryPointsController;
+    @Mock
+    private CarServiceProvider mCarServiceProvider;
+    @Mock
+    private BroadcastDispatcher mBroadcastDispatcher;
+    @Mock
+    private MicQcPanel.MicPrivacyElementsProvider mMicPrivacyElementsProvider;
 
     @Before
     public void setUp() throws Exception {
@@ -84,10 +93,12 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     }
 
     private CarSystemBarController createSystemBarController() {
-        return new CarSystemBarController(mContext, mCarSystemBarViewFactory,
-                mButtonSelectionStateController, () -> mUserNameViewController,
-                () -> mPrivacyChipViewController, mButtonRoleHolderController,
-                new SystemBarConfigs(mTestableResources.getResources()));
+        return new CarSystemBarController(mContext, mCarSystemBarViewFactory, mCarServiceProvider,
+                mBroadcastDispatcher, mButtonSelectionStateController,
+                () -> mUserNameViewController, () -> mPrivacyChipViewController,
+                mButtonRoleHolderController,
+                new SystemBarConfigs(mTestableResources.getResources()),
+                () -> mMicPrivacyElementsProvider);
     }
 
     @Test

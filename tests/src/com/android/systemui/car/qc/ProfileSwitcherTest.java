@@ -22,10 +22,18 @@ import static android.os.UserManager.SWITCHABILITY_STATUS_USER_SWITCH_DISALLOWED
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
+import android.car.user.CarUserManager;
+import android.car.user.UserCreationResult;
+import android.car.user.UserSwitchResult;
+import android.car.util.concurrent.AsyncFuture;
+import android.content.Intent;
 import android.content.pm.UserInfo;
 import android.os.UserManager;
 import android.testing.AndroidTestingRunner;
@@ -35,6 +43,7 @@ import androidx.test.filters.SmallTest;
 
 import com.android.car.qc.QCItem;
 import com.android.car.qc.QCList;
+import com.android.car.qc.QCRow;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
@@ -47,6 +56,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -59,16 +70,23 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
     @Mock
     private UserManager mUserManager;
+    @Mock
+    private CarUserManager mCarUserManager;
 
     @Before
-    public void setUp() {
+    public void setUp() throws ExecutionException, InterruptedException, TimeoutException {
         MockitoAnnotations.initMocks(this);
 
-        mContext.addMockSystemService(UserManager.class, mUserManager);
         when(mUserManager.getAliveUsers()).thenReturn(mAliveUsers);
         when(mUserManager.getUserSwitchability(any())).thenReturn(SWITCHABILITY_STATUS_OK);
 
-        mProfileSwitcher = new ProfileSwitcher(mContext);
+        AsyncFuture<UserSwitchResult> switchResultFuture = mock(AsyncFuture.class);
+        UserSwitchResult switchResult = mock(UserSwitchResult.class);
+        when(switchResult.isSuccess()).thenReturn(true);
+        when(switchResultFuture.get(anyLong(), any())).thenReturn(switchResult);
+        when(mCarUserManager.switchUser(anyInt())).thenReturn(switchResultFuture);
+
+        mProfileSwitcher = new ProfileSwitcher(mContext, mUserManager, mCarUserManager);
     }
 
     @Test
@@ -140,6 +158,49 @@ public class ProfileSwitcherTest extends SysuiTestCase {
                 mContext.getString(R.string.car_guest));
         assertThat(list.getRows().get(2).getTitle()).isEqualTo(
                 mContext.getString(R.string.car_add_user));
+    }
+
+    @Test
+    public void onUserPressed_triggersSwitch() {
+        int currentUserId = 1000;
+        int otherUserId = 1001;
+        UserInfo user1 = generateUser(currentUserId, "User1", /* supportsSwitch= */ true,
+                /* isGuest= */ false);
+        UserInfo user2 = generateUser(otherUserId, "User2", /* supportsSwitch= */ true,
+                /* isGuest= */ false);
+        mAliveUsers.add(user1);
+        mAliveUsers.add(user2);
+        QCList list = getQCList();
+        // Expect four rows - one for each user, one for the guest user, and one for add user
+        assertThat(list.getRows().size()).isEqualTo(4);
+        QCRow otherUserRow = list.getRows().get(1);
+        otherUserRow.getActionHandler().onAction(otherUserRow, mContext, new Intent());
+        verify(mCarUserManager).switchUser(otherUserId);
+    }
+
+    @Test
+    public void onGuestPressed_createsAndSwitches()
+            throws ExecutionException, InterruptedException, TimeoutException {
+        int currentUserId = 1000;
+        int guestUserId = 1001;
+        AsyncFuture<UserCreationResult> createResultFuture = mock(AsyncFuture.class);
+        when(createResultFuture.get(anyLong(), any())).thenReturn(null);
+        when(mCarUserManager.createGuest(any())).thenReturn(createResultFuture);
+
+        UserInfo guestUserInfo = mock(UserInfo.class);
+        guestUserInfo.id = guestUserId;
+        when(mUserManager.findCurrentGuestUser()).thenReturn(guestUserInfo);
+
+        UserInfo user1 = generateUser(currentUserId, "User1", /* supportsSwitch= */ true,
+                /* isGuest= */ false);
+        mAliveUsers.add(user1);
+        QCList list = getQCList();
+        // Expect 3 rows - one for the user, one for the guest user, and one for add user
+        assertThat(list.getRows().size()).isEqualTo(3);
+        QCRow guestRow = list.getRows().get(1);
+        guestRow.getActionHandler().onAction(guestRow, mContext, new Intent());
+        verify(mCarUserManager).createGuest(any());
+        verify(mCarUserManager).switchUser(guestUserId);
     }
 
     private QCList getQCList() {

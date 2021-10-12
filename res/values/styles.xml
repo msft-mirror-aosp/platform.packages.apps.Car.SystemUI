@@ -147,4 +147,18 @@
         <item name="android:gravity">center</item>
         <item name="android:paddingHorizontal">@dimen/activity_blocking_action_button_padding_horizontal</item>
     </style>
+
+    <style name="QCFooterButtonStyle"
+           parent="android:Widget.DeviceDefault.Button.Borderless.Colored">
+        <item name="android:minHeight">@dimen/car_quick_controls_footer_button_min_height</item>
+        <item name="android:layout_marginVertical">
+            @dimen/car_quick_controls_footer_button_vertical_margin
+        </item>
+        <item name="android:layout_marginStart">
+            @dimen/car_quick_controls_footer_button_start_margin
+        </item>
+        <item name="android:paddingHorizontal">
+            @dimen/car_quick_controls_footer_button_horizontal_padding
+        </item>
+    </style>
 </resources>

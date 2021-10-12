@@ -190,6 +190,10 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_quick_controls_entry_points_button_margin_top"/>
       <item type="dimen" name="car_quick_controls_entry_points_button_width"/>
       <item type="dimen" name="car_quick_controls_entry_points_icon_width"/>
+      <item type="dimen" name="car_quick_controls_footer_button_horizontal_padding"/>
+      <item type="dimen" name="car_quick_controls_footer_button_min_height"/>
+      <item type="dimen" name="car_quick_controls_footer_button_start_margin"/>
+      <item type="dimen" name="car_quick_controls_footer_button_vertical_margin"/>
       <item type="dimen" name="car_quick_controls_icon_drawable_height"/>
       <item type="dimen" name="car_quick_controls_icon_drawable_width"/>
       <item type="dimen" name="car_right_system_bar_width"/>
@@ -653,6 +657,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="style" name="HvacTemperature"/>
       <item type="style" name="HvacTemperatureControlIcon"/>
       <item type="style" name="HvacTemperatureFont"/>
+      <item type="style" name="QCFooterButtonStyle"/>
       <item type="style" name="QuickControlEntryPointButton"/>
       <item type="style" name="SystemBarButton"/>
       <item type="style" name="TextAppearance.CarStatus"/>

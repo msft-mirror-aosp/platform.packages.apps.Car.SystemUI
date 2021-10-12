@@ -17,12 +17,18 @@
 package com.android.systemui.car.systembar;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
+import com.android.systemui.R;
+import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.privacy.MicQcPanel;
 import com.android.systemui.car.statusbar.UserNameViewController;
+import com.android.systemui.car.statusicon.StatusIconPanelController;
 import com.android.systemui.dagger.SysUISingleton;
 
 import javax.inject.Inject;
@@ -35,10 +41,13 @@ public class CarSystemBarController {
 
     private final Context mContext;
     private final CarSystemBarViewFactory mCarSystemBarViewFactory;
+    private final CarServiceProvider mCarServiceProvider;
+    private final BroadcastDispatcher mBroadcastDispatcher;
     private final ButtonSelectionStateController mButtonSelectionStateController;
     private final ButtonRoleHolderController mButtonRoleHolderController;
     private final Lazy<UserNameViewController> mUserNameViewControllerLazy;
     private final Lazy<PrivacyChipViewController> mPrivacyChipViewControllerLazy;
+    private final Lazy<MicQcPanel.MicPrivacyElementsProvider> mMicPrivacyElementsProviderLazy;
 
     private final boolean mShowTop;
     private final boolean mShowBottom;
@@ -51,6 +60,7 @@ public class CarSystemBarController {
     private View.OnTouchListener mRightBarTouchListener;
     private NotificationsShadeController mNotificationsShadeController;
     private HvacPanelController mHvacPanelController;
+    private StatusIconPanelController mMicPanelController;
 
     private CarSystemBarView mTopView;
     private CarSystemBarView mBottomView;
@@ -60,17 +70,23 @@ public class CarSystemBarController {
     @Inject
     public CarSystemBarController(Context context,
             CarSystemBarViewFactory carSystemBarViewFactory,
+            CarServiceProvider carServiceProvider,
+            BroadcastDispatcher broadcastDispatcher,
             ButtonSelectionStateController buttonSelectionStateController,
             Lazy<UserNameViewController> userNameViewControllerLazy,
             Lazy<PrivacyChipViewController> privacyChipViewControllerLazy,
             ButtonRoleHolderController buttonRoleHolderController,
-            SystemBarConfigs systemBarConfigs) {
+            SystemBarConfigs systemBarConfigs,
+            Lazy<MicQcPanel.MicPrivacyElementsProvider> micPrivacyElementsProvider) {
         mContext = context;
         mCarSystemBarViewFactory = carSystemBarViewFactory;
+        mCarServiceProvider = carServiceProvider;
+        mBroadcastDispatcher = broadcastDispatcher;
         mButtonSelectionStateController = buttonSelectionStateController;
         mUserNameViewControllerLazy = userNameViewControllerLazy;
         mPrivacyChipViewControllerLazy = privacyChipViewControllerLazy;
         mButtonRoleHolderController = buttonRoleHolderController;
+        mMicPrivacyElementsProviderLazy = micPrivacyElementsProvider;
 
         // Read configuration.
         mShowTop = systemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.TOP);
@@ -174,6 +190,7 @@ public class CarSystemBarController {
         mTopView = mCarSystemBarViewFactory.getTopBar(isSetUp);
         setupBar(mTopView, mTopBarTouchListener, mNotificationsShadeController,
                 mHvacPanelController);
+        setupMicQcPanel();
         return mTopView;
     }
 
@@ -226,6 +243,25 @@ public class CarSystemBarController {
         mButtonRoleHolderController.addAllButtonsWithRoleName(view);
         mUserNameViewControllerLazy.get().addUserNameView(view);
         mPrivacyChipViewControllerLazy.get().addPrivacyChipView(view);
+    }
+
+    private void setupMicQcPanel() {
+        if (mMicPanelController == null) {
+            mMicPanelController = new StatusIconPanelController(mContext, mCarServiceProvider,
+                    mBroadcastDispatcher);
+        }
+
+        mMicPanelController.setOnQcViewsFoundListener(qcViews -> qcViews.forEach(qcView -> {
+            if (qcView.getLocalQCProvider() instanceof MicQcPanel) {
+                MicQcPanel micQcPanel = (MicQcPanel) qcView.getLocalQCProvider();
+                micQcPanel.setControllers(mPrivacyChipViewControllerLazy.get(),
+                        mMicPrivacyElementsProviderLazy.get());
+            }
+        }));
+
+        mMicPanelController.attachPanel(mTopView.requireViewById(R.id.privacy_chip),
+                R.layout.qc_mic_panel, R.dimen.car_mic_qc_panel_width,
+                /* xOffset= */ 0, /* yOffset= */ 0, Gravity.TOP | Gravity.END);
     }
 
     /** Sets a touch listener for the top navigation bar. */

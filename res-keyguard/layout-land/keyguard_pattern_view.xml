@@ -21,7 +21,7 @@
      - Added title "Enter your Pattern" at the top
      - Hid the emergency call at the bottom
 -->
-<com.android.keyguard.KeyguardPatternView
+<com.android.systemui.car.keyguard.CarKeyguardPatternView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/keyguard_pattern_view"
@@ -78,4 +78,4 @@
             android:orientation="vertical"
             android:visibility="gone"/>
     </LinearLayout>
-</com.android.keyguard.KeyguardPatternView>
+</com.android.systemui.car.keyguard.CarKeyguardPatternView>

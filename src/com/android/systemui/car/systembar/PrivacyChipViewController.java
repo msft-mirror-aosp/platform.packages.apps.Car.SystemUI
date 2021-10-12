@@ -17,6 +17,7 @@
 package com.android.systemui.car.systembar;
 
 import static android.hardware.SensorPrivacyManager.Sensors.MICROPHONE;
+import static android.hardware.SensorPrivacyManager.Sources.QS_TILE;
 
 import android.car.Car;
 import android.car.user.CarUserManager;
@@ -37,7 +38,7 @@ import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.privacy.MicPrivacyChip;
-import com.android.systemui.car.privacy.MicPrivacyChipDialogController;
+import com.android.systemui.car.privacy.MicQcPanel;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.privacy.OngoingPrivacyChip;
 import com.android.systemui.privacy.PrivacyItem;
@@ -53,7 +54,7 @@ import javax.inject.Inject;
  * Controls a Privacy Chip view in system icons.
  */
 @SysUISingleton
-public class PrivacyChipViewController implements View.OnClickListener {
+public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvider {
     private static final String TAG = "PrivacyChipViewContrllr";
     private static final boolean DEBUG = false;
 
@@ -62,17 +63,11 @@ public class PrivacyChipViewController implements View.OnClickListener {
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final SensorPrivacyManager mSensorPrivacyManager;
-    private final MicPrivacyChipDialogController mMicPrivacyChipDialogController;
 
     private Context mContext;
     private MicPrivacyChip mPrivacyChip;
     private CarUserManager mCarUserManager;
-    private boolean mAllIndicatorsEnabled;
-    private boolean mMicCameraIndicatorsEnabled;
-    private boolean mIsMicPrivacyChipVisible;
-    private boolean mUserLifecycleListenerRegistered;
-    private int mCurrentUserId;
-
+    private Runnable mQsTileNotifyUpdateRunnable;
     private final SensorPrivacyManager.OnSensorPrivacyChangedListener
             mOnSensorPrivacyChangedListener = (sensor, sensorPrivacyEnabled) -> {
         if (mContext == null) {
@@ -84,41 +79,12 @@ public class PrivacyChipViewController implements View.OnClickListener {
             // We need to negate sensorPrivacyEnabled since when it is {@code true} it means
             // microphone has been toggled off.
             mPrivacyChip.setMicrophoneEnabled(/* isMicrophoneEnabled= */ !sensorPrivacyEnabled);
+            mQsTileNotifyUpdateRunnable.run();
         });
     };
-
-    private final BroadcastReceiver mUserUpdateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (mPrivacyChip == null) {
-                return;
-            }
-            if (!Intent.ACTION_USER_INFO_CHANGED.equals(intent.getAction())) {
-                return;
-            }
-            int currentUserId = mCarDeviceProvisionedController.getCurrentUser();
-            if (mCurrentUserId == currentUserId) {
-                return;
-            }
-
-            setUser(currentUserId);
-        }
-    };
-
-    private final CarUserManager.UserLifecycleListener mUserLifecycleListener =
-            new CarUserManager.UserLifecycleListener() {
-                @Override
-                public void onEvent(CarUserManager.UserLifecycleEvent event) {
-                    if (mPrivacyChip == null) {
-                        return;
-                    }
-                    if (event.getEventType()
-                            == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING) {
-                        setUser(event.getUserHandle().getIdentifier());
-                    }
-                }
-            };
-
+    private boolean mAllIndicatorsEnabled;
+    private boolean mMicCameraIndicatorsEnabled;
+    private boolean mIsMicPrivacyChipVisible;
     private final PrivacyItemController.Callback mPicCallback =
             new PrivacyItemController.Callback() {
                 @Override
@@ -126,6 +92,10 @@ public class PrivacyChipViewController implements View.OnClickListener {
                     if (mPrivacyChip == null) {
                         return;
                     }
+
+                    // Call QS Tile notify update runnable here so that QS tile can update when app
+                    // usage is added/removed/updated
+                    mQsTileNotifyUpdateRunnable.run();
 
                     boolean shouldShowMicPrivacyChip = isMicPartOfPrivacyItems(privacyItems);
                     if (mIsMicPrivacyChipVisible == shouldShowMicPrivacyChip) {
@@ -158,28 +128,72 @@ public class PrivacyChipViewController implements View.OnClickListener {
                     }
                 }
             };
+    private boolean mUserLifecycleListenerRegistered;
+    private int mCurrentUserId;
+    private final BroadcastReceiver mUserUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mPrivacyChip == null) {
+                return;
+            }
+            if (!Intent.ACTION_USER_INFO_CHANGED.equals(intent.getAction())) {
+                return;
+            }
+            int currentUserId = mCarDeviceProvisionedController.getCurrentUser();
+            if (mCurrentUserId == currentUserId) {
+                return;
+            }
+
+            setUser(currentUserId);
+        }
+    };
+    private final CarUserManager.UserLifecycleListener mUserLifecycleListener =
+            new CarUserManager.UserLifecycleListener() {
+                @Override
+                public void onEvent(CarUserManager.UserLifecycleEvent event) {
+                    if (mPrivacyChip == null) {
+                        return;
+                    }
+                    if (event.getEventType()
+                            == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING) {
+                        setUser(event.getUserHandle().getIdentifier());
+                    }
+                }
+            };
 
     @Inject
     public PrivacyChipViewController(Context context, PrivacyItemController privacyItemController,
             CarServiceProvider carServiceProvider, BroadcastDispatcher broadcastDispatcher,
             SensorPrivacyManager sensorPrivacyManager,
-            CarDeviceProvisionedController carDeviceProvisionedController,
-            MicPrivacyChipDialogController micPrivacyChipDialogController) {
+            CarDeviceProvisionedController carDeviceProvisionedController) {
         mContext = context;
         mPrivacyItemController = privacyItemController;
         mCarServiceProvider = carServiceProvider;
         mBroadcastDispatcher = broadcastDispatcher;
         mSensorPrivacyManager = sensorPrivacyManager;
         mCarDeviceProvisionedController = carDeviceProvisionedController;
-        mMicPrivacyChipDialogController = micPrivacyChipDialogController;
 
+        mQsTileNotifyUpdateRunnable = () -> {
+        };
         mIsMicPrivacyChipVisible = false;
         mCurrentUserId = carDeviceProvisionedController.getCurrentUser();
     }
 
     @Override
-    public void onClick(View view) {
-        mMicPrivacyChipDialogController.show();
+    public boolean isMicEnabled() {
+        // We need to negate return of isSensorPrivacyEnabled since when it is {@code true} it
+        // means microphone has been toggled off
+        return !mSensorPrivacyManager.isSensorPrivacyEnabled(MICROPHONE, mCurrentUserId);
+    }
+
+    @Override
+    public void toggleMic() {
+        mSensorPrivacyManager.setSensorPrivacy(QS_TILE, MICROPHONE, isMicEnabled(), mCurrentUserId);
+    }
+
+    @Override
+    public void setNotifyUpdateRunnable(Runnable runnable) {
+        mQsTileNotifyUpdateRunnable = runnable;
     }
 
     private boolean isMicPartOfPrivacyItems(@NonNull List<PrivacyItem> privacyItems) {
@@ -201,7 +215,6 @@ public class PrivacyChipViewController implements View.OnClickListener {
         mPrivacyChip = view.findViewById(R.id.privacy_chip);
         if (mPrivacyChip == null) return;
 
-        mPrivacyChip.setOnClickListener(this);
         mAllIndicatorsEnabled = mPrivacyItemController.getAllIndicatorsAvailable();
         mMicCameraIndicatorsEnabled = mPrivacyItemController.getMicCameraAvailable();
         mPrivacyItemController.addCallback(mPicCallback);
@@ -283,10 +296,7 @@ public class PrivacyChipViewController implements View.OnClickListener {
         // Since this can be launched using a callback thread, its UI based elements need
         // to execute on main executor.
         mContext.getMainExecutor().execute(() -> {
-            // We need to negate return of isSensorPrivacyEnabled since when it is {@code true} it
-            // means microphone has been toggled off
-            mPrivacyChip.setMicrophoneEnabled(/* isMicrophoneEnabled= */
-                    !mSensorPrivacyManager.isSensorPrivacyEnabled(MICROPHONE, userId));
+            mPrivacyChip.setMicrophoneEnabled(isMicEnabled());
         });
     }
 }

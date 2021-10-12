@@ -47,6 +47,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class SystemUIQCView extends QCView {
     private BaseQCController mController;
+    private BaseLocalQCProvider mLocalQCProvider;
 
     public SystemUIQCView(Context context) {
         super(context);
@@ -88,6 +89,14 @@ public class SystemUIQCView extends QCView {
         removeAllViews();
     }
 
+    /**
+     * @return {@link BaseLocalQCProvider} for this System UI Quick Controls View.
+     */
+    @Nullable
+    public BaseLocalQCProvider getLocalQCProvider() {
+        return mLocalQCProvider;
+    }
+
     private void init(@NonNull Context context, @Nullable AttributeSet attrs) {
         setFocusable(false);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SystemUIQCView);
@@ -119,8 +128,8 @@ public class SystemUIQCView extends QCView {
     }
 
     private void bindLocalQCView(String localClass) {
-        BaseLocalQCProvider provider = createLocalQCProviderInstance(localClass, mContext);
-        mController = new LocalQCController(mContext, provider);
+        mLocalQCProvider = createLocalQCProviderInstance(localClass, mContext);
+        mController = new LocalQCController(mContext, mLocalQCProvider);
         mController.addObserver(this);
         mController.listen(true);
     }

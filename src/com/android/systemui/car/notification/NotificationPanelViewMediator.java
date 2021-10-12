@@ -144,11 +144,6 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
     }
 
     @Override
-    public void onOverlayChanged() {
-        // No op.
-    }
-
-    @Override
     public void onUiModeChanged() {
         // No op.
     }

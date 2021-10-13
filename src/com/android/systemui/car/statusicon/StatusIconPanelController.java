@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.UserHandle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,11 +47,14 @@ import java.util.ArrayList;
  * A controller for a panel view associated with a status icon.
  */
 public class StatusIconPanelController {
+    private static final int DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY = Gravity.TOP | Gravity.START;
+
     private final Context mContext;
     private final ArrayList<SystemUIQCView> mQCViews = new ArrayList<>();
 
     private PopupWindow mPanel;
     private ViewGroup mPanelContent;
+    private OnQcViewsFoundListener mOnQcViewsFoundListener;
     private float mDimValue = -1.0f;
     private boolean mUserSwitchEventRegistered;
 
@@ -91,7 +95,49 @@ public class StatusIconPanelController {
         });
     }
 
-    protected void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes) {
+    /**
+     * @return list of {@link SystemUIQCView} in this controller
+     */
+    public ArrayList<SystemUIQCView> getQCViews() {
+        return mQCViews;
+    }
+
+    public void setOnQcViewsFoundListener(OnQcViewsFoundListener onQcViewsFoundListener) {
+        mOnQcViewsFoundListener = onQcViewsFoundListener;
+    }
+
+    /**
+     * A listener that can be used to attach controllers quick control panels using
+     * {@link SystemUIQCView#getLocalQCProvider()}
+     */
+    public interface OnQcViewsFoundListener {
+        /**
+         * This method is call up when {@link SystemUIQCView}s are found
+         */
+        void qcViewsFound(ArrayList<SystemUIQCView> qcViews);
+    }
+
+    /**
+     * Attaches a panel to a root view that toggles the panel visibility when clicked.
+     */
+    public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes) {
+        attachPanel(view, layoutRes, widthRes, /* xOffset= */ 0,  /* yOffset= */0);
+    }
+
+    /**
+     * Attaches a panel to a root view that toggles the panel visibility when clicked.
+     */
+    public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes,
+            int xOffset, int yOffset) {
+        attachPanel(view, layoutRes, widthRes, xOffset, yOffset,
+                DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY);
+    }
+
+    /**
+     * Attaches a panel to a root view that toggles the panel visibility when clicked.
+     */
+    public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes,
+            int xOffset, int yOffset, int gravity) {
         view.setOnClickListener((v) -> {
             if (mPanel == null) {
                 mPanel = createPanel(layoutRes, widthRes);
@@ -110,7 +156,7 @@ public class StatusIconPanelController {
                 ViewUtils.hideFocus(view.getRootView());
             }
 
-            mPanel.showAsDropDown(view);
+            mPanel.showAsDropDown(view, xOffset, yOffset, gravity);
 
             dimBehind(mPanel);
         });
@@ -121,6 +167,9 @@ public class StatusIconPanelController {
         mPanelContent = (ViewGroup) LayoutInflater.from(mContext).inflate(layoutRes, /* root= */
                 null);
         findQcViews(mPanelContent);
+        if (mOnQcViewsFoundListener != null) {
+            mOnQcViewsFoundListener.qcViewsFound(mQCViews);
+        }
         PopupWindow panel = new PopupWindow(mPanelContent, panelWidth, WRAP_CONTENT);
         panel.setBackgroundDrawable(
                 mContext.getResources().getDrawable(R.drawable.status_icon_panel_bg,
@@ -160,6 +209,7 @@ public class StatusIconPanelController {
         mPanel.dismiss();
         mPanel = null;
         mPanelContent = null;
+        mOnQcViewsFoundListener = null;
         mQCViews.forEach(v -> v.destroy());
         mQCViews.clear();
     }

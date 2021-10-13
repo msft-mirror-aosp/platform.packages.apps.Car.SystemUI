@@ -26,7 +26,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.ITransientNotificationCallback;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.testing.AndroidTestingRunner;
@@ -221,14 +220,11 @@ public class CarToastUITest extends SysuiTestCase {
     private void setupPackageInfo(boolean isSystem, boolean isPrivileged,
             boolean isSignedWithPlatformKey)
             throws PackageManager.NameNotFoundException {
-        PackageInfo packageInfo = new PackageInfo();
         ApplicationInfo applicationInfo = mock(ApplicationInfo.class);
-        packageInfo.packageName = PACKAGE_NAME;
         when(applicationInfo.isPrivilegedApp()).thenReturn(isPrivileged);
         when(applicationInfo.isSystemApp()).thenReturn(isSystem);
         when(applicationInfo.isSignedWithPlatformKey()).thenReturn(isSignedWithPlatformKey);
-        packageInfo.applicationInfo = applicationInfo;
-        when(mPackageManager.getPackageInfoAsUser(eq(PACKAGE_NAME), anyInt(), anyInt())).thenReturn(
-                packageInfo);
+        when(mPackageManager.getApplicationInfoAsUser(eq(PACKAGE_NAME), anyInt(), anyInt()))
+                .thenReturn(applicationInfo);
     }
 }

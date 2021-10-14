@@ -16,9 +16,10 @@
 
 package com.android.systemui.car.statusicon;
 
-import static android.view.WindowManager.LayoutParams.TYPE_STATUS_BAR_SUB_PANEL;
+import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
 
+import android.annotation.ColorInt;
 import android.annotation.DimenRes;
 import android.annotation.LayoutRes;
 import android.car.Car;
@@ -33,7 +34,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
+
+import androidx.annotation.VisibleForTesting;
 
 import com.android.car.ui.utils.ViewUtils;
 import com.android.systemui.R;
@@ -50,11 +54,18 @@ public class StatusIconPanelController {
     private static final int DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY = Gravity.TOP | Gravity.START;
 
     private final Context mContext;
+    private final String mIdentifier;
+    private final String mIconTag;
+    private final @ColorInt int mIconHighlightedColor;
+    private final @ColorInt int mIconNotHighlightedColor;
+    private final int mYOffsetPixel;
     private final ArrayList<SystemUIQCView> mQCViews = new ArrayList<>();
 
     private PopupWindow mPanel;
     private ViewGroup mPanelContent;
     private OnQcViewsFoundListener mOnQcViewsFoundListener;
+    private View mAnchorView;
+    private ImageView mStatusIconView;
     private float mDimValue = -1.0f;
     private boolean mUserSwitchEventRegistered;
 
@@ -63,13 +74,16 @@ public class StatusIconPanelController {
             reset();
         }
     };
+
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            boolean isIntentFromSelf =
+                    intent.getIdentifier() != null && intent.getIdentifier().equals(mIdentifier);
 
-            if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action) && mPanel != null
-                    && mPanel.isShowing()) {
+            if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action) && !isIntentFromSelf
+                    && mPanel != null && mPanel.isShowing()) {
                 mPanel.dismiss();
             }
         }
@@ -80,6 +94,18 @@ public class StatusIconPanelController {
             CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher) {
         mContext = context;
+        mIdentifier = Integer.toString(System.identityHashCode(this));
+
+        mIconTag = mContext.getResources().getString(R.string.qc_icon_tag);
+        mIconHighlightedColor = mContext.getColor(R.color.status_icon_highlighted_color);
+        mIconNotHighlightedColor = mContext.getColor(R.color.status_icon_not_highlighted_color);
+
+        int panelMarginTop = mContext.getResources().getDimensionPixelSize(
+                R.dimen.car_status_icon_panel_margin_top);
+        int topSystemBarHeight = mContext.getResources().getDimensionPixelSize(
+                R.dimen.car_top_system_bar_height);
+        // Cancel out the superfluous inset automatically applied to the panel.
+        mYOffsetPixel = panelMarginTop - topSystemBarHeight;
 
         broadcastDispatcher.registerReceiver(mBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* executor= */ null,
@@ -138,7 +164,11 @@ public class StatusIconPanelController {
      */
     public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes,
             int xOffset, int yOffset, int gravity) {
-        view.setOnClickListener((v) -> {
+        if (mAnchorView == null) {
+            mAnchorView = view;
+        }
+
+        mAnchorView.setOnClickListener(v -> {
             if (mPanel == null) {
                 mPanel = createPanel(layoutRes, widthRes);
             }
@@ -148,6 +178,11 @@ public class StatusIconPanelController {
                 return;
             }
 
+            // Dismiss all currently open system dialogs before opening this panel.
+            Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            intent.setIdentifier(mIdentifier);
+            mContext.sendBroadcastAsUser(intent, UserHandle.CURRENT);
+
             mQCViews.forEach(qcView -> qcView.listen(true));
 
             // Clear the focus highlight in this window since a dialog window is about to show.
@@ -156,14 +191,45 @@ public class StatusIconPanelController {
                 ViewUtils.hideFocus(view.getRootView());
             }
 
-            mPanel.showAsDropDown(view, xOffset, yOffset, gravity);
+            // TODO(b/202563671): remove yOffsetPixel when the PopupWindow API is updated.
+            mPanel.showAsDropDown(mAnchorView, /* xoff= */ 0, mYOffsetPixel);
+            mAnchorView.setSelected(true);
+            highlightStatusIcon(true);
 
             dimBehind(mPanel);
         });
     }
 
+    @VisibleForTesting
+    protected PopupWindow getPanel() {
+        return mPanel;
+    }
+
+    @VisibleForTesting
+    protected BroadcastReceiver getBroadcastReceiver() {
+        return mBroadcastReceiver;
+    }
+
+    @VisibleForTesting
+    protected String getIdentifier() {
+        return mIdentifier;
+    }
+
+    @VisibleForTesting
+    @ColorInt
+    protected int getIconHighlightedColor() {
+        return mIconHighlightedColor;
+    }
+
+    @VisibleForTesting
+    @ColorInt
+    protected int getIconNotHighlightedColor() {
+        return mIconNotHighlightedColor;
+    }
+
     private PopupWindow createPanel(@LayoutRes int layoutRes, @DimenRes int widthRes) {
         int panelWidth = mContext.getResources().getDimensionPixelSize(widthRes);
+
         mPanelContent = (ViewGroup) LayoutInflater.from(mContext).inflate(layoutRes, /* root= */
                 null);
         findQcViews(mPanelContent);
@@ -174,12 +240,14 @@ public class StatusIconPanelController {
         panel.setBackgroundDrawable(
                 mContext.getResources().getDrawable(R.drawable.status_icon_panel_bg,
                         mContext.getTheme()));
-        panel.setWindowLayoutType(TYPE_STATUS_BAR_SUB_PANEL);
+        panel.setWindowLayoutType(TYPE_SYSTEM_DIALOG);
         panel.setFocusable(true);
         panel.setOutsideTouchable(false);
         panel.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
+                mAnchorView.setSelected(false);
+                highlightStatusIcon(false);
                 mQCViews.forEach(qcView -> qcView.listen(false));
             }
         });
@@ -222,6 +290,17 @@ public class StatusIconPanelController {
             } else if (v instanceof ViewGroup) {
                 this.findQcViews((ViewGroup) v);
             }
+        }
+    }
+
+    private void highlightStatusIcon(boolean isHighlighted) {
+        if (mStatusIconView == null) {
+            mStatusIconView = mAnchorView.findViewWithTag(mIconTag);
+        }
+
+        if (mStatusIconView != null) {
+            mStatusIconView.setColorFilter(
+                    isHighlighted ? mIconHighlightedColor : mIconNotHighlightedColor);
         }
     }
 }

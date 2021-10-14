@@ -432,6 +432,11 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
             getOverlayViewGlobalStateController().hideView(/* panelViewController= */ this);
         }
         getLayout().setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+
+        // TODO(b/202890142): Unify OverlayPanelViewController with super class show and hide
+        for (OverlayViewStateListener l : mViewStateListeners) {
+            l.onVisibilityChanged(visible);
+        }
     }
 
     /* ***************************************************************************************** *

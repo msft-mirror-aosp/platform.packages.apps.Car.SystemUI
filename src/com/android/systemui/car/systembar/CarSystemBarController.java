@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.privacy.MicQcPanel;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelController;
@@ -61,6 +62,7 @@ public class CarSystemBarController {
     private NotificationsShadeController mNotificationsShadeController;
     private HvacPanelController mHvacPanelController;
     private StatusIconPanelController mMicPanelController;
+    private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
 
     private CarSystemBarView mTopView;
     private CarSystemBarView mBottomView;
@@ -189,7 +191,7 @@ public class CarSystemBarController {
 
         mTopView = mCarSystemBarViewFactory.getTopBar(isSetUp);
         setupBar(mTopView, mTopBarTouchListener, mNotificationsShadeController,
-                mHvacPanelController);
+                mHvacPanelController, mHvacPanelOverlayViewController);
         setupMicQcPanel();
         return mTopView;
     }
@@ -203,7 +205,7 @@ public class CarSystemBarController {
 
         mBottomView = mCarSystemBarViewFactory.getBottomBar(isSetUp);
         setupBar(mBottomView, mBottomBarTouchListener, mNotificationsShadeController,
-                mHvacPanelController);
+                mHvacPanelController, mHvacPanelOverlayViewController);
         return mBottomView;
     }
 
@@ -216,7 +218,7 @@ public class CarSystemBarController {
 
         mLeftView = mCarSystemBarViewFactory.getLeftBar(isSetUp);
         setupBar(mLeftView, mLeftBarTouchListener, mNotificationsShadeController,
-                mHvacPanelController);
+                mHvacPanelController, mHvacPanelOverlayViewController);
         return mLeftView;
     }
 
@@ -229,16 +231,18 @@ public class CarSystemBarController {
 
         mRightView = mCarSystemBarViewFactory.getRightBar(isSetUp);
         setupBar(mRightView, mRightBarTouchListener, mNotificationsShadeController,
-                mHvacPanelController);
+                mHvacPanelController, mHvacPanelOverlayViewController);
         return mRightView;
     }
 
     private void setupBar(CarSystemBarView view, View.OnTouchListener statusBarTouchListener,
             NotificationsShadeController notifShadeController,
-            HvacPanelController hvacPanelController) {
+            HvacPanelController hvacPanelController,
+            HvacPanelOverlayViewController hvacPanelOverlayViewController) {
         view.setStatusBarWindowTouchListener(statusBarTouchListener);
         view.setNotificationsPanelController(notifShadeController);
         view.setHvacPanelController(hvacPanelController);
+        view.registerHvacPanelOverlayViewController(hvacPanelOverlayViewController);
         mButtonSelectionStateController.addAllButtonsWithSelectionState(view);
         mButtonRoleHolderController.addAllButtonsWithRoleName(view);
         mUserNameViewControllerLazy.get().addUserNameView(view);
@@ -328,6 +332,24 @@ public class CarSystemBarController {
         }
         if (mRightView != null) {
             mRightView.setHvacPanelController(mHvacPanelController);
+        }
+    }
+
+    /** Sets the HVACPanelOverlayViewController for views to listen to the panel's state. */
+    public void registerHvacPanelOverlayViewController(
+            HvacPanelOverlayViewController hvacPanelOverlayViewController) {
+        mHvacPanelOverlayViewController = hvacPanelOverlayViewController;
+        if (mTopView != null) {
+            mTopView.registerHvacPanelOverlayViewController(mHvacPanelOverlayViewController);
+        }
+        if (mBottomView != null) {
+            mBottomView.registerHvacPanelOverlayViewController(mHvacPanelOverlayViewController);
+        }
+        if (mLeftView != null) {
+            mLeftView.registerHvacPanelOverlayViewController(mHvacPanelOverlayViewController);
+        }
+        if (mRightView != null) {
+            mRightView.registerHvacPanelOverlayViewController(mHvacPanelOverlayViewController);
         }
     }
 

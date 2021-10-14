@@ -69,6 +69,8 @@ public class OverlayPanelViewControllerTest extends SysuiTestCase {
     private FlingAnimationUtils mFlingAnimationUtils;
     @Mock
     private CarDeviceProvisionedController mCarDeviceProvisionedController;
+    @Mock
+    private OverlayViewController.OverlayViewStateListener mOverlayViewStateListener;
 
     @Before
     public void setUp() {
@@ -381,6 +383,27 @@ public class OverlayPanelViewControllerTest extends SysuiTestCase {
 
         assertThat(mOverlayPanelViewController.getLayout().getVisibility()).isEqualTo(
                 View.INVISIBLE);
+    }
+
+    @Test
+    public void setPanelVisible_setTrue_callsListenerOnVisibilityChangedTrue() {
+        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.getLayout().setVisibility(View.VISIBLE);
+        mOverlayPanelViewController.registerViewStateListener(mOverlayViewStateListener);
+
+        mOverlayPanelViewController.setPanelVisible(false);
+
+        verify(mOverlayViewStateListener).onVisibilityChanged(/* isVisible= */ false);
+    }
+
+    @Test
+    public void setPanelVisible_setFalse_callsListenerOnVisibilityChangedFalse() {
+        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.registerViewStateListener(mOverlayViewStateListener);
+
+        mOverlayPanelViewController.setPanelVisible(true);
+
+        verify(mOverlayViewStateListener).onVisibilityChanged(/* isVisible= */true);
     }
 
     @Test

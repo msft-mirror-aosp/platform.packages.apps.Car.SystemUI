@@ -91,6 +91,9 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="bool" name="config_notif_panel_inset_by_right_systembar"/>
       <item type="bool" name="config_notif_panel_inset_by_top_systembar"/>
       <item type="bool" name="config_systemBarButtonsDraggable"/>
+      <item type="color" name="activity_blocking_action_button_background_color"/>
+      <item type="color" name="activity_blocking_activity_background"/>
+      <item type="color" name="blocking_text"/>
       <item type="color" name="car_accent"/>
       <item type="color" name="car_nav_icon_fill_color"/>
       <item type="color" name="car_nav_icon_fill_color_selected"/>
@@ -131,6 +134,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="color" name="hvac_temperature_floating_text_color"/>
       <item type="color" name="hvac_temperature_increase_arrow_color"/>
       <item type="color" name="hvac_temperature_off_text_bg_color"/>
+      <item type="color" name="ic_ux_restricted_color"/>
       <item type="color" name="keyguard_keypad_image_color"/>
       <item type="color" name="list_divider_color"/>
       <item type="color" name="mic_privacy_chip_dark_icon_color"/>
@@ -141,7 +145,10 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="color" name="notification_shade_background_color"/>
       <item type="color" name="rear_view_camera_button_background"/>
       <item type="color" name="status_bar_background_color"/>
+      <item type="color" name="status_icon_highlighted_color"/>
+      <item type="color" name="status_icon_not_highlighted_color"/>
       <item type="color" name="status_icon_panel_bg_color"/>
+      <item type="color" name="status_icon_selected_button_color"/>
       <item type="color" name="system_bar_background_opaque"/>
       <item type="color" name="system_bar_background_pill_color"/>
       <item type="color" name="system_bar_icon_color"/>
@@ -176,6 +183,10 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_padding_5"/>
       <item type="dimen" name="car_padding_6"/>
       <item type="dimen" name="car_primary_icon_size"/>
+      <item type="dimen" name="car_quick_controls_entry_points_button_margin_bottom"/>
+      <item type="dimen" name="car_quick_controls_entry_points_button_margin_end"/>
+      <item type="dimen" name="car_quick_controls_entry_points_button_margin_start"/>
+      <item type="dimen" name="car_quick_controls_entry_points_button_margin_top"/>
       <item type="dimen" name="car_quick_controls_entry_points_button_width"/>
       <item type="dimen" name="car_quick_controls_entry_points_icon_width"/>
       <item type="dimen" name="car_quick_controls_icon_drawable_height"/>
@@ -184,6 +195,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_status_icon_panel_border_radius"/>
       <item type="dimen" name="car_status_icon_panel_default_width"/>
       <item type="dimen" name="car_status_icon_panel_dim"/>
+      <item type="dimen" name="car_status_icon_panel_margin_top"/>
       <item type="dimen" name="car_status_icon_panel_padding_bottom"/>
       <item type="dimen" name="car_status_icon_panel_padding_top"/>
       <item type="dimen" name="car_system_bar_button_icon_height"/>
@@ -423,6 +435,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="notification_material_bg"/>
       <item type="drawable" name="notification_material_bg_dim"/>
       <item type="drawable" name="stat_sys_signal_null"/>
+      <item type="drawable" name="status_icon_background"/>
       <item type="drawable" name="status_icon_panel_bg"/>
       <item type="drawable" name="system_bar_background"/>
       <item type="drawable" name="system_bar_background_pill"/>

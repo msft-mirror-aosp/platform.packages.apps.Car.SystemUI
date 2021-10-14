@@ -19,12 +19,14 @@ package com.android.systemui.car.statusicon;
 import static com.android.systemui.car.statusicon.StatusIconController.PANEL_CONTENT_LAYOUT_NONE;
 
 import android.annotation.ArrayRes;
+import android.annotation.ColorInt;
 import android.annotation.LayoutRes;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
@@ -49,6 +51,7 @@ public abstract class StatusIconGroupContainerController {
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final Map<Class<?>, Provider<StatusIconController>> mIconControllerCreators;
     private final String mIconTag;
+    private final @ColorInt int mIconNotHighlightedColor;
     private final String[] mStatusIconControllerNames;
 
     public StatusIconGroupContainerController(
@@ -63,6 +66,7 @@ public abstract class StatusIconGroupContainerController {
         mBroadcastDispatcher = broadcastDispatcher;
         mIconControllerCreators = iconControllerCreators;
         mIconTag = mResources.getString(R.string.qc_icon_tag);
+        mIconNotHighlightedColor = mContext.getColor(R.color.status_icon_not_highlighted_color);
         mStatusIconControllerNames = mResources.getStringArray(
                 getStatusIconControllersStringArray());
     }
@@ -95,7 +99,11 @@ public abstract class StatusIconGroupContainerController {
             StatusIconController statusIconController = getStatusIconControllerByName(clsName);
             View entryPointView = li.inflate(getButtonViewLayout(),
                     containerViewGroup, /* attachToRoot= */ false);
-            statusIconController.registerIconView(entryPointView.findViewWithTag(mIconTag));
+
+            ImageView statusIconView = entryPointView.findViewWithTag(mIconTag);
+            statusIconController.registerIconView(statusIconView);
+            statusIconView.setColorFilter(mIconNotHighlightedColor);
+
             if (statusIconController.getPanelContentLayout() != PANEL_CONTENT_LAYOUT_NONE) {
                 StatusIconPanelController panelController = new StatusIconPanelController(mContext,
                         mCarServiceProvider, mBroadcastDispatcher);

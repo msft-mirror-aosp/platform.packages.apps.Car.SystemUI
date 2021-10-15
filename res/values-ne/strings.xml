@@ -41,7 +41,6 @@
     <string name="mic_privacy_chip_apps_recently_used_mic_suffix" msgid="3451383324549295901">"<xliff:g id="APP_0">%1$s</xliff:g> र थप <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> ले हालसालै धेरै पटक माइक्रोफोन प्रयोग गरेका थिए"</string>
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"माइक्रोफोन अन गरियो"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"माइक्रोफोन अफ गरियो"</string>
-    <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"हालसालै माइक्रोफोन प्रयोग गरेका एपहरू"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ठिक छ"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"सवारी साधनको माइक्रोफोन अन गर्ने हो?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"जारी राख्न इन्फोटेनमेन्ट प्रणालीको माइक्रोफोन अन गर्नुहोस्। यस कार्यले अनुमति प्राप्त एपहरूमा माइक्रोफोन अन गर्छ।"</string>

@@ -41,7 +41,6 @@
     <string name="mic_privacy_chip_apps_recently_used_mic_suffix" msgid="3451383324549295901">"<xliff:g id="APP_0">%1$s</xliff:g> 외 <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g>개가 최근에 마이크를 사용함"</string>
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"마이크 사용 설정됨"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"마이크 사용 중지됨"</string>
-    <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"최근 마이크를 사용함"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"확인"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"차량 마이크를 사용 설정하시겠습니까?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"계속하려면 인포테인먼트 시스템 마이크를 사용 설정하세요. 그러면 권한이 있는 모든 앱에서 마이크가 사용 설정됩니다."</string>

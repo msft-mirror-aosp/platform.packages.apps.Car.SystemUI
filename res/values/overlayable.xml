@@ -183,7 +183,6 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_padding_5"/>
       <item type="dimen" name="car_padding_6"/>
       <item type="dimen" name="car_primary_icon_size"/>
-      <item type="dimen" name="car_profile_quick_controls_panel_width"/>
       <item type="dimen" name="car_quick_controls_entry_points_button_margin_bottom"/>
       <item type="dimen" name="car_quick_controls_entry_points_button_margin_end"/>
       <item type="dimen" name="car_quick_controls_entry_points_button_margin_start"/>
@@ -600,7 +599,6 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="layout" name="qc_connectivity_panel"/>
       <item type="layout" name="qc_display_panel"/>
       <item type="layout" name="qc_mic_panel"/>
-      <item type="layout" name="qc_profile_switcher"/>
       <item type="layout" name="status_bar_wifi_group"/>
       <item type="layout" name="system_icons"/>
       <item type="layout" name="sysui_overlay_window"/>

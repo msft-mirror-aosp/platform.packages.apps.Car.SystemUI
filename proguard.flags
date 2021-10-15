@@ -5,6 +5,5 @@
 -keep class com.android.systemui.DaggerCarGlobalRootComponent$CarSysUIComponentImpl { *; }
 
 -keep class com.android.systemui.car.privacy.MicQcPanel { *; }
--keep class com.android.systemui.car.qc.ProfileSwitcher { *; }
 
 -include ../../../../frameworks/base/packages/SystemUI/proguard.flags

@@ -91,6 +91,9 @@ public class HvacPanelOverlayViewMediator implements OverlayViewMediator {
                     }
                 });
 
+        mCarSystemBarController.registerHvacPanelOverlayViewController(
+                mHvacPanelOverlayViewController);
+
         mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* executor= */ null,
                 UserHandle.ALL);

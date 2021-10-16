@@ -336,9 +336,13 @@ public class NotificationPanelViewController extends OverlayPanelViewController
             mCarUxRestrictionManagerWrapper.setCarUxRestrictionsManager(
                     carUxRestrictionsManager);
 
+            PreprocessingManager preprocessingManager = PreprocessingManager.getInstance(mContext);
+
+            preprocessingManager.setCarUxRestrictionManagerWrapper(mCarUxRestrictionManagerWrapper);
+
             mNotificationViewController = new NotificationViewController(
                     mNotificationView,
-                    PreprocessingManager.getInstance(mContext),
+                    preprocessingManager,
                     mCarNotificationListener,
                     mCarUxRestrictionManagerWrapper);
             mNotificationViewController.enable();

@@ -41,7 +41,6 @@
     <string name="mic_privacy_chip_apps_recently_used_mic_suffix" msgid="3451383324549295901">"L\'appli <xliff:g id="APP_0">%1$s</xliff:g> et <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> autres applis ont utilisé le micro récemment"</string>
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"Microphone activé"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Microphone désactivé"</string>
-    <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"Utilisation récente du microphone"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"OK"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Activer le microphone du véhicule?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Pour continuer, activez le microphone du système d\'infodivertissement. Cette action activera le microphone pour toutes les applications qui ont l\'autorisation."</string>

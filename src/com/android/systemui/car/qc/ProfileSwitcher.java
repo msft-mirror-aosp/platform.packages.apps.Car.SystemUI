@@ -42,6 +42,7 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
@@ -79,6 +80,15 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         mCarUserManager = (CarUserManager) mCar.getCarManager(Car.CAR_USER_SERVICE);
     }
 
+    @VisibleForTesting
+    ProfileSwitcher(Context context, UserManager userManager, CarUserManager carUserManager) {
+        super(context);
+        mUserManager = userManager;
+        mUserIconProvider = new UserIconProvider();
+        mCar = null;
+        mCarUserManager = carUserManager;
+    }
+
     @Override
     public QCItem getQCItem() {
         QCList.Builder listBuilder = new QCList.Builder();
@@ -103,7 +113,9 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mCar.disconnect();
+        if (mCar != null) {
+            mCar.disconnect();
+        }
     }
 
     private List<UserInfo> getProfileList() {
@@ -287,7 +299,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     }
 
     private void applyCarSysUIDialogFlags(AlertDialog dialog) {
-        final Window window = dialog.getWindow();
+        Window window = dialog.getWindow();
         window.setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
         window.addFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
                 | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);

@@ -41,7 +41,6 @@
     <string name="mic_privacy_chip_apps_recently_used_mic_suffix" msgid="3451383324549295901">"<xliff:g id="APP_0">%1$s</xliff:g> និង <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> ទៀតបានប្រើ​មីក្រូហ្វូន​ថ្មីៗនេះ"</string>
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"បានបើក​មីក្រូហ្វូន"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"បានបិទ​មីក្រូហ្វូន"</string>
-    <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"ការប្រើប្រាស់​មីក្រូហ្វូនថ្មីៗ"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"អូខេ"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"បើកមីក្រូហ្វូនរបស់​យានជំនិះឬ?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"ដើម្បីបន្ត សូមបើក​មីក្រូហ្វូន​ប្រព័ន្ធព័ត៌មាន និងកម្សាន្ត។ ការធ្វើបែបនេះ​នឹងបើកមីក្រូហ្វូន​សម្រាប់កម្មវិធីទាំងអស់​ដែលមាន​ការអនុញ្ញាត។"</string>

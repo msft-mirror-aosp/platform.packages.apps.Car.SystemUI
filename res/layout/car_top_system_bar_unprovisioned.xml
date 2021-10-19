@@ -113,6 +113,11 @@
           />
     </LinearLayout>
 
+    <com.android.systemui.car.systembar.CarSystemBarButton
+        android:id="@+id/user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"/>
+
     <FrameLayout
         android:id="@+id/right_hvac_container"
         android:layout_width="wrap_content"

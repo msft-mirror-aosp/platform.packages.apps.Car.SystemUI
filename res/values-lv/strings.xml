@@ -41,7 +41,6 @@
     <string name="mic_privacy_chip_apps_recently_used_mic_suffix" msgid="3451383324549295901">"Lietotne <xliff:g id="APP_0">%1$s</xliff:g> un vēl <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> lietotnes nesen izmantoja mikrofonu."</string>
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"Mikrofons tika ieslēgts."</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Mikrofons tika izslēgts."</string>
-    <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"Mikrofona lietojums pēdējā laikā"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"Labi"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Vai ieslēgt transportlīdzekļa mikrofonu?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Lai turpinātu, ieslēdziet informatīvi izklaidējošās sistēmas mikrofonu. Tādējādi mikrofons tiks ieslēgts visām lietotnēm, kurām ir atļauja."</string>

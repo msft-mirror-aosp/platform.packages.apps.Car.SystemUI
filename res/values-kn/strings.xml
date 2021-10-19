@@ -41,7 +41,6 @@
     <string name="mic_privacy_chip_apps_recently_used_mic_suffix" msgid="3451383324549295901">"<xliff:g id="APP_0">%1$s</xliff:g> ಮತ್ತು <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> ಹೆಚ್ಚಿನ ಆ್ಯಪ್‌ಗಳು ಇತ್ತೀಚೆಗೆ ಮೈಕ್ ಅನ್ನು ಬಳಸಿವೆ"</string>
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"ಮೈಕ್ರೋಫೋನ್ ಆನ್ ಮಾಡಲಾಗಿದೆ"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"ಮೈಕ್ರೋಫೋನ್ ಆಫ್ ಮಾಡಲಾಗಿದೆ"</string>
-    <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"ಮೈಕ್ರೋಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಬಳಕೆ"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ಸರಿ"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"ವಾಹನದ ಮೈಕ್ರೊಫೋನ್‌ ಅನ್ನು ಆನ್ ಮಾಡಬೇಕೆ?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"ಮುಂದುವರಿಸಲು, ಇನ್‌ಫೋಟೈನ್‌ಮೆಂಟ್ ಸಿಸ್ಟಂ ಮೈಕ್ರೊಫೋನ್ ಆನ್ ಮಾಡಿ. ಇದು ಅನುಮತಿಯನ್ನು ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳಿಗಾಗಿ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಆನ್ ಮಾಡುತ್ತದೆ."</string>

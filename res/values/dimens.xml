@@ -245,6 +245,9 @@
     <dimen name="car_quick_controls_icon_drawable_width">24dp</dimen>
     <dimen name="car_quick_controls_icon_drawable_height">24dp</dimen>
 
+    <dimen name="car_read_only_status_icon_width">36dp</dimen>
+    <dimen name="car_read_only_status_icon_height">36dp</dimen>
+
     <dimen name="car_status_icon_panel_default_width">800dp</dimen>
     <dimen name="car_status_icon_panel_border_radius">12dp</dimen>
     <dimen name="car_status_icon_panel_padding_top">12dp</dimen>

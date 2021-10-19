@@ -83,9 +83,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/car_padding_2"
                 android:background="@drawable/system_bar_background_pill"
-                android:gravity="center_vertical"
-                systemui:intent="intent:#Intent;component=com.android.car.settings/.profiles.ProfileSwitcherActivity;launchFlags=0x24000000;end"
-            >
+                android:gravity="center_vertical">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

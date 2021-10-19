@@ -41,7 +41,6 @@
     <string name="mic_privacy_chip_apps_recently_used_mic_suffix" msgid="3451383324549295901">"<xliff:g id="APP_0">%1$s</xliff:g> dhe <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> të tjera përdorën mikrofonin së fundi"</string>
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"Mikrofoni është aktivizuar"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Mikrofoni është çaktivizuar"</string>
-    <string name="mic_privacy_chip_dialog_title_mic" msgid="3782090299882049010">"Përdorimi i mikrofonit së fundi"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"Në rregull"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Të aktivizohet mikrofoni i automjetit?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Për të vazhduar, aktivizo mikrofonin e sistemit info-argëtues. Kjo do të aktivizojë mikrofonin për të gjitha aplikacionet që kanë leje."</string>

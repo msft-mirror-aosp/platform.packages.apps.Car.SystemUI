@@ -196,9 +196,12 @@ abstract class CarSystemUIModule {
     abstract NotificationShadeWindowController bindNotificationShadeController(
             NotificationShadeWindowControllerImpl notificationPanelViewController);
 
-    @Binds
-    abstract DeviceProvisionedController bindDeviceProvisionedController(
-            CarDeviceProvisionedControllerImpl deviceProvisionedController);
+    @Provides
+    static DeviceProvisionedController bindDeviceProvisionedController(
+            CarDeviceProvisionedControllerImpl deviceProvisionedController) {
+        deviceProvisionedController.init();
+        return deviceProvisionedController;
+    };
 
     @Binds
     abstract CarDeviceProvisionedController bindCarDeviceProvisionedController(

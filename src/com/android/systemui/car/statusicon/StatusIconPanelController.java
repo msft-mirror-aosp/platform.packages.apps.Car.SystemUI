@@ -32,9 +32,11 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 
+import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.ViewUtils;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
@@ -74,6 +76,16 @@ public class StatusIconPanelController {
             }
         }
     };
+
+    private final ViewTreeObserver.OnGlobalFocusChangeListener mFocusChangeListener =
+            (oldFocus, newFocus) -> {
+                if (mPanel != null && oldFocus != null && newFocus instanceof FocusParkingView) {
+                    // When nudging out of the panel, RotaryService will focus on the
+                    // FocusParkingView to clear the focus highlight. When this occurs, dismiss the
+                    // panel.
+                    mPanel.dismiss();
+                }
+            };
 
     public StatusIconPanelController(
             Context context,
@@ -155,6 +167,7 @@ public class StatusIconPanelController {
             if (view.isFocused()) {
                 ViewUtils.hideFocus(view.getRootView());
             }
+            registerFocusListener(true);
 
             mPanel.showAsDropDown(view, xOffset, yOffset, gravity);
 
@@ -180,9 +193,11 @@ public class StatusIconPanelController {
         panel.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
+                registerFocusListener(false);
                 mQCViews.forEach(qcView -> qcView.listen(false));
             }
         });
+        addFocusParkingView();
 
         return panel;
     }
@@ -201,6 +216,30 @@ public class StatusIconPanelController {
         lp.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
         lp.dimAmount = mDimValue;
         wm.updateViewLayout(container, lp);
+    }
+
+    /**
+     * Add a FocusParkingView to the panel content to prevent rotary controller rotation wrapping
+     * around in the panel - this only should be called once per panel.
+     */
+    private void addFocusParkingView() {
+        if (mPanelContent != null) {
+            FocusParkingView fpv = new FocusParkingView(mContext);
+            mPanelContent.addView(fpv);
+        }
+    }
+
+    private void registerFocusListener(boolean register) {
+        if (mPanelContent == null) {
+            return;
+        }
+        if (register) {
+            mPanelContent.getViewTreeObserver().addOnGlobalFocusChangeListener(
+                    mFocusChangeListener);
+        } else {
+            mPanelContent.getViewTreeObserver().removeOnGlobalFocusChangeListener(
+                    mFocusChangeListener);
+        }
     }
 
     private void reset() {

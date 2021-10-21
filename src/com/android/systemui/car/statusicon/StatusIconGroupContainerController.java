@@ -30,6 +30,7 @@ import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -47,6 +48,7 @@ public abstract class StatusIconGroupContainerController {
     private final Resources mResources;
     private final CarServiceProvider mCarServiceProvider;
     private final BroadcastDispatcher mBroadcastDispatcher;
+    private final ConfigurationController mConfigurationController;
     private final Map<Class<?>, Provider<StatusIconController>> mIconControllerCreators;
     private final String mIconTag;
     private final String[] mStatusIconControllerNames;
@@ -56,11 +58,13 @@ public abstract class StatusIconGroupContainerController {
             @Main Resources resources,
             CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
+            ConfigurationController configurationController,
             Map<Class<?>, Provider<StatusIconController>> iconControllerCreators) {
         mContext = context;
         mResources = resources;
         mCarServiceProvider = carServiceProvider;
         mBroadcastDispatcher = broadcastDispatcher;
+        mConfigurationController = configurationController;
         mIconControllerCreators = iconControllerCreators;
         mIconTag = mResources.getString(R.string.qc_icon_tag);
         mStatusIconControllerNames = mResources.getStringArray(
@@ -98,7 +102,7 @@ public abstract class StatusIconGroupContainerController {
             statusIconController.registerIconView(entryPointView.findViewWithTag(mIconTag));
             if (statusIconController.getPanelContentLayout() != PANEL_CONTENT_LAYOUT_NONE) {
                 StatusIconPanelController panelController = new StatusIconPanelController(mContext,
-                        mCarServiceProvider, mBroadcastDispatcher);
+                        mCarServiceProvider, mBroadcastDispatcher, mConfigurationController);
                 panelController.attachPanel(entryPointView,
                         statusIconController.getPanelContentLayout(),
                         statusIconController.getPanelWidth());

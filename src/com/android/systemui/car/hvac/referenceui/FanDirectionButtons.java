@@ -22,7 +22,9 @@ import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 
 import android.car.hardware.CarPropertyValue;
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -56,6 +58,8 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
     public static final int FAN_DIRECTION_COUNT = 4;
 
     private static final int INVALID_ID = -1;
+    private static final String TAG = FanDirectionButtons.class.getSimpleName();
+    private static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;
 
     @IntDef({FAN_DIRECTION_FACE, FAN_DIRECTION_FACE_FLOOR,
             FAN_DIRECTION_FLOOR, FAN_DIRECTION_FLOOR_DEFROSTER})
@@ -124,12 +128,19 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
     @Override
     public void onPropertyChanged(CarPropertyValue value) {
         if (value.getPropertyId() == HVAC_FAN_DIRECTION) {
+            int newDirection = (Integer) value.getValue();
+            if (!mButtonDirections.contains(newDirection)) {
+                if (DEBUG) {
+                    Log.w(TAG, "Button is not defined for direction: " + newDirection);
+                }
+                return;
+            }
+
             if (mCurrentDirection != INVALID_ID) {
                 mButtons.get(mButtonIndicesByDirection.get(mCurrentDirection))
                         .setSelected(false);
             }
-            mCurrentDirection = (Integer) value.getValue();
-
+            mCurrentDirection = newDirection;
             mButtons.get(mButtonIndicesByDirection.get(mCurrentDirection))
                     .setSelected(true);
 

@@ -33,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            style="?android:attr/borderlessButtonStyle"
+            style="@style/QCFooterButtonStyle"
             android:text="@string/mic_privacy_chip_microphone_settings"
             app:intent="intent:#Intent;component=com.android.car.settings/.common.CarSettingActivities$PrivacySettingsActivity;launchFlags=0x08080000;end"/>
     </com.android.car.ui.FocusArea>

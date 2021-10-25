@@ -254,6 +254,11 @@
 
     <dimen name="car_profile_quick_controls_panel_width">480dp</dimen>
 
+    <dimen name="car_quick_controls_footer_button_vertical_margin">10dp</dimen>
+    <dimen name="car_quick_controls_footer_button_horizontal_padding">24dp</dimen>
+    <dimen name="car_quick_controls_footer_button_start_margin">8dp</dimen>
+    <dimen name="car_quick_controls_footer_button_min_height">56dp</dimen>
+
     <!-- dimensions for HVAC   -->
 
     <dimen name="hvac_panel_full_expanded_height">500dp</dimen>

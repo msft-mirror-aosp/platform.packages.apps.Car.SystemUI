@@ -157,13 +157,32 @@ public class StatusIconPanelController {
 
     /**
      * Attaches a panel to a root view that toggles the panel visibility when clicked.
+     *
+     * Variant of {@link #attachPanel(View, int, int, int, int, int)} with
+     * xOffset={@code 0}, yOffset={@link #mYOffsetPixel} &
+     * gravity={@link #DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY}.
      */
     public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes) {
-        attachPanel(view, layoutRes, widthRes, /* xOffset= */ 0,  /* yOffset= */0);
+        attachPanel(view, layoutRes, widthRes, DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY);
     }
 
     /**
      * Attaches a panel to a root view that toggles the panel visibility when clicked.
+     *
+     * Variant of {@link #attachPanel(View, int, int, int, int, int)} with
+     * xOffset={@code 0} & yOffset={@link #mYOffsetPixel}.
+     */
+    public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes,
+            int gravity) {
+        attachPanel(view, layoutRes, widthRes, /* xOffset= */ 0, mYOffsetPixel,
+                gravity);
+    }
+
+    /**
+     * Attaches a panel to a root view that toggles the panel visibility when clicked.
+     *
+     * Variant of {@link #attachPanel(View, int, int, int, int, int)} with
+     * gravity={@link #DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY}.
      */
     public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes,
             int xOffset, int yOffset) {
@@ -205,7 +224,7 @@ public class StatusIconPanelController {
             registerFocusListener(true);
 
             // TODO(b/202563671): remove yOffsetPixel when the PopupWindow API is updated.
-            mPanel.showAsDropDown(mAnchorView, /* xoff= */ 0, mYOffsetPixel);
+            mPanel.showAsDropDown(mAnchorView, xOffset, yOffset, gravity);
             mAnchorView.setSelected(true);
             highlightStatusIcon(true);
 

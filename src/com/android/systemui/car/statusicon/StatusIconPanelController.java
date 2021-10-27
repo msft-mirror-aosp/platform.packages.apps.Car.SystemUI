@@ -42,6 +42,7 @@ import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.qc.SystemUIQCView;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import java.util.ArrayList;
 
@@ -65,6 +66,15 @@ public class StatusIconPanelController {
             reset();
         }
     };
+
+    private final ConfigurationController.ConfigurationListener mConfigurationListener =
+            new ConfigurationController.ConfigurationListener() {
+                @Override
+                public void onLayoutDirectionChanged(boolean isLayoutRtl) {
+                    reset();
+                }
+            };
+
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -90,12 +100,14 @@ public class StatusIconPanelController {
     public StatusIconPanelController(
             Context context,
             CarServiceProvider carServiceProvider,
-            BroadcastDispatcher broadcastDispatcher) {
+            BroadcastDispatcher broadcastDispatcher,
+            ConfigurationController configurationController) {
         mContext = context;
 
         broadcastDispatcher.registerReceiver(mBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* executor= */ null,
                 UserHandle.ALL);
+        configurationController.addCallback(mConfigurationListener);
 
         carServiceProvider.addListener(car -> {
             CarUserManager carUserManager = (CarUserManager) car.getCarManager(
@@ -179,6 +191,7 @@ public class StatusIconPanelController {
         int panelWidth = mContext.getResources().getDimensionPixelSize(widthRes);
         mPanelContent = (ViewGroup) LayoutInflater.from(mContext).inflate(layoutRes, /* root= */
                 null);
+        mPanelContent.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
         findQcViews(mPanelContent);
         if (mOnQcViewsFoundListener != null) {
             mOnQcViewsFoundListener.qcViewsFound(mQCViews);

@@ -40,6 +40,7 @@ import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.statusbar.phone.StatusBarIconController;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -78,6 +79,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Mock
     private BroadcastDispatcher mBroadcastDispatcher;
     @Mock
+    private ConfigurationController mConfigurationController;
+    @Mock
     private MicQcPanel.MicPrivacyElementsProvider mMicPrivacyElementsProvider;
 
     @Before
@@ -94,7 +97,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     private CarSystemBarController createSystemBarController() {
         return new CarSystemBarController(mContext, mCarSystemBarViewFactory, mCarServiceProvider,
-                mBroadcastDispatcher, mButtonSelectionStateController,
+                mBroadcastDispatcher, mConfigurationController, mButtonSelectionStateController,
                 () -> mUserNameViewController, () -> mPrivacyChipViewController,
                 mButtonRoleHolderController,
                 new SystemBarConfigs(mTestableResources.getResources()),

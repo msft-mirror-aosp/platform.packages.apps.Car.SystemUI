@@ -218,6 +218,7 @@ public class StatusIconPanelController {
             mPanel.showAsDropDown(view, xOffset, yOffset, gravity);
             mAnchorView.setSelected(true);
             highlightStatusIcon(true);
+            setAnimatedStatusIconHighlightedStatus(true);
 
             dimBehind(mPanel);
         });
@@ -267,14 +268,12 @@ public class StatusIconPanelController {
         panel.setWindowLayoutType(TYPE_SYSTEM_DIALOG);
         panel.setFocusable(true);
         panel.setOutsideTouchable(false);
-        panel.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                registerFocusListener(false);
-                mAnchorView.setSelected(false);
-                highlightStatusIcon(false);
-                mQCViews.forEach(qcView -> qcView.listen(false));
-            }
+        panel.setOnDismissListener(() -> {
+            setAnimatedStatusIconHighlightedStatus(false);
+            mAnchorView.setSelected(false);
+            highlightStatusIcon(false);
+            registerFocusListener(false);
+            mQCViews.forEach(qcView -> qcView.listen(false));
         });
         addFocusParkingView();
 
@@ -340,6 +339,12 @@ public class StatusIconPanelController {
             } else if (v instanceof ViewGroup) {
                 this.findQcViews((ViewGroup) v);
             }
+        }
+    }
+
+    private void setAnimatedStatusIconHighlightedStatus(boolean isHighlighted) {
+        if (mAnchorView instanceof AnimatedStatusIcon) {
+            ((AnimatedStatusIcon) mAnchorView).setIconHighlighted(isHighlighted);
         }
     }
 

@@ -85,7 +85,7 @@ public class MicQcPanelTest extends SysuiTestCase {
         mPhoneCallTitle = mContext.getString(R.string.ongoing_privacy_dialog_phonecall);
         mMicOnTitleText = mContext.getString(R.string.mic_privacy_chip_use_microphone);
         mMicOffTitleText = mContext.getString(R.string.mic_privacy_chip_off_content);
-        mTestDrawable = mContext.getDrawable(R.drawable.mic_privacy_chip_background_pill);
+        mTestDrawable = mContext.getDrawable(R.drawable.mic_privacy_chip_active_background_pill);
 
         mMicQcPanel = new MicQcPanel(mContext);
         mMicQcPanel.setControllers(mMicSensorInfoProvider, mMicPrivacyElementsProvider);

@@ -193,7 +193,12 @@ public class CarSystemBarController {
         mTopView = mCarSystemBarViewFactory.getTopBar(isSetUp);
         setupBar(mTopView, mTopBarTouchListener, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController);
-        setupMicQcPanel();
+
+        if (isSetUp) {
+            // We do not want the mic privacy chip to be clickable in unprovisioned mode.
+            setupMicQcPanel();
+        }
+
         if (mProfilePanelController == null) {
             mProfilePanelController = new StatusIconPanelController(
                     mContext, mCarServiceProvider, mBroadcastDispatcher);

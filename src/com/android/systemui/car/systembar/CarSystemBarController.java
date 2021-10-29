@@ -31,6 +31,7 @@ import com.android.systemui.car.privacy.MicQcPanel;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelController;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import javax.inject.Inject;
 
@@ -44,6 +45,7 @@ public class CarSystemBarController {
     private final CarSystemBarViewFactory mCarSystemBarViewFactory;
     private final CarServiceProvider mCarServiceProvider;
     private final BroadcastDispatcher mBroadcastDispatcher;
+    private final ConfigurationController mConfigurationController;
     private final ButtonSelectionStateController mButtonSelectionStateController;
     private final ButtonRoleHolderController mButtonRoleHolderController;
     private final Lazy<UserNameViewController> mUserNameViewControllerLazy;
@@ -75,6 +77,7 @@ public class CarSystemBarController {
             CarSystemBarViewFactory carSystemBarViewFactory,
             CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
+            ConfigurationController configurationController,
             ButtonSelectionStateController buttonSelectionStateController,
             Lazy<UserNameViewController> userNameViewControllerLazy,
             Lazy<PrivacyChipViewController> privacyChipViewControllerLazy,
@@ -85,6 +88,7 @@ public class CarSystemBarController {
         mCarSystemBarViewFactory = carSystemBarViewFactory;
         mCarServiceProvider = carServiceProvider;
         mBroadcastDispatcher = broadcastDispatcher;
+        mConfigurationController = configurationController;
         mButtonSelectionStateController = buttonSelectionStateController;
         mUserNameViewControllerLazy = userNameViewControllerLazy;
         mPrivacyChipViewControllerLazy = privacyChipViewControllerLazy;
@@ -196,7 +200,7 @@ public class CarSystemBarController {
         setupMicQcPanel();
         if (mProfilePanelController == null) {
             mProfilePanelController = new StatusIconPanelController(
-                    mContext, mCarServiceProvider, mBroadcastDispatcher);
+                    mContext, mCarServiceProvider, mBroadcastDispatcher, mConfigurationController);
             mProfilePanelController.attachPanel(mTopView.requireViewById(R.id.user_name),
                     R.layout.qc_profile_switcher, R.dimen.car_profile_quick_controls_panel_width);
         }
@@ -259,7 +263,7 @@ public class CarSystemBarController {
     private void setupMicQcPanel() {
         if (mMicPanelController == null) {
             mMicPanelController = new StatusIconPanelController(mContext, mCarServiceProvider,
-                    mBroadcastDispatcher);
+                    mBroadcastDispatcher, mConfigurationController);
         }
 
         mMicPanelController.setOnQcViewsFoundListener(qcViews -> qcViews.forEach(qcView -> {

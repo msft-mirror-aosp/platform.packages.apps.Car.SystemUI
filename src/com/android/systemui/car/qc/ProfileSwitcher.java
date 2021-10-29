@@ -267,9 +267,9 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     private void showMaxUserLimitReachedDialog() {
         AlertDialog maxUsersDialog = new AlertDialog.Builder(mContext,
                 com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
-                .setTitle(R.string.user_limit_reached_title)
+                .setTitle(R.string.profile_limit_reached_title)
                 .setMessage(mContext.getResources().getQuantityString(
-                        R.plurals.user_limit_reached_message,
+                        R.plurals.profile_limit_reached_message,
                         getMaxSupportedRealUsers(),
                         getMaxSupportedRealUsers()))
                 .setPositiveButton(android.R.string.ok, null)
@@ -286,7 +286,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 .concat(mContext.getString(R.string.user_add_user_message_update));
         AlertDialog addUserDialog = new AlertDialog.Builder(mContext,
                 com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
-                .setTitle(R.string.user_add_user_title)
+                .setTitle(R.string.user_add_profile_title)
                 .setMessage(message)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(android.R.string.ok,

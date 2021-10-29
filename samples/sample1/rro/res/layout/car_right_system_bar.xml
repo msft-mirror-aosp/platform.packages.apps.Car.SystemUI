@@ -35,8 +35,7 @@
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:paddingStart="@*android:dimen/car_padding_2"
-            android:paddingEnd="@*android:dimen/car_padding_2"
-            systemui:intent="intent:#Intent;component=com.android.car.settings/.common.CarSettingActivities$QuickSettingActivity;launchFlags=0x24000000;end">
+            android:paddingEnd="@*android:dimen/car_padding_2">
             <com.android.systemui.statusbar.policy.Clock
                 android:id="@+id/clock"
                 android:layout_width="wrap_content"

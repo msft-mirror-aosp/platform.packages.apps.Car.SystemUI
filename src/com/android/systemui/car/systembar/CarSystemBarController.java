@@ -199,8 +199,11 @@ public class CarSystemBarController {
                 mHvacPanelController, mHvacPanelOverlayViewController);
         setupMicQcPanel();
         if (mProfilePanelController == null) {
-            mProfilePanelController = new StatusIconPanelController(
-                    mContext, mCarServiceProvider, mBroadcastDispatcher, mConfigurationController);
+            boolean profilePanelDisabledWhileDriving = mContext.getResources().getBoolean(
+                    R.bool.config_profile_panel_disabled_while_driving);
+            mProfilePanelController = new StatusIconPanelController(mContext, mCarServiceProvider,
+                    mBroadcastDispatcher, mConfigurationController,
+                    profilePanelDisabledWhileDriving);
             mProfilePanelController.attachPanel(mTopView.requireViewById(R.id.user_name),
                     R.layout.qc_profile_switcher, R.dimen.car_profile_quick_controls_panel_width);
         }

@@ -27,7 +27,8 @@ import com.android.keyguard.KeyguardPatternView;
 /**
  * Car specific {@link KeyguardPatternView} to simply animations.
  *
- * TODO: Instead of extending {@KeyguardPatternView} separate shared logic into interface.
+ * TODO(b/204220809): Instead of extending {@KeyguardPatternView} separate shared logic into
+ * interface.
  */
 public class CarKeyguardPatternView extends KeyguardPatternView {
 

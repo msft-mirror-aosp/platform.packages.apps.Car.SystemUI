@@ -35,6 +35,7 @@ import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -56,6 +57,8 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
     private CarServiceProvider mCarServiceProvider;
     @Mock
     private BroadcastDispatcher mBroadcastDispatcher;
+    @Mock
+    private ConfigurationController mConfigurationController;
 
     @Before
     public void setUp() {
@@ -65,7 +68,7 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
         mIconTag = mContext.getResources().getString(R.string.qc_icon_tag);
 
         mStatusIconPanelController = new StatusIconPanelController(mContext, mCarServiceProvider,
-                mBroadcastDispatcher);
+                mBroadcastDispatcher, mConfigurationController);
         mAnchorView = spy(new ImageView(mContext));
         mAnchorView.setTag(mIconTag);
         mAnchorView.setImageDrawable(mContext.getDrawable(R.drawable.ic_bluetooth_status_off));

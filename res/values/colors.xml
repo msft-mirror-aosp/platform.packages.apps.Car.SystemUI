@@ -118,6 +118,13 @@
     <color name="blocking_text">@android:color/white</color>
     <color name="ic_ux_restricted_color">@android:color/white</color>
 
-    <!-- Color for status icon panel background -->
+    <!-- Color for status icon panel background. -->
     <color name="status_icon_panel_bg_color">#282A2D</color>
+
+    <!-- Color for highlighting the status icon button that is currently selected. -->
+    <color name="status_icon_selected_button_color">#66B5FF</color>
+    <!-- Color for status icon that is currently highlighted. -->
+    <color name="status_icon_highlighted_color">#000000</color>
+    <!-- Color for status icon that is not highlighted. -->
+    <color name="status_icon_not_highlighted_color">#FFFFFF</color>
 </resources>

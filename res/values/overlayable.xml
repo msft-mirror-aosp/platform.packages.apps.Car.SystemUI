@@ -438,6 +438,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_increase_icon"/>
       <item type="drawable" name="ic_mic_dark"/>
       <item type="drawable" name="ic_mic_light"/>
+      <item type="drawable" name="ic_mic_off_dark"/>
       <item type="drawable" name="ic_mic_off_light"/>
       <item type="drawable" name="ic_rear_defroster_off"/>
       <item type="drawable" name="ic_rear_defroster_on"/>
@@ -447,7 +448,9 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_seat_heat_level_2"/>
       <item type="drawable" name="ic_seat_heat_level_3"/>
       <item type="drawable" name="ic_seat_heat_off"/>
-      <item type="drawable" name="mic_privacy_chip_background_pill"/>
+      <item type="drawable" name="mic_privacy_chip_active_background_pill"/>
+      <item type="drawable" name="mic_privacy_chip_inactive_background_pill"/>
+      <item type="drawable" name="mic_privacy_chip_inactive_selected_background_pill"/>
       <item type="drawable" name="notification_handle_bar"/>
       <item type="drawable" name="notification_material_bg"/>
       <item type="drawable" name="notification_material_bg_dim"/>
@@ -480,6 +483,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="clock_container"/>
       <item type="id" name="connected_device_signals_stub"/>
       <item type="id" name="dark_icon"/>
+      <item type="id" name="dark_muted_icon"/>
       <item type="id" name="debug_info"/>
       <item type="id" name="defroster_button"/>
       <item type="id" name="direction_defrost"/>
@@ -515,6 +519,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="hvac_temperature_text"/>
       <item type="id" name="hvacright"/>
       <item type="id" name="inactive_background"/>
+      <item type="id" name="inactive_selected_background"/>
       <item type="id" name="inout_container"/>
       <item type="id" name="keyguard_stub"/>
       <item type="id" name="light_icon"/>

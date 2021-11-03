@@ -144,7 +144,10 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="color" name="notification_ripple_untinted_color"/>
       <item type="color" name="notification_shade_background_color"/>
       <item type="color" name="status_bar_background_color"/>
+      <item type="color" name="status_icon_highlighted_color"/>
+      <item type="color" name="status_icon_not_highlighted_color"/>
       <item type="color" name="status_icon_panel_bg_color"/>
+      <item type="color" name="status_icon_selected_button_color"/>
       <item type="color" name="system_bar_background_opaque"/>
       <item type="color" name="system_bar_background_pill_color"/>
       <item type="color" name="system_bar_icon_color"/>
@@ -189,6 +192,10 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_padding_6"/>
       <item type="dimen" name="car_primary_icon_size"/>
       <item type="dimen" name="car_profile_quick_controls_panel_width"/>
+      <item type="dimen" name="car_quick_controls_entry_points_button_margin_bottom"/>
+      <item type="dimen" name="car_quick_controls_entry_points_button_margin_end"/>
+      <item type="dimen" name="car_quick_controls_entry_points_button_margin_start"/>
+      <item type="dimen" name="car_quick_controls_entry_points_button_margin_top"/>
       <item type="dimen" name="car_quick_controls_entry_points_button_width"/>
       <item type="dimen" name="car_quick_controls_entry_points_icon_width"/>
       <item type="dimen" name="car_quick_controls_footer_button_horizontal_padding"/>
@@ -201,6 +208,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_status_icon_panel_border_radius"/>
       <item type="dimen" name="car_status_icon_panel_default_width"/>
       <item type="dimen" name="car_status_icon_panel_dim"/>
+      <item type="dimen" name="car_status_icon_panel_margin_top"/>
       <item type="dimen" name="car_status_icon_panel_padding_bottom"/>
       <item type="dimen" name="car_status_icon_panel_padding_top"/>
       <item type="dimen" name="car_system_bar_button_icon_height"/>
@@ -430,6 +438,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_increase_icon"/>
       <item type="drawable" name="ic_mic_dark"/>
       <item type="drawable" name="ic_mic_light"/>
+      <item type="drawable" name="ic_mic_off_dark"/>
       <item type="drawable" name="ic_mic_off_light"/>
       <item type="drawable" name="ic_rear_defroster_off"/>
       <item type="drawable" name="ic_rear_defroster_on"/>
@@ -439,11 +448,14 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_seat_heat_level_2"/>
       <item type="drawable" name="ic_seat_heat_level_3"/>
       <item type="drawable" name="ic_seat_heat_off"/>
-      <item type="drawable" name="mic_privacy_chip_background_pill"/>
+      <item type="drawable" name="mic_privacy_chip_active_background_pill"/>
+      <item type="drawable" name="mic_privacy_chip_inactive_background_pill"/>
+      <item type="drawable" name="mic_privacy_chip_inactive_selected_background_pill"/>
       <item type="drawable" name="notification_handle_bar"/>
       <item type="drawable" name="notification_material_bg"/>
       <item type="drawable" name="notification_material_bg_dim"/>
       <item type="drawable" name="stat_sys_signal_null"/>
+      <item type="drawable" name="status_icon_background"/>
       <item type="drawable" name="status_icon_panel_bg"/>
       <item type="drawable" name="system_bar_background"/>
       <item type="drawable" name="system_bar_background_pill"/>
@@ -471,6 +483,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="clock_container"/>
       <item type="id" name="connected_device_signals_stub"/>
       <item type="id" name="dark_icon"/>
+      <item type="id" name="dark_muted_icon"/>
       <item type="id" name="debug_info"/>
       <item type="id" name="defroster_button"/>
       <item type="id" name="direction_defrost"/>
@@ -506,6 +519,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="hvac_temperature_text"/>
       <item type="id" name="hvacright"/>
       <item type="id" name="inactive_background"/>
+      <item type="id" name="inactive_selected_background"/>
       <item type="id" name="inout_container"/>
       <item type="id" name="keyguard_stub"/>
       <item type="id" name="light_icon"/>

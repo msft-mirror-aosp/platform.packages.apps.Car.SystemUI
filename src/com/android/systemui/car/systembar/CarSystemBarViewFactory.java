@@ -27,6 +27,7 @@ import androidx.annotation.LayoutRes;
 import com.android.car.ui.FocusParkingView;
 import com.android.systemui.R;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
+import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.flags.FeatureFlags;
 
@@ -58,6 +59,7 @@ public class CarSystemBarViewFactory {
     private final ArrayMap<Type, ViewGroup> mCachedContainerMap = new ArrayMap<>();
     private final FeatureFlags mFeatureFlags;
     private final QuickControlsEntryPointsController mQuickControlsEntryPointsController;
+    private final ReadOnlyIconsController mReadOnlyIconsController;
 
     /** Type of navigation bar to be created. */
     private enum Type {
@@ -75,11 +77,13 @@ public class CarSystemBarViewFactory {
     public CarSystemBarViewFactory(
             Context context,
             FeatureFlags featureFlags,
-            QuickControlsEntryPointsController quickControlsEntryPointsController
+            QuickControlsEntryPointsController quickControlsEntryPointsController,
+            ReadOnlyIconsController readOnlyIconsController
     ) {
         mContext = context;
         mFeatureFlags = featureFlags;
         mQuickControlsEntryPointsController = quickControlsEntryPointsController;
+        mReadOnlyIconsController = readOnlyIconsController;
     }
 
     /** Gets the top window. */
@@ -160,6 +164,7 @@ public class CarSystemBarViewFactory {
 
         view.setupHvacButton();
         view.setupQuickControlsEntryPoints(mQuickControlsEntryPointsController);
+        view.setupReadOnlyIcons(mReadOnlyIconsController);
 
         // Include a FocusParkingView at the beginning. The rotary controller "parks" the focus here
         // when the user navigates to another window. This is also used to prevent wrap-around.

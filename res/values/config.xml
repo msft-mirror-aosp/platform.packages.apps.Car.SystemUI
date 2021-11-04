@@ -93,6 +93,9 @@
     <!-- Whether heads-up notifications should be shown when panel is open. -->
     <bool name="config_enableHeadsUpNotificationWhenNotificationPanelOpen">true</bool>
 
+    <!-- Whether or not the profile panel should be disabled while driving. -->
+    <bool name="config_profile_panel_disabled_while_driving">true</bool>
+
     <!--
         Initial alpha percent value for the background when the notification
         panel is open. Should be a number between, and inclusive, 0 and 100.
@@ -124,6 +127,12 @@
         <item>com.android.systemui.car.statusicon.ui.BluetoothStatusIconController</item>
         <item>com.android.systemui.car.statusicon.ui.SignalStatusIconController</item>
         <item>com.android.systemui.car.statusicon.ui.DisplayStatusIconController</item>
+    </string-array>
+
+    <!-- List of StatusIconControllers associated with read-only status icons.
+         The icons will be added to the view in the order their controllers appear on this list.-->
+    <string-array name="config_readOnlyIconControllers" translatable="false">
+        <item>com.android.systemui.car.statusicon.ui.LocationStatusIconController</item>
     </string-array>
 
     <!-- List of package names that are allowed sources of app installation. -->

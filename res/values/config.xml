@@ -93,6 +93,9 @@
     <!-- Whether heads-up notifications should be shown when panel is open. -->
     <bool name="config_enableHeadsUpNotificationWhenNotificationPanelOpen">true</bool>
 
+    <!-- Whether or not the profile panel should be disabled while driving. -->
+    <bool name="config_profile_panel_disabled_while_driving">true</bool>
+
     <!--
         Initial alpha percent value for the background when the notification
         panel is open. Should be a number between, and inclusive, 0 and 100.

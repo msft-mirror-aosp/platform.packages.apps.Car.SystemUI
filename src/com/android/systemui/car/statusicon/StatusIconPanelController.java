@@ -23,6 +23,7 @@ import android.annotation.ColorInt;
 import android.annotation.DimenRes;
 import android.annotation.LayoutRes;
 import android.car.Car;
+import android.car.drivingstate.CarUxRestrictions;
 import android.car.user.CarUserManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -37,10 +38,13 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.ui.FocusParkingView;
+import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.car.ui.utils.ViewUtils;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
@@ -62,6 +66,7 @@ public class StatusIconPanelController {
     private final @ColorInt int mIconHighlightedColor;
     private final @ColorInt int mIconNotHighlightedColor;
     private final int mYOffsetPixel;
+    private final boolean mIsDisabledWhileDriving;
     private final ArrayList<SystemUIQCView> mQCViews = new ArrayList<>();
 
     private PopupWindow mPanel;
@@ -69,6 +74,7 @@ public class StatusIconPanelController {
     private OnQcViewsFoundListener mOnQcViewsFoundListener;
     private View mAnchorView;
     private ImageView mStatusIconView;
+    private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
     private float mDimValue = -1.0f;
     private boolean mUserSwitchEventRegistered;
 
@@ -83,6 +89,19 @@ public class StatusIconPanelController {
                 @Override
                 public void onLayoutDirectionChanged(boolean isLayoutRtl) {
                     reset();
+                }
+            };
+
+    private final CarUxRestrictionsUtil.OnUxRestrictionsChangedListener
+            mUxRestrictionsChangedListener =
+            new CarUxRestrictionsUtil.OnUxRestrictionsChangedListener() {
+                @Override
+                public void onRestrictionsChanged(@NonNull CarUxRestrictions carUxRestrictions) {
+                    if (mIsDisabledWhileDriving
+                            && carUxRestrictions.isRequiresDistractionOptimization()
+                            && mPanel != null) {
+                        mPanel.dismiss();
+                    }
                 }
             };
 
@@ -115,6 +134,16 @@ public class StatusIconPanelController {
             CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController) {
+        this(context, carServiceProvider, broadcastDispatcher, configurationController,
+                /* isDisabledWhileDriving= */ false);
+    }
+
+    public StatusIconPanelController(
+            Context context,
+            CarServiceProvider carServiceProvider,
+            BroadcastDispatcher broadcastDispatcher,
+            ConfigurationController configurationController,
+            boolean isDisabledWhileDriving) {
         mContext = context;
         mIdentifier = Integer.toString(System.identityHashCode(this));
 
@@ -142,6 +171,11 @@ public class StatusIconPanelController {
                 mUserSwitchEventRegistered = true;
             }
         });
+        mIsDisabledWhileDriving = isDisabledWhileDriving;
+        if (mIsDisabledWhileDriving) {
+            mCarUxRestrictionsUtil = CarUxRestrictionsUtil.getInstance(mContext);
+            mCarUxRestrictionsUtil.register(mUxRestrictionsChangedListener);
+        }
     }
 
     /**
@@ -211,6 +245,14 @@ public class StatusIconPanelController {
         }
 
         mAnchorView.setOnClickListener(v -> {
+            if (mIsDisabledWhileDriving && mCarUxRestrictionsUtil.getCurrentRestrictions()
+                    .isRequiresDistractionOptimization()) {
+                dismissAllSystemDialogs();
+                Toast.makeText(mContext, R.string.car_ui_restricted_while_driving,
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+
             if (mPanel == null) {
                 mPanel = createPanel(layoutRes, widthRes);
             }
@@ -221,9 +263,7 @@ public class StatusIconPanelController {
             }
 
             // Dismiss all currently open system dialogs before opening this panel.
-            Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-            intent.setIdentifier(mIdentifier);
-            mContext.sendBroadcastAsUser(intent, UserHandle.CURRENT);
+            dismissAllSystemDialogs();
 
             mQCViews.forEach(qcView -> qcView.listen(true));
 
@@ -314,6 +354,12 @@ public class StatusIconPanelController {
         lp.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
         lp.dimAmount = mDimValue;
         wm.updateViewLayout(container, lp);
+    }
+
+    private void dismissAllSystemDialogs() {
+        Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+        intent.setIdentifier(mIdentifier);
+        mContext.sendBroadcastAsUser(intent, UserHandle.CURRENT);
     }
 
     /**

@@ -90,6 +90,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="bool" name="config_notif_panel_inset_by_left_systembar"/>
       <item type="bool" name="config_notif_panel_inset_by_right_systembar"/>
       <item type="bool" name="config_notif_panel_inset_by_top_systembar"/>
+      <item type="bool" name="config_profile_panel_disabled_while_driving"/>
       <item type="bool" name="config_systemBarButtonsDraggable"/>
       <item type="color" name="activity_blocking_action_button_background_color"/>
       <item type="color" name="activity_blocking_activity_background"/>

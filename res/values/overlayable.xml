@@ -32,6 +32,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="array" name="config_allowedAppInstallSources"/>
       <item type="array" name="config_carSystemUIOverlayViewsMediators"/>
       <item type="array" name="config_quickControlsEntryPointIconControllers"/>
+      <item type="array" name="config_readOnlyIconControllers"/>
       <item type="array" name="config_restrictedToastsPackageNameAllowList"/>
       <item type="array" name="config_statusBarIconsToExclude"/>
       <item type="array" name="config_systemUIServiceComponentsExclude"/>
@@ -205,6 +206,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_quick_controls_footer_button_vertical_margin"/>
       <item type="dimen" name="car_quick_controls_icon_drawable_height"/>
       <item type="dimen" name="car_quick_controls_icon_drawable_width"/>
+      <item type="dimen" name="car_read_only_status_icon_height"/>
+      <item type="dimen" name="car_read_only_status_icon_width"/>
       <item type="dimen" name="car_right_system_bar_width"/>
       <item type="dimen" name="car_status_icon_panel_border_radius"/>
       <item type="dimen" name="car_status_icon_panel_default_width"/>
@@ -437,6 +440,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_front_defroster_off"/>
       <item type="drawable" name="ic_front_defroster_on"/>
       <item type="drawable" name="ic_increase_icon"/>
+      <item type="drawable" name="ic_location"/>
       <item type="drawable" name="ic_mic_dark"/>
       <item type="drawable" name="ic_mic_light"/>
       <item type="drawable" name="ic_mic_off_dark"/>
@@ -542,6 +546,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="qc_entry_points_container"/>
       <item type="id" name="qs"/>
       <item type="id" name="qs_car_top_bar"/>
+      <item type="id" name="read_only_icons_container"/>
       <item type="id" name="rear_defroster_button"/>
       <item type="id" name="recycle_air_button"/>
       <item type="id" name="right_hvac_container"/>

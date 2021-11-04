@@ -458,9 +458,7 @@ public class NotificationPanelViewController extends OverlayPanelViewController
 
     @Override
     protected void onAnimateCollapsePanel() {
-        // Due to grouping nature of seen/unseen notifications, we only want to set seen
-        // notifications on collapse rather than expand.
-        mNotificationView.setVisibleNotificationsAsSeen();
+        // no-op
     }
 
     @Override
@@ -485,6 +483,7 @@ public class NotificationPanelViewController extends OverlayPanelViewController
 
     @Override
     protected void onExpandAnimationEnd() {
+        mNotificationView.setVisibleNotificationsAsSeen();
         mNotificationViewController.onVisibilityChanged(true);
     }
 

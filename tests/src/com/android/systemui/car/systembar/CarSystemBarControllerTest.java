@@ -37,6 +37,7 @@ import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.privacy.MicQcPanel;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
+import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.statusbar.phone.StatusBarIconController;
@@ -75,6 +76,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Mock
     private QuickControlsEntryPointsController mQuickControlsEntryPointsController;
     @Mock
+    private ReadOnlyIconsController mReadOnlyIconsController;
+    @Mock
     private CarServiceProvider mCarServiceProvider;
     @Mock
     private BroadcastDispatcher mBroadcastDispatcher;
@@ -86,8 +89,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mCarSystemBarViewFactory = new CarSystemBarViewFactory(
-                mContext, mFeatureFlags, mQuickControlsEntryPointsController);
+        mCarSystemBarViewFactory = new CarSystemBarViewFactory(mContext, mFeatureFlags,
+                mQuickControlsEntryPointsController, mReadOnlyIconsController);
         mTestableResources = mContext.getOrCreateTestableResources();
 
         // Needed to inflate top navigation bar.

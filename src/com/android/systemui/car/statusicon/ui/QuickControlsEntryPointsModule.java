@@ -43,11 +43,18 @@ public abstract class QuickControlsEntryPointsModule {
     public abstract StatusIconController bindSignalStatusIconController(
             SignalStatusIconController signalStatusIconController);
 
-    /** Injects SignalStatusIconController. */
+    /** Injects DisplayStatusIconController. */
     @Binds
     @IntoMap
     @ClassKey(DisplayStatusIconController.class)
     public abstract StatusIconController bindDisplayStatusIconController(
             DisplayStatusIconController displayStatusIconController);
+
+    /** Injects LocationStatusIconController. */
+    @Binds
+    @IntoMap
+    @ClassKey(LocationStatusIconController.class)
+    public abstract StatusIconController bindLocationStatusIconController(
+            LocationStatusIconController locationStatusIconController);
 
 }

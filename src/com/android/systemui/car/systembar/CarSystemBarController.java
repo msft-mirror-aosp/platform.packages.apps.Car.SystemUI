@@ -199,8 +199,11 @@ public class CarSystemBarController {
                 mHvacPanelController, mHvacPanelOverlayViewController);
         setupMicQcPanel();
         if (mProfilePanelController == null) {
-            mProfilePanelController = new StatusIconPanelController(
-                    mContext, mCarServiceProvider, mBroadcastDispatcher, mConfigurationController);
+            boolean profilePanelDisabledWhileDriving = mContext.getResources().getBoolean(
+                    R.bool.config_profile_panel_disabled_while_driving);
+            mProfilePanelController = new StatusIconPanelController(mContext, mCarServiceProvider,
+                    mBroadcastDispatcher, mConfigurationController,
+                    profilePanelDisabledWhileDriving);
             mProfilePanelController.attachPanel(mTopView.requireViewById(R.id.user_name),
                     R.layout.qc_profile_switcher, R.dimen.car_profile_quick_controls_panel_width);
         }
@@ -274,9 +277,10 @@ public class CarSystemBarController {
             }
         }));
 
-        mMicPanelController.attachPanel(mTopView.requireViewById(R.id.privacy_chip),
-                R.layout.qc_mic_panel, R.dimen.car_mic_qc_panel_width,
-                /* xOffset= */ 0, /* yOffset= */ 0, Gravity.TOP | Gravity.END);
+        View micPrivacyChipFocusView =
+                mTopView.requireViewById(R.id.privacy_chip).requireViewById(R.id.focus_view);
+        mMicPanelController.attachPanel(micPrivacyChipFocusView, R.layout.qc_mic_panel,
+                R.dimen.car_mic_qc_panel_width, Gravity.TOP | Gravity.END);
     }
 
     /** Sets a touch listener for the top navigation bar. */

@@ -40,14 +40,23 @@
     <string name="car_guest">Guest</string>
     <!-- Title for button that starts a guest session. [CHAR LIMIT=35] -->
     <string name="start_guest_session">Guest</string>
-    <!-- Title for button that  adds a new user. [CHAR LIMIT=30] -->
-    <string name="car_add_user">Add User</string>
-    <!-- Default name of the new user created. [CHAR LIMIT=30] -->
-    <string name="car_new_user">New User</string>
-    <!-- Message to inform user that creation of new user requires that user to set up their space. [CHAR LIMIT=100] -->
-    <string name="user_add_user_message_setup">When you add a new user, that person needs to set up their space.</string>
-    <!-- Message to inform user that the newly created user will have permissions to update apps for all other users. [CHAR LIMIT=100] -->
-    <string name="user_add_user_message_update">Any user can update apps for all other users.</string>
+    <!-- Title for button that adds a new profile. [CHAR LIMIT=30] -->
+    <string name="car_add_user">Add Profile</string>
+    <!-- Default name of the new profile created. [CHAR LIMIT=30] -->
+    <string name="car_new_user">New Profile</string>
+    <!-- Title of the alert dialog to ask user to confirm creation of new profile. [CHAR LIMIT=30] -->
+    <string name="user_add_profile_title">"Add new profile?"</string>
+    <!-- Message to inform the profile creator that the user it's intended for should customize it for themselves. [CHAR LIMIT=100] -->
+    <string name="user_add_user_message_setup">After you create a new profile, that person should customize it for themselves.</string>
+    <!-- Message to inform user that the newly created profile will have permissions to update apps for all other profiles. [CHAR LIMIT=100] -->
+    <string name="user_add_user_message_update">Apps can be updated from any profile for use by all other profiles.</string>
+    <!-- Title for the dialog that lets users know that the maximum allowed number of profiles on the device has been reached. [CHAR LIMIT=35]-->
+    <string name="profile_limit_reached_title">Profile limit reached</string>
+    <!-- Message that tells people what's the maximum number of profiles allowed on the device. [CHAR_LIMIT=NONE]-->
+    <plurals name="profile_limit_reached_message">
+        <item quantity="one">Only one profile can be created.</item>
+        <item quantity="other">You can add up to <xliff:g id="count" example="3">%d</xliff:g> profiles.</item>
+    </plurals>
     <!-- Message to inform user that the new user profile is loading. [CHAR LIMIT=20] -->
     <string name="car_loading_profile">Loading</string>
     <!-- Message to inform user that the new user profile is loading with additional information on the previous and the next user. [CHAR LIMIT=100] -->

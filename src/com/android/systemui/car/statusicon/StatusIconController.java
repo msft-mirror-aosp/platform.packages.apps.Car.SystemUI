@@ -19,6 +19,7 @@ package com.android.systemui.car.statusicon;
 import android.annotation.DimenRes;
 import android.annotation.LayoutRes;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.VisibleForTesting;
@@ -77,6 +78,15 @@ public abstract class StatusIconController {
     }
 
     /**
+     * Sets the icon visibility.
+     *
+     * NOTE: Icons are visible by default.
+     */
+    protected final void setIconVisibility(boolean isVisible) {
+        mStatusIconData.setIsIconVisible(isVisible);
+    }
+
+    /**
      * Provides observing views with the {@link StatusIconData} and causes them to update
      * themselves accordingly through {@link #updateIconView}.
      */
@@ -89,6 +99,7 @@ public abstract class StatusIconController {
      */
     protected void updateIconView(ImageView view, StatusIconData data) {
         view.setImageDrawable(data.getIconDrawable());
+        view.setVisibility(data.getIsIconVisible() ? View.VISIBLE : View.GONE);
     }
 
     /**

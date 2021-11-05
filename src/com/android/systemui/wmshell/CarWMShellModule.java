@@ -20,7 +20,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.IWindowManager;
 
-import com.android.systemui.dagger.WMSingleton;
+import com.android.wm.shell.dagger.WMShellBaseModule;
+import com.android.wm.shell.dagger.WMSingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.common.DisplayController;

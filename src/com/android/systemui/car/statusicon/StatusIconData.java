@@ -27,6 +27,7 @@ public class StatusIconData {
     private Drawable mIconDrawable;
     @NonNull
     private String mContentDescription = "";
+    private boolean mIsIconVisible = true;
 
     protected Drawable getIconDrawable() {
         return mIconDrawable;
@@ -42,5 +43,13 @@ public class StatusIconData {
 
     protected void setContentDescription(String str) {
         mContentDescription = str;
+    }
+
+    protected boolean getIsIconVisible() {
+        return mIsIconVisible;
+    }
+
+    protected void setIsIconVisible(boolean isVisible) {
+        mIsIconVisible = isVisible;
     }
 }

@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
+import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
 import com.android.systemui.car.systembar.CarSystemBarController.NotificationsShadeController;
 import com.android.systemui.flags.FeatureFlags;
@@ -63,6 +64,7 @@ public class CarSystemBarView extends LinearLayout {
     private View mLockScreenButtons;
     private View mOcclusionButtons;
     private ViewGroup mQcEntryPointsContainer;
+    private ViewGroup mReadOnlyIconsContainer;
     // used to wire in open/close gestures for notifications
     private OnTouchListener mStatusBarWindowTouchListener;
     private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
@@ -82,6 +84,7 @@ public class CarSystemBarView extends LinearLayout {
         mNotificationsButton = findViewById(R.id.notifications);
         mHvacButton = findViewById(R.id.hvac);
         mQcEntryPointsContainer = findViewById(R.id.qc_entry_points_container);
+        mReadOnlyIconsContainer = findViewById(R.id.read_only_icons_container);
         if (mNotificationsButton != null) {
             mNotificationsButton.setOnClickListener(this::onNotificationsClick);
         }
@@ -104,6 +107,12 @@ public class CarSystemBarView extends LinearLayout {
             QuickControlsEntryPointsController quickControlsEntryPointsController) {
         if (mQcEntryPointsContainer != null) {
             quickControlsEntryPointsController.addIconViews(mQcEntryPointsContainer);
+        }
+    }
+
+    void setupReadOnlyIcons(ReadOnlyIconsController readOnlyIconsController) {
+        if (mReadOnlyIconsContainer != null) {
+            readOnlyIconsController.addIconViews(mReadOnlyIconsContainer);
         }
     }
 

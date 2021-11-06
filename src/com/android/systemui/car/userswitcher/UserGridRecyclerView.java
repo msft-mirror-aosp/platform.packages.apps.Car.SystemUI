@@ -363,9 +363,9 @@ public class UserGridRecyclerView extends RecyclerView {
         private void showMaxUserLimitReachedDialog() {
             AlertDialog maxUsersDialog = new Builder(mContext,
                     com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
-                    .setTitle(R.string.user_limit_reached_title)
+                    .setTitle(R.string.profile_limit_reached_title)
                     .setMessage(getResources().getQuantityString(
-                            R.plurals.user_limit_reached_message,
+                            R.plurals.profile_limit_reached_message,
                             getMaxSupportedRealUsers(),
                             getMaxSupportedRealUsers()))
                     .setPositiveButton(android.R.string.ok, null)
@@ -383,7 +383,7 @@ public class UserGridRecyclerView extends RecyclerView {
 
             AlertDialog addUserDialog = new Builder(mContext,
                     com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
-                    .setTitle(R.string.user_add_user_title)
+                    .setTitle(R.string.user_add_profile_title)
                     .setMessage(message)
                     .setNegativeButton(android.R.string.cancel, this)
                     .setPositiveButton(android.R.string.ok, this)

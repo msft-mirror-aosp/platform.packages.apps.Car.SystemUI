@@ -84,8 +84,9 @@ public class CarToastUITest extends SysuiTestCase {
         mCarToastUI = new CarToastUI(mContext,
                 mContext.getOrCreateTestableResources().getResources(), mCommandQueue,
                 mToastFactory, mToastLogger, mPackageManager);
+        View view = new View(mContext);
         when(mSystemUIToast.hasCustomAnimation()).thenReturn(false);
-        when(mSystemUIToast.getView()).thenReturn(new View(mContext));
+        when(mSystemUIToast.getView()).thenReturn(view);
         when(mSystemUIToast.getGravity()).thenReturn(Gravity.BOTTOM);
         when(mSystemUIToast.getXOffset()).thenReturn(0);
         when(mSystemUIToast.getYOffset()).thenReturn(0);
@@ -168,14 +169,16 @@ public class CarToastUITest extends SysuiTestCase {
     @Test
     public void showToast_isSystemNotPrivilegedNotPlatformKeyAllowListed_createToastCalled()
             throws PackageManager.NameNotFoundException {
-        setupPackageInfo(/* isSystem= */ true, /* isPrivileged= */
-                false, /* isSignedWithPlatformKey= */ false);
-
         mContext.getOrCreateTestableResources().addOverride(
                 R.array.config_restrictedToastsPackageNameAllowList,
                 new String[]{PACKAGE_NAME});
+        CarToastUI carToastUI = new CarToastUI(mContext,
+                mContext.getOrCreateTestableResources().getResources(), mCommandQueue,
+                mToastFactory, mToastLogger, mPackageManager);
+        setupPackageInfo(/* isSystem= */ true, /* isPrivileged= */
+                false, /* isSignedWithPlatformKey= */ false);
 
-        mCarToastUI.showToast(UID, PACKAGE_NAME, mIBinder, TEXT, mIBinder, DURATION,
+        carToastUI.showToast(UID, PACKAGE_NAME, mIBinder, TEXT, mIBinder, DURATION,
                 mITransientNotificationCallback);
 
         verify(mToastFactory).createToast(any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt());

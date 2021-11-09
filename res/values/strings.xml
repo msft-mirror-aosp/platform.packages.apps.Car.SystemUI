@@ -41,7 +41,7 @@
     <!-- Title for button that starts a guest session. [CHAR LIMIT=35] -->
     <string name="start_guest_session">Guest</string>
     <!-- Title for button that adds a new profile. [CHAR LIMIT=30] -->
-    <string name="car_add_user">Add Profile</string>
+    <string name="car_add_user">Add a profile</string>
     <!-- Default name of the new profile created. [CHAR LIMIT=30] -->
     <string name="car_new_user">New Profile</string>
     <!-- Title of the alert dialog to ask user to confirm creation of new profile. [CHAR LIMIT=30] -->

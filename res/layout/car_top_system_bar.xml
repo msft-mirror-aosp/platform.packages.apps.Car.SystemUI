@@ -86,7 +86,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/car_padding_2"
-                android:background="@drawable/system_bar_background_pill"
+                android:background="@drawable/status_icon_background"
                 android:gravity="center_vertical">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -101,6 +101,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:src="@drawable/car_ic_user_icon"
+                        android:tint="@color/system_bar_icon_color_with_selection"
                         android:layout_marginEnd="@dimen/system_bar_user_icon_padding"
                     />
                     <TextView

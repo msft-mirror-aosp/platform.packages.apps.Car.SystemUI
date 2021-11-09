@@ -101,9 +101,10 @@ public class CarSystemBarView extends LinearLayout {
     }
 
     void setupQuickControlsEntryPoints(
-            QuickControlsEntryPointsController quickControlsEntryPointsController) {
+            QuickControlsEntryPointsController quickControlsEntryPointsController,
+            boolean isSetUp) {
         if (mQcEntryPointsContainer != null) {
-            quickControlsEntryPointsController.addIconViews(mQcEntryPointsContainer);
+            quickControlsEntryPointsController.addIconViews(mQcEntryPointsContainer, isSetUp);
         }
     }
 

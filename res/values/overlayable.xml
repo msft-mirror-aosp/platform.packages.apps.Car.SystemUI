@@ -536,7 +536,6 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="statusIcons"/>
       <item type="id" name="supplemental_icon"/>
       <item type="id" name="supplemental_icon_divider"/>
-      <item type="id" name="system_icon_area"/>
       <item type="id" name="system_icons"/>
       <item type="id" name="top_guideline"/>
       <item type="id" name="user_avatar"/>

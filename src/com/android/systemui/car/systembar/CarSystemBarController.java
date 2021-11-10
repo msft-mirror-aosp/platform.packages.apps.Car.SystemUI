@@ -128,6 +128,8 @@ public class CarSystemBarController {
         mButtonRoleHolderController.removeAll();
         mUserNameViewControllerLazy.get().removeAll();
         mPrivacyChipViewControllerLazy.get().removeAll();
+        mMicPanelController = null;
+        mProfilePanelController = null;
     }
 
     /** Gets the top window if configured to do so. */
@@ -199,20 +201,12 @@ public class CarSystemBarController {
                 mHvacPanelController, mHvacPanelOverlayViewController);
 
         if (isSetUp) {
-            // We do not want the mic privacy chip to be clickable in unprovisioned mode.
+            // We do not want the mic privacy chip or the profile picker to be clickable in
+            // unprovisioned mode.
             setupMicQcPanel();
+            setupProfilePanel();
         }
 
-        View profilePickerView = mTopView.findViewById(R.id.user_name);
-        if (mProfilePanelController == null && profilePickerView != null) {
-            boolean profilePanelDisabledWhileDriving = mContext.getResources().getBoolean(
-                    R.bool.config_profile_panel_disabled_while_driving);
-            mProfilePanelController = new StatusIconPanelController(mContext, mCarServiceProvider,
-                    mBroadcastDispatcher, mConfigurationController,
-                    profilePanelDisabledWhileDriving);
-            mProfilePanelController.attachPanel(profilePickerView, R.layout.qc_profile_switcher,
-                    R.dimen.car_profile_quick_controls_panel_width);
-        }
         return mTopView;
     }
 
@@ -287,6 +281,19 @@ public class CarSystemBarController {
                 mTopView.requireViewById(R.id.privacy_chip).requireViewById(R.id.focus_view);
         mMicPanelController.attachPanel(micPrivacyChipFocusView, R.layout.qc_mic_panel,
                 R.dimen.car_mic_qc_panel_width, Gravity.TOP | Gravity.END);
+    }
+
+    private void setupProfilePanel() {
+        View profilePickerView = mTopView.findViewById(R.id.user_name);
+        if (mProfilePanelController == null && profilePickerView != null) {
+            boolean profilePanelDisabledWhileDriving = mContext.getResources().getBoolean(
+                    R.bool.config_profile_panel_disabled_while_driving);
+            mProfilePanelController = new StatusIconPanelController(mContext, mCarServiceProvider,
+                    mBroadcastDispatcher, mConfigurationController,
+                    profilePanelDisabledWhileDriving);
+            mProfilePanelController.attachPanel(profilePickerView, R.layout.qc_profile_switcher,
+                    R.dimen.car_profile_quick_controls_panel_width);
+        }
     }
 
     /** Sets a touch listener for the top navigation bar. */

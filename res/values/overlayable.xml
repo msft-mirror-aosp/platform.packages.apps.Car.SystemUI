@@ -514,6 +514,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="lock_screen_nav_buttons"/>
       <item type="id" name="manage_button"/>
       <item type="id" name="max_width_guideline"/>
+      <item type="id" name="mic_privacy_panel"/>
       <item type="id" name="nav_buttons"/>
       <item type="id" name="note"/>
       <item type="id" name="notification_container"/>

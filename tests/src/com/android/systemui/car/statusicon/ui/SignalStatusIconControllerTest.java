@@ -27,7 +27,9 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.statusbar.connectivity.IconState;
 import com.android.systemui.statusbar.connectivity.NetworkController;
+import com.android.systemui.statusbar.connectivity.WifiIndicators;
 import com.android.systemui.statusbar.policy.HotspotController;
 
 import org.junit.Before;
@@ -104,10 +106,8 @@ public class SignalStatusIconControllerTest extends SysuiTestCase {
                 mSignalStatusIconController.getHotSpotIconDrawable());
     }
 
-    private NetworkController.WifiIndicators getWifiIndicator(boolean enabled) {
-        NetworkController.IconState iconState =
-                new NetworkController.IconState(true, R.drawable.icon, "");
-        return new NetworkController.WifiIndicators(enabled, iconState, null, false, false, "",
-                false, "");
+    private WifiIndicators getWifiIndicator(boolean enabled) {
+        IconState iconState = new IconState(true, R.drawable.icon, "");
+        return new WifiIndicators(enabled, iconState, null, false, false, "", false, "");
     }
 }

@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -198,8 +199,8 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
         CarSystemBarButton roleBasedButton = mTestView.findViewById(R.id.role_based_button);
         Drawable appIcon = getContext().getDrawable(R.drawable.ic_android);
 
-        roleBasedButton.setSelected(false);
         roleBasedButton.setAppIcon(appIcon);
+        roleBasedButton.setSelected(false);
         waitForIdleSync();
 
         Drawable currentDrawable = ((AlphaOptimizedImageView) roleBasedButton.findViewById(
@@ -212,15 +213,15 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
     public void onUnselected_withAppIcon_applyUnselectedAlpha() {
         CarSystemBarButton roleBasedButton = mTestView.findViewById(R.id.role_based_button);
 
-        roleBasedButton.setSelected(false);
         roleBasedButton.setAppIcon(getContext().getDrawable(R.drawable.ic_android));
+        roleBasedButton.setSelected(false);
         waitForIdleSync();
 
         assertThat(roleBasedButton.getIconAlpha()).isEqualTo(roleBasedButton.getUnselectedAlpha());
     }
 
     @Test
-    public void onSelected_withAppIcon_showsAppIconWithSelectedAlpha() {
+    public void onSelected_withAppIcon_showsAppIcon() {
         CarSystemBarButton roleBasedButton = mTestView.findViewById(R.id.role_based_button);
         Drawable appIcon = getContext().getDrawable(R.drawable.ic_android);
 
@@ -271,6 +272,8 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
     @Test
     public void onClick_useBroadcast_broadcastsIntent() {
         CarSystemBarButton button = mTestView.findViewById(R.id.broadcast);
+        reset(mContext);
+
         button.performClick();
         waitForIdleSync();
 

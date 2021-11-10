@@ -56,6 +56,7 @@ public class CarSystemBarController {
     private final boolean mShowBottom;
     private final boolean mShowLeft;
     private final boolean mShowRight;
+    private final int mPrivacyChipXOffset;
 
     private View.OnTouchListener mTopBarTouchListener;
     private View.OnTouchListener mBottomBarTouchListener;
@@ -100,6 +101,9 @@ public class CarSystemBarController {
         mShowBottom = systemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.BOTTOM);
         mShowLeft = systemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.LEFT);
         mShowRight = systemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.RIGHT);
+
+        mPrivacyChipXOffset = -context.getResources()
+                .getDimensionPixelOffset(R.dimen.privacy_chip_horizontal_padding);
     }
 
     /**
@@ -277,10 +281,9 @@ public class CarSystemBarController {
             }
         }));
 
-        View micPrivacyChipFocusView =
-                mTopView.requireViewById(R.id.privacy_chip).requireViewById(R.id.focus_view);
-        mMicPanelController.attachPanel(micPrivacyChipFocusView, R.layout.qc_mic_panel,
-                R.dimen.car_mic_qc_panel_width, Gravity.TOP | Gravity.END);
+        mMicPanelController.attachPanel(mTopView.requireViewById(R.id.privacy_chip),
+                R.layout.qc_mic_panel, R.dimen.car_mic_qc_panel_width, mPrivacyChipXOffset,
+                mMicPanelController.getDefaultYOffset(), Gravity.TOP | Gravity.END);
     }
 
     private void setupProfilePanel() {

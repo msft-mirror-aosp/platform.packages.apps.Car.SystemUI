@@ -113,6 +113,8 @@
     <dimen name="privacy_chip_indicator_circle_diameter">21.5dp</dimen>
     <!-- Width of mic privacy chip qc panel -->
     <dimen name="car_mic_qc_panel_width">800dp</dimen>
+    <!-- Privacy chip horizontal padding -->
+    <dimen name="privacy_chip_horizontal_padding">@dimen/car_padding_3</dimen>
 
     <!-- Car volume dimens. -->
     <dimen name="car_volume_item_icon_size">@dimen/car_primary_icon_size</dimen>

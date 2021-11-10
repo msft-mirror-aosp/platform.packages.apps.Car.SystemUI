@@ -203,14 +203,15 @@ public class CarSystemBarController {
             setupMicQcPanel();
         }
 
-        if (mProfilePanelController == null) {
+        View profilePickerView = mTopView.findViewById(R.id.user_name);
+        if (mProfilePanelController == null && profilePickerView != null) {
             boolean profilePanelDisabledWhileDriving = mContext.getResources().getBoolean(
                     R.bool.config_profile_panel_disabled_while_driving);
             mProfilePanelController = new StatusIconPanelController(mContext, mCarServiceProvider,
                     mBroadcastDispatcher, mConfigurationController,
                     profilePanelDisabledWhileDriving);
-            mProfilePanelController.attachPanel(mTopView.requireViewById(R.id.user_name),
-                    R.layout.qc_profile_switcher, R.dimen.car_profile_quick_controls_panel_width);
+            mProfilePanelController.attachPanel(profilePickerView, R.layout.qc_profile_switcher,
+                    R.dimen.car_profile_quick_controls_panel_width);
         }
         return mTopView;
     }

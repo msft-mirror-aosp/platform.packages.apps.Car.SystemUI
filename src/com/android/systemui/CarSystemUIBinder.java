@@ -48,7 +48,7 @@ import dagger.Module;
 import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
 
-/** Binder for car specific {@link SystemUI} modules. */
+/** Binder for car specific {@link CoreStartable} modules. */
 @Module(includes = {RecentsModule.class, StatusBarModule.class, NotificationsModule.class,
         KeyguardModule.class, OverlayWindowModule.class, CarNotificationModule.class,
         QuickControlsEntryPointsModule.class})
@@ -57,132 +57,133 @@ public abstract class CarSystemUIBinder {
     @Binds
     @IntoMap
     @ClassKey(AuthController.class)
-    public abstract SystemUI bindAuthController(AuthController sysui);
+    public abstract CoreStartable bindAuthController(AuthController sysui);
 
     /** Inject Car Navigation Bar. */
     @Binds
     @IntoMap
     @ClassKey(CarSystemBar.class)
-    public abstract SystemUI bindCarSystemBar(CarSystemBar sysui);
+    public abstract CoreStartable bindCarSystemBar(CarSystemBar sysui);
 
     /** Inject into GarbageMonitor.Service. */
     @Binds
     @IntoMap
     @ClassKey(GarbageMonitor.Service.class)
-    public abstract SystemUI bindGarbageMonitorService(GarbageMonitor.Service sysui);
+    public abstract CoreStartable bindGarbageMonitorService(GarbageMonitor.Service sysui);
 
     /** Inject into GlobalActionsComponent. */
     @Binds
     @IntoMap
     @ClassKey(GlobalActionsComponent.class)
-    public abstract SystemUI bindGlobalActionsComponent(GlobalActionsComponent sysui);
+    public abstract CoreStartable bindGlobalActionsComponent(GlobalActionsComponent sysui);
 
     /** Inject into InstantAppNotifier. */
     @Binds
     @IntoMap
     @ClassKey(InstantAppNotifier.class)
-    public abstract SystemUI bindInstantAppNotifier(InstantAppNotifier sysui);
+    public abstract CoreStartable bindInstantAppNotifier(InstantAppNotifier sysui);
 
     /** Inject into KeyguardViewMediator. */
     @Binds
     @IntoMap
     @ClassKey(KeyguardViewMediator.class)
-    public abstract SystemUI bindKeyguardViewMediator(KeyguardViewMediator sysui);
+    public abstract CoreStartable bindKeyguardViewMediator(KeyguardViewMediator sysui);
 
     /** Inject into LatencyTests. */
     @Binds
     @IntoMap
     @ClassKey(LatencyTester.class)
-    public abstract SystemUI bindLatencyTester(LatencyTester sysui);
+    public abstract CoreStartable bindLatencyTester(LatencyTester sysui);
 
     /** Inject into PowerUI. */
     @Binds
     @IntoMap
     @ClassKey(PowerUI.class)
-    public abstract SystemUI bindPowerUI(PowerUI sysui);
+    public abstract CoreStartable bindPowerUI(PowerUI sysui);
 
     /** Inject into Recents. */
     @Binds
     @IntoMap
     @ClassKey(Recents.class)
-    public abstract SystemUI bindRecents(Recents sysui);
+    public abstract CoreStartable bindRecents(Recents sysui);
 
     /** Inject into ScreenDecorations. */
     @Binds
     @IntoMap
     @ClassKey(ScreenDecorations.class)
-    public abstract SystemUI bindScreenDecorations(ScreenDecorations sysui);
+    public abstract CoreStartable bindScreenDecorations(ScreenDecorations sysui);
 
     /** Inject into ShortcutKeyDispatcher. */
     @Binds
     @IntoMap
     @ClassKey(ShortcutKeyDispatcher.class)
-    public abstract SystemUI bindsShortcutKeyDispatcher(ShortcutKeyDispatcher sysui);
+    public abstract CoreStartable bindsShortcutKeyDispatcher(ShortcutKeyDispatcher sysui);
 
     /** Inject into SliceBroadcastRelayHandler. */
     @Binds
     @IntoMap
     @ClassKey(SliceBroadcastRelayHandler.class)
-    public abstract SystemUI bindSliceBroadcastRelayHandler(SliceBroadcastRelayHandler sysui);
+    public abstract CoreStartable bindSliceBroadcastRelayHandler(SliceBroadcastRelayHandler sysui);
 
     /** Inject into ThemeOverlayController. */
     @Binds
     @IntoMap
     @ClassKey(ThemeOverlayController.class)
-    public abstract SystemUI bindThemeOverlayController(ThemeOverlayController sysui);
+    public abstract CoreStartable bindThemeOverlayController(ThemeOverlayController sysui);
 
     /** Inject into StatusBar. */
     @Binds
     @IntoMap
     @ClassKey(StatusBar.class)
-    public abstract SystemUI bindsStatusBar(StatusBar sysui);
+    public abstract CoreStartable bindsStatusBar(StatusBar sysui);
 
     /** Inject into SystemActions. */
     @Binds
     @IntoMap
     @ClassKey(SystemActions.class)
-    public abstract SystemUI bindSystemActions(SystemActions sysui);
+    public abstract CoreStartable bindSystemActions(SystemActions sysui);
 
     /** Inject into VolumeUI. */
     @Binds
     @IntoMap
     @ClassKey(VolumeUI.class)
-    public abstract SystemUI bindVolumeUI(VolumeUI sysui);
+    public abstract CoreStartable bindVolumeUI(VolumeUI sysui);
 
     /** Inject into CarToastUI. */
     @Binds
     @IntoMap
     @ClassKey(CarToastUI.class)
-    public abstract SystemUI bindCarToastUI(CarToastUI service);
+    public abstract CoreStartable bindCarToastUI(CarToastUI service);
 
     /** Inject into ConnectedDeviceVoiceRecognitionNotifier. */
     @Binds
     @IntoMap
     @ClassKey(ConnectedDeviceVoiceRecognitionNotifier.class)
-    public abstract SystemUI bindConnectedDeviceVoiceRecognitionNotifier(
+    public abstract CoreStartable bindConnectedDeviceVoiceRecognitionNotifier(
             ConnectedDeviceVoiceRecognitionNotifier sysui);
 
     /** Inject into SystemUIOverlayWindowManager. */
     @Binds
     @IntoMap
     @ClassKey(SystemUIOverlayWindowManager.class)
-    public abstract SystemUI bindSystemUIPrimaryWindowManager(SystemUIOverlayWindowManager sysui);
+    public abstract CoreStartable bindSystemUIPrimaryWindowManager(
+            SystemUIOverlayWindowManager sysui);
 
     /** Inject into SideLoadedAppController. */
     @Binds
     @IntoMap
     @ClassKey(SideLoadedAppController.class)
-    public abstract SystemUI bindSideLoadedAppController(SideLoadedAppController sysui);
+    public abstract CoreStartable bindSideLoadedAppController(SideLoadedAppController sysui);
 
     /** Inject into WMShell. */
     @Binds
     @IntoMap
     @ClassKey(WMShell.class)
-    public abstract SystemUI bindWMShell(WMShell sysui);
+    public abstract CoreStartable bindWMShell(WMShell sysui);
 
     /** Inject into ClusterDisplayController. */
     @Binds
     @IntoMap
     @ClassKey(ClusterDisplayController.class)
-    public abstract SystemUI bindClusterDisplayController(ClusterDisplayController sysui);
+    public abstract CoreStartable bindClusterDisplayController(ClusterDisplayController sysui);
 }

@@ -40,7 +40,7 @@ import androidx.annotation.VisibleForTesting;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.RegisterStatusBarResult;
 import com.android.internal.view.AppearanceRegion;
-import com.android.systemui.SystemUI;
+import com.android.systemui.CoreStartable;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.hvac.HvacController;
@@ -68,7 +68,7 @@ import javax.inject.Inject;
 import dagger.Lazy;
 
 /** Navigation bars customized for the automotive use case. */
-public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
+public class CarSystemBar extends CoreStartable implements CommandQueue.Callbacks {
     private final CarSystemBarController mCarSystemBarController;
     private final SysuiDarkIconDispatcher mStatusBarIconController;
     private final WindowManager mWindowManager;

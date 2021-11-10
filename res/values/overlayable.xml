@@ -44,6 +44,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="attr" name="categories"/>
       <item type="attr" name="clearBackStack"/>
       <item type="attr" name="componentNames"/>
+      <item type="attr" name="disableWhileDriving"/>
       <item type="attr" name="highlightWhenSelected"/>
       <item type="attr" name="hvacAreaId"/>
       <item type="attr" name="hvacMaxText"/>

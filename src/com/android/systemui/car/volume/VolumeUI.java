@@ -24,8 +24,8 @@ import android.content.res.Resources;
 import android.os.Handler;
 import android.util.Log;
 
+import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
-import com.android.systemui.SystemUI;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -40,7 +40,7 @@ import dagger.Lazy;
 
 /** The entry point for controlling the volume ui in cars. */
 @SysUISingleton
-public class VolumeUI extends SystemUI {
+public class VolumeUI extends CoreStartable {
 
     private static final String TAG = "VolumeUI";
     private final Resources mResources;

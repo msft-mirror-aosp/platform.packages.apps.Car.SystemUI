@@ -21,15 +21,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Handler;
 import android.os.UserHandle;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.android.internal.annotations.VisibleForTesting;
+import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
 import com.android.systemui.SysUIToast;
-import com.android.systemui.SystemUI;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 
@@ -39,7 +38,7 @@ import javax.inject.Inject;
  * Controller responsible for showing toast message when voice recognition over bluetooth device
  * getting activated.
  */
-public class ConnectedDeviceVoiceRecognitionNotifier extends SystemUI {
+public class ConnectedDeviceVoiceRecognitionNotifier extends CoreStartable {
 
     private static final String TAG = "CarVoiceRecognition";
     @VisibleForTesting

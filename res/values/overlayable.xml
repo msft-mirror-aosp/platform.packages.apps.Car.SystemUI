@@ -524,7 +524,6 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="hvac_panel_stub"/>
       <item type="id" name="hvac_temperature_bar"/>
       <item type="id" name="hvac_temperature_text"/>
-      <item type="id" name="hvacright"/>
       <item type="id" name="inactive_background"/>
       <item type="id" name="inactive_selected_background"/>
       <item type="id" name="inout_container"/>
@@ -547,12 +546,10 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="primary_icon"/>
       <item type="id" name="privacy_chip"/>
       <item type="id" name="qc_entry_points_container"/>
-      <item type="id" name="qs"/>
       <item type="id" name="qs_car_top_bar"/>
       <item type="id" name="read_only_icons_container"/>
       <item type="id" name="rear_defroster_button"/>
       <item type="id" name="recycle_air_button"/>
-      <item type="id" name="right_hvac_container"/>
       <item type="id" name="seat_heat_level_button_left"/>
       <item type="id" name="seat_heat_level_button_right"/>
       <item type="id" name="segment_container"/>
@@ -560,7 +557,6 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="statusIcons"/>
       <item type="id" name="supplemental_icon"/>
       <item type="id" name="supplemental_icon_divider"/>
-      <item type="id" name="system_icon_area"/>
       <item type="id" name="system_icons"/>
       <item type="id" name="toggle_debug_info"/>
       <item type="id" name="top_guideline"/>

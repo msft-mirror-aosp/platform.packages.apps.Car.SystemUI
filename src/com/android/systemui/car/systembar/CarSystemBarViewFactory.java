@@ -138,12 +138,7 @@ public class CarSystemBarViewFactory {
     }
 
     private CarSystemBarView getBar(boolean isSetUp, Type provisioned, Type unprovisioned) {
-        CarSystemBarView view;
-        if (isSetUp) {
-            view = getBarCached(provisioned, sLayoutMap.get(provisioned));
-        } else {
-            view = getBarCached(unprovisioned, sLayoutMap.get(unprovisioned));
-        }
+        CarSystemBarView view = getBarCached(isSetUp, provisioned, unprovisioned);
 
         if (view == null) {
             String name = isSetUp ? provisioned.name() : unprovisioned.name();
@@ -154,16 +149,18 @@ public class CarSystemBarViewFactory {
         return view;
     }
 
-    private CarSystemBarView getBarCached(Type type, @LayoutRes int barLayout) {
+    private CarSystemBarView getBarCached(boolean isSetUp, Type provisioned, Type unprovisioned) {
+        Type type = isSetUp ? provisioned : unprovisioned;
         if (mCachedViewMap.containsKey(type)) {
             return mCachedViewMap.get(type);
         }
 
+        @LayoutRes int barLayout = sLayoutMap.get(type);
         CarSystemBarView view = (CarSystemBarView) View.inflate(mContext, barLayout,
                 /* root= */ null);
 
         view.setupHvacButton();
-        view.setupQuickControlsEntryPoints(mQuickControlsEntryPointsController);
+        view.setupQuickControlsEntryPoints(mQuickControlsEntryPointsController, isSetUp);
         view.setupReadOnlyIcons(mReadOnlyIconsController);
 
         // Include a FocusParkingView at the beginning. The rotary controller "parks" the focus here

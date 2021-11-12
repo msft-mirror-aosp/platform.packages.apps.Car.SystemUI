@@ -157,5 +157,6 @@
 
     <declare-styleable name="QCFooterButton">
         <attr name="intent" format="string"/>
+        <attr name="disableWhileDriving" format="boolean"/>
     </declare-styleable>
 </resources>

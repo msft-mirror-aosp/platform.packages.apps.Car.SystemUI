@@ -179,6 +179,14 @@ public class StatusIconPanelController {
     }
 
     /**
+     * @return default Y offset in pixels that cancels out the superfluous inset automatically
+     *         applied to the panel
+     */
+    public int getDefaultYOffset() {
+        return mYOffsetPixel;
+    }
+
+    /**
      * @return list of {@link SystemUIQCView} in this controller
      */
     public ArrayList<SystemUIQCView> getQCViews() {

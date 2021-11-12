@@ -44,6 +44,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="attr" name="categories"/>
       <item type="attr" name="clearBackStack"/>
       <item type="attr" name="componentNames"/>
+      <item type="attr" name="disableWhileDriving"/>
       <item type="attr" name="highlightWhenSelected"/>
       <item type="attr" name="hvacAreaId"/>
       <item type="attr" name="hvacMaxText"/>
@@ -324,6 +325,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="notification_shade_list_padding_bottom"/>
       <item type="dimen" name="notification_shadow_radius"/>
       <item type="dimen" name="privacy_chip_dialog_icon_height"/>
+      <item type="dimen" name="privacy_chip_horizontal_padding"/>
       <item type="dimen" name="privacy_chip_icon_margin"/>
       <item type="dimen" name="privacy_chip_icon_size"/>
       <item type="dimen" name="privacy_chip_indicator_circle_diameter"/>

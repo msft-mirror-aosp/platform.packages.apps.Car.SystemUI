@@ -34,7 +34,7 @@
     <style name="TextAppearance.SystemBar.Username"
            parent="@android:style/TextAppearance.DeviceDefault">
         <item name="android:textSize">@dimen/car_body3_size</item>
-        <item name="android:textColor">@color/system_bar_text_color</item>
+        <item name="android:textColor">@color/system_bar_text_color_with_selection</item>
     </style>
 
     <style name="TextAppearance.CarStatus" parent="@android:style/TextAppearance.DeviceDefault">

@@ -94,9 +94,17 @@ public abstract class StatusIconGroupContainerController {
     }
 
     /**
-     * Adds Quick Control entry points to the provided container ViewGroup.
+     * See {@link #addIconViews(ViewGroup, boolean)}
      */
     public void addIconViews(ViewGroup containerViewGroup) {
+        addIconViews(containerViewGroup, /* shouldAttachPanel= */ true);
+    }
+
+    /**
+     * Adds Quick Control entry points to the provided container ViewGroup. Also attaches
+     * the Quick Control panel if it's specified and allowed.
+     */
+    public void addIconViews(ViewGroup containerViewGroup, boolean shouldAttachPanel) {
         LayoutInflater li = LayoutInflater.from(mContext);
 
         for (String clsName : mStatusIconControllerNames) {
@@ -108,7 +116,8 @@ public abstract class StatusIconGroupContainerController {
             statusIconController.registerIconView(statusIconView);
             statusIconView.setColorFilter(mIconNotHighlightedColor);
 
-            if (statusIconController.getPanelContentLayout() != PANEL_CONTENT_LAYOUT_NONE) {
+            if (shouldAttachPanel
+                    && statusIconController.getPanelContentLayout() != PANEL_CONTENT_LAYOUT_NONE) {
                 StatusIconPanelController panelController = new StatusIconPanelController(mContext,
                         mCarServiceProvider, mBroadcastDispatcher, mConfigurationController);
                 panelController.attachPanel(entryPointView,

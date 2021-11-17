@@ -511,6 +511,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="fan_speed_2"/>
       <item type="id" name="fan_speed_3"/>
       <item type="id" name="fan_speed_4"/>
+      <item type="id" name="focus_parking_view"/>
       <item type="id" name="focus_view"/>
       <item type="id" name="fullscreen_user_switcher_stub"/>
       <item type="id" name="glass_pane"/>
@@ -584,6 +585,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="wifi_out"/>
       <item type="id" name="wifi_signal"/>
       <item type="id" name="wifi_signal_spacer"/>
+      <item type="integer" name="car_keyguard_toast_show_duration_millisecond"/>
       <item type="integer" name="car_volume_dialog_display_expanded_hovering_timeout"/>
       <item type="integer" name="car_volume_dialog_display_expanded_normal_timeout"/>
       <item type="integer" name="car_volume_dialog_display_hovering_timeout"/>
@@ -669,6 +671,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="hvac_temperature_format_celsius"/>
       <item type="string" name="hvac_temperature_format_fahrenheit"/>
       <item type="string" name="hvac_temperature_off"/>
+      <item type="string" name="lockpattern_does_not_support_rotary"/>
       <item type="string" name="mic_privacy_chip_app_recently_used_mic_suffix"/>
       <item type="string" name="mic_privacy_chip_app_using_mic_suffix"/>
       <item type="string" name="mic_privacy_chip_apps_recently_used_mic_suffix"/>

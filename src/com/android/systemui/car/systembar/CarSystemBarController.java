@@ -295,7 +295,7 @@ public class CarSystemBarController {
                     mBroadcastDispatcher, mConfigurationController,
                     profilePanelDisabledWhileDriving);
             mProfilePanelController.attachPanel(profilePickerView, R.layout.qc_profile_switcher,
-                    R.dimen.car_profile_quick_controls_panel_width);
+                    R.dimen.car_profile_quick_controls_panel_width, Gravity.TOP | Gravity.END);
         }
     }
 

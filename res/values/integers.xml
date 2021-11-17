@@ -32,6 +32,9 @@
     <integer name="car_volume_dialog_display_expanded_normal_timeout">6000</integer>
     <integer name="car_volume_dialog_display_expanded_hovering_timeout">32000</integer>
 
+    <!-- Toast on Keyguard show duration -->
+    <integer name="car_keyguard_toast_show_duration_millisecond">2000</integer>
+
     <!-- Privacy chip animation transition duration -->
     <integer name="privacy_chip_animation_transition_duration">500</integer>
     <!-- Privacy chip pill to circle animation delay -->

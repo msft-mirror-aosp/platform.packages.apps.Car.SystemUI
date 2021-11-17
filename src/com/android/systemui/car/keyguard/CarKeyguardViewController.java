@@ -318,7 +318,9 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
     @Override
     public boolean shouldDisableWindowAnimationsForUnlock() {
-        return false;
+        // TODO(b/205189147): revert the following change after the proper fix is landed.
+        // Disables the KeyGuard animation to resolve TaskView misalignment issue after display-on.
+        return true;
     }
 
     @Override

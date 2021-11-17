@@ -25,10 +25,19 @@
     <string name="voice_recognition_toast" msgid="7579725862117020349">"अब आवाज़ पहचानने का काम, कनेक्ट किए गए ब्लूटूथ डिवाइस करते हैं"</string>
     <string name="car_guest" msgid="768913000117469596">"मेहमान प्रोफ़ाइल"</string>
     <string name="start_guest_session" msgid="2759367183497948650">"मेहमान के तौर पर सेशन शुरू करें"</string>
-    <string name="car_add_user" msgid="8660226923614358478">"उपयोगकर्ता जोड़ें"</string>
-    <string name="car_new_user" msgid="304628168515673432">"नया उपयोगकर्ता"</string>
-    <string name="user_add_user_message_setup" msgid="2130987756494836929">"जब आप कोई नया उपयोगकर्ता जोड़ते हैं, तब उसे अपनी जगह सेट करनी होती है."</string>
-    <string name="user_add_user_message_update" msgid="1001907075316748931">"कोई भी उपयोगकर्ता, बाकी सभी उपयोगकर्ताओं के लिए ऐप्लिकेशन अपडेट कर सकता है."</string>
+    <!-- no translation found for car_add_user (6182764665687382136) -->
+    <skip />
+    <!-- no translation found for car_new_user (6766334721724989964) -->
+    <skip />
+    <!-- no translation found for user_add_profile_title (828371911076521952) -->
+    <skip />
+    <!-- no translation found for user_add_user_message_setup (6136074867764164790) -->
+    <skip />
+    <!-- no translation found for user_add_user_message_update (3310089453006545712) -->
+    <skip />
+    <!-- no translation found for profile_limit_reached_title (7891779218496729653) -->
+    <skip />
+    <!-- no translation found for profile_limit_reached_message (910608128912533066) -->
     <string name="car_loading_profile" msgid="458961191993686065">"लोड हो रही है"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"उपयोगकर्ता को लोड किया जा रहा है (<xliff:g id="FROM_USER">%1$d</xliff:g> से <xliff:g id="TO_USER">%2$d</xliff:g> पर)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"माइक्रोफ़ोन बंद है."</string>

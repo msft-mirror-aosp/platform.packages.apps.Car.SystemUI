@@ -25,10 +25,19 @@
     <string name="voice_recognition_toast" msgid="7579725862117020349">"ချိတ်ထားသော ဘလူးတုသ်စက်ဖြင့် အသံမှတ်သားမှုကို ထိန်းချုပ်သည်"</string>
     <string name="car_guest" msgid="768913000117469596">"ဧည့်သည်"</string>
     <string name="start_guest_session" msgid="2759367183497948650">"ဧည့်သည်"</string>
-    <string name="car_add_user" msgid="8660226923614358478">"အသုံးပြုသူ ထည့်ရန်"</string>
-    <string name="car_new_user" msgid="304628168515673432">"အသုံးပြုသူ အသစ်"</string>
-    <string name="user_add_user_message_setup" msgid="2130987756494836929">"အသုံးပြုသူအသစ် ထည့်သည့်အခါ ထိုသူသည် မိမိ၏ နေရာကို စနစ်ထည့်သွင်းရပါမည်။"</string>
-    <string name="user_add_user_message_update" msgid="1001907075316748931">"မည်သူမဆို အသုံးပြုသူအားလုံးအတွက် အက်ပ်များကို အပ်ဒိတ်လုပ်နိုင်သည်။"</string>
+    <!-- no translation found for car_add_user (6182764665687382136) -->
+    <skip />
+    <!-- no translation found for car_new_user (6766334721724989964) -->
+    <skip />
+    <!-- no translation found for user_add_profile_title (828371911076521952) -->
+    <skip />
+    <!-- no translation found for user_add_user_message_setup (6136074867764164790) -->
+    <skip />
+    <!-- no translation found for user_add_user_message_update (3310089453006545712) -->
+    <skip />
+    <!-- no translation found for profile_limit_reached_title (7891779218496729653) -->
+    <skip />
+    <!-- no translation found for profile_limit_reached_message (910608128912533066) -->
     <string name="car_loading_profile" msgid="458961191993686065">"ဖွင့်နေသည်"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"အသုံးပြုသူကို ဖွင့်နေသည် (<xliff:g id="FROM_USER">%1$d</xliff:g> မှ <xliff:g id="TO_USER">%2$d</xliff:g> သို့)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"မိုက်ခရိုဖုန်းကို ပိတ်ထားသည်။"</string>

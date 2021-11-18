@@ -19,8 +19,6 @@ package com.android.systemui.car.systembar;
 import static android.hardware.SensorPrivacyManager.Sensors.MICROPHONE;
 import static android.hardware.SensorPrivacyManager.Sources.QS_TILE;
 
-import android.car.Car;
-import android.car.user.CarUserManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -66,7 +64,6 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
 
     private Context mContext;
     private MicPrivacyChip mPrivacyChip;
-    private CarUserManager mCarUserManager;
     private Runnable mQsTileNotifyUpdateRunnable;
     private final SensorPrivacyManager.OnSensorPrivacyChangedListener
             mOnSensorPrivacyChangedListener = (sensor, sensorPrivacyEnabled) -> {
@@ -128,7 +125,6 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
                     }
                 }
             };
-    private boolean mUserLifecycleListenerRegistered;
     private int mCurrentUserId;
     private final BroadcastReceiver mUserUpdateReceiver = new BroadcastReceiver() {
         @Override
@@ -147,19 +143,19 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
             setUser(currentUserId);
         }
     };
-    private final CarUserManager.UserLifecycleListener mUserLifecycleListener =
-            new CarUserManager.UserLifecycleListener() {
-                @Override
-                public void onEvent(CarUserManager.UserLifecycleEvent event) {
-                    if (mPrivacyChip == null) {
-                        return;
-                    }
-                    if (event.getEventType()
-                            == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING) {
-                        setUser(event.getUserHandle().getIdentifier());
-                    }
-                }
-            };
+    private final BroadcastReceiver mUserChangeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mPrivacyChip == null) {
+                return;
+            }
+            int currentUserId = mCarDeviceProvisionedController.getCurrentUser();
+            if (mCurrentUserId == currentUserId) {
+                return;
+            }
+            setUser(currentUserId);
+        }
+    };
 
     @Inject
     public PrivacyChipViewController(Context context, PrivacyItemController privacyItemController,
@@ -218,7 +214,6 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
         mAllIndicatorsEnabled = mPrivacyItemController.getAllIndicatorsAvailable();
         mMicCameraIndicatorsEnabled = mPrivacyItemController.getMicCameraAvailable();
         mPrivacyItemController.addCallback(mPicCallback);
-        mUserLifecycleListenerRegistered = false;
         registerForUserChangeEvents();
         setUser(mCarDeviceProvisionedController.getCurrentUser());
     }
@@ -233,12 +228,7 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
 
         mPrivacyItemController.removeCallback(mPicCallback);
         mBroadcastDispatcher.unregisterReceiver(mUserUpdateReceiver);
-        if (mUserLifecycleListenerRegistered) {
-            if (mCarUserManager != null) {
-                mCarUserManager.removeListener(mUserLifecycleListener);
-            }
-            mUserLifecycleListenerRegistered = false;
-        }
+        mBroadcastDispatcher.unregisterReceiver(mUserChangeReceiver);
         mSensorPrivacyManager.removeSensorPrivacyListener(MICROPHONE,
                 mOnSensorPrivacyChangedListener);
         mPrivacyChip = null;
@@ -266,15 +256,10 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
 
     private void registerForUserChangeEvents() {
         // Register for user switching
-        mCarServiceProvider.addListener(car -> {
-            mCarUserManager = (CarUserManager) car.getCarManager(Car.CAR_USER_SERVICE);
-            if (mCarUserManager != null && !mUserLifecycleListenerRegistered) {
-                mCarUserManager.addListener(Runnable::run, mUserLifecycleListener);
-                mUserLifecycleListenerRegistered = true;
-            } else {
-                Log.e(TAG, "CarUserManager could not be obtained.");
-            }
-        });
+        IntentFilter userChangeFilter = new IntentFilter(Intent.ACTION_USER_FOREGROUND);
+        mBroadcastDispatcher.registerReceiver(mUserChangeReceiver, userChangeFilter,
+                /* executor= */ null, UserHandle.ALL);
+
         // Also register for user info changing
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_USER_INFO_CHANGED);

@@ -24,6 +24,8 @@ import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
 import static com.android.systemui.statusbar.phone.BarTransitions.MODE_SEMI_TRANSPARENT;
 import static com.android.systemui.statusbar.phone.BarTransitions.MODE_TRANSPARENT;
 
+import android.app.StatusBarManager.Disable2Flags;
+import android.app.StatusBarManager.DisableFlags;
 import android.content.Context;
 import android.inputmethodservice.InputMethodService;
 import android.os.IBinder;
@@ -48,6 +50,7 @@ import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.shared.system.ActivityManagerWrapper;
+import com.android.systemui.shared.system.TaskStackChangeListener;
 import com.android.systemui.statusbar.AutoHideUiElement;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.phone.AutoHideController;
@@ -253,6 +256,12 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
 
         mActivityManagerWrapper = ActivityManagerWrapper.getInstance();
         mActivityManagerWrapper.registerTaskStackListener(mButtonSelectionStateListener);
+        mActivityManagerWrapper.registerTaskStackListener(new TaskStackChangeListener() {
+            @Override
+            public void onLockTaskModeChanged(int mode) {
+                mCarSystemBarController.refreshSystemBarByLockTaskFeatures();
+            }
+        });
 
         // Lastly, call to the icon policy to install/update all the icons.
         // Must be called on the main thread due to the use of observeForever() in
@@ -469,6 +478,16 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
             mAppearanceRegions = appearanceRegions;
             updateStatusBarAppearance();
         }
+        mCarSystemBarController.refreshSystemBarByLockTaskFeatures();
+    }
+
+    @Override
+    public void disable(int displayId, @DisableFlags int state1, @Disable2Flags int state2,
+            boolean animate) {
+        if (displayId != mDisplayId) {
+            return;
+        }
+        mCarSystemBarController.setStatusBarState(state1);
     }
 
     private void updateStatusBarAppearance() {

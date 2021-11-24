@@ -16,13 +16,19 @@
 
 package com.android.systemui.car.systembar;
 
+import android.app.ActivityManager;
+import android.app.StatusBarManager;
 import android.content.Context;
+import android.os.Build;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
@@ -33,6 +39,9 @@ import com.android.systemui.car.statusicon.StatusIconPanelController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import dagger.Lazy;
@@ -40,6 +49,9 @@ import dagger.Lazy;
 /** A single class which controls the navigation bar views. */
 @SysUISingleton
 public class CarSystemBarController {
+    private static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;
+
+    private static final String TAG = CarSystemBarController.class.getSimpleName();
 
     private final Context mContext;
     private final CarSystemBarViewFactory mCarSystemBarViewFactory;
@@ -72,6 +84,8 @@ public class CarSystemBarController {
     private CarSystemBarView mBottomView;
     private CarSystemBarView mLeftView;
     private CarSystemBarView mRightView;
+
+    private int mStatusBarState;
 
     @Inject
     public CarSystemBarController(Context context,
@@ -191,6 +205,79 @@ public class CarSystemBarController {
 
         window.setVisibility(visibility);
         return true;
+    }
+
+    /**
+     * Sets the status bar state and refreshes the system bar when the state was changed.
+     */
+    public void setStatusBarState(int state) {
+        int diff = state ^ mStatusBarState;
+        if (diff == 0) {
+            if (DEBUG) {
+                Log.d(TAG, "setStatusBarState(): status bar states unchanged: "
+                        + state);
+            }
+            return;
+        }
+        mStatusBarState = state;
+        refreshSystemBarByLockTaskFeatures();
+    }
+
+    @VisibleForTesting
+    protected int getStatusBarState() {
+        return mStatusBarState;
+    }
+
+    /**
+     * Refreshes certain system bar views when lock task mode feature is changed based on
+     * {@link StatusBarManager} flags.
+     */
+    public void refreshSystemBarByLockTaskFeatures() {
+        boolean locked = isLockTaskModeLocked();
+        int lockTaskModeVisibility = locked ? View.GONE : View.VISIBLE;
+        boolean homeDisabled = ((mStatusBarState & StatusBarManager.DISABLE_HOME) > 0);
+        boolean notificationDisabled =
+                ((mStatusBarState & StatusBarManager.DISABLE_NOTIFICATION_ICONS) > 0);
+        if (DEBUG) {
+            Log.d(TAG, "refreshSystemBarByLockTaskFeatures: locked?: " + locked
+                    + " homeDisabled: " + homeDisabled
+                    + " notificationDisabled: " + notificationDisabled);
+        }
+
+        setLockTaskDisabledContainer(R.id.qc_entry_points_container, lockTaskModeVisibility);
+        setLockTaskDisabledContainer(R.id.user_name_container, lockTaskModeVisibility);
+
+        // Check navigation icons
+        setLockTaskDisabledButton(R.id.home, homeDisabled);
+        setLockTaskDisabledButton(R.id.phone_nav, locked);
+        setLockTaskDisabledButton(R.id.grid_nav, homeDisabled);
+        setLockTaskDisabledButton(R.id.notifications, notificationDisabled);
+    }
+
+    private boolean isLockTaskModeLocked() {
+        return mContext.getSystemService(ActivityManager.class).getLockTaskModeState()
+                == ActivityManager.LOCK_TASK_MODE_LOCKED;
+    }
+
+    private void setLockTaskDisabledButton(int viewId, boolean disabled) {
+        for (CarSystemBarView barView : getAllAvailableSystemBarViews()) {
+            barView.setLockTaskDisabledButton(viewId, disabled, () ->
+                    showAdminSupportDetailsDialog());
+        }
+    }
+
+    private void setLockTaskDisabledContainer(int viewId, @View.Visibility int visibility) {
+        for (CarSystemBarView barView : getAllAvailableSystemBarViews()) {
+            barView.setLockTaskDisabledContainer(viewId, visibility);
+        }
+    }
+
+    private void showAdminSupportDetailsDialog() {
+        // TODO(b/205891123): launch AdminSupportDetailsDialog after moving
+        // AdminSupportDetailsDialog out of CarSettings since CarSettings is not and should not
+        // be allowlisted for lock task mode.
+        Toast.makeText(mContext, "This action is unavailable for your profile",
+                Toast.LENGTH_LONG).show();
     }
 
     /** Gets the top navigation bar with the appropriate listeners set. */
@@ -483,5 +570,22 @@ public class CarSystemBarController {
         mBottomView = getBottomBar(isSetUp);
         mLeftView = getLeftBar(isSetUp);
         mRightView = getRightBar(isSetUp);
+    }
+
+    private List<CarSystemBarView> getAllAvailableSystemBarViews() {
+        List<CarSystemBarView> barViews = new ArrayList<>();
+        if (mTopView != null) {
+            barViews.add(mTopView);
+        }
+        if (mBottomView != null) {
+            barViews.add(mBottomView);
+        }
+        if (mLeftView != null) {
+            barViews.add(mLeftView);
+        }
+        if (mRightView != null) {
+            barViews.add(mRightView);
+        }
+        return barViews;
     }
 }

@@ -23,6 +23,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -50,6 +51,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
+import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
@@ -74,6 +76,7 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         mContext = spy(mContext);
         ActivityManager am = mContext.getSystemService(ActivityManager.class);
         mActivityManager = spy(am);
@@ -312,6 +315,39 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
         ImageView hasUnseenIndicator = mDefaultButton.findViewById(R.id.car_nav_button_unseen_icon);
 
         assertThat(hasUnseenIndicator.getVisibility()).isEqualTo(View.GONE);
+    }
+
+    @Test
+    public void onSetDisabled_enabled_refreshIconAlpha() {
+        mDefaultButton.setDisabled(false, /* runnable= */ null);
+
+        assertThat(mDefaultButton.getAlpha()).isEqualTo(mDefaultButton.getSelectedAlpha());
+    }
+
+    @Test
+    public void onSetDisabled_disdabledAlpha() {
+        mDefaultButton.setDisabled(true, /* runnable= */ null);
+
+        assertThat(mDefaultButton.getIconAlpha()).isEqualTo(mDefaultButton.getDisabledAlpha());
+    }
+
+    @Test
+    public void onSetDisabled_nullRunnable_doesNotSendBroadcast() {
+        mDefaultButton.setDisabled(true, /* runnable= */ null);
+
+        mDefaultButton.performClick();
+
+        verify(mContext, never()).sendBroadcastAsUser(any(Intent.class), any());
+    }
+
+    @Test
+    public void onSetDisabled_runnable() {
+        Runnable mockRunnable = mock(Runnable.class);
+        mDefaultButton.setDisabled(true, /* runnable= */ mockRunnable);
+
+        mDefaultButton.performClick();
+
+        verify(mockRunnable).run();
     }
 
     /**

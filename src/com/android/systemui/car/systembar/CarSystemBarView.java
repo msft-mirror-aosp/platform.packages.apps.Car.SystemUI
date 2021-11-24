@@ -19,6 +19,7 @@ package com.android.systemui.car.systembar;
 import android.annotation.IntDef;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,8 @@ public class CarSystemBarView extends LinearLayout {
     @Target({ElementType.TYPE_PARAMETER, ElementType.TYPE_USE})
     private @interface ButtonsType {
     }
+
+    private static final String TAG = CarSystemBarView.class.getSimpleName();
 
     public static final int BUTTON_TYPE_NAVIGATION = 0;
     public static final int BUTTON_TYPE_KEYGUARD = 1;
@@ -191,6 +194,11 @@ public class CarSystemBarView extends LinearLayout {
     }
 
     protected void onNotificationsClick(View v) {
+        if (mNotificationsButton != null
+                && mNotificationsButton.getDisabled()) {
+            mNotificationsButton.runOnClickWhileDisabled();
+            return;
+        }
         if (mNotificationsShadeController != null) {
             mNotificationsShadeController.togglePanel();
         }
@@ -231,6 +239,35 @@ public class CarSystemBarView extends LinearLayout {
     }
 
     /**
+     * Sets the system bar view's disabled state and runnable when disabled.
+     */
+    public void setLockTaskDisabledButton(int viewId, boolean disabled, Runnable runnable) {
+        CarSystemBarButton button = findViewById(viewId);
+        if (button != null) {
+            button.setDisabled(disabled, runnable);
+        }
+    }
+
+    /**
+     * Sets the system bar ViewGroup container's visibility
+     */
+    public void setLockTaskDisabledContainer(int viewId, @View.Visibility int visibility) {
+        View v = findViewById(viewId);
+        if (v == null) {
+            Log.e(TAG, "setLockTaskViewVisibility for: " + viewId + " not found");
+            return;
+        }
+        if (v instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) v;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                group.getChildAt(i).setVisibility(visibility);
+            }
+            return;
+        }
+        v.setVisibility(visibility);
+    }
+
+    /**
      * Sets the HvacPanelOverlayViewController and adds HVAC button listeners
      */
     public void registerHvacPanelOverlayViewController(HvacPanelOverlayViewController controller) {
@@ -240,19 +277,19 @@ public class CarSystemBarView extends LinearLayout {
         }
     }
 
-    private void setNavigationButtonsVisibility(int visibility) {
+    private void setNavigationButtonsVisibility(@View.Visibility int visibility) {
         if (mNavButtons != null) {
             mNavButtons.setVisibility(visibility);
         }
     }
 
-    private void setKeyguardButtonsVisibility(int visibility) {
+    private void setKeyguardButtonsVisibility(@View.Visibility int visibility) {
         if (mLockScreenButtons != null) {
             mLockScreenButtons.setVisibility(visibility);
         }
     }
 
-    private void setOcclusionButtonsVisibility(int visibility) {
+    private void setOcclusionButtonsVisibility(@View.Visibility int visibility) {
         if (mOcclusionButtons != null) {
             mOcclusionButtons.setVisibility(visibility);
         }

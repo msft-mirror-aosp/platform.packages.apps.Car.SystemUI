@@ -78,6 +78,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="attr" name="unselectedAlpha"/>
       <item type="attr" name="usage"/>
       <item type="attr" name="useDefaultAppIconForRole"/>
+      <item type="bool" name="bouncer_display_user_switcher"/>
+      <item type="bool" name="can_use_one_handed_bouncer"/>
       <item type="bool" name="config_consumeSystemBarTouchWhenNotificationPanelOpen"/>
       <item type="bool" name="config_enableBottomSystemBar"/>
       <item type="bool" name="config_enableHeadsUpNotificationWhenNotificationPanelOpen"/>

@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.UserHandle;
 import android.text.TextUtils;
@@ -203,10 +204,15 @@ public class MicQcPanel extends BaseLocalQCProvider {
             @NonNull ApplicationInfo appInfo) {
         UserHandle user = UserHandle.getUserHandleForUid(appInfo.uid);
         try (IconFactory iconFactory = IconFactory.obtain(context)) {
-            BitmapInfo bitmapInfo =
-                    iconFactory.createBadgedIconBitmap(
-                            appInfo.loadUnbadgedIcon(context.getPackageManager()), user,
-                            /* shrinkNonAdaptiveIcons= */ false);
+            Drawable d = iconFactory.createBadgedIconBitmap(
+                    appInfo.loadUnbadgedIcon(context.getPackageManager()),
+                    new IconFactory.IconOptions()
+                            .setShrinkNonAdaptiveIcons(false)
+                            .setUser(user))
+                    .newIcon(context);
+            BitmapInfo bitmapInfo = iconFactory.createBadgedIconBitmap(
+                    d, new IconFactory.IconOptions()
+                            .setShrinkNonAdaptiveIcons(false));
             return Icon.createWithBitmap(bitmapInfo.icon);
         }
     }

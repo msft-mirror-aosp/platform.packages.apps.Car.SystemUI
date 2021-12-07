@@ -36,6 +36,7 @@ import com.android.systemui.statusbar.phone.StatusBarIconController;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
+import java.util.Set;
 
 /**
  * A custom system bar for the automotive use case.
@@ -68,8 +69,8 @@ public class CarSystemBarView extends LinearLayout {
     private View mOcclusionButtons;
     private ViewGroup mQcEntryPointsContainer;
     private ViewGroup mReadOnlyIconsContainer;
-    // used to wire in open/close gestures for notifications
-    private OnTouchListener mStatusBarWindowTouchListener;
+    // used to wire in open/close gestures for overlay panels
+    private Set<OnTouchListener> mStatusBarWindowTouchListeners;
     private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
 
     public CarSystemBarView(Context context, AttributeSet attrs) {
@@ -136,7 +137,7 @@ public class CarSystemBarView extends LinearLayout {
     // Used to forward touch events even if the touch was initiated from a child component
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (mStatusBarWindowTouchListener != null) {
+        if (mStatusBarWindowTouchListeners != null && !mStatusBarWindowTouchListeners.isEmpty()) {
             if (!mButtonsDraggable) {
                 return false;
             }
@@ -144,8 +145,8 @@ public class CarSystemBarView extends LinearLayout {
                     : mNotificationsShadeController.isNotificationPanelOpen();
 
             // Forward touch events to the status bar window so it can drag
-            // windows if required (Notification shade)
-            mStatusBarWindowTouchListener.onTouch(this, ev);
+            // windows if required (ex. Notification shade)
+            triggerAllTouchListeners(this, ev);
 
             if (mConsumeTouchWhenPanelOpen && shouldConsumeEvent) {
                 return true;
@@ -175,24 +176,23 @@ public class CarSystemBarView extends LinearLayout {
     }
 
     /**
-     * Sets a touch listener that will be called from onInterceptTouchEvent and onTouchEvent
+     * Sets the touch listeners that will be called from onInterceptTouchEvent and onTouchEvent
      *
-     * @param statusBarWindowTouchListener The listener to call from touch and intercept touch
+     * @param statusBarWindowTouchListeners List of listeners to call from touch and intercept touch
      */
-    public void setStatusBarWindowTouchListener(OnTouchListener statusBarWindowTouchListener) {
-        mStatusBarWindowTouchListener = statusBarWindowTouchListener;
+    public void setStatusBarWindowTouchListeners(
+            Set<OnTouchListener> statusBarWindowTouchListeners) {
+        mStatusBarWindowTouchListeners = statusBarWindowTouchListeners;
     }
 
-    /** Gets the touch listener that will be called from onInterceptTouchEvent and onTouchEvent. */
-    public OnTouchListener getStatusBarWindowTouchListener() {
-        return mStatusBarWindowTouchListener;
+    /** Gets the touch listeners that will be called from onInterceptTouchEvent and onTouchEvent. */
+    public Set<OnTouchListener> getStatusBarWindowTouchListeners() {
+        return mStatusBarWindowTouchListeners;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (mStatusBarWindowTouchListener != null) {
-            mStatusBarWindowTouchListener.onTouch(this, event);
-        }
+        triggerAllTouchListeners(this, event);
         return super.onTouchEvent(event);
     }
 
@@ -295,6 +295,15 @@ public class CarSystemBarView extends LinearLayout {
     private void setOcclusionButtonsVisibility(@View.Visibility int visibility) {
         if (mOcclusionButtons != null) {
             mOcclusionButtons.setVisibility(visibility);
+        }
+    }
+
+    private void triggerAllTouchListeners(View view, MotionEvent event) {
+        if (mStatusBarWindowTouchListeners == null) {
+            return;
+        }
+        for (OnTouchListener listener : mStatusBarWindowTouchListeners) {
+            listener.onTouch(view, event);
         }
     }
 

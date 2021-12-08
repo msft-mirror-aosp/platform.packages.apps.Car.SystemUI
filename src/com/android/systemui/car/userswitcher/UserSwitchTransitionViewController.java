@@ -22,7 +22,7 @@ import android.annotation.UserIdInt;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.RemoteException;
 import android.os.UserHandle;
 import android.os.UserManager;
@@ -34,7 +34,6 @@ import android.widget.TextView;
 
 import com.android.internal.annotations.GuardedBy;
 import com.android.internal.annotations.VisibleForTesting;
-import com.android.settingslib.drawable.CircleFramedDrawable;
 import com.android.systemui.R;
 import com.android.systemui.car.window.OverlayViewController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
@@ -59,6 +58,7 @@ public class UserSwitchTransitionViewController extends OverlayViewController {
     private final ActivityManager mActivityManager;
     private final UserManager mUserManager;
     private final IWindowManager mWindowManagerService;
+    private final UserIconProvider mUserIconProvider = new UserIconProvider();
     private final int mWindowShownTimeoutMs;
     private final Runnable mWindowShownTimeoutCallback = () -> {
         if (DEBUG) {
@@ -150,12 +150,10 @@ public class UserSwitchTransitionViewController extends OverlayViewController {
     }
 
     private void drawUserIcon(int newUserId) {
-        Bitmap bitmap = mUserManager.getUserIcon(newUserId);
-        if (bitmap != null) {
-            CircleFramedDrawable drawable = CircleFramedDrawable.getInstance(mContext, bitmap);
-            ((ImageView) getLayout().findViewById(R.id.user_loading_avatar))
-                    .setImageDrawable(drawable);
-        }
+        Drawable userIcon = mUserIconProvider.getDrawableWithBadge(mContext,
+                mUserManager.getUserInfo(newUserId));
+        ((ImageView) getLayout().findViewById(R.id.user_loading_avatar))
+                .setImageDrawable(userIcon);
     }
 
     private void populateLoadingText(@UserIdInt int previousUserId, @UserIdInt int newUserId) {

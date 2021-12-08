@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
-import android.content.Context;
+import android.content.pm.UserInfo;
 import android.os.UserManager;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
@@ -69,6 +69,8 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
     private OverlayViewGlobalStateController mOverlayViewGlobalStateController;
     @Mock
     private IWindowManager mWindowManagerService;
+    @Mock
+    private UserManager mMockUserManager;
 
     @Before
     public void setUp() {
@@ -81,11 +83,13 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
                 mTestableResources.getResources(),
                 mExecutor,
                 mMockActivityManager,
-                (UserManager) mContext.getSystemService(Context.USER_SERVICE),
+                mMockUserManager,
                 mWindowManagerService,
                 mOverlayViewGlobalStateController
         );
 
+        mockGetUserInfo(TEST_USER_1);
+        mockGetUserInfo(TEST_USER_2);
         mViewGroup = (ViewGroup) LayoutInflater.from(mContext).inflate(
                 R.layout.sysui_overlay_window, /* root= */ null);
         mCarUserSwitchingDialogController.inflate(mViewGroup);
@@ -213,5 +217,10 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
 
         verify(mOverlayViewGlobalStateController, never()).hideView(
                 eq(mCarUserSwitchingDialogController), any());
+    }
+
+    private void mockGetUserInfo(int userId) {
+        when(mMockUserManager.getUserInfo(userId))
+                .thenReturn(new UserInfo(userId, "USER_" + userId, /* flags= */ 0));
     }
 }

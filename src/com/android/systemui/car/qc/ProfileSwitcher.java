@@ -134,7 +134,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         };
 
         return createProfileRow(userInfo.name,
-                mUserIconProvider.getRoundedUserIcon(userInfo, mContext), actionHandler);
+                mUserIconProvider.getDrawableWithBadge(mContext, userInfo), actionHandler);
     }
 
     private QCRow createGuestProfileRow() {
@@ -165,7 +165,8 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             }
         };
 
-        return createProfileRow(mContext.getString(R.string.car_add_user), getCircularAddUserIcon(),
+        return createProfileRow(mContext.getString(R.string.car_add_user),
+                mUserIconProvider.getDrawableWithBadge(mContext, getCircularAddUserIcon()),
                 actionHandler);
     }
 

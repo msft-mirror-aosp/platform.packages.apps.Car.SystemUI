@@ -64,8 +64,22 @@ public class UserIconProvider {
      * @return {@link Drawable} with badge
      */
     public Drawable getDrawableWithBadge(Context context, UserInfo userInfo) {
-        Drawable userIcon = getRoundedUserIcon(userInfo, context);
-        int iconSize = userIcon.getIntrinsicWidth();
+        return addBadge(context, getRoundedUserIcon(userInfo, context), userInfo.id);
+    }
+
+    /**
+     * Gets an icon with badge if the device is managed.
+     *
+     * @param context context
+     * @param drawable icon without badge
+     * @return {@link Drawable} with badge
+     */
+    public Drawable getDrawableWithBadge(Context context, Drawable drawable) {
+        return addBadge(context, drawable, UserHandle.USER_NULL);
+    }
+
+    private static Drawable addBadge(Context context, Drawable drawable, @UserIdInt int userId) {
+        int iconSize = drawable.getIntrinsicWidth();
         UserAvatarView userAvatarView = new UserAvatarView(context);
         float badgeToIconSizeRatio =
                 context.getResources().getDimension(R.dimen.car_user_switcher_managed_badge_size)
@@ -75,7 +89,13 @@ public class UserIconProvider {
         float badgePadding = context.getResources().getDimension(
                 R.dimen.car_user_switcher_managed_badge_margin);
         userAvatarView.setBadgeMargin(badgePadding);
-        userAvatarView.setDrawableWithBadge(userIcon, userInfo.id);
+        if (userId != UserHandle.USER_NULL) {
+            // When the userId is valid, add badge if the user is managed.
+            userAvatarView.setDrawableWithBadge(drawable, userId);
+        } else {
+            // When the userId is not valid, add badge if the device is managed.
+            userAvatarView.setDrawableWithBadge(drawable);
+        }
         Drawable badgedIcon = userAvatarView.getUserIconDrawable();
         badgedIcon.setBounds(0, 0, iconSize, iconSize);
         return badgedIcon;

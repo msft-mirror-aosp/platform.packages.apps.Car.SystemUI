@@ -17,6 +17,7 @@
 package com.android.systemui.car.systembar;
 
 import android.annotation.IntDef;
+import android.annotation.Nullable;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -51,6 +52,7 @@ public class CarSystemBarView extends LinearLayout {
     }
 
     private static final String TAG = CarSystemBarView.class.getSimpleName();
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     public static final int BUTTON_TYPE_NAVIGATION = 0;
     public static final int BUTTON_TYPE_KEYGUARD = 1;
@@ -241,30 +243,28 @@ public class CarSystemBarView extends LinearLayout {
     /**
      * Sets the system bar view's disabled state and runnable when disabled.
      */
-    public void setLockTaskDisabledButton(int viewId, boolean disabled, Runnable runnable) {
+    public void setDisabledSystemBarButton(int viewId, boolean disabled, Runnable runnable,
+                @Nullable String buttonName) {
         CarSystemBarButton button = findViewById(viewId);
         if (button != null) {
+            if (DEBUG) {
+                Log.d(TAG, "setDisabledSystemBarButton for: " + buttonName + " to: " + disabled);
+            }
             button.setDisabled(disabled, runnable);
         }
     }
 
     /**
-     * Sets the system bar ViewGroup container's visibility
+     * Sets the system bar specific View container's visibility. ViewName is used just for
+     * debugging.
      */
-    public void setLockTaskDisabledContainer(int viewId, @View.Visibility int visibility) {
+    public void setVisibilityByViewId(int viewId, @Nullable String viewName,
+                @View.Visibility int visibility) {
         View v = findViewById(viewId);
-        if (v == null) {
-            Log.e(TAG, "setLockTaskViewVisibility for: " + viewId + " not found");
-            return;
+        if (v != null) {
+            if (DEBUG) Log.d(TAG, "setVisibilityByViewId for: " + viewName + " to: " + visibility);
+            v.setVisibility(visibility);
         }
-        if (v instanceof ViewGroup) {
-            ViewGroup group = (ViewGroup) v;
-            for (int i = 0; i < group.getChildCount(); i++) {
-                group.getChildAt(i).setVisibility(visibility);
-            }
-            return;
-        }
-        v.setVisibility(visibility);
     }
 
     /**

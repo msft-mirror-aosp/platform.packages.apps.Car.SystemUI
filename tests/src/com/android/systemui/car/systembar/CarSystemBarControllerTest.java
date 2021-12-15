@@ -49,6 +49,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Set;
+
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
@@ -360,12 +362,14 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBar = createSystemBarController();
 
         CarSystemBarView bottomBar = mCarSystemBar.getBottomBar(/* isSetUp= */ true);
-        View.OnTouchListener controller = bottomBar.getStatusBarWindowTouchListener();
-        assertThat(controller).isNull();
+        Set<View.OnTouchListener> controllers = bottomBar.getStatusBarWindowTouchListeners();
+        assertThat(controllers).isNotNull();
+        assertThat(controllers.size()).isEqualTo(0);
         mCarSystemBar.registerBottomBarTouchListener(mock(View.OnTouchListener.class));
-        controller = bottomBar.getStatusBarWindowTouchListener();
+        controllers = bottomBar.getStatusBarWindowTouchListeners();
 
-        assertThat(controller).isNotNull();
+        assertThat(controllers).isNotNull();
+        assertThat(controllers.size()).isEqualTo(1);
     }
 
     @Test
@@ -375,9 +379,10 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
         mCarSystemBar.registerBottomBarTouchListener(mock(View.OnTouchListener.class));
         CarSystemBarView bottomBar = mCarSystemBar.getBottomBar(/* isSetUp= */ true);
-        View.OnTouchListener controller = bottomBar.getStatusBarWindowTouchListener();
+        Set<View.OnTouchListener> controllers = bottomBar.getStatusBarWindowTouchListeners();
 
-        assertThat(controller).isNotNull();
+        assertThat(controllers).isNotNull();
+        assertThat(controllers.size()).isEqualTo(1);
     }
 
     @Test

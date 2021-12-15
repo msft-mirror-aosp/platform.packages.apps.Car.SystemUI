@@ -20,6 +20,7 @@ import android.app.ActivityManager;
 import android.app.StatusBarManager;
 import android.content.Context;
 import android.os.Build;
+import android.util.ArraySet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -41,6 +42,7 @@ import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -70,10 +72,11 @@ public class CarSystemBarController {
     private final boolean mShowRight;
     private final int mPrivacyChipXOffset;
 
-    private View.OnTouchListener mTopBarTouchListener;
-    private View.OnTouchListener mBottomBarTouchListener;
-    private View.OnTouchListener mLeftBarTouchListener;
-    private View.OnTouchListener mRightBarTouchListener;
+    private final Set<View.OnTouchListener> mTopBarTouchListeners = new ArraySet<>();
+    private final Set<View.OnTouchListener> mBottomBarTouchListeners = new ArraySet<>();
+    private final Set<View.OnTouchListener> mLeftBarTouchListeners = new ArraySet<>();
+    private final Set<View.OnTouchListener> mRightBarTouchListeners = new ArraySet<>();
+
     private NotificationsShadeController mNotificationsShadeController;
     private HvacPanelController mHvacPanelController;
     private StatusIconPanelController mMicPanelController;
@@ -288,7 +291,7 @@ public class CarSystemBarController {
         }
 
         mTopView = mCarSystemBarViewFactory.getTopBar(isSetUp);
-        setupBar(mTopView, mTopBarTouchListener, mNotificationsShadeController,
+        setupBar(mTopView, mTopBarTouchListeners, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController);
 
         if (isSetUp) {
@@ -309,7 +312,7 @@ public class CarSystemBarController {
         }
 
         mBottomView = mCarSystemBarViewFactory.getBottomBar(isSetUp);
-        setupBar(mBottomView, mBottomBarTouchListener, mNotificationsShadeController,
+        setupBar(mBottomView, mBottomBarTouchListeners, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController);
         return mBottomView;
     }
@@ -322,7 +325,7 @@ public class CarSystemBarController {
         }
 
         mLeftView = mCarSystemBarViewFactory.getLeftBar(isSetUp);
-        setupBar(mLeftView, mLeftBarTouchListener, mNotificationsShadeController,
+        setupBar(mLeftView, mLeftBarTouchListeners, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController);
         return mLeftView;
     }
@@ -335,16 +338,16 @@ public class CarSystemBarController {
         }
 
         mRightView = mCarSystemBarViewFactory.getRightBar(isSetUp);
-        setupBar(mRightView, mRightBarTouchListener, mNotificationsShadeController,
+        setupBar(mRightView, mRightBarTouchListeners, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController);
         return mRightView;
     }
 
-    private void setupBar(CarSystemBarView view, View.OnTouchListener statusBarTouchListener,
+    private void setupBar(CarSystemBarView view, Set<View.OnTouchListener> statusBarTouchListeners,
             NotificationsShadeController notifShadeController,
             HvacPanelController hvacPanelController,
             HvacPanelOverlayViewController hvacPanelOverlayViewController) {
-        view.setStatusBarWindowTouchListener(statusBarTouchListener);
+        view.setStatusBarWindowTouchListeners(statusBarTouchListeners);
         view.setNotificationsPanelController(notifShadeController);
         view.setHvacPanelController(hvacPanelController);
         view.registerHvacPanelOverlayViewController(hvacPanelOverlayViewController);
@@ -388,33 +391,33 @@ public class CarSystemBarController {
 
     /** Sets a touch listener for the top navigation bar. */
     public void registerTopBarTouchListener(View.OnTouchListener listener) {
-        mTopBarTouchListener = listener;
-        if (mTopView != null) {
-            mTopView.setStatusBarWindowTouchListener(mTopBarTouchListener);
+        boolean setModified = mTopBarTouchListeners.add(listener);
+        if (setModified && mTopView != null) {
+            mTopView.setStatusBarWindowTouchListeners(mTopBarTouchListeners);
         }
     }
 
     /** Sets a touch listener for the bottom navigation bar. */
     public void registerBottomBarTouchListener(View.OnTouchListener listener) {
-        mBottomBarTouchListener = listener;
-        if (mBottomView != null) {
-            mBottomView.setStatusBarWindowTouchListener(mBottomBarTouchListener);
+        boolean setModified = mBottomBarTouchListeners.add(listener);
+        if (setModified && mBottomView != null) {
+            mBottomView.setStatusBarWindowTouchListeners(mBottomBarTouchListeners);
         }
     }
 
     /** Sets a touch listener for the left navigation bar. */
     public void registerLeftBarTouchListener(View.OnTouchListener listener) {
-        mLeftBarTouchListener = listener;
-        if (mLeftView != null) {
-            mLeftView.setStatusBarWindowTouchListener(mLeftBarTouchListener);
+        boolean setModified = mLeftBarTouchListeners.add(listener);
+        if (setModified && mLeftView != null) {
+            mLeftView.setStatusBarWindowTouchListeners(mLeftBarTouchListeners);
         }
     }
 
     /** Sets a touch listener for the right navigation bar. */
     public void registerRightBarTouchListener(View.OnTouchListener listener) {
-        mRightBarTouchListener = listener;
-        if (mRightView != null) {
-            mRightView.setStatusBarWindowTouchListener(mRightBarTouchListener);
+        boolean setModified = mRightBarTouchListeners.add(listener);
+        if (setModified && mRightView != null) {
+            mRightView.setStatusBarWindowTouchListeners(mRightBarTouchListeners);
         }
     }
 

@@ -120,7 +120,7 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         });
 
         mPowerManagerHelper.setCarPowerStateListener(state -> {
-            if (state == CarPowerManager.CarPowerStateListener.ON) {
+            if (state == CarPowerManager.STATE_ON) {
                 mNotificationPanelViewController.onCarPowerStateOn();
             }
         });

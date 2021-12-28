@@ -80,6 +80,7 @@ public class StatusIconPanelController {
     private ImageView mStatusIconView;
     private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
     private float mDimValue = -1.0f;
+    private View.OnClickListener mOnClickListener;
 
     private final BroadcastReceiver mUserChangeReceiver = new BroadcastReceiver() {
         @Override
@@ -266,7 +267,7 @@ public class StatusIconPanelController {
             mAnchorView = view;
         }
 
-        mAnchorView.setOnClickListener(v -> {
+        mOnClickListener = v -> {
             if (mIsDisabledWhileDriving && mCarUxRestrictionsUtil.getCurrentRestrictions()
                     .isRequiresDistractionOptimization()) {
                 dismissAllSystemDialogs();
@@ -303,7 +304,9 @@ public class StatusIconPanelController {
             setAnimatedStatusIconHighlightedStatus(true);
 
             dimBehind(mPanel);
-        });
+        };
+
+        mAnchorView.setOnClickListener(mOnClickListener);
     }
 
     @VisibleForTesting
@@ -331,6 +334,11 @@ public class StatusIconPanelController {
     @ColorInt
     protected int getIconNotHighlightedColor() {
         return mIconNotHighlightedColor;
+    }
+
+    @VisibleForTesting
+    protected View.OnClickListener getOnClickListener() {
+        return mOnClickListener;
     }
 
     private PopupWindow createPanel(@LayoutRes int layoutRes, @DimenRes int widthRes) {

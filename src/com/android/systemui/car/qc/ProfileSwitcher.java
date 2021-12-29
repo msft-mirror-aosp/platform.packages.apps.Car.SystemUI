@@ -52,6 +52,7 @@ import com.android.car.qc.QCList;
 import com.android.car.qc.QCRow;
 import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.internal.util.UserIcons;
+import com.android.settingslib.utils.StringUtil;
 import com.android.systemui.R;
 import com.android.systemui.car.userswitcher.UserIconProvider;
 
@@ -269,10 +270,8 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         AlertDialog maxUsersDialog = new AlertDialog.Builder(mContext,
                 com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setTitle(R.string.profile_limit_reached_title)
-                .setMessage(mContext.getResources().getQuantityString(
-                        R.plurals.profile_limit_reached_message,
-                        getMaxSupportedRealUsers(),
-                        getMaxSupportedRealUsers()))
+                .setMessage(StringUtil.getIcuPluralsString(mContext, getMaxSupportedRealUsers(),
+                                R.string.profile_limit_reached_message))
                 .setPositiveButton(android.R.string.ok, null)
                 .create();
         // Sets window flags for the SysUI dialog

@@ -651,7 +651,6 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="layout" name="status_bar_wifi_group"/>
       <item type="layout" name="system_icons"/>
       <item type="layout" name="sysui_overlay_window"/>
-      <item type="plurals" name="profile_limit_reached_message"/>
       <item type="string" name="activity_blocked_text"/>
       <item type="string" name="car_add_user"/>
       <item type="string" name="car_guest"/>
@@ -685,6 +684,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="mic_privacy_chip_on_toast"/>
       <item type="string" name="mic_privacy_chip_use_microphone"/>
       <item type="string" name="mic_privacy_chip_use_microphone_subtext"/>
+      <item type="string" name="profile_limit_reached_message"/>
       <item type="string" name="profile_limit_reached_title"/>
       <item type="string" name="qc_footer_bluetooth_settings"/>
       <item type="string" name="qc_footer_display_settings"/>

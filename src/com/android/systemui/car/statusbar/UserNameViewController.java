@@ -117,7 +117,7 @@ public class UserNameViewController {
         mCarServiceProvider.addListener(car -> {
             mCarUserManager = (CarUserManager) car.getCarManager(Car.CAR_USER_SERVICE);
             if (mCarUserManager != null && !mUserLifecycleListenerRegistered) {
-                mCarUserManager.addListener(Runnable::run, mUserLifecycleListener);
+                mCarUserManager.addListener(mContext.getMainExecutor(), mUserLifecycleListener);
                 mUserLifecycleListenerRegistered = true;
             } else {
                 Log.e(TAG, "CarUserManager could not be obtained.");

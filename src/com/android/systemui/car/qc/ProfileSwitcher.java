@@ -106,7 +106,9 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             listBuilder.addRow(createUserProfileRow(profile));
         }
         listBuilder.addRow(createGuestProfileRow());
-        listBuilder.addRow(createAddProfileRow());
+        if (!hasAddUserRestriction(fgUserHandle)) {
+            listBuilder.addRow(createAddProfileRow());
+        }
         return listBuilder.build();
     }
 
@@ -246,6 +248,10 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 UserIcons.convertToBitmap(mContext.getDrawable(R.drawable.car_add_circle_round)));
         circleIcon.setCircular(true);
         return circleIcon;
+    }
+
+    private boolean hasAddUserRestriction(UserHandle userHandle) {
+        return mUserManager.hasUserRestrictionForUser(UserManager.DISALLOW_ADD_USER, userHandle);
     }
 
     private int getMaxSupportedRealUsers() {

@@ -235,7 +235,7 @@ public class CarVolumeDialogImpl implements VolumeDialog {
 
         mContext.registerReceiverAsUser(mHomeButtonPressedBroadcastReceiver, UserHandle.CURRENT,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* broadcastPermission= */
-                null, /* scheduler= */ null);
+                null, /* scheduler= */ null, Context.RECEIVER_EXPORTED);
     }
 
     @Override

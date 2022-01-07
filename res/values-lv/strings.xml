@@ -31,11 +31,8 @@
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Kad jūs esat izveidojis jaunu profilu, profila īpašniekam tas ir patstāvīgi jāpielāgo."</string>
     <string name="user_add_user_message_update" msgid="3310089453006545712">"No jebkura profila var atjaunināt lietotnes, lai izmantotu tās visos pārējos profilos."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"Sasniegts profilu ierobežojums"</string>
-    <plurals name="profile_limit_reached_message" formatted="false" msgid="910608128912533066">
-      <item quantity="zero">Varat pievienot ne vairāk kā <xliff:g id="COUNT">%d</xliff:g> profilus.</item>
-      <item quantity="one">Varat pievienot ne vairāk kā <xliff:g id="COUNT">%d</xliff:g> profilu.</item>
-      <item quantity="other">Varat pievienot ne vairāk kā <xliff:g id="COUNT">%d</xliff:g> profilus.</item>
-    </plurals>
+    <!-- no translation found for profile_limit_reached_message (1534369584753840606) -->
+    <skip />
     <string name="car_loading_profile" msgid="458961191993686065">"Notiek ielāde…"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Notiek lietotāja profila ielāde (<xliff:g id="FROM_USER">%1$d</xliff:g>–<xliff:g id="TO_USER">%2$d</xliff:g>)…"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"Mikrofons ir izslēgts."</string>

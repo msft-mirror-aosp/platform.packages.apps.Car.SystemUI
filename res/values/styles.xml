@@ -35,6 +35,7 @@
            parent="@android:style/TextAppearance.DeviceDefault">
         <item name="android:textSize">@dimen/car_body3_size</item>
         <item name="android:textColor">@color/system_bar_text_color_with_selection</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <style name="TextAppearance.CarStatus" parent="@android:style/TextAppearance.DeviceDefault">

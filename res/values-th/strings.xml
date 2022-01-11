@@ -31,10 +31,7 @@
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"หลังจากที่คุณสร้างโปรไฟล์ใหม่ บุคคลดังกล่าวควรปรับแต่งโปรไฟล์เอง"</string>
     <string name="user_add_user_message_update" msgid="3310089453006545712">"แต่ละโปรไฟล์อัปเดตแอปให้โปรไฟล์อื่นๆ ใช้งานได้"</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"มีโปรไฟล์ถึงขีดจำกัดแล้ว"</string>
-    <plurals name="profile_limit_reached_message" formatted="false" msgid="910608128912533066">
-      <item quantity="other">คุณเพิ่มโปรไฟล์ได้สูงสุด <xliff:g id="COUNT">%d</xliff:g> โปรไฟล์</item>
-      <item quantity="one">สร้างได้เพียงโปรไฟล์เดียวเท่านั้น</item>
-    </plurals>
+    <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{สร้างได้เพียงโปรไฟล์เดียวเท่านั้น}other{คุณเพิ่มโปรไฟล์ได้สูงสุด # โปรไฟล์}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"กำลังโหลด"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"กำลังโหลดผู้ใช้ (จาก <xliff:g id="FROM_USER">%1$d</xliff:g> ถึง <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"ไมโครโฟนปิดอยู่"</string>

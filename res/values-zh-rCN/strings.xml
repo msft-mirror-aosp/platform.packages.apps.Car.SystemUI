@@ -31,10 +31,7 @@
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"您创建新的个人资料后，相应用户应自己对其进行自定义。"</string>
     <string name="user_add_user_message_update" msgid="3310089453006545712">"任意个人资料都可以更新应用，并且更新后的应用可供所有其他个人资料使用。"</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"已达到个人资料数量上限"</string>
-    <plurals name="profile_limit_reached_message" formatted="false" msgid="910608128912533066">
-      <item quantity="other">您最多可以添加 <xliff:g id="COUNT">%d</xliff:g> 份个人资料。</item>
-      <item quantity="one">只能创建 1 份个人资料。</item>
-    </plurals>
+    <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{只能创建 1 份个人资料。}other{您最多可以添加 # 份个人资料。}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"正在加载"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"正在加载用户（从 <xliff:g id="FROM_USER">%1$d</xliff:g> 到 <xliff:g id="TO_USER">%2$d</xliff:g>）"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"麦克风已关闭。"</string>

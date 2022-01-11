@@ -31,10 +31,7 @@
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"നിങ്ങൾ പുതിയൊരു പ്രൊഫെെൽ സൃഷ്‌ടിച്ചതിന് ശേഷം അത് ഉപയോഗിക്കേണ്ടയാൾ അത് ഇഷ്ടാനുസൃതമാക്കേണ്ടതുണ്ട്."</string>
     <string name="user_add_user_message_update" msgid="3310089453006545712">"മറ്റെല്ലാ പ്രൊഫെെലുകൾക്കും ഉപയോഗിക്കാൻ, ആപ്പുകൾ ഏത് പ്രൊഫെെലിൽ നിന്നും അപ്‌ഡേറ്റ് ചെയ്യാനാകും."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"പ്രൊഫൈൽ പരിധിയെത്തി"</string>
-    <plurals name="profile_limit_reached_message" formatted="false" msgid="910608128912533066">
-      <item quantity="other">നിങ്ങൾക്ക് <xliff:g id="COUNT">%d</xliff:g> പ്രൊഫെെലുകൾ വരെ ചേർക്കാനാകും.</item>
-      <item quantity="one">ഒരു പ്രൊഫൈൽ മാത്രമേ സൃഷ്ടിക്കാനാകൂ.</item>
-    </plurals>
+    <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{ഒരു പ്രൊഫൈൽ മാത്രമേ സൃഷ്‌ടിക്കാനാകൂ.}other{നിങ്ങൾക്ക് # പ്രൊഫൈലുകൾ വരെ ചേർക്കാനാകും.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"ലോഡ് ചെയ്യുന്നു"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"ഉപയോക്തൃ പ്രൊഫൈൽ ലോഡ് ചെയ്യുന്നു (<xliff:g id="FROM_USER">%1$d</xliff:g> എന്നതിൽ നിന്ന് <xliff:g id="TO_USER">%2$d</xliff:g> എന്നതിലേക്ക്)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"മൈക്രോഫോൺ ഓഫാണ്."</string>

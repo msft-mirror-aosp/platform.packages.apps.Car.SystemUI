@@ -31,10 +31,7 @@
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"તમે નવી પ્રોફાઇલ બનાવો, પછી સંબંધિત વ્યક્તિએ તેને પોતાના માટે કસ્ટમાઇઝ કરવી જોઈએ."</string>
     <string name="user_add_user_message_update" msgid="3310089453006545712">"ઍપને અન્ય બધી પ્રોફાઇલ દ્વારા ઉપયોગમાં લેવા માટે, તેને કોઈપણ પ્રોફાઇલમાંથી અપડેટ કરી શકાશે."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"મહત્તમ પ્રોફાઇલ સંખ્યાએ પહોંચી ગયા"</string>
-    <plurals name="profile_limit_reached_message" formatted="false" msgid="910608128912533066">
-      <item quantity="one">તમે <xliff:g id="COUNT">%d</xliff:g> જેટલી પ્રોફાઇલ ઉમેરી શકો છો.</item>
-      <item quantity="other">તમે <xliff:g id="COUNT">%d</xliff:g> જેટલી પ્રોફાઇલ ઉમેરી શકો છો.</item>
-    </plurals>
+    <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{માત્ર એક પ્રોફાઇલ બનાવી શકાય છે.}one{તમે વધુમાં વધુ # પ્રોફાઇલ ઉમેરી શકો છો.}other{તમે વધુમાં વધુ # પ્રોફાઇલ ઉમેરી શકો છો.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"લોડ કરી રહ્યાં છીએ"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"વપરાશકર્તાને લોડ કરી રહ્યાં છીએ (<xliff:g id="FROM_USER">%1$d</xliff:g>માંથી <xliff:g id="TO_USER">%2$d</xliff:g>માં)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"માઇક્રોફોન બંધ છે."</string>

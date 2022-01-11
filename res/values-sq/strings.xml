@@ -31,10 +31,8 @@
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Pasi të krijosh një profil të ri, ai person duhet ta personalizojë vetë atë."</string>
     <string name="user_add_user_message_update" msgid="3310089453006545712">"Aplikacionet mund të përditësohen nga çdo profil për t\'u përdorur nga të gjitha profilet e tjera."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"Është arritur kufiri i profileve"</string>
-    <plurals name="profile_limit_reached_message" formatted="false" msgid="910608128912533066">
-      <item quantity="other">Mund të shtosh deri në <xliff:g id="COUNT">%d</xliff:g> profile.</item>
-      <item quantity="one">Mund të krijohet vetëm një profil.</item>
-    </plurals>
+    <!-- no translation found for profile_limit_reached_message (1534369584753840606) -->
+    <skip />
     <string name="car_loading_profile" msgid="458961191993686065">"Po ngarkohet"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Përdoruesi po ngarkohet (nga <xliff:g id="FROM_USER">%1$d</xliff:g> te <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"Mikrofoni është joaktiv."</string>

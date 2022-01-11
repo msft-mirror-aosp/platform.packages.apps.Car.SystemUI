@@ -31,12 +31,8 @@
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Kai sukursite naują profilį, šis asmuo turėtų jį tinkinti pagal save."</string>
     <string name="user_add_user_message_update" msgid="3310089453006545712">"Programas galima atnaujinti iš bet kurio profilio, kad galėtų naudoti visi kiti profiliai."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"Pasiektas profilių apribojimas"</string>
-    <plurals name="profile_limit_reached_message" formatted="false" msgid="910608128912533066">
-      <item quantity="one">Galite pridėti iki <xliff:g id="COUNT">%d</xliff:g> profilio.</item>
-      <item quantity="few">Galite pridėti iki <xliff:g id="COUNT">%d</xliff:g> profilių.</item>
-      <item quantity="many">Galite pridėti iki <xliff:g id="COUNT">%d</xliff:g> profilio.</item>
-      <item quantity="other">Galite pridėti iki <xliff:g id="COUNT">%d</xliff:g> profilių.</item>
-    </plurals>
+    <!-- no translation found for profile_limit_reached_message (1534369584753840606) -->
+    <skip />
     <string name="car_loading_profile" msgid="458961191993686065">"Įkeliama"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Įkeliamas naudotojo profilis (<xliff:g id="FROM_USER">%1$d</xliff:g> – <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"Mikrofonas išjungtas."</string>

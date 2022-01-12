@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.statusicon;
 
-import static android.content.Intent.ACTION_USER_FOREGROUND;
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
 
@@ -24,7 +23,9 @@ import android.annotation.ColorInt;
 import android.annotation.DimenRes;
 import android.annotation.LayoutRes;
 import android.app.PendingIntent;
+import android.car.Car;
 import android.car.drivingstate.CarUxRestrictions;
+import android.car.user.CarUserManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -61,8 +62,6 @@ import java.util.ArrayList;
  */
 public class StatusIconPanelController {
     private static final int DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY = Gravity.TOP | Gravity.START;
-    private static final IntentFilter INTENT_FILTER_USER_CHANGED = new IntentFilter(
-            ACTION_USER_FOREGROUND);
 
     private final Context mContext;
     private final String mIdentifier;
@@ -80,10 +79,10 @@ public class StatusIconPanelController {
     private ImageView mStatusIconView;
     private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
     private float mDimValue = -1.0f;
+    private boolean mUserSwitchEventRegistered;
 
-    private final BroadcastReceiver mUserChangeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
+    private final CarUserManager.UserLifecycleListener mUserLifecycleListener = event -> {
+        if (event.getEventType() == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING) {
             reset();
         }
     };
@@ -182,8 +181,14 @@ public class StatusIconPanelController {
                 UserHandle.ALL);
         configurationController.addCallback(mConfigurationListener);
 
-        context.registerReceiverForAllUsers(mUserChangeReceiver, INTENT_FILTER_USER_CHANGED,
-                /* broadcastPermission= */ null, /* scheduler= */ null);
+        carServiceProvider.addListener(car -> {
+            CarUserManager carUserManager = (CarUserManager) car.getCarManager(
+                    Car.CAR_USER_SERVICE);
+            if (!mUserSwitchEventRegistered) {
+                carUserManager.addListener(Runnable::run, mUserLifecycleListener);
+                mUserSwitchEventRegistered = true;
+            }
+        });
 
         mIsDisabledWhileDriving = isDisabledWhileDriving;
         if (mIsDisabledWhileDriving) {

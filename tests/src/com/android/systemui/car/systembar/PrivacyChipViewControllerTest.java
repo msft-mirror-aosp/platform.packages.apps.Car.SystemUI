@@ -23,7 +23,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -36,7 +35,6 @@ import android.car.Car;
 import android.car.user.CarUserManager;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.hardware.SensorPrivacyManager;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
@@ -300,8 +298,7 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
                 .thenReturn(true);
         mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
         verify(mBroadcastDispatcher).registerReceiver(mBroadcastReceiverArgumentCaptor.capture(),
-                argThat((IntentFilter filter) -> filter.hasAction(Intent.ACTION_USER_INFO_CHANGED)),
-                any(), any());
+                any(), any(), any());
         reset(mExecutor);
         when(mCarDeviceProvisionedController.getCurrentUser()).thenReturn(1);
         mBroadcastReceiverArgumentCaptor.getValue().onReceive(mContext,
@@ -318,13 +315,15 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
         when(mSensorPrivacyManager.isSensorPrivacyEnabled(MICROPHONE, /* userId= */ 1))
                 .thenReturn(false);
         mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
-        verify(mBroadcastDispatcher).registerReceiver(mBroadcastReceiverArgumentCaptor.capture(),
-                argThat((IntentFilter filter) -> filter.hasAction(Intent.ACTION_USER_FOREGROUND)),
-                any(), any());
+        verify(mCarUserManager).addListener(any(), mUserLifecycleListenerArgumentCaptor.capture());
+        CarUserManager.UserLifecycleEvent event = new CarUserManager.UserLifecycleEvent(
+                CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING, /* from= */ 0,
+                /* to= */ 1);
+        CarUserManager.UserLifecycleListener userLifecycleListener =
+                mUserLifecycleListenerArgumentCaptor.getValue();
+        assertThat(userLifecycleListener).isNotNull();
         reset(mExecutor);
-        when(mCarDeviceProvisionedController.getCurrentUser()).thenReturn(1);
-        mBroadcastReceiverArgumentCaptor.getValue().onReceive(mContext,
-                new Intent(Intent.ACTION_USER_FOREGROUND));
+        userLifecycleListener.onEvent(event);
         verify(mExecutor).execute(mRunnableArgumentCaptor.capture());
 
         mRunnableArgumentCaptor.getValue().run();

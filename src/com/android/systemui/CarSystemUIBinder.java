@@ -16,6 +16,7 @@
 
 package com.android.systemui;
 
+import com.android.keyguard.KeyguardBiometricLockoutLogger;
 import com.android.systemui.accessibility.SystemActions;
 import com.android.systemui.biometrics.AuthController;
 import com.android.systemui.car.cluster.ClusterDisplayController;
@@ -88,6 +89,13 @@ public abstract class CarSystemUIBinder {
     @IntoMap
     @ClassKey(KeyguardViewMediator.class)
     public abstract CoreStartable bindKeyguardViewMediator(KeyguardViewMediator sysui);
+
+    /** Inject into KeyguardBiometricLockoutLogger. */
+    @Binds
+    @IntoMap
+    @ClassKey(KeyguardBiometricLockoutLogger.class)
+    public abstract CoreStartable bindKeyguardBiometricLockoutLogger(
+            KeyguardBiometricLockoutLogger sysui);
 
     /** Inject into LatencyTests. */
     @Binds

@@ -73,6 +73,8 @@ public class StatusIconPanelController {
     private final ArrayList<SystemUIQCView> mQCViews = new ArrayList<>();
 
     private PopupWindow mPanel;
+    private @LayoutRes int mPanelLayoutRes;
+    private @DimenRes int mPanelWidthRes;
     private ViewGroup mPanelContent;
     private OnQcViewsFoundListener mOnQcViewsFoundListener;
     private View mAnchorView;
@@ -84,7 +86,7 @@ public class StatusIconPanelController {
 
     private final CarUserManager.UserLifecycleListener mUserLifecycleListener = event -> {
         if (event.getEventType() == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING) {
-            reset();
+            recreatePanel();
         }
     };
 
@@ -92,7 +94,7 @@ public class StatusIconPanelController {
             new ConfigurationController.ConfigurationListener() {
                 @Override
                 public void onLayoutDirectionChanged(boolean isLayoutRtl) {
-                    reset();
+                    recreatePanel();
                 }
             };
 
@@ -271,6 +273,8 @@ public class StatusIconPanelController {
         if (mAnchorView == null) {
             mAnchorView = view;
         }
+        mPanelLayoutRes = layoutRes;
+        mPanelWidthRes = widthRes;
 
         mOnClickListener = v -> {
             if (mIsDisabledWhileDriving && mCarUxRestrictionsUtil.getCurrentRestrictions()
@@ -281,8 +285,8 @@ public class StatusIconPanelController {
                 return;
             }
 
-            if (mPanel == null) {
-                mPanel = createPanel(layoutRes, widthRes);
+            if (mPanel == null && !createPanel()) {
+                return;
             }
 
             if (mPanel.isShowing()) {
@@ -346,24 +350,32 @@ public class StatusIconPanelController {
         return mOnClickListener;
     }
 
-    private PopupWindow createPanel(@LayoutRes int layoutRes, @DimenRes int widthRes) {
-        int panelWidth = mContext.getResources().getDimensionPixelSize(widthRes);
+    /**
+     * Create the PopupWindow panel and assign to {@link mPanel}.
+     * @return true if the panel was created, false otherwise
+     */
+    private boolean createPanel() {
+        if (mPanelWidthRes == 0 || mPanelLayoutRes == 0) {
+            return false;
+        }
 
-        mPanelContent = (ViewGroup) LayoutInflater.from(mContext).inflate(layoutRes, /* root= */
-                null);
+        int panelWidth = mContext.getResources().getDimensionPixelSize(mPanelWidthRes);
+
+        mPanelContent = (ViewGroup) LayoutInflater.from(mContext).inflate(mPanelLayoutRes,
+                /* root= */ null);
         mPanelContent.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
         findQcViews(mPanelContent);
         if (mOnQcViewsFoundListener != null) {
             mOnQcViewsFoundListener.qcViewsFound(mQCViews);
         }
-        PopupWindow panel = new PopupWindow(mPanelContent, panelWidth, WRAP_CONTENT);
-        panel.setBackgroundDrawable(
+        mPanel = new PopupWindow(mPanelContent, panelWidth, WRAP_CONTENT);
+        mPanel.setBackgroundDrawable(
                 mContext.getResources().getDrawable(R.drawable.status_icon_panel_bg,
                         mContext.getTheme()));
-        panel.setWindowLayoutType(TYPE_SYSTEM_DIALOG);
-        panel.setFocusable(true);
-        panel.setOutsideTouchable(false);
-        panel.setOnDismissListener(() -> {
+        mPanel.setWindowLayoutType(TYPE_SYSTEM_DIALOG);
+        mPanel.setFocusable(true);
+        mPanel.setOutsideTouchable(false);
+        mPanel.setOnDismissListener(() -> {
             setAnimatedStatusIconHighlightedStatus(false);
             mAnchorView.setSelected(false);
             highlightStatusIcon(false);
@@ -372,7 +384,7 @@ public class StatusIconPanelController {
         });
         addFocusParkingView();
 
-        return panel;
+        return true;
     }
 
     private void dimBehind(PopupWindow popupWindow) {
@@ -427,9 +439,13 @@ public class StatusIconPanelController {
         mPanel.dismiss();
         mPanel = null;
         mPanelContent = null;
-        mOnQcViewsFoundListener = null;
-        mQCViews.forEach(v -> v.destroy());
+        mQCViews.forEach(SystemUIQCView::destroy);
         mQCViews.clear();
+    }
+
+    private void recreatePanel() {
+        reset();
+        createPanel();
     }
 
     private void findQcViews(ViewGroup rootView) {

@@ -50,7 +50,7 @@
                 android:elevation="5dp"
                 android:singleLine="true"
                 android:textAppearance="@style/TextAppearance.SystemBar.Clock"
-                systemui:amPmStyle="normal"/>
+                systemui:amPmStyle="gone"/>
         </com.android.systemui.car.systembar.CarSystemBarButton>
 
         <include layout="@layout/mic_privacy_chip"
@@ -87,7 +87,7 @@
                         android:id="@+id/user_avatar"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:src="@drawable/car_ic_user_icon"
+                        android:src="@drawable/car_ic_users_icon"
                         android:layout_marginEnd="@dimen/system_bar_user_icon_padding"
                     />
                     <TextView

@@ -62,6 +62,10 @@ android_library {
         "android.car",
     ],
 
+    aaptflags: [
+        "--no-resource-deduping",
+    ],
+
     manifest: "AndroidManifest.xml",
 
     plugins: ["dagger2-compiler"],

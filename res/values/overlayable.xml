@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Copyright (C) 2021 The Android Open Source Project
+<!-- Copyright (C) 2022 The Android Open Source Project
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -414,7 +414,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_ic_selection_bg"/>
       <item type="drawable" name="car_ic_settings_icon"/>
       <item type="drawable" name="car_ic_unseen_indicator"/>
-      <item type="drawable" name="car_ic_user_icon"/>
+      <item type="drawable" name="car_ic_users_icon"/>
       <item type="drawable" name="car_ic_ux_restricted"/>
       <item type="drawable" name="car_rounded_bg_bottom"/>
       <item type="drawable" name="car_seekbar_thumb"/>

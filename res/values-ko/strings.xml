@@ -31,8 +31,7 @@
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"새 프로필을 만들고 나면 사용자가 직접 프로필을 맞춤설정해야 합니다."</string>
     <string name="user_add_user_message_update" msgid="3310089453006545712">"어떤 프로필에서든 앱을 업데이트하여 다른 모든 프로필에 적용할 수 있습니다."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"최대 프로필 개수에 도달"</string>
-    <!-- no translation found for profile_limit_reached_message (1534369584753840606) -->
-    <skip />
+    <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{프로필은 1개만 만들 수 있습니다.}other{프로필은 #개까지 만들 수 있습니다.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"로드 중"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"사용자 로드 중(<xliff:g id="FROM_USER">%1$d</xliff:g>님에서 <xliff:g id="TO_USER">%2$d</xliff:g>님으로)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"마이크가 꺼져 있습니다."</string>

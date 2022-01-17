@@ -31,8 +31,7 @@
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"ඔබ නව පැතිකඩක් තැනීමෙන් පසුව, එම පුද්ගලයා එය තමා සඳහා අභිරුචිකරණය කළ යුතුය."</string>
     <string name="user_add_user_message_update" msgid="3310089453006545712">"අනෙක් සියලු පැතිකඩවල භාවිතය සඳහා යෙදුම් ඕනෑම පැතිකඩකින් යාවත්කාලීන කළ හැකිය."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"පැතිකඩ සීමාව ළඟා විය"</string>
-    <!-- no translation found for profile_limit_reached_message (1534369584753840606) -->
-    <skip />
+    <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{එක් පැතිකඩක් පමණක් තැනිය හැකිය.}one{ඔබට පැතිකඩවල් #ක් දක්වා එක් කළ හැකිය.}other{ඔබට පැතිකඩවල් #ක් දක්වා එක් කළ හැකිය.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"පූරණය වෙමින්"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"පරිශීලකයා පූරණය වෙමින් (<xliff:g id="FROM_USER">%1$d</xliff:g> සිට <xliff:g id="TO_USER">%2$d</xliff:g> වෙත)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"මයික්‍රෆෝනය ක්‍රියාවිරහිත කර ඇත."</string>

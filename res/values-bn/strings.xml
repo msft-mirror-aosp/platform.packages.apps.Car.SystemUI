@@ -31,8 +31,7 @@
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"আপনি নতুন প্রোফাইল তৈরি করার পর, ব্যবহারকারীর সেটিকে কাস্টমাইজ করে নিতে হবে।"</string>
     <string name="user_add_user_message_update" msgid="3310089453006545712">"অ্যাপ যেকোনও প্রোফাইল থেকে আপডেট করা যাবে যাতে অন্যান্য সমস্ত প্রোফাইল সেটি ব্যবহার করতে পারে।"</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"আর কোনও প্রোফাইল যোগ করা যাবে না"</string>
-    <!-- no translation found for profile_limit_reached_message (1534369584753840606) -->
-    <skip />
+    <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{শুধুমাত্র একটি প্রোফাইল তৈরি করা যাবে।}one{আপনি সর্বাধিক #টি প্রোফাইল যোগ করতে পারবেন।}other{আপনি সর্বাধিক #টি প্রোফাইল যোগ করতে পারবেন।}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"লোড হচ্ছে"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"ব্যবহারকারীর প্রোফাইল লোড করা হচ্ছে (<xliff:g id="FROM_USER">%1$d</xliff:g> থেকে <xliff:g id="TO_USER">%2$d</xliff:g>-এ)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"মাইক্রোফোন বন্ধ করা আছে।"</string>

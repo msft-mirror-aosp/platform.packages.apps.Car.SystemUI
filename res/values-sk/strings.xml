@@ -31,8 +31,7 @@
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Po vytvorení by si mala príslušná osoba nový profil prispôsobiť podľa seba."</string>
     <string name="user_add_user_message_update" msgid="3310089453006545712">"Aplikácie môžu byť aktualizované z ľubovoľného profilu a potom používané všetkými ostatnými."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"Dosiahnutý maximálny počet profilov"</string>
-    <!-- no translation found for profile_limit_reached_message (1534369584753840606) -->
-    <skip />
+    <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Môžete vytvoriť iba jeden profil.}few{Môžete pridať až # profily.}many{You can add up to # profiles.}other{Môžete pridať až # profilov.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Načítava sa"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Načítava sa používateľ (predchádzajúci: <xliff:g id="FROM_USER">%1$d</xliff:g>, nasledujúci: <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
     <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"Mikrofón je vypnutý."</string>

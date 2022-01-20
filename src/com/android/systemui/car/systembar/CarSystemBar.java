@@ -259,7 +259,7 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
         mActivityManagerWrapper.registerTaskStackListener(new TaskStackChangeListener() {
             @Override
             public void onLockTaskModeChanged(int mode) {
-                mCarSystemBarController.refreshSystemBarByLockTaskFeatures();
+                mCarSystemBarController.refreshSystemBar();
             }
         });
 
@@ -478,7 +478,7 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
             mAppearanceRegions = appearanceRegions;
             updateStatusBarAppearance();
         }
-        mCarSystemBarController.refreshSystemBarByLockTaskFeatures();
+        mCarSystemBarController.refreshSystemBar();
     }
 
     @Override
@@ -487,7 +487,7 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
         if (displayId != mDisplayId) {
             return;
         }
-        mCarSystemBarController.setStatusBarState(state1);
+        mCarSystemBarController.setSystemBarStates(state1, state2);
     }
 
     private void updateStatusBarAppearance() {

@@ -203,12 +203,24 @@ public class CarSystemBarView extends LinearLayout {
             return;
         }
         if (mNotificationsShadeController != null) {
+            // If the notification shade is about to open, close the hvac panel
+            if (!mNotificationsShadeController.isNotificationPanelOpen()
+                    && mHvacPanelController != null
+                    && mHvacPanelController.isHvacPanelOpen()) {
+                mHvacPanelController.togglePanel();
+            }
             mNotificationsShadeController.togglePanel();
         }
     }
 
     protected void onHvacClick(View v) {
         if (mHvacPanelController != null) {
+            // If the hvac panel is about to open, close the notification shade
+            if (!mHvacPanelController.isHvacPanelOpen()
+                    && mNotificationsShadeController != null
+                    && mNotificationsShadeController.isNotificationPanelOpen()) {
+                mNotificationsShadeController.togglePanel();
+            }
             mHvacPanelController.togglePanel();
         }
     }

@@ -96,10 +96,10 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
     private boolean mPanelVisible;
     private boolean mPanelExpanded;
 
-    private float mOpeningVelocity = DEFAULT_FLING_VELOCITY;
-    private float mClosingVelocity = DEFAULT_FLING_VELOCITY;
+    protected float mOpeningVelocity = DEFAULT_FLING_VELOCITY;
+    protected float mClosingVelocity = DEFAULT_FLING_VELOCITY;
 
-    private boolean mIsAnimating;
+    protected boolean mIsAnimating;
     private boolean mIsTracking;
 
     public OverlayPanelViewController(
@@ -342,7 +342,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
     }
 
     /** Returns the start position if we are in the middle of swiping. */
-    private int getCurrentStartPosition(Rect clipBounds) {
+    protected int getCurrentStartPosition(Rect clipBounds) {
         return mAnimateDirection > 0 ? clipBounds.bottom : clipBounds.top;
     }
 
@@ -352,7 +352,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
                 : 0;
     }
 
-    private void animate(float from, float to, float velocity, boolean isClosing) {
+    protected void animate(float from, float to, float velocity, boolean isClosing) {
         if (mIsAnimating) {
             return;
         }
@@ -384,7 +384,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
         animator.start();
     }
 
-    private void resetPanelVisibility() {
+    protected void resetPanelVisibility() {
         setPanelVisible(false);
         getLayout().setClipBounds(null);
         onCollapseAnimationEnd();

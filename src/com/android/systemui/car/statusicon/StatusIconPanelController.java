@@ -23,6 +23,7 @@ import static android.widget.ListPopupWindow.WRAP_CONTENT;
 import android.annotation.ColorInt;
 import android.annotation.DimenRes;
 import android.annotation.LayoutRes;
+import android.app.PendingIntent;
 import android.car.drivingstate.CarUxRestrictions;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -42,6 +43,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import com.android.car.qc.QCItem;
+import com.android.car.qc.view.QCView;
 import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.car.ui.utils.ViewUtils;
@@ -100,7 +103,7 @@ public class StatusIconPanelController {
                 public void onRestrictionsChanged(@NonNull CarUxRestrictions carUxRestrictions) {
                     if (mIsDisabledWhileDriving
                             && carUxRestrictions.isRequiresDistractionOptimization()
-                            && mPanel != null) {
+                            && isPanelShowing()) {
                         mPanel.dismiss();
                     }
                 }
@@ -114,7 +117,7 @@ public class StatusIconPanelController {
                     intent.getIdentifier() != null && intent.getIdentifier().equals(mIdentifier);
 
             if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action) && !isIntentFromSelf
-                    && mPanel != null && mPanel.isShowing()) {
+                    && isPanelShowing()) {
                 mPanel.dismiss();
             }
         }
@@ -122,13 +125,28 @@ public class StatusIconPanelController {
 
     private final ViewTreeObserver.OnGlobalFocusChangeListener mFocusChangeListener =
             (oldFocus, newFocus) -> {
-                if (mPanel != null && oldFocus != null && newFocus instanceof FocusParkingView) {
+                if (isPanelShowing() && oldFocus != null && newFocus instanceof FocusParkingView) {
                     // When nudging out of the panel, RotaryService will focus on the
                     // FocusParkingView to clear the focus highlight. When this occurs, dismiss the
                     // panel.
                     mPanel.dismiss();
                 }
             };
+
+    private final QCView.QCActionListener mQCActionListener = (item, action) -> {
+        if (!isPanelShowing()) {
+            return;
+        }
+        if (action instanceof PendingIntent) {
+            if (((PendingIntent) action).isActivity()) {
+                mPanel.dismiss();
+            }
+        } else if (action instanceof QCItem.ActionHandler) {
+            if (((QCItem.ActionHandler) action).isActivity()) {
+                mPanel.dismiss();
+            }
+        }
+    };
 
     public StatusIconPanelController(
             Context context,
@@ -405,7 +423,9 @@ public class StatusIconPanelController {
         for (int i = 0; i < rootView.getChildCount(); i++) {
             View v = rootView.getChildAt(i);
             if (v instanceof SystemUIQCView) {
-                mQCViews.add((SystemUIQCView) v);
+                SystemUIQCView qcv = (SystemUIQCView) v;
+                mQCViews.add(qcv);
+                qcv.setActionListener(mQCActionListener);
             } else if (v instanceof ViewGroup) {
                 this.findQcViews((ViewGroup) v);
             }
@@ -427,5 +447,9 @@ public class StatusIconPanelController {
             mStatusIconView.setColorFilter(
                     isHighlighted ? mIconHighlightedColor : mIconNotHighlightedColor);
         }
+    }
+
+    private boolean isPanelShowing() {
+        return mPanel != null && mPanel.isShowing();
     }
 }

@@ -30,6 +30,7 @@ import com.android.systemui.car.volume.VolumeUI;
 import com.android.systemui.car.window.OverlayWindowModule;
 import com.android.systemui.car.window.SystemUIOverlayWindowManager;
 import com.android.systemui.globalactions.GlobalActionsComponent;
+import com.android.systemui.log.SessionTracker;
 import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.keyguard.dagger.KeyguardModule;
 import com.android.systemui.power.PowerUI;
@@ -120,6 +121,12 @@ public abstract class CarSystemUIBinder {
     @IntoMap
     @ClassKey(ScreenDecorations.class)
     public abstract CoreStartable bindScreenDecorations(ScreenDecorations sysui);
+
+    /** Inject into SessionTracker. */
+    @Binds
+    @IntoMap
+    @ClassKey(SessionTracker.class)
+    public abstract CoreStartable bindSessionTracker(SessionTracker service);
 
     /** Inject into ShortcutKeyDispatcher. */
     @Binds

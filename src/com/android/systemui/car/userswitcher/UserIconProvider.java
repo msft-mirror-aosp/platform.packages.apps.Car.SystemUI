@@ -16,9 +16,7 @@
 
 package com.android.systemui.car.userswitcher;
 
-import android.annotation.Nullable;
 import android.annotation.UserIdInt;
-import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.pm.UserInfo;
 import android.content.res.Resources;
@@ -29,12 +27,9 @@ import android.os.UserHandle;
 import android.os.UserManager;
 
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import com.android.car.admin.ui.UserAvatarView;
 import com.android.internal.util.UserIcons;
-import com.android.settingslib.Utils;
-import com.android.settingslib.drawable.UserIconDrawable;
 import com.android.systemui.R;
 
 /**

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Copyright (C) 2021 The Android Open Source Project
+<!-- Copyright (C) 2022 The Android Open Source Project
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -244,6 +244,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_volume_item_seekbar_margin_vertical"/>
       <item type="dimen" name="car_volume_item_seekbar_padding_vertical"/>
       <item type="dimen" name="close_handle_underlap"/>
+      <item type="dimen" name="device_management_dialog_subtitle_padding"/>
       <item type="dimen" name="hvac_button_margin_bottom"/>
       <item type="dimen" name="hvac_button_margin_end"/>
       <item type="dimen" name="hvac_button_margin_start"/>
@@ -467,6 +468,9 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="active_background"/>
       <item type="id" name="auto_button"/>
       <item type="id" name="bottom_guideline"/>
+      <item type="id" name="ca_certs_disclosures"/>
+      <item type="id" name="ca_certs_subtitle"/>
+      <item type="id" name="ca_certs_warning"/>
       <item type="id" name="car_nav_button_icon"/>
       <item type="id" name="car_nav_button_icon_image"/>
       <item type="id" name="car_nav_button_more_icon"/>
@@ -480,6 +484,9 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="dark_icon"/>
       <item type="id" name="dark_muted_icon"/>
       <item type="id" name="defroster_button"/>
+      <item type="id" name="device_management_disclosures"/>
+      <item type="id" name="device_management_subtitle"/>
+      <item type="id" name="device_management_warning"/>
       <item type="id" name="direction_defrost"/>
       <item type="id" name="direction_face"/>
       <item type="id" name="direction_face_and_floor"/>
@@ -522,6 +529,9 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="max_width_guideline"/>
       <item type="id" name="mic_privacy_panel"/>
       <item type="id" name="nav_buttons"/>
+      <item type="id" name="network_logging_disclosures"/>
+      <item type="id" name="network_logging_subtitle"/>
+      <item type="id" name="network_logging_warning"/>
       <item type="id" name="note"/>
       <item type="id" name="notification_container"/>
       <item type="id" name="notification_panel_stub"/>
@@ -537,6 +547,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="read_only_icons_container"/>
       <item type="id" name="rear_defroster_button"/>
       <item type="id" name="recycle_air_button"/>
+      <item type="id" name="scrollView"/>
       <item type="id" name="seat_heat_level_button_left"/>
       <item type="id" name="seat_heat_level_button_right"/>
       <item type="id" name="segment_container"/>
@@ -558,6 +569,9 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="user_switching_dialog_stub"/>
       <item type="id" name="volume_list"/>
       <item type="id" name="volume_seek_bar"/>
+      <item type="id" name="vpn_disclosures"/>
+      <item type="id" name="vpn_subtitle"/>
+      <item type="id" name="vpn_warning"/>
       <item type="id" name="wifi_airplane_spacer"/>
       <item type="id" name="wifi_combo"/>
       <item type="id" name="wifi_group"/>
@@ -610,6 +624,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="layout" name="car_volume_dialog"/>
       <item type="layout" name="car_volume_item"/>
       <item type="layout" name="default_status_icon"/>
+      <item type="layout" name="device_management_dialog"/>
       <item type="layout" name="fan_direction"/>
       <item type="layout" name="fan_speed"/>
       <item type="layout" name="hvac_panel_container"/>

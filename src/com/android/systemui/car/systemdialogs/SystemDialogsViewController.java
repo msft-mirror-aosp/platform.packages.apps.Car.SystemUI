@@ -24,8 +24,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.provider.Settings;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import com.android.systemui.R;
 import com.android.systemui.dagger.SysUISingleton;
@@ -41,7 +46,6 @@ import javax.inject.Inject;
 public class SystemDialogsViewController {
     private final Context mContext;
     private final SecurityController mSecurityController;
-
     private ActivityStarter mActivityStarter;
 
     private final AlertDialog.OnClickListener mOnDeviceMonitoringConfirmed = (dialog, which) -> {
@@ -65,8 +69,7 @@ public class SystemDialogsViewController {
     protected void showDeviceMonitoringDialog() {
         AlertDialog dialog = new AlertDialog.Builder(mContext,
                 com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
-                .setTitle(createDeviceMonitoringTitle())
-                .setMessage(createDeviceMonitoringMessage())
+                .setView(createDialogView())
                 .setPositiveButton(R.string.ok, mOnDeviceMonitoringConfirmed)
                 .create();
 
@@ -74,9 +77,65 @@ public class SystemDialogsViewController {
         dialog.show();
     }
 
-    private CharSequence createDeviceMonitoringTitle() {
-        CharSequence deviceOwnerOrganization = mSecurityController.getDeviceOwnerOrganizationName();
+    private View createDialogView() {
+        View dialogView = LayoutInflater.from(mContext)
+                .inflate(R.layout.device_management_dialog, null, false);
 
+        CharSequence deviceOwnerOrganization = mSecurityController.getDeviceOwnerOrganizationName();
+        boolean isDeviceManaged = mSecurityController.isDeviceManaged();
+
+        // device management section
+        TextView deviceManagementSubtitle =
+                dialogView.requireViewById(R.id.device_management_subtitle);
+        deviceManagementSubtitle.setText(getDeviceMonitoringTitle(deviceOwnerOrganization));
+
+        CharSequence managementMessage = getDeviceMonitoringMessage(deviceOwnerOrganization);
+        if (managementMessage == null) {
+            dialogView.requireViewById(R.id.device_management_disclosures).setVisibility(View.GONE);
+        } else {
+            dialogView.requireViewById(R.id.device_management_disclosures)
+                    .setVisibility(View.VISIBLE);
+            TextView deviceManagementWarning =
+                    dialogView.requireViewById(R.id.device_management_warning);
+            deviceManagementWarning.setText(managementMessage);
+        }
+
+        // CA certificate section
+        CharSequence caCertsMessage = getCaCertsMessage(isDeviceManaged);
+        if (caCertsMessage == null) {
+            dialogView.requireViewById(R.id.ca_certs_disclosures).setVisibility(View.GONE);
+        } else {
+            dialogView.requireViewById(R.id.ca_certs_disclosures).setVisibility(View.VISIBLE);
+            TextView caCertsWarning = dialogView.requireViewById(R.id.ca_certs_warning);
+            caCertsWarning.setText(caCertsMessage);
+        }
+
+        // network logging section
+        CharSequence networkLoggingMessage = getNetworkLoggingMessage(isDeviceManaged);
+        if (networkLoggingMessage == null) {
+            dialogView.requireViewById(R.id.network_logging_disclosures).setVisibility(View.GONE);
+        } else {
+            dialogView.requireViewById(R.id.network_logging_disclosures)
+                    .setVisibility(View.VISIBLE);
+            TextView networkLoggingWarning =
+                    dialogView.requireViewById(R.id.network_logging_warning);
+            networkLoggingWarning.setText(networkLoggingMessage);
+        }
+
+        // VPN section
+        CharSequence vpnMessage = getVpnMessage(isDeviceManaged);
+        if (vpnMessage == null) {
+            dialogView.requireViewById(R.id.vpn_disclosures).setVisibility(View.GONE);
+        } else {
+            dialogView.requireViewById(R.id.vpn_disclosures).setVisibility(View.VISIBLE);
+            TextView vpnWarning = dialogView.requireViewById(R.id.vpn_warning);
+            vpnWarning.setText(vpnMessage);
+        }
+
+        return dialogView;
+    }
+
+    private CharSequence getDeviceMonitoringTitle(CharSequence deviceOwnerOrganization) {
         if (deviceOwnerOrganization != null && isFinancedDevice()) {
             return mContext.getString(R.string.monitoring_title_financed_device,
                     deviceOwnerOrganization);
@@ -85,9 +144,7 @@ public class SystemDialogsViewController {
         }
     }
 
-    private CharSequence createDeviceMonitoringMessage() {
-        CharSequence deviceOwnerOrganization = mSecurityController.getDeviceOwnerOrganizationName();
-
+    private CharSequence getDeviceMonitoringMessage(CharSequence deviceOwnerOrganization) {
         if (deviceOwnerOrganization != null) {
             if (isFinancedDevice()) {
                 return mContext.getString(R.string.monitoring_financed_description_named_management,
@@ -98,6 +155,63 @@ public class SystemDialogsViewController {
             }
         }
         return mContext.getString(R.string.monitoring_description_management);
+    }
+
+    @Nullable
+    private CharSequence getCaCertsMessage(boolean isDeviceManaged) {
+        boolean hasCACerts = mSecurityController.hasCACertInCurrentUser();
+        boolean hasCACertsInWorkProfile = mSecurityController.hasCACertInWorkProfile();
+        if (!(hasCACerts || hasCACertsInWorkProfile)) return null;
+        if (isDeviceManaged) {
+            return mContext.getString(R.string.monitoring_description_management_ca_certificate);
+        }
+        if (hasCACertsInWorkProfile) {
+            return mContext.getString(
+                    R.string.monitoring_description_managed_profile_ca_certificate);
+        }
+        return mContext.getString(R.string.monitoring_description_ca_certificate);
+    }
+
+    @Nullable
+    private CharSequence getNetworkLoggingMessage(boolean isDeviceManaged) {
+        boolean isNetworkLoggingEnabled = mSecurityController.isNetworkLoggingEnabled();
+        if (!isNetworkLoggingEnabled) return null;
+        if (isDeviceManaged) {
+            return mContext.getString(R.string.monitoring_description_management_network_logging);
+        } else {
+            return mContext.getString(
+                    R.string.monitoring_description_managed_profile_network_logging);
+        }
+    }
+
+    @Nullable
+    private CharSequence getVpnMessage(boolean isDeviceManaged) {
+        boolean hasWorkProfile = mSecurityController.hasWorkProfile();
+        String vpnName = mSecurityController.getPrimaryVpnName();
+        String vpnNameWorkProfile = mSecurityController.getWorkProfileVpnName();
+        if (vpnName == null && vpnNameWorkProfile == null) return null;
+        if (isDeviceManaged) {
+            if (vpnName != null && vpnNameWorkProfile != null) {
+                return mContext.getString(R.string.monitoring_description_two_named_vpns,
+                        vpnName, vpnNameWorkProfile);
+            } else {
+                return mContext.getString(R.string.monitoring_description_named_vpn,
+                        vpnName != null ? vpnName : vpnNameWorkProfile);
+            }
+        } else {
+            if (vpnName != null && vpnNameWorkProfile != null) {
+                return mContext.getString(R.string.monitoring_description_two_named_vpns,
+                        vpnName, vpnNameWorkProfile);
+            } else if (vpnNameWorkProfile != null) {
+                return mContext.getString(R.string.monitoring_description_managed_profile_named_vpn,
+                        vpnNameWorkProfile);
+            } else if (hasWorkProfile) {
+                return mContext.getString(
+                        R.string.monitoring_description_personal_profile_named_vpn, vpnName);
+            } else {
+                return mContext.getString(R.string.monitoring_description_named_vpn, vpnName);
+            }
+        }
     }
 
     private boolean isFinancedDevice() {

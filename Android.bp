@@ -129,6 +129,9 @@ android_library {
     ],
 
     plugins: ["dagger2-compiler"],
+
+    // TODO(b/218518451) re-enable errorprone.
+    errorprone: {enabled: false},
 }
 
 android_app {

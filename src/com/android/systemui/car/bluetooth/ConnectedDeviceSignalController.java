@@ -21,6 +21,7 @@ import static com.android.systemui.statusbar.phone.StatusBar.DEBUG;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadsetClient;
+import android.bluetooth.BluetoothHeadsetClient.NetworkServiceState;
 import android.bluetooth.BluetoothProfile;
 import android.bluetooth.BluetoothProfile.ServiceListener;
 import android.content.BroadcastReceiver;
@@ -129,7 +130,7 @@ public class ConnectedDeviceSignalController extends BroadcastReceiver implement
     public void startListening() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothHeadsetClient.ACTION_CONNECTION_STATE_CHANGED);
-        filter.addAction(BluetoothHeadsetClient.ACTION_AG_EVENT);
+        filter.addAction(BluetoothHeadsetClient.ACTION_NETWORK_SERVICE_STATE_CHANGED);
         mContext.registerReceiver(this, filter);
 
         mController.addCallback(this);
@@ -170,12 +171,12 @@ public class ConnectedDeviceSignalController extends BroadcastReceiver implement
             Log.d(TAG, "onReceive(). action: " + action);
         }
 
-        if (BluetoothHeadsetClient.ACTION_AG_EVENT.equals(action)) {
+        if (BluetoothHeadsetClient.ACTION_NETWORK_SERVICE_STATE_CHANGED.equals(action)) {
             if (DEBUG) {
-                Log.d(TAG, "Received ACTION_AG_EVENT");
+                Log.d(TAG, "Received ACTION_NETWORK_SERVICE_STATE_CHANGED");
             }
 
-            processActionAgEvent(intent);
+            processActionNetworkServiceStateEvent(intent);
         } else if (BluetoothHeadsetClient.ACTION_CONNECTION_STATE_CHANGED.equals(action)) {
             int newState = intent.getIntExtra(BluetoothProfile.EXTRA_STATE, -1);
 
@@ -192,38 +193,17 @@ public class ConnectedDeviceSignalController extends BroadcastReceiver implement
 
     /**
      * Processes an {@link Intent} that had an action of
-     * {@link BluetoothHeadsetClient#ACTION_AG_EVENT}.
+     * {@link BluetoothHeadsetClient#ACTION_NETWORK_SERVICE_STATE_CHANGED}.
      */
-    private void processActionAgEvent(Intent intent) {
-        int networkStatus = intent.getIntExtra(BluetoothHeadsetClient.EXTRA_NETWORK_STATUS,
-                INVALID_SIGNAL);
-        if (networkStatus != INVALID_SIGNAL) {
-            if (DEBUG) {
-                Log.d(TAG, "EXTRA_NETWORK_STATUS: " + " " + networkStatus);
-            }
+    private void processActionNetworkServiceStateEvent(Intent intent) {
+        NetworkServiceState state = (NetworkServiceState) intent.getExtra(
+                BluetoothHeadsetClient.EXTRA_NETWORK_SERVICE_STATE, null);
 
-            if (networkStatus == NETWORK_UNAVAILABLE) {
-                setNetworkSignalIcon(NETWORK_UNAVAILABLE_ICON_ID);
-            }
+        if (!state.isServiceAvailable()) {
+            setNetworkSignalIcon(NETWORK_UNAVAILABLE_ICON_ID);
         }
 
-        int signalStrength = intent.getIntExtra(
-                BluetoothHeadsetClient.EXTRA_NETWORK_SIGNAL_STRENGTH, INVALID_SIGNAL);
-        if (signalStrength != INVALID_SIGNAL) {
-            if (DEBUG) {
-                Log.d(TAG, "EXTRA_NETWORK_SIGNAL_STRENGTH: " + signalStrength);
-            }
-
-            setNetworkSignalIcon(SIGNAL_STRENGTH_ICONS[signalStrength]);
-        }
-
-        int roamingStatus = intent.getIntExtra(BluetoothHeadsetClient.EXTRA_NETWORK_ROAMING,
-                INVALID_SIGNAL);
-        if (roamingStatus != INVALID_SIGNAL) {
-            if (DEBUG) {
-                Log.d(TAG, "EXTRA_NETWORK_ROAMING: " + roamingStatus);
-            }
-        }
+        setNetworkSignalIcon(SIGNAL_STRENGTH_ICONS[state.getSignalStrength()]);
     }
 
     private void setNetworkSignalIcon(int level) {

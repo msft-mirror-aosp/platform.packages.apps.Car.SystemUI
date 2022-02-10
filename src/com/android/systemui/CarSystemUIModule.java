@@ -57,6 +57,7 @@ import com.android.systemui.statusbar.NotificationLockscreenUserManager;
 import com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
 import com.android.systemui.statusbar.notification.NotificationEntryManager;
+import com.android.systemui.statusbar.notification.collection.provider.VisualStabilityProvider;
 import com.android.systemui.statusbar.notification.collection.render.GroupMembershipManager;
 import com.android.systemui.statusbar.phone.HeadsUpManagerPhone;
 import com.android.systemui.statusbar.phone.KeyguardBypassController;
@@ -105,6 +106,7 @@ abstract class CarSystemUIModule {
             StatusBarStateController statusBarStateController,
             KeyguardBypassController bypassController,
             GroupMembershipManager groupManager,
+            VisualStabilityProvider visualStabilityProvider,
             ConfigurationController configurationController) {
         return new HeadsUpManagerPhone(
             context,
@@ -112,6 +114,7 @@ abstract class CarSystemUIModule {
             statusBarStateController,
             bypassController,
             groupManager,
+            visualStabilityProvider,
             configurationController
         );
     }

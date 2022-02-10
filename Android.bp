@@ -22,6 +22,7 @@ android_library {
 
     srcs: [
         "src/**/*.java",
+        "src/**/*.kt",
         "src/**/I*.aidl",
     ],
 
@@ -84,6 +85,7 @@ android_library {
     srcs: [
         "tests/src/**/*.java",
         "src/**/*.java",
+        "src/**/*.kt",
         "src/**/I*.aidl",
     ],
     static_libs: [

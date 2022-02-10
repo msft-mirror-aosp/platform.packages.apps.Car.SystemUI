@@ -35,8 +35,6 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="array" name="config_readOnlyIconControllers"/>
       <item type="array" name="config_restrictedToastsPackageNameAllowList"/>
       <item type="array" name="config_statusBarIconsToExclude"/>
-      <item type="array" name="config_systemUIServiceComponentsExclude"/>
-      <item type="array" name="config_systemUIServiceComponentsInclude"/>
       <item type="array" name="hvac_heated_seat_default_icons"/>
       <item type="array" name="hvac_temperature_control_levels"/>
       <item type="array" name="hvac_temperature_level_backgrounds"/>

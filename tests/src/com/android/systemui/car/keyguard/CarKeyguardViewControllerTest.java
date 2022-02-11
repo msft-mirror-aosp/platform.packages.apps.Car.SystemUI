@@ -30,6 +30,8 @@ import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
 
@@ -40,9 +42,11 @@ import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.CarSystemBarController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
+import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
 import com.android.systemui.statusbar.phone.KeyguardBouncer;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
+import com.android.systemui.toast.ToastFactory;
 import com.android.systemui.util.concurrency.FakeExecutor;
 import com.android.systemui.util.time.FakeSystemClock;
 
@@ -65,6 +69,8 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
     @Mock
     private OverlayViewGlobalStateController mOverlayViewGlobalStateController;
     @Mock
+    private SystemUIOverlayWindowController mSystemUIOverlayWindowController;
+    @Mock
     private CarKeyguardViewController.OnKeyguardCancelClickedListener mCancelClickedListener;
     @Mock
     private KeyguardBouncer.Factory mKeyguardBouncerFactory;
@@ -75,14 +81,21 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        ViewGroup mockBaseLayout = new FrameLayout(mContext);
+
         when(mKeyguardBouncerFactory.create(
                 any(ViewGroup.class),
                 any(KeyguardBouncer.BouncerExpansionCallback.class)))
                 .thenReturn(mBouncer);
+        when(mSystemUIOverlayWindowController.getBaseLayout()).thenReturn(mockBaseLayout);
         mExecutor = new FakeExecutor(new FakeSystemClock());
 
         mCarKeyguardViewController = new CarKeyguardViewController(
+                mContext,
                 mExecutor,
+                mock(WindowManager.class),
+                mock(ToastFactory.class),
+                mSystemUIOverlayWindowController,
                 mOverlayViewGlobalStateController,
                 mock(KeyguardStateController.class),
                 mock(KeyguardUpdateMonitor.class),

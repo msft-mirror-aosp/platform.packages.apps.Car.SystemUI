@@ -27,7 +27,6 @@ import static com.android.systemui.statusbar.phone.BarTransitions.MODE_TRANSPARE
 import android.app.StatusBarManager.Disable2Flags;
 import android.app.StatusBarManager.DisableFlags;
 import android.content.Context;
-import android.graphics.Rect;
 import android.inputmethodservice.InputMethodService;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -65,7 +64,6 @@ import com.android.systemui.util.concurrency.DelayableExecutor;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -494,27 +492,31 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
 
     private void updateStatusBarAppearance() {
         int numStacks = mAppearanceRegions.length;
-        final ArrayList<Rect> lightBarBounds = new ArrayList<>();
+        int numLightStacks = 0;
+
+        // We can only have maximum one light stack.
+        int indexLightStack = -1;
 
         for (int i = 0; i < numStacks; i++) {
-            final AppearanceRegion ar = mAppearanceRegions[i];
-            if (isLight(ar.getAppearance())) {
-                lightBarBounds.add(ar.getBounds());
+            if (isLight(mAppearanceRegions[i].getAppearance())) {
+                numLightStacks++;
+                indexLightStack = i;
             }
         }
 
         // If all stacks are light, all icons become dark.
-        if (lightBarBounds.size() == numStacks) {
+        if (numLightStacks == numStacks) {
             mStatusBarIconController.setIconsDarkArea(null);
             mStatusBarIconController.getTransitionsController().setIconsDark(
                     /* dark= */ true, /* animate= */ false);
-        } else if (lightBarBounds.isEmpty()) {
+        } else if (numLightStacks == 0) {
             // If no one is light, all icons become white.
             mStatusBarIconController.getTransitionsController().setIconsDark(
                     /* dark= */ false, /* animate= */ false);
         } else {
             // Not the same for every stack, update icons in area only.
-            mStatusBarIconController.setIconsDarkArea(lightBarBounds);
+            mStatusBarIconController.setIconsDarkArea(
+                    mAppearanceRegions[indexLightStack].getBounds());
             mStatusBarIconController.getTransitionsController().setIconsDark(
                     /* dark= */ true, /* animate= */ false);
         }

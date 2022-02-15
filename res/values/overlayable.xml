@@ -98,6 +98,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="color" name="activity_blocking_activity_background"/>
       <item type="color" name="blocking_text"/>
       <item type="color" name="car_accent"/>
+      <item type="color" name="car_managed_device_icon_color"/>
       <item type="color" name="car_nav_icon_fill_color"/>
       <item type="color" name="car_nav_icon_fill_color_selected"/>
       <item type="color" name="car_nav_unseen_indicator_color"/>
@@ -386,6 +387,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_ic_hvac"/>
       <item type="drawable" name="car_ic_hvac_selected"/>
       <item type="drawable" name="car_ic_keyboard_arrow_down"/>
+      <item type="drawable" name="car_ic_managed_device"/>
       <item type="drawable" name="car_ic_music"/>
       <item type="drawable" name="car_ic_music_mute"/>
       <item type="drawable" name="car_ic_music_selected"/>
@@ -527,7 +529,6 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="lock_screen_nav_buttons"/>
       <item type="id" name="manage_button"/>
       <item type="id" name="max_width_guideline"/>
-      <item type="id" name="mic_privacy_panel"/>
       <item type="id" name="nav_buttons"/>
       <item type="id" name="network_logging_disclosures"/>
       <item type="id" name="network_logging_subtitle"/>
@@ -542,7 +543,12 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="phone_nav"/>
       <item type="id" name="primary_icon"/>
       <item type="id" name="privacy_chip"/>
+      <item type="id" name="qc_bluetooth_footer_button"/>
+      <item type="id" name="qc_connectivity_footer_button"/>
+      <item type="id" name="qc_display_footer_button"/>
       <item type="id" name="qc_entry_points_container"/>
+      <item type="id" name="qc_mic_footer_button"/>
+      <item type="id" name="qc_profile_footer_button"/>
       <item type="id" name="qs_car_top_bar"/>
       <item type="id" name="read_only_icons_container"/>
       <item type="id" name="rear_defroster_button"/>

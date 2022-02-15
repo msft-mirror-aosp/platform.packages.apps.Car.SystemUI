@@ -1,0 +1,27 @@
+<!-- Copyright (C) 2022 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="@*android:dimen/car_touch_target_size"
+        android:height="@*android:dimen/car_touch_target_size"
+        android:viewportWidth="44.0"
+        android:viewportHeight="44.0">
+    <path
+        android:fillColor="@color/car_managed_device_icon_color"
+        android:fillType="evenOdd"
+        android:pathData="M4.74474 37.4238C5.46219 38.1413 6.32508 38.5 7.33341 38.5L36.6667 38.5C37.6751 38.5 38.5386 38.1413 39.2572 37.4238C39.9747 36.7052 40.3334 35.8417 40.3334 34.8333L40.3334 14.6667C40.3334 13.6583 39.9747 12.7955 39.2572 12.078C38.5386 11.3593 37.6751 11 36.6667 11L29.3334 11L29.3334 7.33334C29.3334 6.32501 28.9747 5.46151 28.2572 4.74284C27.5386 4.0254 26.6751 3.66668 25.6667 3.66668L18.3334 3.66667C17.3251 3.66667 16.4622 4.0254 15.7447 4.74284C15.0261 5.46151 14.6667 6.32501 14.6667 7.33334L14.6667 11L7.33341 11C6.32508 11 5.46219 11.3593 4.74475 12.078C4.02608 12.7954 3.66675 13.6583 3.66675 14.6667L3.66674 34.8333C3.66674 35.8417 4.02608 36.7052 4.74474 37.4238ZM25.6667 11L18.3334 11L18.3334 7.33334L25.6667 7.33334L25.6667 11ZM7.33341 34.8333L36.6667 34.8333L36.6667 14.6667L7.33341 14.6667L7.33341 34.8333Z"/>
+    <path
+        android:fillColor="@color/car_managed_device_icon_color"
+        android:pathData="M24.5906 27.3387C23.8719 28.0573 23.0084 28.4167 22.0001 28.4167C20.9917 28.4167 20.1289 28.0573 19.4114 27.3387C18.6927 26.6212 18.3334 25.7583 18.3334 24.75C18.3334 23.7417 18.6927 22.8782 19.4114 22.1595C20.1289 21.4421 20.9917 21.0833 22.0001 21.0833C23.0084 21.0833 23.8719 21.4421 24.5906 22.1595C25.308 22.8782 25.6667 23.7417 25.6667 24.75C25.6667 25.7583 25.308 26.6212 24.5906 27.3387Z"/>
+</vector>

@@ -28,7 +28,6 @@ import static org.mockito.Mockito.verify;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothHeadsetClient;
 import android.content.Intent;
 import android.os.Looper;
 import android.testing.AndroidTestingRunner;
@@ -51,6 +50,16 @@ import org.mockito.ArgumentCaptor;
 // TODO(b/162866441): Refactor to use the Executor pattern instead.
 public class ConnectedDeviceVoiceRecognitionNotifierTest extends SysuiTestCase {
 
+    // TODO(b/218911666): {@link BluetoothHeadsetClient.ACTION_AG_EVENT} is a hidden API.
+    private static final String HEADSET_CLIENT_ACTION_AG_EVENT =
+            "android.bluetooth.headsetclient.profile.action.AG_EVENT";
+    // TODO(b/218911666): {@link BluetoothHeadsetClient.EXTRA_VOICE_RECOGNITION} is a hidden API.
+    private static final String HEADSET_CLIENT_EXTRA_VOICE_RECOGNITION =
+            "android.bluetooth.headsetclient.extra.VOICE_RECOGNITION";
+    // TODO(b/218911666): {@link BluetoothHeadsetClient.ACTION_AUDIO_STATE_CHANGED} is a hidden API.
+    private static final String HEADSET_CLIENT_ACTION_AUDIO_STATE_CHANGED =
+            "android.bluetooth.headsetclient.profile.action.AUDIO_STATE_CHANGED";
+
     private static final String BLUETOOTH_PERM = android.Manifest.permission.BLUETOOTH;
     private static final String BLUETOOTH_REMOTE_ADDRESS = "00:11:22:33:44:55";
 
@@ -72,8 +81,8 @@ public class ConnectedDeviceVoiceRecognitionNotifierTest extends SysuiTestCase {
 
     @Test
     public void testReceiveIntent_started_showToast() {
-        Intent intent = new Intent(BluetoothHeadsetClient.ACTION_AG_EVENT);
-        intent.putExtra(BluetoothHeadsetClient.EXTRA_VOICE_RECOGNITION, VOICE_RECOGNITION_STARTED);
+        Intent intent = new Intent(HEADSET_CLIENT_ACTION_AG_EVENT);
+        intent.putExtra(HEADSET_CLIENT_EXTRA_VOICE_RECOGNITION, VOICE_RECOGNITION_STARTED);
         intent.putExtra(BluetoothDevice.EXTRA_DEVICE, mBluetoothDevice);
         Looper.prepare();
 
@@ -89,8 +98,8 @@ public class ConnectedDeviceVoiceRecognitionNotifierTest extends SysuiTestCase {
 
     @Test
     public void testReceiveIntent_invalidExtra_noToast() {
-        Intent intent = new Intent(BluetoothHeadsetClient.ACTION_AG_EVENT);
-        intent.putExtra(BluetoothHeadsetClient.EXTRA_VOICE_RECOGNITION, INVALID_VALUE);
+        Intent intent = new Intent(HEADSET_CLIENT_ACTION_AG_EVENT);
+        intent.putExtra(HEADSET_CLIENT_EXTRA_VOICE_RECOGNITION, INVALID_VALUE);
         intent.putExtra(BluetoothDevice.EXTRA_DEVICE, mBluetoothDevice);
 
         mContext.sendBroadcast(intent, BLUETOOTH_PERM);
@@ -102,7 +111,7 @@ public class ConnectedDeviceVoiceRecognitionNotifierTest extends SysuiTestCase {
 
     @Test
     public void testReceiveIntent_noExtra_noToast() {
-        Intent intent = new Intent(BluetoothHeadsetClient.ACTION_AG_EVENT);
+        Intent intent = new Intent(HEADSET_CLIENT_ACTION_AG_EVENT);
         intent.putExtra(BluetoothDevice.EXTRA_DEVICE, mBluetoothDevice);
 
         mContext.sendBroadcast(intent, BLUETOOTH_PERM);
@@ -114,7 +123,7 @@ public class ConnectedDeviceVoiceRecognitionNotifierTest extends SysuiTestCase {
 
     @Test
     public void testReceiveIntent_invalidIntent_noToast() {
-        Intent intent = new Intent(BluetoothHeadsetClient.ACTION_AUDIO_STATE_CHANGED);
+        Intent intent = new Intent(HEADSET_CLIENT_ACTION_AUDIO_STATE_CHANGED);
         intent.putExtra(BluetoothDevice.EXTRA_DEVICE, mBluetoothDevice);
 
         mContext.sendBroadcast(intent, BLUETOOTH_PERM);

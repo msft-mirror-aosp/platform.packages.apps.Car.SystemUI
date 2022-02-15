@@ -35,6 +35,7 @@
            parent="@android:style/TextAppearance.DeviceDefault">
         <item name="android:textSize">@dimen/car_body3_size</item>
         <item name="android:textColor">@color/system_bar_text_color_with_selection</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <style name="TextAppearance.CarStatus" parent="@android:style/TextAppearance.DeviceDefault">
@@ -81,10 +82,7 @@
 
     <style name="HvacTemperatureControlIcon">
         <item name="android:scaleType">center</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/temperature_control_arrow_height</item>
         <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
     </style>
 
     <style name="HvacFanSpeedBar">

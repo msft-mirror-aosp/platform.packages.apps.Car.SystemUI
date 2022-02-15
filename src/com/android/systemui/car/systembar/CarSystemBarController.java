@@ -88,7 +88,11 @@ public class CarSystemBarController {
     private CarSystemBarView mLeftView;
     private CarSystemBarView mRightView;
 
+    // Saved StatusBarManager.DisableFlags
     private int mStatusBarState;
+    // Saved StatusBarManager.Disable2Flags
+    private int mStatusBarState2;
+    private int mLockTaskMode;
 
     @Inject
     public CarSystemBarController(Context context,
@@ -211,19 +215,27 @@ public class CarSystemBarController {
     }
 
     /**
-     * Sets the status bar state and refreshes the system bar when the state was changed.
+     * Sets the system bar states - {@code StatusBarManager.DisableFlags},
+     * {@code StatusBarManager.Disable2Flags}, lock task mode. When there is a change in state,
+     * and refreshes the system bars.
+     *
+     * @param state {@code StatusBarManager.DisableFlags}
+     * @param state2 {@code StatusBarManager.Disable2Flags}
      */
-    public void setStatusBarState(int state) {
-        int diff = state ^ mStatusBarState;
-        if (diff == 0) {
+    public void setSystemBarStates(int state, int state2) {
+        int diff = (state ^ mStatusBarState) | (state2 ^ mStatusBarState2);
+        int lockTaskMode = getLockTaskModeState();
+        if (diff == 0 && mLockTaskMode == lockTaskMode) {
             if (DEBUG) {
-                Log.d(TAG, "setStatusBarState(): status bar states unchanged: "
-                        + state);
+                Log.d(TAG, "setSystemBarStates(): status bar states unchanged: state: "
+                        + state + " state2: " +  state2 + " lockTaskMode: " + mLockTaskMode);
             }
             return;
         }
         mStatusBarState = state;
-        refreshSystemBarByLockTaskFeatures();
+        mStatusBarState2 = state2;
+        mLockTaskMode = lockTaskMode;
+        refreshSystemBar();
     }
 
     @VisibleForTesting
@@ -231,47 +243,77 @@ public class CarSystemBarController {
         return mStatusBarState;
     }
 
+    @VisibleForTesting
+    protected int getStatusBarState2() {
+        return mStatusBarState2;
+    }
+
+    @VisibleForTesting
+    protected int getLockTaskMode() {
+        return mLockTaskMode;
+    }
+
     /**
-     * Refreshes certain system bar views when lock task mode feature is changed based on
-     * {@link StatusBarManager} flags.
+     * Refreshes system bar views and sets the visibility of certain components based on
+     * {@link StatusBarManager} flags and lock task mode.
+     * <ul>
+     * <li>Home button will be disabled when {@code StatusBarManager.DISABLE_HOME} is set.
+     * <li>Phone call button will be disable in lock task mode.
+     * <li>App grid button will be disable when {@code StatusBarManager.DISABLE_HOME} is set.
+     * <li>Notification button will be disable when
+     * {@code StatusBarManager.DISABLE_NOTIFICATION_ICONS} is set.
+     * <li>Quick settings and user switcher will be hidden when in lock task mode or when
+     * {@code StatusBarManager.DISABLE2_QUICK_SETTINGS} is set.
+     * </ul>
      */
-    public void refreshSystemBarByLockTaskFeatures() {
-        boolean locked = isLockTaskModeLocked();
-        int lockTaskModeVisibility = locked ? View.GONE : View.VISIBLE;
+    public void refreshSystemBar() {
         boolean homeDisabled = ((mStatusBarState & StatusBarManager.DISABLE_HOME) > 0);
         boolean notificationDisabled =
                 ((mStatusBarState & StatusBarManager.DISABLE_NOTIFICATION_ICONS) > 0);
+        boolean locked = (mLockTaskMode == ActivityManager.LOCK_TASK_MODE_LOCKED);
+        boolean qcDisabled =
+                ((mStatusBarState2 & StatusBarManager.DISABLE2_QUICK_SETTINGS) > 0) || locked;
+        boolean systemIconsDisabled =
+                ((mStatusBarState2 & StatusBarManager.DISABLE2_SYSTEM_ICONS) > 0) || locked;
+
+        setDisabledSystemBarButton(R.id.home, homeDisabled, "home");
+        setDisabledSystemBarButton(R.id.phone_nav, locked, "phone_nav");
+        setDisabledSystemBarButton(R.id.grid_nav, homeDisabled, "grid_nav");
+        setDisabledSystemBarButton(R.id.notifications, notificationDisabled, "notifications");
+
+        setDisabledSystemBarContainer(R.id.qc_entry_points_container, qcDisabled,
+                "qc_entry_points_container");
+        setDisabledSystemBarContainer(R.id.user_name_container, qcDisabled,
+                "user_name_container");
+        setDisabledSystemBarContainer(R.id.read_only_icons_container, systemIconsDisabled,
+                "read_only_icons_container");
+
         if (DEBUG) {
-            Log.d(TAG, "refreshSystemBarByLockTaskFeatures: locked?: " + locked
+            Log.d(TAG, "refreshSystemBar: locked?: " + locked
                     + " homeDisabled: " + homeDisabled
-                    + " notificationDisabled: " + notificationDisabled);
-        }
-
-        setLockTaskDisabledContainer(R.id.qc_entry_points_container, lockTaskModeVisibility);
-        setLockTaskDisabledContainer(R.id.user_name_container, lockTaskModeVisibility);
-
-        // Check navigation icons
-        setLockTaskDisabledButton(R.id.home, homeDisabled);
-        setLockTaskDisabledButton(R.id.phone_nav, locked);
-        setLockTaskDisabledButton(R.id.grid_nav, homeDisabled);
-        setLockTaskDisabledButton(R.id.notifications, notificationDisabled);
-    }
-
-    private boolean isLockTaskModeLocked() {
-        return mContext.getSystemService(ActivityManager.class).getLockTaskModeState()
-                == ActivityManager.LOCK_TASK_MODE_LOCKED;
-    }
-
-    private void setLockTaskDisabledButton(int viewId, boolean disabled) {
-        for (CarSystemBarView barView : getAllAvailableSystemBarViews()) {
-            barView.setLockTaskDisabledButton(viewId, disabled, () ->
-                    showAdminSupportDetailsDialog());
+                    + " notificationDisabled: " + notificationDisabled
+                    + " qcDisabled: " + qcDisabled
+                    + " systemIconsDisabled: " + systemIconsDisabled);
         }
     }
 
-    private void setLockTaskDisabledContainer(int viewId, @View.Visibility int visibility) {
+    private int getLockTaskModeState() {
+        return mContext.getSystemService(ActivityManager.class).getLockTaskModeState();
+    }
+
+    private void setDisabledSystemBarButton(int viewId, boolean disabled,
+                @Nullable String buttonName) {
         for (CarSystemBarView barView : getAllAvailableSystemBarViews()) {
-            barView.setLockTaskDisabledContainer(viewId, visibility);
+            barView.setDisabledSystemBarButton(viewId, disabled,
+                    () -> showAdminSupportDetailsDialog(), buttonName);
+        }
+    }
+
+    private void setDisabledSystemBarContainer(int viewId, boolean disabled,
+                @Nullable String viewName) {
+        for (CarSystemBarView barView : getAllAvailableSystemBarViews()) {
+            barView.setVisibilityByViewId(viewId, viewName,
+                    disabled ? View.INVISIBLE : View.VISIBLE);
         }
     }
 

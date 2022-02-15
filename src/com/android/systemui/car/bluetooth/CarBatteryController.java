@@ -20,7 +20,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadsetClient;
 import android.bluetooth.BluetoothProfile;
-import android.bluetooth.BluetoothProfile.ServiceListener;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -59,22 +58,6 @@ public class CarBatteryController extends BroadcastReceiver implements BatteryCo
 
     private final BluetoothAdapter mAdapter = BluetoothAdapter.getDefaultAdapter();
     private final ArrayList<BatteryStateChangeCallback> mChangeCallbacks = new ArrayList<>();
-    private BluetoothHeadsetClient mBluetoothHeadsetClient;
-    private final ServiceListener mHfpServiceListener = new ServiceListener() {
-        @Override
-        public void onServiceConnected(int profile, BluetoothProfile proxy) {
-            if (profile == BluetoothProfile.HEADSET_CLIENT) {
-                mBluetoothHeadsetClient = (BluetoothHeadsetClient) proxy;
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(int profile) {
-            if (profile == BluetoothProfile.HEADSET_CLIENT) {
-                mBluetoothHeadsetClient = null;
-            }
-        }
-    };
     private int mLevel;
     private BatteryViewHandler mBatteryViewHandler;
 
@@ -84,9 +67,6 @@ public class CarBatteryController extends BroadcastReceiver implements BatteryCo
         if (mAdapter == null) {
             return;
         }
-
-        mAdapter.getProfileProxy(context.getApplicationContext(), mHfpServiceListener,
-                BluetoothProfile.HEADSET_CLIENT);
     }
 
     @Override
@@ -124,8 +104,8 @@ public class CarBatteryController extends BroadcastReceiver implements BatteryCo
     /** Starts listening for bluetooth broadcast messages. */
     public void startListening() {
         IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothDevice.ACTION_BATTERY_LEVEL_CHANGED);
         filter.addAction(BluetoothHeadsetClient.ACTION_CONNECTION_STATE_CHANGED);
-        filter.addAction(BluetoothHeadsetClient.ACTION_AG_EVENT);
         mContext.registerReceiver(this, filter);
     }
 
@@ -142,13 +122,16 @@ public class CarBatteryController extends BroadcastReceiver implements BatteryCo
             Log.d(TAG, "onReceive(). action: " + action);
         }
 
-        if (BluetoothHeadsetClient.ACTION_AG_EVENT.equals(action)) {
-            if (Log.isLoggable(TAG, Log.DEBUG)) {
-                Log.d(TAG, "Received ACTION_AG_EVENT");
-            }
-
-            int batteryLevel = intent.getIntExtra(BluetoothHeadsetClient.EXTRA_BATTERY_LEVEL,
+        if (BluetoothDevice.ACTION_BATTERY_LEVEL_CHANGED.equals(action)) {
+            BluetoothDevice device =
+                    (BluetoothDevice) intent.getExtra(BluetoothDevice.EXTRA_DEVICE);
+            int batteryLevel = intent.getIntExtra(BluetoothDevice.EXTRA_BATTERY_LEVEL,
                     INVALID_BATTERY_LEVEL);
+
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "Received ACTION_BATTERY_LEVEL_CHANGED event: device=" + device
+                        + ", level=" + batteryLevel);
+            }
 
             updateBatteryLevel(batteryLevel);
 
@@ -225,18 +208,11 @@ public class CarBatteryController extends BroadcastReceiver implements BatteryCo
                 mBatteryViewHandler.showBatteryView();
             }
 
-            if (mBluetoothHeadsetClient == null || device == null) {
+            if (device == null) {
                 return;
             }
 
-            // Check if battery information is available and immediately update.
-            Bundle featuresBundle = mBluetoothHeadsetClient.getCurrentAgEvents(device);
-            if (featuresBundle == null) {
-                return;
-            }
-
-            int batteryLevel = featuresBundle.getInt(BluetoothHeadsetClient.EXTRA_BATTERY_LEVEL,
-                    INVALID_BATTERY_LEVEL);
+            int batteryLevel = device.getBatteryLevel();
             updateBatteryLevel(batteryLevel);
         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
             if (Log.isLoggable(TAG, Log.DEBUG)) {

@@ -52,11 +52,13 @@
     <string name="user_add_user_message_update">Apps can be updated from any profile for use by all other profiles.</string>
     <!-- Title for the dialog that lets users know that the maximum allowed number of profiles on the device has been reached. [CHAR LIMIT=35]-->
     <string name="profile_limit_reached_title">Profile limit reached</string>
-    <!-- Message that tells people what's the maximum number of profiles allowed on the device. [CHAR_LIMIT=NONE]-->
-    <plurals name="profile_limit_reached_message">
-        <item quantity="one">Only one profile can be created.</item>
-        <item quantity="other">You can add up to <xliff:g id="count" example="3">%d</xliff:g> profiles.</item>
-    </plurals>
+    <!-- Message that tells people what's the maximum number of profiles allowed on the device. (ICU syntax) [CHAR_LIMIT=NONE]-->
+    <string name="profile_limit_reached_message">
+        {count, plural,
+            =1    {Only one profile can be created.}
+            other {You can add up to # profiles.}
+        }
+    </string>
     <!-- Message to inform user that the new user profile is loading. [CHAR LIMIT=20] -->
     <string name="car_loading_profile">Loading</string>
     <!-- Message to inform user that the new user profile is loading with additional information on the previous and the next user. [CHAR LIMIT=100] -->

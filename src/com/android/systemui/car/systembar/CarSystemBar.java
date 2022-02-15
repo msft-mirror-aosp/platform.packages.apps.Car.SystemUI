@@ -27,6 +27,7 @@ import static com.android.systemui.statusbar.phone.BarTransitions.MODE_TRANSPARE
 import android.app.StatusBarManager.Disable2Flags;
 import android.app.StatusBarManager.DisableFlags;
 import android.content.Context;
+import android.graphics.Rect;
 import android.inputmethodservice.InputMethodService;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -64,6 +65,7 @@ import com.android.systemui.util.concurrency.DelayableExecutor;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -259,7 +261,7 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
         mActivityManagerWrapper.registerTaskStackListener(new TaskStackChangeListener() {
             @Override
             public void onLockTaskModeChanged(int mode) {
-                mCarSystemBarController.refreshSystemBarByLockTaskFeatures();
+                mCarSystemBarController.refreshSystemBar();
             }
         });
 
@@ -478,7 +480,7 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
             mAppearanceRegions = appearanceRegions;
             updateStatusBarAppearance();
         }
-        mCarSystemBarController.refreshSystemBarByLockTaskFeatures();
+        mCarSystemBarController.refreshSystemBar();
     }
 
     @Override
@@ -487,36 +489,32 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
         if (displayId != mDisplayId) {
             return;
         }
-        mCarSystemBarController.setStatusBarState(state1);
+        mCarSystemBarController.setSystemBarStates(state1, state2);
     }
 
     private void updateStatusBarAppearance() {
         int numStacks = mAppearanceRegions.length;
-        int numLightStacks = 0;
-
-        // We can only have maximum one light stack.
-        int indexLightStack = -1;
+        final ArrayList<Rect> lightBarBounds = new ArrayList<>();
 
         for (int i = 0; i < numStacks; i++) {
-            if (isLight(mAppearanceRegions[i].getAppearance())) {
-                numLightStacks++;
-                indexLightStack = i;
+            final AppearanceRegion ar = mAppearanceRegions[i];
+            if (isLight(ar.getAppearance())) {
+                lightBarBounds.add(ar.getBounds());
             }
         }
 
         // If all stacks are light, all icons become dark.
-        if (numLightStacks == numStacks) {
+        if (lightBarBounds.size() == numStacks) {
             mStatusBarIconController.setIconsDarkArea(null);
             mStatusBarIconController.getTransitionsController().setIconsDark(
                     /* dark= */ true, /* animate= */ false);
-        } else if (numLightStacks == 0) {
+        } else if (lightBarBounds.isEmpty()) {
             // If no one is light, all icons become white.
             mStatusBarIconController.getTransitionsController().setIconsDark(
                     /* dark= */ false, /* animate= */ false);
         } else {
             // Not the same for every stack, update icons in area only.
-            mStatusBarIconController.setIconsDarkArea(
-                    mAppearanceRegions[indexLightStack].getBounds());
+            mStatusBarIconController.setIconsDarkArea(lightBarBounds);
             mStatusBarIconController.getTransitionsController().setIconsDark(
                     /* dark= */ true, /* animate= */ false);
         }

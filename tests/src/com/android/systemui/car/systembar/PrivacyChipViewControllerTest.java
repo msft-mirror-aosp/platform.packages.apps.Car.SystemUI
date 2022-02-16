@@ -315,7 +315,8 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
         when(mSensorPrivacyManager.isSensorPrivacyEnabled(MICROPHONE, /* userId= */ 1))
                 .thenReturn(false);
         mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
-        verify(mCarUserManager).addListener(any(), mUserLifecycleListenerArgumentCaptor.capture());
+        verify(mCarUserManager).addListener(any(), any(),
+                mUserLifecycleListenerArgumentCaptor.capture());
         CarUserManager.UserLifecycleEvent event = new CarUserManager.UserLifecycleEvent(
                 CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING, /* from= */ 0,
                 /* to= */ 1);

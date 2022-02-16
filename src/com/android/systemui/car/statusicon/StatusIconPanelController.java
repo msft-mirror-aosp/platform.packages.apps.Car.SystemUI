@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.statusicon;
 
+import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
 
@@ -26,6 +27,7 @@ import android.app.PendingIntent;
 import android.car.Car;
 import android.car.drivingstate.CarUxRestrictions;
 import android.car.user.CarUserManager;
+import android.car.user.UserLifecycleEventFilter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -85,9 +87,7 @@ public class StatusIconPanelController {
     private boolean mUserSwitchEventRegistered;
 
     private final CarUserManager.UserLifecycleListener mUserLifecycleListener = event -> {
-        if (event.getEventType() == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING) {
-            recreatePanel();
-        }
+        recreatePanel();
     };
 
     private final ConfigurationController.ConfigurationListener mConfigurationListener =
@@ -188,7 +188,9 @@ public class StatusIconPanelController {
             CarUserManager carUserManager = (CarUserManager) car.getCarManager(
                     Car.CAR_USER_SERVICE);
             if (!mUserSwitchEventRegistered) {
-                carUserManager.addListener(Runnable::run, mUserLifecycleListener);
+                UserLifecycleEventFilter filter = new UserLifecycleEventFilter.Builder()
+                        .addEventType(USER_LIFECYCLE_EVENT_TYPE_SWITCHING).build();
+                carUserManager.addListener(Runnable::run, filter, mUserLifecycleListener);
                 mUserSwitchEventRegistered = true;
             }
         });

@@ -25,7 +25,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.UserInfo;
 import android.os.UserHandle;
 import android.os.UserManager;
-import android.permission.PermGroupUsage;
+import android.permission.PermissionGroupUsage;
 import android.permission.PermissionManager;
 import android.util.Log;
 
@@ -95,13 +95,13 @@ public class MicPrivacyElementsProviderImpl implements MicQcPanel.MicPrivacyElem
 
     private List<PrivacyDialog.PrivacyElement> createPrivacyElements() {
         List<UserInfo> userInfos = mUserTracker.getUserProfiles();
-        List<PermGroupUsage> permGroupUsages = getPermGroupUsages();
+        List<PermissionGroupUsage> permGroupUsages = getPermGroupUsages();
         mPrivacyLogger.logUnfilteredPermGroupUsage(permGroupUsages);
         List<PrivacyDialog.PrivacyElement> items = new ArrayList<>();
 
         permGroupUsages.forEach(usage -> {
             PrivacyType type =
-                    verifyType(PERM_GROUP_TO_PRIVACY_TYPE_MAP.get(usage.getPermGroupName()));
+                    verifyType(PERM_GROUP_TO_PRIVACY_TYPE_MAP.get(usage.getPermissionGroupName()));
             if (type == null) return;
 
             int userId = UserHandle.getUserId(usage.getUid());
@@ -123,11 +123,15 @@ public class MicPrivacyElementsProviderImpl implements MicQcPanel.MicPrivacyElem
                             usage.getPackageName(),
                             userId,
                             appName,
-                            usage.getAttribution(),
-                            usage.getLastAccess(),
+                            usage.getAttributionTag(),
+                            /* attributionLabel= */ null,
+                            usage.getProxyLabel(),
+                            usage.getLastAccessTimeMillis(),
                             usage.isActive(),
                             userInfo.isManagedProfile(),
-                            usage.isPhoneCall())
+                            usage.isPhoneCall(),
+                            usage.getPermissionGroupName(),
+                            /* navigationIntent= */ null)
             );
         });
 
@@ -147,7 +151,7 @@ public class MicPrivacyElementsProviderImpl implements MicQcPanel.MicPrivacyElem
     }
 
     @WorkerThread
-    private List<PermGroupUsage> getPermGroupUsages() {
+    private List<PermissionGroupUsage> getPermGroupUsages() {
         return mPermissionManager.getIndicatorAppOpUsageData();
     }
 

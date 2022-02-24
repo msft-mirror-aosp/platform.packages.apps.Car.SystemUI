@@ -115,7 +115,7 @@ public class ButtonSelectionStateController {
             // Find the first stack info with a topActivity in the primary display.
             // TODO: We assume that CarFacetButton will launch an app only in the primary display.
             // We need to extend the functionality to handle the multiple display properly.
-            if (taskInfo.topActivity != null && taskInfo.displayId == validDisplay) {
+            if (taskInfo.topActivity != null && taskInfo.displayAreaFeatureId == validDisplay) {
                 validTaskInfo = taskInfo;
                 break;
             }

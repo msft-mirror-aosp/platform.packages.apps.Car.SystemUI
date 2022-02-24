@@ -17,7 +17,6 @@
 package com.android.systemui.car.systembar;
 
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
-import static android.hardware.SensorPrivacyManager.Sensors.MICROPHONE;
 import static android.hardware.SensorPrivacyManager.Sources.QS_TILE;
 import static android.hardware.SensorPrivacyManager.TOGGLE_TYPE_SOFTWARE;
 
@@ -34,15 +33,14 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
-import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarServiceProvider;
-import com.android.systemui.car.privacy.MicPrivacyChip;
-import com.android.systemui.car.privacy.MicQcPanel;
-import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.car.privacy.PrivacyChip;
+import com.android.systemui.car.privacy.SensorQcPanel;
 import com.android.systemui.privacy.OngoingPrivacyChip;
 import com.android.systemui.privacy.PrivacyItem;
 import com.android.systemui.privacy.PrivacyItemController;
@@ -51,14 +49,9 @@ import com.android.systemui.privacy.PrivacyType;
 import java.util.List;
 import java.util.Optional;
 
-import javax.inject.Inject;
-
-/**
- * Controls a Privacy Chip view in system icons.
- */
-@SysUISingleton
-public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvider {
-    private static final String TAG = "PrivacyChipViewContrllr";
+/** Controls a Privacy Chip view in system icons. */
+public abstract class PrivacyChipViewController implements SensorQcPanel.SensorInfoProvider {
+    private static final String TAG = "PrivacyChipViewController";
     private static final boolean DEBUG = false;
 
     private final PrivacyItemController mPrivacyItemController;
@@ -68,7 +61,7 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
     private final SensorPrivacyManager mSensorPrivacyManager;
 
     private Context mContext;
-    private MicPrivacyChip mPrivacyChip;
+    private PrivacyChip mPrivacyChip;
     private CarUserManager mCarUserManager;
     private Runnable mQsTileNotifyUpdateRunnable;
     private final SensorPrivacyManager.OnSensorPrivacyChangedListener
@@ -79,9 +72,9 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
         // Since this is launched using a callback thread, its UI based elements need
         // to execute on main executor.
         mContext.getMainExecutor().execute(() -> {
-            // We need to negate sensorPrivacyEnabled since when it is {@code true} it means
-            // microphone has been toggled off.
-            mPrivacyChip.setMicrophoneEnabled(/* isMicrophoneEnabled= */ !sensorPrivacyEnabled);
+            // We need to negate enabled since when it is {@code true} it means
+            // the sensor (such as microphone or camera) has been toggled off.
+            mPrivacyChip.setSensorEnabled(/* enabled= */ !sensorPrivacyEnabled);
             mQsTileNotifyUpdateRunnable.run();
         });
     };
@@ -157,7 +150,6 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
         setUser(event.getUserHandle().getIdentifier());
     };
 
-    @Inject
     public PrivacyChipViewController(Context context, PrivacyItemController privacyItemController,
             CarServiceProvider carServiceProvider, BroadcastDispatcher broadcastDispatcher,
             SensorPrivacyManager sensorPrivacyManager,
@@ -176,16 +168,17 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
     }
 
     @Override
-    public boolean isMicEnabled() {
+    public boolean isSensorEnabled() {
         // We need to negate return of isSensorPrivacyEnabled since when it is {@code true} it
-        // means microphone has been toggled off
+        // means the sensor (microphone/camera) has been toggled off
         return !mSensorPrivacyManager.isSensorPrivacyEnabled(/* toggleType= */ TOGGLE_TYPE_SOFTWARE,
-                /* sensor= */ MICROPHONE);
+                /* sensor= */ getChipSensor());
     }
 
     @Override
-    public void toggleMic() {
-        mSensorPrivacyManager.setSensorPrivacy(QS_TILE, MICROPHONE, isMicEnabled(), mCurrentUserId);
+    public void toggleSensor() {
+        mSensorPrivacyManager.setSensorPrivacy(/* source= */ QS_TILE, /* sensor= */ getChipSensor(),
+                /* enable= */ isSensorEnabled(), /* userId= */ mCurrentUserId);
     }
 
     @Override
@@ -193,10 +186,16 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
         mQsTileNotifyUpdateRunnable = runnable;
     }
 
+    protected abstract @SensorPrivacyManager.Sensors.Sensor int getChipSensor();
+
+    protected abstract PrivacyType getChipPrivacyType();
+
+    protected abstract @IdRes int getChipResourceId();
+
     private boolean isMicPartOfPrivacyItems(@NonNull List<PrivacyItem> privacyItems) {
         Optional<PrivacyItem> optionalMicPrivacyItem = privacyItems.stream()
                 .filter(privacyItem -> privacyItem.getPrivacyType()
-                        .equals(PrivacyType.TYPE_MICROPHONE))
+                        .equals(getChipPrivacyType()))
                 .findAny();
         return optionalMicPrivacyItem.isPresent();
     }
@@ -209,7 +208,7 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
             return;
         }
 
-        mPrivacyChip = view.findViewById(R.id.privacy_chip);
+        mPrivacyChip = view.findViewById(getChipResourceId());
         if (mPrivacyChip == null) return;
 
         mAllIndicatorsEnabled = mPrivacyItemController.getAllIndicatorsAvailable();
@@ -236,7 +235,7 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
             }
             mUserLifecycleListenerRegistered = false;
         }
-        mSensorPrivacyManager.removeSensorPrivacyListener(MICROPHONE,
+        mSensorPrivacyManager.removeSensorPrivacyListener(getChipSensor(),
                 mOnSensorPrivacyChangedListener);
         mPrivacyChip = null;
     }
@@ -288,15 +287,15 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
 
         mCurrentUserId = userId;
 
-        mSensorPrivacyManager.removeSensorPrivacyListener(MICROPHONE,
+        mSensorPrivacyManager.removeSensorPrivacyListener(getChipSensor(),
                 mOnSensorPrivacyChangedListener);
-        mSensorPrivacyManager.addSensorPrivacyListener(MICROPHONE, userId,
+        mSensorPrivacyManager.addSensorPrivacyListener(getChipSensor(), userId,
                 mOnSensorPrivacyChangedListener);
 
         // Since this can be launched using a callback thread, its UI based elements need
         // to execute on main executor.
         mContext.getMainExecutor().execute(() -> {
-            mPrivacyChip.setMicrophoneEnabled(isMicEnabled());
+            mPrivacyChip.setSensorEnabled(isSensorEnabled());
         });
     }
 }

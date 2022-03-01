@@ -49,7 +49,7 @@ import com.android.systemui.statusbar.phone.KeyguardBouncer;
 import com.android.systemui.statusbar.phone.KeyguardBouncer.Factory;
 import com.android.systemui.statusbar.phone.KeyguardBypassController;
 import com.android.systemui.statusbar.phone.NotificationPanelViewController;
-import com.android.systemui.statusbar.phone.StatusBar;
+import com.android.systemui.statusbar.phone.CentralSurfaces;
 import com.android.systemui.statusbar.phone.panelstate.PanelExpansionStateManager;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.toast.SystemUIToast;
@@ -389,8 +389,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
     }
 
     @Override
-    public void registerStatusBar(
-            StatusBar statusBar,
+    public void registerCentralSurfaces(
+            CentralSurfaces centralSurfaces,
             NotificationPanelViewController notificationPanelViewController,
             PanelExpansionStateManager panelExpansionStateManager,
             BiometricUnlockController biometricUnlockController,

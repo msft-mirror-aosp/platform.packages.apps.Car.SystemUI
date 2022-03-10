@@ -178,7 +178,8 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
     public boolean isMicEnabled() {
         // We need to negate return of isSensorPrivacyEnabled since when it is {@code true} it
         // means microphone has been toggled off
-        return !mSensorPrivacyManager.isSensorPrivacyEnabled(MICROPHONE, mCurrentUserId);
+        return !mSensorPrivacyManager.isSensorPrivacyEnabled(/* toggleType= */ QS_TILE,
+                /* sensor= */ MICROPHONE);
     }
 
     @Override

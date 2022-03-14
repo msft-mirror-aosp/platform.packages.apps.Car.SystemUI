@@ -19,6 +19,7 @@ package com.android.systemui.car.systembar;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
 import static android.hardware.SensorPrivacyManager.Sensors.MICROPHONE;
 import static android.hardware.SensorPrivacyManager.Sources.QS_TILE;
+import static android.hardware.SensorPrivacyManager.TOGGLE_TYPE_SOFTWARE;
 
 import android.car.Car;
 import android.car.user.CarUserManager;
@@ -178,7 +179,7 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
     public boolean isMicEnabled() {
         // We need to negate return of isSensorPrivacyEnabled since when it is {@code true} it
         // means microphone has been toggled off
-        return !mSensorPrivacyManager.isSensorPrivacyEnabled(/* toggleType= */ QS_TILE,
+        return !mSensorPrivacyManager.isSensorPrivacyEnabled(/* toggleType= */ TOGGLE_TYPE_SOFTWARE,
                 /* sensor= */ MICROPHONE);
     }
 

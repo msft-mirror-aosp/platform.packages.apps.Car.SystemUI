@@ -16,11 +16,14 @@
 
 package com.android.systemui.car.systembar;
 
+import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
 import static android.hardware.SensorPrivacyManager.Sensors.MICROPHONE;
 import static android.hardware.SensorPrivacyManager.Sources.QS_TILE;
+import static android.hardware.SensorPrivacyManager.TOGGLE_TYPE_SOFTWARE;
 
 import android.car.Car;
 import android.car.user.CarUserManager;
+import android.car.user.UserLifecycleEventFilter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -147,19 +150,12 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
             setUser(currentUserId);
         }
     };
-    private final CarUserManager.UserLifecycleListener mUserLifecycleListener =
-            new CarUserManager.UserLifecycleListener() {
-                @Override
-                public void onEvent(CarUserManager.UserLifecycleEvent event) {
-                    if (mPrivacyChip == null) {
-                        return;
-                    }
-                    if (event.getEventType()
-                            == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING) {
-                        setUser(event.getUserHandle().getIdentifier());
-                    }
-                }
-            };
+    private final CarUserManager.UserLifecycleListener mUserLifecycleListener = event -> {
+        if (mPrivacyChip == null) {
+            return;
+        }
+        setUser(event.getUserHandle().getIdentifier());
+    };
 
     @Inject
     public PrivacyChipViewController(Context context, PrivacyItemController privacyItemController,
@@ -183,7 +179,8 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
     public boolean isMicEnabled() {
         // We need to negate return of isSensorPrivacyEnabled since when it is {@code true} it
         // means microphone has been toggled off
-        return !mSensorPrivacyManager.isSensorPrivacyEnabled(MICROPHONE, mCurrentUserId);
+        return !mSensorPrivacyManager.isSensorPrivacyEnabled(/* toggleType= */ TOGGLE_TYPE_SOFTWARE,
+                /* sensor= */ MICROPHONE);
     }
 
     @Override
@@ -269,7 +266,9 @@ public class PrivacyChipViewController implements MicQcPanel.MicSensorInfoProvid
         mCarServiceProvider.addListener(car -> {
             mCarUserManager = (CarUserManager) car.getCarManager(Car.CAR_USER_SERVICE);
             if (mCarUserManager != null && !mUserLifecycleListenerRegistered) {
-                mCarUserManager.addListener(Runnable::run, mUserLifecycleListener);
+                UserLifecycleEventFilter filter = new UserLifecycleEventFilter.Builder()
+                        .addEventType(USER_LIFECYCLE_EVENT_TYPE_SWITCHING).build();
+                mCarUserManager.addListener(Runnable::run, filter, mUserLifecycleListener);
                 mUserLifecycleListenerRegistered = true;
             } else {
                 Log.e(TAG, "CarUserManager could not be obtained.");

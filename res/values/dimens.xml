@@ -141,7 +141,7 @@
     <dimen name="notification_shade_handle_bar_margin_end">200dp</dimen>
     <dimen name="notification_shade_handle_bar_margin_top">20dp</dimen>
     <dimen name="notification_shade_handle_bar_margin_bottom">10dp</dimen>
-    <dimen name="notification_shade_list_padding_bottom">50dp</dimen>
+    <dimen name="notification_shade_list_padding_bottom">0dp</dimen>
 
     <!-- The alpha for the scrim behind the notification shade. This value is 1 so that the
      scrim has no transparency. -->

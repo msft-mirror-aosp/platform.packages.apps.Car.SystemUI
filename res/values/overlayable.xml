@@ -672,7 +672,6 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="layout" name="sysui_overlay_window"/>
       <item type="string" name="activity_blocked_text"/>
       <item type="string" name="car_add_user"/>
-      <item type="string" name="car_guest"/>
       <item type="string" name="car_loading_profile"/>
       <item type="string" name="car_loading_profile_developer_message"/>
       <item type="string" name="car_new_user"/>
@@ -714,7 +713,6 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="qc_icon_tag"/>
       <item type="string" name="sensor_privacy_start_use_mic_dialog_content"/>
       <item type="string" name="sensor_privacy_start_use_mic_dialog_title"/>
-      <item type="string" name="start_guest_session"/>
       <item type="string" name="user_add_profile_title"/>
       <item type="string" name="user_add_user_message_setup"/>
       <item type="string" name="user_add_user_message_update"/>

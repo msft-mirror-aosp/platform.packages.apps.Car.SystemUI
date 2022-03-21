@@ -46,7 +46,7 @@ import javax.inject.Inject;
 public class SystemDialogsViewController {
     private final Context mContext;
     private final SecurityController mSecurityController;
-    private final AlertDialog.OnClickListener mOnDeviceMonitoringConfirmed;
+    private final AlertDialog.OnClickListener mOnDeviceMonitoringDialogClickListener;
 
     @Inject
     public SystemDialogsViewController(
@@ -54,10 +54,10 @@ public class SystemDialogsViewController {
             SecurityController securityController) {
         mContext = context;
         mSecurityController = securityController;
-        mOnDeviceMonitoringConfirmed = (dialog, which) -> {
-            if (which == DialogInterface.BUTTON_POSITIVE) {
+        mOnDeviceMonitoringDialogClickListener = (dialog, which) -> {
+            dialog.dismiss();
+            if (which == DialogInterface.BUTTON_NEUTRAL) {
                 Intent intent = new Intent(Settings.ACTION_ENTERPRISE_PRIVACY_SETTINGS);
-                dialog.dismiss();
                 mContext.startActivityAsUser(intent, UserHandle.CURRENT);
             }
         };
@@ -67,7 +67,9 @@ public class SystemDialogsViewController {
         AlertDialog dialog = new AlertDialog.Builder(mContext,
                 com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setView(createDialogView())
-                .setPositiveButton(R.string.ok, mOnDeviceMonitoringConfirmed)
+                .setPositiveButton(R.string.ok, mOnDeviceMonitoringDialogClickListener)
+                .setNeutralButton(R.string.monitoring_button_view_policies,
+                        mOnDeviceMonitoringDialogClickListener)
                 .create();
 
         applyCarSysUIDialogFlags(dialog);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 The Android Open Source Project
+ * Copyright (C) 2022 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,43 +25,43 @@ import androidx.annotation.Nullable;
 
 import com.android.systemui.R;
 
-/** Car optimized Mic Privacy Chip View that is shown when microphone is being used. */
-public class MicPrivacyChip extends PrivacyChip {
+/** Car optimized Camera Privacy Chip View that is shown when camera is being used. */
+public class CameraPrivacyChip extends PrivacyChip {
 
-    private static final String SENSOR_NAME = "microphone";
-    private static final String SENSOR_NAME_WITH_FIRST_LETTER_CAPITALIZED = "Microphone";
+    private static final String SENSOR_NAME = "camera";
+    private static final String SENSOR_NAME_WITH_FIRST_LETTER_CAPITALIZED = "Camera";
 
-    public MicPrivacyChip(@NonNull Context context) {
+    public CameraPrivacyChip(@NonNull Context context) {
         this(context, /* attrs= */ null);
     }
 
-    public MicPrivacyChip(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public CameraPrivacyChip(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, /* defStyleAttrs= */ 0);
     }
 
-    public MicPrivacyChip(@NonNull Context context,
+    public CameraPrivacyChip(@NonNull Context context,
             @Nullable AttributeSet attrs, int defStyleAttrs) {
         super(context, attrs, defStyleAttrs);
     }
 
     @Override
     protected @DrawableRes int getLightMutedIconResourceId() {
-        return R.drawable.ic_mic_off_light;
+        return R.drawable.ic_camera_off_light;
     }
 
     @Override
     protected @DrawableRes int getDarkMutedIconResourceId() {
-        return R.drawable.ic_mic_off_dark;
+        return R.drawable.ic_camera_off_dark;
     }
 
     @Override
     protected @DrawableRes int getLightIconResourceId() {
-        return R.drawable.ic_mic_light;
+        return R.drawable.ic_camera_light;
     }
 
     @Override
     protected @DrawableRes int getDarkIconResourceId() {
-        return R.drawable.ic_mic_dark;
+        return R.drawable.ic_camera_dark;
     }
 
     @Override

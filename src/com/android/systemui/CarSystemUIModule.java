@@ -31,8 +31,6 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
-import com.android.systemui.car.privacy.MicPrivacyElementsProviderImpl;
-import com.android.systemui.car.privacy.MicQcPanel;
 import com.android.systemui.car.statusbar.DozeServiceHost;
 import com.android.systemui.car.volume.CarVolumeModule;
 import com.android.systemui.dagger.GlobalRootComponent;
@@ -222,8 +220,4 @@ abstract class CarSystemUIModule {
 
     @Binds
     abstract DozeHost bindDozeHost(DozeServiceHost dozeServiceHost);
-
-    @Binds
-    abstract MicQcPanel.MicPrivacyElementsProvider bindMicPrivacyElementsProvider(
-            MicPrivacyElementsProviderImpl micPrivacyElementsProvider);
 }

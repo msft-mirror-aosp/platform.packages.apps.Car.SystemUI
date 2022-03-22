@@ -126,7 +126,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         assertThat(rows.get(0).getTitle()).isEqualTo("User1");
         assertThat(rows.get(1).getTitle()).isEqualTo("User2");
         assertThat(rows.get(2).getTitle()).isEqualTo(
-                mContext.getString(R.string.car_guest));
+                mContext.getString(com.android.internal.R.string.guest_name));
         assertThat(rows.get(3).getTitle()).isEqualTo(
                 mContext.getString(R.string.car_add_user));
     }
@@ -144,7 +144,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         assertThat(rows).hasSize(3);
         assertThat(rows.get(0).getTitle()).isEqualTo("User1");
         assertThat(rows.get(1).getTitle()).isEqualTo(
-                mContext.getString(R.string.car_guest));
+                mContext.getString(com.android.internal.R.string.guest_name));
         assertThat(rows.get(2).getTitle()).isEqualTo(
                 mContext.getString(R.string.car_add_user));
     }
@@ -162,7 +162,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         assertThat(rows).hasSize(3);
         assertThat(rows.get(0).getTitle()).isEqualTo("User1");
         assertThat(rows.get(1).getTitle()).isEqualTo(
-                mContext.getString(R.string.car_guest));
+                mContext.getString(com.android.internal.R.string.guest_name));
         assertThat(rows.get(2).getTitle()).isEqualTo(
                 mContext.getString(R.string.car_add_user));
     }
@@ -183,7 +183,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         assertThat(rows.get(0).getTitle()).isEqualTo("User1");
         assertThat(rows.get(1).getTitle()).isEqualTo("User2");
         assertThat(rows.get(2).getTitle()).isEqualTo(
-                mContext.getString(R.string.car_guest));
+                mContext.getString(com.android.internal.R.string.guest_name));
     }
 
     @Test
@@ -200,7 +200,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
                 mContext.getString(R.string.do_disclosure_generic));
         assertThat(rows.get(1).getTitle()).isEqualTo("User1");
         assertThat(rows.get(2).getTitle()).isEqualTo(
-                mContext.getString(R.string.car_guest));
+                mContext.getString(com.android.internal.R.string.guest_name));
         assertThat(rows.get(3).getTitle()).isEqualTo(
                 mContext.getString(R.string.car_add_user));
     }

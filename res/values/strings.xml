@@ -36,10 +36,6 @@
     <string name="hvac_temperature_off">OFF</string>
     <!-- Text for voice recognition toast. [CHAR LIMIT=60] -->
     <string name="voice_recognition_toast">Voice recognition now handled by connected Bluetooth device</string>
-    <!-- Name of Guest Profile. [CHAR LIMIT=35] -->
-    <string name="car_guest">Guest</string>
-    <!-- Title for button that starts a guest session. [CHAR LIMIT=35] -->
-    <string name="start_guest_session">Guest</string>
     <!-- Title for button that adds a new profile. [CHAR LIMIT=30] -->
     <string name="car_add_user">Add a profile</string>
     <!-- Default name of the new profile created. [CHAR LIMIT=30] -->

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 The Android Open Source Project
+ * Copyright (C) 2022 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,15 @@ import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.systemui.R;
 
 /**
- * A {@link BaseLocalQCProvider} that builds the microphone privacy panel.
+ * A {@link BaseLocalQCProvider} that builds the camera privacy panel.
  */
-public class MicQcPanel extends SensorQcPanel {
+public class CameraQcPanel extends SensorQcPanel {
 
-    private static final String SENSOR_NAME = "microphone";
-    private static final String SENSOR_SHORT_NAME = "mic";
-    private static final String SENSOR_NAME_WITH_FIRST_LETTER_CAPITALIZED = "Microphone";
+    private static final String SENSOR_NAME = "camera";
+    private static final String SENSOR_SHORT_NAME = "camera";
+    private static final String SENSOR_NAME_WITH_FIRST_LETTER_CAPITALIZED = "Camera";
 
-    public MicQcPanel(Context context) {
+    public CameraQcPanel(Context context) {
         super(context);
     }
 
@@ -52,11 +52,11 @@ public class MicQcPanel extends SensorQcPanel {
 
     @Override
     protected @DrawableRes int getSensorOnIconResourceId() {
-        return R.drawable.ic_mic_light;
+        return R.drawable.ic_camera_light;
     }
 
     @Override
     protected @DrawableRes int getSensorOffIconResourceId() {
-        return R.drawable.ic_mic_off_light;
+        return R.drawable.ic_camera_off_light;
     }
 }

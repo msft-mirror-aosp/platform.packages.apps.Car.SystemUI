@@ -186,7 +186,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             }
         };
 
-        return createProfileRow(mContext.getString(R.string.start_guest_session),
+        return createProfileRow(mContext.getString(com.android.internal.R.string.guest_name),
                 mUserIconProvider.getRoundedGuestDefaultIcon(mContext.getResources()),
                 actionHandler);
     }
@@ -248,7 +248,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     @Nullable
     private UserInfo createNewOrFindExistingGuest(Context context) {
         AsyncFuture<UserCreationResult> future = mCarUserManager.createGuest(
-                context.getString(R.string.car_guest));
+                context.getString(com.android.internal.R.string.guest_name));
         // CreateGuest will return null if a guest already exists.
         UserInfo newGuest = getUserInfo(future);
         if (newGuest != null) {

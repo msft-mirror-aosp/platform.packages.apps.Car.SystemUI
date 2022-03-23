@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (C) 2021 The Android Open Source Project
+  ~ Copyright (C) 2022 The Android Open Source Project
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
   ~ limitations under the License.
   -->
 
-<com.android.systemui.car.privacy.MicPrivacyChip
+<com.android.systemui.car.privacy.CameraPrivacyChip
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/mic_privacy_chip"
+    android:id="@+id/camera_privacy_chip"
     android:layout_width="@dimen/privacy_chip_width"
     android:layout_height="match_parent"
     android:visibility="gone"
@@ -26,8 +26,8 @@
     android:paddingBottom="@dimen/car_padding_1"
     android:paddingEnd="@dimen/privacy_chip_horizontal_padding"
     android:focusable="false"
-    app:layoutDescription="@xml/mic_privacy_chip_scene">
+    app:layoutDescription="@xml/camera_privacy_chip_scene">
 
     <include layout="@layout/privacy_chip_content"/>
 
-</com.android.systemui.car.privacy.MicPrivacyChip>
+</com.android.systemui.car.privacy.CameraPrivacyChip>

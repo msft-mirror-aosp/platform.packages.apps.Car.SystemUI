@@ -281,7 +281,7 @@
             motion:layout_constraintTop_toBottomOf="parent" />
         <Constraint
             android:id="@id/light_muted_icon"
-            android:src="@drawable/ic_mic_off_light"
+            android:src="@drawable/ic_camera_off_light"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -294,7 +294,7 @@
             motion:layout_constraintTop_toBottomOf="parent" />
         <Constraint
             android:id="@id/dark_muted_icon"
-            android:src="@drawable/ic_mic_off_dark"
+            android:src="@drawable/ic_camera_off_dark"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -307,7 +307,7 @@
             motion:layout_constraintTop_toBottomOf="parent" />
         <Constraint
             android:id="@id/light_icon"
-            android:src="@drawable/ic_mic_light"
+            android:src="@drawable/ic_camera_light"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -320,7 +320,7 @@
             motion:layout_constraintTop_toBottomOf="parent" />
         <Constraint
             android:id="@id/dark_icon"
-            android:src="@drawable/ic_mic_dark"
+            android:src="@drawable/ic_camera_dark"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -366,7 +366,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/light_muted_icon"
-            android:src="@drawable/ic_mic_off_light"
+            android:src="@drawable/ic_camera_off_light"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -379,7 +379,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/dark_muted_icon"
-            android:src="@drawable/ic_mic_off_dark"
+            android:src="@drawable/ic_camera_off_dark"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -392,7 +392,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/light_icon"
-            android:src="@drawable/ic_mic_light"
+            android:src="@drawable/ic_camera_light"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -405,7 +405,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/dark_icon"
-            android:src="@drawable/ic_mic_dark"
+            android:src="@drawable/ic_camera_dark"
             android:alpha="1.0"
             android:visibility="visible"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -451,7 +451,7 @@
             motion:layout_constraintTop_toTopOf="@id/circular_active_indicator_horizontal_guideline" />
         <Constraint
             android:id="@id/light_muted_icon"
-            android:src="@drawable/ic_mic_off_light"
+            android:src="@drawable/ic_camera_off_light"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -464,7 +464,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/dark_muted_icon"
-            android:src="@drawable/ic_mic_off_dark"
+            android:src="@drawable/ic_camera_off_dark"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -477,7 +477,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/light_icon"
-            android:src="@drawable/ic_mic_light"
+            android:src="@drawable/ic_camera_light"
             android:alpha="1.0"
             android:visibility="visible"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -490,7 +490,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/dark_icon"
-            android:src="@drawable/ic_mic_dark"
+            android:src="@drawable/ic_camera_dark"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -536,7 +536,7 @@
             motion:layout_constraintTop_toTopOf="@id/circular_active_indicator_horizontal_guideline" />
         <Constraint
             android:id="@id/light_muted_icon"
-            android:src="@drawable/ic_mic_off_light"
+            android:src="@drawable/ic_camera_off_light"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -549,7 +549,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/dark_muted_icon"
-            android:src="@drawable/ic_mic_off_dark"
+            android:src="@drawable/ic_camera_off_dark"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -562,7 +562,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/light_icon"
-            android:src="@drawable/ic_mic_light"
+            android:src="@drawable/ic_camera_light"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -575,7 +575,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/dark_icon"
-            android:src="@drawable/ic_mic_dark"
+            android:src="@drawable/ic_camera_dark"
             android:alpha="1.0"
             android:visibility="visible"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -621,7 +621,7 @@
             motion:layout_constraintTop_toBottomOf="parent" />
         <Constraint
             android:id="@id/light_muted_icon"
-            android:src="@drawable/ic_mic_off_light"
+            android:src="@drawable/ic_camera_off_light"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -634,7 +634,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/dark_muted_icon"
-            android:src="@drawable/ic_mic_off_dark"
+            android:src="@drawable/ic_camera_off_dark"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -647,7 +647,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/light_icon"
-            android:src="@drawable/ic_mic_light"
+            android:src="@drawable/ic_camera_light"
             android:alpha="1.0"
             android:visibility="visible"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -660,7 +660,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/dark_icon"
-            android:src="@drawable/ic_mic_dark"
+            android:src="@drawable/ic_camera_dark"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -706,7 +706,7 @@
             motion:layout_constraintTop_toBottomOf="parent" />
         <Constraint
             android:id="@id/light_muted_icon"
-            android:src="@drawable/ic_mic_off_light"
+            android:src="@drawable/ic_camera_off_light"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -719,7 +719,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/dark_muted_icon"
-            android:src="@drawable/ic_mic_off_dark"
+            android:src="@drawable/ic_camera_off_dark"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -732,7 +732,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/light_icon"
-            android:src="@drawable/ic_mic_light"
+            android:src="@drawable/ic_camera_light"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -745,7 +745,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/dark_icon"
-            android:src="@drawable/ic_mic_dark"
+            android:src="@drawable/ic_camera_dark"
             android:alpha="1.0"
             android:visibility="visible"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -791,7 +791,7 @@
             motion:layout_constraintTop_toBottomOf="parent" />
         <Constraint
             android:id="@id/light_muted_icon"
-            android:src="@drawable/ic_mic_off_light"
+            android:src="@drawable/ic_camera_off_light"
             android:alpha="1.0"
             android:visibility="visible"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -804,7 +804,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/dark_muted_icon"
-            android:src="@drawable/ic_mic_off_dark"
+            android:src="@drawable/ic_camera_off_dark"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -817,7 +817,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/light_icon"
-            android:src="@drawable/ic_mic_light"
+            android:src="@drawable/ic_camera_light"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -830,7 +830,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/dark_icon"
-            android:src="@drawable/ic_mic_dark"
+            android:src="@drawable/ic_camera_dark"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -876,7 +876,7 @@
             motion:layout_constraintTop_toBottomOf="parent" />
         <Constraint
             android:id="@id/light_muted_icon"
-            android:src="@drawable/ic_mic_off_light"
+            android:src="@drawable/ic_camera_off_light"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -889,7 +889,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/dark_muted_icon"
-            android:src="@drawable/ic_mic_off_dark"
+            android:src="@drawable/ic_camera_off_dark"
             android:visibility="visible"
             android:alpha="1.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -902,7 +902,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/light_icon"
-            android:src="@drawable/ic_mic_light"
+            android:src="@drawable/ic_camera_light"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"
@@ -915,7 +915,7 @@
             motion:layout_constraintTop_toTopOf="parent" />
         <Constraint
             android:id="@id/dark_icon"
-            android:src="@drawable/ic_mic_dark"
+            android:src="@drawable/ic_camera_dark"
             android:visibility="gone"
             android:alpha="0.0"
             android:layout_width="@dimen/privacy_chip_icon_size"

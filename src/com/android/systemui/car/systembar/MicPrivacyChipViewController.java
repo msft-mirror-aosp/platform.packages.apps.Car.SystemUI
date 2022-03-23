@@ -24,9 +24,6 @@ import android.hardware.SensorPrivacyManager;
 import androidx.annotation.IdRes;
 
 import com.android.systemui.R;
-import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarDeviceProvisionedController;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.privacy.PrivacyItemController;
 import com.android.systemui.privacy.PrivacyType;
@@ -40,12 +37,8 @@ public class MicPrivacyChipViewController extends PrivacyChipViewController {
     @Inject
     public MicPrivacyChipViewController(Context context,
             PrivacyItemController privacyItemController,
-            CarServiceProvider carServiceProvider,
-            BroadcastDispatcher broadcastDispatcher,
-            SensorPrivacyManager sensorPrivacyManager,
-            CarDeviceProvisionedController carDeviceProvisionedController) {
-        super(context, privacyItemController, carServiceProvider, broadcastDispatcher,
-                sensorPrivacyManager, carDeviceProvisionedController);
+            SensorPrivacyManager sensorPrivacyManager) {
+        super(context, privacyItemController, sensorPrivacyManager);
     }
 
     @Override

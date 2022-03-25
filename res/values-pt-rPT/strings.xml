@@ -23,30 +23,54 @@
     <string name="fan_speed_off" msgid="3860115181014880798">"DESATIVADA"</string>
     <string name="hvac_temperature_off" msgid="8370977023494579242">"DESATIVADO"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Reconhecimento de voz agora através do disp. Bluetooth lig."</string>
-    <string name="car_guest" msgid="768913000117469596">"Convidado"</string>
-    <string name="start_guest_session" msgid="2759367183497948650">"Convidado"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Adicionar perfil"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Novo perfil"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Quer adicionar o novo perfil?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Depois de criar um novo perfil, deve ser a pessoa em questão a personalizá-lo."</string>
     <string name="user_add_user_message_update" msgid="3310089453006545712">"As apps podem ser atualizadas a partir de qualquer perfil para utilização por todos os perfis."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"Limite de perfis atingido"</string>
-    <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Apenas pode criar um perfil.}one{Pode adicionar até # perfil(is).}other{Pode adicionar até # perfis.}}"</string>
+    <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Apenas pode criar um perfil.}other{Pode adicionar até # perfis.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"A carregar…"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"A carregar o utilizador (de <xliff:g id="FROM_USER">%1$d</xliff:g> para <xliff:g id="TO_USER">%2$d</xliff:g>)…"</string>
-    <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"O microfone está desativado."</string>
-    <string name="mic_privacy_chip_use_microphone" msgid="6766440136862693589">"Utilizar microfone"</string>
-    <string name="mic_privacy_chip_use_microphone_subtext" msgid="3953394014360603987">"Para as apps que têm autorização"</string>
+    <!-- no translation found for privacy_chip_off_content (8406415098507955316) -->
+    <skip />
+    <!-- no translation found for privacy_chip_use_sensor (7688230720803089653) -->
+    <skip />
+    <!-- no translation found for privacy_chip_use_sensor_subtext (5655148288310815742) -->
+    <skip />
     <string name="mic_privacy_chip_microphone_settings" msgid="4520886720588226450">"Definições do microfone"</string>
-    <string name="mic_privacy_chip_app_using_mic_suffix" msgid="8355462601492180023">"<xliff:g id="APP">%s</xliff:g> está a utilizar o microfone"</string>
+    <!-- no translation found for privacy_chip_app_using_sensor_suffix (7921315376271490004) -->
+    <skip />
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> estão a utilizar o microfone"</string>
-    <string name="mic_privacy_chip_app_recently_used_mic_suffix" msgid="1819299821245419382">"<xliff:g id="APP">%s</xliff:g> utilizou o microfone recentemente"</string>
-    <string name="mic_privacy_chip_apps_recently_used_mic_suffix" msgid="3451383324549295901">"A app <xliff:g id="APP_0">%1$s</xliff:g> e mais <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> utilizaram o microfone recentemente"</string>
+    <!-- no translation found for privacy_chip_app_recently_used_sensor_suffix (4632772067170022529) -->
+    <skip />
+    <!-- no translation found for privacy_chip_apps_recently_used_sensor_suffix (2715537466314464047) -->
+    <skip />
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"Microfone ativado"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Microfone desativado"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"OK"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Pretende ativar o microfone do veículo?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Para continuar, ative o microfone do sistema de infoentretenimento. Esta ação irá ativar o microfone para todas as apps que têm autorização."</string>
+    <!-- no translation found for camera_privacy_chip_camera_settings (96342672670928980) -->
+    <skip />
+    <!-- no translation found for camera_privacy_chip_app_using_camera_suffix (2591363552459967509) -->
+    <skip />
+    <!-- no translation found for camera_privacy_chip_apps_using_camera_suffix (8033118959615498419) -->
+    <skip />
+    <!-- no translation found for camera_privacy_chip_app_recently_used_camera_suffix (4534950658276502559) -->
+    <skip />
+    <!-- no translation found for camera_privacy_chip_apps_recently_used_camera_suffix (3094973410349692954) -->
+    <skip />
+    <!-- no translation found for camera_privacy_chip_on_toast (7901274903678512207) -->
+    <skip />
+    <!-- no translation found for camera_privacy_chip_off_toast (7135472255099347229) -->
+    <skip />
+    <!-- no translation found for camera_privacy_chip_dialog_ok (7285467760928137765) -->
+    <skip />
+    <!-- no translation found for sensor_privacy_start_use_camera_dialog_title (4787836783010823885) -->
+    <skip />
+    <!-- no translation found for sensor_privacy_start_use_camera_dialog_content (7749639131326657668) -->
+    <skip />
     <string name="activity_blocked_text" msgid="5353157279548801554">"Não pode utilizar esta funcionalidade enquanto conduz"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Fechar app"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Anterior"</string>

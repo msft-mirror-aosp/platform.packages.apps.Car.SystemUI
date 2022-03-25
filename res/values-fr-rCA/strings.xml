@@ -23,8 +23,6 @@
     <string name="fan_speed_off" msgid="3860115181014880798">"DÉSACTIVÉ"</string>
     <string name="hvac_temperature_off" msgid="8370977023494579242">"DÉSACTIVÉ"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"La reconn. voc. est gérée par l\'appareil Bluetooth connecté"</string>
-    <string name="car_guest" msgid="768913000117469596">"Invité"</string>
-    <string name="start_guest_session" msgid="2759367183497948650">"Invité"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Ajouter un profil"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Nouveau profil"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Ajouter un profil?"</string>
@@ -34,19 +32,45 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Un seul profil peut être créé.}one{Vous pouvez ajouter jusqu\'à # profil.}other{Vous pouvez ajouter jusqu\'à # profils.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Chargement en cours…"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Chargement de l\'utilisateur (de <xliff:g id="FROM_USER">%1$d</xliff:g> vers <xliff:g id="TO_USER">%2$d</xliff:g>) en cours…"</string>
-    <string name="mic_privacy_chip_off_content" msgid="4989623700063721557">"Le microphone est désactivé."</string>
-    <string name="mic_privacy_chip_use_microphone" msgid="6766440136862693589">"Utilisez le microphone"</string>
-    <string name="mic_privacy_chip_use_microphone_subtext" msgid="3953394014360603987">"Pour les applications qui ont l\'autorisation"</string>
+    <!-- no translation found for privacy_chip_off_content (8406415098507955316) -->
+    <skip />
+    <!-- no translation found for privacy_chip_use_sensor (7688230720803089653) -->
+    <skip />
+    <!-- no translation found for privacy_chip_use_sensor_subtext (5655148288310815742) -->
+    <skip />
     <string name="mic_privacy_chip_microphone_settings" msgid="4520886720588226450">"Paramètres du microphone"</string>
-    <string name="mic_privacy_chip_app_using_mic_suffix" msgid="8355462601492180023">"<xliff:g id="APP">%s</xliff:g> utilise le micro"</string>
+    <!-- no translation found for privacy_chip_app_using_sensor_suffix (7921315376271490004) -->
+    <skip />
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> utilisent le micro"</string>
-    <string name="mic_privacy_chip_app_recently_used_mic_suffix" msgid="1819299821245419382">"<xliff:g id="APP">%s</xliff:g> a utilisé le micro récemment"</string>
-    <string name="mic_privacy_chip_apps_recently_used_mic_suffix" msgid="3451383324549295901">"L\'appli <xliff:g id="APP_0">%1$s</xliff:g> et <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> autres applis ont utilisé le micro récemment"</string>
+    <!-- no translation found for privacy_chip_app_recently_used_sensor_suffix (4632772067170022529) -->
+    <skip />
+    <!-- no translation found for privacy_chip_apps_recently_used_sensor_suffix (2715537466314464047) -->
+    <skip />
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"Microphone activé"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Microphone désactivé"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"OK"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Activer le microphone du véhicule?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Pour continuer, activez le microphone du système d\'infodivertissement. Cette action activera le microphone pour toutes les applications qui ont l\'autorisation."</string>
+    <!-- no translation found for camera_privacy_chip_camera_settings (96342672670928980) -->
+    <skip />
+    <!-- no translation found for camera_privacy_chip_app_using_camera_suffix (2591363552459967509) -->
+    <skip />
+    <!-- no translation found for camera_privacy_chip_apps_using_camera_suffix (8033118959615498419) -->
+    <skip />
+    <!-- no translation found for camera_privacy_chip_app_recently_used_camera_suffix (4534950658276502559) -->
+    <skip />
+    <!-- no translation found for camera_privacy_chip_apps_recently_used_camera_suffix (3094973410349692954) -->
+    <skip />
+    <!-- no translation found for camera_privacy_chip_on_toast (7901274903678512207) -->
+    <skip />
+    <!-- no translation found for camera_privacy_chip_off_toast (7135472255099347229) -->
+    <skip />
+    <!-- no translation found for camera_privacy_chip_dialog_ok (7285467760928137765) -->
+    <skip />
+    <!-- no translation found for sensor_privacy_start_use_camera_dialog_title (4787836783010823885) -->
+    <skip />
+    <!-- no translation found for sensor_privacy_start_use_camera_dialog_content (7749639131326657668) -->
+    <skip />
     <string name="activity_blocked_text" msgid="5353157279548801554">"Vous ne pouvez pas utiliser cette fonctionnalité en conduisant"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Fermer l\'application"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Retour"</string>

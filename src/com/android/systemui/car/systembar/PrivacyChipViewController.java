@@ -16,29 +16,16 @@
 
 package com.android.systemui.car.systembar;
 
-import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
 import static android.hardware.SensorPrivacyManager.Sources.QS_TILE;
 import static android.hardware.SensorPrivacyManager.TOGGLE_TYPE_SOFTWARE;
 
-import android.car.Car;
-import android.car.user.CarUserManager;
-import android.car.user.UserLifecycleEventFilter;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.hardware.SensorPrivacyManager;
-import android.os.UserHandle;
-import android.util.Log;
 import android.view.View;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
-import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarDeviceProvisionedController;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.privacy.PrivacyChip;
 import com.android.systemui.car.privacy.SensorQcPanel;
 import com.android.systemui.privacy.OngoingPrivacyChip;
@@ -51,18 +38,12 @@ import java.util.Optional;
 
 /** Controls a Privacy Chip view in system icons. */
 public abstract class PrivacyChipViewController implements SensorQcPanel.SensorInfoProvider {
-    private static final String TAG = "PrivacyChipViewController";
-    private static final boolean DEBUG = false;
 
     private final PrivacyItemController mPrivacyItemController;
-    private final CarServiceProvider mCarServiceProvider;
-    private final BroadcastDispatcher mBroadcastDispatcher;
-    private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final SensorPrivacyManager mSensorPrivacyManager;
 
     private Context mContext;
     private PrivacyChip mPrivacyChip;
-    private CarUserManager mCarUserManager;
     private Runnable mQsTileNotifyUpdateRunnable;
     private final SensorPrivacyManager.OnSensorPrivacyChangedListener
             mOnSensorPrivacyChangedListener = (sensor, sensorPrivacyEnabled) -> {
@@ -124,47 +105,16 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
                     }
                 }
             };
-    private boolean mUserLifecycleListenerRegistered;
-    private int mCurrentUserId;
-    private final BroadcastReceiver mUserUpdateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (mPrivacyChip == null) {
-                return;
-            }
-            if (!Intent.ACTION_USER_INFO_CHANGED.equals(intent.getAction())) {
-                return;
-            }
-            int currentUserId = mCarDeviceProvisionedController.getCurrentUser();
-            if (mCurrentUserId == currentUserId) {
-                return;
-            }
-
-            setUser(currentUserId);
-        }
-    };
-    private final CarUserManager.UserLifecycleListener mUserLifecycleListener = event -> {
-        if (mPrivacyChip == null) {
-            return;
-        }
-        setUser(event.getUserHandle().getIdentifier());
-    };
 
     public PrivacyChipViewController(Context context, PrivacyItemController privacyItemController,
-            CarServiceProvider carServiceProvider, BroadcastDispatcher broadcastDispatcher,
-            SensorPrivacyManager sensorPrivacyManager,
-            CarDeviceProvisionedController carDeviceProvisionedController) {
+            SensorPrivacyManager sensorPrivacyManager) {
         mContext = context;
         mPrivacyItemController = privacyItemController;
-        mCarServiceProvider = carServiceProvider;
-        mBroadcastDispatcher = broadcastDispatcher;
         mSensorPrivacyManager = sensorPrivacyManager;
-        mCarDeviceProvisionedController = carDeviceProvisionedController;
 
         mQsTileNotifyUpdateRunnable = () -> {
         };
         mIsMicPrivacyChipVisible = false;
-        mCurrentUserId = carDeviceProvisionedController.getCurrentUser();
     }
 
     @Override
@@ -178,7 +128,7 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
     @Override
     public void toggleSensor() {
         mSensorPrivacyManager.setSensorPrivacy(/* source= */ QS_TILE, /* sensor= */ getChipSensor(),
-                /* enable= */ isSensorEnabled(), /* userId= */ mCurrentUserId);
+                /* enable= */ isSensorEnabled());
     }
 
     @Override
@@ -214,9 +164,18 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
         mAllIndicatorsEnabled = mPrivacyItemController.getAllIndicatorsAvailable();
         mMicCameraIndicatorsEnabled = mPrivacyItemController.getMicCameraAvailable();
         mPrivacyItemController.addCallback(mPicCallback);
-        mUserLifecycleListenerRegistered = false;
-        registerForUserChangeEvents();
-        setUser(mCarDeviceProvisionedController.getCurrentUser());
+
+        mSensorPrivacyManager.removeSensorPrivacyListener(getChipSensor(),
+                mOnSensorPrivacyChangedListener);
+        mSensorPrivacyManager.addSensorPrivacyListener(getChipSensor(),
+                mOnSensorPrivacyChangedListener);
+
+        // Since this can be launched using a callback thread, its UI based elements need
+        // to execute on main executor.
+        mContext.getMainExecutor().execute(() -> {
+            mPrivacyChip.setSensorEnabled(isSensorEnabled());
+        });
+
     }
 
     /**
@@ -228,13 +187,6 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
         }
 
         mPrivacyItemController.removeCallback(mPicCallback);
-        mBroadcastDispatcher.unregisterReceiver(mUserUpdateReceiver);
-        if (mUserLifecycleListenerRegistered) {
-            if (mCarUserManager != null) {
-                mCarUserManager.removeListener(mUserLifecycleListener);
-            }
-            mUserLifecycleListenerRegistered = false;
-        }
         mSensorPrivacyManager.removeSensorPrivacyListener(getChipSensor(),
                 mOnSensorPrivacyChangedListener);
         mPrivacyChip = null;
@@ -258,44 +210,5 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
 
     private boolean getChipEnabled() {
         return mMicCameraIndicatorsEnabled || mAllIndicatorsEnabled;
-    }
-
-    private void registerForUserChangeEvents() {
-        // Register for user switching
-        mCarServiceProvider.addListener(car -> {
-            mCarUserManager = (CarUserManager) car.getCarManager(Car.CAR_USER_SERVICE);
-            if (mCarUserManager != null && !mUserLifecycleListenerRegistered) {
-                UserLifecycleEventFilter filter = new UserLifecycleEventFilter.Builder()
-                        .addEventType(USER_LIFECYCLE_EVENT_TYPE_SWITCHING).build();
-                mCarUserManager.addListener(Runnable::run, filter, mUserLifecycleListener);
-                mUserLifecycleListenerRegistered = true;
-            } else {
-                Log.e(TAG, "CarUserManager could not be obtained.");
-            }
-        });
-
-        // Also register for user info changing
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_USER_INFO_CHANGED);
-        mBroadcastDispatcher.registerReceiver(mUserUpdateReceiver, filter, /* executor= */ null,
-                UserHandle.ALL);
-    }
-
-    @AnyThread
-    private void setUser(int userId) {
-        if (DEBUG) Log.d(TAG, "New user ID: " + userId);
-
-        mCurrentUserId = userId;
-
-        mSensorPrivacyManager.removeSensorPrivacyListener(getChipSensor(),
-                mOnSensorPrivacyChangedListener);
-        mSensorPrivacyManager.addSensorPrivacyListener(getChipSensor(), userId,
-                mOnSensorPrivacyChangedListener);
-
-        // Since this can be launched using a callback thread, its UI based elements need
-        // to execute on main executor.
-        mContext.getMainExecutor().execute(() -> {
-            mPrivacyChip.setSensorEnabled(isSensorEnabled());
-        });
     }
 }

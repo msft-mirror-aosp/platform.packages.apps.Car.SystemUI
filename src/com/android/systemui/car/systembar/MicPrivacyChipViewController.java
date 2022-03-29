@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 The Android Open Source Project
+ * Copyright (C) 2022 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,41 +14,45 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.privacy;
+package com.android.systemui.car.systembar;
+
+import static android.hardware.SensorPrivacyManager.Sensors.MICROPHONE;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.permission.PermissionManager;
+import android.hardware.SensorPrivacyManager;
 
+import androidx.annotation.IdRes;
+
+import com.android.systemui.R;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.privacy.PrivacyItemController;
 import com.android.systemui.privacy.PrivacyType;
-import com.android.systemui.privacy.logging.PrivacyLogger;
-import com.android.systemui.settings.UserTracker;
 
 import javax.inject.Inject;
 
-/**
- * Implementation of {@link
- * com.android.systemui.car.privacy.SensorQcPanel.SensorPrivacyElementsProvider} for microphone.
- */
+/** Controls a Mic Privacy Chip view in system icons. */
 @SysUISingleton
-public class MicPrivacyElementsProviderImpl extends PrivacyElementsProviderImpl {
+public class MicPrivacyChipViewController extends PrivacyChipViewController {
 
     @Inject
-    public MicPrivacyElementsProviderImpl(
-            Context context,
-            PermissionManager permissionManager,
-            PackageManager packageManager,
+    public MicPrivacyChipViewController(Context context,
             PrivacyItemController privacyItemController,
-            UserTracker userTracker,
-            PrivacyLogger privacyLogger) {
-        super(context, permissionManager, packageManager, privacyItemController, userTracker,
-                privacyLogger);
+            SensorPrivacyManager sensorPrivacyManager) {
+        super(context, privacyItemController, sensorPrivacyManager);
     }
 
     @Override
-    protected PrivacyType getProviderPrivacyType() {
+    protected @SensorPrivacyManager.Sensors.Sensor int getChipSensor() {
+        return MICROPHONE;
+    }
+
+    @Override
+    protected PrivacyType getChipPrivacyType() {
         return PrivacyType.TYPE_MICROPHONE;
+    }
+
+    @Override
+    protected @IdRes int getChipResourceId() {
+        return R.id.mic_privacy_chip;
     }
 }

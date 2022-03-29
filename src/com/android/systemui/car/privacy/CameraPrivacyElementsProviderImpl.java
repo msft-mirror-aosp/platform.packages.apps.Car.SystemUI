@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 The Android Open Source Project
+ * Copyright (C) 2022 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,13 @@ import javax.inject.Inject;
 
 /**
  * Implementation of {@link
- * com.android.systemui.car.privacy.SensorQcPanel.SensorPrivacyElementsProvider} for microphone.
+ * com.android.systemui.car.privacy.SensorQcPanel.SensorPrivacyElementsProvider} for camera.
  */
 @SysUISingleton
-public class MicPrivacyElementsProviderImpl extends PrivacyElementsProviderImpl {
+public class CameraPrivacyElementsProviderImpl extends PrivacyElementsProviderImpl {
 
     @Inject
-    public MicPrivacyElementsProviderImpl(
+    public CameraPrivacyElementsProviderImpl(
             Context context,
             PermissionManager permissionManager,
             PackageManager packageManager,
@@ -49,6 +49,6 @@ public class MicPrivacyElementsProviderImpl extends PrivacyElementsProviderImpl 
 
     @Override
     protected PrivacyType getProviderPrivacyType() {
-        return PrivacyType.TYPE_MICROPHONE;
+        return PrivacyType.TYPE_CAMERA;
     }
 }

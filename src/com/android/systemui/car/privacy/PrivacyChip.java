@@ -512,6 +512,13 @@ public abstract class PrivacyChip extends MotionLayout implements AnimatedStatus
         if (DEBUG) {
             Log.d(TAG, "Transition set: " + getResources().getResourceEntryName(transitionId));
         }
+
+        // Sometimes the alpha of the icon is reset to 0 incorrectly after several transitions, so
+        // set it to 1 before each transition as a workaround. This is fine as long as the
+        // visibility of the icon is set properly. See b/226651461.
+        View darkIcon = requireViewById(R.id.dark_icon);
+        darkIcon.setAlpha(1.0f);
+
         super.setTransition(transitionId);
     }
 

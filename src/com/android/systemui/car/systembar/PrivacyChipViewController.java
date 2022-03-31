@@ -61,7 +61,7 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
     };
     private boolean mAllIndicatorsEnabled;
     private boolean mMicCameraIndicatorsEnabled;
-    private boolean mIsMicPrivacyChipVisible;
+    private boolean mIsPrivacyChipVisible;
     private final PrivacyItemController.Callback mPicCallback =
             new PrivacyItemController.Callback() {
                 @Override
@@ -74,13 +74,13 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
                     // usage is added/removed/updated
                     mQsTileNotifyUpdateRunnable.run();
 
-                    boolean shouldShowMicPrivacyChip = isMicPartOfPrivacyItems(privacyItems);
-                    if (mIsMicPrivacyChipVisible == shouldShowMicPrivacyChip) {
+                    boolean shouldShowPrivacyChip = isSensorPartOfPrivacyItems(privacyItems);
+                    if (mIsPrivacyChipVisible == shouldShowPrivacyChip) {
                         return;
                     }
 
-                    mIsMicPrivacyChipVisible = shouldShowMicPrivacyChip;
-                    setChipVisibility(shouldShowMicPrivacyChip);
+                    mIsPrivacyChipVisible = shouldShowPrivacyChip;
+                    setChipVisibility(shouldShowPrivacyChip);
                 }
 
                 @Override
@@ -114,7 +114,7 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
 
         mQsTileNotifyUpdateRunnable = () -> {
         };
-        mIsMicPrivacyChipVisible = false;
+        mIsPrivacyChipVisible = false;
     }
 
     @Override
@@ -142,12 +142,12 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
 
     protected abstract @IdRes int getChipResourceId();
 
-    private boolean isMicPartOfPrivacyItems(@NonNull List<PrivacyItem> privacyItems) {
-        Optional<PrivacyItem> optionalMicPrivacyItem = privacyItems.stream()
+    private boolean isSensorPartOfPrivacyItems(@NonNull List<PrivacyItem> privacyItems) {
+        Optional<PrivacyItem> optionalSensorPrivacyItem = privacyItems.stream()
                 .filter(privacyItem -> privacyItem.getPrivacyType()
                         .equals(getChipPrivacyType()))
                 .findAny();
-        return optionalMicPrivacyItem.isPresent();
+        return optionalSensorPrivacyItem.isPresent();
     }
 
     /**

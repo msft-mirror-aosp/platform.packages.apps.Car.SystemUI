@@ -81,10 +81,7 @@
 
     <style name="HvacTemperatureControlIcon">
         <item name="android:scaleType">center</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/temperature_control_arrow_height</item>
         <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
     </style>
 
     <style name="HvacFanSpeedBar">

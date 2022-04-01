@@ -543,6 +543,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="hvac_panel_stub"/>
       <item type="id" name="hvac_temperature_bar"/>
       <item type="id" name="hvac_temperature_text"/>
+      <item type="id" name="icon"/>
       <item type="id" name="inactive_background"/>
       <item type="id" name="inactive_selected_background"/>
       <item type="id" name="inout_container"/>
@@ -586,6 +587,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="supplemental_icon"/>
       <item type="id" name="supplemental_icon_divider"/>
       <item type="id" name="system_icons"/>
+      <item type="id" name="text"/>
       <item type="id" name="toggle_debug_info"/>
       <item type="id" name="top_guideline"/>
       <item type="id" name="user_avatar"/>
@@ -679,6 +681,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="status_bar_wifi_group"/>
       <item type="layout" name="system_icons"/>
       <item type="layout" name="sysui_overlay_window"/>
+      <item type="layout" name="text_toast"/>
       <item type="string" name="activity_blocked_text"/>
       <item type="string" name="camera_privacy_chip_app_recently_used_camera_suffix"/>
       <item type="string" name="camera_privacy_chip_app_using_camera_suffix"/>
@@ -753,6 +756,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="style" name="TextAppearance.CarStatus"/>
       <item type="style" name="TextAppearance.SystemBar.Clock"/>
       <item type="style" name="TextAppearance.SystemBar.Username"/>
+      <item type="style" name="TextAppearance.Toast"/>
       <item type="style" name="Theme.Notification"/>
       <item type="style" name="VolumeButtons"/>
       <item type="xml" name="camera_privacy_chip_scene"/>

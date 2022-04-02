@@ -128,7 +128,6 @@ public class DisplaySystemBarsController extends DisplayImeController {
             } else {
                 super.hideInsets(types, fromIme);
             }
-
         }
 
         @Override
@@ -138,11 +137,11 @@ public class DisplaySystemBarsController extends DisplayImeController {
             } else {
                 super.showInsets(types, fromIme);
             }
-
         }
 
         @Override
-        public void topFocusedWindowChanged(String packageName) {
+        public void topFocusedWindowChanged(String packageName,
+                InsetsVisibilities requestedVisibilities) {
             if (Objects.equals(mPackageName, packageName)) {
                 return;
             }

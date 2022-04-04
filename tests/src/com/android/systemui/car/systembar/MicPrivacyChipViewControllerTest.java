@@ -32,9 +32,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.car.Car;
-import android.car.user.CarUserManager;
-import android.content.BroadcastReceiver;
-import android.content.Intent;
 import android.hardware.SensorPrivacyManager;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
@@ -46,9 +43,6 @@ import androidx.test.filters.SmallTest;
 
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
-import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarDeviceProvisionedController;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.privacy.MicPrivacyChip;
 import com.android.systemui.privacy.PrivacyItem;
@@ -70,9 +64,9 @@ import java.util.concurrent.Executor;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class PrivacyChipViewControllerTest extends SysuiTestCase {
+public class MicPrivacyChipViewControllerTest extends SysuiTestCase {
 
-    private PrivacyChipViewController mPrivacyChipViewController;
+    private MicPrivacyChipViewController mMicPrivacyChipViewController;
     private FrameLayout mFrameLayout;
     private MicPrivacyChip mMicPrivacyChip;
 
@@ -83,11 +77,6 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
     @Captor
     private ArgumentCaptor<SensorPrivacyManager.OnSensorPrivacyChangedListener>
             mOnSensorPrivacyChangedListenerArgumentCaptor;
-    @Captor
-    private ArgumentCaptor<BroadcastReceiver> mBroadcastReceiverArgumentCaptor;
-    @Captor
-    private ArgumentCaptor<CarUserManager.UserLifecycleListener>
-            mUserLifecycleListenerArgumentCaptor;
 
     @Mock
     private PrivacyItemController mPrivacyItemController;
@@ -96,13 +85,7 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
     @Mock
     private Executor mExecutor;
     @Mock
-    private BroadcastDispatcher mBroadcastDispatcher;
-    @Mock
     private SensorPrivacyManager mSensorPrivacyManager;
-    @Mock
-    private CarDeviceProvisionedController mCarDeviceProvisionedController;
-    @Mock
-    private CarUserManager mCarUserManager;
     @Mock
     private Car mCar;
     @Mock
@@ -120,38 +103,33 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
 
         when(mContext.getMainExecutor()).thenReturn(mExecutor);
         when(mCar.isConnected()).thenReturn(true);
-        when(mCar.getCarManager(Car.CAR_USER_SERVICE)).thenReturn(mCarUserManager);
 
-        CarServiceProvider carServiceProvider = new CarServiceProvider(mContext, mCar);
-
-        mPrivacyChipViewController = new PrivacyChipViewController(mContext, mPrivacyItemController,
-                carServiceProvider, mBroadcastDispatcher, mSensorPrivacyManager,
-                mCarDeviceProvisionedController);
-        when(mCarDeviceProvisionedController.getCurrentUser()).thenReturn(0);
+        mMicPrivacyChipViewController = new MicPrivacyChipViewController(mContext,
+                mPrivacyItemController, mSensorPrivacyManager);
     }
 
     @Test
     public void addPrivacyChipView_privacyChipViewPresent_addCallbackCalled() {
-        mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
+        mMicPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
 
         verify(mPrivacyItemController).addCallback(any());
     }
 
     @Test
     public void addPrivacyChipView_privacyChipViewPresent_micStatusSet() {
-        when(mSensorPrivacyManager.isSensorPrivacyEnabled(MICROPHONE, /* userId= */ 0))
+        when(mSensorPrivacyManager.isSensorPrivacyEnabled(anyInt(), eq(MICROPHONE)))
                 .thenReturn(false);
-        mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
+        mMicPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
         verify(mExecutor).execute(mRunnableArgumentCaptor.capture());
 
         mRunnableArgumentCaptor.getValue().run();
 
-        verify(mMicPrivacyChip).setMicrophoneEnabled(eq(true));
+        verify(mMicPrivacyChip).setSensorEnabled(eq(true));
     }
 
     @Test
     public void addPrivacyChipView_privacyChipViewNotPresent_addCallbackNotCalled() {
-        mPrivacyChipViewController.addPrivacyChipView(new View(getContext()));
+        mMicPrivacyChipViewController.addPrivacyChipView(new View(getContext()));
 
         verify(mPrivacyItemController, never()).addCallback(any());
     }
@@ -159,7 +137,7 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
     @Test
     public void onPrivacyItemsChanged_micIsPartOfPrivacyItems_animateInCalled() {
         when(mPrivacyItem.getPrivacyType()).thenReturn(PrivacyType.TYPE_MICROPHONE);
-        mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
+        mMicPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
         verify(mPrivacyItemController).addCallback(mPicCallbackArgumentCaptor.capture());
         mPicCallbackArgumentCaptor.getValue().onFlagAllChanged(true);
         mPicCallbackArgumentCaptor.getValue().onFlagMicCameraChanged(true);
@@ -175,7 +153,7 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
     @Test
     public void onPrivacyItemsChanged_micIsPartOfPrivacyItemsTwice_animateInCalledOnce() {
         when(mPrivacyItem.getPrivacyType()).thenReturn(PrivacyType.TYPE_MICROPHONE);
-        mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
+        mMicPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
         verify(mPrivacyItemController).addCallback(mPicCallbackArgumentCaptor.capture());
         mPicCallbackArgumentCaptor.getValue().onFlagAllChanged(true);
         mPicCallbackArgumentCaptor.getValue().onFlagMicCameraChanged(true);
@@ -193,7 +171,7 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
     @Test
     public void onPrivacyItemsChanged_micIsNotPartOfPrivacyItems_animateOutCalled() {
         when(mPrivacyItem.getPrivacyType()).thenReturn(PrivacyType.TYPE_MICROPHONE);
-        mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
+        mMicPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
         verify(mPrivacyItemController).addCallback(mPicCallbackArgumentCaptor.capture());
         mPicCallbackArgumentCaptor.getValue().onFlagAllChanged(true);
         mPicCallbackArgumentCaptor.getValue().onFlagMicCameraChanged(true);
@@ -211,7 +189,7 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
     @Test
     public void onPrivacyItemsChanged_micIsNotPartOfPrivacyItemsTwice_animateOutCalledOnce() {
         when(mPrivacyItem.getPrivacyType()).thenReturn(PrivacyType.TYPE_MICROPHONE);
-        mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
+        mMicPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
         verify(mPrivacyItemController).addCallback(mPicCallbackArgumentCaptor.capture());
         mPicCallbackArgumentCaptor.getValue().onFlagAllChanged(true);
         mPicCallbackArgumentCaptor.getValue().onFlagMicCameraChanged(true);
@@ -230,8 +208,8 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
     @Test
     public void onPrivacyItemsChanged_qsTileNotifyUpdateRunnableExecuted() {
         when(mPrivacyItem.getPrivacyType()).thenReturn(PrivacyType.TYPE_MICROPHONE);
-        mPrivacyChipViewController.setNotifyUpdateRunnable(mQsTileNotifyUpdateRunnable);
-        mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
+        mMicPrivacyChipViewController.setNotifyUpdateRunnable(mQsTileNotifyUpdateRunnable);
+        mMicPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
         verify(mPrivacyItemController).addCallback(mPicCallbackArgumentCaptor.capture());
         mPicCallbackArgumentCaptor.getValue().onFlagAllChanged(true);
         mPicCallbackArgumentCaptor.getValue().onFlagMicCameraChanged(true);
@@ -244,10 +222,10 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void onSensorPrivacyChanged_argTrue_setMicrophoneEnabledWithFalseCalled() {
-        mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
+    public void onSensorPrivacyChanged_argTrue_setSensorEnabledWithFalseCalled() {
+        mMicPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
         verify(mSensorPrivacyManager).addSensorPrivacyListener(eq(MICROPHONE),
-                /* userId= */ eq(0), mOnSensorPrivacyChangedListenerArgumentCaptor.capture());
+                mOnSensorPrivacyChangedListenerArgumentCaptor.capture());
         reset(mMicPrivacyChip);
         reset(mExecutor);
         mOnSensorPrivacyChangedListenerArgumentCaptor.getValue()
@@ -256,14 +234,14 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
 
         mRunnableArgumentCaptor.getAllValues().forEach(Runnable::run);
 
-        verify(mMicPrivacyChip).setMicrophoneEnabled(eq(false));
+        verify(mMicPrivacyChip).setSensorEnabled(eq(false));
     }
 
     @Test
-    public void onSensorPrivacyChanged_argFalse_setMicrophoneEnabledWithTrueCalled() {
-        mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
+    public void onSensorPrivacyChanged_argFalse_setSensorEnabledWithTrueCalled() {
+        mMicPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
         verify(mSensorPrivacyManager).addSensorPrivacyListener(eq(MICROPHONE),
-                /* userId= */ eq(0), mOnSensorPrivacyChangedListenerArgumentCaptor.capture());
+                mOnSensorPrivacyChangedListenerArgumentCaptor.capture());
         reset(mMicPrivacyChip);
         reset(mExecutor);
         mOnSensorPrivacyChangedListenerArgumentCaptor.getValue()
@@ -272,15 +250,15 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
 
         mRunnableArgumentCaptor.getAllValues().forEach(Runnable::run);
 
-        verify(mMicPrivacyChip).setMicrophoneEnabled(eq(true));
+        verify(mMicPrivacyChip).setSensorEnabled(eq(true));
     }
 
     @Test
     public void onSensorPrivacyChanged_qsTileNotifyUpdateRunnableExecuted() {
-        mPrivacyChipViewController.setNotifyUpdateRunnable(mQsTileNotifyUpdateRunnable);
-        mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
+        mMicPrivacyChipViewController.setNotifyUpdateRunnable(mQsTileNotifyUpdateRunnable);
+        mMicPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
         verify(mSensorPrivacyManager).addSensorPrivacyListener(eq(MICROPHONE),
-                /* userId= */ eq(0), mOnSensorPrivacyChangedListenerArgumentCaptor.capture());
+                mOnSensorPrivacyChangedListenerArgumentCaptor.capture());
         reset(mMicPrivacyChip);
         reset(mExecutor);
         mOnSensorPrivacyChangedListenerArgumentCaptor.getValue()
@@ -293,80 +271,38 @@ public class PrivacyChipViewControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void onUserUpdateReceive_setMicrophoneEnabledCalled() {
-        when(mSensorPrivacyManager.isSensorPrivacyEnabled(MICROPHONE, /* userId= */ 1))
-                .thenReturn(true);
-        mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
-        verify(mBroadcastDispatcher).registerReceiver(mBroadcastReceiverArgumentCaptor.capture(),
-                any(), any(), any());
-        reset(mExecutor);
-        when(mCarDeviceProvisionedController.getCurrentUser()).thenReturn(1);
-        mBroadcastReceiverArgumentCaptor.getValue().onReceive(mContext,
-                new Intent(Intent.ACTION_USER_INFO_CHANGED));
-        verify(mExecutor).execute(mRunnableArgumentCaptor.capture());
-
-        mRunnableArgumentCaptor.getValue().run();
-
-        verify(mMicPrivacyChip).setMicrophoneEnabled(eq(false));
-    }
-
-    @Test
-    public void onUserChangeReceive_setMicrophoneEnabledCalled() {
-        when(mSensorPrivacyManager.isSensorPrivacyEnabled(MICROPHONE, /* userId= */ 1))
-                .thenReturn(false);
-        mPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
-        verify(mCarUserManager).addListener(any(), any(),
-                mUserLifecycleListenerArgumentCaptor.capture());
-        CarUserManager.UserLifecycleEvent event = new CarUserManager.UserLifecycleEvent(
-                CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING, /* from= */ 0,
-                /* to= */ 1);
-        CarUserManager.UserLifecycleListener userLifecycleListener =
-                mUserLifecycleListenerArgumentCaptor.getValue();
-        assertThat(userLifecycleListener).isNotNull();
-        reset(mExecutor);
-        userLifecycleListener.onEvent(event);
-        verify(mExecutor).execute(mRunnableArgumentCaptor.capture());
-
-        mRunnableArgumentCaptor.getValue().run();
-
-        verify(mMicPrivacyChip).setMicrophoneEnabled(eq(true));
-    }
-
-    @Test
-    public void isMicEnabled_sensorPrivacyEnabled_returnFalse() {
-        when(mSensorPrivacyManager.isSensorPrivacyEnabled(eq(MICROPHONE), anyInt()))
+    public void isSensorEnabled_sensorPrivacyEnabled_returnFalse() {
+        when(mSensorPrivacyManager.isSensorPrivacyEnabled(anyInt(), eq(MICROPHONE)))
                 .thenReturn(true);
 
-        assertThat(mPrivacyChipViewController.isMicEnabled()).isFalse();
+        assertThat(mMicPrivacyChipViewController.isSensorEnabled()).isFalse();
     }
 
     @Test
-    public void isMicEnabled_sensorPrivacyDisabled_returnTrue() {
-        when(mSensorPrivacyManager.isSensorPrivacyEnabled(eq(MICROPHONE), anyInt()))
+    public void isSensorEnabled_sensorPrivacyDisabled_returnTrue() {
+        when(mSensorPrivacyManager.isSensorPrivacyEnabled(anyInt(), eq(MICROPHONE)))
                 .thenReturn(false);
 
-        assertThat(mPrivacyChipViewController.isMicEnabled()).isTrue();
+        assertThat(mMicPrivacyChipViewController.isSensorEnabled()).isTrue();
     }
 
     @Test
-    public void toggleMic_micTurnedOn_sensorPrivacyEnabled() {
-        when(mSensorPrivacyManager.isSensorPrivacyEnabled(eq(MICROPHONE), anyInt()))
+    public void toggleSensor_micTurnedOn_sensorPrivacyEnabled() {
+        when(mSensorPrivacyManager.isSensorPrivacyEnabled(anyInt(), eq(MICROPHONE)))
                 .thenReturn(false);
 
-        mPrivacyChipViewController.toggleMic();
+        mMicPrivacyChipViewController.toggleSensor();
 
-        verify(mSensorPrivacyManager)
-                .setSensorPrivacy(eq(QS_TILE), eq(MICROPHONE), eq(true), anyInt());
+        verify(mSensorPrivacyManager).setSensorPrivacy(eq(QS_TILE), eq(MICROPHONE), eq(true));
     }
 
     @Test
-    public void toggleMic_micTurnedOff_sensorPrivacyDisabled() {
-        when(mSensorPrivacyManager.isSensorPrivacyEnabled(eq(MICROPHONE), anyInt()))
+    public void toggleSensor_micTurnedOff_sensorPrivacyDisabled() {
+        when(mSensorPrivacyManager.isSensorPrivacyEnabled(anyInt(), eq(MICROPHONE)))
                 .thenReturn(true);
 
-        mPrivacyChipViewController.toggleMic();
+        mMicPrivacyChipViewController.toggleSensor();
 
-        verify(mSensorPrivacyManager)
-                .setSensorPrivacy(eq(QS_TILE), eq(MICROPHONE), eq(false), anyInt());
+        verify(mSensorPrivacyManager).setSensorPrivacy(eq(QS_TILE), eq(MICROPHONE), eq(false));
     }
 }

@@ -45,11 +45,11 @@ import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
+import com.android.systemui.statusbar.phone.CentralSurfaces;
 import com.android.systemui.statusbar.phone.KeyguardBouncer;
 import com.android.systemui.statusbar.phone.KeyguardBouncer.Factory;
 import com.android.systemui.statusbar.phone.KeyguardBypassController;
 import com.android.systemui.statusbar.phone.NotificationPanelViewController;
-import com.android.systemui.statusbar.phone.CentralSurfaces;
 import com.android.systemui.statusbar.phone.panelstate.PanelExpansionStateManager;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.toast.SystemUIToast;
@@ -443,7 +443,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private void notifyKeyguardUpdateMonitor() {
         mKeyguardUpdateMonitor.onKeyguardVisibilityChanged(mShowing);
         if (mBouncer != null) {
-            mKeyguardUpdateMonitor.sendKeyguardBouncerChanged(isBouncerShowing());
+            mKeyguardUpdateMonitor.sendKeyguardBouncerChanged(
+                    bouncerIsOrWillBeShowing(), isBouncerShowing());
         }
     }
 

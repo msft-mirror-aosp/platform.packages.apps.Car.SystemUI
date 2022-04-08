@@ -32,7 +32,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Solo se puede crear un perfil.}other{Puedes crear # perfiles como máximo.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Cargando"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Cargando usuario (de <xliff:g id="FROM_USER">%1$d</xliff:g> a <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
-    <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g>: se ha desactivado."</string>
+    <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> se ha desactivado."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"Usar <xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Para aplicaciones que tienen permiso"</string>
     <string name="mic_privacy_chip_microphone_settings" msgid="4520886720588226450">"Ajustes del micrófono"</string>

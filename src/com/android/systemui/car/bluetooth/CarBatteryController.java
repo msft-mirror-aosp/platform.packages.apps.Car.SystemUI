@@ -30,7 +30,6 @@ import android.view.View;
 
 import com.android.systemui.statusbar.policy.BatteryController;
 
-import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
@@ -60,7 +59,7 @@ public class CarBatteryController extends BroadcastReceiver implements BatteryCo
     }
 
     @Override
-    public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
+    public void dump(PrintWriter pw, String[] args) {
         pw.println("CarBatteryController state:");
         pw.print("    mLevel=");
         pw.println(mLevel);

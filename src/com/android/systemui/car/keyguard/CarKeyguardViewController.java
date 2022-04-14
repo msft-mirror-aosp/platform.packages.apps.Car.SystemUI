@@ -241,6 +241,11 @@ public class CarKeyguardViewController extends OverlayViewController implements
     }
 
     @Override
+    public void resetAlternateAuth(boolean forceUpdateScrim) {
+        // no-op
+    }
+
+    @Override
     @MainThread
     public void onFinishedGoingToSleep() {
         if (mBouncer != null) {

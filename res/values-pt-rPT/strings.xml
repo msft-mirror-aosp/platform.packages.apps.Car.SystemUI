@@ -55,7 +55,7 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"OK"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Ativar a câmara do veículo?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Para continuar, ative a câmara do sistema de infoentretenimento. Esta ação irá ativar a câmara para todas as apps que têm autorização."</string>
-    <string name="activity_blocked_text" msgid="5353157279548801554">"Não pode utilizar esta funcionalidade enquanto conduz"</string>
+    <string name="activity_blocked_text" msgid="5353157279548801554">"Não pode usar esta funcionalidade enquanto conduz"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Fechar app"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Anterior"</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"Definições"</string>

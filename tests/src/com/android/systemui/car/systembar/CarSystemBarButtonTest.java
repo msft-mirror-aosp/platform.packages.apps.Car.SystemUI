@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.systembar;
 
+import static android.app.WindowConfiguration.ACTIVITY_TYPE_UNDEFINED;
 import static android.app.WindowConfiguration.WINDOWING_MODE_FULLSCREEN;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -31,8 +32,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
+import android.app.ActivityTaskManager;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.RemoteException;
 import android.testing.AndroidTestingRunner;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,8 +54,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.MockitoAnnotations;
-
-import java.util.List;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -364,14 +365,17 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
      * like TaskViews).
      */
     private String getCurrentActivityName() {
-        // Check 3 running tasks to be safe in making sure there is at least 1 task running in
-        // fullscreen mode.
-        List<ActivityManager.RunningTaskInfo> infos = mActivityManager.getRunningTasks(3);
-        for (ActivityManager.RunningTaskInfo info : infos) {
-            if (info.getWindowingMode() == WINDOWING_MODE_FULLSCREEN) {
-                return info.topActivity.flattenToShortString();
+        try {
+            ActivityTaskManager.RootTaskInfo rootTaskInfo =
+                    ActivityTaskManager.getService().getRootTaskInfoOnDisplay(
+                            WINDOWING_MODE_FULLSCREEN, ACTIVITY_TYPE_UNDEFINED,
+                            mContext.getDisplayId());
+            if (rootTaskInfo == null || rootTaskInfo.topActivity == null) {
+                return null;
             }
+            return rootTaskInfo.topActivity.flattenToShortString();
+        } catch (RemoteException e) {
+            return null;
         }
-        return null;
     }
 }

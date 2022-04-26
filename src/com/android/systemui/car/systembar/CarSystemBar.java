@@ -258,7 +258,7 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
         mActivityManagerWrapper.registerTaskStackListener(new TaskStackChangeListener() {
             @Override
             public void onLockTaskModeChanged(int mode) {
-                mCarSystemBarController.refreshSystemBarByLockTaskFeatures();
+                mCarSystemBarController.refreshSystemBar();
             }
         });
 
@@ -477,7 +477,7 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
             mAppearanceRegions = appearanceRegions;
             updateStatusBarAppearance();
         }
-        mCarSystemBarController.refreshSystemBarByLockTaskFeatures();
+        mCarSystemBarController.refreshSystemBar();
     }
 
     @Override
@@ -486,7 +486,7 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
         if (displayId != mDisplayId) {
             return;
         }
-        mCarSystemBarController.setStatusBarState(state1);
+        mCarSystemBarController.setSystemBarStates(state1, state2);
     }
 
     private void updateStatusBarAppearance() {

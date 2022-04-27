@@ -32,45 +32,29 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{එක් පැතිකඩක් පමණක් තැනිය හැකිය.}one{ඔබට පැතිකඩවල් #ක් දක්වා එක් කළ හැකිය.}other{ඔබට පැතිකඩවල් #ක් දක්වා එක් කළ හැකිය.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"පූරණය වෙමින්"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"පරිශීලකයා පූරණය වෙමින් (<xliff:g id="FROM_USER">%1$d</xliff:g> සිට <xliff:g id="TO_USER">%2$d</xliff:g> වෙත)"</string>
-    <!-- no translation found for privacy_chip_off_content (8406415098507955316) -->
-    <skip />
-    <!-- no translation found for privacy_chip_use_sensor (7688230720803089653) -->
-    <skip />
-    <!-- no translation found for privacy_chip_use_sensor_subtext (5655148288310815742) -->
-    <skip />
+    <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> ක්‍රියාවිරහිතයි."</string>
+    <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g> භාවිත කරන්න"</string>
+    <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"අවසර ඇති යෙදුම් සඳහා"</string>
     <string name="mic_privacy_chip_microphone_settings" msgid="4520886720588226450">"මයික්‍රෆෝන සැකසීම්"</string>
-    <!-- no translation found for privacy_chip_app_using_sensor_suffix (7921315376271490004) -->
-    <skip />
+    <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"<xliff:g id="APP">%1$s</xliff:g> <xliff:g id="SENSOR">%2$s</xliff:g> භාවිත කරමින් ඇත"</string>
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> මයික්‍රෆෝනය භාවිත කරමින්"</string>
-    <!-- no translation found for privacy_chip_app_recently_used_sensor_suffix (4632772067170022529) -->
-    <skip />
-    <!-- no translation found for privacy_chip_apps_recently_used_sensor_suffix (2715537466314464047) -->
-    <skip />
+    <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"<xliff:g id="APP">%1$s</xliff:g> මෑතකදී <xliff:g id="SENSOR">%2$s</xliff:g> භාවිත කළේය"</string>
+    <string name="privacy_chip_apps_recently_used_sensor_suffix" msgid="2715537466314464047">"<xliff:g id="APP_0">%1$s</xliff:g> සහ තවත් <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g>ක් මෑතකදී <xliff:g id="SENSOR">%3$s</xliff:g> භාවිත කළේය"</string>
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"මයික්‍රෆෝනය ක්‍රියාත්මකයි"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"මයික්‍රෆෝනය ක්‍රියාවිරහිතයි"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"හරි"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"මයික්‍රෆෝනය ක්‍රියාත්මක කරන්නද?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"ඉදිරියට යාමට, තොරතුරු විනෝදාස්වාද පද්ධති මයික්‍රෆෝනය ක්‍රියාත්මක කරන්න අවසර ඇති සියලු යෙදුම් සඳහා මෙය මයික්‍රෆෝනය ක්‍රියාත්මක කරනු ඇත."</string>
-    <!-- no translation found for camera_privacy_chip_camera_settings (96342672670928980) -->
-    <skip />
-    <!-- no translation found for camera_privacy_chip_app_using_camera_suffix (2591363552459967509) -->
-    <skip />
-    <!-- no translation found for camera_privacy_chip_apps_using_camera_suffix (8033118959615498419) -->
-    <skip />
-    <!-- no translation found for camera_privacy_chip_app_recently_used_camera_suffix (4534950658276502559) -->
-    <skip />
-    <!-- no translation found for camera_privacy_chip_apps_recently_used_camera_suffix (3094973410349692954) -->
-    <skip />
-    <!-- no translation found for camera_privacy_chip_on_toast (7901274903678512207) -->
-    <skip />
-    <!-- no translation found for camera_privacy_chip_off_toast (7135472255099347229) -->
-    <skip />
-    <!-- no translation found for camera_privacy_chip_dialog_ok (7285467760928137765) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_camera_dialog_title (4787836783010823885) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_camera_dialog_content (7749639131326657668) -->
-    <skip />
+    <string name="camera_privacy_chip_camera_settings" msgid="96342672670928980">"කැමරා සැකසීම්"</string>
+    <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"<xliff:g id="APP">%s</xliff:g> කැමරාව භාවිත කරමින් ඇත"</string>
+    <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"<xliff:g id="APP_LIST">%s</xliff:g> කැමරාව භාවිත කරමින් ඇත"</string>
+    <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"<xliff:g id="APP">%s</xliff:g> මෑතකදී කැමරාව භාවිත කළේය"</string>
+    <string name="camera_privacy_chip_apps_recently_used_camera_suffix" msgid="3094973410349692954">"<xliff:g id="APP_0">%1$s</xliff:g> සහ තවත් <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g>ක් මෑතකදී කැමරාව භාවිත කළේය"</string>
+    <string name="camera_privacy_chip_on_toast" msgid="7901274903678512207">"කැමරාව ක්‍රියාත්මක කර ඇත"</string>
+    <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"කැමරාව ක්‍රියාවිරහිත කර ඇත"</string>
+    <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"හරි"</string>
+    <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"වාහන කැමරාව ක්‍රියාත්මක කරන්නද?"</string>
+    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"ඉදිරියට යාමට, තොරතුරු විනෝදාස්වාද පද්ධති කැමරාව ක්‍රියාත්මක කරන්න. අවසර ඇති සියලු යෙදුම් සඳහා මෙය කැමරාව ක්‍රියාත්මක කරනු ඇත."</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"රිය පදවන අතරතුර ඔබට මෙම විශේෂාංගය භාවිත කළ නොහැකිය"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"යෙදුම වසන්න"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"ආපසු"</string>

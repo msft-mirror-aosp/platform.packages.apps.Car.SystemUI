@@ -113,12 +113,14 @@
     <dimen name="privacy_chip_width">76dp</dimen>
     <!-- Margin between icons of Privacy chip -->
     <dimen name="privacy_chip_icon_margin">2dp</dimen>
-    <!-- Diameter of indicator circle in mic privacy chip animation -->
+    <!-- Diameter of indicator circle in privacy chip animation -->
     <dimen name="privacy_chip_indicator_circle_diameter">21.5dp</dimen>
-    <!-- Width of mic privacy chip qc panel -->
-    <dimen name="car_mic_qc_panel_width">800dp</dimen>
+    <!-- Width of privacy chip qc panel -->
+    <dimen name="car_sensor_qc_panel_width">800dp</dimen>
     <!-- Privacy chip horizontal padding -->
     <dimen name="privacy_chip_horizontal_padding">@dimen/car_padding_3</dimen>
+    <!-- Outside stroke width for Privacy chip -->
+    <dimen name="privacy_chip_indicator_outside_stroke_width">4dp</dimen>
 
     <!-- Car volume dimens. -->
     <dimen name="car_volume_item_icon_size">@dimen/car_primary_icon_size</dimen>

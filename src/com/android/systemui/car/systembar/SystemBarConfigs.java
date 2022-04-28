@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.systembar;
 
+import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+
 import android.annotation.IntDef;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
@@ -461,6 +463,7 @@ public class SystemBarConfigs {
             lp.setFitInsetsTypes(0);
             lp.windowAnimations = 0;
             lp.gravity = BAR_GRAVITY_MAP.get(mSide);
+            lp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
             return lp;
         }
 

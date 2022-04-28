@@ -32,9 +32,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.car.Car;
-import android.car.user.CarUserManager;
-import android.content.BroadcastReceiver;
-import android.content.Intent;
 import android.hardware.SensorPrivacyManager;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
@@ -46,9 +43,6 @@ import androidx.test.filters.SmallTest;
 
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
-import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarDeviceProvisionedController;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.privacy.CameraPrivacyChip;
 import com.android.systemui.privacy.PrivacyItem;
@@ -83,11 +77,6 @@ public class CameraPrivacyChipViewControllerTest extends SysuiTestCase {
     @Captor
     private ArgumentCaptor<SensorPrivacyManager.OnSensorPrivacyChangedListener>
             mOnSensorPrivacyChangedListenerArgumentCaptor;
-    @Captor
-    private ArgumentCaptor<BroadcastReceiver> mBroadcastReceiverArgumentCaptor;
-    @Captor
-    private ArgumentCaptor<CarUserManager.UserLifecycleListener>
-            mUserLifecycleListenerArgumentCaptor;
 
     @Mock
     private PrivacyItemController mPrivacyItemController;
@@ -96,13 +85,7 @@ public class CameraPrivacyChipViewControllerTest extends SysuiTestCase {
     @Mock
     private Executor mExecutor;
     @Mock
-    private BroadcastDispatcher mBroadcastDispatcher;
-    @Mock
     private SensorPrivacyManager mSensorPrivacyManager;
-    @Mock
-    private CarDeviceProvisionedController mCarDeviceProvisionedController;
-    @Mock
-    private CarUserManager mCarUserManager;
     @Mock
     private Car mCar;
     @Mock
@@ -120,15 +103,9 @@ public class CameraPrivacyChipViewControllerTest extends SysuiTestCase {
 
         when(mContext.getMainExecutor()).thenReturn(mExecutor);
         when(mCar.isConnected()).thenReturn(true);
-        when(mCar.getCarManager(Car.CAR_USER_SERVICE)).thenReturn(mCarUserManager);
 
-        CarServiceProvider carServiceProvider = new CarServiceProvider(mContext, mCar);
-
-        mCameraPrivacyChipViewController =
-                new CameraPrivacyChipViewController(mContext, mPrivacyItemController,
-                carServiceProvider, mBroadcastDispatcher, mSensorPrivacyManager,
-                mCarDeviceProvisionedController);
-        when(mCarDeviceProvisionedController.getCurrentUser()).thenReturn(0);
+        mCameraPrivacyChipViewController = new CameraPrivacyChipViewController(mContext,
+                mPrivacyItemController, mSensorPrivacyManager);
     }
 
     @Test
@@ -248,7 +225,7 @@ public class CameraPrivacyChipViewControllerTest extends SysuiTestCase {
     public void onSensorPrivacyChanged_argTrue_setSensorEnabledWithFalseCalled() {
         mCameraPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
         verify(mSensorPrivacyManager).addSensorPrivacyListener(eq(CAMERA),
-                /* userId= */ eq(0), mOnSensorPrivacyChangedListenerArgumentCaptor.capture());
+                mOnSensorPrivacyChangedListenerArgumentCaptor.capture());
         reset(mCameraPrivacyChip);
         reset(mExecutor);
         mOnSensorPrivacyChangedListenerArgumentCaptor.getValue()
@@ -264,7 +241,7 @@ public class CameraPrivacyChipViewControllerTest extends SysuiTestCase {
     public void onSensorPrivacyChanged_argFalse_setSensorEnabledWithTrueCalled() {
         mCameraPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
         verify(mSensorPrivacyManager).addSensorPrivacyListener(eq(CAMERA),
-                /* userId= */ eq(0), mOnSensorPrivacyChangedListenerArgumentCaptor.capture());
+                mOnSensorPrivacyChangedListenerArgumentCaptor.capture());
         reset(mCameraPrivacyChip);
         reset(mExecutor);
         mOnSensorPrivacyChangedListenerArgumentCaptor.getValue()
@@ -281,7 +258,7 @@ public class CameraPrivacyChipViewControllerTest extends SysuiTestCase {
         mCameraPrivacyChipViewController.setNotifyUpdateRunnable(mQsTileNotifyUpdateRunnable);
         mCameraPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
         verify(mSensorPrivacyManager).addSensorPrivacyListener(eq(CAMERA),
-                /* userId= */ eq(0), mOnSensorPrivacyChangedListenerArgumentCaptor.capture());
+                mOnSensorPrivacyChangedListenerArgumentCaptor.capture());
         reset(mCameraPrivacyChip);
         reset(mExecutor);
         mOnSensorPrivacyChangedListenerArgumentCaptor.getValue()
@@ -291,46 +268,6 @@ public class CameraPrivacyChipViewControllerTest extends SysuiTestCase {
         mRunnableArgumentCaptor.getAllValues().forEach(Runnable::run);
 
         verify(mQsTileNotifyUpdateRunnable).run();
-    }
-
-    @Test
-    public void onUserUpdateReceive_setSensorEnabledCalled() {
-        when(mSensorPrivacyManager.isSensorPrivacyEnabled(anyInt(), eq(CAMERA)))
-                .thenReturn(true);
-        mCameraPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
-        verify(mBroadcastDispatcher).registerReceiver(mBroadcastReceiverArgumentCaptor.capture(),
-                any(), any(), any());
-        reset(mExecutor);
-        when(mCarDeviceProvisionedController.getCurrentUser()).thenReturn(1);
-        mBroadcastReceiverArgumentCaptor.getValue().onReceive(mContext,
-                new Intent(Intent.ACTION_USER_INFO_CHANGED));
-        verify(mExecutor).execute(mRunnableArgumentCaptor.capture());
-
-        mRunnableArgumentCaptor.getValue().run();
-
-        verify(mCameraPrivacyChip).setSensorEnabled(eq(false));
-    }
-
-    @Test
-    public void onUserChangeReceive_setSensorEnabledCalled() {
-        when(mSensorPrivacyManager.isSensorPrivacyEnabled(anyInt(), eq(CAMERA)))
-                .thenReturn(false);
-        mCameraPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
-        verify(mCarUserManager).addListener(any(), any(),
-                mUserLifecycleListenerArgumentCaptor.capture());
-        CarUserManager.UserLifecycleEvent event = new CarUserManager.UserLifecycleEvent(
-                CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING, /* from= */ 0,
-                /* to= */ 1);
-        CarUserManager.UserLifecycleListener userLifecycleListener =
-                mUserLifecycleListenerArgumentCaptor.getValue();
-        assertThat(userLifecycleListener).isNotNull();
-        reset(mExecutor);
-        userLifecycleListener.onEvent(event);
-        verify(mExecutor).execute(mRunnableArgumentCaptor.capture());
-
-        mRunnableArgumentCaptor.getValue().run();
-
-        verify(mCameraPrivacyChip).setSensorEnabled(eq(true));
     }
 
     @Test
@@ -356,8 +293,7 @@ public class CameraPrivacyChipViewControllerTest extends SysuiTestCase {
 
         mCameraPrivacyChipViewController.toggleSensor();
 
-        verify(mSensorPrivacyManager)
-                .setSensorPrivacy(eq(QS_TILE), eq(CAMERA), eq(true), anyInt());
+        verify(mSensorPrivacyManager).setSensorPrivacy(eq(QS_TILE), eq(CAMERA), eq(true));
     }
 
     @Test
@@ -367,7 +303,6 @@ public class CameraPrivacyChipViewControllerTest extends SysuiTestCase {
 
         mCameraPrivacyChipViewController.toggleSensor();
 
-        verify(mSensorPrivacyManager)
-                .setSensorPrivacy(eq(QS_TILE), eq(CAMERA), eq(false), anyInt());
+        verify(mSensorPrivacyManager).setSensorPrivacy(eq(QS_TILE), eq(CAMERA), eq(false));
     }
 }

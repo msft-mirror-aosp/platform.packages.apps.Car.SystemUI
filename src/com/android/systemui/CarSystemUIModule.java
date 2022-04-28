@@ -31,8 +31,6 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
-import com.android.systemui.car.privacy.MicPrivacyElementsProviderImpl;
-import com.android.systemui.car.privacy.MicQcPanel;
 import com.android.systemui.car.statusbar.DozeServiceHost;
 import com.android.systemui.car.volume.CarVolumeModule;
 import com.android.systemui.dagger.GlobalRootComponent;
@@ -57,6 +55,7 @@ import com.android.systemui.statusbar.NotificationLockscreenUserManager;
 import com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
 import com.android.systemui.statusbar.notification.NotificationEntryManager;
+import com.android.systemui.statusbar.notification.collection.provider.VisualStabilityProvider;
 import com.android.systemui.statusbar.notification.collection.render.GroupMembershipManager;
 import com.android.systemui.statusbar.phone.HeadsUpManagerPhone;
 import com.android.systemui.statusbar.phone.KeyguardBypassController;
@@ -105,6 +104,7 @@ abstract class CarSystemUIModule {
             StatusBarStateController statusBarStateController,
             KeyguardBypassController bypassController,
             GroupMembershipManager groupManager,
+            VisualStabilityProvider visualStabilityProvider,
             ConfigurationController configurationController) {
         return new HeadsUpManagerPhone(
             context,
@@ -112,6 +112,7 @@ abstract class CarSystemUIModule {
             statusBarStateController,
             bypassController,
             groupManager,
+            visualStabilityProvider,
             configurationController
         );
     }
@@ -217,8 +218,4 @@ abstract class CarSystemUIModule {
 
     @Binds
     abstract DozeHost bindDozeHost(DozeServiceHost dozeServiceHost);
-
-    @Binds
-    abstract MicQcPanel.MicPrivacyElementsProvider bindMicPrivacyElementsProvider(
-            MicPrivacyElementsProviderImpl micPrivacyElementsProvider);
 }

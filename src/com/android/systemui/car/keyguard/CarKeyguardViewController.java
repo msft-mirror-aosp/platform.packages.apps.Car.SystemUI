@@ -45,11 +45,11 @@ import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
+import com.android.systemui.statusbar.phone.CentralSurfaces;
 import com.android.systemui.statusbar.phone.KeyguardBouncer;
 import com.android.systemui.statusbar.phone.KeyguardBouncer.Factory;
 import com.android.systemui.statusbar.phone.KeyguardBypassController;
 import com.android.systemui.statusbar.phone.NotificationPanelViewController;
-import com.android.systemui.statusbar.phone.StatusBar;
 import com.android.systemui.statusbar.phone.panelstate.PanelExpansionStateManager;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.toast.SystemUIToast;
@@ -241,6 +241,11 @@ public class CarKeyguardViewController extends OverlayViewController implements
     }
 
     @Override
+    public void resetAlternateAuth(boolean forceUpdateScrim) {
+        // no-op
+    }
+
+    @Override
     @MainThread
     public void onFinishedGoingToSleep() {
         if (mBouncer != null) {
@@ -389,8 +394,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
     }
 
     @Override
-    public void registerStatusBar(
-            StatusBar statusBar,
+    public void registerCentralSurfaces(
+            CentralSurfaces centralSurfaces,
             NotificationPanelViewController notificationPanelViewController,
             PanelExpansionStateManager panelExpansionStateManager,
             BiometricUnlockController biometricUnlockController,
@@ -443,7 +448,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private void notifyKeyguardUpdateMonitor() {
         mKeyguardUpdateMonitor.onKeyguardVisibilityChanged(mShowing);
         if (mBouncer != null) {
-            mKeyguardUpdateMonitor.sendKeyguardBouncerChanged(isBouncerShowing());
+            mKeyguardUpdateMonitor.sendKeyguardBouncerChanged(
+                    bouncerIsOrWillBeShowing(), isBouncerShowing());
         }
     }
 

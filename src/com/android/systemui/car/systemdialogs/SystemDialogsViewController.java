@@ -23,6 +23,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +35,6 @@ import androidx.annotation.Nullable;
 
 import com.android.systemui.R;
 import com.android.systemui.dagger.SysUISingleton;
-import com.android.systemui.plugins.ActivityStarter;
 import com.android.systemui.statusbar.policy.SecurityController;
 
 import javax.inject.Inject;
@@ -46,31 +46,30 @@ import javax.inject.Inject;
 public class SystemDialogsViewController {
     private final Context mContext;
     private final SecurityController mSecurityController;
-    private ActivityStarter mActivityStarter;
-
-    private final AlertDialog.OnClickListener mOnDeviceMonitoringConfirmed = (dialog, which) -> {
-        if (which == DialogInterface.BUTTON_POSITIVE) {
-            Intent intent = new Intent(Settings.ACTION_ENTERPRISE_PRIVACY_SETTINGS);
-            dialog.dismiss();
-            mActivityStarter.postStartActivityDismissingKeyguard(intent, /* delay= */ 0);
-        }
-    };
+    private final AlertDialog.OnClickListener mOnDeviceMonitoringDialogClickListener;
 
     @Inject
     public SystemDialogsViewController(
             Context context,
-            ActivityStarter activityStarter,
             SecurityController securityController) {
         mContext = context;
-        mActivityStarter = activityStarter;
         mSecurityController = securityController;
+        mOnDeviceMonitoringDialogClickListener = (dialog, which) -> {
+            dialog.dismiss();
+            if (which == DialogInterface.BUTTON_NEUTRAL) {
+                Intent intent = new Intent(Settings.ACTION_ENTERPRISE_PRIVACY_SETTINGS);
+                mContext.startActivityAsUser(intent, UserHandle.CURRENT);
+            }
+        };
     }
 
     protected void showDeviceMonitoringDialog() {
         AlertDialog dialog = new AlertDialog.Builder(mContext,
                 com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setView(createDialogView())
-                .setPositiveButton(R.string.ok, mOnDeviceMonitoringConfirmed)
+                .setPositiveButton(R.string.ok, mOnDeviceMonitoringDialogClickListener)
+                .setNeutralButton(R.string.monitoring_button_view_policies,
+                        mOnDeviceMonitoringDialogClickListener)
                 .create();
 
         applyCarSysUIDialogFlags(dialog);

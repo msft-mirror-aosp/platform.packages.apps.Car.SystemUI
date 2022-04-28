@@ -26,10 +26,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.android.systemui.statusbar.policy.BatteryController;
 
-import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
@@ -40,17 +40,6 @@ import java.util.ArrayList;
  */
 public class CarBatteryController extends BroadcastReceiver implements BatteryController {
     private static final String TAG = "CarBatteryController";
-
-    // According to the Bluetooth HFP 1.5 specification, battery levels are indicated by a
-    // value from 1-5, where these values represent the following:
-    // 0%% - 0, 1-25%% - 1, 26-50%% - 2, 51-75%% - 3, 76-99%% - 4, 100%% - 5
-    // As a result, set the level as the average within that range.
-    private static final int BATTERY_LEVEL_EMPTY = 0;
-    private static final int BATTERY_LEVEL_1 = 12;
-    private static final int BATTERY_LEVEL_2 = 28;
-    private static final int BATTERY_LEVEL_3 = 63;
-    private static final int BATTERY_LEVEL_4 = 87;
-    private static final int BATTERY_LEVEL_FULL = 100;
 
     private static final int INVALID_BATTERY_LEVEL = -1;
 
@@ -70,7 +59,7 @@ public class CarBatteryController extends BroadcastReceiver implements BatteryCo
     }
 
     @Override
-    public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
+    public void dump(PrintWriter pw, String[] args) {
         pw.println("CarBatteryController state:");
         pw.print("    mLevel=");
         pw.println(mLevel);
@@ -78,6 +67,11 @@ public class CarBatteryController extends BroadcastReceiver implements BatteryCo
 
     @Override
     public void setPowerSaveMode(boolean powerSave) {
+        // No-op. No power save mode for the car.
+    }
+
+    @Override
+    public void setPowerSaveMode(boolean powerSave, View view) {
         // No-op. No power save mode for the car.
     }
 
@@ -154,41 +148,22 @@ public class CarBatteryController extends BroadcastReceiver implements BatteryCo
     }
 
     /**
-     * Converts the battery level to a percentage that can be displayed on-screen and notifies
+     * Verifies battery level is a valid percentage and notifies
      * any {@link BatteryStateChangeCallback}s of this.
      */
     private void updateBatteryLevel(int batteryLevel) {
-        if (batteryLevel == INVALID_BATTERY_LEVEL) {
+        // Valid battery level is from 0 to 100, inclusive.
+        if (batteryLevel < 0 || batteryLevel > 100) {
             if (Log.isLoggable(TAG, Log.DEBUG)) {
                 Log.d(TAG, "Battery level invalid. Ignoring.");
             }
             return;
         }
 
-        // The battery level is a value between 0-5. Let the default battery level be 0.
-        switch (batteryLevel) {
-            case 5:
-                mLevel = BATTERY_LEVEL_FULL;
-                break;
-            case 4:
-                mLevel = BATTERY_LEVEL_4;
-                break;
-            case 3:
-                mLevel = BATTERY_LEVEL_3;
-                break;
-            case 2:
-                mLevel = BATTERY_LEVEL_2;
-                break;
-            case 1:
-                mLevel = BATTERY_LEVEL_1;
-                break;
-            case 0:
-            default:
-                mLevel = BATTERY_LEVEL_EMPTY;
-        }
+        mLevel = batteryLevel;
 
         if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log.d(TAG, "Battery level: " + batteryLevel + "; setting mLevel as: " + mLevel);
+            Log.d(TAG, "Battery level: " + mLevel);
         }
 
         notifyBatteryLevelChanged();

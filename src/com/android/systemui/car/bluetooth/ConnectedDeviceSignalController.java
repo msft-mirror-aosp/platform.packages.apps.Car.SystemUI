@@ -16,7 +16,7 @@
 
 package com.android.systemui.car.bluetooth;
 
-import static com.android.systemui.statusbar.phone.StatusBar.DEBUG;
+import static com.android.systemui.statusbar.phone.CentralSurfaces.DEBUG;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;

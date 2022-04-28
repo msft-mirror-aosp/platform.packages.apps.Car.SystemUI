@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.statusicon;
 
+import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
 
@@ -26,6 +27,7 @@ import android.app.PendingIntent;
 import android.car.Car;
 import android.car.drivingstate.CarUxRestrictions;
 import android.car.user.CarUserManager;
+import android.car.user.UserLifecycleEventFilter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -85,9 +87,7 @@ public class StatusIconPanelController {
     private boolean mUserSwitchEventRegistered;
 
     private final CarUserManager.UserLifecycleListener mUserLifecycleListener = event -> {
-        if (event.getEventType() == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING) {
-            recreatePanel();
-        }
+        recreatePanel();
     };
 
     private final ConfigurationController.ConfigurationListener mConfigurationListener =
@@ -188,7 +188,9 @@ public class StatusIconPanelController {
             CarUserManager carUserManager = (CarUserManager) car.getCarManager(
                     Car.CAR_USER_SERVICE);
             if (!mUserSwitchEventRegistered) {
-                carUserManager.addListener(Runnable::run, mUserLifecycleListener);
+                UserLifecycleEventFilter filter = new UserLifecycleEventFilter.Builder()
+                        .addEventType(USER_LIFECYCLE_EVENT_TYPE_SWITCHING).build();
+                carUserManager.addListener(Runnable::run, filter, mUserLifecycleListener);
                 mUserSwitchEventRegistered = true;
             }
         });
@@ -382,7 +384,6 @@ public class StatusIconPanelController {
             registerFocusListener(false);
             mQCViews.forEach(qcView -> qcView.listen(false));
         });
-        addFocusParkingView();
 
         return true;
     }
@@ -407,17 +408,6 @@ public class StatusIconPanelController {
         Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         intent.setIdentifier(mIdentifier);
         mContext.sendBroadcastAsUser(intent, UserHandle.CURRENT);
-    }
-
-    /**
-     * Add a FocusParkingView to the panel content to prevent rotary controller rotation wrapping
-     * around in the panel - this only should be called once per panel.
-     */
-    private void addFocusParkingView() {
-        if (mPanelContent != null) {
-            FocusParkingView fpv = new FocusParkingView(mContext);
-            mPanelContent.addView(fpv);
-        }
     }
 
     private void registerFocusListener(boolean register) {

@@ -21,13 +21,13 @@ import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsModule;
 import com.android.systemui.car.window.OverlayWindowModule;
 import com.android.systemui.keyguard.dagger.KeyguardModule;
 import com.android.systemui.recents.RecentsModule;
-import com.android.systemui.statusbar.dagger.StatusBarModule;
+import com.android.systemui.statusbar.dagger.CentralSurfacesModule;
 import com.android.systemui.statusbar.notification.dagger.NotificationsModule;
 
 import dagger.Module;
 
 /** Binder for car specific {@link CoreStartable} modules. */
-@Module(includes = {RecentsModule.class, StatusBarModule.class, NotificationsModule.class,
+@Module(includes = {RecentsModule.class, CentralSurfacesModule.class, NotificationsModule.class,
         KeyguardModule.class, OverlayWindowModule.class, CarNotificationModule.class,
         QuickControlsEntryPointsModule.class})
 public abstract class CarSystemUIBinder {

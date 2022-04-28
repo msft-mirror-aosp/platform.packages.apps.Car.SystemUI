@@ -141,12 +141,12 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="ic_ux_restricted_color"/>
       <item type="color" name="keyguard_keypad_image_color"/>
       <item type="color" name="list_divider_color"/>
-      <item type="color" name="mic_privacy_chip_dark_icon_color"/>
-      <item type="color" name="mic_privacy_chip_indicator_color"/>
-      <item type="color" name="mic_privacy_chip_light_icon_color"/>
       <item type="color" name="notification_divider_color"/>
       <item type="color" name="notification_ripple_untinted_color"/>
       <item type="color" name="notification_shade_background_color"/>
+      <item type="color" name="privacy_chip_dark_icon_color"/>
+      <item type="color" name="privacy_chip_indicator_color"/>
+      <item type="color" name="privacy_chip_indicator_outside_stroke_color"/>
       <item type="color" name="status_bar_background_color"/>
       <item type="color" name="status_icon_highlighted_color"/>
       <item type="color" name="status_icon_not_highlighted_color"/>
@@ -345,6 +345,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="privacy_chip_icon_margin"/>
       <item type="dimen" name="privacy_chip_icon_size"/>
       <item type="dimen" name="privacy_chip_indicator_circle_diameter"/>
+      <item type="dimen" name="privacy_chip_indicator_outside_stroke_width"/>
       <item type="dimen" name="privacy_chip_width"/>
       <item type="dimen" name="scrim_behind_alpha"/>
       <item type="dimen" name="side_margin"/>

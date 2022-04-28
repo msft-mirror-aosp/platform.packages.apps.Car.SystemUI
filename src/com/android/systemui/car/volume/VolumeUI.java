@@ -31,7 +31,6 @@ import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.volume.VolumeDialogComponent;
 
-import java.io.FileDescriptor;
 import java.io.PrintWriter;
 
 import javax.inject.Inject;
@@ -119,11 +118,11 @@ public class VolumeUI extends CoreStartable {
     }
 
     @Override
-    public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
+    public void dump(PrintWriter pw, String[] args) {
         pw.print("mEnabled="); pw.println(mEnabled);
         if (!mEnabled) return;
         if (mVolumeDialogComponent != null) {
-            mVolumeDialogComponent.dump(fd, pw, args);
+            mVolumeDialogComponent.dump(pw, args);
         }
     }
 }

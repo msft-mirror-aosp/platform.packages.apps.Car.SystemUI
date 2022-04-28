@@ -246,7 +246,7 @@ public class UserGridRecyclerView extends RecyclerView {
             mRes = context.getResources();
             mContext = context;
             updateUsers(users);
-            mGuestName = mRes.getString(R.string.car_guest);
+            mGuestName = mRes.getString(com.android.internal.R.string.guest_name);
             mNewUserName = mRes.getString(R.string.car_new_user);
         }
 
@@ -438,7 +438,7 @@ public class UserGridRecyclerView extends RecyclerView {
             String recordName;
             switch (userRecord.mType) {
                 case UserRecord.START_GUEST:
-                    recordName = mContext.getString(R.string.start_guest_session);
+                    recordName = mContext.getString(com.android.internal.R.string.guest_name);
                     break;
                 case UserRecord.ADD_USER:
                     recordName = mContext.getString(R.string.car_add_user);

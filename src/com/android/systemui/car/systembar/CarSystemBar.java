@@ -63,7 +63,6 @@ import com.android.systemui.statusbar.phone.SysuiDarkIconDispatcher;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 
-import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
@@ -581,7 +580,7 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
     }
 
     @Override
-    public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
+    public void dump(PrintWriter pw, String[] args) {
         pw.print("  mTaskStackListener=");
         pw.println(mButtonSelectionStateListener);
         pw.print("  mBottomSystemBarView=");

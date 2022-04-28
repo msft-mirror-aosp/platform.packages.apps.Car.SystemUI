@@ -16,7 +16,7 @@
 
 package com.android.systemui.car.bluetooth;
 
-import static com.android.systemui.statusbar.phone.StatusBar.DEBUG;
+import static com.android.systemui.statusbar.phone.CentralSurfaces.DEBUG;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -28,7 +28,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Bundle;
 import android.telephony.SignalStrength;
 import android.util.Log;
 import android.util.TypedValue;
@@ -73,8 +72,6 @@ public class ConnectedDeviceSignalController extends BroadcastReceiver implement
             3,
             4,
     };
-
-    private static final int INVALID_SIGNAL = -1;
 
     private final BluetoothAdapter mAdapter = BluetoothAdapter.getDefaultAdapter();
     private final Context mContext;
@@ -225,21 +222,17 @@ public class ConnectedDeviceSignalController extends BroadcastReceiver implement
                 return;
             }
 
-            // Check if battery information is available and immediately update.
-            Bundle featuresBundle = mBluetoothHeadsetClient.getCurrentAgEvents(device);
-            if (featuresBundle == null) {
+            // Check if network signal strength information is available and immediately update.
+            NetworkServiceState state = mBluetoothHeadsetClient.getNetworkServiceState(device);
+            if (state == null) {
                 return;
             }
 
-            int signalStrength = featuresBundle.getInt(
-                    BluetoothHeadsetClient.EXTRA_NETWORK_SIGNAL_STRENGTH, INVALID_SIGNAL);
-            if (signalStrength != INVALID_SIGNAL) {
-                if (DEBUG) {
-                    Log.d(TAG, "EXTRA_NETWORK_SIGNAL_STRENGTH: " + signalStrength);
-                }
-
-                setNetworkSignalIcon(SIGNAL_STRENGTH_ICONS[signalStrength]);
+            int signalStrength = state.getSignalStrength();
+            if (DEBUG) {
+                Log.d(TAG, "NetworkServiceState getSignalStrength(): " + signalStrength);
             }
+            setNetworkSignalIcon(SIGNAL_STRENGTH_ICONS[signalStrength]);
         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
             if (DEBUG) {
                 Log.d(TAG, "Device disconnected");

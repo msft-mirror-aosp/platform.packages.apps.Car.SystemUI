@@ -30,6 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
+import android.app.admin.DevicePolicyManager;
 import android.car.user.CarUserManager;
 import android.car.user.UserCreationResult;
 import android.car.user.UserSwitchResult;
@@ -72,6 +73,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     @Mock
     private UserManager mUserManager;
     @Mock
+    private DevicePolicyManager mDevicePolicyManager;
+    @Mock
     private CarUserManager mCarUserManager;
 
     @Before
@@ -80,6 +83,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
         when(mUserManager.getAliveUsers()).thenReturn(mAliveUsers);
         when(mUserManager.getUserSwitchability(any())).thenReturn(SWITCHABILITY_STATUS_OK);
+        when(mDevicePolicyManager.isDeviceManaged()).thenReturn(false);
+        when(mDevicePolicyManager.isOrganizationOwnedDeviceWithManagedProfile()).thenReturn(false);
 
         AsyncFuture<UserSwitchResult> switchResultFuture = mock(AsyncFuture.class);
         UserSwitchResult switchResult = mock(UserSwitchResult.class);
@@ -87,7 +92,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         when(switchResultFuture.get(anyLong(), any())).thenReturn(switchResult);
         when(mCarUserManager.switchUser(anyInt())).thenReturn(switchResultFuture);
 
-        mProfileSwitcher = new ProfileSwitcher(mContext, mUserManager, mCarUserManager);
+        mProfileSwitcher = new ProfileSwitcher(mContext, mUserManager, mDevicePolicyManager,
+                mCarUserManager);
     }
 
     @Test
@@ -101,9 +107,9 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         UserInfo otherUser = generateUser(1001, "Other User", /* supportsSwitch= */ true,
                 /* isGuest= */ false);
         mAliveUsers.add(otherUser);
-        QCList list = getQCList();
-        assertThat(list.getRows()).hasSize(1);
-        assertThat(list.getRows().get(0).getTitle()).isEqualTo("Current User");
+        List<QCRow> rows = getProfileRows();
+        assertThat(rows).hasSize(1);
+        assertThat(rows.get(0).getTitle()).isEqualTo("Current User");
     }
 
     @Test
@@ -114,14 +120,14 @@ public class ProfileSwitcherTest extends SysuiTestCase {
                 /* isGuest= */ false);
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
-        QCList list = getQCList();
+        List<QCRow> rows = getProfileRows();
         // Expect four rows - one for each user, one for the guest user, and one for add user
-        assertThat(list.getRows()).hasSize(4);
-        assertThat(list.getRows().get(0).getTitle()).isEqualTo("User1");
-        assertThat(list.getRows().get(1).getTitle()).isEqualTo("User2");
-        assertThat(list.getRows().get(2).getTitle()).isEqualTo(
-                mContext.getString(R.string.car_guest));
-        assertThat(list.getRows().get(3).getTitle()).isEqualTo(
+        assertThat(rows).hasSize(4);
+        assertThat(rows.get(0).getTitle()).isEqualTo("User1");
+        assertThat(rows.get(1).getTitle()).isEqualTo("User2");
+        assertThat(rows.get(2).getTitle()).isEqualTo(
+                mContext.getString(com.android.internal.R.string.guest_name));
+        assertThat(rows.get(3).getTitle()).isEqualTo(
                 mContext.getString(R.string.car_add_user));
     }
 
@@ -133,13 +139,13 @@ public class ProfileSwitcherTest extends SysuiTestCase {
                 /* isGuest= */ false);
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
-        QCList list = getQCList();
+        List<QCRow> rows = getProfileRows();
         // Expect three rows - one for the valid user, one for the guest user, and one for add user
-        assertThat(list.getRows()).hasSize(3);
-        assertThat(list.getRows().get(0).getTitle()).isEqualTo("User1");
-        assertThat(list.getRows().get(1).getTitle()).isEqualTo(
-                mContext.getString(R.string.car_guest));
-        assertThat(list.getRows().get(2).getTitle()).isEqualTo(
+        assertThat(rows).hasSize(3);
+        assertThat(rows.get(0).getTitle()).isEqualTo("User1");
+        assertThat(rows.get(1).getTitle()).isEqualTo(
+                mContext.getString(com.android.internal.R.string.guest_name));
+        assertThat(rows.get(2).getTitle()).isEqualTo(
                 mContext.getString(R.string.car_add_user));
     }
 
@@ -151,13 +157,13 @@ public class ProfileSwitcherTest extends SysuiTestCase {
                 /* isGuest= */ true);
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
-        QCList list = getQCList();
+        List<QCRow> rows = getProfileRows();
         // Expect three rows - one for the valid user, one for the guest user, and one for add user
-        assertThat(list.getRows()).hasSize(3);
-        assertThat(list.getRows().get(0).getTitle()).isEqualTo("User1");
-        assertThat(list.getRows().get(1).getTitle()).isEqualTo(
-                mContext.getString(R.string.car_guest));
-        assertThat(list.getRows().get(2).getTitle()).isEqualTo(
+        assertThat(rows).hasSize(3);
+        assertThat(rows.get(0).getTitle()).isEqualTo("User1");
+        assertThat(rows.get(1).getTitle()).isEqualTo(
+                mContext.getString(com.android.internal.R.string.guest_name));
+        assertThat(rows.get(2).getTitle()).isEqualTo(
                 mContext.getString(R.string.car_add_user));
     }
 
@@ -171,13 +177,32 @@ public class ProfileSwitcherTest extends SysuiTestCase {
                 /* isGuest= */ false);
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
-        QCList list = getQCList();
+        List<QCRow> rows = getProfileRows();
         // Expect three rows - one for each user and one for the guest user
-        assertThat(list.getRows()).hasSize(3);
-        assertThat(list.getRows().get(0).getTitle()).isEqualTo("User1");
-        assertThat(list.getRows().get(1).getTitle()).isEqualTo("User2");
-        assertThat(list.getRows().get(2).getTitle()).isEqualTo(
-                mContext.getString(R.string.car_guest));
+        assertThat(rows).hasSize(3);
+        assertThat(rows.get(0).getTitle()).isEqualTo("User1");
+        assertThat(rows.get(1).getTitle()).isEqualTo("User2");
+        assertThat(rows.get(2).getTitle()).isEqualTo(
+                mContext.getString(com.android.internal.R.string.guest_name));
+    }
+
+    @Test
+    public void switchAllowed_deviceManaged_returnsValidRows() {
+        when(mDevicePolicyManager.isDeviceManaged()).thenReturn(true);
+        UserInfo user1 = generateUser(1000, "User1", /* supportsSwitch= */ true,
+                /* isGuest= */ false);
+        mAliveUsers.add(user1);
+        List<QCRow> rows = getProfileRows();
+        // Expect four rows - one for the device owner message, one for the user,
+        // one for the guest user, and one for add user
+        assertThat(rows).hasSize(4);
+        assertThat(rows.get(0).getSubtitle()).isEqualTo(
+                mContext.getString(R.string.do_disclosure_generic));
+        assertThat(rows.get(1).getTitle()).isEqualTo("User1");
+        assertThat(rows.get(2).getTitle()).isEqualTo(
+                mContext.getString(com.android.internal.R.string.guest_name));
+        assertThat(rows.get(3).getTitle()).isEqualTo(
+                mContext.getString(R.string.car_add_user));
     }
 
     @Test
@@ -190,10 +215,10 @@ public class ProfileSwitcherTest extends SysuiTestCase {
                 /* isGuest= */ false);
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
-        QCList list = getQCList();
+        List<QCRow> rows = getProfileRows();
         // Expect four rows - one for each user, one for the guest user, and one for add user
-        assertThat(list.getRows()).hasSize(4);
-        QCRow otherUserRow = list.getRows().get(1);
+        assertThat(rows).hasSize(4);
+        QCRow otherUserRow = rows.get(1);
         otherUserRow.getActionHandler().onAction(otherUserRow, mContext, new Intent());
         verify(mCarUserManager).switchUser(otherUserId);
     }
@@ -214,20 +239,20 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         UserInfo user1 = generateUser(currentUserId, "User1", /* supportsSwitch= */ true,
                 /* isGuest= */ false);
         mAliveUsers.add(user1);
-        QCList list = getQCList();
+        List<QCRow> rows = getProfileRows();
         // Expect 3 rows - one for the user, one for the guest user, and one for add user
-        assertThat(list.getRows()).hasSize(3);
-        QCRow guestRow = list.getRows().get(1);
+        assertThat(rows).hasSize(3);
+        QCRow guestRow = rows.get(1);
         guestRow.getActionHandler().onAction(guestRow, mContext, new Intent());
         verify(mCarUserManager).createGuest(any());
         verify(mCarUserManager).switchUser(guestUserId);
     }
 
-    private QCList getQCList() {
+    private List<QCRow> getProfileRows() {
         QCItem item = mProfileSwitcher.getQCItem();
         assertThat(item).isNotNull();
         assertThat(item instanceof QCList).isTrue();
-        return (QCList) item;
+        return ((QCList) item).getRows();
     }
 
     private UserInfo generateUser(int id, String name, boolean supportsSwitch, boolean isGuest) {

@@ -384,7 +384,6 @@ public class StatusIconPanelController {
             registerFocusListener(false);
             mQCViews.forEach(qcView -> qcView.listen(false));
         });
-        addFocusParkingView();
 
         return true;
     }
@@ -409,17 +408,6 @@ public class StatusIconPanelController {
         Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         intent.setIdentifier(mIdentifier);
         mContext.sendBroadcastAsUser(intent, UserHandle.CURRENT);
-    }
-
-    /**
-     * Add a FocusParkingView to the panel content to prevent rotary controller rotation wrapping
-     * around in the panel - this only should be called once per panel.
-     */
-    private void addFocusParkingView() {
-        if (mPanelContent != null) {
-            FocusParkingView fpv = new FocusParkingView(mContext);
-            mPanelContent.addView(fpv);
-        }
     }
 
     private void registerFocusListener(boolean register) {

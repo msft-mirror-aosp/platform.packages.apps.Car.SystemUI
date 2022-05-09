@@ -111,6 +111,35 @@ public abstract class PrivacyChip extends MotionLayout implements AnimatedStatus
         lightIcon.setImageResource(getLightIconResourceId());
         ImageView darkIcon = requireViewById(R.id.dark_icon);
         darkIcon.setImageResource(getDarkIconResourceId());
+
+        setTransitionListener(
+                new MotionLayout.TransitionListener() {
+                    @Override
+                    public void onTransitionCompleted(MotionLayout motionLayout, int currentId) {}
+
+                    @Override
+                    public void onTransitionStarted(MotionLayout m, int startId, int endId) {
+                        if (startId == R.id.active) {
+                            showIndicatorBorder(false);
+                        }
+                    }
+
+                    @Override
+                    public void onTransitionChange(
+                            MotionLayout m, int startId, int endId, float progress) {
+                        // When R.id.activeFromActiveInit animation is done and the green
+                        // indicator shows up, set its background with a drawable with border.
+                        // Reset the background to default after that (in onTransitionStarted()).
+                        if (Float.compare(progress, 1.0f) == 0
+                                && startId == R.id.active_init && endId == R.id.active) {
+                            showIndicatorBorder(true);
+                        }
+                    }
+
+                    @Override
+                    public void onTransitionTrigger(
+                            MotionLayout m, int triggerId, boolean positive, float p) {}
+                });
     }
 
     @Override
@@ -344,6 +373,17 @@ public abstract class PrivacyChip extends MotionLayout implements AnimatedStatus
                 mCurrentTransitionState = AnimationStates.ACTIVE;
             }
             transitionToEnd();
+        });
+    }
+
+    private void showIndicatorBorder(boolean show) {
+        // Since this is launched using a {@link ScheduledExecutorService}, its UI based elements
+        // need to execute on main executor.
+        getContext().getMainExecutor().execute(() -> {
+            View activeBackground = findViewById(R.id.active_background);
+            activeBackground.setBackground(getContext().getDrawable(show
+                    ? R.drawable.privacy_chip_active_background_pill_with_border
+                    : R.drawable.privacy_chip_active_background_pill));
         });
     }
 

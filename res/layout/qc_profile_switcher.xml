@@ -19,6 +19,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/status_icon_panel_bg_color">
+    <com.android.car.ui.FocusParkingView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
     <com.android.car.ui.FocusArea
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

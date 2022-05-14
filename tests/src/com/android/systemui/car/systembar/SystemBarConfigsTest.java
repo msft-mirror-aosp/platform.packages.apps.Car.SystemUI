@@ -109,7 +109,7 @@ public class SystemBarConfigsTest extends SysuiTestCase {
     public void onInit_hideBottomSystemBarForKeyboardValueDoNotSync_throwsRuntimeException() {
         when(mResources.getBoolean(R.bool.config_hideBottomSystemBarForKeyboard)).thenReturn(false);
         when(mResources.getBoolean(
-                com.android.internal.R.bool.config_automotiveHideNavBarForKeyboard)).thenReturn(
+                com.android.internal.R.bool.config_hideNavBarForKeyboard)).thenReturn(
                 true);
 
         mSystemBarConfigs = new SystemBarConfigs(mResources);
@@ -276,7 +276,7 @@ public class SystemBarConfigsTest extends SysuiTestCase {
 
         when(mResources.getBoolean(R.bool.config_hideTopSystemBarForKeyboard)).thenReturn(false);
         when(mResources.getBoolean(
-                com.android.internal.R.bool.config_automotiveHideNavBarForKeyboard)).thenReturn(
+                com.android.internal.R.bool.config_hideNavBarForKeyboard)).thenReturn(
                 false);
         when(mResources.getBoolean(R.bool.config_hideLeftSystemBarForKeyboard)).thenReturn(
                 false);

@@ -57,11 +57,11 @@
 
     <!-- If set to true, the corresponding system bar will be hidden when Keyboard (IME) appears.
          NOTE: hideBottomSystemBarKeyboard must not be overlaid directly here. To change its value,
-         overlay config_automotiveHideNavBarForKeyboard in framework/base/core/res/res. -->
+         overlay config_hideNavBarForKeyboard in framework/base/core/res/res. -->
     <bool name="config_hideTopSystemBarForKeyboard">false</bool>
     <bool name="config_hideLeftSystemBarForKeyboard">false</bool>
     <bool name="config_hideRightSystemBarForKeyboard">false</bool>
-    <bool name="config_hideBottomSystemBarForKeyboard">@*android:bool/config_automotiveHideNavBarForKeyboard</bool>
+    <bool name="config_hideBottomSystemBarForKeyboard">@*android:bool/config_hideNavBarForKeyboard</bool>
 
     <!-- If set to false, requests CarSystemBarViews to not intercept touch events to make it easier
         to touch the buttons without accidentally expanding the notification panel.-->

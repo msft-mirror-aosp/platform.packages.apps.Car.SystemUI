@@ -32,8 +32,8 @@
     <string name="user_add_user_message_update" msgid="3310089453006545712">"Qualsiasi profilo può aggiornare le app che verranno usate da tutti gli altri profili."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"Limite di profili raggiunto"</string>
     <plurals name="profile_limit_reached_message" formatted="false" msgid="910608128912533066">
-      <item quantity="one">Puoi aggiungere al massimo <xliff:g id="COUNT">%d</xliff:g> profilo.</item>
       <item quantity="other">Puoi aggiungere al massimo <xliff:g id="COUNT">%d</xliff:g> profili.</item>
+      <item quantity="one">È possibile creare un solo profilo.</item>
     </plurals>
     <string name="car_loading_profile" msgid="458961191993686065">"Caricamento"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Caricamento dell\'utente (da <xliff:g id="FROM_USER">%1$d</xliff:g> a <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>

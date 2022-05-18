@@ -25,9 +25,11 @@ import static android.view.WindowInsetsController.BEHAVIOR_DEFAULT;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,6 +42,8 @@ import android.testing.TestableLooper;
 import android.testing.TestableResources;
 import android.util.ArrayMap;
 import android.view.Display;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import androidx.test.filters.SmallTest;
@@ -69,8 +73,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.internal.InOrderImpl;
+
+import java.util.Arrays;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -150,6 +158,14 @@ public class CarSystemBarTest extends SysuiTestCase {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        when(mCarSystemBarController.getTopWindow()).thenReturn(mock(ViewGroup.class));
+        when(mCarSystemBarController.getBottomWindow()).thenReturn(mock(ViewGroup.class));
+        when(mCarSystemBarController.getLeftWindow()).thenReturn(mock(ViewGroup.class));
+        when(mCarSystemBarController.getRightWindow()).thenReturn(mock(ViewGroup.class));
+        initCarSystemBar();
+    }
+
+    private void initCarSystemBar() {
         mCarSystemBar = new CarSystemBar(mContext, mCarSystemBarController, mLightBarController,
                 mStatusBarIconController, mWindowManager, mDeviceProvisionedController,
                 new CommandQueue(mContext), mAutoHideController, mButtonSelectionStateListener,
@@ -412,6 +428,42 @@ public class CarSystemBarTest extends SysuiTestCase {
         mCarSystemBar.onConfigChanged(config);
 
         verify(mockUiModeManager).setNightModeActivated(true);
+    }
+
+    @Test
+    public void onConfigChanged_callOnClick_profilePickerViewIsSelected() {
+        Configuration config = new Configuration();
+        config.uiMode = Configuration.UI_MODE_NIGHT_YES;
+        View mockProfilePickerView = mock(View.class);
+        when(mockProfilePickerView.isSelected()).thenReturn(true);
+        CarSystemBarView mockTopBarView = mock(CarSystemBarView.class);
+        when(mockTopBarView.findViewById(R.id.user_name)).thenReturn(mockProfilePickerView);
+        when(mCarSystemBarController.getTopBar(anyBoolean())).thenReturn(mockTopBarView);
+        initCarSystemBar();
+
+        mCarSystemBar.start();
+        mCarSystemBar.onConfigChanged(config);
+
+        InOrder inOrder = new InOrderImpl(Arrays.asList(mockProfilePickerView, mockTopBarView));
+        inOrder.verify(mockTopBarView).findViewById(R.id.user_name);
+        inOrder.verify(mockProfilePickerView).callOnClick();
+        inOrder.verify(mockTopBarView).findViewById(R.id.user_name);
+        inOrder.verify(mockProfilePickerView).callOnClick();
+    }
+
+    @Test
+    public void onConfigChanged_callQuickControlsOnClickFromClassName_forSelectedQuickControl() {
+        String clsName = "testClsName";
+        Configuration config = new Configuration();
+        config.uiMode = Configuration.UI_MODE_NIGHT_YES;
+        when(mCarSystemBarController.getSelectedQuickControlsClassName()).thenReturn(clsName);
+        initCarSystemBar();
+
+        mCarSystemBar.start();
+        mCarSystemBar.onConfigChanged(config);
+
+        verify(mCarSystemBarController, times(2))
+                .callQuickControlsOnClickFromClassName(clsName);
     }
 
     private void waitForDelayableExecutor() {

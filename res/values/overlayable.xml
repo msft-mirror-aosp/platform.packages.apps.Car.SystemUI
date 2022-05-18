@@ -571,12 +571,16 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="phone_nav"/>
       <item type="id" name="primary_icon"/>
       <item type="id" name="qc_bluetooth_footer_button"/>
+      <item type="id" name="qc_bluetooth_status_icon"/>
       <item type="id" name="qc_camera_footer_button"/>
       <item type="id" name="qc_connectivity_footer_button"/>
       <item type="id" name="qc_display_footer_button"/>
+      <item type="id" name="qc_display_status_icon"/>
       <item type="id" name="qc_entry_points_container"/>
+      <item type="id" name="qc_location_status_icon"/>
       <item type="id" name="qc_mic_footer_button"/>
       <item type="id" name="qc_profile_footer_button"/>
+      <item type="id" name="qc_signal_status_icon"/>
       <item type="id" name="qs_car_top_bar"/>
       <item type="id" name="read_only_icons_container"/>
       <item type="id" name="rear_defroster_button"/>

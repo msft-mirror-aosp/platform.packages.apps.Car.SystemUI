@@ -154,6 +154,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="status_icon_selected_button_color"/>
       <item type="color" name="system_bar_background_opaque"/>
       <item type="color" name="system_bar_background_pill_color"/>
+      <item type="color" name="system_bar_clock_text_color"/>
       <item type="color" name="system_bar_icon_color"/>
       <item type="color" name="system_bar_icon_color_with_selection"/>
       <item type="color" name="system_bar_icon_selected_color"/>

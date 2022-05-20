@@ -170,4 +170,9 @@ public class CarSystemBarViewFactory {
         mCachedViewMap.put(type, view);
         return mCachedViewMap.get(type);
     }
+
+    /** Resets the cached Views. */
+    protected void resetCache() {
+        mCachedViewMap.clear();
+    }
 }

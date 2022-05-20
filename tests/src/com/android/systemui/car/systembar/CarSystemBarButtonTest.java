@@ -134,11 +134,11 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
     }
 
     @Test
-    public void onSelected_doesNotHighlightWhenSelected_applySelectedAlpha() {
+    public void onSelected_doesNotHighlightWhenSelected_applyDefaultUnselectedAlpha() {
         mDefaultButton.setSelected(true);
         waitForIdleSync();
 
-        assertThat(mDefaultButton.getIconAlpha()).isEqualTo(mDefaultButton.getSelectedAlpha());
+        assertThat(mDefaultButton.getIconAlpha()).isEqualTo(mDefaultButton.getUnselectedAlpha());
     }
 
     @Test

@@ -63,7 +63,6 @@ import com.android.systemui.statusbar.phone.SysuiDarkIconDispatcher;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 
-import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
@@ -426,7 +425,7 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
     /**
      * We register for soft keyboard visibility events such that we can hide the navigation bar
      * giving more screen space to the IME. Note: this is optional and controlled by
-     * {@code com.android.internal.R.bool.config_automotiveHideNavBarForKeyboard}.
+     * {@code com.android.internal.R.bool.config_hideNavBarForKeyboard}.
      */
     @Override
     public void setImeWindowStatus(int displayId, IBinder token, int vis, int backDisposition,
@@ -581,7 +580,7 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
     }
 
     @Override
-    public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
+    public void dump(PrintWriter pw, String[] args) {
         pw.print("  mTaskStackListener=");
         pw.println(mButtonSelectionStateListener);
         pw.print("  mBottomSystemBarView=");

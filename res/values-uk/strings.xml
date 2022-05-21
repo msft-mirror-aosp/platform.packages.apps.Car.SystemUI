@@ -32,45 +32,29 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Можна створити лише один профіль.}one{Можна додати не більше ніж # профіль.}few{Можна додати не більше ніж # профілі.}many{Можна додати не більше ніж # профілів.}other{Можна додати не більше ніж # профілю.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Завантаження"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Завантаження профілю користувача (від <xliff:g id="FROM_USER">%1$d</xliff:g> до <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
-    <!-- no translation found for privacy_chip_off_content (8406415098507955316) -->
-    <skip />
-    <!-- no translation found for privacy_chip_use_sensor (7688230720803089653) -->
-    <skip />
-    <!-- no translation found for privacy_chip_use_sensor_subtext (5655148288310815742) -->
-    <skip />
+    <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g>: вимкнено."</string>
+    <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"Використовувати функцію \"<xliff:g id="SENSOR">%1$s</xliff:g>\""</string>
+    <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Для додатків, яким надано дозвіл"</string>
     <string name="mic_privacy_chip_microphone_settings" msgid="4520886720588226450">"Налаштування мікрофона"</string>
-    <!-- no translation found for privacy_chip_app_using_sensor_suffix (7921315376271490004) -->
-    <skip />
+    <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"Додаток <xliff:g id="APP">%1$s</xliff:g> використовує функцію \"<xliff:g id="SENSOR">%2$s</xliff:g>\""</string>
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"Додатки <xliff:g id="APP_LIST">%s</xliff:g> використовують мікрофон"</string>
-    <!-- no translation found for privacy_chip_app_recently_used_sensor_suffix (4632772067170022529) -->
-    <skip />
-    <!-- no translation found for privacy_chip_apps_recently_used_sensor_suffix (2715537466314464047) -->
-    <skip />
+    <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"Додаток <xliff:g id="APP">%1$s</xliff:g> нещодавно використовував функцію \"<xliff:g id="SENSOR">%2$s</xliff:g>\""</string>
+    <string name="privacy_chip_apps_recently_used_sensor_suffix" msgid="2715537466314464047">"Додаток <xliff:g id="APP_0">%1$s</xliff:g> і ще <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> нещодавно використовували функцію \"<xliff:g id="SENSOR">%3$s</xliff:g>\""</string>
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"Мікрофон увімкнено"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Мікрофон вимкнено"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"OK"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Увімкнути мікрофон транспортного засобу?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Щоб продовжити, увімкніть мікрофон інформаційно-розважальної системи. Мікрофон буде також увімкнено в усіх додатках, яким надано дозвіл."</string>
-    <!-- no translation found for camera_privacy_chip_camera_settings (96342672670928980) -->
-    <skip />
-    <!-- no translation found for camera_privacy_chip_app_using_camera_suffix (2591363552459967509) -->
-    <skip />
-    <!-- no translation found for camera_privacy_chip_apps_using_camera_suffix (8033118959615498419) -->
-    <skip />
-    <!-- no translation found for camera_privacy_chip_app_recently_used_camera_suffix (4534950658276502559) -->
-    <skip />
-    <!-- no translation found for camera_privacy_chip_apps_recently_used_camera_suffix (3094973410349692954) -->
-    <skip />
-    <!-- no translation found for camera_privacy_chip_on_toast (7901274903678512207) -->
-    <skip />
-    <!-- no translation found for camera_privacy_chip_off_toast (7135472255099347229) -->
-    <skip />
-    <!-- no translation found for camera_privacy_chip_dialog_ok (7285467760928137765) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_camera_dialog_title (4787836783010823885) -->
-    <skip />
-    <!-- no translation found for sensor_privacy_start_use_camera_dialog_content (7749639131326657668) -->
-    <skip />
+    <string name="camera_privacy_chip_camera_settings" msgid="96342672670928980">"Налаштування камери"</string>
+    <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"Додаток <xliff:g id="APP">%s</xliff:g> використовує камеру"</string>
+    <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"Додатки <xliff:g id="APP_LIST">%s</xliff:g> використовують камеру"</string>
+    <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"Нещодавно додаток <xliff:g id="APP">%s</xliff:g> використовував камеру"</string>
+    <string name="camera_privacy_chip_apps_recently_used_camera_suffix" msgid="3094973410349692954">"Нещодавно додаток <xliff:g id="APP_0">%1$s</xliff:g> і ще <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> використовували камеру"</string>
+    <string name="camera_privacy_chip_on_toast" msgid="7901274903678512207">"Камеру ввімкнено"</string>
+    <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"Камеру вимкнено"</string>
+    <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"OK"</string>
+    <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Увімкнути камеру транспортного засобу?"</string>
+    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Щоб продовжити, увімкніть камеру інформаційно-розважальної системи. Камеру буде також увімкнено в усіх додатках, яким надано дозвіл."</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Ця функція недоступна під час руху"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Закрити додаток"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Назад"</string>

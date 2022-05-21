@@ -25,6 +25,7 @@ import android.util.SparseArray;
 import android.view.IDisplayWindowInsetsController;
 import android.view.IWindowManager;
 import android.view.InsetsController;
+import android.view.InsetsSourceControl;
 import android.view.InsetsState;
 import android.view.InsetsVisibilities;
 import android.view.WindowInsets.Type;
@@ -37,6 +38,7 @@ import com.android.wm.shell.common.DisplayImeController;
 import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.common.TransactionPool;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -52,7 +54,8 @@ public class DisplaySystemBarsController extends DisplayImeController {
     private final Context mContext;
     private final DisplayController mDisplayController;
     private final Handler mHandler;
-    private SparseArray<PerDisplay> mPerDisplaySparseArray;
+    @VisibleForTesting
+    SparseArray<PerDisplay> mPerDisplaySparseArray;
 
     public DisplaySystemBarsController(
             Context context,
@@ -137,6 +140,22 @@ public class DisplaySystemBarsController extends DisplayImeController {
             } else {
                 super.showInsets(types, fromIme);
             }
+        }
+
+        @Override
+        public void insetsControlChanged(InsetsState insetsState,
+                InsetsSourceControl[] activeControls) {
+            InsetsSourceControl[] nonImeControls = null;
+            // Need to filter out IME control to prevent control after leash is released
+            if (activeControls != null) {
+                nonImeControls = Arrays.stream(activeControls).filter(
+                        c -> c.getType() != InsetsState.ITYPE_IME).toArray(
+                        InsetsSourceControl[]::new);
+            }
+            mInsetsController.onControlsChanged(nonImeControls);
+            // After passing the controls to the InsetsController, pass the original controls to
+            // the parent DisplayImeController to handle IME controls.
+            super.insetsControlChanged(insetsState, activeControls);
         }
 
         @Override

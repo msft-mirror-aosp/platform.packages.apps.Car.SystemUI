@@ -26,10 +26,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.android.systemui.statusbar.policy.BatteryController;
 
-import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
@@ -59,7 +59,7 @@ public class CarBatteryController extends BroadcastReceiver implements BatteryCo
     }
 
     @Override
-    public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
+    public void dump(PrintWriter pw, String[] args) {
         pw.println("CarBatteryController state:");
         pw.print("    mLevel=");
         pw.println(mLevel);
@@ -67,6 +67,11 @@ public class CarBatteryController extends BroadcastReceiver implements BatteryCo
 
     @Override
     public void setPowerSaveMode(boolean powerSave) {
+        // No-op. No power save mode for the car.
+    }
+
+    @Override
+    public void setPowerSaveMode(boolean powerSave, View view) {
         // No-op. No power save mode for the car.
     }
 

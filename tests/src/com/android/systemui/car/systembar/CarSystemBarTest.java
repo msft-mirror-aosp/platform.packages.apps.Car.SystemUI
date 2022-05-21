@@ -26,10 +26,13 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.UiModeManager;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.RemoteException;
 import android.testing.AndroidTestingRunner;
@@ -57,6 +60,7 @@ import com.android.systemui.statusbar.phone.PhoneStatusBarPolicy;
 import com.android.systemui.statusbar.phone.StatusBarIconController;
 import com.android.systemui.statusbar.phone.StatusBarSignalPolicy;
 import com.android.systemui.statusbar.phone.SysuiDarkIconDispatcher;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.util.concurrency.FakeExecutor;
 import com.android.systemui.util.time.FakeSystemClock;
@@ -151,7 +155,8 @@ public class CarSystemBarTest extends SysuiTestCase {
                 new CommandQueue(mContext), mAutoHideController, mButtonSelectionStateListener,
                 mExecutor, mUiBgExecutor, mBarService, () -> mKeyguardStateController,
                 () -> mIconPolicy, mHvacController, mSignalPolicy,
-                new SystemBarConfigs(mTestableResources.getResources()));
+                new SystemBarConfigs(mTestableResources.getResources()),
+                mock(ConfigurationController.class));
         mCarSystemBar.setSignalPolicy(mSignalPolicy);
     }
 
@@ -395,6 +400,18 @@ public class CarSystemBarTest extends SysuiTestCase {
         mCarSystemBar.disable(Display.DEFAULT_DISPLAY, 0, 0, false);
 
         verify(mCarSystemBarController).setSystemBarStates(0, 0);
+    }
+
+    @Test
+    public void onConfigChanged_setNightModeActivated() {
+        Configuration config = new Configuration();
+        config.uiMode = Configuration.UI_MODE_NIGHT_YES;
+        UiModeManager mockUiModeManager = mock(UiModeManager.class);
+        mCarSystemBar.setUiModeManager(mockUiModeManager);
+
+        mCarSystemBar.onConfigChanged(config);
+
+        verify(mockUiModeManager).setNightModeActivated(true);
     }
 
     private void waitForDelayableExecutor() {

@@ -425,7 +425,7 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
     /**
      * We register for soft keyboard visibility events such that we can hide the navigation bar
      * giving more screen space to the IME. Note: this is optional and controlled by
-     * {@code com.android.internal.R.bool.config_automotiveHideNavBarForKeyboard}.
+     * {@code com.android.internal.R.bool.config_hideNavBarForKeyboard}.
      */
     @Override
     public void setImeWindowStatus(int displayId, IBinder token, int vis, int backDisposition,

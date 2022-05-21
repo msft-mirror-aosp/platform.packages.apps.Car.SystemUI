@@ -28,7 +28,7 @@
     <style name="TextAppearance.SystemBar.Clock"
            parent="@*android:style/TextAppearance.StatusBar.Icon">
         <item name="android:textSize">@dimen/car_body1_size</item>
-        <item name="android:textColor">@*android:color/car_headline3</item>
+        <item name="android:textColor">@color/system_bar_clock_text_color</item>
     </style>
 
     <style name="TextAppearance.SystemBar.Username"

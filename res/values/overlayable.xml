@@ -471,6 +471,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="notification_material_bg"/>
       <item type="drawable" name="notification_material_bg_dim"/>
       <item type="drawable" name="privacy_chip_active_background_pill"/>
+      <item type="drawable" name="privacy_chip_active_background_pill_with_border"/>
       <item type="drawable" name="privacy_chip_inactive_background_pill"/>
       <item type="drawable" name="privacy_chip_inactive_selected_background_pill"/>
       <item type="drawable" name="stat_sys_signal_null"/>

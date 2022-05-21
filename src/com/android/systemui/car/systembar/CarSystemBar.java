@@ -26,7 +26,9 @@ import static com.android.systemui.statusbar.phone.BarTransitions.MODE_TRANSPARE
 
 import android.app.StatusBarManager.Disable2Flags;
 import android.app.StatusBarManager.DisableFlags;
+import android.app.UiModeManager;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.inputmethodservice.InputMethodService;
 import android.os.IBinder;
@@ -60,6 +62,7 @@ import com.android.systemui.statusbar.phone.LightBarController;
 import com.android.systemui.statusbar.phone.PhoneStatusBarPolicy;
 import com.android.systemui.statusbar.phone.StatusBarSignalPolicy;
 import com.android.systemui.statusbar.phone.SysuiDarkIconDispatcher;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 
@@ -72,7 +75,8 @@ import javax.inject.Inject;
 import dagger.Lazy;
 
 /** Navigation bars customized for the automotive use case. */
-public class CarSystemBar extends CoreStartable implements CommandQueue.Callbacks {
+public class CarSystemBar extends CoreStartable implements CommandQueue.Callbacks,
+        ConfigurationController.ConfigurationListener {
     private final CarSystemBarController mCarSystemBarController;
     private final SysuiDarkIconDispatcher mStatusBarIconController;
     private final WindowManager mWindowManager;
@@ -86,6 +90,8 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
     private final Lazy<KeyguardStateController> mKeyguardStateControllerLazy;
     private final Lazy<PhoneStatusBarPolicy> mIconPolicyLazy;
     private final HvacController mHvacController;
+
+    private UiModeManager mUiModeManager;
 
     private final int mDisplayId;
     private final SystemBarConfigs mSystemBarConfigs;
@@ -124,6 +130,8 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
     private boolean mStatusBarTransientShown;
     private boolean mNavBarTransientShown;
 
+    private boolean mIsUiModeNight = false;
+
     @Inject
     public CarSystemBar(Context context,
             CarSystemBarController carSystemBarController,
@@ -142,7 +150,8 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
             Lazy<PhoneStatusBarPolicy> iconPolicyLazy,
             HvacController hvacController,
             StatusBarSignalPolicy signalPolicy,
-            SystemBarConfigs systemBarConfigs
+            SystemBarConfigs systemBarConfigs,
+            ConfigurationController configurationController
     ) {
         super(context);
         mCarSystemBarController = carSystemBarController;
@@ -161,6 +170,8 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
         mSystemBarConfigs = systemBarConfigs;
         mSignalPolicy = signalPolicy;
         mDisplayId = context.getDisplayId();
+        mUiModeManager = mContext.getSystemService(UiModeManager.class);
+        configurationController.addCallback(this);
     }
 
     @Override
@@ -610,5 +621,25 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onConfigChanged(Configuration newConfig) {
+        boolean isConfigNightMode = (newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                == Configuration.UI_MODE_NIGHT_YES;
+        // Only refresh UI on Night mode changes
+        if (isConfigNightMode != mIsUiModeNight) {
+            mIsUiModeNight = isConfigNightMode;
+            mUiModeManager.setNightModeActivated(mIsUiModeNight);
+
+            mCarSystemBarController.resetCache();
+
+            restartNavBars();
+        }
+    }
+
+    @VisibleForTesting
+    void setUiModeManager(UiModeManager uiModeManager) {
+        mUiModeManager = uiModeManager;
     }
 }

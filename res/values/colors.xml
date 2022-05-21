@@ -130,4 +130,7 @@
     <color name="status_icon_highlighted_color">#000000</color>
     <!-- Color for status icon that is not highlighted. -->
     <color name="status_icon_not_highlighted_color">#FFFFFF</color>
+
+    <!-- Color for clock text -->
+    <color name="system_bar_clock_text_color">@*android:color/car_headline3</color>
 </resources>

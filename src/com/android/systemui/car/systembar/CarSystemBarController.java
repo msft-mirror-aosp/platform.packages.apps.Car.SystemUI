@@ -654,4 +654,9 @@ public class CarSystemBarController {
         }
         return barViews;
     }
+
+    /** Resets the cached Views. */
+    protected void resetCache() {
+        mCarSystemBarViewFactory.resetCache();
+    }
 }

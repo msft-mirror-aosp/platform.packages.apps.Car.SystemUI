@@ -113,4 +113,9 @@ public class LocationStatusIconController extends StatusIconController {
             }
         });
     }
+
+    @Override
+    protected int getId() {
+        return R.id.qc_location_status_icon;
+    }
 }

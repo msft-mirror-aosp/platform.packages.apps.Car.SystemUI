@@ -50,4 +50,9 @@ public class DisplayStatusIconController extends StatusIconController {
     protected int getPanelContentLayout() {
         return R.layout.qc_display_panel;
     }
+
+    @Override
+    protected int getId() {
+        return R.id.qc_display_status_icon;
+    }
 }

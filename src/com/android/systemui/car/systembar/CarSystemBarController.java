@@ -655,6 +655,16 @@ public class CarSystemBarController {
         return barViews;
     }
 
+    /** Gets the selected Quick Controls class name. */
+    protected String getSelectedQuickControlsClassName() {
+        return mCarSystemBarViewFactory.getSelectedQuickControlsClassName();
+    }
+
+    /** Calls onClick for the given Quick Controls class name. */
+    protected void callQuickControlsOnClickFromClassName(String clsName) {
+        mCarSystemBarViewFactory.callQuickControlsOnClickFromClassName(clsName);
+    }
+
     /** Resets the cached Views. */
     protected void resetCache() {
         mCarSystemBarViewFactory.resetCache();

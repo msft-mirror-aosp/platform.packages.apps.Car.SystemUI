@@ -104,4 +104,9 @@ public class BluetoothStatusIconController extends StatusIconController implemen
     Drawable getBluetoothOnConnectedDrawable() {
         return mBluetoothOnConnectedDrawable;
     }
+
+    @Override
+    protected int getId() {
+        return R.id.qc_bluetooth_status_icon;
+    }
 }

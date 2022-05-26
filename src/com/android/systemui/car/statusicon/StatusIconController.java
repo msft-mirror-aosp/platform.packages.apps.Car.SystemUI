@@ -128,6 +128,11 @@ public abstract class StatusIconController {
      */
     protected abstract void updateStatus();
 
+    /**
+     * Gets the Id for the View.
+     */
+    protected abstract int getId();
+
     @VisibleForTesting
     boolean isViewRegistered(ImageView view) {
         return mObserverMap.containsKey(view);

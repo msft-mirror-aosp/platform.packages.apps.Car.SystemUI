@@ -37,6 +37,7 @@ import android.view.ViewGroup;
 
 import androidx.test.filters.SmallTest;
 
+import com.android.car.ui.FocusParkingView;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
@@ -733,6 +734,18 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         setLockTaskModeLocked(/* locked= */ true);
 
         assertThat(userSwitcher.getVisibility()).isEqualTo(View.INVISIBLE);
+    }
+
+    @Test
+    public void cacheAndHideFocus_doesntCallHideFocus_if_focusParkingViewIsFocused() {
+        mCarSystemBar = createSystemBarController();
+        View mockFocusParkingView = mock(FocusParkingView.class);
+        View mockContainerView = mock(View.class);
+        when(mockContainerView.findFocus()).thenReturn(mockFocusParkingView);
+
+        int returnFocusedViewId = mCarSystemBar.cacheAndHideFocus(mockContainerView);
+
+        assertThat(returnFocusedViewId).isEqualTo(View.NO_ID);
     }
 
     private void clearSystemBarStates() {

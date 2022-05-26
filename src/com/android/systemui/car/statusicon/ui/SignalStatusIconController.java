@@ -26,8 +26,8 @@ import com.android.settingslib.graph.SignalDrawable;
 import com.android.systemui.R;
 import com.android.systemui.car.statusicon.StatusIconController;
 import com.android.systemui.dagger.qualifiers.Main;
-import com.android.systemui.statusbar.connectivity.NetworkController;
 import com.android.systemui.statusbar.connectivity.MobileDataIndicators;
+import com.android.systemui.statusbar.connectivity.NetworkController;
 import com.android.systemui.statusbar.connectivity.SignalCallback;
 import com.android.systemui.statusbar.connectivity.WifiIndicators;
 import com.android.systemui.statusbar.policy.HotspotController;
@@ -119,5 +119,10 @@ public class SignalStatusIconController extends StatusIconController implements
     @VisibleForTesting
     Drawable getHotSpotIconDrawable() {
         return mHotSpotIconDrawable;
+    }
+
+    @Override
+    protected int getId() {
+        return R.id.qc_signal_status_icon;
     }
 }

@@ -46,6 +46,7 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.RegisterStatusBarResult;
 import com.android.internal.view.AppearanceRegion;
 import com.android.systemui.CoreStartable;
+import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.hvac.HvacController;
@@ -632,9 +633,44 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
             mIsUiModeNight = isConfigNightMode;
             mUiModeManager.setNightModeActivated(mIsUiModeNight);
 
-            mCarSystemBarController.resetCache();
+            // cache the current state
+            // The focused view will be destroyed during re-layout, causing the framework to adjust
+            // the focus unexpectedly. To avoid that, move focus to a view that won't be
+            // destroyed during re-layout and has no focus highlight (the FocusParkingView), then
+            // move focus back to the previously focused view after re-layout.
+            mCarSystemBarController.cacheAndHideFocus();
+            String selectedQuickControlsClsName = null;
+            View profilePickerView = null;
+            boolean isProfilePickerOpen = false;
+            if (mTopSystemBarView != null) {
+                profilePickerView = mTopSystemBarView.findViewById(
+                        R.id.user_name);
+            }
+            if (profilePickerView != null) isProfilePickerOpen = profilePickerView.isSelected();
+            if (isProfilePickerOpen) {
+                profilePickerView.callOnClick();
+            } else {
+                selectedQuickControlsClsName =
+                        mCarSystemBarController.getSelectedQuickControlsClassName();
+                mCarSystemBarController.callQuickControlsOnClickFromClassName(
+                        selectedQuickControlsClsName);
+            }
 
+            mCarSystemBarController.resetCache();
             restartNavBars();
+
+            // retrieve the previous state
+            if (isProfilePickerOpen) {
+                if (mTopSystemBarView != null) {
+                    profilePickerView = mTopSystemBarView.findViewById(
+                            R.id.user_name);
+                }
+                if (profilePickerView != null) profilePickerView.callOnClick();
+            } else {
+                mCarSystemBarController.callQuickControlsOnClickFromClassName(
+                        selectedQuickControlsClsName);
+            }
+            mCarSystemBarController.restoreFocus();
         }
     }
 

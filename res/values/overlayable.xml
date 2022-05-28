@@ -672,6 +672,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="device_management_dialog"/>
       <item type="layout" name="fan_direction"/>
       <item type="layout" name="fan_speed"/>
+      <item type="layout" name="hvac_panel"/>
       <item type="layout" name="hvac_panel_container"/>
       <item type="layout" name="hvac_panel_handle_bar"/>
       <item type="layout" name="hvac_temperature_bar_overlay"/>

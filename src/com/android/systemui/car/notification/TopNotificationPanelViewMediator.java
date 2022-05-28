@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.notification;
 
+import android.app.UiModeManager;
+
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.systembar.CarSystemBarController;
@@ -41,14 +43,16 @@ public class TopNotificationPanelViewMediator extends NotificationPanelViewMedia
             BroadcastDispatcher broadcastDispatcher,
 
             CarDeviceProvisionedController carDeviceProvisionedController,
-            ConfigurationController configurationController
+            ConfigurationController configurationController,
+            UiModeManager uiModeManager
     ) {
         super(carSystemBarController,
                 notificationPanelViewController,
                 powerManagerHelper,
                 broadcastDispatcher,
                 carDeviceProvisionedController,
-                configurationController);
+                configurationController,
+                uiModeManager);
         notificationPanelViewController.setOverlayDirection(
                 OverlayPanelViewController.OVERLAY_FROM_TOP_BAR);
     }

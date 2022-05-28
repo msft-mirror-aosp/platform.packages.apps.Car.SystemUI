@@ -28,6 +28,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.MainThread;
 
 import com.android.car.ui.FocusArea;
+import com.android.internal.annotations.VisibleForTesting;
 
 import java.util.ArrayList;
 
@@ -318,5 +319,10 @@ public class OverlayViewController {
      */
     public void removePanelViewStateListener(OverlayViewStateListener listener) {
         mViewStateListeners.remove(listener);
+    }
+
+    @VisibleForTesting
+    public void setLayout(View layout) {
+        mLayout = layout;
     }
 }

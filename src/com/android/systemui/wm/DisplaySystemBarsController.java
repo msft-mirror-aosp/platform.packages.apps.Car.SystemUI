@@ -51,9 +51,9 @@ public class DisplaySystemBarsController extends DisplayImeController {
 
     private static final String TAG = "DisplaySystemBarsController";
 
-    private final Context mContext;
-    private final DisplayController mDisplayController;
-    private final Handler mHandler;
+    protected final Context mContext;
+    protected final DisplayController mDisplayController;
+    protected final Handler mHandler;
     @VisibleForTesting
     SparseArray<PerDisplay> mPerDisplaySparseArray;
 
@@ -99,7 +99,6 @@ public class DisplaySystemBarsController extends DisplayImeController {
         mPerDisplaySparseArray.remove(displayId);
     }
 
-    @VisibleForTesting
     class PerDisplay extends DisplayImeController.PerDisplay {
 
         int mDisplayId;
@@ -168,7 +167,7 @@ public class DisplaySystemBarsController extends DisplayImeController {
             updateDisplayWindowRequestedVisibilities();
         }
 
-        private void updateDisplayWindowRequestedVisibilities() {
+        protected void updateDisplayWindowRequestedVisibilities() {
             if (mPackageName == null) {
                 return;
             }
@@ -185,7 +184,7 @@ public class DisplaySystemBarsController extends DisplayImeController {
             }
         }
 
-        private void updateRequestedVisibilities(@Type.InsetsType int types, boolean visible) {
+        protected void updateRequestedVisibilities(@Type.InsetsType int types, boolean visible) {
             ArraySet<Integer> internalTypes = InsetsState.toInternalType(types);
             for (int i = internalTypes.size() - 1; i >= 0; i--) {
                 mRequestedVisibilities.setVisibility(internalTypes.valueAt(i), visible);

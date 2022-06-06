@@ -18,10 +18,12 @@ package com.android.systemui.car.statusicon;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.testng.Assert.assertThrows;
 
 import android.content.Intent;
 import android.os.UserHandle;
@@ -176,6 +178,24 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
         mStatusIconPanelController.getBroadcastReceiver().onReceive(mContext, intent);
 
         verify(mAnchorView).setColorFilter(mStatusIconPanelController.getIconNotHighlightedColor());
+    }
+
+    @Test
+    public void onDestroy_unregistersListeners() {
+        mStatusIconPanelController.destroyPanel();
+
+        verify(mCarServiceProvider).removeListener(any());
+        verify(mConfigurationController).removeCallback(any());
+        verify(mBroadcastDispatcher).unregisterReceiver(any());
+    }
+
+    @Test
+    public void onDestroy_reAttach_throwsException() {
+        mStatusIconPanelController.destroyPanel();
+
+        assertThrows(IllegalStateException.class, () -> mStatusIconPanelController.attachPanel(
+                mAnchorView, R.layout.qc_display_panel,
+                R.dimen.car_status_icon_panel_default_width));
     }
 
     private void clickAnchorView() {

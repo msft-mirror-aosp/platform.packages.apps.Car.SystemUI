@@ -38,7 +38,9 @@ import com.android.systemui.statusbar.policy.ConfigurationController;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Provider;
 
@@ -56,6 +58,7 @@ public abstract class StatusIconGroupContainerController {
     private final Map<Class<?>, Provider<StatusIconController>> mIconControllerCreators;
     private final String mIconTag;
     private final String[] mStatusIconControllerNames;
+    private final Set<StatusIconPanelController> mStatusIconPanelControllers;
     private Map<String, View> mStatusIconViewClassMap;
     private @ColorInt int mIconNotHighlightedColor;
 
@@ -77,6 +80,7 @@ public abstract class StatusIconGroupContainerController {
         mStatusIconControllerNames = mResources.getStringArray(
                 getStatusIconControllersStringArray());
         mStatusIconViewClassMap = new HashMap<>();
+        mStatusIconPanelControllers = new HashSet<>();
     }
 
     private static <T> T resolve(String className, Map<Class<?>, Provider<T>> creators) {
@@ -129,6 +133,7 @@ public abstract class StatusIconGroupContainerController {
                 panelController.attachPanel(entryPointView,
                         statusIconController.getPanelContentLayout(),
                         statusIconController.getPanelWidth());
+                mStatusIconPanelControllers.add(panelController);
             }
             containerViewGroup.addView(entryPointView);
             mStatusIconViewClassMap.put(clsName, entryPointView);
@@ -153,6 +158,10 @@ public abstract class StatusIconGroupContainerController {
 
     /** Resets the cached Views. */
     public void resetCache() {
+        for (StatusIconPanelController panelController : mStatusIconPanelControllers) {
+            panelController.destroyPanel();
+        }
+        mStatusIconPanelControllers.clear();
         mStatusIconViewClassMap.clear();
     }
 

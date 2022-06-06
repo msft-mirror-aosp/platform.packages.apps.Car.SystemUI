@@ -66,6 +66,9 @@ public class StatusIconPanelController {
     private static final int DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY = Gravity.TOP | Gravity.START;
 
     private final Context mContext;
+    private final CarServiceProvider mCarServiceProvider;
+    private final BroadcastDispatcher mBroadcastDispatcher;
+    private final ConfigurationController mConfigurationController;
     private final String mIdentifier;
     private final String mIconTag;
     private final @ColorInt int mIconHighlightedColor;
@@ -84,11 +87,25 @@ public class StatusIconPanelController {
     private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
     private float mDimValue = -1.0f;
     private View.OnClickListener mOnClickListener;
+    private CarUserManager mCarUserManager;
     private boolean mUserSwitchEventRegistered;
+    private boolean mIsPanelDestroyed;
 
     private final CarUserManager.UserLifecycleListener mUserLifecycleListener = event -> {
         recreatePanel();
     };
+
+    private final CarServiceProvider.CarServiceOnConnectedListener mCarServiceOnConnectedListener =
+            car -> {
+                mCarUserManager = (CarUserManager) car.getCarManager(
+                        Car.CAR_USER_SERVICE);
+                if (!mUserSwitchEventRegistered) {
+                    UserLifecycleEventFilter filter = new UserLifecycleEventFilter.Builder()
+                            .addEventType(USER_LIFECYCLE_EVENT_TYPE_SWITCHING).build();
+                    mCarUserManager.addListener(Runnable::run, filter, mUserLifecycleListener);
+                    mUserSwitchEventRegistered = true;
+                }
+            };
 
     private final ConfigurationController.ConfigurationListener mConfigurationListener =
             new ConfigurationController.ConfigurationListener() {
@@ -166,6 +183,9 @@ public class StatusIconPanelController {
             ConfigurationController configurationController,
             boolean isDisabledWhileDriving) {
         mContext = context;
+        mCarServiceProvider = carServiceProvider;
+        mBroadcastDispatcher = broadcastDispatcher;
+        mConfigurationController = configurationController;
         mIdentifier = Integer.toString(System.identityHashCode(this));
 
         mIconTag = mContext.getResources().getString(R.string.qc_icon_tag);
@@ -179,21 +199,11 @@ public class StatusIconPanelController {
         // TODO(b/202563671): remove mYOffsetPixel when the PopupWindow API is updated.
         mYOffsetPixel = panelMarginTop - topSystemBarHeight;
 
-        broadcastDispatcher.registerReceiver(mBroadcastReceiver,
+        mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* executor= */ null,
                 UserHandle.ALL);
-        configurationController.addCallback(mConfigurationListener);
-
-        carServiceProvider.addListener(car -> {
-            CarUserManager carUserManager = (CarUserManager) car.getCarManager(
-                    Car.CAR_USER_SERVICE);
-            if (!mUserSwitchEventRegistered) {
-                UserLifecycleEventFilter filter = new UserLifecycleEventFilter.Builder()
-                        .addEventType(USER_LIFECYCLE_EVENT_TYPE_SWITCHING).build();
-                carUserManager.addListener(Runnable::run, filter, mUserLifecycleListener);
-                mUserSwitchEventRegistered = true;
-            }
-        });
+        mConfigurationController.addCallback(mConfigurationListener);
+        mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
 
         mIsDisabledWhileDriving = isDisabledWhileDriving;
         if (mIsDisabledWhileDriving) {
@@ -272,6 +282,10 @@ public class StatusIconPanelController {
      */
     public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes,
             int xOffset, int yOffset, int gravity) {
+        if (mIsPanelDestroyed) {
+            throw new IllegalStateException("Attempting to attach destroyed panel");
+        }
+
         if (mAnchorView == null) {
             mAnchorView = view;
         }
@@ -318,6 +332,25 @@ public class StatusIconPanelController {
         };
 
         mAnchorView.setOnClickListener(mOnClickListener);
+    }
+
+    /**
+     * Cleanup listeners and reset panel. This controller instance should not be used after this
+     * method is called.
+     */
+    public void destroyPanel() {
+        reset();
+        if (mCarUserManager != null) {
+            mCarUserManager.removeListener(mUserLifecycleListener);
+        }
+        if (mCarUxRestrictionsUtil != null) {
+            mCarUxRestrictionsUtil.unregister(mUxRestrictionsChangedListener);
+        }
+        mCarServiceProvider.removeListener(mCarServiceOnConnectedListener);
+        mConfigurationController.removeCallback(mConfigurationListener);
+        mBroadcastDispatcher.unregisterReceiver(mBroadcastReceiver);
+        mPanelLayoutRes = 0;
+        mIsPanelDestroyed = true;
     }
 
     @VisibleForTesting

@@ -21,18 +21,26 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.testing.AndroidTestingRunner;
 import android.view.View;
 
+import androidx.test.filters.SmallTest;
+
 import com.android.systemui.SysuiTestCase;
+import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.flags.FeatureFlags;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+@CarSystemUiTest
+@RunWith(AndroidTestingRunner.class)
+@SmallTest
 public class CarSystemBarViewFactoryTest extends SysuiTestCase {
     private CarSystemBarViewFactory mCarSystemBarViewFactory;
 

@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.hvac;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -28,6 +29,8 @@ import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.test.filters.SmallTest;
 
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
@@ -50,6 +53,7 @@ import java.util.Collections;
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
+@SmallTest
 public class HvacPanelOverlayViewControllerTest extends SysuiTestCase {
     HvacPanelOverlayViewController mHvacPanelOverlayViewController;
 
@@ -93,6 +97,8 @@ public class HvacPanelOverlayViewControllerTest extends SysuiTestCase {
         HvacPanelView mockHvacPanelView = mock(HvacPanelView.class);
         ViewGroup mockHvacPanelParentView = mock(ViewGroup.class);
         when(mockHvacPanelParentView.indexOfChild(mockHvacPanelView)).thenReturn(mockIndex);
+        when(mockHvacPanelParentView.generateLayoutParams(any())).thenReturn(
+                mock(ViewGroup.LayoutParams.class));
         when(mockHvacPanelView.getParent()).thenReturn(mockHvacPanelParentView);
         when(mockHvacPanelView.getLayoutParams()).thenReturn(mock(ViewGroup.LayoutParams.class));
         when(mockLayout.findViewById(R.id.hvac_panel)).thenReturn(mockHvacPanelView);

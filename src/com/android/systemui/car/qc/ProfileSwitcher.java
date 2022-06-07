@@ -16,6 +16,7 @@
 package com.android.systemui.car.qc;
 
 import static android.os.UserManager.SWITCHABILITY_STATUS_OK;
+import static android.provider.Settings.ACTION_ENTERPRISE_PRIVACY_SETTINGS;
 import static android.view.WindowInsets.Type.statusBars;
 
 import static com.android.car.ui.utils.CarUiUtils.drawableToBitmap;
@@ -24,6 +25,7 @@ import android.annotation.Nullable;
 import android.annotation.UserIdInt;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.admin.DevicePolicyManager;
 import android.car.Car;
 import android.car.user.CarUserManager;
 import android.car.user.UserCreationResult;
@@ -43,6 +45,7 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
@@ -67,6 +70,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     private static final int TIMEOUT_MS = CarProperties.user_hal_timeout().orElse(5_000) + 500;
 
     private final UserManager mUserManager;
+    private final DevicePolicyManager mDevicePolicyManager;
     private final UserIconProvider mUserIconProvider;
     private final Car mCar;
     private final CarUserManager mCarUserManager;
@@ -75,15 +79,18 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     public ProfileSwitcher(Context context) {
         super(context);
         mUserManager = context.getSystemService(UserManager.class);
+        mDevicePolicyManager = context.getSystemService(DevicePolicyManager.class);
         mUserIconProvider = new UserIconProvider();
-        mCar = Car.createCar(mContext);
+        mCar = Car.createCar(context);
         mCarUserManager = (CarUserManager) mCar.getCarManager(Car.CAR_USER_SERVICE);
     }
 
     @VisibleForTesting
-    ProfileSwitcher(Context context, UserManager userManager, CarUserManager carUserManager) {
+    ProfileSwitcher(Context context, UserManager userManager,
+            DevicePolicyManager devicePolicyManager, CarUserManager carUserManager) {
         super(context);
         mUserManager = userManager;
+        mDevicePolicyManager = devicePolicyManager;
         mUserIconProvider = new UserIconProvider();
         mCar = null;
         mCarUserManager = carUserManager;
@@ -92,6 +99,11 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     @Override
     public QCItem getQCItem() {
         QCList.Builder listBuilder = new QCList.Builder();
+
+        if (mDevicePolicyManager.isDeviceManaged()
+                || mDevicePolicyManager.isOrganizationOwnedDeviceWithManagedProfile()) {
+            listBuilder.addRow(createOrganizationOwnedDeviceRow());
+        }
 
         int fgUserId = ActivityManager.getCurrentUser();
         UserHandle fgUserHandle = UserHandle.of(fgUserId);
@@ -106,7 +118,9 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             listBuilder.addRow(createUserProfileRow(profile));
         }
         listBuilder.addRow(createGuestProfileRow());
-        listBuilder.addRow(createAddProfileRow());
+        if (!hasAddUserRestriction(fgUserHandle)) {
+            listBuilder.addRow(createAddProfileRow());
+        }
         return listBuilder.build();
     }
 
@@ -125,6 +139,29 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 .collect(Collectors.toList());
     }
 
+    private QCRow createOrganizationOwnedDeviceRow() {
+        Icon icon = Icon.createWithBitmap(
+                drawableToBitmap(mContext.getDrawable(R.drawable.car_ic_managed_device)));
+        QCRow row = new QCRow.Builder()
+                .setIcon(icon)
+                .setSubtitle(mContext.getString(R.string.do_disclosure_generic))
+                .build();
+        row.setActionHandler(new QCItem.ActionHandler() {
+            @Override
+            public void onAction(@NonNull QCItem item, @NonNull Context context,
+                    @NonNull Intent intent) {
+                mContext.startActivityAsUser(new Intent(ACTION_ENTERPRISE_PRIVACY_SETTINGS),
+                        UserHandle.CURRENT);
+            }
+
+            @Override
+            public boolean isActivity() {
+                return true;
+            }
+        });
+        return row;
+    }
+
     private QCRow createUserProfileRow(UserInfo userInfo) {
         QCItem.ActionHandler actionHandler = (item, context, intent) -> {
             if (mPendingUserAdd) {
@@ -134,7 +171,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         };
 
         return createProfileRow(userInfo.name,
-                mUserIconProvider.getRoundedUserIcon(userInfo, mContext), actionHandler);
+                mUserIconProvider.getDrawableWithBadge(mContext, userInfo), actionHandler);
     }
 
     private QCRow createGuestProfileRow() {
@@ -165,7 +202,8 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             }
         };
 
-        return createProfileRow(mContext.getString(R.string.car_add_user), getCircularAddUserIcon(),
+        return createProfileRow(mContext.getString(R.string.car_add_user),
+                mUserIconProvider.getDrawableWithBadge(mContext, getCircularAddUserIcon()),
                 actionHandler);
     }
 
@@ -246,6 +284,10 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 UserIcons.convertToBitmap(mContext.getDrawable(R.drawable.car_add_circle_round)));
         circleIcon.setCircular(true);
         return circleIcon;
+    }
+
+    private boolean hasAddUserRestriction(UserHandle userHandle) {
+        return mUserManager.hasUserRestrictionForUser(UserManager.DISALLOW_ADD_USER, userHandle);
     }
 
     private int getMaxSupportedRealUsers() {

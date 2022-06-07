@@ -48,7 +48,7 @@
     <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"Microfone ativado"</string>
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Microfone desativado"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"OK"</string>
-    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Pretende ativar o microfone do veículo?"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Ativar o microfone do veículo?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Para continuar, ative o microfone do sistema de infoentretenimento. Esta ação irá ativar o microfone para todas as apps que têm autorização."</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"Definições"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Definições de Bluetooth"</string>

@@ -39,6 +39,7 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,6 +79,11 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
         reset(mAnchorView);
         mStatusIconPanelController.attachPanel(mAnchorView, R.layout.qc_display_panel,
                 R.dimen.car_status_icon_panel_default_width);
+    }
+
+    @After
+    public void tearDown() {
+        mStatusIconPanelController.destroyPanel();
     }
 
     @Test

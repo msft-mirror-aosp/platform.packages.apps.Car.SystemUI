@@ -177,6 +177,16 @@ public class CarSystemBarController {
         mUserNameViewControllerLazy.get().removeAll();
         mMicPrivacyChipViewControllerLazy.get().removeAll();
         mCameraPrivacyChipViewControllerLazy.get().removeAll();
+
+        if (mMicPanelController != null) {
+            mMicPanelController.destroyPanel();
+        }
+        if (mCameraPanelController != null) {
+            mCameraPanelController.destroyPanel();
+        }
+        if (mProfilePanelController != null) {
+            mProfilePanelController.destroyPanel();
+        }
         mMicPanelController = null;
         mCameraPanelController = null;
         mProfilePanelController = null;
@@ -364,9 +374,10 @@ public class CarSystemBarController {
         if (isSetUp) {
             // We do not want the privacy chips or the profile picker to be clickable in
             // unprovisioned mode.
-            setupSensorQcPanel(mMicPanelController, R.id.mic_privacy_chip, R.layout.qc_mic_panel);
-            setupSensorQcPanel(mCameraPanelController, R.id.camera_privacy_chip,
-                    R.layout.qc_camera_panel);
+            mMicPanelController = setupSensorQcPanel(mMicPanelController, R.id.mic_privacy_chip,
+                    R.layout.qc_mic_panel);
+            mCameraPanelController = setupSensorQcPanel(mCameraPanelController,
+                    R.id.camera_privacy_chip, R.layout.qc_camera_panel);
             setupProfilePanel();
         }
 
@@ -427,8 +438,9 @@ public class CarSystemBarController {
         mCameraPrivacyChipViewControllerLazy.get().addPrivacyChipView(view);
     }
 
-    private void setupSensorQcPanel(@Nullable StatusIconPanelController panelController,
-            int chipId, @LayoutRes int panelLayoutRes) {
+    private StatusIconPanelController setupSensorQcPanel(
+            @Nullable StatusIconPanelController panelController, int chipId,
+            @LayoutRes int panelLayoutRes) {
         if (panelController == null) {
             panelController = new StatusIconPanelController(mContext, mCarServiceProvider,
                     mBroadcastDispatcher, mConfigurationController);
@@ -449,6 +461,8 @@ public class CarSystemBarController {
         panelController.attachPanel(mTopView.requireViewById(chipId), panelLayoutRes,
                 R.dimen.car_sensor_qc_panel_width, mPrivacyChipXOffset,
                 panelController.getDefaultYOffset(), Gravity.TOP | Gravity.END);
+
+        return panelController;
     }
 
     private void setupProfilePanel() {

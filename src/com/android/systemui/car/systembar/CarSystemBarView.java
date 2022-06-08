@@ -119,7 +119,8 @@ public class CarSystemBarView extends LinearLayout {
 
     void setupReadOnlyIcons(ReadOnlyIconsController readOnlyIconsController) {
         if (mReadOnlyIconsContainer != null) {
-            readOnlyIconsController.addIconViews(mReadOnlyIconsContainer);
+            readOnlyIconsController.addIconViews(mReadOnlyIconsContainer,
+                    /* shouldAttachPanel= */false);
         }
     }
 

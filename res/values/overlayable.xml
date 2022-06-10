@@ -484,6 +484,10 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="system_bar_pill_rotary_background"/>
       <item type="drawable" name="temperature_bar_background"/>
       <item type="drawable" name="volume_dialog_background"/>
+      <item type="fraction" name="celsius_temperature_increment"/>
+      <item type="fraction" name="celsius_temperature_round"/>
+      <item type="fraction" name="fahrenheit_temperature_increment"/>
+      <item type="fraction" name="fahrenheit_temperature_round"/>
       <item type="id" name="ac_button"/>
       <item type="id" name="ac_master_switch"/>
       <item type="id" name="action_button_container"/>
@@ -626,7 +630,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="integer" name="car_volume_dialog_display_expanded_normal_timeout"/>
       <item type="integer" name="car_volume_dialog_display_hovering_timeout"/>
       <item type="integer" name="car_volume_dialog_display_normal_timeout"/>
-      <item type="integer" name="celsius_increment_fraction"/>
       <item type="integer" name="config_bottomSystemBarType"/>
       <item type="integer" name="config_bottomSystemBarZOrder"/>
       <item type="integer" name="config_finalNotificationBackgroundAlpha"/>
@@ -638,7 +641,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="integer" name="config_topSystemBarType"/>
       <item type="integer" name="config_topSystemBarZOrder"/>
       <item type="integer" name="config_userSwitchTransitionViewShownTimeoutMs"/>
-      <item type="integer" name="fahrenheit_increment_fraction"/>
       <item type="integer" name="hvac_global_area_id"/>
       <item type="integer" name="hvac_panel_settle_close_percentage"/>
       <item type="integer" name="hvac_seat_heat_level_count"/>

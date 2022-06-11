@@ -60,7 +60,6 @@ public abstract class StatusIconGroupContainerController {
     private final String[] mStatusIconControllerNames;
     private final Set<StatusIconPanelController> mStatusIconPanelControllers;
     private Map<String, View> mStatusIconViewClassMap;
-    private @ColorInt int mIconNotHighlightedColor;
 
     public StatusIconGroupContainerController(
             Context context,
@@ -76,7 +75,6 @@ public abstract class StatusIconGroupContainerController {
         mConfigurationController = configurationController;
         mIconControllerCreators = iconControllerCreators;
         mIconTag = mResources.getString(R.string.qc_icon_tag);
-        mIconNotHighlightedColor = mContext.getColor(R.color.status_icon_not_highlighted_color);
         mStatusIconControllerNames = mResources.getStringArray(
                 getStatusIconControllersStringArray());
         mStatusIconViewClassMap = new HashMap<>();
@@ -114,7 +112,8 @@ public abstract class StatusIconGroupContainerController {
      */
     public void addIconViews(ViewGroup containerViewGroup, boolean shouldAttachPanel) {
         LayoutInflater li = LayoutInflater.from(mContext);
-        mIconNotHighlightedColor = mContext.getColor(R.color.status_icon_not_highlighted_color);
+        @ColorInt int iconNotHighlightedColor = mContext.getColor(
+                R.color.status_icon_not_highlighted_color);
 
         for (String clsName : mStatusIconControllerNames) {
             StatusIconController statusIconController = getStatusIconControllerByName(clsName);
@@ -124,7 +123,7 @@ public abstract class StatusIconGroupContainerController {
 
             ImageView statusIconView = entryPointView.findViewWithTag(mIconTag);
             statusIconController.registerIconView(statusIconView);
-            statusIconView.setColorFilter(mIconNotHighlightedColor);
+            statusIconView.setColorFilter(iconNotHighlightedColor);
 
             if (shouldAttachPanel
                     && statusIconController.getPanelContentLayout() != PANEL_CONTENT_LAYOUT_NONE) {

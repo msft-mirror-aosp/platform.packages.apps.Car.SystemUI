@@ -25,6 +25,7 @@ import android.util.ArrayMap;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.InsetsFrameProvider;
 import android.view.InsetsState;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -459,7 +460,10 @@ public class SystemBarConfigs {
                             | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
                     PixelFormat.TRANSLUCENT);
             lp.setTitle(BAR_TITLE_MAP.get(mSide));
-            lp.providesInsetsTypes = new int[]{BAR_TYPE_MAP[mBarType], BAR_GESTURE_MAP.get(mSide)};
+            lp.providedInsets = new InsetsFrameProvider[] {
+                new InsetsFrameProvider(BAR_TYPE_MAP[mBarType]),
+                new InsetsFrameProvider(BAR_GESTURE_MAP.get(mSide))
+            };
             lp.setFitInsetsTypes(0);
             lp.windowAnimations = 0;
             lp.gravity = BAR_GRAVITY_MAP.get(mSide);

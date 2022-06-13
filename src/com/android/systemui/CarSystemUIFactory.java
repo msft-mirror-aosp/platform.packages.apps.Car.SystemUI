@@ -16,7 +16,6 @@
 
 package com.android.systemui;
 
-import android.content.Context;
 import android.os.UserHandle;
 
 import com.android.systemui.dagger.GlobalRootComponent;
@@ -31,10 +30,8 @@ import java.util.Optional;
  */
 public class CarSystemUIFactory extends SystemUIFactory {
     @Override
-    protected GlobalRootComponent buildGlobalRootComponent(Context context) {
-        return DaggerCarGlobalRootComponent.builder()
-                .context(context)
-                .build();
+    protected GlobalRootComponent.Builder getGlobalRootComponentBuilder() {
+        return DaggerCarGlobalRootComponent.builder();
     }
 
     @Override

@@ -56,11 +56,11 @@ public class ButtonSelectionStateController {
 
     private final Set<CarSystemBarButton> mRegisteredViews = new HashSet<>();
 
+    protected final Context mContext;
     protected ButtonMap mButtonsByCategory = new ButtonMap();
     protected ButtonMap mButtonsByPackage = new ButtonMap();
     protected ButtonMap mButtonsByComponentName = new ButtonMap();
     protected HashSet<CarSystemBarButton> mSelectedButtons;
-    protected Context mContext;
 
     @Inject
     public ButtonSelectionStateController(Context context) {
@@ -128,12 +128,7 @@ public class ButtonSelectionStateController {
         int displayId = validTaskInfo.displayId;
 
         // Clear all registered views
-        mRegisteredViews.forEach(carSystemBarButton -> {
-            if (carSystemBarButton.getDisplayId() == displayId) {
-                carSystemBarButton.setSelected(false);
-            }
-        });
-        mSelectedButtons.clear();
+        clearAllSelectedButtons(displayId);
 
         HashSet<CarSystemBarButton> selectedButtons = findSelectedButtons(validTaskInfo);
 
@@ -145,6 +140,15 @@ public class ButtonSelectionStateController {
                 }
             });
         }
+    }
+
+    protected void clearAllSelectedButtons(int displayId) {
+        mRegisteredViews.forEach(carSystemBarButton -> {
+            if (carSystemBarButton.getDisplayId() == displayId) {
+                carSystemBarButton.setSelected(false);
+            }
+        });
+        mSelectedButtons.clear();
     }
 
     /**

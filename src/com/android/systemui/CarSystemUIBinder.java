@@ -18,6 +18,7 @@ package com.android.systemui;
 
 import com.android.systemui.car.notification.CarNotificationModule;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsModule;
+import com.android.systemui.car.systembar.CarSystemBarModule;
 import com.android.systemui.car.window.OverlayWindowModule;
 import com.android.systemui.keyguard.dagger.KeyguardModule;
 import com.android.systemui.recents.RecentsModule;
@@ -31,6 +32,6 @@ import dagger.Module;
 @Module(includes = {RecentsModule.class, CentralSurfacesDependenciesModule.class,
         NotificationsModule.class, NotificationRowModule.class, KeyguardModule.class,
         OverlayWindowModule.class, CarNotificationModule.class,
-        QuickControlsEntryPointsModule.class})
+        QuickControlsEntryPointsModule.class, CarSystemBarModule.class})
 public abstract class CarSystemUIBinder {
 }

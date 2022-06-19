@@ -16,14 +16,16 @@
 
 package com.android.systemui.car.statusicon;
 
-import static android.content.Intent.ACTION_USER_FOREGROUND;
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
 
 import android.annotation.ColorInt;
 import android.annotation.DimenRes;
 import android.annotation.LayoutRes;
+import android.app.PendingIntent;
+import android.car.Car;
 import android.car.drivingstate.CarUxRestrictions;
+import android.car.user.CarUserManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +44,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import com.android.car.qc.QCItem;
+import com.android.car.qc.view.QCView;
 import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.car.ui.utils.ViewUtils;
@@ -58,8 +62,6 @@ import java.util.ArrayList;
  */
 public class StatusIconPanelController {
     private static final int DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY = Gravity.TOP | Gravity.START;
-    private static final IntentFilter INTENT_FILTER_USER_CHANGED = new IntentFilter(
-            ACTION_USER_FOREGROUND);
 
     private final Context mContext;
     private final String mIdentifier;
@@ -77,10 +79,10 @@ public class StatusIconPanelController {
     private ImageView mStatusIconView;
     private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
     private float mDimValue = -1.0f;
+    private boolean mUserSwitchEventRegistered;
 
-    private final BroadcastReceiver mUserChangeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
+    private final CarUserManager.UserLifecycleListener mUserLifecycleListener = event -> {
+        if (event.getEventType() == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING) {
             reset();
         }
     };
@@ -100,7 +102,7 @@ public class StatusIconPanelController {
                 public void onRestrictionsChanged(@NonNull CarUxRestrictions carUxRestrictions) {
                     if (mIsDisabledWhileDriving
                             && carUxRestrictions.isRequiresDistractionOptimization()
-                            && mPanel != null) {
+                            && isPanelShowing()) {
                         mPanel.dismiss();
                     }
                 }
@@ -114,7 +116,7 @@ public class StatusIconPanelController {
                     intent.getIdentifier() != null && intent.getIdentifier().equals(mIdentifier);
 
             if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action) && !isIntentFromSelf
-                    && mPanel != null && mPanel.isShowing()) {
+                    && isPanelShowing()) {
                 mPanel.dismiss();
             }
         }
@@ -122,13 +124,28 @@ public class StatusIconPanelController {
 
     private final ViewTreeObserver.OnGlobalFocusChangeListener mFocusChangeListener =
             (oldFocus, newFocus) -> {
-                if (mPanel != null && oldFocus != null && newFocus instanceof FocusParkingView) {
+                if (isPanelShowing() && oldFocus != null && newFocus instanceof FocusParkingView) {
                     // When nudging out of the panel, RotaryService will focus on the
                     // FocusParkingView to clear the focus highlight. When this occurs, dismiss the
                     // panel.
                     mPanel.dismiss();
                 }
             };
+
+    private final QCView.QCActionListener mQCActionListener = (item, action) -> {
+        if (!isPanelShowing()) {
+            return;
+        }
+        if (action instanceof PendingIntent) {
+            if (((PendingIntent) action).isActivity()) {
+                mPanel.dismiss();
+            }
+        } else if (action instanceof QCItem.ActionHandler) {
+            if (((QCItem.ActionHandler) action).isActivity()) {
+                mPanel.dismiss();
+            }
+        }
+    };
 
     public StatusIconPanelController(
             Context context,
@@ -164,8 +181,14 @@ public class StatusIconPanelController {
                 UserHandle.ALL);
         configurationController.addCallback(mConfigurationListener);
 
-        context.registerReceiverForAllUsers(mUserChangeReceiver, INTENT_FILTER_USER_CHANGED,
-                /* broadcastPermission= */ null, /* scheduler= */ null);
+        carServiceProvider.addListener(car -> {
+            CarUserManager carUserManager = (CarUserManager) car.getCarManager(
+                    Car.CAR_USER_SERVICE);
+            if (!mUserSwitchEventRegistered) {
+                carUserManager.addListener(Runnable::run, mUserLifecycleListener);
+                mUserSwitchEventRegistered = true;
+            }
+        });
 
         mIsDisabledWhileDriving = isDisabledWhileDriving;
         if (mIsDisabledWhileDriving) {
@@ -405,7 +428,9 @@ public class StatusIconPanelController {
         for (int i = 0; i < rootView.getChildCount(); i++) {
             View v = rootView.getChildAt(i);
             if (v instanceof SystemUIQCView) {
-                mQCViews.add((SystemUIQCView) v);
+                SystemUIQCView qcv = (SystemUIQCView) v;
+                mQCViews.add(qcv);
+                qcv.setActionListener(mQCActionListener);
             } else if (v instanceof ViewGroup) {
                 this.findQcViews((ViewGroup) v);
             }
@@ -427,5 +452,9 @@ public class StatusIconPanelController {
             mStatusIconView.setColorFilter(
                     isHighlighted ? mIconHighlightedColor : mIconNotHighlightedColor);
         }
+    }
+
+    private boolean isPanelShowing() {
+        return mPanel != null && mPanel.isShowing();
     }
 }

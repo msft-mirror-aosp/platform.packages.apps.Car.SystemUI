@@ -16,6 +16,7 @@
 
 package com.android.systemui.wm;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -158,8 +159,9 @@ public class DisplaySystemBarsController extends DisplayImeController {
         }
 
         @Override
-        public void topFocusedWindowChanged(String packageName,
+        public void topFocusedWindowChanged(ComponentName component,
                 InsetsVisibilities requestedVisibilities) {
+            String packageName = component != null ? component.getPackageName() : null;
             if (Objects.equals(mPackageName, packageName)) {
                 return;
             }

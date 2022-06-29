@@ -101,6 +101,8 @@
     <dimen name="car_keyline_2">96dp</dimen>
     <dimen name="car_keyline_3">128dp</dimen>
 
+    <dimen name="device_management_dialog_subtitle_padding">20dp</dimen>
+
     <!-- Height of icons in Privacy chip dialog. Both App Op icon and application icon -->
     <dimen name="privacy_chip_dialog_icon_height">48dp</dimen>
     <!-- Icon size for Privacy chip -->

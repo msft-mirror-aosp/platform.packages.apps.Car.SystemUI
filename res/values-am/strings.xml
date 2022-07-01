@@ -55,6 +55,38 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"እሺ"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"የተሽከርካሪ ካሜራ ይብራ?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"ለመቀጠል የኢንፎቴይንመንት ስርዓት ካሜራን ያብሩ። ይህ ፈቃዱ ላላቸው ሁሉም መተግበሪያዎች ካሜራውን ያበራል።"</string>
+    <!-- no translation found for system_bar_home_label (8413273833405495948) -->
+    <skip />
+    <!-- no translation found for system_bar_phone_label (5664288201806823777) -->
+    <skip />
+    <!-- no translation found for system_bar_applications_label (7081862804211786227) -->
+    <skip />
+    <!-- no translation found for system_bar_climate_control_label (4091187805919276017) -->
+    <skip />
+    <!-- no translation found for system_bar_notifications_label (6039158514903928210) -->
+    <skip />
+    <!-- no translation found for system_bar_maps_label (7883864993280235380) -->
+    <skip />
+    <!-- no translation found for system_bar_media_label (6156112139796274847) -->
+    <skip />
+    <!-- no translation found for hvac_decrease_button_label (5628481079099995286) -->
+    <skip />
+    <!-- no translation found for hvac_increase_button_label (2855688290787396792) -->
+    <skip />
+    <!-- no translation found for status_icon_bluetooth_disconnected (6773447522499007010) -->
+    <skip />
+    <!-- no translation found for status_icon_bluetooth_connected (4548446117525711779) -->
+    <skip />
+    <!-- no translation found for status_icon_bluetooth_off (5435041393564635821) -->
+    <skip />
+    <!-- no translation found for status_icon_signal_mobile (7264721079060179783) -->
+    <skip />
+    <!-- no translation found for status_icon_signal_wifi (1257569337648058522) -->
+    <skip />
+    <!-- no translation found for status_icon_signal_hotspot (1023039120452006880) -->
+    <skip />
+    <!-- no translation found for status_icon_display_status (2970020923181359144) -->
+    <skip />
     <string name="activity_blocked_text" msgid="5353157279548801554">"እየነዱ ሳለ ይህን ባህሪ መጠቀም አይችሉም"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"መተግበሪያን ዝጋ"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"ተመለስ"</string>

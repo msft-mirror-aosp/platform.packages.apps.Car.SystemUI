@@ -43,6 +43,7 @@ import android.view.WindowManager;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.internal.statusbar.IStatusBarService;
+import com.android.internal.statusbar.LetterboxDetails;
 import com.android.internal.statusbar.RegisterStatusBarResult;
 import com.android.internal.view.AppearanceRegion;
 import com.android.systemui.CoreStartable;
@@ -199,7 +200,7 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
 
         onSystemBarAttributesChanged(mDisplayId, result.mAppearance, result.mAppearanceRegions,
                 result.mNavbarColorManagedByIme, result.mBehavior, result.mRequestedVisibilities,
-                result.mPackageName);
+                result.mPackageName, result.mLetterboxDetails);
 
         // StatusBarManagerService has a back up of IME token and it's restored here.
         setImeWindowStatus(mDisplayId, result.mImeToken, result.mImeWindowVis,
@@ -476,7 +477,8 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
             boolean navbarColorManagedByIme,
             @WindowInsetsController.Behavior int behavior,
             InsetsVisibilities requestedVisibilities,
-            String packageName) {
+            String packageName,
+            LetterboxDetails[] letterboxDetails) {
         if (displayId != mDisplayId) {
             return;
         }

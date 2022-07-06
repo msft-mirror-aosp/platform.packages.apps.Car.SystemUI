@@ -152,7 +152,8 @@ public class CarSystemBarTest extends SysuiTestCase {
                 BEHAVIOR_DEFAULT,
                 /* requestedVisibilities= */ null,
                 /* packageName= */ null,
-                /* transientBarTypes= */ new int[]{});
+                /* transientBarTypes= */ new int[]{},
+                /* letterboxDetails= */ null);
         try {
             when(mBarService.registerStatusBar(any())).thenReturn(mBarResult);
         } catch (RemoteException e) {

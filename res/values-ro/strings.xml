@@ -55,38 +55,22 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"OK"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Porniți camera foto a vehiculului?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Ca să continuați, porniți camera foto a sistemului de infotainment. Acest lucru va porni camera foto pentru toate aplicațiile care au permisiunea."</string>
-    <!-- no translation found for system_bar_home_label (8413273833405495948) -->
-    <skip />
-    <!-- no translation found for system_bar_phone_label (5664288201806823777) -->
-    <skip />
-    <!-- no translation found for system_bar_applications_label (7081862804211786227) -->
-    <skip />
-    <!-- no translation found for system_bar_climate_control_label (4091187805919276017) -->
-    <skip />
-    <!-- no translation found for system_bar_notifications_label (6039158514903928210) -->
-    <skip />
-    <!-- no translation found for system_bar_maps_label (7883864993280235380) -->
-    <skip />
-    <!-- no translation found for system_bar_media_label (6156112139796274847) -->
-    <skip />
-    <!-- no translation found for hvac_decrease_button_label (5628481079099995286) -->
-    <skip />
-    <!-- no translation found for hvac_increase_button_label (2855688290787396792) -->
-    <skip />
-    <!-- no translation found for status_icon_bluetooth_disconnected (6773447522499007010) -->
-    <skip />
-    <!-- no translation found for status_icon_bluetooth_connected (4548446117525711779) -->
-    <skip />
-    <!-- no translation found for status_icon_bluetooth_off (5435041393564635821) -->
-    <skip />
-    <!-- no translation found for status_icon_signal_mobile (7264721079060179783) -->
-    <skip />
-    <!-- no translation found for status_icon_signal_wifi (1257569337648058522) -->
-    <skip />
-    <!-- no translation found for status_icon_signal_hotspot (1023039120452006880) -->
-    <skip />
-    <!-- no translation found for status_icon_display_status (2970020923181359144) -->
-    <skip />
+    <string name="system_bar_home_label" msgid="8413273833405495948">"Ecran de pornire"</string>
+    <string name="system_bar_phone_label" msgid="5664288201806823777">"Telefon"</string>
+    <string name="system_bar_applications_label" msgid="7081862804211786227">"Aplicații"</string>
+    <string name="system_bar_climate_control_label" msgid="4091187805919276017">"Controlul climei"</string>
+    <string name="system_bar_notifications_label" msgid="6039158514903928210">"Notificări"</string>
+    <string name="system_bar_maps_label" msgid="7883864993280235380">"Maps"</string>
+    <string name="system_bar_media_label" msgid="6156112139796274847">"Media"</string>
+    <string name="hvac_decrease_button_label" msgid="5628481079099995286">"Reduceți temperatura"</string>
+    <string name="hvac_increase_button_label" msgid="2855688290787396792">"Creșteți temperatura"</string>
+    <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"Setarea Bluetooth: deconectată"</string>
+    <string name="status_icon_bluetooth_connected" msgid="4548446117525711779">"Setarea Bluetooth: conectată"</string>
+    <string name="status_icon_bluetooth_off" msgid="5435041393564635821">"Setarea Bluetooth: Bluetooth este dezactivat"</string>
+    <string name="status_icon_signal_mobile" msgid="7264721079060179783">"Setări pentru semnal: se folosesc datele mobile"</string>
+    <string name="status_icon_signal_wifi" msgid="1257569337648058522">"Setări pentru semnal: Wi-Fi activat"</string>
+    <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"Setări pentru semnal: hotspot activat"</string>
+    <string name="status_icon_display_status" msgid="2970020923181359144">"Setări de afișare"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Nu puteți folosi această funcție în timp ce conduceți"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Închideți aplicația"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Înapoi"</string>

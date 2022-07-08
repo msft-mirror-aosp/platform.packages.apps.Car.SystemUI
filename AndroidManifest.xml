@@ -16,7 +16,6 @@
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:androidprv="http://schemas.android.com/apk/prv/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         package="com.android.systemui"
         android:sharedUserId="android.uid.systemui"
         coreApp="true">
@@ -44,9 +43,7 @@
     <!-- This permission is required to observe microphone sensor privacy changes. -->
     <uses-permission android:name="android.permission.OBSERVE_SENSOR_PRIVACY" />
 
-    <application
-        tools:replace="android:appComponentFactory"
-        android:appComponentFactory="com.android.systemui.CarSystemUIAppComponentFactory">
+    <application>
         <activity
             android:name=".car.activity.ActivityBlockingActivity"
             android:documentLaunchMode="always"

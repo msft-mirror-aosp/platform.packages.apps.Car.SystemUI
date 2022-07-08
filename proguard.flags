@@ -1,4 +1,4 @@
--keep class com.android.systemui.CarSystemUIInitializer
+-keep class com.android.systemui.CarSystemUIFactory
 -keep class com.android.car.notification.headsup.animationhelper.**
 
 -keep class com.android.systemui.DaggerCarGlobalRootComponent { *; }

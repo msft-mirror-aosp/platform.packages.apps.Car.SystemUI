@@ -18,10 +18,6 @@
     <string name="config_statusBarComponent" translatable="false">
         com.android.systemui.statusbar.car.CarStatusBar
     </string>
-    <string name="config_systemUIFactoryComponent" translatable="false">
-        com.android.systemui.CarSystemUIFactory
-    </string>
-
     <!-- How many milliseconds to wait before force hiding the UserSwitchTransitionView -->
     <integer name="config_userSwitchTransitionViewShownTimeoutMs" translatable="false">5000
     </integer>

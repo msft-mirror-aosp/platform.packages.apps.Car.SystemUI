@@ -152,7 +152,11 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
             if (consumed) {
                 return true;
             }
-            maybeCompleteAnimation(event);
+            int action = event.getActionMasked();
+            if (action == MotionEvent.ACTION_UP) {
+                maybeCompleteAnimation(event);
+            }
+
             return true;
         };
 
@@ -164,7 +168,10 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
             if (consumed) {
                 return true;
             }
-            maybeCompleteAnimation(event);
+            int action = event.getActionMasked();
+            if (action == MotionEvent.ACTION_UP) {
+                maybeCompleteAnimation(event);
+            }
             return true;
         };
     }
@@ -735,8 +742,8 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
         GestureDetector handleBarCloseGestureDetector =
                 new GestureDetector(mContext, new HandleBarCloseGestureListener());
         handleBar.setOnTouchListener((v, event) -> {
-            int action = event.getAction();
-            switch (action & MotionEvent.ACTION_MASK) {
+            int action = event.getActionMasked();
+            switch (action) {
                 case MotionEvent.ACTION_UP:
                     maybeCompleteAnimation(event);
                     // Intentionally not breaking here, since handleBarClosureGestureDetector's

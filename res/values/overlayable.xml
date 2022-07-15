@@ -709,7 +709,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="config_appGridComponentName"/>
       <item type="string" name="config_notificationPanelViewMediator"/>
       <item type="string" name="config_statusBarComponent"/>
-      <item type="string" name="config_systemUIFactoryComponent"/>
       <item type="string" name="debug_button_text"/>
       <item type="string" name="exit_button_close_application"/>
       <item type="string" name="exit_button_go_back"/>

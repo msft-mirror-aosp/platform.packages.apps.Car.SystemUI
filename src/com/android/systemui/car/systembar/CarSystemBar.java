@@ -54,8 +54,8 @@ import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.systemui.plugins.DarkIconDispatcher;
-import com.android.systemui.shared.system.ActivityManagerWrapper;
 import com.android.systemui.shared.system.TaskStackChangeListener;
+import com.android.systemui.shared.system.TaskStackChangeListeners;
 import com.android.systemui.statusbar.AutoHideUiElement;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.phone.AutoHideController;
@@ -99,7 +99,6 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
     private final SystemBarConfigs mSystemBarConfigs;
 
     private StatusBarSignalPolicy mSignalPolicy;
-    private ActivityManagerWrapper mActivityManagerWrapper;
 
     // If the nav bar should be hidden when the soft keyboard is visible.
     private boolean mHideTopBarForKeyboard;
@@ -268,9 +267,10 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
 
         createSystemBar(result);
 
-        mActivityManagerWrapper = ActivityManagerWrapper.getInstance();
-        mActivityManagerWrapper.registerTaskStackListener(mButtonSelectionStateListener);
-        mActivityManagerWrapper.registerTaskStackListener(new TaskStackChangeListener() {
+        TaskStackChangeListeners.getInstance().registerTaskStackListener(
+                mButtonSelectionStateListener);
+        TaskStackChangeListeners.getInstance().registerTaskStackListener(
+                new TaskStackChangeListener() {
             @Override
             public void onLockTaskModeChanged(int mode) {
                 mCarSystemBarController.refreshSystemBar();

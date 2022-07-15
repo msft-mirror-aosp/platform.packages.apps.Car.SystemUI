@@ -55,38 +55,22 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"ઓકે"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"શું વાહનનો કૅમેરા ચાલુ કરીએ?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"આગળ વધવા માટે, ઇન્ફોટેનમેન્ટ સિસ્ટમનો કૅમેરા ચાલુ કરો. આમ કરવાથી પરવાનગી ધરાવતી બધી ઍપ માટે કૅમેરા ચાલુ થશે."</string>
-    <!-- no translation found for system_bar_home_label (8413273833405495948) -->
-    <skip />
-    <!-- no translation found for system_bar_phone_label (5664288201806823777) -->
-    <skip />
-    <!-- no translation found for system_bar_applications_label (7081862804211786227) -->
-    <skip />
-    <!-- no translation found for system_bar_climate_control_label (4091187805919276017) -->
-    <skip />
-    <!-- no translation found for system_bar_notifications_label (6039158514903928210) -->
-    <skip />
-    <!-- no translation found for system_bar_maps_label (7883864993280235380) -->
-    <skip />
-    <!-- no translation found for system_bar_media_label (6156112139796274847) -->
-    <skip />
-    <!-- no translation found for hvac_decrease_button_label (5628481079099995286) -->
-    <skip />
-    <!-- no translation found for hvac_increase_button_label (2855688290787396792) -->
-    <skip />
-    <!-- no translation found for status_icon_bluetooth_disconnected (6773447522499007010) -->
-    <skip />
-    <!-- no translation found for status_icon_bluetooth_connected (4548446117525711779) -->
-    <skip />
-    <!-- no translation found for status_icon_bluetooth_off (5435041393564635821) -->
-    <skip />
-    <!-- no translation found for status_icon_signal_mobile (7264721079060179783) -->
-    <skip />
-    <!-- no translation found for status_icon_signal_wifi (1257569337648058522) -->
-    <skip />
-    <!-- no translation found for status_icon_signal_hotspot (1023039120452006880) -->
-    <skip />
-    <!-- no translation found for status_icon_display_status (2970020923181359144) -->
-    <skip />
+    <string name="system_bar_home_label" msgid="8413273833405495948">"હોમ સ્ક્રીન"</string>
+    <string name="system_bar_phone_label" msgid="5664288201806823777">"ફોન"</string>
+    <string name="system_bar_applications_label" msgid="7081862804211786227">"ઍપ્લિકેશન"</string>
+    <string name="system_bar_climate_control_label" msgid="4091187805919276017">"આબોહવાનું નિયંત્રણ"</string>
+    <string name="system_bar_notifications_label" msgid="6039158514903928210">"નોટિફિકેશન"</string>
+    <string name="system_bar_maps_label" msgid="7883864993280235380">"Maps"</string>
+    <string name="system_bar_media_label" msgid="6156112139796274847">"મીડિયા"</string>
+    <string name="hvac_decrease_button_label" msgid="5628481079099995286">"તાપમાન ઘટાડો"</string>
+    <string name="hvac_increase_button_label" msgid="2855688290787396792">"તાપમાન વધારો"</string>
+    <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"બ્લૂટૂથનું સેટિંગ: ડિસ્કનેક્ટ કરેલું છે"</string>
+    <string name="status_icon_bluetooth_connected" msgid="4548446117525711779">"બ્લૂટૂથનું સેટિંગ: કનેક્ટ કરેલું છે"</string>
+    <string name="status_icon_bluetooth_off" msgid="5435041393564635821">"બ્લૂટૂથનું સેટિંગ: બ્લૂટૂથ બંધ છે"</string>
+    <string name="status_icon_signal_mobile" msgid="7264721079060179783">"સિગ્નલના સેટિંગ: મોબાઇલ ડેટાનો ઉપયોગ કરવામાં આવી રહ્યો છે"</string>
+    <string name="status_icon_signal_wifi" msgid="1257569337648058522">"સિગ્નલના સેટિંગ: વાઇ-ફાઇ ચાલુ છે"</string>
+    <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"સિગ્નલના સેટિંગ: હૉટસ્પૉટ બંધ છે"</string>
+    <string name="status_icon_display_status" msgid="2970020923181359144">"ડિસ્પ્લેના સેટિંગ"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"ડ્રાઇવ કરતી વખતે તમે આ સુવિધાનો ઉપયોગ કરી શકતા નથી"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"ઍપ બંધ કરો"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"પાછળ"</string>

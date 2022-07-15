@@ -55,38 +55,22 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"ਠੀਕ ਹੈ"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"ਕੀ ਵਾਹਨ ਦਾ ਕੈਮਰਾ ਚਾਲੂ ਕਰਨਾ ਹੈ?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"ਜਾਰੀ ਰੱਖਣ ਲਈ, ਵਾਹਨ ਆਡੀਓ ਸਿਸਟਮ ਦੇ ਕੈਮਰੇ ਨੂੰ ਚਾਲੂ ਕਰੋ। ਇਹ ਇਜਾਜ਼ਤ ਵਾਲੀਆਂ ਸਾਰੀਆਂ ਐਪਾਂ ਲਈ ਕੈਮਰੇ ਨੂੰ ਚਾਲੂ ਕਰ ਦੇਵੇਗਾ।"</string>
-    <!-- no translation found for system_bar_home_label (8413273833405495948) -->
-    <skip />
-    <!-- no translation found for system_bar_phone_label (5664288201806823777) -->
-    <skip />
-    <!-- no translation found for system_bar_applications_label (7081862804211786227) -->
-    <skip />
-    <!-- no translation found for system_bar_climate_control_label (4091187805919276017) -->
-    <skip />
-    <!-- no translation found for system_bar_notifications_label (6039158514903928210) -->
-    <skip />
-    <!-- no translation found for system_bar_maps_label (7883864993280235380) -->
-    <skip />
-    <!-- no translation found for system_bar_media_label (6156112139796274847) -->
-    <skip />
-    <!-- no translation found for hvac_decrease_button_label (5628481079099995286) -->
-    <skip />
-    <!-- no translation found for hvac_increase_button_label (2855688290787396792) -->
-    <skip />
-    <!-- no translation found for status_icon_bluetooth_disconnected (6773447522499007010) -->
-    <skip />
-    <!-- no translation found for status_icon_bluetooth_connected (4548446117525711779) -->
-    <skip />
-    <!-- no translation found for status_icon_bluetooth_off (5435041393564635821) -->
-    <skip />
-    <!-- no translation found for status_icon_signal_mobile (7264721079060179783) -->
-    <skip />
-    <!-- no translation found for status_icon_signal_wifi (1257569337648058522) -->
-    <skip />
-    <!-- no translation found for status_icon_signal_hotspot (1023039120452006880) -->
-    <skip />
-    <!-- no translation found for status_icon_display_status (2970020923181359144) -->
-    <skip />
+    <string name="system_bar_home_label" msgid="8413273833405495948">"ਹੋਮ ਸਕ੍ਰੀਨ"</string>
+    <string name="system_bar_phone_label" msgid="5664288201806823777">"ਫ਼ੋਨ"</string>
+    <string name="system_bar_applications_label" msgid="7081862804211786227">"ਐਪਲੀਕੇਸ਼ਨਾਂ"</string>
+    <string name="system_bar_climate_control_label" msgid="4091187805919276017">"ਜਲਵਾਯੂ ਸੰਬੰਧੀ ਕੰਟਰੋਲ"</string>
+    <string name="system_bar_notifications_label" msgid="6039158514903928210">"ਸੂਚਨਾਵਾਂ"</string>
+    <string name="system_bar_maps_label" msgid="7883864993280235380">"Maps"</string>
+    <string name="system_bar_media_label" msgid="6156112139796274847">"ਮੀਡੀਆ"</string>
+    <string name="hvac_decrease_button_label" msgid="5628481079099995286">"ਤਾਪਮਾਨ ਘਟਾਓ"</string>
+    <string name="hvac_increase_button_label" msgid="2855688290787396792">"ਤਾਪਮਾਨ ਵਧਾਓ"</string>
+    <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"ਬਲੂਟੁੱਥ ਸੈਟਿੰਗ: ਡਿਸਕਨੈਕਟ ਕੀਤਾ ਗਿਆ"</string>
+    <string name="status_icon_bluetooth_connected" msgid="4548446117525711779">"ਬਲੂਟੁੱਥ ਸੈਟਿੰਗ: ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ"</string>
+    <string name="status_icon_bluetooth_off" msgid="5435041393564635821">"ਬਲੂਟੁੱਥ ਸੈਟਿੰਗ: ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ"</string>
+    <string name="status_icon_signal_mobile" msgid="7264721079060179783">"ਸਿਗਨਲ ਸੈਟਿੰਗਾਂ: ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ"</string>
+    <string name="status_icon_signal_wifi" msgid="1257569337648058522">"ਸਿਗਨਲ ਸੈਟਿੰਗਾਂ: ਵਾਈ-ਫਾਈ ਚਾਲੂ ਹੈ"</string>
+    <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"ਸਿਗਨਲ ਸੈਟਿੰਗਾਂ: ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ"</string>
+    <string name="status_icon_display_status" msgid="2970020923181359144">"ਡਿਸਪਲੇ ਸੈਟਿੰਗਾਂ"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"ਤੁਸੀਂ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਗੱਡੀ ਚਲਾਉਂਦੇ ਸਮੇਂ ਨਹੀਂ ਵਰਤ ਸਕਦੇ"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"ਐਪ ਬੰਦ ਕਰੋ"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"ਪਿੱਛੇ ਜਾਓ"</string>

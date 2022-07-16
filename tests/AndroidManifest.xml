@@ -20,7 +20,11 @@
           android:sharedUserId="android.uid.system"
           package="com.android.systemui.tests">
 
-    <application android:debuggable="true" android:largeHeap="true">
+    <application
+        android:debuggable="true"
+        android:largeHeap="true"
+        tools:replace="android:appComponentFactory"
+        android:appComponentFactory="com.android.systemui.CarSystemUITestAppComponentFactory">
         <uses-library android:name="android.test.runner"/>
 
         <provider

@@ -42,6 +42,9 @@ public class BluetoothStatusIconController extends StatusIconController implemen
     private Drawable mBluetoothOffDrawable;
     private Drawable mBluetoothOnDisconnectedDrawable;
     private Drawable mBluetoothOnConnectedDrawable;
+    private String mBluetoothOffContentDescription;
+    private String mBluetoothOnDisconnectedContentDescription;
+    private String mBluetoothOnConnectedContentDescription;
 
     @Inject
     BluetoothStatusIconController(
@@ -58,6 +61,13 @@ public class BluetoothStatusIconController extends StatusIconController implemen
         mBluetoothOnConnectedDrawable = resources.getDrawable(
                 R.drawable.ic_bluetooth_status_on_connected, /* theme= */ null);
 
+        mBluetoothOffContentDescription = resources.getString(
+                R.string.status_icon_bluetooth_off);
+        mBluetoothOnDisconnectedContentDescription = resources.getString(
+                R.string.status_icon_bluetooth_disconnected);
+        mBluetoothOnConnectedContentDescription = resources.getString(
+                R.string.status_icon_bluetooth_connected);
+
         mBluetoothController.addCallback(this);
     }
 
@@ -65,10 +75,13 @@ public class BluetoothStatusIconController extends StatusIconController implemen
     protected void updateStatus() {
         if (!mBluetoothEnabled) {
             setIconDrawableToDisplay(mBluetoothOffDrawable);
+            setIconContentDescription(mBluetoothOffContentDescription);
         } else if (mBluetoothConnected) {
             setIconDrawableToDisplay(mBluetoothOnConnectedDrawable);
+            setIconContentDescription(mBluetoothOnConnectedContentDescription);
         } else {
             setIconDrawableToDisplay(mBluetoothOnDisconnectedDrawable);
+            setIconContentDescription(mBluetoothOnDisconnectedContentDescription);
         }
         onStatusUpdated();
     }

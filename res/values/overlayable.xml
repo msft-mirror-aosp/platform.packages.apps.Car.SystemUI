@@ -714,6 +714,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="exit_button_go_back"/>
       <item type="string" name="fan_speed_max"/>
       <item type="string" name="fan_speed_off"/>
+      <item type="string" name="hvac_decrease_button_label"/>
+      <item type="string" name="hvac_increase_button_label"/>
       <item type="string" name="hvac_max_text"/>
       <item type="string" name="hvac_min_text"/>
       <item type="string" name="hvac_null_temp_text"/>
@@ -745,6 +747,20 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="sensor_privacy_start_use_camera_dialog_title"/>
       <item type="string" name="sensor_privacy_start_use_mic_dialog_content"/>
       <item type="string" name="sensor_privacy_start_use_mic_dialog_title"/>
+      <item type="string" name="status_icon_bluetooth_connected"/>
+      <item type="string" name="status_icon_bluetooth_disconnected"/>
+      <item type="string" name="status_icon_bluetooth_off"/>
+      <item type="string" name="status_icon_display_status"/>
+      <item type="string" name="status_icon_signal_hotspot"/>
+      <item type="string" name="status_icon_signal_mobile"/>
+      <item type="string" name="status_icon_signal_wifi"/>
+      <item type="string" name="system_bar_applications_label"/>
+      <item type="string" name="system_bar_climate_control_label"/>
+      <item type="string" name="system_bar_home_label"/>
+      <item type="string" name="system_bar_maps_label"/>
+      <item type="string" name="system_bar_media_label"/>
+      <item type="string" name="system_bar_notifications_label"/>
+      <item type="string" name="system_bar_phone_label"/>
       <item type="string" name="user_add_profile_title"/>
       <item type="string" name="user_add_user_message_setup"/>
       <item type="string" name="user_add_user_message_update"/>

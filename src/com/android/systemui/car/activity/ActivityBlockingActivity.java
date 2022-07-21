@@ -17,9 +17,8 @@ package com.android.systemui.car.activity;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.ActivityTaskManager.RootTaskInfo;
-import android.app.IActivityManager;
 import android.car.Car;
+import android.car.app.CarActivityManager;
 import android.car.content.pm.CarPackageManager;
 import android.car.drivingstate.CarUxRestrictions;
 import android.car.drivingstate.CarUxRestrictionsManager;
@@ -33,7 +32,6 @@ import android.hardware.display.DisplayManager;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Slog;
@@ -68,12 +66,12 @@ public class ActivityBlockingActivity extends Activity {
     private Car mCar;
     private CarUxRestrictionsManager mUxRManager;
     private CarPackageManager mCarPackageManager;
+    private CarActivityManager mCarActivityManager;
 
     private Button mExitButton;
     private Button mToggleDebug;
 
     private int mBlockedTaskId;
-    private IActivityManager mAm;
 
     private final View.OnClickListener mOnExitButtonClickedListener =
             v -> {
@@ -99,7 +97,6 @@ public class ActivityBlockingActivity extends Activity {
         setContentView(R.layout.activity_blocking);
 
         mExitButton = findViewById(R.id.exit_button);
-        mAm = ActivityManager.getService();
 
         // Listen to the CarUxRestrictions so this blocking activity can be dismissed when the
         // restrictions are lifted.
@@ -112,6 +109,8 @@ public class ActivityBlockingActivity extends Activity {
                     }
                     mCarPackageManager = (CarPackageManager) car.getCarManager(
                             Car.PACKAGE_SERVICE);
+                    mCarActivityManager = (CarActivityManager) car.getCarManager(
+                            Car.CAR_ACTIVITY_SERVICE);
                     mUxRManager = (CarUxRestrictionsManager) car.getCarManager(
                             Car.CAR_UX_RESTRICTION_SERVICE);
                     // This activity would have been launched only in a restricted state.
@@ -262,35 +261,25 @@ public class ActivityBlockingActivity extends Activity {
      * the ABA is distraction optimized.
      */
     private boolean isTopActivityBehindAbaDistractionOptimized() {
-        List<RootTaskInfo> taskInfos;
-        try {
-            taskInfos = mAm.getAllRootTaskInfos();
-        } catch (RemoteException e) {
-            Slog.e(TAG, "Unable to get stack info from ActivityManager");
-            // assume that the state is still correct, the activity behind is not DO
-            return false;
-        }
+        List<ActivityManager.RunningTaskInfo> taskInfosTopToBottom;
+        taskInfosTopToBottom = mCarActivityManager.getVisibleTasks();
+        ActivityManager.RunningTaskInfo topStackBehindAba = null;
 
-        RootTaskInfo topStackBehindAba = null;
-        for (RootTaskInfo taskInfo : taskInfos) {
+        // Iterate in bottom to top manner
+        for (int i = taskInfosTopToBottom.size() - 1; i >= 0; i--) {
+            ActivityManager.RunningTaskInfo taskInfo = taskInfosTopToBottom.get(i);
             if (taskInfo.displayId != getDisplayId()) {
                 // ignore stacks on other displays
                 continue;
             }
 
             if (getComponentName().equals(taskInfo.topActivity)) {
-                // ignore stack with the blocking activity
-                continue;
+                // quit when stack with the blocking activity is encountered because the last seen
+                // task will be the topStackBehindAba.
+                break;
             }
 
-            if (!taskInfo.visible) {
-                // ignore stacks that aren't visible
-                continue;
-            }
-
-            if (topStackBehindAba == null || topStackBehindAba.position < taskInfo.position) {
-                topStackBehindAba = taskInfo;
-            }
+            topStackBehindAba = taskInfo;
         }
 
         if (Log.isLoggable(TAG, Log.DEBUG)) {

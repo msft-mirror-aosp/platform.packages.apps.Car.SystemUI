@@ -55,6 +55,22 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"OK"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"車のカメラを ON にしますか？"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"続行するには、インフォテインメント システムのカメラを ON にしてください。これにより、権限が付与されているすべてのアプリに対してカメラが ON になります。"</string>
+    <string name="system_bar_home_label" msgid="8413273833405495948">"ホーム画面"</string>
+    <string name="system_bar_phone_label" msgid="5664288201806823777">"電話"</string>
+    <string name="system_bar_applications_label" msgid="7081862804211786227">"アプリ"</string>
+    <string name="system_bar_climate_control_label" msgid="4091187805919276017">"暖房換気空調システム"</string>
+    <string name="system_bar_notifications_label" msgid="6039158514903928210">"通知"</string>
+    <string name="system_bar_maps_label" msgid="7883864993280235380">"マップ"</string>
+    <string name="system_bar_media_label" msgid="6156112139796274847">"メディア"</string>
+    <string name="hvac_decrease_button_label" msgid="5628481079099995286">"温度を下げる"</string>
+    <string name="hvac_increase_button_label" msgid="2855688290787396792">"温度を上げる"</string>
+    <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"Bluetooth の設定: 接続解除済み"</string>
+    <string name="status_icon_bluetooth_connected" msgid="4548446117525711779">"Bluetooth の設定: 接続済み"</string>
+    <string name="status_icon_bluetooth_off" msgid="5435041393564635821">"Bluetooth の設定: Bluetooth OFF"</string>
+    <string name="status_icon_signal_mobile" msgid="7264721079060179783">"電波状況の設定: モバイルデータを使用中"</string>
+    <string name="status_icon_signal_wifi" msgid="1257569337648058522">"電波状況の設定: Wi-Fi ON"</string>
+    <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"電波状況の設定: アクセス ポイント ON"</string>
+    <string name="status_icon_display_status" msgid="2970020923181359144">"ディスプレイの設定"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"運転中はこの機能を利用できません"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"アプリを閉じる"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"戻る"</string>

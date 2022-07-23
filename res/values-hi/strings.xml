@@ -55,6 +55,22 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"ठीक है"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"क्या गाड़ी का कैमरा चालू करना है?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"जारी रखने के लिए, सूचना और मनोरंजन की सुविधा देने वाले डिवाइस के कैमरे को चालू करें. इससे उन सभी ऐप्लिकेशन के लिए, कैमरा चालू हो जाएगा जिन्हें अनुमति है."</string>
+    <string name="system_bar_home_label" msgid="8413273833405495948">"होम स्क्रीन"</string>
+    <string name="system_bar_phone_label" msgid="5664288201806823777">"फ़ोन"</string>
+    <string name="system_bar_applications_label" msgid="7081862804211786227">"ऐप्लिकेशन"</string>
+    <string name="system_bar_climate_control_label" msgid="4091187805919276017">"क्लाइमेट कंट्रोल"</string>
+    <string name="system_bar_notifications_label" msgid="6039158514903928210">"सूचनाएं"</string>
+    <string name="system_bar_maps_label" msgid="7883864993280235380">"Maps"</string>
+    <string name="system_bar_media_label" msgid="6156112139796274847">"मीडिया"</string>
+    <string name="hvac_decrease_button_label" msgid="5628481079099995286">"तापमान कम करें"</string>
+    <string name="hvac_increase_button_label" msgid="2855688290787396792">"तापमान बढ़ाएं"</string>
+    <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"ब्लूटूथ सेटिंग: डिसकनेक्ट हो गई"</string>
+    <string name="status_icon_bluetooth_connected" msgid="4548446117525711779">"ब्लूटूथ सेटिंग: कनेक्ट हो गई"</string>
+    <string name="status_icon_bluetooth_off" msgid="5435041393564635821">"ब्लूटूथ सेटिंग: ब्लूटूथ बंद है"</string>
+    <string name="status_icon_signal_mobile" msgid="7264721079060179783">"सिग्नल सेटिंग: मोबाइल डेटा का इस्तेमाल किया जा रहा है"</string>
+    <string name="status_icon_signal_wifi" msgid="1257569337648058522">"सिग्नल सेटिंग: वाई-फ़ाई चालू है"</string>
+    <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"सिग्नल सेटिंग: हॉटस्पॉट चालू है"</string>
+    <string name="status_icon_display_status" msgid="2970020923181359144">"डिसप्ले सेटिंग"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"आप गाड़ी चलाते समय इस सुविधा का इस्तेमाल नहीं कर सकते"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"ऐप्लिकेशन बंद करें"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"वापस जाएं"</string>

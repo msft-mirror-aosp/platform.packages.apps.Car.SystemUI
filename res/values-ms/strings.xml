@@ -55,6 +55,22 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"OK"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Hidupkan kamera kenderaan?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Untuk meneruskan, hidupkan kamera sistem maklumat hibur. Tindakan ini akan menghidupkan kamera untuk semua apl yang mempunyai kebenaran."</string>
+    <string name="system_bar_home_label" msgid="8413273833405495948">"Skrin Utama"</string>
+    <string name="system_bar_phone_label" msgid="5664288201806823777">"Telefon"</string>
+    <string name="system_bar_applications_label" msgid="7081862804211786227">"Aplikasi"</string>
+    <string name="system_bar_climate_control_label" msgid="4091187805919276017">"Kawalan Iklim"</string>
+    <string name="system_bar_notifications_label" msgid="6039158514903928210">"Pemberitahuan"</string>
+    <string name="system_bar_maps_label" msgid="7883864993280235380">"Peta"</string>
+    <string name="system_bar_media_label" msgid="6156112139796274847">"Media"</string>
+    <string name="hvac_decrease_button_label" msgid="5628481079099995286">"Kurangkan suhu"</string>
+    <string name="hvac_increase_button_label" msgid="2855688290787396792">"Tinggikan suhu"</string>
+    <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"Tetapan Bluetooth: Diputuskan Sambungan"</string>
+    <string name="status_icon_bluetooth_connected" msgid="4548446117525711779">"Tetapan Bluetooth: Disambungkan"</string>
+    <string name="status_icon_bluetooth_off" msgid="5435041393564635821">"Tetapan Bluetooth: Bluetooth dimatikan"</string>
+    <string name="status_icon_signal_mobile" msgid="7264721079060179783">"Tetapan Isyarat: Menggunakan Data Mudah Alih"</string>
+    <string name="status_icon_signal_wifi" msgid="1257569337648058522">"Tetapan Isyarat: Wi-Fi Dihidupkan"</string>
+    <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"Tetapan Isyarat: Tempat Liputan Dihidupkan"</string>
+    <string name="status_icon_display_status" msgid="2970020923181359144">"Tetapan Paparan"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Anda tidak boleh menggunakan ciri ini semasa memandu"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Tutup apl"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Kembali"</string>

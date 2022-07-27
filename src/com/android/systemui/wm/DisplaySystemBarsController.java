@@ -35,9 +35,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.wm.shell.common.DisplayController;
-import com.android.wm.shell.common.DisplayImeController;
 import com.android.wm.shell.common.DisplayInsetsController;
-import com.android.wm.shell.common.TransactionPool;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -48,12 +46,13 @@ import java.util.Objects;
  * {@link R.bool#config_remoteInsetsControllerControlsSystemBars} determines whether this controller
  * takes control or not.
  */
-public class DisplaySystemBarsController extends DisplayImeController {
+public class DisplaySystemBarsController implements DisplayController.OnDisplaysChangedListener {
 
     private static final String TAG = "DisplaySystemBarsController";
 
     protected final Context mContext;
-    protected final DisplayController mDisplayController;
+    protected final IWindowManager mWmService;
+    protected final DisplayInsetsController mDisplayInsetsController;
     protected final Handler mHandler;
     @VisibleForTesting
     SparseArray<PerDisplay> mPerDisplaySparseArray;
@@ -63,13 +62,12 @@ public class DisplaySystemBarsController extends DisplayImeController {
             IWindowManager wmService,
             DisplayController displayController,
             DisplayInsetsController displayInsetsController,
-            @Main Handler mainHandler,
-            TransactionPool transactionPool) {
-        super(wmService, displayController, displayInsetsController, (r) -> mainHandler.post(r),
-                transactionPool);
+            @Main Handler mainHandler) {
         mContext = context;
-        mDisplayController = displayController;
+        mWmService = wmService;
+        mDisplayInsetsController = displayInsetsController;
         mHandler = mainHandler;
+        displayController.addDisplayWindowListener(this);
     }
 
     @Override
@@ -92,15 +90,12 @@ public class DisplaySystemBarsController extends DisplayImeController {
 
     @Override
     public void onDisplayRemoved(int displayId) {
-        try {
-            mWmService.setDisplayWindowInsetsController(displayId, null);
-        } catch (RemoteException e) {
-            Slog.w(TAG, "Unable to remove insets controller on display " + displayId);
-        }
+        PerDisplay pd = mPerDisplaySparseArray.get(displayId);
+        pd.unregister();
         mPerDisplaySparseArray.remove(displayId);
     }
 
-    class PerDisplay extends DisplayImeController.PerDisplay {
+    class PerDisplay implements DisplayInsetsController.OnInsetsChangedListener {
 
         int mDisplayId;
         InsetsController mInsetsController;
@@ -108,7 +103,6 @@ public class DisplaySystemBarsController extends DisplayImeController {
         String mPackageName;
 
         PerDisplay(int displayId) {
-            super(displayId, mDisplayController.getDisplayLayout(displayId).rotation());
             mDisplayId = displayId;
             mInsetsController = new InsetsController(
                     new DisplaySystemBarsInsetsControllerHost(mHandler, visibilities -> {
@@ -117,9 +111,16 @@ public class DisplaySystemBarsController extends DisplayImeController {
                     }));
         }
 
+        public void register() {
+            mDisplayInsetsController.addInsetsChangedListener(mDisplayId, this);
+        }
+
+        public void unregister() {
+            mDisplayInsetsController.removeInsetsChangedListener(mDisplayId, this);
+        }
+
         @Override
         public void insetsChanged(InsetsState insetsState) {
-            super.insetsChanged(insetsState);
             mInsetsController.onStateChanged(insetsState);
             updateDisplayWindowRequestedVisibilities();
         }
@@ -128,8 +129,6 @@ public class DisplaySystemBarsController extends DisplayImeController {
         public void hideInsets(@Type.InsetsType int types, boolean fromIme) {
             if ((types & Type.ime()) == 0) {
                 mInsetsController.hide(types);
-            } else {
-                super.hideInsets(types, fromIme);
             }
         }
 
@@ -137,8 +136,6 @@ public class DisplaySystemBarsController extends DisplayImeController {
         public void showInsets(@Type.InsetsType int types, boolean fromIme) {
             if ((types & Type.ime()) == 0) {
                 mInsetsController.show(types);
-            } else {
-                super.showInsets(types, fromIme);
             }
         }
 
@@ -153,9 +150,6 @@ public class DisplaySystemBarsController extends DisplayImeController {
                         InsetsSourceControl[]::new);
             }
             mInsetsController.onControlsChanged(nonImeControls);
-            // After passing the controls to the InsetsController, pass the original controls to
-            // the parent DisplayImeController to handle IME controls.
-            super.insetsControlChanged(insetsState, activeControls);
         }
 
         @Override

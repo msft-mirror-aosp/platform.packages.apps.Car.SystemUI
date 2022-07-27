@@ -21,6 +21,7 @@
           package="com.android.systemui.tests">
 
     <application
+        android:name="com.android.systemui.SystemUIApplication"
         android:debuggable="true"
         android:largeHeap="true"
         tools:replace="android:appComponentFactory"

@@ -317,6 +317,13 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
                 animate(from, to, velocity, isClosing);
             } else if (isClosing) {
                 resetPanelVisibility();
+            } else if (!mIsAnimating && !mPanelExpanded) {
+                // This case can happen when the touch ends in the navigation bar.
+                // It is important to check for mIsAnimation, because sometime a closing animation
+                // starts and the following calls will grey out the navigation bar for a sec, this
+                // looks awful ;)
+                onExpandAnimationEnd();
+                setPanelExpanded(true);
             }
 
             // If we swipe down the notification panel all the way to the bottom of the screen

@@ -38,6 +38,8 @@
     <string name="voice_recognition_toast">Voice recognition now handled by connected Bluetooth device</string>
     <!-- Title for button that adds a new profile. [CHAR LIMIT=30] -->
     <string name="car_add_user">Add a profile</string>
+    <!-- Title for button that ends current user session. [CHAR LIMIT=30] -->
+    <string name="end_session">End session</string>
     <!-- Default name of the new profile created. [CHAR LIMIT=30] -->
     <string name="car_new_user">New Profile</string>
     <!-- Title of the alert dialog to ask user to confirm creation of new profile. [CHAR LIMIT=30] -->

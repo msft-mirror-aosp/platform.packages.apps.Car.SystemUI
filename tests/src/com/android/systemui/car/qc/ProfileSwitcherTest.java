@@ -38,6 +38,7 @@ import android.car.util.concurrent.AsyncFuture;
 import android.content.Intent;
 import android.content.pm.UserInfo;
 import android.os.UserManager;
+import android.os.UserHandle;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 
@@ -94,6 +95,50 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
         mProfileSwitcher = new ProfileSwitcher(mContext, mUserManager, mDevicePolicyManager,
                 mCarUserManager);
+    }
+
+    private void setUpLogout() {
+        UserInfo user1 = generateUser(1000, "User1", /* supportsSwitch= */ true,
+                /* isGuest= */ false);
+        UserInfo user2 = generateUser(1001, "User2", /* supportsSwitch= */ true,
+                /* isGuest= */ false);
+        mAliveUsers.add(user1);
+        mAliveUsers.add(user2);
+        when(mDevicePolicyManager.isDeviceManaged()).thenReturn(true);
+        when(mDevicePolicyManager.isLogoutEnabled()).thenReturn(true);
+        when(mDevicePolicyManager.getLogoutUser()).thenReturn(mock(UserHandle.class));
+    }
+
+    @Test
+    public void logoutAllowed_managedDevice_switchAllowed() {
+        setUpLogout();
+        List<QCRow> rows = getProfileRows();
+        assertThat(rows).hasSize(6);
+        assertThat(rows.get(0).getSubtitle()).isEqualTo(
+                mContext.getString(R.string.do_disclosure_generic));
+        assertThat(rows.get(1).getTitle()).isEqualTo("User1");
+        assertThat(rows.get(2).getTitle()).isEqualTo("User2");
+        assertThat(rows.get(3).getTitle()).isEqualTo(
+                mContext.getString(com.android.internal.R.string.guest_name));
+        assertThat(rows.get(4).getTitle()).isEqualTo(
+                mContext.getString(R.string.car_add_user));
+        assertThat(rows.get(5).getTitle()).isEqualTo(mContext.getString(R.string.end_session));
+    }
+
+    @Test
+    public void logoutAllowed_managedDevice_switchDisallowed() {
+        setUpLogout();
+        when(mUserManager.getUserSwitchability(any()))
+                .thenReturn(SWITCHABILITY_STATUS_USER_SWITCH_DISALLOWED);
+        when(mUserManager.getUserInfo(ActivityManager.getCurrentUser()))
+                .thenReturn(mAliveUsers.get(0));
+
+        List<QCRow> rows = getProfileRows();
+        assertThat(rows).hasSize(3);
+        assertThat(rows.get(0).getSubtitle()).isEqualTo(
+                mContext.getString(R.string.do_disclosure_generic));
+        assertThat(rows.get(1).getTitle()).isEqualTo(mAliveUsers.get(0).name);
+        assertThat(rows.get(2).getTitle()).isEqualTo(mContext.getString(R.string.end_session));
     }
 
     @Test

@@ -106,12 +106,19 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             listBuilder.addRow(createOrganizationOwnedDeviceRow());
         }
 
+        boolean isLogoutEnabled = mDevicePolicyManager.isLogoutEnabled()
+                && mDevicePolicyManager.getLogoutUser() != null;
+
         int fgUserId = ActivityManager.getCurrentUser();
         UserHandle fgUserHandle = UserHandle.of(fgUserId);
         // If the foreground user CANNOT switch to other users, only display the foreground user.
         if (mUserManager.getUserSwitchability(fgUserHandle) != SWITCHABILITY_STATUS_OK) {
             UserInfo currentUser = mUserManager.getUserInfo(ActivityManager.getCurrentUser());
-            return listBuilder.addRow(createUserProfileRow(currentUser)).build();
+            listBuilder.addRow(createUserProfileRow(currentUser));
+            if (isLogoutEnabled) {
+                listBuilder.addRow(createLogOutRow());
+            }
+            return listBuilder.build();
         }
 
         List<UserInfo> profiles = getProfileList();
@@ -121,6 +128,10 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         listBuilder.addRow(createGuestProfileRow());
         if (!hasAddUserRestriction(fgUserHandle)) {
             listBuilder.addRow(createAddProfileRow());
+        }
+
+        if (isLogoutEnabled) {
+            listBuilder.addRow(createLogOutRow());
         }
         return listBuilder.build();
     }
@@ -208,6 +219,15 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 actionHandler);
     }
 
+    private QCRow createLogOutRow() {
+        QCRow row = new QCRow.Builder()
+                .setIcon(Icon.createWithResource(mContext, R.drawable.car_ic_logout))
+                .setTitle(mContext.getString(R.string.end_session))
+                .build();
+        row.setActionHandler((item, context, intent) -> logoutUser());
+        return row;
+    }
+
     private QCRow createProfileRow(String title, Drawable iconDrawable,
             QCItem.ActionHandler actionHandler) {
         Icon icon = Icon.createWithBitmap(drawableToBitmap(iconDrawable));
@@ -236,6 +256,24 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             Log.w(TAG, "Timed out while switching user: " + TIMEOUT_MS + "ms");
         } else if (!userSwitchResult.isSuccess()) {
             Log.w(TAG, "Could not switch user: " + userSwitchResult);
+        }
+    }
+
+    private void logoutUser() {
+        mContext.sendBroadcastAsUser(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
+                UserHandle.CURRENT);
+        AsyncFuture<UserSwitchResult> userSwitchResultFuture = mCarUserManager.logoutUser();
+        UserSwitchResult userSwitchResult;
+        try {
+            userSwitchResult = userSwitchResultFuture.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            Log.w(TAG, "Could not log out user.", e);
+            return;
+        }
+        if (userSwitchResult == null) {
+            Log.w(TAG, "Timed out while logging out user: " + TIMEOUT_MS + "ms");
+        } else if (!userSwitchResult.isSuccess()) {
+            Log.w(TAG, "Could not log out user: " + userSwitchResult);
         }
     }
 

@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"បិទ"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"ឥឡូវនេះ ការសម្គាល់សំឡេងត្រូវបានចាត់ចែងដោយឧបករណ៍ដែលបានភ្ជាប់ប៊្លូធូស"</string>
     <string name="car_add_user" msgid="6182764665687382136">"បញ្ចូល​កម្រងព័ត៌មាន"</string>
+    <string name="end_session" msgid="2765206020435441421">"បញ្ចប់​សម័យ"</string>
     <string name="car_new_user" msgid="6766334721724989964">"កម្រងព័ត៌មាន​ថ្មី"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"បញ្ចូល​កម្រងព័ត៌មានថ្មី​ឬ?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"បន្ទាប់ពីអ្នកបង្កើតកម្រងព័ត៌មានថ្មី បុគ្គលនោះគួរតែប្ដូរកម្រងព័ត៌មាននោះតាមបំណងសម្រាប់ខ្លួនគាត់ផ្ទាល់។"</string>

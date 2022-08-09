@@ -24,6 +24,8 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"DEZACTIVAT"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Recunoașterea vocală acum gestionată de dispozitivul Bluetooth conectat"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Adăugați un profil"</string>
+    <!-- no translation found for end_session (2765206020435441421) -->
+    <skip />
     <string name="car_new_user" msgid="6766334721724989964">"Profil nou"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Adăugați un profil nou?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"După ce creați un profil nou, utilizatorul respectiv trebuie să-l personalizeze."</string>

@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"ਬੰਦ"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"ਅਵਾਜ਼ ਦੀ ਪਛਾਣ ਨੂੰ ਹੁਣ ਕਨੈਕਟ ਕੀਤਾ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਸੰਭਾਲਦਾ ਹੈ"</string>
     <string name="car_add_user" msgid="6182764665687382136">"ਕੋਈ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰੋ"</string>
+    <string name="end_session" msgid="2765206020435441421">"ਸੈਸ਼ਨ ਸਮਾਪਤ ਕਰੋ"</string>
     <string name="car_new_user" msgid="6766334721724989964">"ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"ਕੀ ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰਨਾ ਹੈ?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"ਤੁਹਾਡੇ ਵੱਲੋਂ ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਬਣਾਉਣ ਤੋਂ ਬਾਅਦ, ਉਸ ਵਿਅਕਤੀ ਨੂੰ ਖੁਦ ਲਈ ਇਸਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ।"</string>

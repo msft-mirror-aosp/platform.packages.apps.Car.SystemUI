@@ -24,6 +24,8 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"IZKL."</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Prepoznavanje glasu zdaj izvaja povezana naprava Bluetooth"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Dodaj profil"</string>
+    <!-- no translation found for end_session (2765206020435441421) -->
+    <skip />
     <string name="car_new_user" msgid="6766334721724989964">"Nov profil"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Želite dodati nov profil?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Ko ustvarite nov profil, si ga mora ta oseba prilagoditi."</string>

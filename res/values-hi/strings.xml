@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"बंद है"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"अब आवाज़ पहचानने का काम, कनेक्ट किए गए ब्लूटूथ डिवाइस करते हैं"</string>
     <string name="car_add_user" msgid="6182764665687382136">"कोई प्रोफ़ाइल जोड़ें"</string>
+    <string name="end_session" msgid="2765206020435441421">"सेशन खत्म करें"</string>
     <string name="car_new_user" msgid="6766334721724989964">"नई प्रोफ़ाइल"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"नई प्रोफ़ाइल जोड़ना है?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"नई प्रोफ़ाइल बनने के बाद, उपयोगकर्ता को उसे अपनी पसंद के मुताबिक बना लेना चाहिए."</string>

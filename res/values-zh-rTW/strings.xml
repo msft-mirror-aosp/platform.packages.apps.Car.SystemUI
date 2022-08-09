@@ -24,6 +24,8 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"關閉"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"現在由已連線的藍牙裝置處理語音辨識作業"</string>
     <string name="car_add_user" msgid="6182764665687382136">"新增設定檔"</string>
+    <!-- no translation found for end_session (2765206020435441421) -->
+    <skip />
     <string name="car_new_user" msgid="6766334721724989964">"新設定檔"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"要新增設定檔嗎？"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"當你建立新設定檔後，該使用者必須自己進行個人化設定。"</string>

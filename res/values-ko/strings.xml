@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"꺼짐"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"이제 연결된 블루투스 기기에서 음성 인식이 처리됩니다."</string>
     <string name="car_add_user" msgid="6182764665687382136">"프로필 추가"</string>
+    <string name="end_session" msgid="2765206020435441421">"세션 종료"</string>
     <string name="car_new_user" msgid="6766334721724989964">"새 프로필"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"새 프로필을 추가하시겠습니까?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"새 프로필을 만들고 나면 사용자가 직접 프로필을 맞춤설정해야 합니다."</string>

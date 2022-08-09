@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"UIT"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Spraakherkenning actief via een verbonden bluetooth-apparaat"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Profiel toevoegen"</string>
+    <string name="end_session" msgid="2765206020435441421">"Sessie beëindigen"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Nieuw profiel"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Nieuw profiel toevoegen?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Nadat je een nieuw profiel hebt gemaakt, kan die persoon het zelf personaliseren."</string>

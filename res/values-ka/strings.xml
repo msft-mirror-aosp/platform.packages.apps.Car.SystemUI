@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"გამორთულია"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"ხმის ამოცნობა დამუშავდება დაკავშირებული Bluetooth-მოწყობილობით"</string>
     <string name="car_add_user" msgid="6182764665687382136">"პროფილის დამატება"</string>
+    <string name="end_session" msgid="2765206020435441421">"სესიის დასრულება"</string>
     <string name="car_new_user" msgid="6766334721724989964">"ახალი პროფილი"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"დაემატოს ახალი პროფილი?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"მას შემდეგ, რაც ახალ პროფილს შექმნით, ამ პიროვნებამ თვითონ უნდა დააყენოს მისი პარამეტრები."</string>

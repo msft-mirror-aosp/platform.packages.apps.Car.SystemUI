@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"ИСКЉУЧЕНО"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Препознавањем гласа сада управља повезани Bluetooth уређај"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Додај профил"</string>
+    <string name="end_session" msgid="2765206020435441421">"Заврши сесију"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Нови профил"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Желите да додате нови профил?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Када направите нов профил, та особа треба сама да га прилагоди."</string>

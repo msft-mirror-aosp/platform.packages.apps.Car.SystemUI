@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"DESAKTIBATUTA"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Konektatutako Bluetooth bidezko gailuak kudeatzen du ahotsa ezagutzeko eginbidea"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Gehitu profil bat"</string>
+    <string name="end_session" msgid="2765206020435441421">"Amaitu saioa"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Profil berria"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Beste profil bat gehitu nahi duzu?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Zuk profil berria sortu ondoren, erabiltzaileak berak pertsonalizatu beharko luke."</string>

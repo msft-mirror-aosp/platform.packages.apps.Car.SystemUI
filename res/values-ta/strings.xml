@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"ஆஃப்"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"இணைக்கப்பட்ட புளூடூத் சாதனத்தால் \'குரல் அறிதல்\' கையாளப்படுகிறது"</string>
     <string name="car_add_user" msgid="6182764665687382136">"புதிய சுயவிவரத்தைச் சேர்த்தல்"</string>
+    <string name="end_session" msgid="2765206020435441421">"அமர்வை நிறைவுசெய்க"</string>
     <string name="car_new_user" msgid="6766334721724989964">"புதிய சுயவிவரம்"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"புதிய சுயவிவரத்தைச் சேர்க்கவா?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"நீங்கள் புதிய சுயவிவரத்தை உருவாக்கிய பிறகு சம்பந்தப்பட்ட நபரே அதைப் பிரத்தியேகமாக்க வேண்டும்."</string>

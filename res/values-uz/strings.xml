@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"YOQILMAGAN"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Endi ovozni tanish Bluetooth qurilma ulanganda amalga oshadi"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Profil kiritish"</string>
+    <string name="end_session" msgid="2765206020435441421">"Seansni yakunlash"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Yangi profil"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Yangi profil kiritilsinmi?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Yangi profil yaratilgandan keyin foydalanuvchi uni oʻzi uchun sozlab olishi kerak."</string>

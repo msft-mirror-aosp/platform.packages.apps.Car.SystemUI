@@ -24,8 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"DEAKTİV"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Səs tanınması qoşulmuş Bluetooth cihazı ilə icra edilir"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Profil əlavə edin"</string>
-    <!-- no translation found for end_session (2765206020435441421) -->
-    <skip />
+    <string name="end_session" msgid="2765206020435441421">"Sessiyanı sonlandırın"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Yeni profil"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Yeni profil əlavə edilsin?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Yeni bir profil yaratdıqdan sonra həmin şəxs onu özü üçün fərdiləşdirməlidir."</string>

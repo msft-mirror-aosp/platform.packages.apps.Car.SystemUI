@@ -24,8 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"SLÖKKT"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Raddgreiningu er nú stjórnað af tengdu Bluetooth-tæki"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Bæta við prófíl"</string>
-    <!-- no translation found for end_session (2765206020435441421) -->
-    <skip />
+    <string name="end_session" msgid="2765206020435441421">"Ljúka lotu"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Nýr prófíll"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Bæta við nýjum prófíl?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Eftir að þú býrð til nýjan prófíl ætti eigandi prófílsins að sérsníða hann eftir eigin höfði."</string>

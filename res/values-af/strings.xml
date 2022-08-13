@@ -24,8 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"AF"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Stemherkenning nou deur gekoppelde Bluetooth-toestel hanteer"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Voeg \'n profiel by"</string>
-    <!-- no translation found for end_session (2765206020435441421) -->
-    <skip />
+    <string name="end_session" msgid="2765206020435441421">"Beëindig sessie"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Nuwe profiel"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Voeg nuwe profiel by?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Nadat jy \'n nuwe profiel geskep het, moet daardie persoon dit self pasmaak."</string>

@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.statusicon;
 
+import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
 
@@ -26,6 +27,7 @@ import android.app.PendingIntent;
 import android.car.Car;
 import android.car.drivingstate.CarUxRestrictions;
 import android.car.user.CarUserManager;
+import android.car.user.UserLifecycleEventFilter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -73,25 +75,26 @@ public class StatusIconPanelController {
     private final ArrayList<SystemUIQCView> mQCViews = new ArrayList<>();
 
     private PopupWindow mPanel;
+    private @LayoutRes int mPanelLayoutRes;
+    private @DimenRes int mPanelWidthRes;
     private ViewGroup mPanelContent;
     private OnQcViewsFoundListener mOnQcViewsFoundListener;
     private View mAnchorView;
     private ImageView mStatusIconView;
     private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
     private float mDimValue = -1.0f;
+    private View.OnClickListener mOnClickListener;
     private boolean mUserSwitchEventRegistered;
 
     private final CarUserManager.UserLifecycleListener mUserLifecycleListener = event -> {
-        if (event.getEventType() == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING) {
-            reset();
-        }
+        recreatePanel();
     };
 
     private final ConfigurationController.ConfigurationListener mConfigurationListener =
             new ConfigurationController.ConfigurationListener() {
                 @Override
                 public void onLayoutDirectionChanged(boolean isLayoutRtl) {
-                    reset();
+                    recreatePanel();
                 }
             };
 
@@ -173,7 +176,7 @@ public class StatusIconPanelController {
                 R.dimen.car_status_icon_panel_margin_top);
         int topSystemBarHeight = mContext.getResources().getDimensionPixelSize(
                 R.dimen.car_top_system_bar_height);
-        // Cancel out the superfluous inset automatically applied to the panel.
+        // TODO(b/202563671): remove mYOffsetPixel when the PopupWindow API is updated.
         mYOffsetPixel = panelMarginTop - topSystemBarHeight;
 
         broadcastDispatcher.registerReceiver(mBroadcastReceiver,
@@ -185,7 +188,9 @@ public class StatusIconPanelController {
             CarUserManager carUserManager = (CarUserManager) car.getCarManager(
                     Car.CAR_USER_SERVICE);
             if (!mUserSwitchEventRegistered) {
-                carUserManager.addListener(Runnable::run, mUserLifecycleListener);
+                UserLifecycleEventFilter filter = new UserLifecycleEventFilter.Builder()
+                        .addEventType(USER_LIFECYCLE_EVENT_TYPE_SWITCHING).build();
+                carUserManager.addListener(Runnable::run, filter, mUserLifecycleListener);
                 mUserSwitchEventRegistered = true;
             }
         });
@@ -270,8 +275,10 @@ public class StatusIconPanelController {
         if (mAnchorView == null) {
             mAnchorView = view;
         }
+        mPanelLayoutRes = layoutRes;
+        mPanelWidthRes = widthRes;
 
-        mAnchorView.setOnClickListener(v -> {
+        mOnClickListener = v -> {
             if (mIsDisabledWhileDriving && mCarUxRestrictionsUtil.getCurrentRestrictions()
                     .isRequiresDistractionOptimization()) {
                 dismissAllSystemDialogs();
@@ -280,8 +287,8 @@ public class StatusIconPanelController {
                 return;
             }
 
-            if (mPanel == null) {
-                mPanel = createPanel(layoutRes, widthRes);
+            if (mPanel == null && !createPanel()) {
+                return;
             }
 
             if (mPanel.isShowing()) {
@@ -308,7 +315,9 @@ public class StatusIconPanelController {
             setAnimatedStatusIconHighlightedStatus(true);
 
             dimBehind(mPanel);
-        });
+        };
+
+        mAnchorView.setOnClickListener(mOnClickListener);
     }
 
     @VisibleForTesting
@@ -338,33 +347,45 @@ public class StatusIconPanelController {
         return mIconNotHighlightedColor;
     }
 
-    private PopupWindow createPanel(@LayoutRes int layoutRes, @DimenRes int widthRes) {
-        int panelWidth = mContext.getResources().getDimensionPixelSize(widthRes);
+    @VisibleForTesting
+    protected View.OnClickListener getOnClickListener() {
+        return mOnClickListener;
+    }
 
-        mPanelContent = (ViewGroup) LayoutInflater.from(mContext).inflate(layoutRes, /* root= */
-                null);
+    /**
+     * Create the PopupWindow panel and assign to {@link mPanel}.
+     * @return true if the panel was created, false otherwise
+     */
+    private boolean createPanel() {
+        if (mPanelWidthRes == 0 || mPanelLayoutRes == 0) {
+            return false;
+        }
+
+        int panelWidth = mContext.getResources().getDimensionPixelSize(mPanelWidthRes);
+
+        mPanelContent = (ViewGroup) LayoutInflater.from(mContext).inflate(mPanelLayoutRes,
+                /* root= */ null);
         mPanelContent.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
         findQcViews(mPanelContent);
         if (mOnQcViewsFoundListener != null) {
             mOnQcViewsFoundListener.qcViewsFound(mQCViews);
         }
-        PopupWindow panel = new PopupWindow(mPanelContent, panelWidth, WRAP_CONTENT);
-        panel.setBackgroundDrawable(
+        mPanel = new PopupWindow(mPanelContent, panelWidth, WRAP_CONTENT);
+        mPanel.setBackgroundDrawable(
                 mContext.getResources().getDrawable(R.drawable.status_icon_panel_bg,
                         mContext.getTheme()));
-        panel.setWindowLayoutType(TYPE_SYSTEM_DIALOG);
-        panel.setFocusable(true);
-        panel.setOutsideTouchable(false);
-        panel.setOnDismissListener(() -> {
+        mPanel.setWindowLayoutType(TYPE_SYSTEM_DIALOG);
+        mPanel.setFocusable(true);
+        mPanel.setOutsideTouchable(false);
+        mPanel.setOnDismissListener(() -> {
             setAnimatedStatusIconHighlightedStatus(false);
             mAnchorView.setSelected(false);
             highlightStatusIcon(false);
             registerFocusListener(false);
             mQCViews.forEach(qcView -> qcView.listen(false));
         });
-        addFocusParkingView();
 
-        return panel;
+        return true;
     }
 
     private void dimBehind(PopupWindow popupWindow) {
@@ -389,17 +410,6 @@ public class StatusIconPanelController {
         mContext.sendBroadcastAsUser(intent, UserHandle.CURRENT);
     }
 
-    /**
-     * Add a FocusParkingView to the panel content to prevent rotary controller rotation wrapping
-     * around in the panel - this only should be called once per panel.
-     */
-    private void addFocusParkingView() {
-        if (mPanelContent != null) {
-            FocusParkingView fpv = new FocusParkingView(mContext);
-            mPanelContent.addView(fpv);
-        }
-    }
-
     private void registerFocusListener(boolean register) {
         if (mPanelContent == null) {
             return;
@@ -419,9 +429,13 @@ public class StatusIconPanelController {
         mPanel.dismiss();
         mPanel = null;
         mPanelContent = null;
-        mOnQcViewsFoundListener = null;
-        mQCViews.forEach(v -> v.destroy());
+        mQCViews.forEach(SystemUIQCView::destroy);
         mQCViews.clear();
+    }
+
+    private void recreatePanel() {
+        reset();
+        createPanel();
     }
 
     private void findQcViews(ViewGroup rootView) {

@@ -425,10 +425,10 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
             Log.e(TAG, "onPanelVisible: " + visible);
         }
 
-        if (visible && !getOverlayViewGlobalStateController().isWindowVisible()) {
+        if (visible) {
             getOverlayViewGlobalStateController().showView(/* panelViewController= */ this);
         }
-        if (!visible && getOverlayViewGlobalStateController().isWindowVisible()) {
+        else if (getOverlayViewGlobalStateController().isWindowVisible()) {
             getOverlayViewGlobalStateController().hideView(/* panelViewController= */ this);
         }
         getLayout().setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
@@ -475,7 +475,8 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
     protected void calculatePercentageFromEndingEdge(float y) {
         if (getLayout().getHeight() > 0) {
             float height = getVisiblePanelHeight(y);
-            mPercentageFromEndingEdge = (int) Math.abs(height / getLayout().getHeight() * 100);
+            mPercentageFromEndingEdge = Math.round(
+                    Math.abs(height / getLayout().getHeight() * 100));
         }
     }
 

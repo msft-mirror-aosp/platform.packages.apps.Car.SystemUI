@@ -25,6 +25,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.window.DisplayAreaOrganizer;
 
+import com.android.internal.logging.UiEventLogger;
 import com.android.keyguard.KeyguardViewController;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarDeviceProvisionedController;
@@ -63,6 +64,7 @@ import com.android.systemui.statusbar.notification.collection.render.GroupMember
 import com.android.systemui.statusbar.phone.HeadsUpManagerPhone;
 import com.android.systemui.statusbar.phone.KeyguardBypassController;
 import com.android.systemui.statusbar.phone.KeyguardEnvironmentImpl;
+import com.android.systemui.statusbar.policy.AccessibilityManagerWrapper;
 import com.android.systemui.statusbar.policy.BatteryController;
 import com.android.systemui.statusbar.policy.BatteryControllerImpl;
 import com.android.systemui.statusbar.policy.ConfigurationController;
@@ -109,7 +111,9 @@ abstract class CarSystemUIModule {
             GroupMembershipManager groupManager,
             VisualStabilityProvider visualStabilityProvider,
             ConfigurationController configurationController,
-            @Main Handler handler) {
+            @Main Handler handler,
+            AccessibilityManagerWrapper accessibilityManagerWrapper,
+            UiEventLogger uiEventLogger) {
         return new HeadsUpManagerPhone(
             context,
             headsUpManagerLogger,
@@ -118,7 +122,9 @@ abstract class CarSystemUIModule {
             groupManager,
             visualStabilityProvider,
             configurationController,
-            handler
+            handler,
+            accessibilityManagerWrapper,
+            uiEventLogger
         );
     }
 

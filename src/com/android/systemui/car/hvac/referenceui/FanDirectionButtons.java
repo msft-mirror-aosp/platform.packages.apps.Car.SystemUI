@@ -128,7 +128,10 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
     @Override
     public void onPropertyChanged(CarPropertyValue value) {
         if (value.getPropertyId() == HVAC_FAN_DIRECTION) {
-            int newDirection = (Integer) value.getValue();
+            int newDirection = INVALID_ID;
+            if (value.getValue() instanceof Integer) {
+                newDirection = (Integer) value.getValue();
+            }
             if (!mButtonDirections.contains(newDirection)) {
                 if (DEBUG) {
                     Log.w(TAG, "Button is not defined for direction: " + newDirection);

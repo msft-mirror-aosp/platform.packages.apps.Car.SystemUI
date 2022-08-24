@@ -24,8 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"已关闭"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"现在由已连接的蓝牙设备处理语音识别操作"</string>
     <string name="car_add_user" msgid="6182764665687382136">"添加个人资料"</string>
-    <!-- no translation found for end_session (2765206020435441421) -->
-    <skip />
+    <string name="end_session" msgid="2765206020435441421">"结束会话"</string>
     <string name="car_new_user" msgid="6766334721724989964">"新的个人资料"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"要添加新的个人资料吗？"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"您创建新的个人资料后，相应用户应自己对其进行自定义。"</string>

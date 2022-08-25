@@ -30,7 +30,6 @@ import android.car.Car;
 import android.car.user.CarUserManager;
 import android.car.user.UserCreationResult;
 import android.car.user.UserSwitchResult;
-import android.car.userlib.UserHelper;
 import android.car.util.concurrent.AsyncFuture;
 import android.content.Context;
 import android.content.Intent;
@@ -50,11 +49,13 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
+import com.android.car.internal.user.UserHelper;
 import com.android.car.qc.QCItem;
 import com.android.car.qc.QCList;
 import com.android.car.qc.QCRow;
 import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.internal.util.UserIcons;
+import com.android.settingslib.utils.StringUtil;
 import com.android.systemui.R;
 import com.android.systemui.car.userswitcher.UserIconProvider;
 
@@ -185,7 +186,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             }
         };
 
-        return createProfileRow(mContext.getString(R.string.start_guest_session),
+        return createProfileRow(mContext.getString(com.android.internal.R.string.guest_name),
                 mUserIconProvider.getRoundedGuestDefaultIcon(mContext.getResources()),
                 actionHandler);
     }
@@ -247,7 +248,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     @Nullable
     private UserInfo createNewOrFindExistingGuest(Context context) {
         AsyncFuture<UserCreationResult> future = mCarUserManager.createGuest(
-                context.getString(R.string.car_guest));
+                context.getString(com.android.internal.R.string.guest_name));
         // CreateGuest will return null if a guest already exists.
         UserInfo newGuest = getUserInfo(future);
         if (newGuest != null) {
@@ -275,7 +276,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             Log.w(TAG, "Could not create user: " + userCreationResult);
             return null;
         }
-        return userCreationResult.getUser();
+        return mUserManager.getUserInfo(userCreationResult.getUser().getIdentifier());
     }
 
     private RoundedBitmapDrawable getCircularAddUserIcon() {
@@ -310,10 +311,8 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         AlertDialog maxUsersDialog = new AlertDialog.Builder(mContext,
                 com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setTitle(R.string.profile_limit_reached_title)
-                .setMessage(mContext.getResources().getQuantityString(
-                        R.plurals.profile_limit_reached_message,
-                        getMaxSupportedRealUsers(),
-                        getMaxSupportedRealUsers()))
+                .setMessage(StringUtil.getIcuPluralsString(mContext, getMaxSupportedRealUsers(),
+                                R.string.profile_limit_reached_message))
                 .setPositiveButton(android.R.string.ok, null)
                 .create();
         // Sets window flags for the SysUI dialog
@@ -357,9 +356,9 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             try {
                 UserInfo user = getUserInfo(future);
                 if (user != null) {
-                    UserHelper.setDefaultNonAdminRestrictions(mContext, user,
+                    UserHelper.setDefaultNonAdminRestrictions(mContext, user.getUserHandle(),
                             /* enable= */ true);
-                    UserHelper.assignDefaultIcon(mContext, user);
+                    UserHelper.assignDefaultIcon(mContext, user.getUserHandle());
                     return user;
                 } else {
                     Log.e(TAG, "Failed to create user in the background");

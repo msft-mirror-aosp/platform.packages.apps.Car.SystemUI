@@ -42,7 +42,8 @@ import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.privacy.MicQcPanel;
+import com.android.systemui.car.privacy.CameraPrivacyElementsProviderImpl;
+import com.android.systemui.car.privacy.MicPrivacyElementsProviderImpl;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
@@ -56,6 +57,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Set;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -81,7 +84,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Mock
     private UserNameViewController mUserNameViewController;
     @Mock
-    private PrivacyChipViewController mPrivacyChipViewController;
+    private MicPrivacyChipViewController mMicPrivacyChipViewController;
+    @Mock
+    private CameraPrivacyChipViewController mCameraPrivacyChipViewController;
     @Mock
     private FeatureFlags mFeatureFlags;
     @Mock
@@ -95,7 +100,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Mock
     private ConfigurationController mConfigurationController;
     @Mock
-    private MicQcPanel.MicPrivacyElementsProvider mMicPrivacyElementsProvider;
+    private MicPrivacyElementsProviderImpl mMicPrivacyElementsProvider;
+    @Mock
+    private CameraPrivacyElementsProviderImpl mCameraPrivacyElementsProvider;
 
     @Before
     public void setUp() throws Exception {
@@ -114,11 +121,11 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     private CarSystemBarController createSystemBarController() {
         return new CarSystemBarController(mSpiedContext, mCarSystemBarViewFactory,
                 mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
-                mButtonSelectionStateController,
-                () -> mUserNameViewController, () -> mPrivacyChipViewController,
+                mButtonSelectionStateController, () -> mUserNameViewController,
+                () -> mMicPrivacyChipViewController, () -> mCameraPrivacyChipViewController,
                 mButtonRoleHolderController,
                 new SystemBarConfigs(mTestableResources.getResources()),
-                () -> mMicPrivacyElementsProvider);
+                () -> mMicPrivacyElementsProvider, () -> mCameraPrivacyElementsProvider);
     }
 
     @Test
@@ -145,7 +152,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
         mCarSystemBar.removeAll();
 
-        verify(mPrivacyChipViewController).removeAll();
+        verify(mMicPrivacyChipViewController).removeAll();
+        verify(mCameraPrivacyChipViewController).removeAll();
     }
 
     @Test
@@ -374,12 +382,14 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBar = createSystemBarController();
 
         CarSystemBarView bottomBar = mCarSystemBar.getBottomBar(/* isSetUp= */ true);
-        View.OnTouchListener controller = bottomBar.getStatusBarWindowTouchListener();
-        assertThat(controller).isNull();
+        Set<View.OnTouchListener> controllers = bottomBar.getStatusBarWindowTouchListeners();
+        assertThat(controllers).isNotNull();
+        assertThat(controllers.size()).isEqualTo(0);
         mCarSystemBar.registerBottomBarTouchListener(mock(View.OnTouchListener.class));
-        controller = bottomBar.getStatusBarWindowTouchListener();
+        controllers = bottomBar.getStatusBarWindowTouchListeners();
 
-        assertThat(controller).isNotNull();
+        assertThat(controllers).isNotNull();
+        assertThat(controllers.size()).isEqualTo(1);
     }
 
     @Test
@@ -389,9 +399,10 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
         mCarSystemBar.registerBottomBarTouchListener(mock(View.OnTouchListener.class));
         CarSystemBarView bottomBar = mCarSystemBar.getBottomBar(/* isSetUp= */ true);
-        View.OnTouchListener controller = bottomBar.getStatusBarWindowTouchListener();
+        Set<View.OnTouchListener> controllers = bottomBar.getStatusBarWindowTouchListeners();
 
-        assertThat(controller).isNotNull();
+        assertThat(controllers).isNotNull();
+        assertThat(controllers.size()).isEqualTo(1);
     }
 
     @Test

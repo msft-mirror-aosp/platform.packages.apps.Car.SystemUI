@@ -32,8 +32,6 @@ import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
 import com.android.systemui.car.systembar.CarSystemBarController.NotificationsShadeController;
-import com.android.systemui.flags.FeatureFlags;
-import com.android.systemui.statusbar.phone.StatusBarIconController;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
@@ -121,19 +119,6 @@ public class CarSystemBarView extends LinearLayout {
         if (mReadOnlyIconsContainer != null) {
             readOnlyIconsController.addIconViews(mReadOnlyIconsContainer,
                     /* shouldAttachPanel= */false);
-        }
-    }
-
-    void setupIconController(FeatureFlags featureFlags, StatusBarIconController iconController) {
-        View mStatusIcons = findViewById(R.id.statusIcons);
-        if (mStatusIcons != null) {
-            // Attach the controllers for Status icons such as wifi and bluetooth if the standard
-            // container is in the view.
-            StatusBarIconController.DarkIconManager mDarkIconManager =
-                    new StatusBarIconController.DarkIconManager(
-                            mStatusIcons.findViewById(R.id.statusIcons), featureFlags);
-            mDarkIconManager.setShouldLog(true);
-            iconController.addIconGroup(mDarkIconManager);
         }
     }
 

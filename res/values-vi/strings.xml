@@ -24,8 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"ĐÃ TẮT"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Thiết bị Bluetooth được kết nối đang xử lý vấn đề nhận dạng giọng nói"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Thêm hồ sơ"</string>
-    <!-- no translation found for end_session (2765206020435441421) -->
-    <skip />
+    <string name="end_session" msgid="2765206020435441421">"Kết thúc phiên"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Hồ sơ mới"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Thêm hồ sơ mới?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Sau khi bạn tạo hồ sơ cho một người mới, người đó phải tự tùy chỉnh hồ sơ của họ."</string>

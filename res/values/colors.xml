@@ -42,8 +42,7 @@
     <color name="system_bar_text_color">#FFFFFF</color>
     <color name="system_bar_text_selected_color">#000000</color>
     <color name="system_bar_text_unavailable_color">#B0B0B0</color>
-    <color name="status_bar_background_color">#33000000</color>
-    <drawable name="system_bar_background">@color/status_bar_background_color</drawable>
+    <drawable name="system_bar_background">#000000</drawable>
 
     <!-- colors for quick controls entry points icon   -->
     <color name="car_quick_controls_icon_drawable_color">#FFFFFF</color>

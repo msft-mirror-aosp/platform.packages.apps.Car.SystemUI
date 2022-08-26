@@ -147,7 +147,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="privacy_chip_dark_icon_color"/>
       <item type="color" name="privacy_chip_indicator_color"/>
       <item type="color" name="privacy_chip_indicator_outside_stroke_color"/>
-      <item type="color" name="status_bar_background_color"/>
       <item type="color" name="status_icon_highlighted_color"/>
       <item type="color" name="status_icon_not_highlighted_color"/>
       <item type="color" name="status_icon_panel_bg_color"/>
@@ -400,6 +399,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_ic_hvac"/>
       <item type="drawable" name="car_ic_hvac_selected"/>
       <item type="drawable" name="car_ic_keyboard_arrow_down"/>
+      <item type="drawable" name="car_ic_logout"/>
       <item type="drawable" name="car_ic_managed_device"/>
       <item type="drawable" name="car_ic_music"/>
       <item type="drawable" name="car_ic_music_mute"/>
@@ -710,6 +710,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="config_notificationPanelViewMediator"/>
       <item type="string" name="config_statusBarComponent"/>
       <item type="string" name="debug_button_text"/>
+      <item type="string" name="end_session"/>
       <item type="string" name="exit_button_close_application"/>
       <item type="string" name="exit_button_go_back"/>
       <item type="string" name="fan_speed_max"/>

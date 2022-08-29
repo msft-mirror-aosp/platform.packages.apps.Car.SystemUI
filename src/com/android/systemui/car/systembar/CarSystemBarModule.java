@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.systembar;
 
+import android.content.Context;
+
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.dagger.SysUISingleton;
 
@@ -48,5 +50,19 @@ public abstract class CarSystemBarModule {
             return overrideButtonSelectionStateListener.get();
         }
         return new ButtonSelectionStateListener(controller);
+    }
+
+    @BindsOptionalOf
+    @CarSysUIDynamicOverride
+    abstract ButtonSelectionStateController optionalButtonSelectionStateController();
+
+    @SysUISingleton
+    @Provides
+    static ButtonSelectionStateController provideButtonSelectionStateController(Context context,
+            @CarSysUIDynamicOverride Optional<ButtonSelectionStateController> controller) {
+        if (controller.isPresent()) {
+            return controller.get();
+        }
+        return new ButtonSelectionStateController(context);
     }
 }

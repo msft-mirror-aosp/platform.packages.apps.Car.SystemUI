@@ -58,12 +58,10 @@ import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.NotificationLockscreenUserManager;
 import com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
-import com.android.systemui.statusbar.notification.NotificationEntryManager;
 import com.android.systemui.statusbar.notification.collection.provider.VisualStabilityProvider;
 import com.android.systemui.statusbar.notification.collection.render.GroupMembershipManager;
 import com.android.systemui.statusbar.phone.HeadsUpManagerPhone;
 import com.android.systemui.statusbar.phone.KeyguardBypassController;
-import com.android.systemui.statusbar.phone.KeyguardEnvironmentImpl;
 import com.android.systemui.statusbar.policy.AccessibilityManagerWrapper;
 import com.android.systemui.statusbar.policy.BatteryController;
 import com.android.systemui.statusbar.policy.BatteryControllerImpl;
@@ -193,10 +191,6 @@ abstract class CarSystemUIModule {
 
     @Binds
     abstract DockManager bindDockManager(DockManagerImpl dockManager);
-
-    @Binds
-    abstract NotificationEntryManager.KeyguardEnvironment bindKeyguardEnvironment(
-            KeyguardEnvironmentImpl keyguardEnvironment);
 
     @Binds
     abstract ShadeController provideShadeController(ShadeControllerImpl shadeController);

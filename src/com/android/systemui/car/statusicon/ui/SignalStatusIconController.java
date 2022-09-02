@@ -62,12 +62,11 @@ public class SignalStatusIconController extends StatusIconController implements
         mHotspotController = hotspotController;
         mNetworkController = networkController;
 
-        mNetworkController.addCallback(this);
-        mHotspotController.addCallback(this);
-
         mMobileSignalIconDrawable = new SignalDrawable(mContext);
         mHotSpotIconDrawable = mResources.getDrawable(R.drawable.ic_hotspot, mContext.getTheme());
 
+        mNetworkController.addCallback(this);
+        mHotspotController.addCallback(this);
     }
 
     @Override

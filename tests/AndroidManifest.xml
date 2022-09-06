@@ -25,7 +25,8 @@
         android:debuggable="true"
         android:largeHeap="true"
         tools:replace="android:appComponentFactory"
-        android:appComponentFactory="com.android.systemui.CarSystemUITestAppComponentFactory">
+        android:appComponentFactory="com.android.systemui.CarSystemUITestAppComponentFactory"
+        android:testOnly="true">
         <uses-library android:name="android.test.runner"/>
 
         <provider

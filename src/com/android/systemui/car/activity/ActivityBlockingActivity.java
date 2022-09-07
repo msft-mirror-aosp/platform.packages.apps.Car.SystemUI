@@ -145,8 +145,8 @@ public class ActivityBlockingActivity extends Activity {
         String blockedActivity = getIntent().getStringExtra(
                 CarPackageManager.BLOCKING_INTENT_EXTRA_BLOCKED_ACTIVITY_NAME);
         if (!TextUtils.isEmpty(blockedActivity)) {
-            if (isTopActivityBehindAbaDistractionOptimized()) {
-                Slog.e(TAG, "Top activity is already DO, so finishing");
+            if (areAllVisibleActivitiesDistractionOptimised()) {
+                Slog.e(TAG, "All visible activities are already DO, so finishing");
                 finish();
                 return;
             }
@@ -257,49 +257,40 @@ public class ActivityBlockingActivity extends Activity {
 
     /**
      * It is possible that the stack info has changed between when the intent to launch this
-     * activity was initiated and when this activity is started. Check whether the activity behind
-     * the ABA is distraction optimized.
+     * activity was initiated and when this activity is started. Check whether all the visible
+     * activities are distraction optimized.
      */
-    private boolean isTopActivityBehindAbaDistractionOptimized() {
-        List<ActivityManager.RunningTaskInfo> taskInfosTopToBottom;
-        taskInfosTopToBottom = mCarActivityManager.getVisibleTasks();
-        ActivityManager.RunningTaskInfo topStackBehindAba = null;
-
-        // Iterate in bottom to top manner
-        for (int i = taskInfosTopToBottom.size() - 1; i >= 0; i--) {
-            ActivityManager.RunningTaskInfo taskInfo = taskInfosTopToBottom.get(i);
+    private boolean areAllVisibleActivitiesDistractionOptimised() {
+        List<ActivityManager.RunningTaskInfo> visibleTasks;
+        visibleTasks = mCarActivityManager.getVisibleTasks();
+        for (int i = visibleTasks.size() - 1; i >= 0; i--) {
+            ActivityManager.RunningTaskInfo taskInfo = visibleTasks.get(i);
             if (taskInfo.displayId != getDisplayId()) {
                 // ignore stacks on other displays
                 continue;
             }
 
             if (getComponentName().equals(taskInfo.topActivity)) {
-                // quit when stack with the blocking activity is encountered because the last seen
-                // task will be the topStackBehindAba.
-                break;
+                // skip the ActivityBlockingActivity itself
+                continue;
             }
 
-            topStackBehindAba = taskInfo;
-        }
-
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Slog.d(TAG, String.format("Top stack behind ABA is: %s", topStackBehindAba));
-        }
-
-        if (topStackBehindAba != null && topStackBehindAba.topActivity != null) {
-            boolean isDo = mCarPackageManager.isActivityDistractionOptimized(
-                    topStackBehindAba.topActivity.getPackageName(),
-                    topStackBehindAba.topActivity.getClassName());
-            if (Log.isLoggable(TAG, Log.DEBUG)) {
-                Slog.d(TAG,
-                        String.format("Top activity (%s) is DO: %s", topStackBehindAba.topActivity,
-                                isDo));
+            if (taskInfo.topActivity != null) {
+                boolean isDo = mCarPackageManager.isActivityDistractionOptimized(
+                        taskInfo.topActivity.getPackageName(),
+                        taskInfo.topActivity.getClassName());
+                if (Log.isLoggable(TAG, Log.DEBUG)) {
+                    Slog.d(TAG,
+                            String.format("Activity (%s) is DO: %s", taskInfo.topActivity, isDo));
+                }
+                if (!isDo) {
+                    return false;
+                }
             }
-            return isDo;
         }
 
-        // unknown top stack / activity, default to considering it non-DO
-        return false;
+        // No visible non-DO activity found.
+        return true;
     }
 
     private void displayDebugInfo() {

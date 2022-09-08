@@ -451,6 +451,7 @@ public class CarSystemBarController {
         view.setNotificationsPanelController(notifShadeController);
         view.setHvacPanelController(hvacPanelController);
         view.registerHvacPanelOverlayViewController(hvacPanelOverlayViewController);
+        view.updateControlCenterButtonVisibility(CarSystemUIUserUtil.isMUMDSystemUI());
         mButtonSelectionStateController.addAllButtonsWithSelectionState(view);
         mButtonRoleHolderController.addAllButtonsWithRoleName(view);
         mUserNameViewControllerLazy.get().addUserNameView(view);

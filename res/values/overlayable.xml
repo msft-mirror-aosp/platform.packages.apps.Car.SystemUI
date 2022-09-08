@@ -401,6 +401,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_ic_hvac"/>
       <item type="drawable" name="car_ic_hvac_selected"/>
       <item type="drawable" name="car_ic_keyboard_arrow_down"/>
+      <item type="drawable" name="car_ic_logout"/>
       <item type="drawable" name="car_ic_managed_device"/>
       <item type="drawable" name="car_ic_music"/>
       <item type="drawable" name="car_ic_music_mute"/>
@@ -461,6 +462,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_mic_light"/>
       <item type="drawable" name="ic_mic_off_dark"/>
       <item type="drawable" name="ic_mic_off_light"/>
+      <item type="drawable" name="ic_phone"/>
       <item type="drawable" name="ic_rear_defroster_off"/>
       <item type="drawable" name="ic_rear_defroster_on"/>
       <item type="drawable" name="ic_recycle_air_off"/>
@@ -585,6 +587,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="qc_entry_points_container"/>
       <item type="id" name="qc_location_status_icon"/>
       <item type="id" name="qc_mic_footer_button"/>
+      <item type="id" name="qc_phone_call_status_icon"/>
       <item type="id" name="qc_profile_footer_button"/>
       <item type="id" name="qc_signal_status_icon"/>
       <item type="id" name="qs_car_top_bar"/>
@@ -711,6 +714,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="config_notificationPanelViewMediator"/>
       <item type="string" name="config_statusBarComponent"/>
       <item type="string" name="debug_button_text"/>
+      <item type="string" name="end_session"/>
       <item type="string" name="exit_button_close_application"/>
       <item type="string" name="exit_button_go_back"/>
       <item type="string" name="fan_speed_max"/>

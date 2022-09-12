@@ -83,6 +83,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="bool" name="config_enableHeadsUpNotificationWhenNotificationPanelOpen"/>
       <item type="bool" name="config_enableLeftSystemBar"/>
       <item type="bool" name="config_enableRightSystemBar"/>
+      <item type="bool" name="config_enableShellMainThread"/>
       <item type="bool" name="config_enableTopSystemBar"/>
       <item type="bool" name="config_hideBottomSystemBarForKeyboard"/>
       <item type="bool" name="config_hideLeftSystemBarForKeyboard"/>

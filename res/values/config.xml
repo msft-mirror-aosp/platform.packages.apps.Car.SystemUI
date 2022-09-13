@@ -178,4 +178,7 @@
         below the border results in the panel being expanded back to the original height.
     -->
     <integer name="hvac_panel_settle_close_percentage">50</integer>
+
+    <!-- Determines whether the shell features all run on another thread. -->
+    <bool name="config_enableShellMainThread">true</bool>
 </resources>

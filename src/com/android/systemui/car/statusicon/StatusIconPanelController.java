@@ -50,7 +50,6 @@ import com.android.car.qc.QCItem;
 import com.android.car.qc.view.QCView;
 import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
-import com.android.car.ui.utils.ViewUtils;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
@@ -315,11 +314,6 @@ public class StatusIconPanelController {
 
             mQCViews.forEach(qcView -> qcView.listen(true));
 
-            // Clear the focus highlight in this window since a dialog window is about to show.
-            // TODO(b/201700195): remove this workaround once the window focus issue is fixed.
-            if (view.isFocused()) {
-                ViewUtils.hideFocus(view.getRootView());
-            }
             registerFocusListener(true);
 
             // TODO(b/202563671): remove yOffsetPixel when the PopupWindow API is updated.

@@ -462,6 +462,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_mic_light"/>
       <item type="drawable" name="ic_mic_off_dark"/>
       <item type="drawable" name="ic_mic_off_light"/>
+      <item type="drawable" name="ic_phone"/>
       <item type="drawable" name="ic_rear_defroster_off"/>
       <item type="drawable" name="ic_rear_defroster_on"/>
       <item type="drawable" name="ic_recycle_air_off"/>
@@ -586,6 +587,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="qc_entry_points_container"/>
       <item type="id" name="qc_location_status_icon"/>
       <item type="id" name="qc_mic_footer_button"/>
+      <item type="id" name="qc_phone_call_status_icon"/>
       <item type="id" name="qc_profile_footer_button"/>
       <item type="id" name="qc_signal_status_icon"/>
       <item type="id" name="qs_car_top_bar"/>

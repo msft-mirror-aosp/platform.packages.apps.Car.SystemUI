@@ -130,6 +130,7 @@
          The icons will be added to the view in the order their controllers appear on this list.-->
     <string-array name="config_readOnlyIconControllers" translatable="false">
         <item>com.android.systemui.car.statusicon.ui.LocationStatusIconController</item>
+        <item>com.android.systemui.car.statusicon.ui.PhoneCallStatusIconController</item>
     </string-array>
 
     <!-- List of package names that are allowed sources of app installation. -->

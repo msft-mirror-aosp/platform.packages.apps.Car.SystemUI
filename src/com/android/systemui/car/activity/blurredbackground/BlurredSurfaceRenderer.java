@@ -26,6 +26,9 @@ import android.os.IBinder;
 import android.util.Slog;
 import android.view.Surface;
 import android.view.SurfaceControl;
+import android.window.ScreenCapture;
+import android.window.ScreenCapture.DisplayCaptureArgs;
+import android.window.ScreenCapture.ScreenshotHardwareBuffer;
 
 import com.android.systemui.R;
 
@@ -146,15 +149,15 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
                 Slog.e(TAG,
                         "Could not find display token for screenshot. Will not capture screenshot");
             } else {
-                final SurfaceControl.DisplayCaptureArgs captureArgs =
-                        new SurfaceControl.DisplayCaptureArgs.Builder(token)
+                final DisplayCaptureArgs captureArgs =
+                        new DisplayCaptureArgs.Builder(token)
                                 .setSize(mWindowRect.width(), mWindowRect.height())
                                 .setSourceCrop(mWindowRect)
                                 .setUseIdentityTransform(true)
                                 .build();
 
-                SurfaceControl.ScreenshotHardwareBuffer screenshotHardwareBuffer =
-                        SurfaceControl.captureDisplay(captureArgs);
+                ScreenshotHardwareBuffer screenshotHardwareBuffer =
+                        ScreenCapture.captureDisplay(captureArgs);
                 mSurface.attachAndQueueBufferWithColorSpace(
                         screenshotHardwareBuffer.getHardwareBuffer(),
                         screenshotHardwareBuffer.getColorSpace());

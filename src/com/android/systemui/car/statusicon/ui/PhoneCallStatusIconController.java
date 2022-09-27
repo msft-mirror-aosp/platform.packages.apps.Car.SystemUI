@@ -81,6 +81,7 @@ public class PhoneCallStatusIconController extends StatusIconController {
                 filter,  /* broadcastPermission= */ null, /* scheduler= */ null);
         registerForUserChangeEvents();
         setIconDrawableToDisplay(resources.getDrawable(R.drawable.ic_phone, context.getTheme()));
+        updateStatus();
     }
 
     @Override

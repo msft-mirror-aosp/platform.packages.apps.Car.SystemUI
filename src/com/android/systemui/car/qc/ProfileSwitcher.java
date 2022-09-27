@@ -148,6 +148,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         return mUserManager.getAliveUsers()
                 .stream()
                 .filter(userInfo -> userInfo.supportsSwitchToByUser() && !userInfo.isGuest())
+                .sorted((u1, u2) -> Long.signum(u1.creationTime - u2.creationTime))
                 .collect(Collectors.toList());
     }
 

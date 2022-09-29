@@ -136,6 +136,7 @@ public class UserGridRecyclerView extends RecyclerView {
         return mUserManager.getAliveUsers()
                 .stream()
                 .filter(UserInfo::supportsSwitchToByUser)
+                .sorted((u1, u2) -> Long.signum(u1.creationTime - u2.creationTime))
                 .collect(Collectors.toList());
     }
 

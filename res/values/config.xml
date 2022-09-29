@@ -182,4 +182,9 @@
 
     <!-- Determines whether the shell features all run on another thread. -->
     <bool name="config_enableShellMainThread">true</bool>
+
+    <!-- Determines whether the shell task organizer be registered automatiacly or not.
+         It needs to be disabled for CarSystemUI as CarLauncher already registers one. With 2
+         organizers there can be recovery problems if either of the process crashes. -->
+    <bool name="config_registerShellTaskOrganizerOnInit">false</bool>
 </resources>

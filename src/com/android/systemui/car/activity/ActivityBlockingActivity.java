@@ -32,6 +32,7 @@ import android.hardware.display.DisplayManager;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Slog;
@@ -53,6 +54,7 @@ import java.util.List;
  * Additional information on blocked Activity should be passed as intent extras.
  */
 public class ActivityBlockingActivity extends Activity {
+    private static final int ACTIVITY_MONITORING_DELAY_MS = 1000;
     private static final String TAG = "BlockingActivity";
     private static final int EGL_CONTEXT_VERSION = 3;
     private static final int EGL_CONFIG_SIZE = 8;
@@ -72,6 +74,7 @@ public class ActivityBlockingActivity extends Activity {
     private Button mToggleDebug;
 
     private int mBlockedTaskId;
+    private final Handler mHandler = new Handler();
 
     private final View.OnClickListener mOnExitButtonClickedListener =
             v -> {
@@ -145,9 +148,8 @@ public class ActivityBlockingActivity extends Activity {
         String blockedActivity = getIntent().getStringExtra(
                 CarPackageManager.BLOCKING_INTENT_EXTRA_BLOCKED_ACTIVITY_NAME);
         if (!TextUtils.isEmpty(blockedActivity)) {
-            if (areAllVisibleActivitiesDistractionOptimised()) {
-                Slog.e(TAG, "All visible activities are already DO, so finishing");
-                finish();
+            boolean finished = finishIfActivitiesAreDistractionOptimised();
+            if (finished) {
                 return;
             }
 
@@ -178,6 +180,17 @@ public class ActivityBlockingActivity extends Activity {
         // Finish when blocking activity goes invisible to avoid it accidentally re-surfaces with
         // stale string regarding blocked activity.
         finish();
+    }
+
+    private boolean finishIfActivitiesAreDistractionOptimised() {
+        if (areAllVisibleActivitiesDistractionOptimised()) {
+            Slog.i(TAG, "All visible activities are already DO, so finishing");
+            finish();
+            return true;
+        }
+        mHandler.postDelayed(() -> finishIfActivitiesAreDistractionOptimised(),
+                ACTIVITY_MONITORING_DELAY_MS);
+        return false;
     }
 
     private void setupGLSurface() {
@@ -366,6 +379,7 @@ public class ActivityBlockingActivity extends Activity {
             mToggleDebug.getViewTreeObserver().removeOnGlobalLayoutListener(
                     mOnGlobalLayoutListener);
         }
+        mHandler.removeCallbacksAndMessages(null);
         mCar.disconnect();
     }
 

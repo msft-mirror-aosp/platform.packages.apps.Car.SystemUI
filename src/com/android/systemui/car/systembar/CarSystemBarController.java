@@ -39,12 +39,12 @@ import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.privacy.CameraPrivacyElementsProviderImpl;
-import com.android.systemui.car.privacy.CameraQcPanel;
 import com.android.systemui.car.privacy.MicPrivacyElementsProviderImpl;
-import com.android.systemui.car.privacy.MicQcPanel;
+import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelController;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import java.util.ArrayList;
@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import dagger.Lazy;
 
@@ -63,12 +64,14 @@ public class CarSystemBarController {
     private static final String TAG = CarSystemBarController.class.getSimpleName();
 
     private final Context mContext;
+    private final UserTracker mUserTracker;
     private final CarSystemBarViewFactory mCarSystemBarViewFactory;
     private final CarServiceProvider mCarServiceProvider;
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final ConfigurationController mConfigurationController;
     private final ButtonSelectionStateController mButtonSelectionStateController;
     private final ButtonRoleHolderController mButtonRoleHolderController;
+    private final Provider<SystemUIQCViewController> mQCViewControllerProvider;
     private final Lazy<UserNameViewController> mUserNameViewControllerLazy;
     private final Lazy<MicPrivacyChipViewController> mMicPrivacyChipViewControllerLazy;
     private final Lazy<CameraPrivacyChipViewController> mCameraPrivacyChipViewControllerLazy;
@@ -115,6 +118,7 @@ public class CarSystemBarController {
 
     @Inject
     public CarSystemBarController(Context context,
+            UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,
             CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
@@ -125,9 +129,11 @@ public class CarSystemBarController {
             Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
             ButtonRoleHolderController buttonRoleHolderController,
             SystemBarConfigs systemBarConfigs,
+            Provider<SystemUIQCViewController> qcViewControllerProvider,
             Lazy<MicPrivacyElementsProviderImpl> micPrivacyElementsProvider,
             Lazy<CameraPrivacyElementsProviderImpl> cameraPrivacyElementsProvider) {
         mContext = context;
+        mUserTracker = userTracker;
         mCarSystemBarViewFactory = carSystemBarViewFactory;
         mCarServiceProvider = carServiceProvider;
         mBroadcastDispatcher = broadcastDispatcher;
@@ -137,6 +143,7 @@ public class CarSystemBarController {
         mMicPrivacyChipViewControllerLazy = micPrivacyChipViewControllerLazy;
         mCameraPrivacyChipViewControllerLazy = cameraPrivacyChipViewControllerLazy;
         mButtonRoleHolderController = buttonRoleHolderController;
+        mQCViewControllerProvider = qcViewControllerProvider;
         mMicPrivacyElementsProviderLazy = micPrivacyElementsProvider;
         mCameraPrivacyElementsProviderLazy = cameraPrivacyElementsProvider;
 
@@ -442,22 +449,10 @@ public class CarSystemBarController {
             @Nullable StatusIconPanelController panelController, int chipId,
             @LayoutRes int panelLayoutRes) {
         if (panelController == null) {
-            panelController = new StatusIconPanelController(mContext, mCarServiceProvider,
-                    mBroadcastDispatcher, mConfigurationController);
+            panelController = new StatusIconPanelController(mContext, mUserTracker,
+                    mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
+                    mQCViewControllerProvider);
         }
-
-        panelController.setOnQcViewsFoundListener(qcViews -> qcViews.forEach(qcView -> {
-            if (qcView.getLocalQCProvider() instanceof MicQcPanel) {
-                MicQcPanel micQcPanel = (MicQcPanel) qcView.getLocalQCProvider();
-                micQcPanel.setControllers(mMicPrivacyChipViewControllerLazy.get(),
-                        mMicPrivacyElementsProviderLazy.get());
-            } else if (qcView.getLocalQCProvider() instanceof CameraQcPanel) {
-                CameraQcPanel cameraQcPanel = (CameraQcPanel) qcView.getLocalQCProvider();
-                cameraQcPanel.setControllers(mCameraPrivacyChipViewControllerLazy.get(),
-                        mCameraPrivacyElementsProviderLazy.get());
-            }
-        }));
-
         panelController.attachPanel(mTopView.requireViewById(chipId), panelLayoutRes,
                 R.dimen.car_sensor_qc_panel_width, mPrivacyChipXOffset,
                 panelController.getDefaultYOffset(), Gravity.TOP | Gravity.END);
@@ -470,9 +465,9 @@ public class CarSystemBarController {
         if (mProfilePanelController == null && profilePickerView != null) {
             boolean profilePanelDisabledWhileDriving = mContext.getResources().getBoolean(
                     R.bool.config_profile_panel_disabled_while_driving);
-            mProfilePanelController = new StatusIconPanelController(mContext, mCarServiceProvider,
-                    mBroadcastDispatcher, mConfigurationController,
-                    profilePanelDisabledWhileDriving);
+            mProfilePanelController = new StatusIconPanelController(mContext, mUserTracker,
+                    mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
+                    mQCViewControllerProvider, profilePanelDisabledWhileDriving);
             mProfilePanelController.attachPanel(profilePickerView, R.layout.qc_profile_switcher,
                     R.dimen.car_profile_quick_controls_panel_width, Gravity.TOP | Gravity.END);
         }

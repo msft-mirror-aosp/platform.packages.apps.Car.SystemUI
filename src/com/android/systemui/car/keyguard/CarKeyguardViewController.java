@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.keyguard;
 
+import static com.android.internal.widget.LockPatternUtils.CREDENTIAL_TYPE_PATTERN;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -33,6 +35,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.ui.FocusParkingView;
+import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.LockPatternView;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardViewController;
@@ -44,6 +47,7 @@ import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.NotificationPanelViewController;
 import com.android.systemui.shade.ShadeExpansionStateManager;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
@@ -73,6 +77,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private static final float TOAST_PARAMS_VERTICAL_WEIGHT = 1.0f;
 
     private final Context mContext;
+    private final UserTracker mUserTracker;
     private final DelayableExecutor mMainExecutor;
     private final WindowManager mWindowManager;
     private final ToastFactory mToastFactory;
@@ -90,12 +95,9 @@ public class CarKeyguardViewController extends OverlayViewController implements
                 public void onFullyShown() {
                     LockPatternView patternView = getLayout().findViewById(R.id.lockPatternView);
                     if (patternView != null) {
-                        patternView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                            @Override
-                            public void onFocusChange(View v, boolean hasFocus) {
-                                if (hasFocus) {
-                                    makeOverlayToast(R.string.lockpattern_does_not_support_rotary);
-                                }
+                        patternView.setOnFocusChangeListener((v, hasFocus) -> {
+                            if (hasFocus) {
+                                makeOverlayToast(R.string.lockpattern_does_not_support_rotary);
                             }
                         });
                     }
@@ -107,6 +109,15 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
                 @Override
                 public void onStartingToShow() {
+                    // TODO: Remove this code block when b/158386500 is addressed properly.
+                    LockPatternUtils utils = new LockPatternUtils(mContext);
+                    int currentUser = mUserTracker.getUserId();
+                    if (utils.getCredentialTypeForUser(currentUser) == CREDENTIAL_TYPE_PATTERN
+                            && !utils.isVisiblePatternEnabled(currentUser)) {
+                        utils.setVisiblePatternEnabled(true, currentUser);
+                        Log.w(TAG, "Pattern is invisible for the current user. "
+                                + "Setting it to be visible.");
+                    }
                 }
 
                 @Override
@@ -124,6 +135,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     @Inject
     public CarKeyguardViewController(
             Context context,
+            UserTracker userTracker,
             @Main DelayableExecutor mainExecutor,
             WindowManager windowManager,
             ToastFactory toastFactory,
@@ -139,6 +151,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         super(R.id.keyguard_stub, overlayViewGlobalStateController);
 
         mContext = context;
+        mUserTracker = userTracker;
         mMainExecutor = mainExecutor;
         mWindowManager = windowManager;
         mToastFactory = toastFactory;

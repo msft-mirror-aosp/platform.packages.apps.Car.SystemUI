@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import android.app.UiModeManager;
+import android.content.Context;
 import android.content.res.Resources;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
@@ -43,6 +44,7 @@ import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationPanelViewMediator;
 import com.android.systemui.car.notification.PowerManagerHelper;
 import com.android.systemui.car.notification.TopNotificationPanelViewMediator;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import org.junit.Before;
@@ -290,16 +292,18 @@ public class SystemBarConfigsTest extends SysuiTestCase {
     private class TestTopNotificationPanelViewMediator extends
             TopNotificationPanelViewMediator {
         TestTopNotificationPanelViewMediator(
+                Context context,
                 CarSystemBarController carSystemBarController,
                 NotificationPanelViewController notificationPanelViewController,
                 PowerManagerHelper powerManagerHelper,
                 BroadcastDispatcher broadcastDispatcher,
+                UserTracker userTracker,
                 CarDeviceProvisionedController carDeviceProvisionedController,
                 ConfigurationController configurationController,
                 UiModeManager uiModeManager) {
-            super(carSystemBarController, notificationPanelViewController, powerManagerHelper,
-                    broadcastDispatcher, carDeviceProvisionedController, configurationController,
-                    uiModeManager);
+            super(context, carSystemBarController, notificationPanelViewController,
+                    powerManagerHelper, broadcastDispatcher, userTracker,
+                    carDeviceProvisionedController, configurationController, uiModeManager);
         }
     }
 }

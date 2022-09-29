@@ -32,7 +32,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.UserHandle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,10 +52,15 @@ import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.qc.QCFooterButton;
 import com.android.systemui.car.qc.SystemUIQCView;
+import com.android.systemui.car.qc.SystemUIQCViewController;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import java.util.ArrayList;
+
+import javax.inject.Provider;
 
 /**
  * A controller for a panel view associated with a status icon.
@@ -65,16 +69,18 @@ public class StatusIconPanelController {
     private static final int DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY = Gravity.TOP | Gravity.START;
 
     private final Context mContext;
+    private final UserTracker mUserTracker;
     private final CarServiceProvider mCarServiceProvider;
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final ConfigurationController mConfigurationController;
+    private final Provider<SystemUIQCViewController> mQCViewControllerProvider;
     private final String mIdentifier;
     private final String mIconTag;
     private final @ColorInt int mIconHighlightedColor;
     private final @ColorInt int mIconNotHighlightedColor;
     private final int mYOffsetPixel;
     private final boolean mIsDisabledWhileDriving;
-    private final ArrayList<SystemUIQCView> mQCViews = new ArrayList<>();
+    private final ArrayList<SystemUIQCViewController> mQCViewControllers = new ArrayList<>();
 
     private PopupWindow mPanel;
     private @LayoutRes int mPanelLayoutRes;
@@ -141,6 +147,16 @@ public class StatusIconPanelController {
         }
     };
 
+    private final UserTracker.Callback mUserTrackerCallback = new UserTracker.Callback() {
+        @Override
+        public void onUserChanged(int newUser, Context userContext) {
+            mBroadcastDispatcher.unregisterReceiver(mBroadcastReceiver);
+            mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
+                    new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* executor= */ null,
+                    mUserTracker.getUserHandle());
+        }
+    };
+
     private final ViewTreeObserver.OnGlobalFocusChangeListener mFocusChangeListener =
             (oldFocus, newFocus) -> {
                 if (isPanelShowing() && oldFocus != null && newFocus instanceof FocusParkingView) {
@@ -168,23 +184,29 @@ public class StatusIconPanelController {
 
     public StatusIconPanelController(
             Context context,
+            UserTracker userTracker,
             CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
-            ConfigurationController configurationController) {
-        this(context, carServiceProvider, broadcastDispatcher, configurationController,
-                /* isDisabledWhileDriving= */ false);
+            ConfigurationController configurationController,
+            Provider<SystemUIQCViewController> qcViewControllerProvider) {
+        this(context, userTracker, carServiceProvider, broadcastDispatcher, configurationController,
+                qcViewControllerProvider, /* isDisabledWhileDriving= */ false);
     }
 
     public StatusIconPanelController(
             Context context,
+            UserTracker userTracker,
             CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
+            Provider<SystemUIQCViewController> qcViewControllerProvider,
             boolean isDisabledWhileDriving) {
         mContext = context;
+        mUserTracker = userTracker;
         mCarServiceProvider = carServiceProvider;
         mBroadcastDispatcher = broadcastDispatcher;
         mConfigurationController = configurationController;
+        mQCViewControllerProvider = qcViewControllerProvider;
         mIdentifier = Integer.toString(System.identityHashCode(this));
 
         mIconTag = mContext.getResources().getString(R.string.qc_icon_tag);
@@ -200,7 +222,8 @@ public class StatusIconPanelController {
 
         mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* executor= */ null,
-                UserHandle.ALL);
+                mUserTracker.getUserHandle());
+        mUserTracker.addCallback(mUserTrackerCallback, mContext.getMainExecutor());
         mConfigurationController.addCallback(mConfigurationListener);
         mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
 
@@ -217,13 +240,6 @@ public class StatusIconPanelController {
      */
     public int getDefaultYOffset() {
         return mYOffsetPixel;
-    }
-
-    /**
-     * @return list of {@link SystemUIQCView} in this controller
-     */
-    public ArrayList<SystemUIQCView> getQCViews() {
-        return mQCViews;
     }
 
     public void setOnQcViewsFoundListener(OnQcViewsFoundListener onQcViewsFoundListener) {
@@ -312,7 +328,7 @@ public class StatusIconPanelController {
             // Dismiss all currently open system dialogs before opening this panel.
             dismissAllSystemDialogs();
 
-            mQCViews.forEach(qcView -> qcView.listen(true));
+            mQCViewControllers.forEach(controller -> controller.listen(true));
 
             registerFocusListener(true);
 
@@ -342,6 +358,7 @@ public class StatusIconPanelController {
         }
         mCarServiceProvider.removeListener(mCarServiceOnConnectedListener);
         mConfigurationController.removeCallback(mConfigurationListener);
+        mUserTracker.removeCallback(mUserTrackerCallback);
         mBroadcastDispatcher.unregisterReceiver(mBroadcastReceiver);
         mPanelLayoutRes = 0;
         mIsPanelDestroyed = true;
@@ -394,9 +411,7 @@ public class StatusIconPanelController {
                 /* root= */ null);
         mPanelContent.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
         findQcViews(mPanelContent);
-        if (mOnQcViewsFoundListener != null) {
-            mOnQcViewsFoundListener.qcViewsFound(mQCViews);
-        }
+        findQcFooterViews(mPanelContent);
         mPanel = new PopupWindow(mPanelContent, panelWidth, WRAP_CONTENT);
         mPanel.setBackgroundDrawable(
                 mContext.getResources().getDrawable(R.drawable.status_icon_panel_bg,
@@ -409,7 +424,7 @@ public class StatusIconPanelController {
             mAnchorView.setSelected(false);
             highlightStatusIcon(false);
             registerFocusListener(false);
-            mQCViews.forEach(qcView -> qcView.listen(false));
+            mQCViewControllers.forEach(controller -> controller.listen(false));
         });
 
         return true;
@@ -434,7 +449,7 @@ public class StatusIconPanelController {
     private void dismissAllSystemDialogs() {
         Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         intent.setIdentifier(mIdentifier);
-        mContext.sendBroadcastAsUser(intent, UserHandle.CURRENT);
+        mContext.sendBroadcastAsUser(intent, mUserTracker.getUserHandle());
     }
 
     private void registerFocusListener(boolean register) {
@@ -456,8 +471,8 @@ public class StatusIconPanelController {
         mPanel.dismiss();
         mPanel = null;
         mPanelContent = null;
-        mQCViews.forEach(SystemUIQCView::destroy);
-        mQCViews.clear();
+        mQCViewControllers.forEach(SystemUIQCViewController::destroy);
+        mQCViewControllers.clear();
     }
 
     private void recreatePanel() {
@@ -470,10 +485,23 @@ public class StatusIconPanelController {
             View v = rootView.getChildAt(i);
             if (v instanceof SystemUIQCView) {
                 SystemUIQCView qcv = (SystemUIQCView) v;
-                mQCViews.add(qcv);
+                SystemUIQCViewController controller = mQCViewControllerProvider.get();
+                controller.attachView(qcv);
+                mQCViewControllers.add(controller);
                 qcv.setActionListener(mQCActionListener);
             } else if (v instanceof ViewGroup) {
                 this.findQcViews((ViewGroup) v);
+            }
+        }
+    }
+
+    private void findQcFooterViews(ViewGroup rootView) {
+        for (int i = 0; i < rootView.getChildCount(); i++) {
+            View v = rootView.getChildAt(i);
+            if (v instanceof QCFooterButton) {
+                ((QCFooterButton) v).setUserTracker(mUserTracker);
+            } else if (v instanceof ViewGroup) {
+                this.findQcFooterViews((ViewGroup) v);
             }
         }
     }

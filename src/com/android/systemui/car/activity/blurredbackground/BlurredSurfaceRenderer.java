@@ -16,19 +16,24 @@
 
 package com.android.systemui.car.activity.blurredbackground;
 
+import static android.view.Display.DEFAULT_DISPLAY;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
-import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Pair;
 import android.util.Slog;
 import android.view.Surface;
-import android.view.SurfaceControl;
+import android.view.WindowManagerGlobal;
 import android.window.ScreenCapture;
-import android.window.ScreenCapture.DisplayCaptureArgs;
+import android.window.ScreenCapture.CaptureArgs;
+import android.window.ScreenCapture.ScreenCaptureListener;
 import android.window.ScreenCapture.ScreenshotHardwareBuffer;
+import android.window.ScreenCapture.ScreenshotSync;
 
 import com.android.systemui.R;
 
@@ -144,28 +149,27 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
         boolean isScreenshotCaptured = false;
 
         try {
-            final IBinder token = SurfaceControl.getInternalDisplayToken();
-            if (token == null) {
-                Slog.e(TAG,
-                        "Could not find display token for screenshot. Will not capture screenshot");
-            } else {
-                final DisplayCaptureArgs captureArgs =
-                        new DisplayCaptureArgs.Builder(token)
-                                .setSize(mWindowRect.width(), mWindowRect.height())
-                                .setSourceCrop(mWindowRect)
-                                .setUseIdentityTransform(true)
-                                .build();
-
-                ScreenshotHardwareBuffer screenshotHardwareBuffer =
-                        ScreenCapture.captureDisplay(captureArgs);
-                mSurface.attachAndQueueBufferWithColorSpace(
-                        screenshotHardwareBuffer.getHardwareBuffer(),
-                        screenshotHardwareBuffer.getColorSpace());
-                mSurfaceTexture.updateTexImage();
-                mSurfaceTexture.getTransformMatrix(mTexMatrix);
-                isScreenshotCaptured = true;
+            final CaptureArgs captureArgs = new CaptureArgs.Builder<>()
+                    .setSourceCrop(mWindowRect)
+                    .build();
+            Pair<ScreenCaptureListener, ScreenshotSync> syncScreenCapture =
+                    ScreenCapture.createSyncCaptureListener();
+            try {
+                WindowManagerGlobal.getWindowManagerService().captureDisplay(DEFAULT_DISPLAY,
+                        captureArgs, syncScreenCapture.first);
+            } catch (RemoteException e) {
+                Slog.e(TAG, "Failed to request screencapture for display");
+                e.rethrowAsRuntimeException();
             }
+            final ScreenshotHardwareBuffer screenshotHardwareBuffer =
+                    syncScreenCapture.second.get();
 
+            mSurface.attachAndQueueBufferWithColorSpace(
+                    screenshotHardwareBuffer.getHardwareBuffer(),
+                    screenshotHardwareBuffer.getColorSpace());
+            mSurfaceTexture.updateTexImage();
+            mSurfaceTexture.getTransformMatrix(mTexMatrix);
+            isScreenshotCaptured = true;
         } finally {
             mSurface.release();
             mSurfaceTexture.release();

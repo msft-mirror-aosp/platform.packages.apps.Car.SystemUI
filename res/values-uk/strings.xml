@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"ВИМКНЕНО"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Голос розпізнається через підключений пристрій Bluetooth"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Додати профіль"</string>
+    <string name="end_session" msgid="2765206020435441421">"Завершити сеанс"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Новий профіль"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Додати новий профіль?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Коли ви створите новий профіль, цій людині потрібно буде налаштувати його для себе."</string>

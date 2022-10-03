@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"ఆఫ్"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"నేడు వాయిస్ గుర్తింపును కనెక్ట్ అయిన బ్లూటూత్ నిర్వహిస్తోంది"</string>
     <string name="car_add_user" msgid="6182764665687382136">"ప్రొఫైల్‌ను జోడించండి"</string>
+    <string name="end_session" msgid="2765206020435441421">"సెషన్‌ను ముగించండి"</string>
     <string name="car_new_user" msgid="6766334721724989964">"కొత్త ప్రొఫైల్"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"కొత్త ప్రొఫైల్‌ను జోడించాలా?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"మీరు కొత్త ప్రొఫైల్‌ను క్రియేట్ చేసిన తర్వాత, ఆ వ్యక్తి దాన్ని వారి కోసం అనుకూలంగా మార్చుకోవాలి."</string>

@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"අක්‍රියයි"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"හඬ හැඳුනුම දැන් සම්බන්ධ බ්ලූටූත් උපාංගය මගින් හසුරුවනු ලැබේ"</string>
     <string name="car_add_user" msgid="6182764665687382136">"පැතිකඩක් එක් කරන්න"</string>
+    <string name="end_session" msgid="2765206020435441421">"සැසිය නිමා කරන්න"</string>
     <string name="car_new_user" msgid="6766334721724989964">"නව පැතිකඩ"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"නව පැතිකඩ එක් කරන්නද?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"ඔබ නව පැතිකඩක් තැනීමෙන් පසුව, එම පුද්ගලයා එය තමා සඳහා අභිරුචිකරණය කළ යුතුය."</string>

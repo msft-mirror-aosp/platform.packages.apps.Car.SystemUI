@@ -25,6 +25,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.window.DisplayAreaOrganizer;
 
+import com.android.internal.logging.UiEventLogger;
 import com.android.keyguard.KeyguardViewController;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarDeviceProvisionedController;
@@ -41,6 +42,7 @@ import com.android.systemui.demomode.DemoModeController;
 import com.android.systemui.dock.DockManager;
 import com.android.systemui.dock.DockManagerImpl;
 import com.android.systemui.doze.DozeHost;
+import com.android.systemui.dump.DumpManager;
 import com.android.systemui.navigationbar.gestural.GestureModule;
 import com.android.systemui.plugins.qs.QSFactory;
 import com.android.systemui.plugins.statusbar.StatusBarStateController;
@@ -57,12 +59,11 @@ import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.NotificationLockscreenUserManager;
 import com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
-import com.android.systemui.statusbar.notification.NotificationEntryManager;
 import com.android.systemui.statusbar.notification.collection.provider.VisualStabilityProvider;
 import com.android.systemui.statusbar.notification.collection.render.GroupMembershipManager;
 import com.android.systemui.statusbar.phone.HeadsUpManagerPhone;
 import com.android.systemui.statusbar.phone.KeyguardBypassController;
-import com.android.systemui.statusbar.phone.KeyguardEnvironmentImpl;
+import com.android.systemui.statusbar.policy.AccessibilityManagerWrapper;
 import com.android.systemui.statusbar.policy.BatteryController;
 import com.android.systemui.statusbar.policy.BatteryControllerImpl;
 import com.android.systemui.statusbar.policy.ConfigurationController;
@@ -108,7 +109,10 @@ abstract class CarSystemUIModule {
             KeyguardBypassController bypassController,
             GroupMembershipManager groupManager,
             VisualStabilityProvider visualStabilityProvider,
-            ConfigurationController configurationController) {
+            ConfigurationController configurationController,
+            @Main Handler handler,
+            AccessibilityManagerWrapper accessibilityManagerWrapper,
+            UiEventLogger uiEventLogger) {
         return new HeadsUpManagerPhone(
             context,
             headsUpManagerLogger,
@@ -116,7 +120,10 @@ abstract class CarSystemUIModule {
             bypassController,
             groupManager,
             visualStabilityProvider,
-            configurationController
+            configurationController,
+            handler,
+            accessibilityManagerWrapper,
+            uiEventLogger
         );
     }
 
@@ -152,10 +159,11 @@ abstract class CarSystemUIModule {
     static BatteryController provideBatteryController(Context context,
             EnhancedEstimates enhancedEstimates, PowerManager powerManager,
             BroadcastDispatcher broadcastDispatcher, DemoModeController demoModeController,
+            DumpManager dumpManager,
             @Main Handler mainHandler,
             @Background Handler bgHandler) {
         BatteryController bC = new BatteryControllerImpl(context, enhancedEstimates, powerManager,
-                broadcastDispatcher, demoModeController, mainHandler, bgHandler);
+                broadcastDispatcher, demoModeController, dumpManager, mainHandler, bgHandler);
         bC.init();
         return bC;
     }
@@ -185,10 +193,6 @@ abstract class CarSystemUIModule {
 
     @Binds
     abstract DockManager bindDockManager(DockManagerImpl dockManager);
-
-    @Binds
-    abstract NotificationEntryManager.KeyguardEnvironment bindKeyguardEnvironment(
-            KeyguardEnvironmentImpl keyguardEnvironment);
 
     @Binds
     abstract ShadeController provideShadeController(ShadeControllerImpl shadeController);

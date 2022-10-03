@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"IMEZIMWA"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Utambuzi wa sauti sasa unashughulikiwa na kifaa kilichounganishwa cha Bluetooth"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Weka wasifu"</string>
+    <string name="end_session" msgid="2765206020435441421">"Maliza kipindi"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Wasifu Mpya"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Ungependa kuweka wasifu mpya?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Baada ya kuweka wasifu mpya, mtu huyo anapaswa kuuwekea mapendeleo ili uwe jinsi apendavyo."</string>

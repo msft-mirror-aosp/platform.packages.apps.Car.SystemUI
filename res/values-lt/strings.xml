@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"IŠJUNGTA"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Balso atpažinimą dabar tvarko susietas „Bluetooth“ įrenginys"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Pridėti profilį"</string>
+    <string name="end_session" msgid="2765206020435441421">"Baigti seansą"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Naujas profilis"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Pridėti naują profilį?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Kai sukursite naują profilį, šis asmuo turėtų jį tinkinti pagal save."</string>

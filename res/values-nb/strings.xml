@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"AV"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Talegjenkjenning håndteres nå av tilkoblet Bluetooth-enhet"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Legg til en profil"</string>
+    <string name="end_session" msgid="2765206020435441421">"Avslutt økten"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Ny profil"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Vil du legge til en ny profil?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Etter at du har opprettet en ny profil, kan brukeren tilpasse den selv."</string>

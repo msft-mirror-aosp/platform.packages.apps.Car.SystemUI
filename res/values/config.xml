@@ -130,6 +130,7 @@
          The icons will be added to the view in the order their controllers appear on this list.-->
     <string-array name="config_readOnlyIconControllers" translatable="false">
         <item>com.android.systemui.car.statusicon.ui.LocationStatusIconController</item>
+        <item>com.android.systemui.car.statusicon.ui.PhoneCallStatusIconController</item>
     </string-array>
 
     <!-- List of package names that are allowed sources of app installation. -->
@@ -178,4 +179,12 @@
         below the border results in the panel being expanded back to the original height.
     -->
     <integer name="hvac_panel_settle_close_percentage">50</integer>
+
+    <!-- Determines whether the shell features all run on another thread. -->
+    <bool name="config_enableShellMainThread">true</bool>
+
+    <!-- Determines whether the shell task organizer be registered automatiacly or not.
+         It needs to be disabled for CarSystemUI as CarLauncher already registers one. With 2
+         organizers there can be recovery problems if either of the process crashes. -->
+    <bool name="config_registerShellTaskOrganizerOnInit">false</bool>
 </resources>

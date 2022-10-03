@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"ӨЧҮК"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Үндү эми туташкан Bluetooth түзмөгү менен тааныса болот"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Профиль кошуу"</string>
+    <string name="end_session" msgid="2765206020435441421">"Сеансты бүтүрүү"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Жаңы профиль"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Жаңы профиль кошулсунбу?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Жаңы профиль түзүлгөндөн кийин, ал аны өзүнө ыңгайлаштырып алышы керек."</string>

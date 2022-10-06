@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.notification;
 
+import android.app.UiModeManager;
 import android.car.hardware.power.CarPowerManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -53,6 +54,7 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final ConfigurationController mConfigurationController;
+    private final UiModeManager mUiModeManager;
 
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -67,6 +69,8 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         }
     };
 
+    private boolean mIsUiModeNight;
+
     @Inject
     public NotificationPanelViewMediator(
             CarSystemBarController carSystemBarController,
@@ -76,7 +80,8 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
             BroadcastDispatcher broadcastDispatcher,
 
             CarDeviceProvisionedController carDeviceProvisionedController,
-            ConfigurationController configurationController
+            ConfigurationController configurationController,
+            UiModeManager uiModeManager
     ) {
         mCarSystemBarController = carSystemBarController;
         mNotificationPanelViewController = notificationPanelViewController;
@@ -84,6 +89,7 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         mBroadcastDispatcher = broadcastDispatcher;
         mCarDeviceProvisionedController = carDeviceProvisionedController;
         mConfigurationController = configurationController;
+        mUiModeManager = uiModeManager;
     }
 
     @Override
@@ -131,7 +137,15 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
 
     @Override
     public void onConfigChanged(Configuration newConfig) {
-        // No op.
+        boolean isConfigNightMode = (newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                == Configuration.UI_MODE_NIGHT_YES;
+        // Only refresh UI on Night mode changes
+        if (isConfigNightMode != mIsUiModeNight) {
+            mIsUiModeNight = isConfigNightMode;
+            mUiModeManager.setNightModeActivated(mIsUiModeNight);
+            mNotificationPanelViewController.reinflate();
+            registerListeners();
+        }
     }
 
     @Override

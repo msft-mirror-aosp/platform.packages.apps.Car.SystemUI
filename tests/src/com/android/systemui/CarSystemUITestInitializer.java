@@ -18,13 +18,19 @@ package com.android.systemui;
 
 import static org.mockito.Mockito.mock;
 
+import android.content.Context;
+
 import com.android.systemui.dagger.SysUIComponent;
 import com.android.systemui.dagger.WMComponent;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
 
 import java.util.Optional;
 
-public class CarSystemUITestFactory extends CarSystemUIFactory {
+public class CarSystemUITestInitializer extends CarSystemUIInitializer {
+    public CarSystemUITestInitializer(Context context) {
+        super(context);
+    }
+
     @Override
     protected SysUIComponent.Builder prepareSysUIComponentBuilder(
             SysUIComponent.Builder sysUIBuilder, WMComponent wm) {

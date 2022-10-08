@@ -446,7 +446,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
     }
 
     private void notifyKeyguardUpdateMonitor() {
-        mKeyguardUpdateMonitor.onKeyguardVisibilityChanged(mShowing);
         if (mBouncer != null) {
             mKeyguardUpdateMonitor.sendKeyguardBouncerChanged(
                     bouncerIsOrWillBeShowing(), isBouncerShowing());

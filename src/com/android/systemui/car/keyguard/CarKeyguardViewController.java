@@ -281,11 +281,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
     }
 
     @Override
-    public boolean isShowing() {
-        return mShowing;
-    }
-
-    @Override
     @MainThread
     public void dismissAndCollapse() {
         // If dismissing and collapsing Keyguard is requested (e.g. by a Keyguard-dismissing

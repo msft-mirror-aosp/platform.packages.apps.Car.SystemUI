@@ -31,6 +31,7 @@ import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
 import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
 import com.android.systemui.car.decor.CarSystemStatusAnimationScheduler;
+import com.android.systemui.car.drivemode.DriveModeModule;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
 import com.android.systemui.car.statusbar.DozeServiceHost;
@@ -92,7 +93,8 @@ import javax.inject.Named;
                 GestureModule.class,
                 PowerModule.class,
                 QSModule.class,
-                ReferenceScreenshotModule.class
+                ReferenceScreenshotModule.class,
+                DriveModeModule.class
         }
 )
 abstract class CarSystemUIModule {

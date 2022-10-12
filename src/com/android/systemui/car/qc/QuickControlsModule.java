@@ -50,4 +50,11 @@ public abstract class QuickControlsModule {
     @ClassKey(CameraQcPanel.class)
     public abstract BaseLocalQCProvider bindCameraQcPanel(
             CameraQcPanel micQcPanel);
+
+    /** Injects DriveModeQcPanel. */
+    @Binds
+    @IntoMap
+    @ClassKey(DriveModeQcPanel.class)
+    public abstract BaseLocalQCProvider bindDriveModeQcPanel(
+            DriveModeQcPanel driveModeQcPanel);
 }

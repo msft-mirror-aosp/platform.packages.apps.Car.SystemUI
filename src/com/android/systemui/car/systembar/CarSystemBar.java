@@ -77,8 +77,9 @@ import javax.inject.Inject;
 import dagger.Lazy;
 
 /** Navigation bars customized for the automotive use case. */
-public class CarSystemBar extends CoreStartable implements CommandQueue.Callbacks,
+public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         ConfigurationController.ConfigurationListener {
+    private final Context mContext;
     private final CarSystemBarController mCarSystemBarController;
     private final SysuiDarkIconDispatcher mStatusBarIconController;
     private final WindowManager mWindowManager;
@@ -154,7 +155,7 @@ public class CarSystemBar extends CoreStartable implements CommandQueue.Callback
             SystemBarConfigs systemBarConfigs,
             ConfigurationController configurationController
     ) {
-        super(context);
+        mContext = context;
         mCarSystemBarController = carSystemBarController;
         mStatusBarIconController = (SysuiDarkIconDispatcher) darkIconDispatcher;
         mWindowManager = windowManager;

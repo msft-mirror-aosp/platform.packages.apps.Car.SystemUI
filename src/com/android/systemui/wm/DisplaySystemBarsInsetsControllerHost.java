@@ -22,8 +22,6 @@ import android.annotation.NonNull;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.InsetsController;
-import android.view.InsetsState;
-import android.view.InsetsVisibilities;
 import android.view.SurfaceControl;
 import android.view.SyncRtSurfaceTransactionApplier;
 import android.view.WindowInsets;
@@ -45,12 +43,12 @@ public class DisplaySystemBarsInsetsControllerHost implements InsetsController.H
 
     private final Handler mHandler;
     private final float[] mTmpFloat9 = new float[9];
-    private final Consumer<InsetsVisibilities> mRequestedVisibilityCallback;
+    private final Consumer<Integer> mRequestedVisibleTypesCallback;
 
     public DisplaySystemBarsInsetsControllerHost(Handler handler,
-            Consumer<InsetsVisibilities> requestedVisibilityCallback) {
+            Consumer<Integer> requestedVisibleTypesCallback) {
         mHandler = handler;
-        mRequestedVisibilityCallback = requestedVisibilityCallback;
+        mRequestedVisibleTypesCallback = requestedVisibleTypesCallback;
     }
 
     @Override
@@ -96,14 +94,8 @@ public class DisplaySystemBarsInsetsControllerHost implements InsetsController.H
     }
 
     @Override
-    public void updateCompatSysUiVisibility(
-            @InsetsState.InternalInsetsType int type, boolean visible, boolean hasControl) {
-        // no-op
-    }
-
-    @Override
-    public void updateRequestedVisibilities(InsetsVisibilities visibilities) {
-        mRequestedVisibilityCallback.accept(visibilities);
+    public void updateRequestedVisibleTypes(@WindowInsets.Type.InsetsType int types) {
+        mRequestedVisibleTypesCallback.accept(types);
     }
 
     @Override

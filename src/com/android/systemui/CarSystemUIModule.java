@@ -47,6 +47,7 @@ import com.android.systemui.qs.tileimpl.QSFactoryImpl;
 import com.android.systemui.recents.Recents;
 import com.android.systemui.recents.RecentsImplementation;
 import com.android.systemui.screenshot.ReferenceScreenshotModule;
+import com.android.systemui.settings.dagger.MultiUserUtilsModule;
 import com.android.systemui.shade.ShadeController;
 import com.android.systemui.shade.ShadeControllerImpl;
 import com.android.systemui.statusbar.CommandQueue;
@@ -79,6 +80,7 @@ import dagger.Provides;
 @Module(
         includes = {
                 AospPolicyModule.class,
+                MultiUserUtilsModule.class,
                 CarVolumeModule.class,
                 GestureModule.class,
                 PowerModule.class,

@@ -65,6 +65,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.plugins.VolumeDialog;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.volume.Events;
 import com.android.systemui.volume.SystemUIInterpolators;
 import com.android.systemui.volume.VolumeDialogImpl;
@@ -80,7 +81,8 @@ import java.util.List;
  *
  * Methods ending in "H" must be called on the (ui) handler.
  */
-public class CarVolumeDialogImpl implements VolumeDialog {
+public class CarVolumeDialogImpl
+        implements VolumeDialog, ConfigurationController.ConfigurationListener {
 
     private static final String TAG = "CarVolumeDialog";
     private static final boolean DEBUG = Build.IS_USERDEBUG || Build.IS_ENG;
@@ -105,6 +107,7 @@ public class CarVolumeDialogImpl implements VolumeDialog {
     private final int mExpNormalTimeout;
     private final int mExpHoveringTimeout;
     private final CarServiceProvider mCarServiceProvider;
+    private final ConfigurationController mConfigurationController;
 
     private Window mWindow;
     private CustomDialog mDialog;
@@ -194,7 +197,10 @@ public class CarVolumeDialogImpl implements VolumeDialog {
         }
     };
 
-    public CarVolumeDialogImpl(Context context, CarServiceProvider carServiceProvider) {
+    public CarVolumeDialogImpl(
+            Context context,
+            CarServiceProvider carServiceProvider,
+            ConfigurationController configurationController) {
         mContext = context;
         mCarServiceProvider = carServiceProvider;
         mKeyguard = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
@@ -206,6 +212,7 @@ public class CarVolumeDialogImpl implements VolumeDialog {
                 R.integer.car_volume_dialog_display_expanded_normal_timeout);
         mExpHoveringTimeout = mContext.getResources().getInteger(
                 R.integer.car_volume_dialog_display_expanded_hovering_timeout);
+        mConfigurationController = configurationController;
     }
 
     private static int getSeekbarValue(CarAudioManager carAudioManager, int volumeGroupId) {
@@ -235,6 +242,7 @@ public class CarVolumeDialogImpl implements VolumeDialog {
         mContext.registerReceiverAsUser(mHomeButtonPressedBroadcastReceiver, UserHandle.CURRENT,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* broadcastPermission= */
                 null, /* scheduler= */ null, Context.RECEIVER_EXPORTED);
+        mConfigurationController.addCallback(this);
     }
 
     @Override
@@ -244,6 +252,15 @@ public class CarVolumeDialogImpl implements VolumeDialog {
         mContext.unregisterReceiver(mHomeButtonPressedBroadcastReceiver);
 
         cleanupAudioManager();
+        mConfigurationController.removeCallback(this);
+    }
+
+    @Override
+    public void onLayoutDirectionChanged(boolean isLayoutRtl) {
+        if (mListView != null) {
+            mListView.setLayoutDirection(
+                    isLayoutRtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
+        }
     }
 
     /**

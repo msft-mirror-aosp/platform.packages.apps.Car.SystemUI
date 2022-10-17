@@ -16,12 +16,12 @@
 
 package com.android.systemui;
 
+import com.android.systemui.car.keyguard.CarKeyguardModule;
 import com.android.systemui.car.notification.CarNotificationModule;
 import com.android.systemui.car.qc.QuickControlsModule;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsModule;
 import com.android.systemui.car.systembar.CarSystemBarModule;
 import com.android.systemui.car.window.OverlayWindowModule;
-import com.android.systemui.keyguard.dagger.KeyguardModule;
 import com.android.systemui.recents.RecentsModule;
 import com.android.systemui.statusbar.dagger.CentralSurfacesDependenciesModule;
 import com.android.systemui.statusbar.notification.dagger.NotificationsModule;
@@ -31,7 +31,7 @@ import dagger.Module;
 
 /** Binder for car specific {@link CoreStartable} modules. */
 @Module(includes = {RecentsModule.class, CentralSurfacesDependenciesModule.class,
-        NotificationsModule.class, NotificationRowModule.class, KeyguardModule.class,
+        NotificationsModule.class, NotificationRowModule.class, CarKeyguardModule.class,
         OverlayWindowModule.class, CarNotificationModule.class, QuickControlsModule.class,
         QuickControlsEntryPointsModule.class, CarSystemBarModule.class})
 public abstract class CarSystemUIBinder {

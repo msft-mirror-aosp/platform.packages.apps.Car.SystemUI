@@ -34,7 +34,8 @@ LOCAL_MULTILIB := both
 
 LOCAL_JNI_SHARED_LIBRARIES := \
     libdexmakerjvmtiagent \
-    libmultiplejvmtiagentsinterferenceagent
+    libmultiplejvmtiagentsinterferenceagent \
+    libstaticjvmtiagent
 
 LOCAL_JAVA_LIBRARIES := \
     android.test.runner \

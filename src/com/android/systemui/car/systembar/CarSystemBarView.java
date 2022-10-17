@@ -32,6 +32,7 @@ import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
 import com.android.systemui.car.systembar.CarSystemBarController.NotificationsShadeController;
+import com.android.systemui.settings.UserTracker;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
@@ -119,6 +120,21 @@ public class CarSystemBarView extends LinearLayout {
         if (mReadOnlyIconsContainer != null) {
             readOnlyIconsController.addIconViews(mReadOnlyIconsContainer,
                     /* shouldAttachPanel= */false);
+        }
+    }
+
+    void setupSystemBarButtons(UserTracker userTracker) {
+        setupSystemBarButtons(this, userTracker);
+    }
+
+    private void setupSystemBarButtons(View v, UserTracker userTracker) {
+        if (v instanceof CarSystemBarButton) {
+            ((CarSystemBarButton) v).setUserTracker(userTracker);
+        } else if (v instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) v;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                setupSystemBarButtons(viewGroup.getChildAt(i), userTracker);
+            }
         }
     }
 

@@ -45,11 +45,13 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.privacy.CameraPrivacyElementsProviderImpl;
 import com.android.systemui.car.privacy.MicPrivacyElementsProviderImpl;
+import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.plugins.DarkIconDispatcher;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.phone.StatusBarIconController;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
@@ -77,6 +79,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     private Context mSpiedContext;
 
     @Mock
+    private UserTracker mUserTracker;
+    @Mock
     private ActivityManager mActivityManager;
     @Mock
     private ButtonSelectionStateController mButtonSelectionStateController;
@@ -101,6 +105,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Mock
     private ConfigurationController mConfigurationController;
     @Mock
+    private SystemUIQCViewController mSystemUIQCViewController;
+    @Mock
     private MicPrivacyElementsProviderImpl mMicPrivacyElementsProvider;
     @Mock
     private CameraPrivacyElementsProviderImpl mCameraPrivacyElementsProvider;
@@ -112,7 +118,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mSpiedContext = spy(mContext);
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
         mCarSystemBarViewFactory = new CarSystemBarViewFactory(mSpiedContext, mFeatureFlags,
-                mQuickControlsEntryPointsController, mReadOnlyIconsController);
+                mQuickControlsEntryPointsController, mReadOnlyIconsController,
+                mock(UserTracker.class));
 
         // Needed to inflate top navigation bar.
         mDependency.injectMockDependency(DarkIconDispatcher.class);
@@ -120,13 +127,14 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     }
 
     private CarSystemBarController createSystemBarController() {
-        return new CarSystemBarController(mSpiedContext, mCarSystemBarViewFactory,
+        return new CarSystemBarController(mSpiedContext, mUserTracker, mCarSystemBarViewFactory,
                 mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
                 mButtonSelectionStateController, () -> mUserNameViewController,
                 () -> mMicPrivacyChipViewController, () -> mCameraPrivacyChipViewController,
                 mButtonRoleHolderController,
                 new SystemBarConfigs(mTestableResources.getResources()),
-                () -> mMicPrivacyElementsProvider, () -> mCameraPrivacyElementsProvider);
+                () -> mSystemUIQCViewController, () -> mMicPrivacyElementsProvider,
+                () -> mCameraPrivacyElementsProvider);
     }
 
     @Test

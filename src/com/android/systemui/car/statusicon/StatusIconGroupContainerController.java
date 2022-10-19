@@ -32,7 +32,9 @@ import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import java.lang.reflect.Constructor;
@@ -51,10 +53,12 @@ import javax.inject.Provider;
  */
 public abstract class StatusIconGroupContainerController {
     private final Context mContext;
+    private final UserTracker mUserTracker;
     private final Resources mResources;
     private final CarServiceProvider mCarServiceProvider;
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final ConfigurationController mConfigurationController;
+    private final Provider<SystemUIQCViewController> mQCViewControllerProvider;
     private final Map<Class<?>, Provider<StatusIconController>> mIconControllerCreators;
     private final String mIconTag;
     private final String[] mStatusIconControllerNames;
@@ -63,16 +67,20 @@ public abstract class StatusIconGroupContainerController {
 
     public StatusIconGroupContainerController(
             Context context,
+            UserTracker userTracker,
             @Main Resources resources,
             CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
+            Provider<SystemUIQCViewController> qcViewControllerProvider,
             Map<Class<?>, Provider<StatusIconController>> iconControllerCreators) {
         mContext = context;
+        mUserTracker = userTracker;
         mResources = resources;
         mCarServiceProvider = carServiceProvider;
         mBroadcastDispatcher = broadcastDispatcher;
         mConfigurationController = configurationController;
+        mQCViewControllerProvider = qcViewControllerProvider;
         mIconControllerCreators = iconControllerCreators;
         mIconTag = mResources.getString(R.string.qc_icon_tag);
         mStatusIconControllerNames = mResources.getStringArray(
@@ -128,7 +136,8 @@ public abstract class StatusIconGroupContainerController {
             if (shouldAttachPanel
                     && statusIconController.getPanelContentLayout() != PANEL_CONTENT_LAYOUT_NONE) {
                 StatusIconPanelController panelController = new StatusIconPanelController(mContext,
-                        mCarServiceProvider, mBroadcastDispatcher, mConfigurationController);
+                        mUserTracker, mCarServiceProvider, mBroadcastDispatcher,
+                        mConfigurationController, mQCViewControllerProvider);
                 panelController.attachPanel(entryPointView,
                         statusIconController.getPanelContentLayout(),
                         statusIconController.getPanelWidth());

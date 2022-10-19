@@ -45,7 +45,6 @@ import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.os.UserHandle;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -65,6 +64,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.plugins.VolumeDialog;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.volume.Events;
 import com.android.systemui.volume.SystemUIInterpolators;
@@ -108,6 +108,7 @@ public class CarVolumeDialogImpl
     private final int mExpHoveringTimeout;
     private final CarServiceProvider mCarServiceProvider;
     private final ConfigurationController mConfigurationController;
+    private final UserTracker mUserTracker;
 
     private Window mWindow;
     private CustomDialog mDialog;
@@ -120,6 +121,7 @@ public class CarVolumeDialogImpl
     private boolean mDismissing;
     private boolean mExpanded;
     private View mExpandIcon;
+    private boolean mHomeButtonPressedBroadcastReceiverRegistered;
 
     private final CarAudioManager.CarVolumeCallback mVolumeChangeCallback =
             new CarAudioManager.CarVolumeCallback() {
@@ -197,12 +199,28 @@ public class CarVolumeDialogImpl
         }
     };
 
+    private final UserTracker.Callback mUserTrackerCallback = new UserTracker.Callback() {
+        @Override
+        public void onUserChanged(int newUser, Context userContext) {
+            if (mHomeButtonPressedBroadcastReceiverRegistered) {
+                mContext.unregisterReceiver(mHomeButtonPressedBroadcastReceiver);
+                mContext.registerReceiverAsUser(mHomeButtonPressedBroadcastReceiver,
+                        mUserTracker.getUserHandle(),
+                        new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
+                        /* broadcastPermission= */ null, /* scheduler= */ null,
+                        Context.RECEIVER_EXPORTED);
+            }
+        }
+    };
+
     public CarVolumeDialogImpl(
             Context context,
             CarServiceProvider carServiceProvider,
-            ConfigurationController configurationController) {
+            ConfigurationController configurationController,
+            UserTracker userTracker) {
         mContext = context;
         mCarServiceProvider = carServiceProvider;
+        mUserTracker = userTracker;
         mKeyguard = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
         mNormalTimeout = mContext.getResources().getInteger(
                 R.integer.car_volume_dialog_display_normal_timeout);
@@ -239,9 +257,11 @@ public class CarVolumeDialogImpl
         initDialog();
         mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
 
-        mContext.registerReceiverAsUser(mHomeButtonPressedBroadcastReceiver, UserHandle.CURRENT,
-                new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* broadcastPermission= */
-                null, /* scheduler= */ null, Context.RECEIVER_EXPORTED);
+        mContext.registerReceiverAsUser(mHomeButtonPressedBroadcastReceiver,
+                mUserTracker.getUserHandle(), new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
+                /* broadcastPermission= */ null, /* scheduler= */ null, Context.RECEIVER_EXPORTED);
+        mHomeButtonPressedBroadcastReceiverRegistered = true;
+        mUserTracker.addCallback(mUserTrackerCallback, mContext.getMainExecutor());
         mConfigurationController.addCallback(this);
     }
 
@@ -249,7 +269,9 @@ public class CarVolumeDialogImpl
     public void destroy() {
         mHandler.removeCallbacksAndMessages(/* token= */ null);
 
+        mUserTracker.removeCallback(mUserTrackerCallback);
         mContext.unregisterReceiver(mHomeButtonPressedBroadcastReceiver);
+        mHomeButtonPressedBroadcastReceiverRegistered = false;
 
         cleanupAudioManager();
         mConfigurationController.removeCallback(this);

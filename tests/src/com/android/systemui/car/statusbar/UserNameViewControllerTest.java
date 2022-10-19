@@ -18,13 +18,12 @@ package com.android.systemui.car.statusbar;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import android.car.Car;
-import android.car.user.CarUserManager;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.pm.UserInfo;
@@ -39,9 +38,8 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarDeviceProvisionedController;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.settings.UserTracker;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -62,13 +60,9 @@ public class UserNameViewControllerTest extends SysuiTestCase {
     private UserNameViewController mUserNameViewController;
 
     @Mock
-    private Car mCar;
-    @Mock
-    private CarUserManager mCarUserManager;
+    private UserTracker mUserTracker;
     @Mock
     private UserManager mUserManager;
-    @Mock
-    private CarDeviceProvisionedController mCarDeviceProvisionedController;
     @Mock
     private BroadcastDispatcher mBroadcastDispatcher;
 
@@ -77,12 +71,9 @@ public class UserNameViewControllerTest extends SysuiTestCase {
         MockitoAnnotations.initMocks(this);
         when(mUserManager.getUserInfo(mUserInfo1.id)).thenReturn(mUserInfo1);
         when(mUserManager.getUserInfo(mUserInfo2.id)).thenReturn(mUserInfo2);
-        when(mCar.isConnected()).thenReturn(true);
-        when(mCar.getCarManager(Car.CAR_USER_SERVICE)).thenReturn(mCarUserManager);
 
-        CarServiceProvider carServiceProvider = new CarServiceProvider(mContext, mCar);
-        mUserNameViewController = new UserNameViewController(getContext(), carServiceProvider,
-                mUserManager, mBroadcastDispatcher, mCarDeviceProvisionedController);
+        mUserNameViewController = new UserNameViewController(getContext(), mUserTracker,
+                mUserManager, mBroadcastDispatcher);
 
         mTextView = new TextView(getContext());
         mTextView.setId(R.id.user_name_text);
@@ -90,7 +81,7 @@ public class UserNameViewControllerTest extends SysuiTestCase {
 
     @Test
     public void addUserNameViewToController_updatesUserNameView() {
-        when(mCarDeviceProvisionedController.getCurrentUser()).thenReturn(mUserInfo1.id);
+        when(mUserTracker.getUserId()).thenReturn(mUserInfo1.id);
 
         mUserNameViewController.addUserNameView(mTextView);
 
@@ -103,8 +94,7 @@ public class UserNameViewControllerTest extends SysuiTestCase {
         mUserNameViewController.addUserNameView(nullView);
 
         assertEquals(mTextView.getText(), "");
-        verifyZeroInteractions(mCarDeviceProvisionedController);
-        verifyZeroInteractions(mCarUserManager);
+        verify(mUserTracker, never()).addCallback(any(), any());
         verifyZeroInteractions(mUserManager);
     }
 
@@ -112,52 +102,41 @@ public class UserNameViewControllerTest extends SysuiTestCase {
     public void removeAll_withNoRegisteredListener_doesNotUnregister() {
         mUserNameViewController.removeAll();
 
-        verifyZeroInteractions(mCarUserManager);
+        verifyZeroInteractions(mUserTracker);
+        verifyZeroInteractions(mBroadcastDispatcher);
     }
 
     @Test
     public void userLifecycleListener_onUserSwitchLifecycleEvent_updatesUserNameView() {
-        ArgumentCaptor<CarUserManager.UserLifecycleListener> userLifecycleListenerArgumentCaptor =
-                ArgumentCaptor.forClass(CarUserManager.UserLifecycleListener.class);
-        when(mCarDeviceProvisionedController.getCurrentUser()).thenReturn(mUserInfo1.id);
+        ArgumentCaptor<UserTracker.Callback> userTrackerCallbackCaptor =
+                ArgumentCaptor.forClass(UserTracker.Callback.class);
+        when(mUserTracker.getUserId()).thenReturn(mUserInfo1.id);
         // Add the initial TextView, which registers the UserLifecycleListener
         mUserNameViewController.addUserNameView(mTextView);
         assertEquals(mTextView.getText(), mUserInfo1.name);
-        verify(mCarUserManager).addListener(any(), any(),
-                userLifecycleListenerArgumentCaptor.capture());
+        verify(mUserTracker).addCallback(userTrackerCallbackCaptor.capture(), any());
 
-        CarUserManager.UserLifecycleEvent event = new CarUserManager.UserLifecycleEvent(
-                CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING, /* from= */ mUserInfo1.id,
-                /* to= */ mUserInfo2.id);
-        userLifecycleListenerArgumentCaptor.getValue().onEvent(event);
+        userTrackerCallbackCaptor.getValue().onUserChanged(mUserInfo2.id, mContext);
 
         assertEquals(mTextView.getText(), mUserInfo2.name);
-    }
-
-    @Test
-    public void userInfoChangedBroadcast_withoutInitializingUserNameView_doesNothing() {
-        getContext().sendBroadcast(new Intent(Intent.ACTION_USER_INFO_CHANGED));
-
-        assertEquals(mTextView.getText(), "");
-        verifyZeroInteractions(mCarDeviceProvisionedController);
     }
 
     @Test
     public void userInfoChangedBroadcast_withUserNameViewInitialized_updatesUserNameView() {
         ArgumentCaptor<BroadcastReceiver> broadcastReceiverArgumentCaptor = ArgumentCaptor.forClass(
                 BroadcastReceiver.class);
-        when(mCarDeviceProvisionedController.getCurrentUser()).thenReturn(mUserInfo1.id);
+        when(mUserTracker.getUserId()).thenReturn(mUserInfo1.id);
         mUserNameViewController.addUserNameView(mTextView);
         assertEquals(mTextView.getText(), mUserInfo1.name);
         verify(mBroadcastDispatcher).registerReceiver(broadcastReceiverArgumentCaptor.capture(),
                 any(), any(), any());
 
-        reset(mCarDeviceProvisionedController);
-        when(mCarDeviceProvisionedController.getCurrentUser()).thenReturn(mUserInfo2.id);
+        reset(mUserTracker);
+        when(mUserTracker.getUserId()).thenReturn(mUserInfo2.id);
         broadcastReceiverArgumentCaptor.getValue().onReceive(getContext(),
                 new Intent(Intent.ACTION_USER_INFO_CHANGED));
 
         assertEquals(mTextView.getText(), mUserInfo2.name);
-        verify(mCarDeviceProvisionedController).getCurrentUser();
+        verify(mUserTracker).getUserId();
     }
 }

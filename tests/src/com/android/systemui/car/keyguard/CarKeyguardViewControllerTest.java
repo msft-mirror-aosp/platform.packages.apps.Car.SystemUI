@@ -43,6 +43,7 @@ import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.CarSystemBarController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
 import com.android.systemui.statusbar.phone.KeyguardBouncer;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
@@ -66,6 +67,8 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
     private CarKeyguardViewController mCarKeyguardViewController;
     private FakeExecutor mExecutor;
 
+    @Mock
+    private UserTracker mUserTracker;
     @Mock
     private OverlayViewGlobalStateController mOverlayViewGlobalStateController;
     @Mock
@@ -92,6 +95,7 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
 
         mCarKeyguardViewController = new CarKeyguardViewController(
                 mContext,
+                mUserTracker,
                 mExecutor,
                 mock(WindowManager.class),
                 mock(ToastFactory.class),

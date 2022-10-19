@@ -23,6 +23,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertThrows;
 
 import android.content.Intent;
@@ -37,6 +38,8 @@ import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.qc.SystemUIQCViewController;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import org.junit.After;
@@ -55,13 +58,18 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
     private StatusIconPanelController mStatusIconPanelController;
     private ImageView mAnchorView;
     private String mIconTag;
+    private UserHandle mUserHandle;
 
+    @Mock
+    private UserTracker mUserTracker;
     @Mock
     private CarServiceProvider mCarServiceProvider;
     @Mock
     private BroadcastDispatcher mBroadcastDispatcher;
     @Mock
     private ConfigurationController mConfigurationController;
+    @Mock
+    private SystemUIQCViewController mSystemUIQCViewController;
 
     @Before
     public void setUp() {
@@ -69,9 +77,12 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
 
         mContext = spy(mContext);
         mIconTag = mContext.getResources().getString(R.string.qc_icon_tag);
+        mUserHandle = UserHandle.of(1000);
+        when(mUserTracker.getUserHandle()).thenReturn(mUserHandle);
 
-        mStatusIconPanelController = new StatusIconPanelController(mContext, mCarServiceProvider,
-                mBroadcastDispatcher, mConfigurationController);
+        mStatusIconPanelController = new StatusIconPanelController(mContext, mUserTracker,
+                mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
+                () -> mSystemUIQCViewController);
         mAnchorView = spy(new ImageView(mContext));
         mAnchorView.setTag(mIconTag);
         mAnchorView.setImageDrawable(mContext.getDrawable(R.drawable.ic_bluetooth_status_off));
@@ -129,7 +140,7 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
         clickAnchorView();
         waitForIdleSync();
 
-        verify(mContext).sendBroadcastAsUser(argumentCaptor.capture(), eq(UserHandle.CURRENT));
+        verify(mContext).sendBroadcastAsUser(argumentCaptor.capture(), eq(mUserHandle));
         assertThat(argumentCaptor.getValue().getAction()).isEqualTo(
                 Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         assertThat(argumentCaptor.getValue().getIdentifier()).isEqualTo(

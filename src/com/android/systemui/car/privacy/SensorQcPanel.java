@@ -63,8 +63,11 @@ public abstract class SensorQcPanel extends BaseLocalQCProvider {
     private SensorPrivacyElementsProvider mSensorPrivacyElementsProvider;
     private SensorInfoProvider mSensorInfoProvider;
 
-    public SensorQcPanel(Context context) {
+    public SensorQcPanel(Context context, SensorInfoProvider infoProvider,
+            SensorPrivacyElementsProvider elementsProvider) {
         super(context);
+        mSensorInfoProvider = infoProvider;
+        mSensorPrivacyElementsProvider = elementsProvider;
         mPhoneCallTitle = context.getString(R.string.ongoing_privacy_dialog_phonecall);
         mSensorOnTitleText = context.getString(R.string.privacy_chip_use_sensor, getSensorName());
         mSensorOffTitleText = context.getString(R.string.privacy_chip_off_content,
@@ -73,32 +76,6 @@ public abstract class SensorQcPanel extends BaseLocalQCProvider {
 
         mSensorOnIcon = Icon.createWithResource(context, getSensorOnIconResourceId());
         mSensorOffIcon = Icon.createWithResource(context, getSensorOffIconResourceId());
-    }
-
-    /**
-     * Sets controllers for this {@link BaseLocalQCProvider}.
-     */
-    public void setControllers(Object... objects) {
-        if (objects == null) {
-            return;
-        }
-
-        for (int i = 0; i < objects.length; i++) {
-            Object object = objects[i];
-
-            if (object instanceof SensorInfoProvider) {
-                mSensorInfoProvider = (SensorInfoProvider) object;
-                mSensorInfoProvider.setNotifyUpdateRunnable(() -> notifyChange());
-            }
-
-            if (object instanceof SensorPrivacyElementsProvider) {
-                mSensorPrivacyElementsProvider = (SensorPrivacyElementsProvider) object;
-            }
-        }
-
-        if (mSensorInfoProvider != null && mSensorPrivacyElementsProvider != null) {
-            notifyChange();
-        }
     }
 
     @Override

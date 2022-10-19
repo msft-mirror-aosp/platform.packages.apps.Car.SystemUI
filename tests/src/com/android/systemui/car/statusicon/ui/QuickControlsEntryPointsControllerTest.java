@@ -21,7 +21,6 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import android.content.res.Resources;
 import android.testing.AndroidTestingRunner;
 import android.view.View;
 
@@ -31,6 +30,8 @@ import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.qc.SystemUIQCViewController;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import org.junit.Before;
@@ -47,7 +48,7 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
     private QuickControlsEntryPointsController mQuickControlsEntryPointsController;
 
     @Mock
-    private Resources mResources;
+    private UserTracker mUserTracker;
     @Mock
     private CarServiceProvider mCarServiceProvider;
     @Mock
@@ -55,16 +56,20 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
     @Mock
     private ConfigurationController mConfigurationController;
     @Mock
+    private SystemUIQCViewController mSystemUIQCViewController;
+    @Mock
     private Map mIconControllerCreators;
 
     @Before
     public void setUp() {
         mQuickControlsEntryPointsController = new QuickControlsEntryPointsController(
                 mContext,
+                mUserTracker,
                 mContext.getOrCreateTestableResources().getResources(),
                 mCarServiceProvider,
                 mBroadcastDispatcher,
                 mConfigurationController,
+                () -> mSystemUIQCViewController,
                 mIconControllerCreators);
     }
 

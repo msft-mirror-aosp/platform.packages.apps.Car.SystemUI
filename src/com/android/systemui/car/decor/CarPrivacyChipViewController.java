@@ -17,8 +17,9 @@
 package com.android.systemui.car.decor;
 
 import android.content.Context;
-import android.view.InsetsVisibilities;
+import android.view.InsetsState;
 import android.view.View;
+import android.view.WindowInsets.Type.InsetsType;
 import android.view.WindowInsetsController;
 
 import androidx.annotation.UiThread;
@@ -52,7 +53,7 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
         implements CommandQueue.Callbacks {
     private boolean mAreaVisible;
     private boolean mHasAnimation;
-    private int mBarType;
+    private final @InsetsType int mBarType;
 
     @Inject
     public CarPrivacyChipViewController(
@@ -69,8 +70,8 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
         commandQueue.addCallback(this);
         mHasAnimation = context.getResources().getBoolean(
                 R.bool.config_enableImmersivePrivacyChipAnimation);
-        mBarType = SystemBarConfigs.BAR_TYPE_MAP[
-                context.getResources().getInteger(R.integer.config_privacyIndicatorLocation)];
+        mBarType = InsetsState.toPublicType(SystemBarConfigs.BAR_TYPE_MAP[
+                context.getResources().getInteger(R.integer.config_privacyIndicatorLocation)]);
     }
 
     @Override
@@ -95,14 +96,12 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
             AppearanceRegion[] appearanceRegions,
             boolean navbarColorManagedByIme,
             @WindowInsetsController.Behavior int behavior,
-            InsetsVisibilities requestedVisibilities,
+            @InsetsType int requestedVisibleTypes,
             String packageName,
             LetterboxDetails[] letterboxDetails) {
-        boolean newAreaVisibility = requestedVisibilities != null
-                ? !requestedVisibilities.getVisibility(mBarType)
-                : false;
-        if (newAreaVisibility != mAreaVisible) {
-            mAreaVisible = newAreaVisibility;
+        boolean areaVisible = (mBarType & requestedVisibleTypes) != 0;
+        if (mAreaVisible != areaVisible) {
+            mAreaVisible = areaVisible;
             getUiExecutor().execute(() -> updateDotView(getCurrentViewState()));
         }
     }

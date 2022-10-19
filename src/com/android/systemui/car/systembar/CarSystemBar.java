@@ -34,9 +34,9 @@ import android.inputmethodservice.InputMethodService;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.Display;
-import android.view.InsetsVisibilities;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets.Type.InsetsType;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
 
@@ -199,7 +199,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         }
 
         onSystemBarAttributesChanged(mDisplayId, result.mAppearance, result.mAppearanceRegions,
-                result.mNavbarColorManagedByIme, result.mBehavior, result.mRequestedVisibilities,
+                result.mNavbarColorManagedByIme, result.mBehavior, result.mRequestedVisibleTypes,
                 result.mPackageName, result.mLetterboxDetails);
 
         // StatusBarManagerService has a back up of IME token and it's restored here.
@@ -477,7 +477,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
             AppearanceRegion[] appearanceRegions,
             boolean navbarColorManagedByIme,
             @WindowInsetsController.Behavior int behavior,
-            InsetsVisibilities requestedVisibilities,
+            @InsetsType int requestedVisibleTypes,
             String packageName,
             LetterboxDetails[] letterboxDetails) {
         if (displayId != mDisplayId) {

@@ -16,11 +16,6 @@
 
 package com.android.systemui.car.statusbar;
 
-import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
-
-import android.car.Car;
-import android.car.user.CarUserManager;
-import android.car.user.UserLifecycleEventFilter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -28,15 +23,15 @@ import android.content.IntentFilter;
 import android.content.pm.UserInfo;
 import android.os.UserHandle;
 import android.os.UserManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.MainThread;
+
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarDeviceProvisionedController;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.settings.UserTracker;
 
 import javax.inject.Inject;
 
@@ -48,41 +43,42 @@ public class UserNameViewController {
     private static final String TAG = "UserNameViewController";
 
     private Context mContext;
+    private UserTracker mUserTracker;
     private UserManager mUserManager;
-    private CarUserManager mCarUserManager;
-    private CarServiceProvider mCarServiceProvider;
-    private CarDeviceProvisionedController mCarDeviceProvisionedController;
     private BroadcastDispatcher mBroadcastDispatcher;
     private TextView mUserNameView;
 
     private final BroadcastReceiver mUserUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            updateUser(mCarDeviceProvisionedController.getCurrentUser());
+            updateUser(mUserTracker.getUserId());
         }
     };
 
     private boolean mUserLifecycleListenerRegistered = false;
 
-    private final CarUserManager.UserLifecycleListener mUserLifecycleListener = event -> {
-        updateUser(event.getUserId());
-    };
+    private final UserTracker.Callback mUserChangedCallback =
+            new UserTracker.Callback() {
+                @Override
+                public void onUserChanged(int newUser, Context userContext) {
+                    updateUser(newUser);
+                }
+            };
 
     @Inject
-    public UserNameViewController(Context context, CarServiceProvider carServiceProvider,
-            UserManager userManager, BroadcastDispatcher broadcastDispatcher,
-            CarDeviceProvisionedController carDeviceProvisionedController) {
+    public UserNameViewController(Context context, UserTracker userTracker,
+            UserManager userManager, BroadcastDispatcher broadcastDispatcher) {
         mContext = context;
-        mCarServiceProvider = carServiceProvider;
+        mUserTracker = userTracker;
         mUserManager = userManager;
         mBroadcastDispatcher = broadcastDispatcher;
-        mCarDeviceProvisionedController = carDeviceProvisionedController;
     }
 
     /**
      * Find the {@link TextView} for the driver's user name from a view and if found set it with the
      * current driver's user name.
      */
+     @MainThread
     public void addUserNameView(View v) {
         TextView userNameView = v.findViewById(R.id.user_name_text);
         if (userNameView != null) {
@@ -90,7 +86,7 @@ public class UserNameViewController {
                 registerForUserChangeEvents();
             }
             mUserNameView = userNameView;
-            updateUser(mCarDeviceProvisionedController.getCurrentUser());
+            updateUser(mUserTracker.getUserId());
         }
     }
 
@@ -101,27 +97,17 @@ public class UserNameViewController {
         mUserNameView = null;
         if (mUserLifecycleListenerRegistered) {
             mBroadcastDispatcher.unregisterReceiver(mUserUpdateReceiver);
-            if (mCarUserManager != null) {
-                mCarUserManager.removeListener(mUserLifecycleListener);
-            }
+            mUserTracker.removeCallback(mUserChangedCallback);
             mUserLifecycleListenerRegistered = false;
         }
     }
 
     private void registerForUserChangeEvents() {
         // Register for user switching
-        mCarServiceProvider.addListener(car -> {
-            mCarUserManager = (CarUserManager) car.getCarManager(Car.CAR_USER_SERVICE);
-            if (mCarUserManager != null && !mUserLifecycleListenerRegistered) {
-                UserLifecycleEventFilter filter = new UserLifecycleEventFilter.Builder()
-                        .addEventType(USER_LIFECYCLE_EVENT_TYPE_SWITCHING).build();
-                mCarUserManager.addListener(mContext.getMainExecutor(), filter,
-                        mUserLifecycleListener);
-                mUserLifecycleListenerRegistered = true;
-            } else {
-                Log.e(TAG, "CarUserManager could not be obtained.");
-            }
-        });
+        if (!mUserLifecycleListenerRegistered) {
+            mUserTracker.addCallback(mUserChangedCallback, mContext.getMainExecutor());
+            mUserLifecycleListenerRegistered = true;
+        }
         // Also register for user info changing
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_USER_INFO_CHANGED);

@@ -17,7 +17,6 @@
 package com.android.systemui.car;
 
 import android.annotation.NonNull;
-import android.app.ActivityManager;
 import android.car.settings.CarSettings;
 import android.database.ContentObserver;
 import android.net.Uri;
@@ -47,6 +46,7 @@ import kotlin.Unit;
 @SysUISingleton
 public class CarDeviceProvisionedControllerImpl extends DeviceProvisionedControllerImpl implements
         CarDeviceProvisionedController {
+    private final UserTracker mUserTracker;
     private final Uri mUserSetupInProgressUri;
     private final ContentObserver mCarSettingsObserver;
     private final Handler mMainHandler;
@@ -65,6 +65,7 @@ public class CarDeviceProvisionedControllerImpl extends DeviceProvisionedControl
         super(secureSettings, globalSettings, userTracker, dumpManager, backgroundHandler,
                 mainExecutor);
 
+        mUserTracker = userTracker;
         mMainHandler = mainHandler;
         mSecureSettings = secureSettings;
         mUserSetupInProgressUri = mSecureSettings.getUriFor(
@@ -98,7 +99,7 @@ public class CarDeviceProvisionedControllerImpl extends DeviceProvisionedControl
 
     @Override
     public boolean isCurrentUserSetupInProgress() {
-        return isUserSetupInProgress(ActivityManager.getCurrentUser());
+        return isUserSetupInProgress(mUserTracker.getUserId());
     }
 
     @Override

@@ -18,7 +18,6 @@ package com.android.systemui.car.statusicon.ui;
 
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
 
-import android.app.ActivityManager;
 import android.car.Car;
 import android.car.user.CarUserManager;
 import android.car.user.UserLifecycleEventFilter;
@@ -35,6 +34,7 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.statusicon.StatusIconController;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.settings.UserTracker;
 
 import javax.inject.Inject;
 
@@ -48,6 +48,7 @@ public class LocationStatusIconController extends StatusIconController {
             LocationManager.MODE_CHANGED_ACTION);
 
     private final Context mContext;
+    private final UserTracker mUserTracker;
     private final LocationManager mLocationManager;
     private final CarServiceProvider mCarServiceProvider;
 
@@ -72,10 +73,12 @@ public class LocationStatusIconController extends StatusIconController {
     @Inject
     LocationStatusIconController(
             Context context,
+            UserTracker userTracker,
             @Main Resources resources,
             CarServiceProvider carServiceProvider) {
 
         mContext = context;
+        mUserTracker = userTracker;
         mLocationManager = context.getSystemService(LocationManager.class);
         mCarServiceProvider = carServiceProvider;
 
@@ -93,7 +96,7 @@ public class LocationStatusIconController extends StatusIconController {
     }
 
     private void updateIconVisibilityForCurrentUser() {
-        int fgUserId = ActivityManager.getCurrentUser();
+        int fgUserId = mUserTracker.getUserId();
         UserHandle fgUserHandle = UserHandle.of(fgUserId);
         mIsLocationActive = mLocationManager.isLocationEnabledForUser(fgUserHandle);
         updateStatus();

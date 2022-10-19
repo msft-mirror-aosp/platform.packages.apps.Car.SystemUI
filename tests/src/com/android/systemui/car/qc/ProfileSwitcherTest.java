@@ -29,7 +29,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.ActivityManager;
 import android.app.admin.DevicePolicyManager;
 import android.car.user.CarUserManager;
 import android.car.user.UserCreationResult;
@@ -50,6 +49,7 @@ import com.android.car.qc.QCRow;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.settings.UserTracker;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -72,6 +72,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     private List<UserInfo> mAliveUsers = new ArrayList<>();
 
     @Mock
+    private UserTracker mUserTracker;
+    @Mock
     private UserManager mUserManager;
     @Mock
     private DevicePolicyManager mDevicePolicyManager;
@@ -82,6 +84,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     public void setUp() throws ExecutionException, InterruptedException, TimeoutException {
         MockitoAnnotations.initMocks(this);
 
+        when(mUserTracker.getUserId()).thenReturn(1000);
+        when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(1000));
         when(mUserManager.getAliveUsers()).thenReturn(mAliveUsers);
         when(mUserManager.getUserSwitchability(any())).thenReturn(SWITCHABILITY_STATUS_OK);
         when(mDevicePolicyManager.isDeviceManaged()).thenReturn(false);
@@ -93,8 +97,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         when(switchResultFuture.get(anyLong(), any())).thenReturn(switchResult);
         when(mCarUserManager.switchUser(anyInt())).thenReturn(switchResultFuture);
 
-        mProfileSwitcher = new ProfileSwitcher(mContext, mUserManager, mDevicePolicyManager,
-                mCarUserManager);
+        mProfileSwitcher = new ProfileSwitcher(mContext, mUserTracker, mUserManager,
+                mDevicePolicyManager, mCarUserManager);
     }
 
     private void setUpLogout() {
@@ -130,7 +134,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         setUpLogout();
         when(mUserManager.getUserSwitchability(any()))
                 .thenReturn(SWITCHABILITY_STATUS_USER_SWITCH_DISALLOWED);
-        when(mUserManager.getUserInfo(ActivityManager.getCurrentUser()))
+        when(mUserManager.getUserInfo(mUserTracker.getUserId()))
                 .thenReturn(mAliveUsers.get(0));
 
         List<QCRow> rows = getProfileRows();
@@ -145,10 +149,10 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     public void switchNotAllowed_returnsOnlyCurrentUser() {
         when(mUserManager.getUserSwitchability(any()))
                 .thenReturn(SWITCHABILITY_STATUS_USER_SWITCH_DISALLOWED);
-        UserInfo currentUser = generateUser(ActivityManager.getCurrentUser(),
+        UserInfo currentUser = generateUser(mUserTracker.getUserId(),
                 "Current User", /* supportsSwitch= */ true, /* isGuest= */ false);
         mAliveUsers.add(currentUser);
-        when(mUserManager.getUserInfo(ActivityManager.getCurrentUser())).thenReturn(currentUser);
+        when(mUserManager.getUserInfo(mUserTracker.getUserId())).thenReturn(currentUser);
         UserInfo otherUser = generateUser(1001, "Other User", /* supportsSwitch= */ true,
                 /* isGuest= */ false);
         mAliveUsers.add(otherUser);

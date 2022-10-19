@@ -19,6 +19,8 @@ package com.android.systemui.car.systembar;
 import static android.app.WindowConfiguration.ACTIVITY_TYPE_UNDEFINED;
 import static android.app.WindowConfiguration.WINDOWING_MODE_FULLSCREEN;
 
+import static com.android.systemui.car.users.CarSystemUIUserUtil.getCurrentUserHandle;
+
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.ActivityTaskManager;
@@ -29,7 +31,6 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.RemoteException;
-import android.os.UserHandle;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -41,6 +42,7 @@ import androidx.annotation.Nullable;
 
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
 
 import java.net.URISyntaxException;
@@ -62,6 +64,8 @@ public class CarSystemBarButton extends LinearLayout {
 
     private final Context mContext;
     private final ActivityManager mActivityManager;
+    @Nullable
+    private UserTracker mUserTracker;
     private AlphaOptimizedImageView mIcon;
     private AlphaOptimizedImageView mMoreIcon;
     private ImageView mUnseenIcon;
@@ -316,18 +320,19 @@ public class CarSystemBarButton extends LinearLayout {
             }
             boolean startState = mSelected;
             mContext.sendBroadcastAsUser(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
-                    UserHandle.CURRENT);
+                    getCurrentUserHandle(mContext, mUserTracker));
 
             boolean intentLaunched = false;
             try {
                 if (mBroadcastIntent) {
-                    mContext.sendBroadcastAsUser(toSend, UserHandle.CURRENT);
+                    mContext.sendBroadcastAsUser(toSend,
+                            getCurrentUserHandle(mContext, mUserTracker));
                     return;
                 }
                 ActivityOptions options = ActivityOptions.makeBasic();
                 options.setLaunchDisplayId(mContext.getDisplayId());
                 mContext.startActivityAsUser(toSend, options.toBundle(),
-                        UserHandle.CURRENT);
+                        getCurrentUserHandle(mContext, mUserTracker));
                 intentLaunched = true;
             } catch (Exception e) {
                 Log.e(TAG, "Failed to launch intent", e);
@@ -358,18 +363,22 @@ public class CarSystemBarButton extends LinearLayout {
     protected OnLongClickListener getButtonLongClickListener(Intent toSend) {
         return v -> {
             mContext.sendBroadcastAsUser(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
-                    UserHandle.CURRENT);
+                    getCurrentUserHandle(mContext, mUserTracker));
             try {
                 ActivityOptions options = ActivityOptions.makeBasic();
                 options.setLaunchDisplayId(mContext.getDisplayId());
                 mContext.startActivityAsUser(toSend, options.toBundle(),
-                        UserHandle.CURRENT);
+                        getCurrentUserHandle(mContext, mUserTracker));
             } catch (Exception e) {
                 Log.e(TAG, "Failed to launch intent", e);
             }
             // consume event either way
             return true;
         };
+    }
+
+    void setUserTracker(UserTracker userTracker) {
+        mUserTracker = userTracker;
     }
 
     /**

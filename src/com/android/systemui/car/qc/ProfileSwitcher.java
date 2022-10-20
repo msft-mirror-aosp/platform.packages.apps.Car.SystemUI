@@ -23,6 +23,7 @@ import static com.android.car.ui.utils.CarUiUtils.drawableToBitmap;
 
 import android.annotation.Nullable;
 import android.annotation.UserIdInt;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.admin.DevicePolicyManager;
 import android.car.Car;
@@ -42,6 +43,7 @@ import android.sysprop.CarProperties;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -56,6 +58,7 @@ import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.internal.util.UserIcons;
 import com.android.settingslib.utils.StringUtil;
 import com.android.systemui.R;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.settings.UserTracker;
 
@@ -250,6 +253,27 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     private void switchUser(@UserIdInt int userId) {
         mContext.sendBroadcastAsUser(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
                 mUserTracker.getUserHandle());
+        if (mUserTracker.getUserId() == userId) {
+            return;
+        }
+        if (mUserManager.isUsersOnSecondaryDisplaysSupported()) {
+            if (mUserManager.getVisibleUsers().stream().anyMatch(
+                    userHandle -> userHandle.getIdentifier() == userId)) {
+                // TODO_MD - finalize behavior for non-switchable users
+                Toast.makeText(mContext,
+                        "Cannot switch to user already running on another display.",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)) {
+                switchSecondaryUser(userId);
+                return;
+            }
+        }
+        switchForegroundUser(userId);
+    }
+
+    private void switchForegroundUser(@UserIdInt int userId) {
         AsyncFuture<UserSwitchResult> userSwitchResultFuture =
                 mCarUserManager.switchUser(userId);
         UserSwitchResult userSwitchResult;
@@ -264,6 +288,16 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         } else if (!userSwitchResult.isSuccess()) {
             Log.w(TAG, "Could not switch user: " + userSwitchResult);
         }
+    }
+
+    private void switchSecondaryUser(@UserIdInt int userId) {
+        ActivityManager am = mContext.getSystemService(ActivityManager.class);
+        boolean success = am.stopUser(mUserTracker.getUserId(), /* force= */ true);
+        if (!success) {
+            Log.w(TAG, "Cound not stop user " + userId);
+            return;
+        }
+        am.startUserInBackgroundOnSecondaryDisplay(userId, mContext.getDisplayId());
     }
 
     private void logoutUser() {

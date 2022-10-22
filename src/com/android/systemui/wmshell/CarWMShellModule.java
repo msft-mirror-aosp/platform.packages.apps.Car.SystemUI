@@ -20,18 +20,13 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.IWindowManager;
 
-import com.android.wm.shell.dagger.DynamicOverride;
-import com.android.wm.shell.dagger.WMShellBaseModule;
-import com.android.wm.shell.dagger.WMSingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.common.DisplayController;
-import com.android.wm.shell.common.DisplayImeController;
 import com.android.wm.shell.common.DisplayInsetsController;
-import com.android.wm.shell.common.TransactionPool;
+import com.android.wm.shell.dagger.WMShellBaseModule;
+import com.android.wm.shell.dagger.WMSingleton;
 import com.android.wm.shell.pip.Pip;
-import com.android.wm.shell.startingsurface.StartingWindowTypeAlgorithm;
-import com.android.wm.shell.startingsurface.phone.PhoneStartingWindowTypeAlgorithm;
 
 import dagger.BindsOptionalOf;
 import dagger.Module;
@@ -43,13 +38,12 @@ public abstract class CarWMShellModule {
 
     @WMSingleton
     @Provides
-    @DynamicOverride
-    static DisplayImeController provideDisplayImeController(Context context,
+    static DisplaySystemBarsController provideDisplaySystemBarsController(Context context,
             IWindowManager wmService, DisplayController displayController,
             DisplayInsetsController displayInsetsController,
-            @Main Handler mainHandler, TransactionPool transactionPool) {
+            @Main Handler mainHandler) {
         return new DisplaySystemBarsController(context, wmService, displayController,
-                displayInsetsController, mainHandler, transactionPool);
+                displayInsetsController, mainHandler);
     }
 
     @BindsOptionalOf

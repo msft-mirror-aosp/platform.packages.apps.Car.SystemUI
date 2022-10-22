@@ -91,6 +91,16 @@ public class CarServiceProvider {
     }
 
     /**
+     * Remove a car service connection listener.
+     */
+    @AnyThread
+    public void removeListener(CarServiceOnConnectedListener listener) {
+        synchronized (mListeners) {
+            mListeners.remove(listener);
+        }
+    }
+
+    /**
      * Listener which is triggered when Car Service is connected.
      */
     public interface CarServiceOnConnectedListener {

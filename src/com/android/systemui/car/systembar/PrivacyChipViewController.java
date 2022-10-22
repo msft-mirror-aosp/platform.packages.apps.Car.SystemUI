@@ -186,6 +186,7 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
             mPrivacyChip.setOnClickListener(null);
         }
 
+        mIsPrivacyChipVisible = false;
         mPrivacyItemController.removeCallback(mPicCallback);
         mSensorPrivacyManager.removeSensorPrivacyListener(getChipSensor(),
                 mOnSensorPrivacyChangedListener);

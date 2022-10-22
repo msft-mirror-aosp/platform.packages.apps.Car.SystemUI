@@ -24,6 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"DESAKTIBATUTA"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Konektatutako Bluetooth bidezko gailuak kudeatzen du ahotsa ezagutzeko eginbidea"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Gehitu profil bat"</string>
+    <string name="end_session" msgid="2765206020435441421">"Amaitu saioa"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Profil berria"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Beste profil bat gehitu nahi duzu?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Zuk profil berria sortu ondoren, erabiltzaileak berak pertsonalizatu beharko luke."</string>
@@ -55,6 +56,22 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"Ados"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Ibilgailuaren kamera aktibatu nahi duzu?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Aurrera egiteko, aktibatu informazio- eta aisia-sistemaren kamera. Horrela, kamera aktibatuta izango dute hura erabiltzeko baimena daukaten aplikazio guztiek."</string>
+    <string name="system_bar_home_label" msgid="8413273833405495948">"Hasierako pantaila"</string>
+    <string name="system_bar_phone_label" msgid="5664288201806823777">"Telefonoa"</string>
+    <string name="system_bar_applications_label" msgid="7081862804211786227">"Aplikazioak"</string>
+    <string name="system_bar_climate_control_label" msgid="4091187805919276017">"Klimaren kontrola"</string>
+    <string name="system_bar_notifications_label" msgid="6039158514903928210">"Jakinarazpenak"</string>
+    <string name="system_bar_maps_label" msgid="7883864993280235380">"Maps"</string>
+    <string name="system_bar_media_label" msgid="6156112139796274847">"Multimedia-edukia"</string>
+    <string name="hvac_decrease_button_label" msgid="5628481079099995286">"Jaitsi tenperatura"</string>
+    <string name="hvac_increase_button_label" msgid="2855688290787396792">"Igo tenperatura"</string>
+    <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"Bluetooth-aren ezarpena: deskonektatuta"</string>
+    <string name="status_icon_bluetooth_connected" msgid="4548446117525711779">"Bluetooth-aren ezarpena: konektatuta"</string>
+    <string name="status_icon_bluetooth_off" msgid="5435041393564635821">"Bluetooth-aren ezarpena: Bluetooth-a desaktibatuta"</string>
+    <string name="status_icon_signal_mobile" msgid="7264721079060179783">"Seinalearen ezarpenak: datu-konexioa erabiltzen"</string>
+    <string name="status_icon_signal_wifi" msgid="1257569337648058522">"Seinalearen ezarpenak: wifia aktibatuta"</string>
+    <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"Seinalearen ezarpenak: wifi-gunea aktibatuta"</string>
+    <string name="status_icon_display_status" msgid="2970020923181359144">"Bistaratze-aukerak"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Ezin duzu erabili eginbidea gidatu bitartean"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Itxi aplikazioa"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Atzera"</string>

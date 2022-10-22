@@ -118,6 +118,7 @@ android_library {
         "mockito-target-inline-minus-junit4",
         "testables",
         "truth-prebuilt",
+        "testng",
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
     ],

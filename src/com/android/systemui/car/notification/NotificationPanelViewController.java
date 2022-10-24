@@ -443,7 +443,7 @@ public class NotificationPanelViewController extends OverlayPanelViewController
     /** Called when the car power state is changed to ON. */
     public void onCarPowerStateOn() {
         if (mNotificationClickHandlerFactory != null) {
-            mNotificationClickHandlerFactory.clearAllNotifications();
+            mNotificationClickHandlerFactory.clearAllNotifications(mContext);
         }
         mNotificationDataManager.clearAll();
     }

@@ -72,7 +72,7 @@ public class SystemBarConfigs {
         NOTE: The elements' order in the map below must be preserved as-is since the correct
         corresponding values are obtained by the index.
      */
-    private static final int[] BAR_TYPE_MAP = {
+    public static final int[] BAR_TYPE_MAP = {
             InsetsState.ITYPE_STATUS_BAR,
             InsetsState.ITYPE_NAVIGATION_BAR,
             InsetsState.ITYPE_CLIMATE_BAR,

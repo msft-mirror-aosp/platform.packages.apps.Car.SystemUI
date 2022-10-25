@@ -81,6 +81,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="bool" name="config_consumeSystemBarTouchWhenNotificationPanelOpen"/>
       <item type="bool" name="config_enableBottomSystemBar"/>
       <item type="bool" name="config_enableHeadsUpNotificationWhenNotificationPanelOpen"/>
+      <item type="bool" name="config_enableImmersivePrivacyChip"/>
+      <item type="bool" name="config_enableImmersivePrivacyChipAnimation"/>
       <item type="bool" name="config_enableLeftSystemBar"/>
       <item type="bool" name="config_enableRightSystemBar"/>
       <item type="bool" name="config_enableShellMainThread"/>
@@ -94,7 +96,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="bool" name="config_notif_panel_inset_by_right_systembar"/>
       <item type="bool" name="config_notif_panel_inset_by_top_systembar"/>
       <item type="bool" name="config_profile_panel_disabled_while_driving"/>
-      <item type="bool" name="config_registerShellTaskOrganizerOnInit"/>
       <item type="bool" name="config_systemBarButtonsDraggable"/>
       <item type="color" name="activity_blocking_action_button_background_color"/>
       <item type="color" name="activity_blocking_activity_background"/>
@@ -257,6 +258,10 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_volume_item_seekbar_padding_vertical"/>
       <item type="dimen" name="common_margin"/>
       <item type="dimen" name="device_management_dialog_subtitle_padding"/>
+      <item type="dimen" name="fullscreen_indicator_height"/>
+      <item type="dimen" name="fullscreen_indicator_padding_horizontal"/>
+      <item type="dimen" name="fullscreen_indicator_padding_vertical"/>
+      <item type="dimen" name="fullscreen_indicator_width"/>
       <item type="dimen" name="hvac_button_margin_bottom"/>
       <item type="dimen" name="hvac_button_margin_end"/>
       <item type="dimen" name="hvac_button_margin_start"/>
@@ -579,6 +584,11 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="passenger_hvac"/>
       <item type="id" name="phone_nav"/>
       <item type="id" name="primary_icon"/>
+      <item type="id" name="privacy_dot"/>
+      <item type="id" name="privacy_dot_bottom_left_container"/>
+      <item type="id" name="privacy_dot_bottom_right_container"/>
+      <item type="id" name="privacy_dot_top_left_container"/>
+      <item type="id" name="privacy_dot_top_right_container"/>
       <item type="id" name="qc_bluetooth_footer_button"/>
       <item type="id" name="qc_bluetooth_status_icon"/>
       <item type="id" name="qc_camera_footer_button"/>
@@ -641,6 +651,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="integer" name="config_initialNotificationBackgroundAlpha"/>
       <item type="integer" name="config_leftSystemBarType"/>
       <item type="integer" name="config_leftSystemBarZOrder"/>
+      <item type="integer" name="config_privacyIndicatorLocation"/>
       <item type="integer" name="config_rightSystemBarType"/>
       <item type="integer" name="config_rightSystemBarZOrder"/>
       <item type="integer" name="config_topSystemBarType"/>
@@ -688,6 +699,10 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="notification_handle_bar"/>
       <item type="layout" name="notification_panel_container"/>
       <item type="layout" name="privacy_chip_content"/>
+      <item type="layout" name="privacy_dot_bottom_left"/>
+      <item type="layout" name="privacy_dot_bottom_right"/>
+      <item type="layout" name="privacy_dot_top_left"/>
+      <item type="layout" name="privacy_dot_top_right"/>
       <item type="layout" name="qc_bluetooth_panel"/>
       <item type="layout" name="qc_camera_panel"/>
       <item type="layout" name="qc_connectivity_panel"/>

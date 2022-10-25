@@ -38,6 +38,12 @@
     <integer name="config_rightSystemBarType">3</integer>
     <integer name="config_bottomSystemBarType">1</integer>
 
+    <!-- Location of the system bar privacy indicator. This value should be consistent with the
+         layout file where the view for system bar privacy indicator is put. -->
+    <!-- For example the view is put car_top_system_bar.xml, this value should be
+         config_topSystemBarType. -->
+    <integer name="config_privacyIndicatorLocation">@integer/config_topSystemBarType</integer>
+
     <!-- Configure the relative z-order among the system bars. When two system bars overlap (e.g.
          if both top bar and left bar are enabled, it creates an overlapping space in the upper left
          corner), the system bar with the higher z-order takes the overlapping space and padding is
@@ -183,8 +189,8 @@
     <!-- Determines whether the shell features all run on another thread. -->
     <bool name="config_enableShellMainThread">true</bool>
 
-    <!-- Determines whether the shell task organizer be registered automatiacly or not.
-         It needs to be disabled for CarSystemUI as CarLauncher already registers one. With 2
-         organizers there can be recovery problems if either of the process crashes. -->
-    <bool name="config_registerShellTaskOrganizerOnInit">false</bool>
+    <!-- show the privacy chip indicator in full screen mode. -->
+    <bool name="config_enableImmersivePrivacyChip">true</bool>
+    <!-- enable animation for the privacy chip indicator in full screen mode. -->
+    <bool name="config_enableImmersivePrivacyChipAnimation">true</bool>
 </resources>

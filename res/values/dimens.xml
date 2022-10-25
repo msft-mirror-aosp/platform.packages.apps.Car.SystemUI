@@ -380,4 +380,10 @@
     <dimen name="activity_blocking_action_button_min_width">@*android:dimen/car_button_min_width</dimen>
     <dimen name="activity_blocking_action_button_text_size">@*android:dimen/car_body3_size</dimen>
     <dimen name="activity_blocking_action_button_padding_horizontal">@*android:dimen/car_padding_4</dimen>
+
+    <!-- Dimensions for the immersive privacy chip -->
+    <dimen name="fullscreen_indicator_padding_vertical">10dp</dimen>
+    <dimen name="fullscreen_indicator_padding_horizontal">12dp</dimen>
+    <dimen name="fullscreen_indicator_height">56dp</dimen>
+    <dimen name="fullscreen_indicator_width">80dp</dimen>
 </resources>

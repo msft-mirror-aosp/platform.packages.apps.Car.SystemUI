@@ -31,9 +31,9 @@ import com.android.internal.app.IVoiceInteractionSessionListener;
 import com.android.internal.app.IVoiceInteractionSessionShowCallback;
 
 /**
- * AssitantButton is a ui component that will trigger the Voice Interaction Service.
+ * AssistantButton is an UI component that will trigger the Voice Interaction Service.
  */
-public class AssitantButton extends CarSystemBarButton {
+public class AssistantButton extends CarSystemBarButton {
     private static final String TAG = "AssistantButton";
     private final AssistUtils mAssistUtils;
     private final IVoiceInteractionSessionShowCallback mShowCallback =
@@ -49,7 +49,7 @@ public class AssitantButton extends CarSystemBarButton {
                 }
             };
 
-    public AssitantButton(Context context, AttributeSet attrs) {
+    public AssistantButton(Context context, AttributeSet attrs) {
         super(context, attrs);
         mAssistUtils = new AssistUtils(context);
         setOnClickListener(v -> showAssistant());
@@ -76,7 +76,7 @@ public class AssitantButton extends CarSystemBarButton {
         );
     }
 
-    private void showAssistant() {
+    void showAssistant() {
         final Bundle args = new Bundle();
         mAssistUtils.showSessionForActiveService(args,
                 SHOW_SOURCE_ASSIST_GESTURE, mShowCallback, /*activityToken=*/ null);
@@ -101,7 +101,7 @@ public class AssitantButton extends CarSystemBarButton {
     private void assistantSetSelected(boolean selected) {
         if (hasSelectionState()) {
             getContext().getMainExecutor().execute(
-                    () -> AssitantButton.super.setSelected(selected));
+                    () -> AssistantButton.super.setSelected(selected));
         }
     }
 }

@@ -109,16 +109,16 @@ abstract class CarSystemUIModule {
             AccessibilityManagerWrapper accessibilityManagerWrapper,
             UiEventLogger uiEventLogger) {
         return new HeadsUpManagerPhone(
-            context,
-            headsUpManagerLogger,
-            statusBarStateController,
-            bypassController,
-            groupManager,
-            visualStabilityProvider,
-            configurationController,
-            handler,
-            accessibilityManagerWrapper,
-            uiEventLogger
+                context,
+                headsUpManagerLogger,
+                statusBarStateController,
+                bypassController,
+                groupManager,
+                visualStabilityProvider,
+                configurationController,
+                handler,
+                accessibilityManagerWrapper,
+                uiEventLogger
         );
     }
 

@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
 import android.car.test.mocks.AndroidMockitoHelper;
+import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.testing.AndroidTestingRunner;
@@ -54,6 +55,8 @@ public class CarSystemUIUserUtilTest extends SysuiTestCase {
 
     @Mock
     private UserTracker mUserTracker;
+    @Mock
+    private UserManager mUserManager;
 
     @Before
     public void setUp() {
@@ -61,9 +64,11 @@ public class CarSystemUIUserUtilTest extends SysuiTestCase {
                 .initMocks(this)
                 .spyStatic(UserManager.class)
                 .spyStatic(ActivityManager.class)
+                .spyStatic(Process.class)
                 .strictness(Strictness.LENIENT)
                 .startMocking();
         mContext = spy(mContext);
+        mContext.addMockSystemService(UserManager.class, mUserManager);
         when(mUserTracker.getUserHandle()).thenReturn(mUserHandle);
         AndroidMockitoHelper.mockUmIsHeadlessSystemUserMode(true);
         AndroidMockitoHelper.mockAmGetCurrentUser(mActivityManagerTestUser);
@@ -110,5 +115,36 @@ public class CarSystemUIUserUtilTest extends SysuiTestCase {
         UserHandle userHandle = CarSystemUIUserUtil.getCurrentUserHandle(mContext, null);
 
         assertThat(userHandle.getIdentifier()).isEqualTo(mContextTestUser);
+    }
+
+    @Test
+    public void isSecondaryMUMDSystemUI_usersOnSecondaryDisplaysNotSupported_returnsFalse() {
+        when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(false);
+
+        assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)).isFalse();
+    }
+
+    @Test
+    public void isSecondaryMUMDSystemUI_systemUser_returnsFalse() {
+        when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(true);
+        when(Process.myUserHandle()).thenReturn(UserHandle.SYSTEM);
+
+        assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)).isFalse();
+    }
+
+    @Test
+    public void isSecondaryMUMDSystemUI_currentUser_returnsFalse() {
+        when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(true);
+        when(Process.myUserHandle()).thenReturn(UserHandle.of(mActivityManagerTestUser));
+
+        assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)).isFalse();
+    }
+
+    @Test
+    public void isSecondaryMUMDSystemUI_isSecondaryUser_returnsTrue() {
+        when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(true);
+        when(Process.myUserHandle()).thenReturn(mUserHandle);
+
+        assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)).isTrue();
     }
 }

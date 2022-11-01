@@ -25,16 +25,25 @@ import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardDisplayManager;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardViewController;
+import com.android.keyguard.ViewMediatorCallback;
+import com.android.keyguard.dagger.KeyguardQsUserSwitchComponent;
+import com.android.keyguard.dagger.KeyguardStatusBarViewComponent;
+import com.android.keyguard.dagger.KeyguardStatusViewComponent;
+import com.android.keyguard.dagger.KeyguardUserSwitcherComponent;
 import com.android.keyguard.mediator.ScreenOnCoordinator;
 import com.android.systemui.animation.ActivityLaunchAnimator;
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
+import com.android.systemui.classifier.FalsingModule;
+import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.systemui.dreams.DreamOverlayStateController;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
+import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
+import com.android.systemui.keyguard.domain.quickaffordance.KeyguardQuickAffordanceModule;
 import com.android.systemui.navigationbar.NavigationModeController;
 import com.android.systemui.statusbar.NotificationShadeDepthController;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
@@ -48,61 +57,88 @@ import com.android.systemui.util.DeviceConfigProxy;
 import java.util.concurrent.Executor;
 
 import dagger.Lazy;
+import dagger.Module;
+import dagger.Provides;
 
 /**
- * Car customizations on top of {@link KeyguardViewMediator}. Please refer to that class for
- * more details on specific functionalities.
+ * Dagger Module providing keyguard.
  */
-public class CarKeyguardViewMediator extends KeyguardViewMediator {
-    private final Context mContext;
+@Module(subcomponents = {
+        KeyguardQsUserSwitchComponent.class,
+        KeyguardStatusBarViewComponent.class,
+        KeyguardStatusViewComponent.class,
+        KeyguardUserSwitcherComponent.class},
+        includes = {
+                FalsingModule.class,
+                KeyguardQuickAffordanceModule.class,
+                KeyguardRepositoryModule.class,
+        })
+public class CarKeyguardModule {
 
     /**
-     * Injected constructor. See {@link CarKeyguardModule}.
+     * Provides our instance of CarKeyguardViewMediator
      */
-    public CarKeyguardViewMediator(Context context,
+    @Provides
+    @SysUISingleton
+    public static KeyguardViewMediator newKeyguardViewMediator(
+            Context context,
             FalsingCollector falsingCollector,
             LockPatternUtils lockPatternUtils,
             BroadcastDispatcher broadcastDispatcher,
             Lazy<KeyguardViewController> statusBarKeyguardViewManagerLazy,
             DismissCallbackRegistry dismissCallbackRegistry,
-            KeyguardUpdateMonitor keyguardUpdateMonitor,
+            KeyguardUpdateMonitor updateMonitor,
             DumpManager dumpManager,
-            Executor uiBgExecutor, PowerManager powerManager,
+            PowerManager powerManager,
             TrustManager trustManager,
             UserSwitcherController userSwitcherController,
+            @UiBackground Executor uiBgExecutor,
             DeviceConfigProxy deviceConfig,
             NavigationModeController navigationModeController,
             KeyguardDisplayManager keyguardDisplayManager,
             DozeParameters dozeParameters,
             SysuiStatusBarStateController statusBarStateController,
             KeyguardStateController keyguardStateController,
-            Lazy<KeyguardUnlockAnimationController> keyguardUnlockAnimationControllerLazy,
+            Lazy<KeyguardUnlockAnimationController> keyguardUnlockAnimationController,
             ScreenOffAnimationController screenOffAnimationController,
             Lazy<NotificationShadeDepthController> notificationShadeDepthController,
             ScreenOnCoordinator screenOnCoordinator,
             InteractionJankMonitor interactionJankMonitor,
             DreamOverlayStateController dreamOverlayStateController,
-            Lazy<NotificationShadeWindowController> notificationShadeWindowControllerLazy,
+            Lazy<NotificationShadeWindowController> notificationShadeWindowController,
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator) {
-        super(context, falsingCollector, lockPatternUtils, broadcastDispatcher,
-                statusBarKeyguardViewManagerLazy, dismissCallbackRegistry, keyguardUpdateMonitor,
-                dumpManager, uiBgExecutor, powerManager, trustManager, userSwitcherController,
-                deviceConfig, navigationModeController, keyguardDisplayManager, dozeParameters,
-                statusBarStateController, keyguardStateController,
-                keyguardUnlockAnimationControllerLazy, screenOffAnimationController,
-                notificationShadeDepthController, screenOnCoordinator, interactionJankMonitor,
-                dreamOverlayStateController, notificationShadeWindowControllerLazy,
+        return new CarKeyguardViewMediator(
+                context,
+                falsingCollector,
+                lockPatternUtils,
+                broadcastDispatcher,
+                statusBarKeyguardViewManagerLazy,
+                dismissCallbackRegistry,
+                updateMonitor,
+                dumpManager,
+                uiBgExecutor,
+                powerManager,
+                trustManager,
+                userSwitcherController,
+                deviceConfig,
+                navigationModeController,
+                keyguardDisplayManager,
+                dozeParameters,
+                statusBarStateController,
+                keyguardStateController,
+                keyguardUnlockAnimationController,
+                screenOffAnimationController,
+                notificationShadeDepthController,
+                screenOnCoordinator,
+                interactionJankMonitor,
+                dreamOverlayStateController,
+                notificationShadeWindowController,
                 activityLaunchAnimator);
-        mContext = context;
     }
 
-    @Override
-    public void start() {
-        if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)) {
-            // Currently keyguard is not functional for the secondary users in a MUMD configuration
-            // TODO_MD: make keyguard functional for secondary users
-            return;
-        }
-        super.start();
+    /** */
+    @Provides
+    public ViewMediatorCallback providesViewMediatorCallback(KeyguardViewMediator viewMediator) {
+        return viewMediator.getViewMediatorCallback();
     }
 }

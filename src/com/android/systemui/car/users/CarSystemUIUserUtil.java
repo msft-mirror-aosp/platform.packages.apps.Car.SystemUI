@@ -18,6 +18,7 @@ package com.android.systemui.car.users;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
 
@@ -52,5 +53,17 @@ public final class CarSystemUIUserUtil {
         }
         // SystemUI is running as a non-headless system user - this is probably the correct user
         return UserHandle.of(context.getUserId());
+    }
+
+    /**
+     * Helper function that returns {@code true} if the current instance of SystemUI is running as
+     * a secondary user on MUMD system.
+     */
+    public static boolean isSecondaryMUMDSystemUI(Context context) {
+        UserManager userManager = context.getSystemService(UserManager.class);
+        UserHandle myUserHandle = Process.myUserHandle();
+        return userManager.isUsersOnSecondaryDisplaysSupported()
+                && !myUserHandle.isSystem()
+                && myUserHandle.getIdentifier() != ActivityManager.getCurrentUser();
     }
 }

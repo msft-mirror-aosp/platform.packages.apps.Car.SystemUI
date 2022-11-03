@@ -33,6 +33,7 @@ import com.android.systemui.car.decor.CarPrivacyChipViewController;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
 import com.android.systemui.car.statusbar.DozeServiceHost;
+import com.android.systemui.car.users.CarMultiUserUtilsModule;
 import com.android.systemui.car.volume.CarVolumeModule;
 import com.android.systemui.dagger.GlobalRootComponent;
 import com.android.systemui.dagger.SysUISingleton;
@@ -83,13 +84,14 @@ import dagger.Provides;
 @Module(
         includes = {
                 AospPolicyModule.class,
+                CarMultiUserUtilsModule.class,
                 CarVolumeModule.class,
                 GestureModule.class,
                 PowerModule.class,
                 QSModule.class,
                 ReferenceScreenshotModule.class
         }
-        )
+)
 abstract class CarSystemUIModule {
 
     @SysUISingleton

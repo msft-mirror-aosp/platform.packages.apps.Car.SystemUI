@@ -19,16 +19,21 @@ package com.android.systemui.car.qc;
 import static android.os.UserManager.SWITCHABILITY_STATUS_OK;
 import static android.os.UserManager.SWITCHABILITY_STATUS_USER_SWITCH_DISALLOWED;
 
+import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.ActivityManager;
 import android.app.admin.DevicePolicyManager;
 import android.car.user.CarUserManager;
 import android.car.user.UserCreationResult;
@@ -46,18 +51,24 @@ import androidx.test.filters.SmallTest;
 import com.android.car.qc.QCItem;
 import com.android.car.qc.QCList;
 import com.android.car.qc.QCRow;
+import com.android.dx.mockito.inline.extended.ExtendedMockito;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.settings.UserTracker;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.MockitoSession;
+import org.mockito.quality.Strictness;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -68,6 +79,7 @@ import java.util.concurrent.TimeoutException;
 @SmallTest
 public class ProfileSwitcherTest extends SysuiTestCase {
 
+    private MockitoSession mSession;
     private ProfileSwitcher mProfileSwitcher;
     private List<UserInfo> mAliveUsers = new ArrayList<>();
 
@@ -79,17 +91,29 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     private DevicePolicyManager mDevicePolicyManager;
     @Mock
     private CarUserManager mCarUserManager;
+    @Mock
+    private ActivityManager mActivityManager;
 
     @Before
     public void setUp() throws ExecutionException, InterruptedException, TimeoutException {
-        MockitoAnnotations.initMocks(this);
+        mSession = ExtendedMockito.mockitoSession()
+                .initMocks(this)
+                .spyStatic(CarSystemUIUserUtil.class)
+                .strictness(Strictness.LENIENT)
+                .startMocking();
 
+        mContext.addMockSystemService(ActivityManager.class, mActivityManager);
         when(mUserTracker.getUserId()).thenReturn(1000);
         when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(1000));
         when(mUserManager.getAliveUsers()).thenReturn(mAliveUsers);
         when(mUserManager.getUserSwitchability(any())).thenReturn(SWITCHABILITY_STATUS_OK);
+        when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(false);
+        when(mUserManager.getVisibleUsers()).thenReturn(
+                Collections.singletonList(UserHandle.of(1000)));
         when(mDevicePolicyManager.isDeviceManaged()).thenReturn(false);
         when(mDevicePolicyManager.isOrganizationOwnedDeviceWithManagedProfile()).thenReturn(false);
+        when(mActivityManager.stopUser(anyInt(), anyBoolean())).thenReturn(true);
+        doReturn(false).when(() -> CarSystemUIUserUtil.isSecondaryMUMDSystemUI(any()));
 
         AsyncFuture<UserSwitchResult> switchResultFuture = mock(AsyncFuture.class);
         UserSwitchResult switchResult = mock(UserSwitchResult.class);
@@ -99,6 +123,14 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
         mProfileSwitcher = new ProfileSwitcher(mContext, mUserTracker, mUserManager,
                 mDevicePolicyManager, mCarUserManager);
+    }
+
+    @After
+    public void tearDown() {
+        if (mSession != null) {
+            mSession.finishMocking();
+            mSession = null;
+        }
     }
 
     private void setUpLogout() {
@@ -314,6 +346,61 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         guestRow.getActionHandler().onAction(guestRow, mContext, new Intent());
         verify(mCarUserManager).createGuest(any());
         verify(mCarUserManager).switchUser(guestUserId);
+    }
+
+    @Test
+    public void onUserPressed_alreadyStartedUser_doesNothing() {
+        when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(true);
+        int currentUserId = 1000;
+        int secondaryUserId = 1001;
+        UserInfo user1 = generateUser(currentUserId, "User1", /* supportsSwitch= */ true,
+                /* isGuest= */ false);
+        UserInfo user2 = generateUser(secondaryUserId, "User2", /* supportsSwitch= */ true,
+                /* isGuest= */ false);
+        mAliveUsers.add(user1);
+        mAliveUsers.add(user2);
+        when(mUserManager.getVisibleUsers()).thenReturn(
+                Arrays.asList(UserHandle.of(currentUserId), UserHandle.of(secondaryUserId)));
+        List<QCRow> rows = getProfileRows();
+        // Expect four rows - one for each user, one for the guest user, and one for add user
+        assertThat(rows).hasSize(4);
+        QCRow otherUserRow = rows.get(1);
+        otherUserRow.getActionHandler().onAction(otherUserRow, mContext, new Intent());
+        // Verify nothing happens
+        verify(mCarUserManager, never()).switchUser(secondaryUserId);
+        verify(mActivityManager, never()).stopUser(anyInt(), anyBoolean());
+        verify(mActivityManager, never()).startUserInBackgroundOnSecondaryDisplay(anyInt(),
+                anyInt());
+    }
+
+    @Test
+    public void onUserPressed_secondaryUser_stopsAndStartsNewUser() {
+        int currentUserId = 1000;
+        int secondaryUserId = 1001;
+        int newUserId = 1002;
+        doReturn(true).when(() -> CarSystemUIUserUtil.isSecondaryMUMDSystemUI(any()));
+        when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(true);
+        when(mUserTracker.getUserId()).thenReturn(secondaryUserId);
+        when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(secondaryUserId));
+        UserInfo user1 = generateUser(currentUserId, "User1", /* supportsSwitch= */ true,
+                /* isGuest= */ false);
+        UserInfo user2 = generateUser(secondaryUserId, "User2", /* supportsSwitch= */ true,
+                /* isGuest= */ false);
+        UserInfo user3 = generateUser(newUserId, "User3", /* supportsSwitch= */ true,
+                /* isGuest= */ false);
+        mAliveUsers.add(user1);
+        mAliveUsers.add(user2);
+        mAliveUsers.add(user3);
+        when(mUserManager.getVisibleUsers()).thenReturn(
+                Arrays.asList(UserHandle.of(currentUserId), UserHandle.of(secondaryUserId)));
+        List<QCRow> rows = getProfileRows();
+        // Expect five rows - one for each user, one for the guest user, and one for add user
+        assertThat(rows).hasSize(5);
+        QCRow newUserRow = rows.get(2);
+        newUserRow.getActionHandler().onAction(newUserRow, mContext, new Intent());
+        verify(mActivityManager).stopUser(eq(secondaryUserId), anyBoolean());
+        verify(mActivityManager).startUserInBackgroundOnSecondaryDisplay(eq(newUserId),
+                anyInt());
     }
 
     private List<QCRow> getProfileRows() {

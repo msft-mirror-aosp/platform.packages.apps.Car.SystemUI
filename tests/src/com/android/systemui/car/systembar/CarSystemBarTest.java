@@ -44,6 +44,7 @@ import android.util.ArrayMap;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import androidx.test.filters.SmallTest;
@@ -150,7 +151,7 @@ public class CarSystemBarTest extends SysuiTestCase {
                 /* imeToken= */ null,
                 /* navbarColorMangedByIme= */ false,
                 BEHAVIOR_DEFAULT,
-                /* requestedVisibilities= */ null,
+                WindowInsets.Type.defaultVisible(),
                 /* packageName= */ null,
                 /* transientBarTypes= */ new int[]{},
                 /* letterboxDetails= */ null);

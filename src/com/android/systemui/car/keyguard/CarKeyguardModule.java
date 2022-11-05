@@ -45,6 +45,7 @@ import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
 import com.android.systemui.keyguard.domain.quickaffordance.KeyguardQuickAffordanceModule;
 import com.android.systemui.navigationbar.NavigationModeController;
+import com.android.systemui.shade.ShadeController;
 import com.android.systemui.statusbar.NotificationShadeDepthController;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
 import com.android.systemui.statusbar.SysuiStatusBarStateController;
@@ -105,6 +106,7 @@ public class CarKeyguardModule {
             ScreenOnCoordinator screenOnCoordinator,
             InteractionJankMonitor interactionJankMonitor,
             DreamOverlayStateController dreamOverlayStateController,
+            Lazy<ShadeController> shadeController,
             Lazy<NotificationShadeWindowController> notificationShadeWindowController,
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator) {
         return new CarKeyguardViewMediator(
@@ -132,6 +134,7 @@ public class CarKeyguardModule {
                 screenOnCoordinator,
                 interactionJankMonitor,
                 dreamOverlayStateController,
+                shadeController,
                 notificationShadeWindowController,
                 activityLaunchAnimator);
     }

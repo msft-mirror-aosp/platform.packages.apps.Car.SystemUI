@@ -38,7 +38,6 @@ import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Slog;
-import android.view.Display;
 import android.view.DisplayInfo;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -207,12 +206,7 @@ public class ActivityBlockingActivity extends Activity {
 
         Rect windowRect = getAppWindowRect();
 
-        // We currently don't support blur for secondary display
-        // (because it is hard to take a screenshot of a secondary display)
-        // So for secondary displays, the GLSurfaceView will not appear blurred
-        boolean shouldRenderBlurred = getDisplayId() == Display.DEFAULT_DISPLAY;
-
-        mSurfaceRenderer = new BlurredSurfaceRenderer(this, windowRect, shouldRenderBlurred);
+        mSurfaceRenderer = new BlurredSurfaceRenderer(this, windowRect, getDisplayId());
 
         mGLSurfaceView = findViewById(R.id.blurred_surface_view);
         mGLSurfaceView.setEGLContextClientVersion(EGL_CONTEXT_VERSION);

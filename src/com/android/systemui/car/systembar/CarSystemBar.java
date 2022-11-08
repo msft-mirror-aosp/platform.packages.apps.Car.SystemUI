@@ -33,7 +33,6 @@ import android.graphics.Rect;
 import android.inputmethodservice.InputMethodService;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets.Type.InsetsType;
@@ -54,6 +53,7 @@ import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.systemui.plugins.DarkIconDispatcher;
+import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.shared.system.TaskStackChangeListener;
 import com.android.systemui.shared.system.TaskStackChangeListeners;
 import com.android.systemui.statusbar.AutoHideUiElement;
@@ -90,6 +90,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     private final DelayableExecutor mExecutor;
     private final Executor mUiBgExecutor;
     private final IStatusBarService mBarService;
+    private final DisplayTracker mDisplayTracker;
     private final Lazy<KeyguardStateController> mKeyguardStateControllerLazy;
     private final Lazy<PhoneStatusBarPolicy> mIconPolicyLazy;
     private final HvacController mHvacController;
@@ -153,7 +154,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
             HvacController hvacController,
             StatusBarSignalPolicy signalPolicy,
             SystemBarConfigs systemBarConfigs,
-            ConfigurationController configurationController
+            ConfigurationController configurationController,
+            DisplayTracker displayTracker
     ) {
         mContext = context;
         mCarSystemBarController = carSystemBarController;
@@ -173,6 +175,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mSignalPolicy = signalPolicy;
         mDisplayId = context.getDisplayId();
         mUiModeManager = mContext.getSystemService(UiModeManager.class);
+        mDisplayTracker = displayTracker;
         configurationController.addCallback(this);
     }
 
@@ -356,7 +359,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
 
         // Try setting up the initial state of the nav bar if applicable.
         if (result != null) {
-            setImeWindowStatus(Display.DEFAULT_DISPLAY, result.mImeToken,
+            setImeWindowStatus(mDisplayTracker.getDefaultDisplayId(), result.mImeToken,
                     result.mImeWindowVis, result.mImeBackDisposition,
                     result.mShowImeSwitcher);
         }

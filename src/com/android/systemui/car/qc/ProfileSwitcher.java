@@ -75,13 +75,13 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     private static final String TAG = ProfileSwitcher.class.getSimpleName();
     private static final int TIMEOUT_MS = CarProperties.user_hal_timeout().orElse(5_000) + 500;
 
-    private final UserTracker mUserTracker;
+    protected final UserTracker mUserTracker;
+    protected final UserIconProvider mUserIconProvider;
     private final UserManager mUserManager;
     private final DevicePolicyManager mDevicePolicyManager;
-    private final UserIconProvider mUserIconProvider;
     private final Car mCar;
     private final CarUserManager mCarUserManager;
-    private boolean mPendingUserAdd;
+    protected boolean mPendingUserAdd;
 
     @Inject
     public ProfileSwitcher(Context context, UserTracker userTracker) {
@@ -184,7 +184,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         return row;
     }
 
-    private QCRow createUserProfileRow(UserInfo userInfo) {
+    protected QCRow createUserProfileRow(UserInfo userInfo) {
         QCItem.ActionHandler actionHandler = (item, context, intent) -> {
             if (mPendingUserAdd) {
                 return;
@@ -250,7 +250,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         return row;
     }
 
-    private void switchUser(@UserIdInt int userId) {
+    protected void switchUser(@UserIdInt int userId) {
         mContext.sendBroadcastAsUser(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
                 mUserTracker.getUserHandle());
         if (mUserTracker.getUserId() == userId) {
@@ -391,7 +391,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setTitle(R.string.profile_limit_reached_title)
                 .setMessage(StringUtil.getIcuPluralsString(mContext, getMaxSupportedRealUsers(),
-                                R.string.profile_limit_reached_message))
+                        R.string.profile_limit_reached_message))
                 .setPositiveButton(android.R.string.ok, null)
                 .create();
         // Sets window flags for the SysUI dialog

@@ -36,6 +36,7 @@ import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.navigationbar.NavigationModeController;
+import com.android.systemui.shade.ShadeController;
 import com.android.systemui.statusbar.NotificationShadeDepthController;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
 import com.android.systemui.statusbar.SysuiStatusBarStateController;
@@ -82,6 +83,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             ScreenOnCoordinator screenOnCoordinator,
             InteractionJankMonitor interactionJankMonitor,
             DreamOverlayStateController dreamOverlayStateController,
+            Lazy<ShadeController> mShadeControllerLazy,
             Lazy<NotificationShadeWindowController> notificationShadeWindowControllerLazy,
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator) {
         super(context, falsingCollector, lockPatternUtils, broadcastDispatcher,
@@ -91,7 +93,9 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 statusBarStateController, keyguardStateController,
                 keyguardUnlockAnimationControllerLazy, screenOffAnimationController,
                 notificationShadeDepthController, screenOnCoordinator, interactionJankMonitor,
-                dreamOverlayStateController, notificationShadeWindowControllerLazy,
+                dreamOverlayStateController,
+                mShadeControllerLazy,
+                notificationShadeWindowControllerLazy,
                 activityLaunchAnimator);
         mContext = context;
     }

@@ -127,10 +127,9 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         }
 
         @Override
-        public void hideInsets(@InsetsType int types, boolean fromIme,
-                @Nullable ImeTracker.Token statsToken) {
+        public void hideInsets(@InsetsType int types, boolean fromIme) {
             if ((types & WindowInsets.Type.ime()) == 0) {
-                mInsetsController.hide(types, /* fromIme = */ false, statsToken);
+                mInsetsController.hide(types);
             }
         }
 
@@ -174,7 +173,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             updateRequestedVisibleTypes(barVisibilities[0], /* visible= */ true);
             updateRequestedVisibleTypes(barVisibilities[1], /* visible= */ false);
             showInsets(barVisibilities[0], /* fromIme= */ false, /* statsToken= */ null);
-            hideInsets(barVisibilities[1], /* fromIme= */ false, /* statsToken = */ null);
+            hideInsets(barVisibilities[1], /* fromIme= */ false);
             try {
                 mWmService.updateDisplayWindowRequestedVisibleTypes(mDisplayId,
                         mRequestedVisibleTypes);

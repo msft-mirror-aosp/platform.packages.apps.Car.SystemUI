@@ -16,7 +16,6 @@
 
 package com.android.systemui.wm;
 
-import android.annotation.Nullable;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Handler;
@@ -30,7 +29,6 @@ import android.view.InsetsSourceControl;
 import android.view.InsetsState;
 import android.view.WindowInsets;
 import android.view.WindowInsets.Type.InsetsType;
-import android.view.inputmethod.ImeTracker;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -134,10 +132,9 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         }
 
         @Override
-        public void showInsets(@InsetsType int types, boolean fromIme,
-                @Nullable ImeTracker.Token statsToken) {
+        public void showInsets(@InsetsType int types, boolean fromIme) {
             if ((types & WindowInsets.Type.ime()) == 0) {
-                mInsetsController.show(types, /* fromIme= */ false, statsToken);
+                mInsetsController.show(types);
             }
         }
 
@@ -172,7 +169,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             int[] barVisibilities = BarControlPolicy.getBarVisibilities(mPackageName);
             updateRequestedVisibleTypes(barVisibilities[0], /* visible= */ true);
             updateRequestedVisibleTypes(barVisibilities[1], /* visible= */ false);
-            showInsets(barVisibilities[0], /* fromIme= */ false, /* statsToken= */ null);
+            showInsets(barVisibilities[0], /* fromIme= */ false);
             hideInsets(barVisibilities[1], /* fromIme= */ false);
             try {
                 mWmService.updateDisplayWindowRequestedVisibleTypes(mDisplayId,

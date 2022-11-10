@@ -38,6 +38,7 @@ import com.android.systemui.statusbar.events.SystemStatusAnimationScheduler;
 import com.android.systemui.statusbar.events.ViewState;
 import com.android.systemui.statusbar.phone.StatusBarContentInsetsProvider;
 import com.android.systemui.statusbar.policy.ConfigurationController;
+import com.android.systemui.util.concurrency.DelayableExecutor;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -102,7 +103,11 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
         boolean areaVisible = (mBarType & requestedVisibleTypes) != 0;
         if (mAreaVisible != areaVisible) {
             mAreaVisible = areaVisible;
-            getUiExecutor().execute(() -> updateDotView(getCurrentViewState()));
+            DelayableExecutor executor = getUiExecutor();
+            // Null check to avoid crashing caused by debug.disable_screen_decorations=true
+            if (executor != null) {
+                executor.execute(() -> updateDotView(getCurrentViewState()));
+            }
         }
     }
 }

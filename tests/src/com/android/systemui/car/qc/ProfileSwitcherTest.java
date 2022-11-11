@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.qc;
 
+import static android.car.test.mocks.AndroidMockitoHelper.mockUmGetVisibleUsers;
 import static android.os.UserManager.SWITCHABILITY_STATUS_OK;
 import static android.os.UserManager.SWITCHABILITY_STATUS_USER_SWITCH_DISALLOWED;
 
@@ -67,8 +68,6 @@ import org.mockito.MockitoSession;
 import org.mockito.quality.Strictness;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -108,8 +107,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         when(mUserManager.getAliveUsers()).thenReturn(mAliveUsers);
         when(mUserManager.getUserSwitchability(any())).thenReturn(SWITCHABILITY_STATUS_OK);
         when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(false);
-        when(mUserManager.getVisibleUsers()).thenReturn(
-                Collections.singletonList(UserHandle.of(1000)));
+        mockUmGetVisibleUsers(mUserManager, 1000);
         when(mDevicePolicyManager.isDeviceManaged()).thenReturn(false);
         when(mDevicePolicyManager.isOrganizationOwnedDeviceWithManagedProfile()).thenReturn(false);
         when(mActivityManager.stopUser(anyInt(), anyBoolean())).thenReturn(true);
@@ -359,8 +357,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
                 /* isGuest= */ false);
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
-        when(mUserManager.getVisibleUsers()).thenReturn(
-                Arrays.asList(UserHandle.of(currentUserId), UserHandle.of(secondaryUserId)));
+        mockUmGetVisibleUsers(mUserManager, currentUserId, secondaryUserId);
         List<QCRow> rows = getProfileRows();
         // Expect four rows - one for each user, one for the guest user, and one for add user
         assertThat(rows).hasSize(4);
@@ -391,8 +388,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
         mAliveUsers.add(user3);
-        when(mUserManager.getVisibleUsers()).thenReturn(
-                Arrays.asList(UserHandle.of(currentUserId), UserHandle.of(secondaryUserId)));
+        mockUmGetVisibleUsers(mUserManager, currentUserId, secondaryUserId);
         List<QCRow> rows = getProfileRows();
         // Expect five rows - one for each user, one for the guest user, and one for add user
         assertThat(rows).hasSize(5);

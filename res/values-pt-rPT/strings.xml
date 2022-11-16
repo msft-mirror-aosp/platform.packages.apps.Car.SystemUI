@@ -26,7 +26,7 @@
     <string name="car_add_user" msgid="6182764665687382136">"Adicionar perfil"</string>
     <string name="end_session" msgid="2765206020435441421">"Terminar sessão"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Novo perfil"</string>
-    <string name="user_add_profile_title" msgid="828371911076521952">"Quer adicionar o novo perfil?"</string>
+    <string name="user_add_profile_title" msgid="828371911076521952">"Adicionar o novo perfil?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Depois de criar um novo perfil, deve ser a pessoa em questão a personalizá-lo."</string>
     <string name="user_add_user_message_update" msgid="3310089453006545712">"As apps podem ser atualizadas a partir de qualquer perfil para utilização por todos os perfis."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"Limite de perfis atingido"</string>

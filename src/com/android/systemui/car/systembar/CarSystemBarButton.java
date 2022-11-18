@@ -58,6 +58,8 @@ public class CarSystemBarButton extends LinearLayout {
     private static final String BUTTON_FILTER_DELIMITER = ";";
     private static final String EXTRA_BUTTON_CATEGORIES = "categories";
     private static final String EXTRA_BUTTON_PACKAGES = "packages";
+    private static final String EXTRA_DIALOG_CLOSE_REASON = "reason";
+    private static final String DIALOG_CLOSE_REASON_CAR_SYSTEMBAR_BUTTON = "carsystembarbutton";
     private static final float DEFAULT_SELECTED_ALPHA = 1f;
     private static final float DEFAULT_UNSELECTED_ALPHA = 0.75f;
     private static final float DISABLED_ALPHA = 0.25f;
@@ -319,8 +321,9 @@ public class CarSystemBarButton extends LinearLayout {
                 return;
             }
             boolean startState = mSelected;
-            mContext.sendBroadcastAsUser(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
-                    getCurrentUserHandle(mContext, mUserTracker));
+            Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            intent.putExtra(EXTRA_DIALOG_CLOSE_REASON, DIALOG_CLOSE_REASON_CAR_SYSTEMBAR_BUTTON);
+            mContext.sendBroadcastAsUser(intent, getCurrentUserHandle(mContext, mUserTracker));
 
             boolean intentLaunched = false;
             try {
@@ -362,8 +365,9 @@ public class CarSystemBarButton extends LinearLayout {
     /** Defines the behavior of a long click. */
     protected OnLongClickListener getButtonLongClickListener(Intent toSend) {
         return v -> {
-            mContext.sendBroadcastAsUser(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
-                    getCurrentUserHandle(mContext, mUserTracker));
+            Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            intent.putExtra(EXTRA_DIALOG_CLOSE_REASON, DIALOG_CLOSE_REASON_CAR_SYSTEMBAR_BUTTON);
+            mContext.sendBroadcastAsUser(intent, getCurrentUserHandle(mContext, mUserTracker));
             try {
                 ActivityOptions options = ActivityOptions.makeBasic();
                 options.setLaunchDisplayId(mContext.getDisplayId());

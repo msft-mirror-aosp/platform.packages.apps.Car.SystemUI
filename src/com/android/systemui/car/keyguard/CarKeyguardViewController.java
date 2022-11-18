@@ -60,9 +60,9 @@ import com.android.systemui.toast.SystemUIToast;
 import com.android.systemui.toast.ToastFactory;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 
-import javax.inject.Inject;
-
 import dagger.Lazy;
+
+import javax.inject.Inject;
 
 /**
  * Automotive implementation of the {@link KeyguardViewController}. It controls the Keyguard View
@@ -376,9 +376,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
     @Override
     public boolean shouldDisableWindowAnimationsForUnlock() {
-        // TODO(b/205189147): revert the following change after the proper fix is landed.
-        // Disables the KeyGuard animation to resolve TaskView misalignment issue after display-on.
-        return true;
+        return false;
     }
 
     @Override

@@ -386,4 +386,8 @@
     <dimen name="fullscreen_indicator_padding_horizontal">12dp</dimen>
     <dimen name="fullscreen_indicator_height">56dp</dimen>
     <dimen name="fullscreen_indicator_width">80dp</dimen>
+
+    <!-- Dimensions for Display Input Lock -->
+    <dimen name="display_input_lock_icon_width">415dp</dimen>
+    <dimen name="display_input_lock_icon_height">415dp</dimen>
 </resources>

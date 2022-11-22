@@ -18,6 +18,7 @@ package com.android.systemui.car.activity;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.car.Car;
+import android.car.CarOccupantZoneManager;
 import android.car.app.CarActivityManager;
 import android.car.content.pm.CarPackageManager;
 import android.car.drivingstate.CarUxRestrictions;
@@ -69,6 +70,7 @@ public class ActivityBlockingActivity extends Activity {
     private CarUxRestrictionsManager mUxRManager;
     private CarPackageManager mCarPackageManager;
     private CarActivityManager mCarActivityManager;
+    private CarOccupantZoneManager mCarOccupantZoneManager;
 
     private Button mExitButton;
     private Button mToggleDebug;
@@ -116,6 +118,7 @@ public class ActivityBlockingActivity extends Activity {
                             Car.CAR_ACTIVITY_SERVICE);
                     mUxRManager = (CarUxRestrictionsManager) car.getCarManager(
                             Car.CAR_UX_RESTRICTION_SERVICE);
+                    mCarOccupantZoneManager = car.getCarManager(CarOccupantZoneManager.class);
                     // This activity would have been launched only in a restricted state.
                     // But ensuring when the service connection is established, that we are still
                     // in a restricted state.
@@ -399,8 +402,19 @@ public class ActivityBlockingActivity extends Activity {
             return;
         }
 
+        int displayId = getDisplayId();
         Intent startMain = new Intent(Intent.ACTION_MAIN);
-        startMain.addCategory(Intent.CATEGORY_HOME);
+
+        int driverDisplayId = mCarOccupantZoneManager.getDisplayIdForDriver(
+                CarOccupantZoneManager.DISPLAY_TYPE_MAIN);
+
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Slog.d(TAG, String.format("display id: %d, driver display id: %d",
+                    displayId, driverDisplayId));
+        }
+        String intentCategory = displayId == driverDisplayId ? Intent.CATEGORY_HOME
+                : Intent.CATEGORY_SECONDARY_HOME;
+        startMain.addCategory(intentCategory);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(startMain);
         finish();

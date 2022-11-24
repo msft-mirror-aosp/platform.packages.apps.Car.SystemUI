@@ -22,6 +22,8 @@ import static android.car.media.CarAudioManager.PRIMARY_AUDIO_ZONE;
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.annotation.DrawableRes;
 import android.annotation.Nullable;
 import android.app.Dialog;
@@ -312,12 +314,13 @@ public class CarVolumeDialogImpl
         mDialog.setOnShowListener(dialog -> {
             mListView.setTranslationY(-mListView.getHeight());
             mListView.setAlpha(0);
-            mListView.animate()
-                    .alpha(1)
-                    .translationY(0)
-                    .setDuration(LISTVIEW_ANIMATION_DURATION_IN_MILLIS)
-                    .setInterpolator(new SystemUIInterpolators.LogDecelerateInterpolator())
-                    .start();
+            PropertyValuesHolder pvhAlpha = PropertyValuesHolder.ofFloat(View.ALPHA, 1f);
+            PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f);
+            ObjectAnimator showAnimator = ObjectAnimator.ofPropertyValuesHolder(mListView, pvhAlpha,
+                    pvhY);
+            showAnimator.setDuration(LISTVIEW_ANIMATION_DURATION_IN_MILLIS);
+            showAnimator.setInterpolator(new SystemUIInterpolators.LogDecelerateInterpolator());
+            showAnimator.start();
         });
         mListView = mWindow.findViewById(R.id.volume_list);
         mListView.setOnHoverListener((v, event) -> {
@@ -400,26 +403,15 @@ public class CarVolumeDialogImpl
             return;
         }
 
-        mDismissing = true;
-        mListView.animate()
-                .alpha(0)
-                .translationY(-mListView.getHeight())
-                .setDuration(LISTVIEW_ANIMATION_DURATION_IN_MILLIS)
-                .setInterpolator(new SystemUIInterpolators.LogAccelerateInterpolator())
-                .withEndAction(() -> mHandler.postDelayed(() -> {
-                    if (DEBUG) {
-                        Log.d(TAG, "mDialog.dismiss()");
-                    }
-                    mDialog.dismiss();
-                    mDismissing = false;
-                    // if mExpandIcon is null that means user never clicked on the expanded arrow
-                    // which implies that the dialog is still not expanded. In that case we do
-                    // not want to reset the state
-                    if (mExpandIcon != null && mExpanded) {
-                        toggleDialogExpansion(/* isClicked = */ false);
-                    }
-                }, DISMISS_DELAY_IN_MILLIS))
-                .start();
+        PropertyValuesHolder pvhAlpha = PropertyValuesHolder.ofFloat(View.ALPHA, 0f);
+        PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y,
+                (float) -mListView.getHeight());
+        ObjectAnimator dismissAnimator = ObjectAnimator.ofPropertyValuesHolder(mListView, pvhAlpha,
+                pvhY);
+        dismissAnimator.setDuration(LISTVIEW_ANIMATION_DURATION_IN_MILLIS);
+        dismissAnimator.setInterpolator(new SystemUIInterpolators.LogAccelerateInterpolator());
+        dismissAnimator.addListener(new DismissAnimationListener());
+        dismissAnimator.start();
 
         Events.writeEvent(Events.EVENT_DISMISS_DIALOG, reason);
     }
@@ -619,6 +611,44 @@ public class CarVolumeDialogImpl
                 }
             }
             return false;
+        }
+    }
+
+    private final class DismissAnimationListener implements Animator.AnimatorListener {
+        @Override
+        public void onAnimationStart(Animator animation) {
+            mDismissing = true;
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            mHandler.postDelayed(() -> {
+                if (DEBUG) {
+                    Log.d(TAG, "mDialog.dismiss()");
+                }
+                mDialog.dismiss();
+                mDismissing = false;
+                // if mExpandIcon is null that means user never clicked on the expanded arrow
+                // which implies that the dialog is still not expanded. In that case we do
+                // not want to reset the state
+                if (mExpandIcon != null && mExpanded) {
+                    toggleDialogExpansion(/* isClicked = */ false);
+                }
+            }, DISMISS_DELAY_IN_MILLIS);
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+            // A canceled animation will also call onAnimationEnd so any necessary cleanup will
+            // already happen there
+            if (DEBUG) {
+                Log.d(TAG, "dismiss animation canceled");
+            }
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+            // no-op
         }
     }
 

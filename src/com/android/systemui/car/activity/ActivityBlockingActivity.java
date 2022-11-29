@@ -34,6 +34,7 @@ import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Slog;
@@ -403,11 +404,17 @@ public class ActivityBlockingActivity extends Activity {
         }
 
         int displayId = getDisplayId();
+        int userOnDisplay = getUserForDisplayId(displayId);
+        if (userOnDisplay == CarOccupantZoneManager.INVALID_USER_ID) {
+            Slog.e(TAG, "can not find user on display " + displayId
+                    + " to start Home");
+            finish();
+        }
+
         Intent startMain = new Intent(Intent.ACTION_MAIN);
 
         int driverDisplayId = mCarOccupantZoneManager.getDisplayIdForDriver(
                 CarOccupantZoneManager.DISPLAY_TYPE_MAIN);
-
         if (Log.isLoggable(TAG, Log.DEBUG)) {
             Slog.d(TAG, String.format("display id: %d, driver display id: %d",
                     displayId, driverDisplayId));
@@ -416,7 +423,7 @@ public class ActivityBlockingActivity extends Activity {
                 : Intent.CATEGORY_SECONDARY_HOME;
         startMain.addCategory(intentCategory);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
+        startActivityAsUser(startMain, UserHandle.of(userOnDisplay));
         finish();
     }
 
@@ -433,5 +440,26 @@ public class ActivityBlockingActivity extends Activity {
             mCarPackageManager.restartTask(mBlockedTaskId);
             finish();
         }
+    }
+
+    // TODO(b/241589812): Use getUserForDisplayId API from CarOccupantZoneManager.
+    private int getUserForDisplayId(int displayId) {
+        CarOccupantZoneManager.OccupantZoneInfo targetZoneInfo = null;
+        List<CarOccupantZoneManager.OccupantZoneInfo> occupantZoneInfos =
+                mCarOccupantZoneManager.getAllOccupantZones();
+        for (int index = 0; index < occupantZoneInfos.size(); index++) {
+            CarOccupantZoneManager.OccupantZoneInfo occupantZoneInfo = occupantZoneInfos.get(index);
+            List<Display> displays = mCarOccupantZoneManager.getAllDisplaysForOccupant(
+                    occupantZoneInfo);
+            for (int displayIndex = 0; displayIndex < displays.size(); displayIndex++) {
+                if (displays.get(displayIndex).getDisplayId() == displayId) {
+                    targetZoneInfo = occupantZoneInfo;
+                }
+            }
+        }
+        if (targetZoneInfo == null) {
+            return CarOccupantZoneManager.INVALID_USER_ID;
+        }
+        return mCarOccupantZoneManager.getUserForOccupant(targetZoneInfo);
     }
 }

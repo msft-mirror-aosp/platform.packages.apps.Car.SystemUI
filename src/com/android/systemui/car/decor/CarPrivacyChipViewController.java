@@ -31,6 +31,7 @@ import com.android.systemui.car.systembar.SystemBarConfigs;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.plugins.statusbar.StatusBarStateController;
+import com.android.systemui.privacy.PrivacyType;
 import com.android.systemui.shade.ShadeExpansionStateManager;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.events.PrivacyDotViewController;
@@ -55,6 +56,7 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
     private boolean mAreaVisible;
     private boolean mHasAnimation;
     private final @InsetsType int mBarType;
+    private long mDuration;
 
     @Inject
     public CarPrivacyChipViewController(
@@ -73,21 +75,71 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
                 R.bool.config_enableImmersivePrivacyChipAnimation);
         mBarType = InsetsState.toPublicType(SystemBarConfigs.BAR_TYPE_MAP[
                 context.getResources().getInteger(R.integer.config_privacyIndicatorLocation)]);
+        mDuration = Long.valueOf(
+                context.getResources().getInteger(R.integer.privacy_indicator_animation_duration));
     }
 
     @Override
     @UiThread
     public void updateDotView(ViewState state) {
-        // TODO(b/248145978): Add animation for transition.
         boolean shouldShow = state.shouldShowDot();
         View designatedCorner = state.getDesignatedCorner();
         if (mAreaVisible && shouldShow && designatedCorner != null) {
-            showDotView(designatedCorner, mHasAnimation);
+            showIndicator(state, mHasAnimation);
         } else {
             if (designatedCorner.getVisibility() == View.VISIBLE) {
-                hideDotView(designatedCorner, mHasAnimation);
+                hideIndicator(state, mHasAnimation);
             }
         }
+    }
+
+    @UiThread
+    private void showIndicator(ViewState viewState, boolean animate) {
+        View container = viewState.getDesignatedCorner();
+        container.setVisibility(View.VISIBLE);
+        container.setAlpha(1f);
+
+        View cameraView = container.findViewById(R.id.camera_view);
+        View micView = container.findViewById(R.id.mic_view);
+
+        String contentDescription = viewState.getContentDescription();
+        if (contentDescription.contains(PrivacyType.TYPE_CAMERA.getLogName())) {
+            updateViewVisibility(cameraView, View.VISIBLE, animate);
+        } else {
+            updateViewVisibility(cameraView, View.INVISIBLE, animate);
+        }
+
+        if (contentDescription.contains(PrivacyType.TYPE_MICROPHONE.getLogName())) {
+            updateViewVisibility(micView, View.VISIBLE, animate);
+        } else {
+            updateViewVisibility(micView, View.INVISIBLE, animate);
+        }
+
+        if (getShowingListener() != null) {
+            getShowingListener().onPrivacyDotShown(container);
+        }
+    }
+
+    @UiThread
+    private void hideIndicator(ViewState viewState, boolean animate) {
+        View container = viewState.getDesignatedCorner();
+
+        View cameraView = container.findViewById(R.id.immersive_privacy_camera);
+        View micView = container.findViewById(R.id.immersive_privacy_microphone);
+        updateViewVisibility(cameraView, View.INVISIBLE, animate);
+        updateViewVisibility(micView, View.INVISIBLE, animate);
+
+        container.setVisibility(View.INVISIBLE);
+        if (getShowingListener() != null) {
+            getShowingListener().onPrivacyDotHidden(container);
+        }
+    }
+
+    @UiThread
+    private void updateViewVisibility(View view, int visibility, boolean animate) {
+        // TODO(b/248145978): Add animation for transition.
+        view.setVisibility(visibility);
+        view.setAlpha(visibility == View.VISIBLE ? 1f : 0f);
     }
 
     @Override
@@ -109,5 +161,17 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
                 executor.execute(() -> updateDotView(getCurrentViewState()));
             }
         }
+    }
+
+    @Override
+    @UiThread
+    public void updateRotations(int rotation, int paddingTop) {
+        // Do nothing.
+    }
+
+    @Override
+    @UiThread
+    public void setCornerSizes(ViewState state) {
+        // Do nothing.
     }
 }

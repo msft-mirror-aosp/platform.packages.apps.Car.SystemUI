@@ -152,9 +152,9 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
             @InsetsType int requestedVisibleTypes,
             String packageName,
             LetterboxDetails[] letterboxDetails) {
-        boolean areaVisible = (mBarType & requestedVisibleTypes) != 0;
-        if (mAreaVisible != areaVisible) {
-            mAreaVisible = areaVisible;
+        boolean newAreaVisibility = (mBarType & requestedVisibleTypes) == 0;
+        if (newAreaVisibility != mAreaVisible) {
+            mAreaVisible = newAreaVisibility;
             DelayableExecutor executor = getUiExecutor();
             // Null check to avoid crashing caused by debug.disable_screen_decorations=true
             if (executor != null) {

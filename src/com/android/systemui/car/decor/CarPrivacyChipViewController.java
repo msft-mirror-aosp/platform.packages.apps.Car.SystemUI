@@ -99,8 +99,8 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
         container.setVisibility(View.VISIBLE);
         container.setAlpha(1f);
 
-        View cameraView = container.findViewById(R.id.camera_view);
-        View micView = container.findViewById(R.id.mic_view);
+        View cameraView = container.findViewById(R.id.immersive_privacy_camera);
+        View micView = container.findViewById(R.id.immersive_privacy_microphone);
 
         String contentDescription = viewState.getContentDescription();
         if (contentDescription.contains(PrivacyType.TYPE_CAMERA.getLogName())) {

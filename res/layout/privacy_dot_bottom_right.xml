@@ -22,7 +22,7 @@
     android:layout_width="wrap_content"
     android:layout_marginTop="@dimen/fullscreen_indicator_padding_vertical"
     android:layout_marginEnd="@dimen/fullscreen_indicator_padding_horizontal"
-    android:visibility="visible"
+    android:visibility="invisible"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="parent">
     <ImageView
@@ -33,7 +33,7 @@
         android:scaleType="center"
         android:src="@drawable/ic_mic_light"
         android:background="@drawable/privacy_chip_active_background_pill"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:layout_constraintEnd_toStartOf="@+id/camera_view"
         app:layout_constraintTop_toTopOf="parent"/>
 

@@ -562,6 +562,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="hvac_temperature_bar"/>
       <item type="id" name="hvac_temperature_text"/>
       <item type="id" name="icon"/>
+      <item type="id" name="immersive_privacy_camera"/>
+      <item type="id" name="immersive_privacy_microphone"/>
       <item type="id" name="inactive_background"/>
       <item type="id" name="inactive_selected_background"/>
       <item type="id" name="inout_container"/>
@@ -587,6 +589,9 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="passenger_hvac"/>
       <item type="id" name="phone_nav"/>
       <item type="id" name="primary_icon"/>
+      <item type="id" name="privacy_dot_bottom_left_container"/>
+      <item type="id" name="privacy_dot_bottom_right_container"/>
+      <item type="id" name="privacy_dot_top_left_container"/>
       <item type="id" name="privacy_dot_top_right_container"/>
       <item type="id" name="qc_bluetooth_footer_button"/>
       <item type="id" name="qc_bluetooth_status_icon"/>

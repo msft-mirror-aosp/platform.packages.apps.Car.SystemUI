@@ -358,7 +358,7 @@ public class SystemBarConfigs {
     @InsetsState.InternalInsetsType
     private int getSystemBarTypeBySide(@SystemBarSide int side) {
         return mSystemBarConfigMap.get(side) != null
-                ? mSystemBarConfigMap.get(side).getBarType() : null;
+                ? mSystemBarConfigMap.get(side).getBarType() : InsetsState.ITYPE_INVALID;
     }
 
     // On init, system bars are visible as long as they are enabled.

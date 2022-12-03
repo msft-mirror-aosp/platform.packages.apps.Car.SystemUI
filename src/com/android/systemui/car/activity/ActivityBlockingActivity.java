@@ -404,7 +404,7 @@ public class ActivityBlockingActivity extends Activity {
         }
 
         int displayId = getDisplayId();
-        int userOnDisplay = getUserForDisplayId(displayId);
+        int userOnDisplay = mCarOccupantZoneManager.getUserForDisplayId(displayId);
         if (userOnDisplay == CarOccupantZoneManager.INVALID_USER_ID) {
             Slog.e(TAG, "can not find user on display " + displayId
                     + " to start Home");
@@ -440,26 +440,5 @@ public class ActivityBlockingActivity extends Activity {
             mCarPackageManager.restartTask(mBlockedTaskId);
             finish();
         }
-    }
-
-    // TODO(b/241589812): Use getUserForDisplayId API from CarOccupantZoneManager.
-    private int getUserForDisplayId(int displayId) {
-        CarOccupantZoneManager.OccupantZoneInfo targetZoneInfo = null;
-        List<CarOccupantZoneManager.OccupantZoneInfo> occupantZoneInfos =
-                mCarOccupantZoneManager.getAllOccupantZones();
-        for (int index = 0; index < occupantZoneInfos.size(); index++) {
-            CarOccupantZoneManager.OccupantZoneInfo occupantZoneInfo = occupantZoneInfos.get(index);
-            List<Display> displays = mCarOccupantZoneManager.getAllDisplaysForOccupant(
-                    occupantZoneInfo);
-            for (int displayIndex = 0; displayIndex < displays.size(); displayIndex++) {
-                if (displays.get(displayIndex).getDisplayId() == displayId) {
-                    targetZoneInfo = occupantZoneInfo;
-                }
-            }
-        }
-        if (targetZoneInfo == null) {
-            return CarOccupantZoneManager.INVALID_USER_ID;
-        }
-        return mCarOccupantZoneManager.getUserForOccupant(targetZoneInfo);
     }
 }

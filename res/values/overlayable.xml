@@ -514,7 +514,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="ca_certs_subtitle"/>
       <item type="id" name="ca_certs_warning"/>
       <item type="id" name="camera_privacy_chip"/>
-      <item type="id" name="camera_view"/>
       <item type="id" name="car_nav_button_icon"/>
       <item type="id" name="car_nav_button_icon_image"/>
       <item type="id" name="car_nav_button_more_icon"/>
@@ -579,7 +578,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="max_width_guideline"/>
       <item type="id" name="mic_privacy_chip"/>
       <item type="id" name="mic_privacy_panel"/>
-      <item type="id" name="mic_view"/>
       <item type="id" name="nav_buttons"/>
       <item type="id" name="network_logging_disclosures"/>
       <item type="id" name="network_logging_subtitle"/>

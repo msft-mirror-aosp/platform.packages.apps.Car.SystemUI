@@ -83,6 +83,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="bool" name="config_enableHeadsUpNotificationWhenNotificationPanelOpen"/>
       <item type="bool" name="config_enableLeftSystemBar"/>
       <item type="bool" name="config_enableRightSystemBar"/>
+      <item type="bool" name="config_enableShellMainThread"/>
       <item type="bool" name="config_enableTopSystemBar"/>
       <item type="bool" name="config_hideBottomSystemBarForKeyboard"/>
       <item type="bool" name="config_hideLeftSystemBarForKeyboard"/>
@@ -93,6 +94,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="bool" name="config_notif_panel_inset_by_right_systembar"/>
       <item type="bool" name="config_notif_panel_inset_by_top_systembar"/>
       <item type="bool" name="config_profile_panel_disabled_while_driving"/>
+      <item type="bool" name="config_registerShellTaskOrganizerOnInit"/>
       <item type="bool" name="config_systemBarButtonsDraggable"/>
       <item type="color" name="activity_blocking_action_button_background_color"/>
       <item type="color" name="activity_blocking_activity_background"/>
@@ -147,6 +149,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="privacy_chip_dark_icon_color"/>
       <item type="color" name="privacy_chip_indicator_color"/>
       <item type="color" name="privacy_chip_indicator_outside_stroke_color"/>
+      <item type="color" name="privacy_chip_light_icon_color"/>
       <item type="color" name="status_bar_background_color"/>
       <item type="color" name="status_icon_highlighted_color"/>
       <item type="color" name="status_icon_not_highlighted_color"/>
@@ -154,6 +157,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="status_icon_selected_button_color"/>
       <item type="color" name="system_bar_background_opaque"/>
       <item type="color" name="system_bar_background_pill_color"/>
+      <item type="color" name="system_bar_clock_text_color"/>
       <item type="color" name="system_bar_icon_color"/>
       <item type="color" name="system_bar_icon_color_with_selection"/>
       <item type="color" name="system_bar_icon_selected_color"/>
@@ -399,6 +403,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_ic_hvac"/>
       <item type="drawable" name="car_ic_hvac_selected"/>
       <item type="drawable" name="car_ic_keyboard_arrow_down"/>
+      <item type="drawable" name="car_ic_logout"/>
       <item type="drawable" name="car_ic_managed_device"/>
       <item type="drawable" name="car_ic_music"/>
       <item type="drawable" name="car_ic_music_mute"/>
@@ -459,6 +464,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_mic_light"/>
       <item type="drawable" name="ic_mic_off_dark"/>
       <item type="drawable" name="ic_mic_off_light"/>
+      <item type="drawable" name="ic_phone"/>
       <item type="drawable" name="ic_rear_defroster_off"/>
       <item type="drawable" name="ic_rear_defroster_on"/>
       <item type="drawable" name="ic_recycle_air_off"/>
@@ -483,6 +489,10 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="system_bar_pill_rotary_background"/>
       <item type="drawable" name="temperature_bar_background"/>
       <item type="drawable" name="volume_dialog_background"/>
+      <item type="fraction" name="celsius_temperature_increment"/>
+      <item type="fraction" name="celsius_temperature_round"/>
+      <item type="fraction" name="fahrenheit_temperature_increment"/>
+      <item type="fraction" name="fahrenheit_temperature_round"/>
       <item type="id" name="ac_button"/>
       <item type="id" name="ac_master_switch"/>
       <item type="id" name="action_button_container"/>
@@ -556,6 +566,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="manage_button"/>
       <item type="id" name="max_width_guideline"/>
       <item type="id" name="mic_privacy_chip"/>
+      <item type="id" name="mic_privacy_panel"/>
       <item type="id" name="nav_buttons"/>
       <item type="id" name="network_logging_disclosures"/>
       <item type="id" name="network_logging_subtitle"/>
@@ -570,12 +581,17 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="phone_nav"/>
       <item type="id" name="primary_icon"/>
       <item type="id" name="qc_bluetooth_footer_button"/>
+      <item type="id" name="qc_bluetooth_status_icon"/>
       <item type="id" name="qc_camera_footer_button"/>
       <item type="id" name="qc_connectivity_footer_button"/>
       <item type="id" name="qc_display_footer_button"/>
+      <item type="id" name="qc_display_status_icon"/>
       <item type="id" name="qc_entry_points_container"/>
+      <item type="id" name="qc_location_status_icon"/>
       <item type="id" name="qc_mic_footer_button"/>
+      <item type="id" name="qc_phone_call_status_icon"/>
       <item type="id" name="qc_profile_footer_button"/>
+      <item type="id" name="qc_signal_status_icon"/>
       <item type="id" name="qs_car_top_bar"/>
       <item type="id" name="read_only_icons_container"/>
       <item type="id" name="rear_defroster_button"/>
@@ -620,7 +636,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="integer" name="car_volume_dialog_display_expanded_normal_timeout"/>
       <item type="integer" name="car_volume_dialog_display_hovering_timeout"/>
       <item type="integer" name="car_volume_dialog_display_normal_timeout"/>
-      <item type="integer" name="celsius_increment_fraction"/>
       <item type="integer" name="config_bottomSystemBarType"/>
       <item type="integer" name="config_bottomSystemBarZOrder"/>
       <item type="integer" name="config_finalNotificationBackgroundAlpha"/>
@@ -632,7 +647,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="integer" name="config_topSystemBarType"/>
       <item type="integer" name="config_topSystemBarZOrder"/>
       <item type="integer" name="config_userSwitchTransitionViewShownTimeoutMs"/>
-      <item type="integer" name="fahrenheit_increment_fraction"/>
       <item type="integer" name="hvac_global_area_id"/>
       <item type="integer" name="hvac_panel_settle_close_percentage"/>
       <item type="integer" name="hvac_seat_heat_level_count"/>
@@ -666,6 +680,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="device_management_dialog"/>
       <item type="layout" name="fan_direction"/>
       <item type="layout" name="fan_speed"/>
+      <item type="layout" name="hvac_panel"/>
       <item type="layout" name="hvac_panel_container"/>
       <item type="layout" name="hvac_panel_handle_bar"/>
       <item type="layout" name="hvac_temperature_bar_overlay"/>
@@ -700,12 +715,14 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="config_appGridComponentName"/>
       <item type="string" name="config_notificationPanelViewMediator"/>
       <item type="string" name="config_statusBarComponent"/>
-      <item type="string" name="config_systemUIFactoryComponent"/>
       <item type="string" name="debug_button_text"/>
+      <item type="string" name="end_session"/>
       <item type="string" name="exit_button_close_application"/>
       <item type="string" name="exit_button_go_back"/>
       <item type="string" name="fan_speed_max"/>
       <item type="string" name="fan_speed_off"/>
+      <item type="string" name="hvac_decrease_button_label"/>
+      <item type="string" name="hvac_increase_button_label"/>
       <item type="string" name="hvac_max_text"/>
       <item type="string" name="hvac_min_text"/>
       <item type="string" name="hvac_null_temp_text"/>
@@ -737,6 +754,20 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="sensor_privacy_start_use_camera_dialog_title"/>
       <item type="string" name="sensor_privacy_start_use_mic_dialog_content"/>
       <item type="string" name="sensor_privacy_start_use_mic_dialog_title"/>
+      <item type="string" name="status_icon_bluetooth_connected"/>
+      <item type="string" name="status_icon_bluetooth_disconnected"/>
+      <item type="string" name="status_icon_bluetooth_off"/>
+      <item type="string" name="status_icon_display_status"/>
+      <item type="string" name="status_icon_signal_hotspot"/>
+      <item type="string" name="status_icon_signal_mobile"/>
+      <item type="string" name="status_icon_signal_wifi"/>
+      <item type="string" name="system_bar_applications_label"/>
+      <item type="string" name="system_bar_climate_control_label"/>
+      <item type="string" name="system_bar_home_label"/>
+      <item type="string" name="system_bar_maps_label"/>
+      <item type="string" name="system_bar_media_label"/>
+      <item type="string" name="system_bar_notifications_label"/>
+      <item type="string" name="system_bar_phone_label"/>
       <item type="string" name="user_add_profile_title"/>
       <item type="string" name="user_add_user_message_setup"/>
       <item type="string" name="user_add_user_message_update"/>

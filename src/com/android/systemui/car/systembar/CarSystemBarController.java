@@ -28,8 +28,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 
+import com.android.car.ui.FocusParkingView;
+import com.android.car.ui.utils.ViewUtils;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
@@ -77,6 +80,15 @@ public class CarSystemBarController {
     private final boolean mShowLeft;
     private final boolean mShowRight;
     private final int mPrivacyChipXOffset;
+
+    @IdRes
+    private int mTopFocusedViewId;
+    @IdRes
+    private int mBottomFocusedViewId;
+    @IdRes
+    private int mLeftFocusedViewId;
+    @IdRes
+    private int mRightFocusedViewId;
 
     private final Set<View.OnTouchListener> mTopBarTouchListeners = new ArraySet<>();
     private final Set<View.OnTouchListener> mBottomBarTouchListeners = new ArraySet<>();
@@ -165,6 +177,16 @@ public class CarSystemBarController {
         mUserNameViewControllerLazy.get().removeAll();
         mMicPrivacyChipViewControllerLazy.get().removeAll();
         mCameraPrivacyChipViewControllerLazy.get().removeAll();
+
+        if (mMicPanelController != null) {
+            mMicPanelController.destroyPanel();
+        }
+        if (mCameraPanelController != null) {
+            mCameraPanelController.destroyPanel();
+        }
+        if (mProfilePanelController != null) {
+            mProfilePanelController.destroyPanel();
+        }
         mMicPanelController = null;
         mCameraPanelController = null;
         mProfilePanelController = null;
@@ -352,9 +374,10 @@ public class CarSystemBarController {
         if (isSetUp) {
             // We do not want the privacy chips or the profile picker to be clickable in
             // unprovisioned mode.
-            setupSensorQcPanel(mMicPanelController, R.id.mic_privacy_chip, R.layout.qc_mic_panel);
-            setupSensorQcPanel(mCameraPanelController, R.id.camera_privacy_chip,
-                    R.layout.qc_camera_panel);
+            mMicPanelController = setupSensorQcPanel(mMicPanelController, R.id.mic_privacy_chip,
+                    R.layout.qc_mic_panel);
+            mCameraPanelController = setupSensorQcPanel(mCameraPanelController,
+                    R.id.camera_privacy_chip, R.layout.qc_camera_panel);
             setupProfilePanel();
         }
 
@@ -415,8 +438,9 @@ public class CarSystemBarController {
         mCameraPrivacyChipViewControllerLazy.get().addPrivacyChipView(view);
     }
 
-    private void setupSensorQcPanel(@Nullable StatusIconPanelController panelController,
-            int chipId, @LayoutRes int panelLayoutRes) {
+    private StatusIconPanelController setupSensorQcPanel(
+            @Nullable StatusIconPanelController panelController, int chipId,
+            @LayoutRes int panelLayoutRes) {
         if (panelController == null) {
             panelController = new StatusIconPanelController(mContext, mCarServiceProvider,
                     mBroadcastDispatcher, mConfigurationController);
@@ -437,6 +461,8 @@ public class CarSystemBarController {
         panelController.attachPanel(mTopView.requireViewById(chipId), panelLayoutRes,
                 R.dimen.car_sensor_qc_panel_width, mPrivacyChipXOffset,
                 panelController.getDefaultYOffset(), Gravity.TOP | Gravity.END);
+
+        return panelController;
     }
 
     private void setupProfilePanel() {
@@ -653,5 +679,57 @@ public class CarSystemBarController {
             barViews.add(mRightView);
         }
         return barViews;
+    }
+
+    /** Gets the selected Quick Controls class name. */
+    protected String getSelectedQuickControlsClassName() {
+        return mCarSystemBarViewFactory.getSelectedQuickControlsClassName();
+    }
+
+    /** Calls onClick for the given Quick Controls class name. */
+    protected void callQuickControlsOnClickFromClassName(String clsName) {
+        mCarSystemBarViewFactory.callQuickControlsOnClickFromClassName(clsName);
+    }
+
+    /** Resets the cached Views. */
+    protected void resetCache() {
+        mCarSystemBarViewFactory.resetCache();
+    }
+
+    /** Stores the ID of the View that is currently focused and hides the focus. */
+    protected void cacheAndHideFocus() {
+        mTopFocusedViewId = cacheAndHideFocus(mTopView);
+        if (mTopFocusedViewId != View.NO_ID) return;
+        mBottomFocusedViewId = cacheAndHideFocus(mBottomView);
+        if (mBottomFocusedViewId != View.NO_ID) return;
+        mLeftFocusedViewId = cacheAndHideFocus(mLeftView);
+        if (mLeftFocusedViewId != View.NO_ID) return;
+        mRightFocusedViewId = cacheAndHideFocus(mRightView);
+    }
+
+    @VisibleForTesting
+    int cacheAndHideFocus(@Nullable View rootView) {
+        if (rootView == null) return View.NO_ID;
+        View focusedView = rootView.findFocus();
+        if (focusedView == null || focusedView instanceof FocusParkingView) return View.NO_ID;
+        int focusedViewId = focusedView.getId();
+        ViewUtils.hideFocus(rootView);
+        return focusedViewId;
+    }
+
+    /** Requests focus on the View that matches the cached ID. */
+    protected void restoreFocus() {
+        if (restoreFocus(mTopView, mTopFocusedViewId)) return;
+        if (restoreFocus(mBottomView, mBottomFocusedViewId)) return;
+        if (restoreFocus(mLeftView, mLeftFocusedViewId)) return;
+        restoreFocus(mRightView, mRightFocusedViewId);
+    }
+
+    private boolean restoreFocus(@Nullable View rootView, @IdRes int viewToFocusId) {
+        if (rootView == null || viewToFocusId == View.NO_ID) return false;
+        View focusedView = rootView.findViewById(viewToFocusId);
+        if (focusedView == null) return false;
+        focusedView.requestFocus();
+        return true;
     }
 }

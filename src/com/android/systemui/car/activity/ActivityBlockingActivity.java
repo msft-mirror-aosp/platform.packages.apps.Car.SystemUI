@@ -17,9 +17,8 @@ package com.android.systemui.car.activity;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.ActivityTaskManager.RootTaskInfo;
-import android.app.IActivityManager;
 import android.car.Car;
+import android.car.app.CarActivityManager;
 import android.car.content.pm.CarPackageManager;
 import android.car.drivingstate.CarUxRestrictions;
 import android.car.drivingstate.CarUxRestrictionsManager;
@@ -33,7 +32,6 @@ import android.hardware.display.DisplayManager;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Slog;
@@ -68,12 +66,12 @@ public class ActivityBlockingActivity extends Activity {
     private Car mCar;
     private CarUxRestrictionsManager mUxRManager;
     private CarPackageManager mCarPackageManager;
+    private CarActivityManager mCarActivityManager;
 
     private Button mExitButton;
     private Button mToggleDebug;
 
     private int mBlockedTaskId;
-    private IActivityManager mAm;
 
     private final View.OnClickListener mOnExitButtonClickedListener =
             v -> {
@@ -99,7 +97,6 @@ public class ActivityBlockingActivity extends Activity {
         setContentView(R.layout.activity_blocking);
 
         mExitButton = findViewById(R.id.exit_button);
-        mAm = ActivityManager.getService();
 
         // Listen to the CarUxRestrictions so this blocking activity can be dismissed when the
         // restrictions are lifted.
@@ -112,6 +109,8 @@ public class ActivityBlockingActivity extends Activity {
                     }
                     mCarPackageManager = (CarPackageManager) car.getCarManager(
                             Car.PACKAGE_SERVICE);
+                    mCarActivityManager = (CarActivityManager) car.getCarManager(
+                            Car.CAR_ACTIVITY_SERVICE);
                     mUxRManager = (CarUxRestrictionsManager) car.getCarManager(
                             Car.CAR_UX_RESTRICTION_SERVICE);
                     // This activity would have been launched only in a restricted state.
@@ -146,8 +145,8 @@ public class ActivityBlockingActivity extends Activity {
         String blockedActivity = getIntent().getStringExtra(
                 CarPackageManager.BLOCKING_INTENT_EXTRA_BLOCKED_ACTIVITY_NAME);
         if (!TextUtils.isEmpty(blockedActivity)) {
-            if (isTopActivityBehindAbaDistractionOptimized()) {
-                Slog.e(TAG, "Top activity is already DO, so finishing");
+            if (areAllVisibleActivitiesDistractionOptimised()) {
+                Slog.e(TAG, "All visible activities are already DO, so finishing");
                 finish();
                 return;
             }
@@ -258,59 +257,40 @@ public class ActivityBlockingActivity extends Activity {
 
     /**
      * It is possible that the stack info has changed between when the intent to launch this
-     * activity was initiated and when this activity is started. Check whether the activity behind
-     * the ABA is distraction optimized.
+     * activity was initiated and when this activity is started. Check whether all the visible
+     * activities are distraction optimized.
      */
-    private boolean isTopActivityBehindAbaDistractionOptimized() {
-        List<RootTaskInfo> taskInfos;
-        try {
-            taskInfos = mAm.getAllRootTaskInfos();
-        } catch (RemoteException e) {
-            Slog.e(TAG, "Unable to get stack info from ActivityManager");
-            // assume that the state is still correct, the activity behind is not DO
-            return false;
-        }
-
-        RootTaskInfo topStackBehindAba = null;
-        for (RootTaskInfo taskInfo : taskInfos) {
+    private boolean areAllVisibleActivitiesDistractionOptimised() {
+        List<ActivityManager.RunningTaskInfo> visibleTasks;
+        visibleTasks = mCarActivityManager.getVisibleTasks();
+        for (int i = visibleTasks.size() - 1; i >= 0; i--) {
+            ActivityManager.RunningTaskInfo taskInfo = visibleTasks.get(i);
             if (taskInfo.displayId != getDisplayId()) {
                 // ignore stacks on other displays
                 continue;
             }
 
             if (getComponentName().equals(taskInfo.topActivity)) {
-                // ignore stack with the blocking activity
+                // skip the ActivityBlockingActivity itself
                 continue;
             }
 
-            if (!taskInfo.visible) {
-                // ignore stacks that aren't visible
-                continue;
-            }
-
-            if (topStackBehindAba == null || topStackBehindAba.position < taskInfo.position) {
-                topStackBehindAba = taskInfo;
+            if (taskInfo.topActivity != null) {
+                boolean isDo = mCarPackageManager.isActivityDistractionOptimized(
+                        taskInfo.topActivity.getPackageName(),
+                        taskInfo.topActivity.getClassName());
+                if (Log.isLoggable(TAG, Log.DEBUG)) {
+                    Slog.d(TAG,
+                            String.format("Activity (%s) is DO: %s", taskInfo.topActivity, isDo));
+                }
+                if (!isDo) {
+                    return false;
+                }
             }
         }
 
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Slog.d(TAG, String.format("Top stack behind ABA is: %s", topStackBehindAba));
-        }
-
-        if (topStackBehindAba != null && topStackBehindAba.topActivity != null) {
-            boolean isDo = mCarPackageManager.isActivityDistractionOptimized(
-                    topStackBehindAba.topActivity.getPackageName(),
-                    topStackBehindAba.topActivity.getClassName());
-            if (Log.isLoggable(TAG, Log.DEBUG)) {
-                Slog.d(TAG,
-                        String.format("Top activity (%s) is DO: %s", topStackBehindAba.topActivity,
-                                isDo));
-            }
-            return isDo;
-        }
-
-        // unknown top stack / activity, default to considering it non-DO
-        return false;
+        // No visible non-DO activity found.
+        return true;
     }
 
     private void displayDebugInfo() {

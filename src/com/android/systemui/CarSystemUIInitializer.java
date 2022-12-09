@@ -11,7 +11,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
 
 package com.android.systemui;
@@ -29,21 +29,28 @@ import java.util.Optional;
 /**
  * Class factory to provide car specific SystemUI components.
  */
-public class CarSystemUIFactory extends SystemUIFactory {
+public class CarSystemUIInitializer extends SystemUIInitializer {
+    public CarSystemUIInitializer(Context context) {
+        super(context);
+    }
+
     @Override
-    protected GlobalRootComponent buildGlobalRootComponent(Context context) {
-        return DaggerCarGlobalRootComponent.builder()
-                .context(context)
-                .build();
+    protected GlobalRootComponent.Builder getGlobalRootComponentBuilder() {
+        return DaggerCarGlobalRootComponent.builder();
     }
 
     @Override
     protected SysUIComponent.Builder prepareSysUIComponentBuilder(
             SysUIComponent.Builder sysUIBuilder, WMComponent wm) {
         CarWMComponent carWm = (CarWMComponent) wm;
+        initWmComponents(carWm);
         boolean isSystemUser = UserHandle.myUserId() == UserHandle.USER_SYSTEM;
         return ((CarSysUIComponent.Builder) sysUIBuilder).setRootTaskDisplayAreaOrganizer(
                 isSystemUser ? Optional.of(carWm.getRootTaskDisplayAreaOrganizer())
                         : Optional.empty());
+    }
+
+    private void initWmComponents(CarWMComponent carWm) {
+        carWm.getDisplaySystemBarsController();
     }
 }

@@ -21,11 +21,6 @@ import android.content.Context;
 import android.content.pm.UserInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BlendMode;
-import android.graphics.BlendModeColorFilter;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.UserHandle;
@@ -184,35 +179,38 @@ public class UserIconProvider {
      * @return Default user icon
      */
     private Bitmap getUserDefaultIcon(Resources resources, UserInfo userInfo) {
-        Drawable icon = resources.getDrawable(
-                R.drawable.car_user_icon_circle_background, /*Theme=*/ null).mutate();
-        icon.setBounds(/*left=*/ 0, /*top=*/ 0,
-                icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
-        // Set color for the background of the user icon.
-        int backgroundColor = resources.getColor(
-                USER_BACKGROUND_ICON_COLORS[userInfo.id % USER_BACKGROUND_ICON_COLORS.length]);
-        icon.setColorFilter(new BlendModeColorFilter(backgroundColor, BlendMode.SRC_IN));
-
-        Bitmap userIconBitmap = UserIcons.convertToBitmap(icon);
-
-        // Set the first letter of user name as user icon.
-        String firstLetter = userInfo.name.substring(/*beginIndex=*/ 0, /*endIndex=*/ 1);
-        Paint paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(resources.getColor(
-                USER_NAME_ICON_COLORS[userInfo.id % USER_NAME_ICON_COLORS.length]));
-        paint.setTextSize(resources.getDimension(R.dimen.user_icon_text_size));
-        paint.setTextAlign(Paint.Align.LEFT);
-
-        // Draw text in center of the canvas.
-        Canvas canvas = new Canvas(userIconBitmap);
-        Rect textBounds = new Rect();
-        paint.getTextBounds(firstLetter, /*start=*/0, /*end=*/1, textBounds);
-        float x = canvas.getWidth() * 0.5f - textBounds.exactCenterX();
-        float y = canvas.getHeight() * 0.5f - textBounds.exactCenterY();
-        canvas.drawText(firstLetter, x, y, paint);
-
-        return userIconBitmap;
+        return UserIcons.convertToBitmap(
+                UserIcons.getDefaultUserIcon(resources, userInfo.id, /* light= */ false));
+//        TODO(b/268396237): Update user icons everywhere
+//        Drawable icon = resources.getDrawable(
+//                R.drawable.car_user_icon_circle_background, /*Theme=*/ null).mutate();
+//        icon.setBounds(/*left=*/ 0, /*top=*/ 0,
+//                icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
+//        // Set color for the background of the user icon.
+//        int backgroundColor = resources.getColor(
+//                USER_BACKGROUND_ICON_COLORS[userInfo.id % USER_BACKGROUND_ICON_COLORS.length]);
+//        icon.setColorFilter(new BlendModeColorFilter(backgroundColor, BlendMode.SRC_IN));
+//
+//        Bitmap userIconBitmap = UserIcons.convertToBitmap(icon);
+//
+//        // Set the first letter of user name as user icon.
+//        String firstLetter = userInfo.name.substring(/*beginIndex=*/ 0, /*endIndex=*/ 1);
+//        Paint paint = new Paint();
+//        paint.setStyle(Paint.Style.FILL);
+//        paint.setColor(resources.getColor(
+//                USER_NAME_ICON_COLORS[userInfo.id % USER_NAME_ICON_COLORS.length]));
+//        paint.setTextSize(resources.getDimension(R.dimen.user_icon_text_size));
+//        paint.setTextAlign(Paint.Align.LEFT);
+//
+//        // Draw text in center of the canvas.
+//        Canvas canvas = new Canvas(userIconBitmap);
+//        Rect textBounds = new Rect();
+//        paint.getTextBounds(firstLetter, /*start=*/0, /*end=*/1, textBounds);
+//        float x = canvas.getWidth() * 0.5f - textBounds.exactCenterX();
+//        float y = canvas.getHeight() * 0.5f - textBounds.exactCenterY();
+//        canvas.drawText(firstLetter, x, y, paint);
+//
+//        return userIconBitmap;
     }
 
     private Bitmap getGuestUserDefaultIcon(Resources resources) {

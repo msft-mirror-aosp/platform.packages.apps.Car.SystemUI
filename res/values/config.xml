@@ -199,4 +199,9 @@
     <bool name="config_enableImmersivePrivacyChip">true</bool>
     <!-- enable animation for the privacy chip indicator in full screen mode. -->
     <bool name="config_enableImmersivePrivacyChipAnimation">true</bool>
+
+    <!-- Animation duration (in milliseconds) when dismissing display input lock icon. -->
+    <integer name="config_displayInputLockIconAnimDuration">250</integer>
+    <!-- The number of milliseconds before the display input lock icon auto-dismisses. -->
+    <integer name="config_displayInputLockIconDismissDelay">250</integer>
 </resources>

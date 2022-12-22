@@ -63,7 +63,7 @@ public abstract class CarMultiUserUtilsModule {
     ) {
         UserHandle processUser = Process.myUserHandle();
         boolean isSecondaryUserSystemUI =
-                userManager.isUsersOnSecondaryDisplaysSupported()
+                userManager.isVisibleBackgroundUsersSupported()
                         && !processUser.isSystem()
                         && processUser.getIdentifier() != ActivityManager.getCurrentUser();
         int startingUser = isSecondaryUserSystemUI

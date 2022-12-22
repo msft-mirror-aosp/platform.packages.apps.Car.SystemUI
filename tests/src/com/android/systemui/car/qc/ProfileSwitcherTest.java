@@ -106,7 +106,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(1000));
         when(mUserManager.getAliveUsers()).thenReturn(mAliveUsers);
         when(mUserManager.getUserSwitchability(any())).thenReturn(SWITCHABILITY_STATUS_OK);
-        when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(false);
+        when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(false);
         mockUmGetVisibleUsers(mUserManager, 1000);
         when(mDevicePolicyManager.isDeviceManaged()).thenReturn(false);
         when(mDevicePolicyManager.isOrganizationOwnedDeviceWithManagedProfile()).thenReturn(false);
@@ -348,7 +348,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
     @Test
     public void onUserPressed_alreadyStartedUser_doesNothing() {
-        when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(true);
+        when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(true);
         int currentUserId = 1000;
         int secondaryUserId = 1001;
         UserInfo user1 = generateUser(currentUserId, "User1", /* supportsSwitch= */ true,
@@ -366,8 +366,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         // Verify nothing happens
         verify(mCarUserManager, never()).switchUser(secondaryUserId);
         verify(mActivityManager, never()).stopUser(anyInt(), anyBoolean());
-        verify(mActivityManager, never()).startUserInBackgroundOnSecondaryDisplay(anyInt(),
-                anyInt());
+        verify(mActivityManager, never()).startUserInBackgroundVisibleOnDisplay(anyInt(), anyInt());
     }
 
     @Test
@@ -376,7 +375,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         int secondaryUserId = 1001;
         int newUserId = 1002;
         doReturn(true).when(() -> CarSystemUIUserUtil.isSecondaryMUMDSystemUI(any()));
-        when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(true);
+        when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(true);
         when(mUserTracker.getUserId()).thenReturn(secondaryUserId);
         when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(secondaryUserId));
         UserInfo user1 = generateUser(currentUserId, "User1", /* supportsSwitch= */ true,
@@ -395,8 +394,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         QCRow newUserRow = rows.get(2);
         newUserRow.getActionHandler().onAction(newUserRow, mContext, new Intent());
         verify(mActivityManager).stopUser(eq(secondaryUserId), anyBoolean());
-        verify(mActivityManager).startUserInBackgroundOnSecondaryDisplay(eq(newUserId),
-                anyInt());
+        verify(mActivityManager).startUserInBackgroundVisibleOnDisplay(eq(newUserId), anyInt());
     }
 
     private List<QCRow> getProfileRows() {

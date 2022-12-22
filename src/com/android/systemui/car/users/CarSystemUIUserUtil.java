@@ -62,7 +62,7 @@ public final class CarSystemUIUserUtil {
     public static boolean isSecondaryMUMDSystemUI(Context context) {
         UserManager userManager = context.getSystemService(UserManager.class);
         UserHandle myUserHandle = Process.myUserHandle();
-        return userManager.isUsersOnSecondaryDisplaysSupported()
+        return userManager.isVisibleBackgroundUsersSupported()
                 && !myUserHandle.isSystem()
                 && myUserHandle.getIdentifier() != ActivityManager.getCurrentUser();
     }

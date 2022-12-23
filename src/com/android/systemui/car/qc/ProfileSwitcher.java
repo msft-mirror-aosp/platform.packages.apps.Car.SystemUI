@@ -256,7 +256,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         if (mUserTracker.getUserId() == userId) {
             return;
         }
-        if (mUserManager.isVisibleBackgroundUsersSupported()) {
+        if (mUserManager.isUsersOnSecondaryDisplaysSupported()) {
             if (mUserManager.getVisibleUsers().stream().anyMatch(
                     userHandle -> userHandle.getIdentifier() == userId)) {
                 // TODO_MD - finalize behavior for non-switchable users
@@ -297,7 +297,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             Log.w(TAG, "Cound not stop user " + userId);
             return;
         }
-        am.startUserInBackgroundVisibleOnDisplay(userId, mContext.getDisplayId());
+        am.startUserInBackgroundOnSecondaryDisplay(userId, mContext.getDisplayId());
     }
 
     private void logoutUser() {

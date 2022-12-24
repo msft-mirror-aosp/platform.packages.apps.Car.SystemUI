@@ -119,14 +119,14 @@ public class CarSystemUIUserUtilTest extends SysuiTestCase {
 
     @Test
     public void isSecondaryMUMDSystemUI_usersOnSecondaryDisplaysNotSupported_returnsFalse() {
-        when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(false);
+        when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(false);
 
         assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)).isFalse();
     }
 
     @Test
     public void isSecondaryMUMDSystemUI_systemUser_returnsFalse() {
-        when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(true);
+        when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(true);
         when(Process.myUserHandle()).thenReturn(UserHandle.SYSTEM);
 
         assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)).isFalse();
@@ -134,7 +134,7 @@ public class CarSystemUIUserUtilTest extends SysuiTestCase {
 
     @Test
     public void isSecondaryMUMDSystemUI_currentUser_returnsFalse() {
-        when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(true);
+        when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(true);
         when(Process.myUserHandle()).thenReturn(UserHandle.of(mActivityManagerTestUser));
 
         assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)).isFalse();
@@ -142,7 +142,7 @@ public class CarSystemUIUserUtilTest extends SysuiTestCase {
 
     @Test
     public void isSecondaryMUMDSystemUI_isSecondaryUser_returnsTrue() {
-        when(mUserManager.isUsersOnSecondaryDisplaysSupported()).thenReturn(true);
+        when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(true);
         when(Process.myUserHandle()).thenReturn(mUserHandle);
 
         assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)).isTrue();

@@ -53,7 +53,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 style="@style/QCFooterButtonStyle"
                 android:text="@string/mic_privacy_chip_microphone_settings"
-                app:intent="intent:#Intent;component=com.android.car.settings/.common.CarSettingActivities$PrivacySettingsActivity;launchFlags=0x08080000;end"
+                app:intent="intent:#Intent;component=com.android.car.settings/.common.CarSettingActivities$PrivacySettingsActivity;launchFlags=0x14008000;end"
                 app:disableWhileDriving="true"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.android.car.ui.FocusArea>

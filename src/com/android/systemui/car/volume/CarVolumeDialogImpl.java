@@ -28,6 +28,7 @@ import android.annotation.DrawableRes;
 import android.annotation.Nullable;
 import android.app.Dialog;
 import android.app.KeyguardManager;
+import android.app.UiModeManager;
 import android.car.Car;
 import android.car.CarOccupantZoneManager;
 import android.car.media.CarAudioManager;
@@ -36,6 +37,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
 import android.graphics.Color;
@@ -112,6 +114,7 @@ public class CarVolumeDialogImpl
     private final CarServiceProvider mCarServiceProvider;
     private final ConfigurationController mConfigurationController;
     private final UserTracker mUserTracker;
+    private final UiModeManager mUiModeManager;
 
     private Window mWindow;
     private CustomDialog mDialog;
@@ -126,6 +129,7 @@ public class CarVolumeDialogImpl
     private boolean mExpanded;
     private View mExpandIcon;
     private boolean mHomeButtonPressedBroadcastReceiverRegistered;
+    private boolean mIsUiModeNight;
 
     private final CarAudioManager.CarVolumeCallback mVolumeChangeCallback =
             new CarAudioManager.CarVolumeCallback() {
@@ -254,6 +258,8 @@ public class CarVolumeDialogImpl
         mExpHoveringTimeout = mContext.getResources().getInteger(
                 R.integer.car_volume_dialog_display_expanded_hovering_timeout);
         mConfigurationController = configurationController;
+        mUiModeManager = mContext.getSystemService(UiModeManager.class);
+        mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
     }
 
     private static int getSeekbarValue(CarAudioManager carAudioManager, int volumeZoneId,
@@ -308,6 +314,20 @@ public class CarVolumeDialogImpl
         if (mListView != null) {
             mListView.setLayoutDirection(
                     isLayoutRtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
+        }
+    }
+
+    @Override
+    public void onConfigChanged(Configuration newConfig) {
+        ConfigurationController.ConfigurationListener.super.onConfigChanged(newConfig);
+        boolean isConfigNightMode = newConfig.isNightModeActive();
+
+        if (isConfigNightMode != mIsUiModeNight) {
+            mIsUiModeNight = isConfigNightMode;
+            mUiModeManager.setNightModeActivated(mIsUiModeNight);
+            // Call notifyDataSetChanged to force trigger the mVolumeItemsAdapter#onBindViewHolder
+            // and reset items background color. notify() or invalidate() don't work here.
+            mVolumeItemsAdapter.notifyDataSetChanged();
         }
     }
 

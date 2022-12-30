@@ -61,6 +61,8 @@ public class CarSystemBarView extends LinearLayout {
     private final boolean mConsumeTouchWhenPanelOpen;
     private final boolean mButtonsDraggable;
 
+    private CarSystemBarButton mHomeButton;
+    private CarSystemBarButton mPassengerHomeButton;
     private View mNavButtons;
     private CarSystemBarButton mNotificationsButton;
     private HvacButton mHvacButton;
@@ -83,6 +85,8 @@ public class CarSystemBarView extends LinearLayout {
 
     @Override
     public void onFinishInflate() {
+        mHomeButton = findViewById(R.id.home);
+        mPassengerHomeButton = findViewById(R.id.passenger_home);
         mNavButtons = findViewById(R.id.nav_buttons);
         mLockScreenButtons = findViewById(R.id.lock_screen_nav_buttons);
         mOcclusionButtons = findViewById(R.id.occlusion_buttons);
@@ -100,6 +104,18 @@ public class CarSystemBarView extends LinearLayout {
         setClickable(true);
         // Needs to not be focusable so rotary won't highlight the entire nav bar.
         setFocusable(false);
+    }
+
+    void updateHomeButtonVisibility(boolean isPassenger) {
+        if (!isPassenger) {
+            return;
+        }
+        if (mPassengerHomeButton != null) {
+            if (mHomeButton != null) {
+                mHomeButton.setVisibility(GONE);
+            }
+            mPassengerHomeButton.setVisibility(VISIBLE);
+        }
     }
 
     void setupHvacButton() {

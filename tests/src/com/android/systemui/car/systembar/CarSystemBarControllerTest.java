@@ -20,6 +20,8 @@ import static android.app.StatusBarManager.DISABLE2_QUICK_SETTINGS;
 import static android.app.StatusBarManager.DISABLE_HOME;
 import static android.app.StatusBarManager.DISABLE_NOTIFICATION_ICONS;
 
+import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.Mockito.mock;
@@ -38,6 +40,7 @@ import android.view.ViewGroup;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.ui.FocusParkingView;
+import com.android.dx.mockito.inline.extended.ExtendedMockito;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
@@ -49,17 +52,20 @@ import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.phone.StatusBarIconController;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.MockitoSession;
+import org.mockito.quality.Strictness;
 
 import java.util.Set;
 
@@ -77,6 +83,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     private CarSystemBarViewFactory mCarSystemBarViewFactory;
     private TestableResources mTestableResources;
     private Context mSpiedContext;
+    private MockitoSession mSession;
 
     @Mock
     private UserTracker mUserTracker;
@@ -113,7 +120,11 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        mSession = ExtendedMockito.mockitoSession()
+            .initMocks(this)
+            .spyStatic(CarSystemUIUserUtil.class)
+            .strictness(Strictness.LENIENT)
+            .startMocking();
         mTestableResources = mContext.getOrCreateTestableResources();
         mSpiedContext = spy(mContext);
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
@@ -124,6 +135,13 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         // Needed to inflate top navigation bar.
         mDependency.injectMockDependency(DarkIconDispatcher.class);
         mDependency.injectMockDependency(StatusBarIconController.class);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        if (mSession != null) {
+            mSession.finishMocking();
+        }
     }
 
     private CarSystemBarController createSystemBarController() {
@@ -754,6 +772,36 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         int returnFocusedViewId = mCarSystemBar.cacheAndHideFocus(mockContainerView);
 
         assertThat(returnFocusedViewId).isEqualTo(View.NO_ID);
+    }
+
+    @Test
+    public void testDriverHomeOnDriverSystemUI_isVisible() {
+        doReturn(false).when(() ->
+                CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mSpiedContext));
+        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, /* value= */ true);
+        mCarSystemBar = createSystemBarController();
+
+        CarSystemBarView bottomBar = mCarSystemBar.getBottomBar(/* isSetUp= */ true);
+        View driverHomeButton = bottomBar.findViewById(R.id.home);
+        View passengerHomeButton = bottomBar.findViewById(R.id.passenger_home);
+
+        assertThat(driverHomeButton.getVisibility()).isEqualTo(View.VISIBLE);
+        assertThat(passengerHomeButton.getVisibility()).isEqualTo(View.GONE);
+    }
+
+    @Test
+    public void testPassengerHomeOnSecondarySystemUI_isVisible() {
+        doReturn(true).when(() ->
+                CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mSpiedContext));
+        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
+        mCarSystemBar = createSystemBarController();
+
+        CarSystemBarView bottomBar = mCarSystemBar.getBottomBar(/* isSetUp= */ true);
+        View driverHomeButton = bottomBar.findViewById(R.id.home);
+        View passengerHomeButton = bottomBar.findViewById(R.id.passenger_home);
+
+        assertThat(driverHomeButton.getVisibility()).isEqualTo(View.GONE);
+        assertThat(passengerHomeButton.getVisibility()).isEqualTo(View.VISIBLE);
     }
 
     private void clearSystemBarStates() {

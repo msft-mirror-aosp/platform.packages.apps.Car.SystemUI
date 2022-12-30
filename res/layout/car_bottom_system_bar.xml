@@ -64,6 +64,15 @@
                 systemui:intent="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;launchFlags=0x14000000;end"/>
 
             <com.android.systemui.car.systembar.CarSystemBarButton
+                android:id="@+id/passenger_home"
+                android:contentDescription="@string/system_bar_home_label"
+                android:visibility="gone"
+                style="@style/SystemBarButton"
+                systemui:highlightWhenSelected="true"
+                systemui:icon="@drawable/car_ic_home"
+                systemui:intent="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.SECONDARY_HOME;launchFlags=0x14000000;end"/>
+
+            <com.android.systemui.car.systembar.CarSystemBarButton
                 android:id="@+id/phone_nav"
                 android:contentDescription="@string/system_bar_phone_label"
                 style="@style/SystemBarButton"

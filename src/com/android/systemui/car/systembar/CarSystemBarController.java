@@ -43,9 +43,12 @@ import com.android.systemui.car.privacy.MicPrivacyElementsProviderImpl;
 import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelController;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
+
+import dagger.Lazy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +56,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-
-import dagger.Lazy;
 
 /** A single class which controls the navigation bar views. */
 @SysUISingleton
@@ -319,6 +320,7 @@ public class CarSystemBarController {
                 ((mStatusBarState2 & StatusBarManager.DISABLE2_SYSTEM_ICONS) > 0) || locked;
 
         setDisabledSystemBarButton(R.id.home, homeDisabled, "home");
+        setDisabledSystemBarButton(R.id.passenger_home, homeDisabled, "passenger_home");
         setDisabledSystemBarButton(R.id.phone_nav, locked, "phone_nav");
         setDisabledSystemBarButton(R.id.grid_nav, homeDisabled, "grid_nav");
         setDisabledSystemBarButton(R.id.notifications, notificationDisabled, "notifications");
@@ -434,6 +436,7 @@ public class CarSystemBarController {
             NotificationsShadeController notifShadeController,
             HvacPanelController hvacPanelController,
             HvacPanelOverlayViewController hvacPanelOverlayViewController) {
+        view.updateHomeButtonVisibility(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext));
         view.setStatusBarWindowTouchListeners(statusBarTouchListeners);
         view.setNotificationsPanelController(notifShadeController);
         view.setHvacPanelController(hvacPanelController);

@@ -590,6 +590,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="notification_view"/>
       <item type="id" name="notifications"/>
       <item type="id" name="occlusion_buttons"/>
+      <item type="id" name="passenger_home"/>
       <item type="id" name="passenger_hvac"/>
       <item type="id" name="phone_nav"/>
       <item type="id" name="primary_icon"/>

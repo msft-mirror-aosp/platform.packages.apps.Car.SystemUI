@@ -149,7 +149,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             // Need to filter out IME control to prevent control after leash is released
             if (activeControls != null) {
                 nonImeControls = Arrays.stream(activeControls).filter(
-                        c -> c.getType() != InsetsState.ITYPE_IME).toArray(
+                        c -> c.getType() != WindowInsets.Type.ime()).toArray(
                         InsetsSourceControl[]::new);
             }
             mInsetsController.onControlsChanged(nonImeControls);

@@ -57,6 +57,7 @@ public final class DisplayInputLockInfoWindow {
     private final long mAutoDismissDelayMs;
 
     private boolean mIsShown;  // Only accessed from MainThread.
+    private boolean mIsTransitioningToHide;  // Only accessed from MainThread.
 
     private final Runnable mHideInputLockInfoRunnable = () -> {
         hideInputLockInfoWindow();
@@ -134,24 +135,42 @@ public final class DisplayInputLockInfoWindow {
 
     @MainThread
     private void hideInputLockInfoWindow() {
-        if (!mIsShown) {
+        if (!mIsShown || mIsTransitioningToHide) {
             return;
         }
 
-        TransitionSet transition = new TransitionSet();
-        transition.addTransition(new Fade(Fade.OUT));
-        transition.setDuration(mDismissAnimDurationMs);
-        transition.setInterpolator(Interpolators.DECELERATE_QUINT);
-        transition.addListener(new TransitionListenerAdapter() {
-            @Override
-            @MainThread
-            public void onTransitionEnd(Transition transition) {
-                mWindowManager.removeView(mLockInfoViewGroup);
-                mIsShown = false;
-                transition.removeListener(this);
-            }
-        });
-        TransitionManager.beginDelayedTransition(mLockInfoViewGroup, transition);
-        mLockIconView.setVisibility(View.INVISIBLE);
+        if (shouldAnimateLockIconView()) {
+            mIsTransitioningToHide = true;
+            TransitionSet transition = new TransitionSet();
+            transition.addTransition(new Fade(Fade.OUT));
+            transition.setDuration(mDismissAnimDurationMs);
+            transition.setInterpolator(Interpolators.DECELERATE_QUINT);
+            transition.addListener(new TransitionListenerAdapter() {
+                @Override
+                @MainThread
+                public void onTransitionEnd(Transition transition) {
+                    transition.removeListener(this);
+                    hideImmediately();
+                }
+            });
+            TransitionManager.beginDelayedTransition(mLockInfoViewGroup, transition);
+            mLockIconView.setVisibility(View.INVISIBLE);
+        } else {
+            hideImmediately();
+        }
+    }
+
+    @MainThread
+    private void hideImmediately() {
+        mWindowManager.removeView(mLockInfoViewGroup);
+        mIsShown = false;
+        mIsTransitioningToHide = false;
+    }
+
+    @MainThread
+    private boolean shouldAnimateLockIconView() {
+        // The lock icon view is animated only if the container view {@code mLockInfoViewGroup} has
+        // already been laid out. If it hasn't been laid out, it hasn't been drawn to screen yet.
+        return mLockInfoViewGroup.isLaidOut();
     }
 }

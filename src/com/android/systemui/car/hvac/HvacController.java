@@ -41,6 +41,7 @@ import static android.car.VehiclePropertyIds.HVAC_TEMPERATURE_SET;
 import android.annotation.IntDef;
 import android.car.Car;
 import android.car.VehicleUnit;
+import android.car.hardware.CarPropertyConfig;
 import android.car.hardware.CarPropertyValue;
 import android.car.hardware.property.CarPropertyManager;
 import android.content.res.Resources;
@@ -48,10 +49,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
@@ -86,6 +85,9 @@ public class HvacController implements HvacPropertySetter,
                     HVAC_ACTUAL_FAN_SPEED_RPM, HVAC_POWER_ON, HVAC_FAN_DIRECTION_AVAILABLE,
                     HVAC_AUTO_RECIRC_ON, HVAC_SEAT_VENTILATION, HVAC_ELECTRIC_DEFROSTER_ON};
     private static final int[] HVAC_PROPERTIES_TO_GET_ON_INIT = {HVAC_POWER_ON, HVAC_AUTO_ON};
+    private static final int GLOBAL_AREA_ID = 0;
+    private static final int VEHICLE_AREA_GLOBAL = 0x01000000;
+    private static final int VEHICLE_AREA_SEAT = 0x05000000;
 
     @IntDef(value = {HVAC_FAN_SPEED, HVAC_FAN_DIRECTION, HVAC_TEMPERATURE_CURRENT,
             HVAC_TEMPERATURE_SET, HVAC_DEFROSTER, HVAC_AC_ON, HVAC_MAX_AC_ON, HVAC_MAX_DEFROST_ON,
@@ -104,8 +106,6 @@ public class HvacController implements HvacPropertySetter,
     private Executor mExecutor;
     private CarPropertyManager mCarPropertyManager;
     private boolean mIsConnectedToCar;
-    @Nullable
-    private Integer mHvacGlobalAreaId;
 
     /**
      * Contains views to init until car service is connected.
@@ -119,7 +119,9 @@ public class HvacController implements HvacPropertySetter,
             new CarPropertyManager.CarPropertyEventCallback() {
                 @Override
                 public void onChangeEvent(CarPropertyValue value) {
-                    mExecutor.execute(() -> handleHvacPropertyChange(value.getPropertyId(), value));
+                    mExecutor.execute(() -> {
+                        handleHvacPropertyChange(value.getPropertyId(), value);
+                    });
                 }
 
                 @Override
@@ -157,14 +159,42 @@ public class HvacController implements HvacPropertySetter,
             carServiceProvider.addListener(mCarServiceLifecycleListener);
         }
         configurationController.addCallback(this);
-        mHvacGlobalAreaId = resources.getInteger(R.integer.hvac_global_area_id);
+    }
+
+    private int[] getSupportedAreaIds(int propertyId) {
+        CarPropertyConfig config = mCarPropertyManager.getCarPropertyConfig(propertyId);
+        if (config == null) {
+            // This property isn't supported/exposed by the CarPropertyManager. So an empty array is
+            // returned here to signify that no areaIds with this propertyId are going to be
+            // registered or updated.
+            return new int[] {};
+        }
+        return config.getAreaIds();
+    }
+
+    private ArrayList<Integer> getAreaIdsFromTargetAreaId(int propertyId, int targetAreaId) {
+        ArrayList<Integer> areaIdsFromTargetAreaId = new ArrayList<Integer>();
+        int[] supportedAreaIds = getSupportedAreaIds(propertyId);
+
+        for (int supportedAreaId : supportedAreaIds) {
+            if (targetAreaId == GLOBAL_AREA_ID || (targetAreaId & supportedAreaId) != 0) {
+                areaIdsFromTargetAreaId.add(supportedAreaId);
+            }
+        }
+
+        return areaIdsFromTargetAreaId;
     }
 
     @Override
-    public void setHvacProperty(@HvacProperty Integer propertyId, int areaId, int val) {
+    public void setHvacProperty(@HvacProperty Integer propertyId, int targetAreaId,
+            int val) {
         mExecutor.execute(() -> {
             try {
-                mCarPropertyManager.setIntProperty(propertyId, areaId, val);
+                ArrayList<Integer> supportedAreaIds = getAreaIdsFromTargetAreaId(
+                        propertyId.intValue(), targetAreaId);
+                for (int areaId : supportedAreaIds) {
+                    mCarPropertyManager.setIntProperty(propertyId, areaId, val);
+                }
             } catch (RuntimeException e) {
                 Log.w(TAG, "Error while setting HVAC property: ", e);
             }
@@ -172,10 +202,15 @@ public class HvacController implements HvacPropertySetter,
     }
 
     @Override
-    public void setHvacProperty(@HvacProperty Integer propertyId, int areaId, float val) {
+    public void setHvacProperty(@HvacProperty Integer propertyId, int targetAreaId,
+            float val) {
         mExecutor.execute(() -> {
             try {
-                mCarPropertyManager.setFloatProperty(propertyId, areaId, val);
+                ArrayList<Integer> supportedAreaIds = getAreaIdsFromTargetAreaId(
+                        propertyId.intValue(), targetAreaId);
+                for (int areaId : supportedAreaIds) {
+                    mCarPropertyManager.setFloatProperty(propertyId, areaId, val);
+                }
             } catch (RuntimeException e) {
                 Log.w(TAG, "Error while setting HVAC property: ", e);
             }
@@ -183,10 +218,15 @@ public class HvacController implements HvacPropertySetter,
     }
 
     @Override
-    public void setHvacProperty(@HvacProperty Integer propertyId, int areaId, boolean val) {
+    public void setHvacProperty(@HvacProperty Integer propertyId, int targetAreaId,
+            boolean val) {
         mExecutor.execute(() -> {
             try {
-                mCarPropertyManager.setBooleanProperty(propertyId, areaId, val);
+                ArrayList<Integer> supportedAreaIds = getAreaIdsFromTargetAreaId(
+                        propertyId.intValue(), targetAreaId);
+                for (int areaId : supportedAreaIds) {
+                    mCarPropertyManager.setBooleanProperty(propertyId, areaId, val);
+                }
             } catch (RuntimeException e) {
                 Log.w(TAG, "Error while setting HVAC property: ", e);
             }
@@ -207,25 +247,48 @@ public class HvacController implements HvacPropertySetter,
             try {
                 HvacView hvacView = (HvacView) rootView;
                 @HvacProperty Integer propId = hvacView.getHvacPropertyToView();
-                @AreaId Integer areaId = hvacView.getAreaId();
+                @AreaId Integer targetAreaId = hvacView.getAreaId();
                 hvacView.setHvacPropertySetter(this);
 
-                addHvacViewToMap(propId, areaId, hvacView);
+                ArrayList<Integer> supportedAreaIds = getAreaIdsFromTargetAreaId(propId.intValue(),
+                        targetAreaId.intValue());
+                for (Integer areaId : supportedAreaIds) {
+                    addHvacViewToMap(propId.intValue(), areaId.intValue(), hvacView);
+                }
 
                 if (mCarPropertyManager != null) {
-                    CarPropertyValue initValue = mCarPropertyManager.getProperty(propId, areaId);
                     boolean usesFahrenheit = mCarPropertyManager.getIntProperty(
-                            HVAC_TEMPERATURE_DISPLAY_UNITS,
-                            mCarPropertyManager.getAreaId(HVAC_TEMPERATURE_DISPLAY_UNITS,
-                                    areaId)) == VehicleUnit.FAHRENHEIT;
+                            HVAC_TEMPERATURE_DISPLAY_UNITS, GLOBAL_AREA_ID)
+                            == VehicleUnit.FAHRENHEIT;
+                    for (Integer areaId : supportedAreaIds) {
+                        CarPropertyValue initValue = mCarPropertyManager.getProperty(propId,
+                                areaId);
 
-                    // Initialize the view with the initial value.
-                    hvacView.onPropertyChanged(initValue);
-                    hvacView.onHvacTemperatureUnitChanged(usesFahrenheit);
-                    for (int propToGetOnInitId : HVAC_PROPERTIES_TO_GET_ON_INIT) {
-                        CarPropertyValue propToGetOnInitValue = mCarPropertyManager.getProperty(
-                                propToGetOnInitId, mHvacGlobalAreaId);
-                        hvacView.onPropertyChanged(propToGetOnInitValue);
+                        // Initialize the view with the initial value.
+                        hvacView.onPropertyChanged(initValue);
+                        hvacView.onHvacTemperatureUnitChanged(usesFahrenheit);
+
+                        if (mCarPropertyManager.getCarPropertyConfig(propId).getAreaType()
+                                != VEHICLE_AREA_SEAT) {
+                            continue;
+                        }
+
+                        for (int propToGetOnInitId : HVAC_PROPERTIES_TO_GET_ON_INIT) {
+                            int[] propToGetOnInitSupportedAreaIds = getSupportedAreaIds(
+                                    propToGetOnInitId);
+
+                            int areaIdToFind = areaId.intValue();
+
+                            for (int supportedAreaId : propToGetOnInitSupportedAreaIds) {
+                                if ((supportedAreaId & areaIdToFind) == areaIdToFind) {
+                                    CarPropertyValue propToGetOnInitValue =
+                                            mCarPropertyManager.getProperty(propToGetOnInitId,
+                                            supportedAreaId);
+                                    hvacView.onPropertyChanged(propToGetOnInitValue);
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             } catch (IllegalArgumentException ex) {
@@ -248,9 +311,13 @@ public class HvacController implements HvacPropertySetter,
         if (rootView instanceof HvacView) {
             HvacView hvacView = (HvacView) rootView;
             @HvacProperty Integer propId = hvacView.getHvacPropertyToView();
-            @AreaId Integer areaId = hvacView.getAreaId();
+            @AreaId Integer targetAreaId = hvacView.getAreaId();
 
-            removeHvacViewFromMap(propId, areaId, hvacView);
+            ArrayList<Integer> supportedAreaIds = getAreaIdsFromTargetAreaId(propId.intValue(),
+                    targetAreaId.intValue());
+            for (Integer areaId : supportedAreaIds) {
+                removeHvacViewFromMap(propId.intValue(), areaId.intValue(), hvacView);
+            }
         }
 
         if (rootView instanceof ViewGroup) {
@@ -263,17 +330,6 @@ public class HvacController implements HvacPropertySetter,
 
     @VisibleForTesting
     void handleHvacPropertyChange(@HvacProperty int propertyId, CarPropertyValue value) {
-        List<HvacView> viewsToNotify = null;
-
-        if (value.getAreaId() == mHvacGlobalAreaId) {
-            mHvacPropertyViewMap.forEach((propId, areaIds) -> {
-                areaIds.forEach((areaId, views) -> {
-                    views.forEach(v -> v.onPropertyChanged(value));
-                });
-            });
-            return;
-        }
-
         if (value.getPropertyId() == HVAC_TEMPERATURE_DISPLAY_UNITS) {
             mHvacPropertyViewMap.forEach((propId, areaIds) -> {
                 areaIds.forEach((areaId, views) -> {
@@ -284,12 +340,25 @@ public class HvacController implements HvacPropertySetter,
             return;
         }
 
-        Map<Integer, List<HvacView>> viewsRegisteredForProp = mHvacPropertyViewMap.get(propertyId);
-        if (viewsRegisteredForProp != null) {
-            viewsToNotify = viewsRegisteredForProp.get(value.getAreaId());
-            if (viewsToNotify != null) {
-                viewsToNotify.forEach(v -> v.onPropertyChanged(value));
-            }
+        int valueAreaType = mCarPropertyManager.getCarPropertyConfig(value.getPropertyId())
+                .getAreaType();
+        if (valueAreaType == VEHICLE_AREA_GLOBAL) {
+            mHvacPropertyViewMap.forEach((propId, areaIds) -> {
+                areaIds.forEach((areaId, views) -> {
+                    views.forEach(v -> v.onPropertyChanged(value));
+                });
+            });
+        } else {
+            mHvacPropertyViewMap.forEach((propId, areaIds) -> {
+                if (valueAreaType
+                        == mCarPropertyManager.getCarPropertyConfig(propId).getAreaType()) {
+                    areaIds.forEach((areaId, views) -> {
+                        if ((value.getAreaId() & areaId) == areaId) {
+                            views.forEach(v -> v.onPropertyChanged(value));
+                        }
+                    });
+                }
+            });
         }
     }
 

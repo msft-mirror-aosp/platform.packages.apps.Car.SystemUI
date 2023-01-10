@@ -24,8 +24,7 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"ବନ୍ଦ ଅଛି"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"ଭଏସ ଚିହ୍ନଟକରଣ ଏବେ ସଂଯୁକ୍ତ ଥିବା ବ୍ଲୁଟୁଥ ଡିଭାଇସ ଦ୍ୱାରା ପରିଚାଳିତ"</string>
     <string name="car_add_user" msgid="6182764665687382136">"ଏକ ପ୍ରୋଫାଇଲ ଯୋଗ କରନ୍ତୁ"</string>
-    <!-- no translation found for end_session (2765206020435441421) -->
-    <skip />
+    <string name="end_session" msgid="2765206020435441421">"ସେସନ ଶେଷ କରନ୍ତୁ"</string>
     <string name="car_new_user" msgid="6766334721724989964">"ନୂଆ ପ୍ରୋଫାଇଲ"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"ନୂଆ ପ୍ରୋଫାଇଲ ଯୋଗ କରିବେ?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"ଆପଣ କୌଣସି ବ୍ୟକ୍ତିଙ୍କ ପାଇଁ ଏକ ନୂଆ ପ୍ରୋଫାଇଲ ତିଆରି କରିବା ପରେ, ସେ ନିଜ ପାଇଁ ତା\'କୁ କଷ୍ଟମାଇଜ କରିବା ଉଚିତ।"</string>
@@ -33,7 +32,7 @@
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"ଅଧିକ ପ୍ରୋଫାଇଲ ପାଇଁ ଅନୁମତି ନାହିଁ"</string>
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{କେବଳ ଗୋଟିଏ ପ୍ରୋଫାଇଲ ତିଆରି କରାଯାଇପାରିବ।}other{ଆପଣ #ଟି ପର୍ଯ୍ୟନ୍ତ ପ୍ରୋଫାଇଲ ଯୋଗ କରିପାରିବେ।}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"ଲୋଡ୍ କରାଯାଉଛି"</string>
-    <string name="car_loading_profile_developer_message" msgid="737810794567935702">"ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ଲୋଡ୍ କରାଯାଉଛି (<xliff:g id="FROM_USER">%1$d</xliff:g>ଙ୍କ ଠାରୁ <xliff:g id="TO_USER">%2$d</xliff:g> ପର୍ଯ୍ୟନ୍ତ)"</string>
+    <string name="car_loading_profile_developer_message" msgid="737810794567935702">"ୟୁଜର ଲୋଡ କରାଯାଉଛି (<xliff:g id="FROM_USER">%1$d</xliff:g>ଙ୍କ ଠାରୁ <xliff:g id="TO_USER">%2$d</xliff:g> ପର୍ଯ୍ୟନ୍ତ)"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> ବନ୍ଦ ଅଛି।"</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g> ବ୍ୟବହାର କରନ୍ତୁ"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"ଅନୁମତି ଥିବା ଆପ୍ସ ପାଇଁ"</string>

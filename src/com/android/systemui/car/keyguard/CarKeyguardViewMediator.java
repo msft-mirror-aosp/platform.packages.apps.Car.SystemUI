@@ -32,6 +32,7 @@ import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.dreams.DreamOverlayStateController;
 import com.android.systemui.dump.DumpManager;
+import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
@@ -86,6 +87,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             ScreenOnCoordinator screenOnCoordinator,
             InteractionJankMonitor interactionJankMonitor,
             DreamOverlayStateController dreamOverlayStateController,
+            FeatureFlags featureFlags,
             Lazy<ShadeController> mShadeControllerLazy,
             Lazy<NotificationShadeWindowController> notificationShadeWindowControllerLazy,
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator,
@@ -97,7 +99,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 statusBarStateController, keyguardStateController,
                 keyguardUnlockAnimationControllerLazy, screenOffAnimationController,
                 notificationShadeDepthController, screenOnCoordinator, interactionJankMonitor,
-                dreamOverlayStateController,
+                dreamOverlayStateController, featureFlags,
                 mShadeControllerLazy,
                 notificationShadeWindowControllerLazy,
                 activityLaunchAnimator,

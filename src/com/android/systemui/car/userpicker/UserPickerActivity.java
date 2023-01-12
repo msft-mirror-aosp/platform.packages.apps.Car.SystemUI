@@ -55,15 +55,11 @@ import javax.inject.Inject;
  * It has user picker controller object for the executed display, and cleans it up
  * when the activity is destroyed.
  */
-public final class UserPickerActivity extends Activity implements Dumpable {
+public class UserPickerActivity extends Activity implements Dumpable {
     private static final String TAG = UserPickerActivity.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     private UserPickerActivityComponent mUserPickerActivityComponent;
-
-    private UserPickerController mController;
-    private SnackbarManager mSnackbarManager;
-    private DialogManager mDialogManager;
 
     @Inject
     UserPickerReadOnlyIconsController mUserPickerReadOnlyIconsController;
@@ -72,6 +68,12 @@ public final class UserPickerActivity extends Activity implements Dumpable {
     @Inject
     DumpManager mDumpManager;
 
+    @VisibleForTesting
+    UserPickerController mController;
+    @VisibleForTesting
+    SnackbarManager mSnackbarManager;
+    @VisibleForTesting
+    DialogManager mDialogManager;
     @VisibleForTesting
     UserPickerAdapter mAdapter;
     @VisibleForTesting
@@ -84,8 +86,6 @@ public final class UserPickerActivity extends Activity implements Dumpable {
     View mLogoutButton;
     @VisibleForTesting
     View mBackButton;
-    @VisibleForTesting
-    boolean mIsUserPickerFinished;
 
     @Inject
     UserPickerActivity(
@@ -94,7 +94,7 @@ public final class UserPickerActivity extends Activity implements Dumpable {
             CarServiceProvider carServiceProvider,
             UserPickerSharedState userPickerSharedState
     ) {
-        super();
+        this();
         mUserPickerActivityComponent = DaggerUserPickerActivityComponent.builder()
                 .context(context)
                 .carServiceProvider(carServiceProvider)
@@ -106,6 +106,11 @@ public final class UserPickerActivity extends Activity implements Dumpable {
         mDialogManager = mUserPickerActivityComponent.dialogManager();
         mSnackbarManager = mUserPickerActivityComponent.snackbarManager();
         mController = mUserPickerActivityComponent.userPickerController();
+    }
+
+    @VisibleForTesting
+    UserPickerActivity() {
+        super();
     }
 
     private final Callbacks mCallbacks = new Callbacks() {
@@ -140,12 +145,18 @@ public final class UserPickerActivity extends Activity implements Dumpable {
         super.onCreate(savedInstanceState);
         setShowWhenLocked(true);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        init();
+    }
 
+    @VisibleForTesting
+    void init() {
         LayoutInflater inflater = LayoutInflater.from(this);
         mRootView = inflater.inflate(R.layout.user_picker, null);
-        setContentView(mRootView);
+        if (getWindow() != null) {
+            setContentView(mRootView);
+            initWindow();
+        }
 
-        initWindow();
         initManagers(mRootView);
         initViews();
         initController();
@@ -164,10 +175,12 @@ public final class UserPickerActivity extends Activity implements Dumpable {
         mLogoutButton.setOnClickListener(v -> mController.logoutUser());
 
         mBackButton = mRootView.findViewById(R.id.back_button);
-        mBackButton.setOnClickListener(v -> finishAndRemoveTask());
+        mBackButton.setOnClickListener(v -> {
+            finishAndRemoveTask();
+        });
 
         mUserPickerView = (UserPickerView) mRootView.findViewById(R.id.user_picker);
-        mAdapter = new UserPickerAdapter(this);
+        mAdapter = createUserPickerAdapter();
         mUserPickerView.setAdapter(mAdapter);
 
         ViewGroup statusIconContainer = mRootView
@@ -197,6 +210,11 @@ public final class UserPickerActivity extends Activity implements Dumpable {
         mController.init(mCallbacks, getDisplayId());
     }
 
+    @VisibleForTesting
+    UserPickerAdapter createUserPickerAdapter() {
+        return new UserPickerAdapter(this);
+    }
+
     @Override
     protected void onDestroy() {
         if (DEBUG) {
@@ -220,18 +238,17 @@ public final class UserPickerActivity extends Activity implements Dumpable {
         mController.onConfigurationChanged();
     }
 
-    private void setupHeaderBar(HeaderState headerState) {
+    @VisibleForTesting
+    void setupHeaderBar(HeaderState headerState) {
         int state = headerState.getState();
         switch (state) {
             case HEADER_STATE_LOGOUT:
                 mHeaderBarTextForLogout.setVisibility(View.VISIBLE);
-                mBackButton.setVisibility(View.INVISIBLE);
-                if (getDisplayId() != mDisplayTracker.getDefaultDisplayId()) {
-                    mLogoutButton.setVisibility(View.INVISIBLE);
-                }
+                mBackButton.setVisibility(View.GONE);
+                mLogoutButton.setVisibility(View.GONE);
                 break;
             case HEADER_STATE_CHANGE_USER:
-                mHeaderBarTextForLogout.setVisibility(View.INVISIBLE);
+                mHeaderBarTextForLogout.setVisibility(View.GONE);
                 mBackButton.setVisibility(View.VISIBLE);
                 if (getDisplayId() != mDisplayTracker.getDefaultDisplayId()) {
                     mLogoutButton.setVisibility(View.VISIBLE);

@@ -24,14 +24,21 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.systemui.R;
 
-final class UserPickerView extends RecyclerView {
+/**
+ * Displays a GridLayout with icons for the users in the system to allow switching between users.
+ * Also, shows and dissmisses dialogs using user picker dialog manager.
+ */
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+public final class UserPickerView extends RecyclerView {
 
-    UserPickerView(Context context, AttributeSet attrs) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public UserPickerView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         addItemDecoration(new ItemSpacingDecoration(context.getResources().getDimensionPixelSize(
@@ -45,10 +52,12 @@ final class UserPickerView extends RecyclerView {
      * A {@link RecyclerView.ItemDecoration} that will add spacing between each item in the
      * RecyclerView that it is added to.
      */
-    private static final class ItemSpacingDecoration extends RecyclerView.ItemDecoration {
+    @VisibleForTesting
+    static final class ItemSpacingDecoration extends RecyclerView.ItemDecoration {
         private final int mItemSpacing;
 
-        private ItemSpacingDecoration(int itemSpacing) {
+        @VisibleForTesting
+        ItemSpacingDecoration(int itemSpacing) {
             mItemSpacing = itemSpacing;
         }
 

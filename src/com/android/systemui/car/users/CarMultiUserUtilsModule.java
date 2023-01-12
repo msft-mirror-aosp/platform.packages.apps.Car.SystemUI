@@ -17,6 +17,7 @@
 package com.android.systemui.car.users;
 
 import android.app.ActivityManager;
+import android.app.IActivityManager;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Process;
@@ -58,6 +59,7 @@ public abstract class CarMultiUserUtilsModule {
     static UserTracker provideUserTracker(
             Context context,
             UserManager userManager,
+            IActivityManager iActivityManager,
             DumpManager dumpManager,
             @Background Handler handler
     ) {
@@ -69,8 +71,8 @@ public abstract class CarMultiUserUtilsModule {
         int startingUser = isSecondaryUserSystemUI
                 ? processUser.getIdentifier()
                 : ActivityManager.getCurrentUser();
-        CarUserTrackerImpl tracker = new CarUserTrackerImpl(context, userManager, dumpManager,
-                handler, isSecondaryUserSystemUI);
+        CarUserTrackerImpl tracker = new CarUserTrackerImpl(context, userManager, iActivityManager,
+                dumpManager, handler, isSecondaryUserSystemUI);
         tracker.initialize(startingUser);
         return tracker;
     }

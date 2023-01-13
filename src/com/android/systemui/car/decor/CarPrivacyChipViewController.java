@@ -106,13 +106,13 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
         if (contentDescription.contains(PrivacyType.TYPE_CAMERA.getLogName())) {
             updateViewVisibility(cameraView, View.VISIBLE, animate);
         } else {
-            updateViewVisibility(cameraView, View.INVISIBLE, animate);
+            updateViewVisibility(cameraView, View.GONE, animate);
         }
 
         if (contentDescription.contains(PrivacyType.TYPE_MICROPHONE.getLogName())) {
             updateViewVisibility(micView, View.VISIBLE, animate);
         } else {
-            updateViewVisibility(micView, View.INVISIBLE, animate);
+            updateViewVisibility(micView, View.GONE, animate);
         }
 
         if (getShowingListener() != null) {
@@ -126,8 +126,8 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
 
         View cameraView = container.findViewById(R.id.immersive_privacy_camera);
         View micView = container.findViewById(R.id.immersive_privacy_microphone);
-        updateViewVisibility(cameraView, View.INVISIBLE, animate);
-        updateViewVisibility(micView, View.INVISIBLE, animate);
+        updateViewVisibility(cameraView, View.GONE, animate);
+        updateViewVisibility(micView, View.GONE, animate);
 
         container.setVisibility(View.INVISIBLE);
         if (getShowingListener() != null) {

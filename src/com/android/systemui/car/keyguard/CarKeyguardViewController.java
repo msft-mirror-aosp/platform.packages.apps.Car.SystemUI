@@ -47,6 +47,7 @@ import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerCallbackInteractor.PrimaryBouncerExpansionCallback;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.NotificationPanelViewController;
 import com.android.systemui.shade.ShadeExpansionStateManager;
@@ -89,8 +90,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private final CarSystemBarController mCarSystemBarController;
     private final Factory mKeyguardBouncerFactory;
     // Needed to instantiate mBouncer.
-    private final KeyguardBouncer.PrimaryBouncerExpansionCallback mExpansionCallback =
-            new KeyguardBouncer.PrimaryBouncerExpansionCallback() {
+    private final PrimaryBouncerExpansionCallback mExpansionCallback =
+            new PrimaryBouncerExpansionCallback() {
                 @Override
                 public void onFullyShown() {
                     LockPatternView patternView = getLayout().findViewById(R.id.lockPatternView);
@@ -122,6 +123,14 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
                 @Override
                 public void onFullyHidden() {
+                }
+
+                @Override
+                public void onVisibilityChanged(boolean isVisible) {
+                }
+
+                @Override
+                public void onExpansionChanged(float bouncerHideAmount) {
                 }
             };
 

@@ -141,6 +141,8 @@
     <string name="status_icon_signal_hotspot">Signal Settings: Hotspot On</string>
     <!-- Status icon for display settings in status bar-->
     <string name="status_icon_display_status">Display Settings</string>
+    <!-- Status icon for drive mode settings in status bar -->
+    <string name="status_icon_drive_mode">Drive Mode</string>
 
     <!-- Blocking activity: Message to show to user when a feature of current application is not allowed. [CHAR LIMIT=120] -->
     <string name="activity_blocked_text">You can\u2019t use this feature while driving</string>
@@ -150,6 +152,12 @@
     <string name="exit_button_go_back">Back</string>
     <!-- Blocking activity: Text for button that shows debug info in non-user build. -->
     <string name="debug_button_text" translatable="false">Debug Info</string>
+
+    <!-- Drive modes -->
+    <string name="drive_mode_modes_comfort">Comfort</string>
+    <string name="drive_mode_modes_eco">Eco</string>
+    <string name="drive_mode_modes_sport">Sport</string>
+    <string name="qc_drive_mode_active_subtitle">Active</string>
 
     <!-- Quick Controls: Message to be displayed as the footer button to launch the settings application [CHAR LIMIT=45] -->
     <string name="qc_footer_settings">Settings</string>

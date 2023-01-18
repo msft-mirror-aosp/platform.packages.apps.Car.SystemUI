@@ -31,7 +31,6 @@ import android.widget.ImageView;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
@@ -55,7 +54,6 @@ public abstract class StatusIconGroupContainerController {
     private final Context mContext;
     private final UserTracker mUserTracker;
     private final Resources mResources;
-    private final CarServiceProvider mCarServiceProvider;
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final ConfigurationController mConfigurationController;
     private final Provider<SystemUIQCViewController> mQCViewControllerProvider;
@@ -69,7 +67,6 @@ public abstract class StatusIconGroupContainerController {
             Context context,
             UserTracker userTracker,
             @Main Resources resources,
-            CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider,
@@ -77,7 +74,6 @@ public abstract class StatusIconGroupContainerController {
         mContext = context;
         mUserTracker = userTracker;
         mResources = resources;
-        mCarServiceProvider = carServiceProvider;
         mBroadcastDispatcher = broadcastDispatcher;
         mConfigurationController = configurationController;
         mQCViewControllerProvider = qcViewControllerProvider;
@@ -136,8 +132,8 @@ public abstract class StatusIconGroupContainerController {
             if (shouldAttachPanel
                     && statusIconController.getPanelContentLayout() != PANEL_CONTENT_LAYOUT_NONE) {
                 StatusIconPanelController panelController = new StatusIconPanelController(mContext,
-                        mUserTracker, mCarServiceProvider, mBroadcastDispatcher,
-                        mConfigurationController, mQCViewControllerProvider);
+                        mUserTracker, mBroadcastDispatcher, mConfigurationController,
+                        mQCViewControllerProvider);
                 panelController.attachPanel(entryPointView,
                         statusIconController.getPanelContentLayout(),
                         statusIconController.getPanelWidth());

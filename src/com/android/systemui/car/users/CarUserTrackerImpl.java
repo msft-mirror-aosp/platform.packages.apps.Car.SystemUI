@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.users;
 
+import android.app.IActivityManager;
 import android.content.Context;
 import android.os.Handler;
 import android.os.UserManager;
@@ -31,20 +32,31 @@ import com.android.systemui.settings.UserTrackerImpl;
 public class CarUserTrackerImpl extends UserTrackerImpl {
     private final boolean mIsSecondaryUserSystemUI;
 
-    public CarUserTrackerImpl(Context context, UserManager userManager, DumpManager dumpManager,
+    public CarUserTrackerImpl(Context context, UserManager userManager,
+            IActivityManager iActivityManager, DumpManager dumpManager,
             Handler backgroundHandler, boolean isSecondaryUserSystemUI) {
-        super(context, userManager, dumpManager, backgroundHandler);
+        super(context, userManager, iActivityManager, dumpManager, backgroundHandler);
         mIsSecondaryUserSystemUI = isSecondaryUserSystemUI;
     }
 
     @Override
-    protected void handleSwitchUser(int user) {
+    public void handleUserSwitching(int newUserId) {
         if (mIsSecondaryUserSystemUI) {
             // Secondary user SystemUI instances are not running on foreground users, so they should
             // not be impacted by foreground user switches.
             return;
         }
-        super.handleSwitchUser(user);
+        super.handleUserSwitching(newUserId);
+    }
+
+    @Override
+    public void handleUserSwitchComplete(int newUserId) {
+        if (mIsSecondaryUserSystemUI) {
+            // Secondary user SystemUI instances are not running on foreground users, so they should
+            // not be impacted by foreground user switches.
+            return;
+        }
+        super.handleUserSwitchComplete(newUserId);
     }
 
     @Override

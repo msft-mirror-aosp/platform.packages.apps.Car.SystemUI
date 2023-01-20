@@ -388,6 +388,9 @@
     <dimen name="fullscreen_indicator_width">80dp</dimen>
 
     <!-- Dimensions for Display Input Lock -->
-    <dimen name="display_input_lock_icon_width">415dp</dimen>
-    <dimen name="display_input_lock_icon_height">415dp</dimen>
+    <dimen name="display_input_lock_text_padding">32dp</dimen>
+    <dimen name="display_input_lock_text_bottom_margin">24dp</dimen>
+    <dimen name="display_input_lock_text_size">24sp</dimen>
+    <dimen name="display_input_lock_text_width">642dp</dimen>
+    <dimen name="display_input_lock_background_radius">8dp</dimen>
 </resources>

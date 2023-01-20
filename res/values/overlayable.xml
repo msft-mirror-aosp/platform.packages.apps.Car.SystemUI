@@ -120,6 +120,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="car_volume_dialog_tint"/>
       <item type="color" name="car_volume_item_background_color"/>
       <item type="color" name="car_volume_item_divider_color"/>
+      <item type="color" name="display_input_lock_icon_color"/>
+      <item type="color" name="display_input_lock_background_color"/>
       <item type="color" name="docked_divider_background"/>
       <item type="color" name="hvac_background_color"/>
       <item type="color" name="hvac_fan_drawable_fill_color"/>
@@ -260,8 +262,11 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_volume_item_seekbar_padding_vertical"/>
       <item type="dimen" name="common_margin"/>
       <item type="dimen" name="device_management_dialog_subtitle_padding"/>
-      <item type="dimen" name="display_input_lock_icon_height"/>
-      <item type="dimen" name="display_input_lock_icon_width"/>
+      <item type="dimen" name="display_input_lock_text_padding"/>
+      <item type="dimen" name="display_input_lock_text_bottom_margin"/>
+      <item type="dimen" name="display_input_lock_text_size"/>
+      <item type="dimen" name="display_input_lock_text_width"/>
+      <item type="dimen" name="display_input_lock_background_radius"/>
       <item type="dimen" name="fullscreen_indicator_height"/>
       <item type="dimen" name="fullscreen_indicator_padding_horizontal"/>
       <item type="dimen" name="fullscreen_indicator_padding_vertical"/>
@@ -435,6 +440,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_rounded_bg_bottom"/>
       <item type="drawable" name="car_seekbar_thumb"/>
       <item type="drawable" name="car_stat_sys_data_bluetooth_indicator"/>
+      <item type="drawable" name="display_input_locked_background"/>
       <item type="drawable" name="fan_speed_inset"/>
       <item type="drawable" name="hvac_decrease_button"/>
       <item type="drawable" name="hvac_increase_button"/>
@@ -452,7 +458,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_camera_off_dark"/>
       <item type="drawable" name="ic_camera_off_light"/>
       <item type="drawable" name="ic_decrease_icon"/>
-      <item type="drawable" name="ic_display_input_locked"/>
       <item type="drawable" name="ic_fan_direction_defrost"/>
       <item type="drawable" name="ic_fan_direction_defrost_off"/>
       <item type="drawable" name="ic_fan_direction_defrost_on"/>
@@ -665,6 +670,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="integer" name="config_bottomSystemBarZOrder"/>
       <item type="integer" name="config_displayInputLockIconAnimDuration"/>
       <item type="integer" name="config_displayInputLockIconDismissDelay"/>
+      <item type="integer" name="config_displayInputLockInitialDismissDelay"/>
       <item type="integer" name="config_finalNotificationBackgroundAlpha"/>
       <item type="integer" name="config_initialNotificationBackgroundAlpha"/>
       <item type="integer" name="config_leftSystemBarType"/>
@@ -757,6 +763,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="drive_mode_modes_comfort"/>
       <item type="string" name="drive_mode_modes_eco"/>
       <item type="string" name="drive_mode_modes_sport"/>
+      <item type="string" name="display_input_lock_text"/>
+      <item type="string" name="display_input_lock_initial_text"/>
       <item type="string" name="end_session"/>
       <item type="string" name="exit_button_close_application"/>
       <item type="string" name="exit_button_go_back"/>

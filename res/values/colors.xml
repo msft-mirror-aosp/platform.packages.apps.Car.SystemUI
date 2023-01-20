@@ -133,4 +133,8 @@
 
     <!-- Color for clock text -->
     <color name="system_bar_clock_text_color">@*android:color/car_headline3</color>
+
+    <!-- Colors for display input lock icon and text -->
+    <color name="display_input_lock_icon_color">@android:color/white</color>
+    <color name="display_input_lock_background_color">@*android:color/car_grey_868</color>
 </resources>

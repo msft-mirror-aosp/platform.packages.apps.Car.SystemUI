@@ -36,7 +36,6 @@ import com.android.car.ui.utils.ViewUtils;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.privacy.CameraPrivacyElementsProviderImpl;
 import com.android.systemui.car.privacy.MicPrivacyElementsProviderImpl;
@@ -67,7 +66,6 @@ public class CarSystemBarController {
     private final Context mContext;
     private final UserTracker mUserTracker;
     private final CarSystemBarViewFactory mCarSystemBarViewFactory;
-    private final CarServiceProvider mCarServiceProvider;
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final ConfigurationController mConfigurationController;
     private final ButtonSelectionStateController mButtonSelectionStateController;
@@ -121,7 +119,6 @@ public class CarSystemBarController {
     public CarSystemBarController(Context context,
             UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,
-            CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             ButtonSelectionStateController buttonSelectionStateController,
@@ -136,7 +133,6 @@ public class CarSystemBarController {
         mContext = context;
         mUserTracker = userTracker;
         mCarSystemBarViewFactory = carSystemBarViewFactory;
-        mCarServiceProvider = carServiceProvider;
         mBroadcastDispatcher = broadcastDispatcher;
         mConfigurationController = configurationController;
         mButtonSelectionStateController = buttonSelectionStateController;
@@ -453,8 +449,7 @@ public class CarSystemBarController {
             @LayoutRes int panelLayoutRes) {
         if (panelController == null) {
             panelController = new StatusIconPanelController(mContext, mUserTracker,
-                    mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
-                    mQCViewControllerProvider);
+                    mBroadcastDispatcher, mConfigurationController, mQCViewControllerProvider);
         }
         panelController.attachPanel(mTopView.requireViewById(chipId), panelLayoutRes,
                 R.dimen.car_sensor_qc_panel_width, mPrivacyChipXOffset,
@@ -469,8 +464,8 @@ public class CarSystemBarController {
             boolean profilePanelDisabledWhileDriving = mContext.getResources().getBoolean(
                     R.bool.config_profile_panel_disabled_while_driving);
             mProfilePanelController = new StatusIconPanelController(mContext, mUserTracker,
-                    mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
-                    mQCViewControllerProvider, profilePanelDisabledWhileDriving);
+                    mBroadcastDispatcher, mConfigurationController, mQCViewControllerProvider,
+                    profilePanelDisabledWhileDriving);
             mProfilePanelController.attachPanel(profilePickerView, R.layout.qc_profile_switcher,
                     R.dimen.car_profile_quick_controls_panel_width, Gravity.TOP | Gravity.END);
         }

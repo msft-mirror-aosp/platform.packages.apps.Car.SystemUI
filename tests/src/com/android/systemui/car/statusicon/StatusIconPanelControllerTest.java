@@ -36,7 +36,6 @@ import android.widget.ImageView;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.settings.UserTracker;
@@ -63,8 +62,6 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
     @Mock
     private UserTracker mUserTracker;
     @Mock
-    private CarServiceProvider mCarServiceProvider;
-    @Mock
     private BroadcastDispatcher mBroadcastDispatcher;
     @Mock
     private ConfigurationController mConfigurationController;
@@ -81,8 +78,7 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
         when(mUserTracker.getUserHandle()).thenReturn(mUserHandle);
 
         mStatusIconPanelController = new StatusIconPanelController(mContext, mUserTracker,
-                mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
-                () -> mSystemUIQCViewController);
+                mBroadcastDispatcher, mConfigurationController, () -> mSystemUIQCViewController);
         mAnchorView = spy(new ImageView(mContext));
         mAnchorView.setTag(mIconTag);
         mAnchorView.setImageDrawable(mContext.getDrawable(R.drawable.ic_bluetooth_status_off));
@@ -201,7 +197,6 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
     public void onDestroy_unregistersListeners() {
         mStatusIconPanelController.destroyPanel();
 
-        verify(mCarServiceProvider).removeListener(any());
         verify(mConfigurationController).removeCallback(any());
         verify(mBroadcastDispatcher).unregisterReceiver(any());
     }

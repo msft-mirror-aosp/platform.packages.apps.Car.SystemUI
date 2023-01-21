@@ -50,8 +50,8 @@ public class QuickControlsEntryPointsController extends StatusIconGroupContainer
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider,
             Map<Class<?>, Provider<StatusIconController>> iconControllerCreators) {
-        super(context, userTracker, resources, carServiceProvider, broadcastDispatcher,
-                configurationController, qcViewControllerProvider, iconControllerCreators);
+        super(context, userTracker, resources, broadcastDispatcher, configurationController,
+                qcViewControllerProvider, iconControllerCreators);
     }
 
     @Override

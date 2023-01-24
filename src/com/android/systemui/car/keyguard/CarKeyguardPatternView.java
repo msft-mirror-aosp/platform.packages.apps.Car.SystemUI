@@ -38,4 +38,9 @@ public class CarKeyguardPatternView extends KeyguardPatternView {
     public CarKeyguardPatternView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
+
+    @Override
+    public void startAppearAnimation() {
+        setAlpha(1f);
+    }
 }

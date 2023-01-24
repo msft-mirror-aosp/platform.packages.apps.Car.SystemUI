@@ -17,7 +17,7 @@
 package com.android.systemui.car.keyguard;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -35,11 +35,8 @@ import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.keyguard.KeyguardHostViewController;
-import com.android.keyguard.KeyguardSecurityModel;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.ViewMediatorCallback;
-import com.android.keyguard.dagger.KeyguardBouncerComponent;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
@@ -47,10 +44,9 @@ import com.android.systemui.car.systembar.CarSystemBarController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerCallbackInteractor;
-import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerInteractor;
-import com.android.systemui.keyguard.ui.viewmodel.KeyguardBouncerViewModel;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
+import com.android.systemui.statusbar.phone.KeyguardBouncer;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.toast.ToastFactory;
 import com.android.systemui.util.concurrency.FakeExecutor;
@@ -61,12 +57,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
-@TestableLooper.RunWithLooper(setAsMainLooper = true)
+@TestableLooper.RunWithLooper
 @SmallTest
 public class CarKeyguardViewControllerTest extends SysuiTestCase {
 
@@ -82,15 +77,9 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
     @Mock
     private CarKeyguardViewController.OnKeyguardCancelClickedListener mCancelClickedListener;
     @Mock
-    private PrimaryBouncerCallbackInteractor mPrimaryBouncerCallbackInteractor;
+    private KeyguardBouncer.Factory mKeyguardBouncerFactory;
     @Mock
-    private PrimaryBouncerInteractor mPrimaryBouncerInteractor;
-    @Mock
-    private KeyguardSecurityModel mKeyguardSecurityModel;
-    @Mock
-    private KeyguardBouncerViewModel mKeyguardBouncerViewModel;
-    @Mock
-    private KeyguardBouncerComponent.Factory mKeyguardBouncerComponentFactory;
+    private KeyguardBouncer mBouncer;
 
     @Before
     public void setUp() {
@@ -98,16 +87,12 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
 
         ViewGroup mockBaseLayout = new FrameLayout(mContext);
 
+        when(mKeyguardBouncerFactory.create(
+                any(ViewGroup.class),
+                any(PrimaryBouncerCallbackInteractor.PrimaryBouncerExpansionCallback.class)))
+                .thenReturn(mBouncer);
         when(mSystemUIOverlayWindowController.getBaseLayout()).thenReturn(mockBaseLayout);
         mExecutor = new FakeExecutor(new FakeSystemClock());
-
-        KeyguardBouncerComponent keyguardBouncerComponent = mock(KeyguardBouncerComponent.class);
-        KeyguardHostViewController keyguardHostViewController = mock(
-                KeyguardHostViewController.class);
-        when(mKeyguardBouncerComponentFactory.create(any(ViewGroup.class))).thenReturn(
-                keyguardBouncerComponent);
-        when(keyguardBouncerComponent.getKeyguardHostViewController()).thenReturn(
-                keyguardHostViewController);
 
         mCarKeyguardViewController = new CarKeyguardViewController(
                 mContext,
@@ -122,11 +107,7 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
                 () -> mock(BiometricUnlockController.class),
                 mock(ViewMediatorCallback.class),
                 mock(CarSystemBarController.class),
-                mPrimaryBouncerCallbackInteractor,
-                mPrimaryBouncerInteractor,
-                mKeyguardSecurityModel,
-                mKeyguardBouncerViewModel,
-                mKeyguardBouncerComponentFactory
+                mKeyguardBouncerFactory
         );
         mCarKeyguardViewController.inflate((ViewGroup) LayoutInflater.from(mContext).inflate(
                 R.layout.sysui_overlay_window, /* root= */ null));
@@ -134,16 +115,16 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
 
     @Test
     public void onShow_bouncerIsSecure_showsBouncerWithSecuritySelectionReset() {
-        setIsSecure(true);
+        when(mBouncer.isSecure()).thenReturn(true);
         mCarKeyguardViewController.show(/* options= */ null);
         waitForDelayableExecutor();
 
-        verify(mPrimaryBouncerInteractor).show(/* isScrimmed= */ true);
+        verify(mBouncer).show(/* resetSecuritySelection= */ true);
     }
 
     @Test
     public void onShow_bouncerIsSecure_keyguardIsVisible() {
-        setIsSecure(true);
+        when(mBouncer.isSecure()).thenReturn(true);
         mCarKeyguardViewController.show(/* options= */ null);
 
         verify(mOverlayViewGlobalStateController).showView(eq(mCarKeyguardViewController), any());
@@ -151,16 +132,16 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
 
     @Test
     public void onShow_bouncerNotSecure_hidesBouncerAndDestroysTheView() {
-        setIsSecure(false);
+        when(mBouncer.isSecure()).thenReturn(false);
         mCarKeyguardViewController.show(/* options= */ null);
         waitForDelayableExecutor();
 
-        verify(mPrimaryBouncerInteractor, Mockito.times(2)).hide();
+        verify(mBouncer).hide(/* destroyView= */ true);
     }
 
     @Test
     public void onShow_bouncerNotSecure_keyguardIsNotVisible() {
-        setIsSecure(false);
+        when(mBouncer.isSecure()).thenReturn(false);
         mCarKeyguardViewController.show(/* options= */ null);
         waitForDelayableExecutor();
 
@@ -179,23 +160,23 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
 
     @Test
     public void onHide_keyguardShowing_hidesBouncerAndDestroysTheView() {
-        setIsSecure(true);
+        when(mBouncer.isSecure()).thenReturn(true);
         mCarKeyguardViewController.show(/* options= */ null);
         mCarKeyguardViewController.hide(/* startTime= */ 0, /* fadeoutDelay= */ 0);
 
-        verify(mPrimaryBouncerInteractor).hide();
+        verify(mBouncer).hide(/* destroyView= */ true);
     }
 
     @Test
     public void onHide_keyguardNotShown_doesNotHideOrDestroyBouncer() {
         mCarKeyguardViewController.hide(/* startTime= */ 0, /* fadeoutDelay= */ 0);
 
-        verify(mPrimaryBouncerInteractor, never()).hide();
+        verify(mBouncer, never()).hide(anyBoolean());
     }
 
     @Test
     public void onHide_KeyguardNotVisible() {
-        setIsSecure(true);
+        when(mBouncer.isSecure()).thenReturn(true);
         mCarKeyguardViewController.show(/* options= */ null);
         mCarKeyguardViewController.hide(/* startTime= */ 0, /* fadeoutDelay= */ 0);
 
@@ -208,20 +189,20 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
 
     @Test
     public void setOccludedFalse_currentlyOccluded_showsKeyguard() {
-        setIsSecure(true);
+        when(mBouncer.isSecure()).thenReturn(true);
         mCarKeyguardViewController.show(/* options= */ null);
         mCarKeyguardViewController.setOccluded(/* occluded= */ true, /* animate= */ false);
-        reset(mPrimaryBouncerInteractor);
+        reset(mBouncer);
 
         mCarKeyguardViewController.setOccluded(/* occluded= */ false, /* animate= */ false);
         waitForDelayableExecutor();
 
-        verify(mPrimaryBouncerInteractor).show(/* isScrimmed= */ true);
+        verify(mBouncer).show(true);
     }
 
     @Test
     public void onCancelClicked_callsCancelClickedListener() {
-        setIsSecure(true);
+        when(mBouncer.isSecure()).thenReturn(true);
         mCarKeyguardViewController.show(/* options= */ null);
         mCarKeyguardViewController.registerOnKeyguardCancelClickedListener(mCancelClickedListener);
         mCarKeyguardViewController.onCancelClicked();
@@ -231,7 +212,7 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
 
     @Test
     public void onEnterSleepModeAndThenShowKeyguard_bouncerNotSecure_keyguardIsVisible() {
-        setIsSecure(false);
+        when(mBouncer.isSecure()).thenReturn(false);
         mCarKeyguardViewController.onStartedGoingToSleep();
         mCarKeyguardViewController.show(/* options= */ null);
         waitForDelayableExecutor();
@@ -247,7 +228,7 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
 
     @Test
     public void onDeviceWakeUpWhileKeyguardShown_bouncerNotSecure_keyguardIsNotVisible() {
-        setIsSecure(false);
+        when(mBouncer.isSecure()).thenReturn(false);
         mCarKeyguardViewController.onStartedGoingToSleep();
         mCarKeyguardViewController.show(/* options= */ null);
         mCarKeyguardViewController.onStartedWakingUp();
@@ -264,22 +245,16 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
 
     @Test
     public void onCancelClicked_hidesBouncerAndDestroysTheView() {
-        setIsSecure(true);
+        when(mBouncer.isSecure()).thenReturn(true);
         mCarKeyguardViewController.show(/* options= */ null);
         mCarKeyguardViewController.registerOnKeyguardCancelClickedListener(mCancelClickedListener);
         mCarKeyguardViewController.onCancelClicked();
 
-        verify(mPrimaryBouncerInteractor).hide();
+        verify(mBouncer).hide(/* destroyView= */ true);
     }
 
     private void waitForDelayableExecutor() {
         mExecutor.advanceClockToLast();
         mExecutor.runAllReady();
-    }
-
-    private void setIsSecure(boolean isSecure) {
-        when(mKeyguardSecurityModel.getSecurityMode(anyInt())).thenReturn(
-                isSecure ? KeyguardSecurityModel.SecurityMode.PIN
-                        : KeyguardSecurityModel.SecurityMode.None);
     }
 }

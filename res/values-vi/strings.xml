@@ -72,19 +72,14 @@
     <string name="status_icon_signal_wifi" msgid="1257569337648058522">"Cài đặt tín hiệu: Wi-Fi đang bật"</string>
     <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"Cài đặt tín hiệu: Điểm phát sóng đang bật"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"Cài đặt màn hình"</string>
-    <!-- no translation found for status_icon_drive_mode (3938622431486261076) -->
-    <skip />
+    <string name="status_icon_drive_mode" msgid="3938622431486261076">"Chế độ lái xe"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Bạn không thể dùng tính năng này khi đang lái xe"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Tắt ứng dụng"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Quay lại"</string>
-    <!-- no translation found for drive_mode_modes_comfort (628724737960743004) -->
-    <skip />
-    <!-- no translation found for drive_mode_modes_eco (7694931508925737653) -->
-    <skip />
-    <!-- no translation found for drive_mode_modes_sport (7664603138389270601) -->
-    <skip />
-    <!-- no translation found for qc_drive_mode_active_subtitle (3667965966971747414) -->
-    <skip />
+    <string name="drive_mode_modes_comfort" msgid="628724737960743004">"Thoải mái"</string>
+    <string name="drive_mode_modes_eco" msgid="7694931508925737653">"Tiết kiệm"</string>
+    <string name="drive_mode_modes_sport" msgid="7664603138389270601">"Thể thao"</string>
+    <string name="qc_drive_mode_active_subtitle" msgid="3667965966971747414">"Năng động"</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"Cài đặt"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Cài đặt Bluetooth"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"Cài đặt mạng và Internet"</string>

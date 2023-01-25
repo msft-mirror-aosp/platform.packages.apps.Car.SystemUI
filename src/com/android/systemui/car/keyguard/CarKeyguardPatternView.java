@@ -54,9 +54,4 @@ public class CarKeyguardPatternView extends KeyguardPatternView {
             Log.w(TAG, "Pattern is inivisble for the current user. Setting it to be visible.");
         }
     }
-
-    @Override
-    public void startAppearAnimation() {
-        setAlpha(1f);
-    }
 }

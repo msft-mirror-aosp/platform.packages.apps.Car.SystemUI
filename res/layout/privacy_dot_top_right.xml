@@ -24,29 +24,22 @@
     android:visibility="invisible"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="parent">
-    <ImageView
-        android:id="@+id/immersive_privacy_microphone"
-        android:contentDescription="@null"
+    <include
+        layout="@layout/immersive_mic_indicator"
+        android:id="@+id/immersive_mic_indicator_container"
         android:layout_height="@dimen/fullscreen_indicator_height"
         android:layout_width="@dimen/fullscreen_indicator_width"
         android:layout_marginEnd="@dimen/fullscreen_indicator_padding_horizontal"
-        android:scaleType="center"
-        android:src="@drawable/ic_mic_light"
-        android:background="@drawable/privacy_chip_active_background_pill"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toStartOf="@+id/immersive_privacy_camera"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@+id/immersive_cam_indicator_container"
         app:layout_constraintTop_toTopOf="parent"/>
-
-    <ImageView
-        android:id="@+id/immersive_privacy_camera"
-        android:contentDescription="@null"
+    <include
+        layout="@layout/immersive_cam_indicator"
+        android:id="@+id/immersive_cam_indicator_container"
         android:layout_height="@dimen/fullscreen_indicator_height"
         android:layout_width="@dimen/fullscreen_indicator_width"
         android:layout_marginEnd="@dimen/fullscreen_indicator_padding_horizontal"
-        android:scaleType="center"
-        android:src="@drawable/ic_camera_light"
-        android:background="@drawable/privacy_chip_active_background_pill"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

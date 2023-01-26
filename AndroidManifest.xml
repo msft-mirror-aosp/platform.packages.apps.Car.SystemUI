@@ -75,5 +75,20 @@
             android:exported="false"
             android:launchMode="singleTask">
         </activity>
+        <activity
+            android:name=".car.userpicker.UserPickerActivity"
+            android:label="UserPicker"
+            android:icon="@drawable/ic_user_picker"
+            android:launchMode="singleTop"
+            android:showForAllUsers="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|locale|density|layoutDirection"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:directBootAware="true"
+            android:theme="@style/Theme.UserPicker">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

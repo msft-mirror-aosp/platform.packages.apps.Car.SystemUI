@@ -35,6 +35,7 @@ import com.android.systemui.car.drivemode.DriveModeModule;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
 import com.android.systemui.car.statusbar.DozeServiceHost;
+import com.android.systemui.car.userpicker.UserPickerComponent;
 import com.android.systemui.car.users.CarMultiUserUtilsModule;
 import com.android.systemui.car.volume.CarVolumeModule;
 import com.android.systemui.dagger.GlobalRootComponent;
@@ -95,7 +96,8 @@ import javax.inject.Named;
                 QSModule.class,
                 ReferenceScreenshotModule.class,
                 DriveModeModule.class
-        }
+        },
+        subcomponents = UserPickerComponent.class
 )
 abstract class CarSystemUIModule {
 

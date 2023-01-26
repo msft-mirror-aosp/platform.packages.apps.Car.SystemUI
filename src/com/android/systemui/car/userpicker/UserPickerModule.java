@@ -1,13 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-/**
- * Copyright (c) 2018, The Android Open Source Project
+/*
+ * Copyright (C) 2023 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
--->
 
-<resources>
-    <style name="Theme.Notification" parent="Theme.DeviceDefault.NoActionBar.Notification">
-    </style>
-    <style name="Theme.UserPicker" parent="Theme.MaterialComponents">
-        <item name="android:windowDisablePreview">true</item>
-    </style>
-</resources>
+package com.android.systemui.car.userpicker;
+
+import dagger.Module;
+
+/**
+ * Module for {@link UserPickerComponent}.
+ * It is used to set {@link UserPickerActivityComponent} as subcomponent of
+ * {@link UserPickerComponent}.
+ */
+@Module(subcomponents = UserPickerActivityComponent.class)
+public abstract class UserPickerModule {
+}

@@ -25,6 +25,7 @@ import com.android.systemui.car.input.DisplayInputSinkController
 import com.android.systemui.car.systembar.CarSystemBar
 import com.android.systemui.car.systembar.CarSystemBarMediator
 import com.android.systemui.car.toast.CarToastUI
+import com.android.systemui.car.userpicker.UserPicker
 import com.android.systemui.car.users.CarSystemUIUserUtil
 import com.android.systemui.car.voicerecognition.ConnectedDeviceVoiceRecognitionNotifier
 import com.android.systemui.car.volume.VolumeUI
@@ -172,6 +173,12 @@ abstract class CarSystemUICoreStartableModule {
     @IntoMap
     @ClassKey(ThemeOverlayController::class)
     abstract fun bindThemeOverlayController(sysui: ThemeOverlayController): CoreStartable
+
+    /** Inject into UserPicker  */
+    @Binds
+    @IntoMap
+    @ClassKey(UserPicker::class)
+    abstract fun bindUserPicker(service: UserPicker): CoreStartable
 
     /** Inject into VolumeUI.  */
     @Binds

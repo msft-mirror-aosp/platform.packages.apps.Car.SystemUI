@@ -16,6 +16,8 @@
 
 package com.android.systemui.wm;
 
+import static com.android.systemui.car.users.CarSystemUIUserUtil.isSecondaryMUMDSystemUI;
+
 import android.annotation.Nullable;
 import android.content.ComponentName;
 import android.content.Context;
@@ -68,7 +70,12 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         mWmService = wmService;
         mDisplayInsetsController = displayInsetsController;
         mHandler = mainHandler;
-        displayController.addDisplayWindowListener(this);
+        if (!isSecondaryMUMDSystemUI(mContext)) {
+            // This WM controller should only be initialized once for the primary SystemUI, as it
+            // will affect insets on all displays.
+            // TODO(b/262773276): support per-user remote inset controllers
+            displayController.addDisplayWindowListener(this);
+        }
     }
 
     @Override

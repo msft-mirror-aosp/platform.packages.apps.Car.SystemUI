@@ -773,7 +773,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Test
     public void testDriverHomeOnDriverSystemUI_isVisible() {
         doReturn(false).when(() ->
-                CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mSpiedContext));
+                CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, /* value= */ true);
         mCarSystemBar = createSystemBarController();
 
@@ -788,7 +788,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Test
     public void testPassengerHomeOnSecondarySystemUI_isVisible() {
         doReturn(true).when(() ->
-                CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mSpiedContext));
+                CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         mCarSystemBar = createSystemBarController();
 

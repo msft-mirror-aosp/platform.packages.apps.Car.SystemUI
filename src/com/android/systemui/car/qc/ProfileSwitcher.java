@@ -265,7 +265,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                         Toast.LENGTH_LONG).show();
                 return;
             }
-            if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)) {
+            if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
                 switchSecondaryUser(userId);
                 return;
             }

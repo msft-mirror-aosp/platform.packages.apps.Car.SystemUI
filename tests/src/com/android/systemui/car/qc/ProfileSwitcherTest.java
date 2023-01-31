@@ -111,7 +111,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         when(mDevicePolicyManager.isDeviceManaged()).thenReturn(false);
         when(mDevicePolicyManager.isOrganizationOwnedDeviceWithManagedProfile()).thenReturn(false);
         when(mActivityManager.stopUser(anyInt(), anyBoolean())).thenReturn(true);
-        doReturn(false).when(() -> CarSystemUIUserUtil.isSecondaryMUMDSystemUI(any()));
+        doReturn(false).when(() -> CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
 
         AsyncFuture<UserSwitchResult> switchResultFuture = mock(AsyncFuture.class);
         UserSwitchResult switchResult = mock(UserSwitchResult.class);
@@ -374,7 +374,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         int currentUserId = 1000;
         int secondaryUserId = 1001;
         int newUserId = 1002;
-        doReturn(true).when(() -> CarSystemUIUserUtil.isSecondaryMUMDSystemUI(any()));
+        doReturn(true).when(() -> CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
         when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(true);
         when(mUserTracker.getUserId()).thenReturn(secondaryUserId);
         when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(secondaryUserId));

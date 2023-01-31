@@ -109,7 +109,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
 
     @Override
     public void start() {
-        if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)) {
+        if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
             // Currently keyguard is not functional for the secondary users in a MUMD configuration
             // TODO_MD: make keyguard functional for secondary users
             return;

@@ -70,7 +70,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         mWmService = wmService;
         mDisplayInsetsController = displayInsetsController;
         mHandler = mainHandler;
-        if (!isSecondaryMUMDSystemUI(mContext)) {
+        if (!isSecondaryMUMDSystemUI()) {
             // This WM controller should only be initialized once for the primary SystemUI, as it
             // will affect insets on all displays.
             // TODO(b/262773276): support per-user remote inset controllers

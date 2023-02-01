@@ -18,10 +18,13 @@ package com.android.systemui.car.statusicon;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.testng.Assert.assertThrows;
 
 import android.content.Intent;
 import android.os.UserHandle;
@@ -33,10 +36,12 @@ import android.widget.ImageView;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.qc.SystemUIQCViewController;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,13 +57,16 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
     private StatusIconPanelController mStatusIconPanelController;
     private ImageView mAnchorView;
     private String mIconTag;
+    private UserHandle mUserHandle;
 
     @Mock
-    private CarServiceProvider mCarServiceProvider;
+    private UserTracker mUserTracker;
     @Mock
     private BroadcastDispatcher mBroadcastDispatcher;
     @Mock
     private ConfigurationController mConfigurationController;
+    @Mock
+    private SystemUIQCViewController mSystemUIQCViewController;
 
     @Before
     public void setUp() {
@@ -66,9 +74,11 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
 
         mContext = spy(mContext);
         mIconTag = mContext.getResources().getString(R.string.qc_icon_tag);
+        mUserHandle = UserHandle.of(1000);
+        when(mUserTracker.getUserHandle()).thenReturn(mUserHandle);
 
-        mStatusIconPanelController = new StatusIconPanelController(mContext, mCarServiceProvider,
-                mBroadcastDispatcher, mConfigurationController);
+        mStatusIconPanelController = new StatusIconPanelController(mContext, mUserTracker,
+                mBroadcastDispatcher, mConfigurationController, () -> mSystemUIQCViewController);
         mAnchorView = spy(new ImageView(mContext));
         mAnchorView.setTag(mIconTag);
         mAnchorView.setImageDrawable(mContext.getDrawable(R.drawable.ic_bluetooth_status_off));
@@ -76,6 +86,11 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
         reset(mAnchorView);
         mStatusIconPanelController.attachPanel(mAnchorView, R.layout.qc_display_panel,
                 R.dimen.car_status_icon_panel_default_width);
+    }
+
+    @After
+    public void tearDown() {
+        mStatusIconPanelController.destroyPanel();
     }
 
     @Test
@@ -121,7 +136,7 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
         clickAnchorView();
         waitForIdleSync();
 
-        verify(mContext).sendBroadcastAsUser(argumentCaptor.capture(), eq(UserHandle.CURRENT));
+        verify(mContext).sendBroadcastAsUser(argumentCaptor.capture(), eq(mUserHandle));
         assertThat(argumentCaptor.getValue().getAction()).isEqualTo(
                 Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         assertThat(argumentCaptor.getValue().getIdentifier()).isEqualTo(
@@ -176,6 +191,23 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
         mStatusIconPanelController.getBroadcastReceiver().onReceive(mContext, intent);
 
         verify(mAnchorView).setColorFilter(mStatusIconPanelController.getIconNotHighlightedColor());
+    }
+
+    @Test
+    public void onDestroy_unregistersListeners() {
+        mStatusIconPanelController.destroyPanel();
+
+        verify(mConfigurationController).removeCallback(any());
+        verify(mBroadcastDispatcher).unregisterReceiver(any());
+    }
+
+    @Test
+    public void onDestroy_reAttach_throwsException() {
+        mStatusIconPanelController.destroyPanel();
+
+        assertThrows(IllegalStateException.class, () -> mStatusIconPanelController.attachPanel(
+                mAnchorView, R.layout.qc_display_panel,
+                R.dimen.car_status_icon_panel_default_width));
     }
 
     private void clickAnchorView() {

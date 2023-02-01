@@ -57,4 +57,17 @@ public abstract class QuickControlsEntryPointsModule {
     public abstract StatusIconController bindLocationStatusIconController(
             LocationStatusIconController locationStatusIconController);
 
+    /** Injects PhoneCallStatusIconController. */
+    @Binds
+    @IntoMap
+    @ClassKey(PhoneCallStatusIconController.class)
+    public abstract StatusIconController bindPhoneCallStatusIconController(
+            PhoneCallStatusIconController phoneCallStatusIconController);
+
+    /** Injects ThemeSwitchStatusIconController. */
+    @Binds
+    @IntoMap
+    @ClassKey(DriveModeStatusIconController.class)
+    public abstract StatusIconController bindDriveModeStatusIconController(
+            DriveModeStatusIconController driveModeStatusIconController);
 }

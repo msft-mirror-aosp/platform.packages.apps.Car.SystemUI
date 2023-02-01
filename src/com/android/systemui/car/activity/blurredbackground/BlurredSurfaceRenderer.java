@@ -22,10 +22,16 @@ import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
-import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Pair;
 import android.util.Slog;
 import android.view.Surface;
-import android.view.SurfaceControl;
+import android.view.WindowManagerGlobal;
+import android.window.ScreenCapture;
+import android.window.ScreenCapture.CaptureArgs;
+import android.window.ScreenCapture.ScreenCaptureListener;
+import android.window.ScreenCapture.ScreenshotHardwareBuffer;
+import android.window.ScreenCapture.ScreenshotSync;
 
 import com.android.systemui.R;
 
@@ -57,7 +63,7 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
     private final float[] mTexMatrix = new float[16];
 
     private final boolean mShadersLoadedSuccessfully;
-    private final boolean mShouldRenderBlurred;
+    private final int mDisplayId;
     private boolean mIsScreenShotCaptured = false;
 
     /**
@@ -66,8 +72,8 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
      *
      * @param windowRect Rect that represents the application window
      */
-    public BlurredSurfaceRenderer(Context context, Rect windowRect, boolean shouldRenderBlurred) {
-        mShouldRenderBlurred = shouldRenderBlurred;
+    public BlurredSurfaceRenderer(Context context, Rect windowRect, int displayId) {
+        mDisplayId = displayId;
 
         mVertexShader = GLHelper.getShaderFromRaw(context, R.raw.vertex_shader);
         mHorizontalBlurShader = GLHelper.getShaderFromRaw(context,
@@ -89,10 +95,7 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
 
         mSurfaceTexture = new SurfaceTexture(mScreenshotTextureId);
         mSurface = new Surface(mSurfaceTexture);
-
-        if (mShouldRenderBlurred) {
-            mIsScreenShotCaptured = captureScreenshot();
-        }
+        mIsScreenShotCaptured = captureScreenshot();
     }
 
     @Override
@@ -141,28 +144,27 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
         boolean isScreenshotCaptured = false;
 
         try {
-            final IBinder token = SurfaceControl.getInternalDisplayToken();
-            if (token == null) {
-                Slog.e(TAG,
-                        "Could not find display token for screenshot. Will not capture screenshot");
-            } else {
-                final SurfaceControl.DisplayCaptureArgs captureArgs =
-                        new SurfaceControl.DisplayCaptureArgs.Builder(token)
-                                .setSize(mWindowRect.width(), mWindowRect.height())
-                                .setSourceCrop(mWindowRect)
-                                .setUseIdentityTransform(true)
-                                .build();
-
-                SurfaceControl.ScreenshotHardwareBuffer screenshotHardwareBuffer =
-                        SurfaceControl.captureDisplay(captureArgs);
-                mSurface.attachAndQueueBufferWithColorSpace(
-                        screenshotHardwareBuffer.getHardwareBuffer(),
-                        screenshotHardwareBuffer.getColorSpace());
-                mSurfaceTexture.updateTexImage();
-                mSurfaceTexture.getTransformMatrix(mTexMatrix);
-                isScreenshotCaptured = true;
+            final CaptureArgs captureArgs = new CaptureArgs.Builder<>()
+                    .setSourceCrop(mWindowRect)
+                    .build();
+            Pair<ScreenCaptureListener, ScreenshotSync> syncScreenCapture =
+                    ScreenCapture.createSyncCaptureListener();
+            try {
+                WindowManagerGlobal.getWindowManagerService().captureDisplay(mDisplayId,
+                        captureArgs, syncScreenCapture.first);
+            } catch (RemoteException e) {
+                Slog.e(TAG, "Failed to request screencapture for display");
+                e.rethrowAsRuntimeException();
             }
+            final ScreenshotHardwareBuffer screenshotHardwareBuffer =
+                    syncScreenCapture.second.get();
 
+            mSurface.attachAndQueueBufferWithColorSpace(
+                    screenshotHardwareBuffer.getHardwareBuffer(),
+                    screenshotHardwareBuffer.getColorSpace());
+            mSurfaceTexture.updateTexImage();
+            mSurfaceTexture.getTransformMatrix(mTexMatrix);
+            isScreenshotCaptured = true;
         } finally {
             mSurface.release();
             mSurfaceTexture.release();
@@ -189,8 +191,7 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
 
     private boolean shouldDrawFrame() {
         return mIsScreenShotCaptured
-                && mShadersLoadedSuccessfully
-                && mShouldRenderBlurred;
+                && mShadersLoadedSuccessfully;
     }
 }
 

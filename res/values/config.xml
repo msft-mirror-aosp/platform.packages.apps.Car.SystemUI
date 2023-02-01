@@ -18,10 +18,6 @@
     <string name="config_statusBarComponent" translatable="false">
         com.android.systemui.statusbar.car.CarStatusBar
     </string>
-    <string name="config_systemUIFactoryComponent" translatable="false">
-        com.android.systemui.CarSystemUIFactory
-    </string>
-
     <!-- How many milliseconds to wait before force hiding the UserSwitchTransitionView -->
     <integer name="config_userSwitchTransitionViewShownTimeoutMs" translatable="false">5000
     </integer>
@@ -41,6 +37,12 @@
     <integer name="config_leftSystemBarType">2</integer>
     <integer name="config_rightSystemBarType">3</integer>
     <integer name="config_bottomSystemBarType">1</integer>
+
+    <!-- Location of the system bar privacy indicator. This value should be consistent with the
+         layout file where the view for system bar privacy indicator is put. -->
+    <!-- For example the view is put car_top_system_bar.xml, this value should be
+         config_topSystemBarType. -->
+    <integer name="config_privacyIndicatorLocation">@integer/config_topSystemBarType</integer>
 
     <!-- Configure the relative z-order among the system bars. When two system bars overlap (e.g.
          if both top bar and left bar are enabled, it creates an overlapping space in the upper left
@@ -116,7 +118,7 @@
     <string-array name="config_carSystemUIOverlayViewsMediators" translatable="false">
         <item>@string/config_notificationPanelViewMediator</item>
         <item>com.android.systemui.car.hvac.HvacPanelOverlayViewMediator</item>
-        <item>com.android.systemui.car.keyguard.CarKeyguardViewMediator</item>
+        <item>com.android.systemui.car.keyguard.CarKeyguardOverlayViewMediator</item>
         <item>com.android.systemui.car.systemdialogs.SystemDialogsViewMediator</item>
         <item>com.android.systemui.car.userswitcher.FullscreenUserSwitcherViewMediator</item>
         <item>com.android.systemui.car.userswitcher.UserSwitchTransitionViewMediator</item>
@@ -134,6 +136,7 @@
          The icons will be added to the view in the order their controllers appear on this list.-->
     <string-array name="config_readOnlyIconControllers" translatable="false">
         <item>com.android.systemui.car.statusicon.ui.LocationStatusIconController</item>
+        <item>com.android.systemui.car.statusicon.ui.PhoneCallStatusIconController</item>
     </string-array>
 
     <!-- List of package names that are allowed sources of app installation. -->
@@ -182,4 +185,23 @@
         below the border results in the panel being expanded back to the original height.
     -->
     <integer name="hvac_panel_settle_close_percentage">50</integer>
+
+    <!-- Determines whether the shell features all run on another thread. -->
+    <bool name="config_enableShellMainThread">true</bool>
+
+    <!-- Determines whether the shell task organizer be registered automatiacly or not.
+         It needs to be disabled for CarSystemUI as CarLauncher already registers one. With 2
+         organizers there can be recovery problems if either of the process crashes. -->
+    <!-- TODO(b/228598071): Enabled this to fix b/250675259. -->
+    <bool name="config_registerShellTaskOrganizerOnInit">true</bool>
+
+    <!-- show the privacy chip indicator in full screen mode. -->
+    <bool name="config_enableImmersivePrivacyChip">true</bool>
+    <!-- enable animation for the privacy chip indicator in full screen mode. -->
+    <bool name="config_enableImmersivePrivacyChipAnimation">true</bool>
+
+    <!-- Animation duration (in milliseconds) when dismissing display input lock icon. -->
+    <integer name="config_displayInputLockIconAnimDuration">250</integer>
+    <!-- The number of milliseconds before the display input lock icon auto-dismisses. -->
+    <integer name="config_displayInputLockIconDismissDelay">250</integer>
 </resources>

@@ -45,6 +45,6 @@
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:maxLines="3"
-        android:lineHeight="32dp"
+        android:lineHeight="36dp"
         android:textAppearance="@style/TextAppearance.Toast"/>
 </LinearLayout>

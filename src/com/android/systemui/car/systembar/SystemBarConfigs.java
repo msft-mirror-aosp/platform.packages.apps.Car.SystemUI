@@ -25,6 +25,7 @@ import android.util.ArrayMap;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.InsetsFrameProvider;
 import android.view.InsetsState;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -71,7 +72,7 @@ public class SystemBarConfigs {
         NOTE: The elements' order in the map below must be preserved as-is since the correct
         corresponding values are obtained by the index.
      */
-    private static final int[] BAR_TYPE_MAP = {
+    public static final int[] BAR_TYPE_MAP = {
             InsetsState.ITYPE_STATUS_BAR,
             InsetsState.ITYPE_NAVIGATION_BAR,
             InsetsState.ITYPE_CLIMATE_BAR,
@@ -355,12 +356,6 @@ public class SystemBarConfigs {
         });
     }
 
-    @InsetsState.InternalInsetsType
-    private int getSystemBarTypeBySide(@SystemBarSide int side) {
-        return mSystemBarConfigMap.get(side) != null
-                ? mSystemBarConfigMap.get(side).getBarType() : null;
-    }
-
     // On init, system bars are visible as long as they are enabled.
     private Map<@SystemBarSide Integer, Boolean> getSystemBarsVisibilityOnInit() {
         ArrayMap<@SystemBarSide Integer, Boolean> visibilityMap = new ArrayMap<>();
@@ -459,7 +454,10 @@ public class SystemBarConfigs {
                             | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
                     PixelFormat.TRANSLUCENT);
             lp.setTitle(BAR_TITLE_MAP.get(mSide));
-            lp.providesInsetsTypes = new int[]{BAR_TYPE_MAP[mBarType], BAR_GESTURE_MAP.get(mSide)};
+            lp.providedInsets = new InsetsFrameProvider[] {
+                new InsetsFrameProvider(BAR_TYPE_MAP[mBarType]),
+                new InsetsFrameProvider(BAR_GESTURE_MAP.get(mSide))
+            };
             lp.setFitInsetsTypes(0);
             lp.windowAnimations = 0;
             lp.gravity = BAR_GRAVITY_MAP.get(mSide);

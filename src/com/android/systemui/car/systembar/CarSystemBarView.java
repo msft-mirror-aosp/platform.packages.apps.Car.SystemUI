@@ -32,8 +32,7 @@ import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
 import com.android.systemui.car.systembar.CarSystemBarController.NotificationsShadeController;
-import com.android.systemui.flags.FeatureFlags;
-import com.android.systemui.statusbar.phone.StatusBarIconController;
+import com.android.systemui.settings.UserTracker;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
@@ -62,6 +61,8 @@ public class CarSystemBarView extends LinearLayout {
     private final boolean mConsumeTouchWhenPanelOpen;
     private final boolean mButtonsDraggable;
 
+    private CarSystemBarButton mHomeButton;
+    private CarSystemBarButton mPassengerHomeButton;
     private View mNavButtons;
     private CarSystemBarButton mNotificationsButton;
     private HvacButton mHvacButton;
@@ -84,6 +85,8 @@ public class CarSystemBarView extends LinearLayout {
 
     @Override
     public void onFinishInflate() {
+        mHomeButton = findViewById(R.id.home);
+        mPassengerHomeButton = findViewById(R.id.passenger_home);
         mNavButtons = findViewById(R.id.nav_buttons);
         mLockScreenButtons = findViewById(R.id.lock_screen_nav_buttons);
         mOcclusionButtons = findViewById(R.id.occlusion_buttons);
@@ -103,6 +106,18 @@ public class CarSystemBarView extends LinearLayout {
         setFocusable(false);
     }
 
+    void updateHomeButtonVisibility(boolean isPassenger) {
+        if (!isPassenger) {
+            return;
+        }
+        if (mPassengerHomeButton != null) {
+            if (mHomeButton != null) {
+                mHomeButton.setVisibility(GONE);
+            }
+            mPassengerHomeButton.setVisibility(VISIBLE);
+        }
+    }
+
     void setupHvacButton() {
         if (mHvacButton != null) {
             mHvacButton.setOnClickListener(this::onHvacClick);
@@ -119,20 +134,23 @@ public class CarSystemBarView extends LinearLayout {
 
     void setupReadOnlyIcons(ReadOnlyIconsController readOnlyIconsController) {
         if (mReadOnlyIconsContainer != null) {
-            readOnlyIconsController.addIconViews(mReadOnlyIconsContainer);
+            readOnlyIconsController.addIconViews(mReadOnlyIconsContainer,
+                    /* shouldAttachPanel= */false);
         }
     }
 
-    void setupIconController(FeatureFlags featureFlags, StatusBarIconController iconController) {
-        View mStatusIcons = findViewById(R.id.statusIcons);
-        if (mStatusIcons != null) {
-            // Attach the controllers for Status icons such as wifi and bluetooth if the standard
-            // container is in the view.
-            StatusBarIconController.DarkIconManager mDarkIconManager =
-                    new StatusBarIconController.DarkIconManager(
-                            mStatusIcons.findViewById(R.id.statusIcons), featureFlags);
-            mDarkIconManager.setShouldLog(true);
-            iconController.addIconGroup(mDarkIconManager);
+    void setupSystemBarButtons(UserTracker userTracker) {
+        setupSystemBarButtons(this, userTracker);
+    }
+
+    private void setupSystemBarButtons(View v, UserTracker userTracker) {
+        if (v instanceof CarSystemBarButton) {
+            ((CarSystemBarButton) v).setUserTracker(userTracker);
+        } else if (v instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) v;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                setupSystemBarButtons(viewGroup.getChildAt(i), userTracker);
+            }
         }
     }
 

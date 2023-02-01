@@ -18,13 +18,11 @@ package com.android.systemui.wm;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
 
 import android.car.settings.CarSettings;
 import android.os.Handler;
-import android.os.RemoteException;
 import android.provider.Settings;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
@@ -34,9 +32,8 @@ import androidx.test.filters.SmallTest;
 
 import com.android.systemui.SysuiTestCase;
 import com.android.wm.shell.common.DisplayController;
-import com.android.wm.shell.common.DisplayImeController;
 import com.android.wm.shell.common.DisplayInsetsController;
-import com.android.wm.shell.common.TransactionPool;
+import com.android.wm.shell.common.DisplayLayout;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -58,23 +55,24 @@ public class DisplaySystemBarsControllerTest extends SysuiTestCase {
     @Mock
     private DisplayController mDisplayController;
     @Mock
+    private DisplayLayout mDisplayLayout;
+    @Mock
     private DisplayInsetsController mDisplayInsetsController;
     @Mock
     private Handler mHandler;
-    @Mock
-    private TransactionPool mTransactionPool;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        when(mDisplayLayout.rotation()).thenReturn(0);
+        when(mDisplayController.getDisplayLayout(anyInt())).thenReturn(mDisplayLayout);
 
         mController = new DisplaySystemBarsController(
                 mContext,
                 mIWindowManager,
                 mDisplayController,
                 mDisplayInsetsController,
-                mHandler,
-                mTransactionPool
+                mHandler
         );
     }
 

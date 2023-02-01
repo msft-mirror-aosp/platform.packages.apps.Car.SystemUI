@@ -73,6 +73,13 @@ public abstract class StatusIconController {
     /**
      * Sets the icon drawable to display.
      */
+    protected final void setIconContentDescription(String str) {
+        mStatusIconData.setContentDescription(str);
+    }
+
+    /**
+     * Sets the icon drawable to display.
+     */
     protected final void setIconDrawableToDisplay(Drawable drawable) {
         mStatusIconData.setIconDrawable(drawable);
     }
@@ -100,8 +107,8 @@ public abstract class StatusIconController {
     protected void updateIconView(ImageView view, StatusIconData data) {
         view.setImageDrawable(data.getIconDrawable());
         view.setVisibility(data.getIsIconVisible() ? View.VISIBLE : View.GONE);
+        view.setContentDescription(data.getContentDescription());
     }
-
     /**
      * Returns the resource id of the layout to be drawn inside the panel associated with this
      * status icon.
@@ -127,6 +134,11 @@ public abstract class StatusIconController {
      * views by calling {@link #onStatusUpdated} at the end.
      */
     protected abstract void updateStatus();
+
+    /**
+     * Gets the Id for the View.
+     */
+    protected abstract int getId();
 
     @VisibleForTesting
     boolean isViewRegistered(ImageView view) {

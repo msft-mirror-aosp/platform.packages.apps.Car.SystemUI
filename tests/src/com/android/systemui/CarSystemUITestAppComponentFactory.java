@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The Android Open Source Project
+ * Copyright (C) 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,18 @@
 
 package com.android.systemui;
 
-import dagger.Module;
+import android.content.Context;
 
 /**
- * Dagger module for including the CarSysUIComponent.
+ * Starts up SystemUI using {@link CarSystemUITestInitializer}.
  *
- * TODO(b/162923491): Remove or otherwise refactor this module. This is a stop gap.
+ * The {@link SystemUIAppComponentFactoryBase} is required for proper SystemUI functionality.
+ *
+ * @see SystemUIAppComponentFactoryBase
  */
-@Module(subcomponents = {CarSysUIComponent.class})
-public abstract class CarSysUIComponentModule {
+public class CarSystemUITestAppComponentFactory extends SystemUIAppComponentFactoryBase {
+    @Override
+    protected SystemUIInitializer createSystemUIInitializer(Context context) {
+        return new CarSystemUITestInitializer(context);
+    }
 }

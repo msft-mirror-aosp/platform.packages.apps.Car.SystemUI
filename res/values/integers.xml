@@ -39,20 +39,13 @@
     <integer name="privacy_chip_animation_transition_duration">500</integer>
     <!-- Privacy chip pill to circle animation delay -->
     <integer name="privacy_chip_pill_to_circle_delay">2000</integer>
-    <!-- Privacy chip no mic usage animation delay -->
-    <integer name="privacy_chip_no_mic_usage_delay">15000</integer>
+    <!-- Privacy chip no sensor usage animation delay -->
+    <integer name="privacy_chip_no_sensor_usage_delay">15000</integer>
     <!-- HVAC area ID that represents the associated property affecting the entire vehicle
       (e.g. HVAC Power On/Off affects the entire vehicle.) -->
     <integer name="hvac_global_area_id">117</integer>
     <!-- The total number of seat heat levels supported by VHAL. -->
     <integer name="hvac_seat_heat_level_count">4</integer>
-
-    <!-- How many times the increment/decrement button should be clicked to change 1 Fahrenheit
-      degree. (e.g. if set to 2, clicking once changes by 0.5 (=1/2) Fahrenheit degree.)   -->
-    <integer name="celsius_increment_fraction">2</integer>
-    <!-- How many times the increment/decrement button should be clicked to change 1 Celsius
-      degree. (e.g. if set to 2, clicking once changes by 0.5 (=1/2) Celsius degree.)   -->
-    <integer name="fahrenheit_increment_fraction">1</integer>
 
     <!-- The upper bounds for background colors used in Adjustable Background Temperature Control
     View. Note that these integers should be in Celsius and will be divided by 10 so that the first

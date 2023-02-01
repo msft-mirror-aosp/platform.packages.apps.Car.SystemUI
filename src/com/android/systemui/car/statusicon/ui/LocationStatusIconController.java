@@ -16,9 +16,12 @@
 
 package com.android.systemui.car.statusicon.ui;
 
+import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
+
 import android.app.ActivityManager;
 import android.car.Car;
 import android.car.user.CarUserManager;
+import android.car.user.UserLifecycleEventFilter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -62,12 +65,7 @@ public class LocationStatusIconController extends StatusIconController {
             new CarUserManager.UserLifecycleListener() {
                 @Override
                 public void onEvent(CarUserManager.UserLifecycleEvent event) {
-                    mContext.getMainExecutor().execute(() -> {
-                        if (event.getEventType()
-                                == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING) {
-                            updateIconVisibilityForCurrentUser();
-                        }
-                    });
+                    mContext.getMainExecutor().execute(() -> updateIconVisibilityForCurrentUser());
                 }
             };
 
@@ -106,11 +104,18 @@ public class LocationStatusIconController extends StatusIconController {
             CarUserManager carUserManager = (CarUserManager) car.getCarManager(
                     Car.CAR_USER_SERVICE);
             if (carUserManager != null && !mUserLifecycleListenerRegistered) {
-                carUserManager.addListener(Runnable::run, mUserLifecycleListener);
+                UserLifecycleEventFilter filter = new UserLifecycleEventFilter.Builder()
+                        .addEventType(USER_LIFECYCLE_EVENT_TYPE_SWITCHING).build();
+                carUserManager.addListener(Runnable::run, filter, mUserLifecycleListener);
                 mUserLifecycleListenerRegistered = true;
             } else {
                 Log.e(TAG, "CarUserManager could not be obtained.");
             }
         });
+    }
+
+    @Override
+    protected int getId() {
+        return R.id.qc_location_status_icon;
     }
 }

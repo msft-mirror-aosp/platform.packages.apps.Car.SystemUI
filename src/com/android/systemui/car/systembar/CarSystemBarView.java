@@ -32,11 +32,10 @@ import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
 import com.android.systemui.car.systembar.CarSystemBarController.NotificationsShadeController;
-import com.android.systemui.flags.FeatureFlags;
-import com.android.systemui.statusbar.phone.StatusBarIconController;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
+import java.util.Set;
 
 /**
  * A custom system bar for the automotive use case.
@@ -70,8 +69,8 @@ public class CarSystemBarView extends LinearLayout {
     private View mOcclusionButtons;
     private ViewGroup mQcEntryPointsContainer;
     private ViewGroup mReadOnlyIconsContainer;
-    // used to wire in open/close gestures for notifications
-    private OnTouchListener mStatusBarWindowTouchListener;
+    // used to wire in open/close gestures for overlay panels
+    private Set<OnTouchListener> mStatusBarWindowTouchListeners;
     private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
 
     public CarSystemBarView(Context context, AttributeSet attrs) {
@@ -92,6 +91,9 @@ public class CarSystemBarView extends LinearLayout {
         mReadOnlyIconsContainer = findViewById(R.id.read_only_icons_container);
         if (mNotificationsButton != null) {
             mNotificationsButton.setOnClickListener(this::onNotificationsClick);
+        }
+        if (mHvacButton != null) {
+            mHvacButton.setOnClickListener(this::onHvacClick);
         }
         // Needs to be clickable so that it will receive ACTION_MOVE events.
         setClickable(true);
@@ -115,27 +117,15 @@ public class CarSystemBarView extends LinearLayout {
 
     void setupReadOnlyIcons(ReadOnlyIconsController readOnlyIconsController) {
         if (mReadOnlyIconsContainer != null) {
-            readOnlyIconsController.addIconViews(mReadOnlyIconsContainer);
-        }
-    }
-
-    void setupIconController(FeatureFlags featureFlags, StatusBarIconController iconController) {
-        View mStatusIcons = findViewById(R.id.statusIcons);
-        if (mStatusIcons != null) {
-            // Attach the controllers for Status icons such as wifi and bluetooth if the standard
-            // container is in the view.
-            StatusBarIconController.DarkIconManager mDarkIconManager =
-                    new StatusBarIconController.DarkIconManager(
-                            mStatusIcons.findViewById(R.id.statusIcons), featureFlags);
-            mDarkIconManager.setShouldLog(true);
-            iconController.addIconGroup(mDarkIconManager);
+            readOnlyIconsController.addIconViews(mReadOnlyIconsContainer,
+                    /* shouldAttachPanel= */false);
         }
     }
 
     // Used to forward touch events even if the touch was initiated from a child component
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (mStatusBarWindowTouchListener != null) {
+        if (mStatusBarWindowTouchListeners != null && !mStatusBarWindowTouchListeners.isEmpty()) {
             if (!mButtonsDraggable) {
                 return false;
             }
@@ -143,8 +133,8 @@ public class CarSystemBarView extends LinearLayout {
                     : mNotificationsShadeController.isNotificationPanelOpen();
 
             // Forward touch events to the status bar window so it can drag
-            // windows if required (Notification shade)
-            mStatusBarWindowTouchListener.onTouch(this, ev);
+            // windows if required (ex. Notification shade)
+            triggerAllTouchListeners(this, ev);
 
             if (mConsumeTouchWhenPanelOpen && shouldConsumeEvent) {
                 return true;
@@ -174,24 +164,23 @@ public class CarSystemBarView extends LinearLayout {
     }
 
     /**
-     * Sets a touch listener that will be called from onInterceptTouchEvent and onTouchEvent
+     * Sets the touch listeners that will be called from onInterceptTouchEvent and onTouchEvent
      *
-     * @param statusBarWindowTouchListener The listener to call from touch and intercept touch
+     * @param statusBarWindowTouchListeners List of listeners to call from touch and intercept touch
      */
-    public void setStatusBarWindowTouchListener(OnTouchListener statusBarWindowTouchListener) {
-        mStatusBarWindowTouchListener = statusBarWindowTouchListener;
+    public void setStatusBarWindowTouchListeners(
+            Set<OnTouchListener> statusBarWindowTouchListeners) {
+        mStatusBarWindowTouchListeners = statusBarWindowTouchListeners;
     }
 
-    /** Gets the touch listener that will be called from onInterceptTouchEvent and onTouchEvent. */
-    public OnTouchListener getStatusBarWindowTouchListener() {
-        return mStatusBarWindowTouchListener;
+    /** Gets the touch listeners that will be called from onInterceptTouchEvent and onTouchEvent. */
+    public Set<OnTouchListener> getStatusBarWindowTouchListeners() {
+        return mStatusBarWindowTouchListeners;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (mStatusBarWindowTouchListener != null) {
-            mStatusBarWindowTouchListener.onTouch(this, event);
-        }
+        triggerAllTouchListeners(this, event);
         return super.onTouchEvent(event);
     }
 
@@ -202,12 +191,24 @@ public class CarSystemBarView extends LinearLayout {
             return;
         }
         if (mNotificationsShadeController != null) {
+            // If the notification shade is about to open, close the hvac panel
+            if (!mNotificationsShadeController.isNotificationPanelOpen()
+                    && mHvacPanelController != null
+                    && mHvacPanelController.isHvacPanelOpen()) {
+                mHvacPanelController.togglePanel();
+            }
             mNotificationsShadeController.togglePanel();
         }
     }
 
     protected void onHvacClick(View v) {
         if (mHvacPanelController != null) {
+            // If the hvac panel is about to open, close the notification shade
+            if (!mHvacPanelController.isHvacPanelOpen()
+                    && mNotificationsShadeController != null
+                    && mNotificationsShadeController.isNotificationPanelOpen()) {
+                mNotificationsShadeController.togglePanel();
+            }
             mHvacPanelController.togglePanel();
         }
     }
@@ -292,6 +293,15 @@ public class CarSystemBarView extends LinearLayout {
     private void setOcclusionButtonsVisibility(@View.Visibility int visibility) {
         if (mOcclusionButtons != null) {
             mOcclusionButtons.setVisibility(visibility);
+        }
+    }
+
+    private void triggerAllTouchListeners(View view, MotionEvent event) {
+        if (mStatusBarWindowTouchListeners == null) {
+            return;
+        }
+        for (OnTouchListener listener : mStatusBarWindowTouchListeners) {
+            listener.onTouch(view, event);
         }
     }
 

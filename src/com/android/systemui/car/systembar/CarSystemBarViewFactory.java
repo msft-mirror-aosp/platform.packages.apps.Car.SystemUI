@@ -170,4 +170,24 @@ public class CarSystemBarViewFactory {
         mCachedViewMap.put(type, view);
         return mCachedViewMap.get(type);
     }
+
+    /** Gets the selected Quick Controls class name. */
+    protected String getSelectedQuickControlsClassName() {
+        return mQuickControlsEntryPointsController.getClassNameOfSelectedView();
+    }
+
+    /** Calls onClick for the given Quick Controls class name. */
+    protected void callQuickControlsOnClickFromClassName(String clsName) {
+        View statusIconView = mQuickControlsEntryPointsController.getViewFromClassName(clsName);
+        if (statusIconView != null) {
+            statusIconView.callOnClick();
+        }
+    }
+
+    /** Resets the cached Views. */
+    protected void resetCache() {
+        mQuickControlsEntryPointsController.resetCache();
+        mReadOnlyIconsController.resetCache();
+        mCachedViewMap.clear();
+    }
 }

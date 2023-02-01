@@ -30,7 +30,6 @@ import android.car.Car;
 import android.car.user.CarUserManager;
 import android.car.user.UserCreationResult;
 import android.car.user.UserSwitchResult;
-import android.car.userlib.UserHelper;
 import android.car.util.concurrent.AsyncFuture;
 import android.content.Context;
 import android.content.Intent;
@@ -50,11 +49,13 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
+import com.android.car.internal.user.UserHelper;
 import com.android.car.qc.QCItem;
 import com.android.car.qc.QCList;
 import com.android.car.qc.QCRow;
 import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.internal.util.UserIcons;
+import com.android.settingslib.utils.StringUtil;
 import com.android.systemui.R;
 import com.android.systemui.car.userswitcher.UserIconProvider;
 
@@ -105,12 +106,19 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             listBuilder.addRow(createOrganizationOwnedDeviceRow());
         }
 
+        boolean isLogoutEnabled = mDevicePolicyManager.isLogoutEnabled()
+                && mDevicePolicyManager.getLogoutUser() != null;
+
         int fgUserId = ActivityManager.getCurrentUser();
         UserHandle fgUserHandle = UserHandle.of(fgUserId);
         // If the foreground user CANNOT switch to other users, only display the foreground user.
         if (mUserManager.getUserSwitchability(fgUserHandle) != SWITCHABILITY_STATUS_OK) {
             UserInfo currentUser = mUserManager.getUserInfo(ActivityManager.getCurrentUser());
-            return listBuilder.addRow(createUserProfileRow(currentUser)).build();
+            listBuilder.addRow(createUserProfileRow(currentUser));
+            if (isLogoutEnabled) {
+                listBuilder.addRow(createLogOutRow());
+            }
+            return listBuilder.build();
         }
 
         List<UserInfo> profiles = getProfileList();
@@ -120,6 +128,10 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         listBuilder.addRow(createGuestProfileRow());
         if (!hasAddUserRestriction(fgUserHandle)) {
             listBuilder.addRow(createAddProfileRow());
+        }
+
+        if (isLogoutEnabled) {
+            listBuilder.addRow(createLogOutRow());
         }
         return listBuilder.build();
     }
@@ -185,7 +197,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             }
         };
 
-        return createProfileRow(mContext.getString(R.string.start_guest_session),
+        return createProfileRow(mContext.getString(com.android.internal.R.string.guest_name),
                 mUserIconProvider.getRoundedGuestDefaultIcon(mContext.getResources()),
                 actionHandler);
     }
@@ -205,6 +217,15 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         return createProfileRow(mContext.getString(R.string.car_add_user),
                 mUserIconProvider.getDrawableWithBadge(mContext, getCircularAddUserIcon()),
                 actionHandler);
+    }
+
+    private QCRow createLogOutRow() {
+        QCRow row = new QCRow.Builder()
+                .setIcon(Icon.createWithResource(mContext, R.drawable.car_ic_logout))
+                .setTitle(mContext.getString(R.string.end_session))
+                .build();
+        row.setActionHandler((item, context, intent) -> logoutUser());
+        return row;
     }
 
     private QCRow createProfileRow(String title, Drawable iconDrawable,
@@ -238,6 +259,24 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         }
     }
 
+    private void logoutUser() {
+        mContext.sendBroadcastAsUser(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
+                UserHandle.CURRENT);
+        AsyncFuture<UserSwitchResult> userSwitchResultFuture = mCarUserManager.logoutUser();
+        UserSwitchResult userSwitchResult;
+        try {
+            userSwitchResult = userSwitchResultFuture.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            Log.w(TAG, "Could not log out user.", e);
+            return;
+        }
+        if (userSwitchResult == null) {
+            Log.w(TAG, "Timed out while logging out user: " + TIMEOUT_MS + "ms");
+        } else if (!userSwitchResult.isSuccess()) {
+            Log.w(TAG, "Could not log out user: " + userSwitchResult);
+        }
+    }
+
     /**
      * Finds the existing Guest user, or creates one if it doesn't exist.
      *
@@ -247,7 +286,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     @Nullable
     private UserInfo createNewOrFindExistingGuest(Context context) {
         AsyncFuture<UserCreationResult> future = mCarUserManager.createGuest(
-                context.getString(R.string.car_guest));
+                context.getString(com.android.internal.R.string.guest_name));
         // CreateGuest will return null if a guest already exists.
         UserInfo newGuest = getUserInfo(future);
         if (newGuest != null) {
@@ -275,7 +314,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             Log.w(TAG, "Could not create user: " + userCreationResult);
             return null;
         }
-        return userCreationResult.getUser();
+        return mUserManager.getUserInfo(userCreationResult.getUser().getIdentifier());
     }
 
     private RoundedBitmapDrawable getCircularAddUserIcon() {
@@ -310,10 +349,8 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         AlertDialog maxUsersDialog = new AlertDialog.Builder(mContext,
                 com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setTitle(R.string.profile_limit_reached_title)
-                .setMessage(mContext.getResources().getQuantityString(
-                        R.plurals.profile_limit_reached_message,
-                        getMaxSupportedRealUsers(),
-                        getMaxSupportedRealUsers()))
+                .setMessage(StringUtil.getIcuPluralsString(mContext, getMaxSupportedRealUsers(),
+                                R.string.profile_limit_reached_message))
                 .setPositiveButton(android.R.string.ok, null)
                 .create();
         // Sets window flags for the SysUI dialog
@@ -357,9 +394,9 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             try {
                 UserInfo user = getUserInfo(future);
                 if (user != null) {
-                    UserHelper.setDefaultNonAdminRestrictions(mContext, user,
+                    UserHelper.setDefaultNonAdminRestrictions(mContext, user.getUserHandle(),
                             /* enable= */ true);
-                    UserHelper.assignDefaultIcon(mContext, user);
+                    UserHelper.assignDefaultIcon(mContext, user.getUserHandle());
                     return user;
                 } else {
                     Log.e(TAG, "Failed to create user in the background");

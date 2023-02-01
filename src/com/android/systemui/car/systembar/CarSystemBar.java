@@ -26,7 +26,10 @@ import static com.android.systemui.statusbar.phone.BarTransitions.MODE_TRANSPARE
 
 import android.app.StatusBarManager.Disable2Flags;
 import android.app.StatusBarManager.DisableFlags;
+import android.app.UiModeManager;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.inputmethodservice.InputMethodService;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -40,17 +43,19 @@ import android.view.WindowManager;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.internal.statusbar.IStatusBarService;
+import com.android.internal.statusbar.LetterboxDetails;
 import com.android.internal.statusbar.RegisterStatusBarResult;
 import com.android.internal.view.AppearanceRegion;
-import com.android.systemui.SystemUI;
+import com.android.systemui.CoreStartable;
+import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.systemui.plugins.DarkIconDispatcher;
-import com.android.systemui.shared.system.ActivityManagerWrapper;
 import com.android.systemui.shared.system.TaskStackChangeListener;
+import com.android.systemui.shared.system.TaskStackChangeListeners;
 import com.android.systemui.statusbar.AutoHideUiElement;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.phone.AutoHideController;
@@ -59,11 +64,12 @@ import com.android.systemui.statusbar.phone.LightBarController;
 import com.android.systemui.statusbar.phone.PhoneStatusBarPolicy;
 import com.android.systemui.statusbar.phone.StatusBarSignalPolicy;
 import com.android.systemui.statusbar.phone.SysuiDarkIconDispatcher;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 
-import java.io.FileDescriptor;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -71,7 +77,8 @@ import javax.inject.Inject;
 import dagger.Lazy;
 
 /** Navigation bars customized for the automotive use case. */
-public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
+public class CarSystemBar extends CoreStartable implements CommandQueue.Callbacks,
+        ConfigurationController.ConfigurationListener {
     private final CarSystemBarController mCarSystemBarController;
     private final SysuiDarkIconDispatcher mStatusBarIconController;
     private final WindowManager mWindowManager;
@@ -85,11 +92,13 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
     private final Lazy<KeyguardStateController> mKeyguardStateControllerLazy;
     private final Lazy<PhoneStatusBarPolicy> mIconPolicyLazy;
     private final HvacController mHvacController;
+
+    private UiModeManager mUiModeManager;
+
     private final int mDisplayId;
     private final SystemBarConfigs mSystemBarConfigs;
 
     private StatusBarSignalPolicy mSignalPolicy;
-    private ActivityManagerWrapper mActivityManagerWrapper;
 
     // If the nav bar should be hidden when the soft keyboard is visible.
     private boolean mHideTopBarForKeyboard;
@@ -122,6 +131,8 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
     private boolean mStatusBarTransientShown;
     private boolean mNavBarTransientShown;
 
+    private boolean mIsUiModeNight = false;
+
     @Inject
     public CarSystemBar(Context context,
             CarSystemBarController carSystemBarController,
@@ -138,9 +149,10 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
             IStatusBarService barService,
             Lazy<KeyguardStateController> keyguardStateControllerLazy,
             Lazy<PhoneStatusBarPolicy> iconPolicyLazy,
-            StatusBarSignalPolicy signalPolicy,
             HvacController hvacController,
-            SystemBarConfigs systemBarConfigs
+            StatusBarSignalPolicy signalPolicy,
+            SystemBarConfigs systemBarConfigs,
+            ConfigurationController configurationController
     ) {
         super(context);
         mCarSystemBarController = carSystemBarController;
@@ -159,6 +171,8 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
         mSystemBarConfigs = systemBarConfigs;
         mSignalPolicy = signalPolicy;
         mDisplayId = context.getDisplayId();
+        mUiModeManager = mContext.getSystemService(UiModeManager.class);
+        configurationController.addCallback(this);
     }
 
     @Override
@@ -185,7 +199,7 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
 
         onSystemBarAttributesChanged(mDisplayId, result.mAppearance, result.mAppearanceRegions,
                 result.mNavbarColorManagedByIme, result.mBehavior, result.mRequestedVisibilities,
-                result.mPackageName);
+                result.mPackageName, result.mLetterboxDetails);
 
         // StatusBarManagerService has a back up of IME token and it's restored here.
         setImeWindowStatus(mDisplayId, result.mImeToken, result.mImeWindowVis,
@@ -253,9 +267,10 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
 
         createSystemBar(result);
 
-        mActivityManagerWrapper = ActivityManagerWrapper.getInstance();
-        mActivityManagerWrapper.registerTaskStackListener(mButtonSelectionStateListener);
-        mActivityManagerWrapper.registerTaskStackListener(new TaskStackChangeListener() {
+        TaskStackChangeListeners.getInstance().registerTaskStackListener(
+                mButtonSelectionStateListener);
+        TaskStackChangeListeners.getInstance().registerTaskStackListener(
+                new TaskStackChangeListener() {
             @Override
             public void onLockTaskModeChanged(int mode) {
                 mCarSystemBarController.refreshSystemBar();
@@ -423,7 +438,7 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
     /**
      * We register for soft keyboard visibility events such that we can hide the navigation bar
      * giving more screen space to the IME. Note: this is optional and controlled by
-     * {@code com.android.internal.R.bool.config_automotiveHideNavBarForKeyboard}.
+     * {@code com.android.internal.R.bool.config_hideNavBarForKeyboard}.
      */
     @Override
     public void setImeWindowStatus(int displayId, IBinder token, int vis, int backDisposition,
@@ -462,7 +477,8 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
             boolean navbarColorManagedByIme,
             @WindowInsetsController.Behavior int behavior,
             InsetsVisibilities requestedVisibilities,
-            String packageName) {
+            String packageName,
+            LetterboxDetails[] letterboxDetails) {
         if (displayId != mDisplayId) {
             return;
         }
@@ -491,31 +507,27 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
 
     private void updateStatusBarAppearance() {
         int numStacks = mAppearanceRegions.length;
-        int numLightStacks = 0;
-
-        // We can only have maximum one light stack.
-        int indexLightStack = -1;
+        final ArrayList<Rect> lightBarBounds = new ArrayList<>();
 
         for (int i = 0; i < numStacks; i++) {
-            if (isLight(mAppearanceRegions[i].getAppearance())) {
-                numLightStacks++;
-                indexLightStack = i;
+            final AppearanceRegion ar = mAppearanceRegions[i];
+            if (isLight(ar.getAppearance())) {
+                lightBarBounds.add(ar.getBounds());
             }
         }
 
         // If all stacks are light, all icons become dark.
-        if (numLightStacks == numStacks) {
+        if (lightBarBounds.size() == numStacks) {
             mStatusBarIconController.setIconsDarkArea(null);
             mStatusBarIconController.getTransitionsController().setIconsDark(
                     /* dark= */ true, /* animate= */ false);
-        } else if (numLightStacks == 0) {
+        } else if (lightBarBounds.isEmpty()) {
             // If no one is light, all icons become white.
             mStatusBarIconController.getTransitionsController().setIconsDark(
                     /* dark= */ false, /* animate= */ false);
         } else {
             // Not the same for every stack, update icons in area only.
-            mStatusBarIconController.setIconsDarkArea(
-                    mAppearanceRegions[indexLightStack].getBounds());
+            mStatusBarIconController.setIconsDarkArea(lightBarBounds);
             mStatusBarIconController.getTransitionsController().setIconsDark(
                     /* dark= */ true, /* animate= */ false);
         }
@@ -582,7 +594,7 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
     }
 
     @Override
-    public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
+    public void dump(PrintWriter pw, String[] args) {
         pw.print("  mTaskStackListener=");
         pw.println(mButtonSelectionStateListener);
         pw.print("  mBottomSystemBarView=");
@@ -612,5 +624,60 @@ public class CarSystemBar extends SystemUI implements CommandQueue.Callbacks {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onConfigChanged(Configuration newConfig) {
+        boolean isConfigNightMode = (newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                == Configuration.UI_MODE_NIGHT_YES;
+        // Only refresh UI on Night mode changes
+        if (isConfigNightMode != mIsUiModeNight) {
+            mIsUiModeNight = isConfigNightMode;
+            mUiModeManager.setNightModeActivated(mIsUiModeNight);
+
+            // cache the current state
+            // The focused view will be destroyed during re-layout, causing the framework to adjust
+            // the focus unexpectedly. To avoid that, move focus to a view that won't be
+            // destroyed during re-layout and has no focus highlight (the FocusParkingView), then
+            // move focus back to the previously focused view after re-layout.
+            mCarSystemBarController.cacheAndHideFocus();
+            String selectedQuickControlsClsName = null;
+            View profilePickerView = null;
+            boolean isProfilePickerOpen = false;
+            if (mTopSystemBarView != null) {
+                profilePickerView = mTopSystemBarView.findViewById(
+                        R.id.user_name);
+            }
+            if (profilePickerView != null) isProfilePickerOpen = profilePickerView.isSelected();
+            if (isProfilePickerOpen) {
+                profilePickerView.callOnClick();
+            } else {
+                selectedQuickControlsClsName =
+                        mCarSystemBarController.getSelectedQuickControlsClassName();
+                mCarSystemBarController.callQuickControlsOnClickFromClassName(
+                        selectedQuickControlsClsName);
+            }
+
+            mCarSystemBarController.resetCache();
+            restartNavBars();
+
+            // retrieve the previous state
+            if (isProfilePickerOpen) {
+                if (mTopSystemBarView != null) {
+                    profilePickerView = mTopSystemBarView.findViewById(
+                            R.id.user_name);
+                }
+                if (profilePickerView != null) profilePickerView.callOnClick();
+            } else {
+                mCarSystemBarController.callQuickControlsOnClickFromClassName(
+                        selectedQuickControlsClsName);
+            }
+            mCarSystemBarController.restoreFocus();
+        }
+    }
+
+    @VisibleForTesting
+    void setUiModeManager(UiModeManager uiModeManager) {
+        mUiModeManager = uiModeManager;
     }
 }

@@ -76,7 +76,8 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mTestableResources = mContext.getOrCreateTestableResources();
-        mExecutor = new FakeExecutor(new FakeSystemClock());
+        mClock = new FakeSystemClock();
+        mExecutor = new FakeExecutor(mClock);
         mCarUserSwitchingDialogController = new UserSwitchTransitionViewController(
                 mContext,
                 mTestableResources.getResources(),
@@ -196,10 +197,10 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
         mExecutor.runAllReady();
         reset(mOverlayViewGlobalStateController);
 
-        getContext().getMainThreadHandler().postDelayed(() -> {
-            verify(mOverlayViewGlobalStateController).hideView(
-                    eq(mCarUserSwitchingDialogController), any());
-        }, mCarUserSwitchingDialogController.getWindowShownTimeoutMs() + 10);
+        mClock.advanceTime(mCarUserSwitchingDialogController.getWindowShownTimeoutMs() + 10);
+
+        verify(mOverlayViewGlobalStateController).hideView(
+                eq(mCarUserSwitchingDialogController), any());
     }
 
     @Test
@@ -212,10 +213,10 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
         mExecutor.runAllReady();
         reset(mOverlayViewGlobalStateController);
 
-        getContext().getMainThreadHandler().postDelayed(() -> {
-            verify(mOverlayViewGlobalStateController, never()).hideView(
-                    eq(mCarUserSwitchingDialogController), any());
-        }, mCarUserSwitchingDialogController.getWindowShownTimeoutMs() + 10);
+        mClock.advanceTime(mCarUserSwitchingDialogController.getWindowShownTimeoutMs() + 10);
+
+        verify(mOverlayViewGlobalStateController, never()).hideView(
+                eq(mCarUserSwitchingDialogController), any());
     }
 
     private void mockGetUserInfo(int userId) {

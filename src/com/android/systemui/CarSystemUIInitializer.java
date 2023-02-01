@@ -11,13 +11,12 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
 
 package com.android.systemui;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.UserHandle;
 
 import com.android.systemui.dagger.GlobalRootComponent;
@@ -25,50 +24,33 @@ import com.android.systemui.dagger.SysUIComponent;
 import com.android.systemui.dagger.WMComponent;
 import com.android.systemui.wmshell.CarWMComponent;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Class factory to provide car specific SystemUI components.
  */
-public class CarSystemUIFactory extends SystemUIFactory {
-    @Override
-    protected GlobalRootComponent buildGlobalRootComponent(Context context) {
-        return DaggerCarGlobalRootComponent.builder()
-                .context(context)
-                .build();
+public class CarSystemUIInitializer extends SystemUIInitializer {
+    public CarSystemUIInitializer(Context context) {
+        super(context);
     }
 
     @Override
-    public String[] getSystemUIServiceComponents(Resources resources) {
-        Set<String> names = new HashSet<>();
-
-        for (String s : super.getSystemUIServiceComponents(resources)) {
-            names.add(s);
-        }
-
-        for (String s : resources.getStringArray(R.array.config_systemUIServiceComponentsExclude)) {
-            names.remove(s);
-        }
-
-        for (String s : resources.getStringArray(R.array.config_systemUIServiceComponentsInclude)) {
-            names.add(s);
-        }
-
-        String[] finalNames = new String[names.size()];
-        names.toArray(finalNames);
-
-        return finalNames;
+    protected GlobalRootComponent.Builder getGlobalRootComponentBuilder() {
+        return DaggerCarGlobalRootComponent.builder();
     }
 
     @Override
     protected SysUIComponent.Builder prepareSysUIComponentBuilder(
             SysUIComponent.Builder sysUIBuilder, WMComponent wm) {
         CarWMComponent carWm = (CarWMComponent) wm;
+        initWmComponents(carWm);
         boolean isSystemUser = UserHandle.myUserId() == UserHandle.USER_SYSTEM;
         return ((CarSysUIComponent.Builder) sysUIBuilder).setRootTaskDisplayAreaOrganizer(
                 isSystemUser ? Optional.of(carWm.getRootTaskDisplayAreaOrganizer())
                         : Optional.empty());
+    }
+
+    private void initWmComponents(CarWMComponent carWm) {
+        carWm.getDisplaySystemBarsController();
     }
 }

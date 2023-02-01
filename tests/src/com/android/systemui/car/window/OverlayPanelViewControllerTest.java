@@ -196,10 +196,13 @@ public class OverlayPanelViewControllerTest extends SysuiTestCase {
 
         mOverlayPanelViewController.animateCollapsePanel();
 
+        ArgumentCaptor<Animator> animatorCaptor = ArgumentCaptor.forClass(Animator.class);
         ArgumentCaptor<Float> endValueCaptor = ArgumentCaptor.forClass(Float.class);
         verify(mFlingAnimationUtils).apply(
-                any(Animator.class), anyFloat(), endValueCaptor.capture(), anyFloat());
+                animatorCaptor.capture(), anyFloat(), endValueCaptor.capture(), anyFloat());
         assertThat(endValueCaptor.getValue().intValue()).isEqualTo(0);
+        // clean up animator listeners to prevent subsequent calls after test execution is finished
+        animatorCaptor.getValue().removeAllListeners();
     }
 
     @Test
@@ -218,11 +221,14 @@ public class OverlayPanelViewControllerTest extends SysuiTestCase {
 
         mOverlayPanelViewController.animateCollapsePanel();
 
+        ArgumentCaptor<Animator> animatorCaptor = ArgumentCaptor.forClass(Animator.class);
         ArgumentCaptor<Float> endValueCaptor = ArgumentCaptor.forClass(Float.class);
         verify(mFlingAnimationUtils).apply(
-                any(Animator.class), anyFloat(), endValueCaptor.capture(), anyFloat());
+                animatorCaptor.capture(), anyFloat(), endValueCaptor.capture(), anyFloat());
         assertThat(endValueCaptor.getValue().intValue()).isEqualTo(
                 mOverlayPanelViewController.getLayout().getHeight());
+        // clean up animator listeners to prevent subsequent calls after test execution is finished
+        animatorCaptor.getValue().removeAllListeners();
     }
 
     @Test
@@ -325,23 +331,13 @@ public class OverlayPanelViewControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void setPanelVisible_setTrue_windowNotVisible_setsWindowVisible() {
+    public void setPanelVisible_setTrue_showsView() {
         mOverlayPanelViewController.inflate(mBaseLayout);
         when(mOverlayViewGlobalStateController.isWindowVisible()).thenReturn(false);
 
         mOverlayPanelViewController.setPanelVisible(true);
 
         verify(mOverlayViewGlobalStateController).showView(mOverlayPanelViewController);
-    }
-
-    @Test
-    public void setPanelVisible_setTrue_windowVisible_doesNotSetWindowVisible() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
-        when(mOverlayViewGlobalStateController.isWindowVisible()).thenReturn(true);
-
-        mOverlayPanelViewController.setPanelVisible(true);
-
-        verify(mOverlayViewGlobalStateController, never()).showView(mOverlayPanelViewController);
     }
 
     @Test

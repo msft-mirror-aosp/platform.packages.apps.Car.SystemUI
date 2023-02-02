@@ -432,7 +432,7 @@ public class CarSystemBarController {
             NotificationsShadeController notifShadeController,
             HvacPanelController hvacPanelController,
             HvacPanelOverlayViewController hvacPanelOverlayViewController) {
-        view.updateHomeButtonVisibility(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext));
+        view.updateHomeButtonVisibility(CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
         view.setStatusBarWindowTouchListeners(statusBarTouchListeners);
         view.setNotificationsPanelController(notifShadeController);
         view.setHvacPanelController(hvacPanelController);

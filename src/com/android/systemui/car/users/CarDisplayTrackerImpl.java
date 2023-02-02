@@ -20,6 +20,7 @@ import static android.car.CarOccupantZoneManager.DISPLAY_TYPE_MAIN;
 import static android.hardware.display.DisplayManager.EVENT_FLAG_DISPLAY_BRIGHTNESS;
 
 import static com.android.systemui.car.users.CarSystemUIUserUtil.isCurrentSystemUIDisplay;
+import static com.android.systemui.car.users.CarSystemUIUserUtil.isMUMDSystemUI;
 
 import android.car.Car;
 import android.car.CarOccupantZoneManager;
@@ -53,11 +54,19 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
     private final Handler mHandler;
     private CarOccupantZoneManager mCarOccupantZoneManager;
     private CarOccupantZoneManager.OccupantZoneInfo mOccupantZone;
-    private boolean mInitialized;
     @GuardedBy("mDisplayCallbacks")
     private final List<DisplayTrackerCallbackData> mDisplayCallbacks = new ArrayList<>();
     @GuardedBy("mBrightnessCallbacks")
     private final List<DisplayTrackerCallbackData> mBrightnessCallbacks = new ArrayList<>();
+
+    private final CarOccupantZoneManager.OccupantZoneConfigChangeListener mConfigChangeListener =
+            new CarOccupantZoneManager.OccupantZoneConfigChangeListener() {
+                @Override
+                public void onOccupantZoneConfigChanged(int changeFlags) {
+                    mOccupantZone = mCarOccupantZoneManager.getOccupantZoneForUser(
+                            mUserTracker.getUserHandle());
+                }
+            };
 
     private final DisplayManager.DisplayListener mDisplayListener =
             new DisplayManager.DisplayListener() {
@@ -120,7 +129,10 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
 
     @Override
     public int getDefaultDisplayId() {
-        if (mInitialized) {
+        if (!isMUMDSystemUI()) {
+            return Display.DEFAULT_DISPLAY;
+        }
+        if (mOccupantZone != null) {
             Display display = mCarOccupantZoneManager.getDisplayForOccupant(mOccupantZone,
                     DISPLAY_TYPE_MAIN);
             if (display != null) {
@@ -132,7 +144,10 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
 
     @Override
     public Display[] getAllDisplays() {
-        if (mInitialized) {
+        if (!isMUMDSystemUI()) {
+            return mDisplayManager.getDisplays();
+        }
+        if (mOccupantZone != null) {
             return mCarOccupantZoneManager.getAllDisplaysForOccupant(mOccupantZone)
                     .toArray(Display[]::new);
         }
@@ -180,17 +195,14 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
     @WorkerThread
     private void onDisplayAdded(int displayId, List<DisplayTrackerCallbackData> callbacks) {
         Assert.isNotMainThread();
-        if (!mInitialized) {
-            return;
-        }
-        if (!isCurrentSystemUIDisplay(mContext, mCarOccupantZoneManager,
-                mUserTracker.getUserHandle(), displayId)) {
+        if (!shouldExecuteDisplayCallback(displayId)) {
             return;
         }
 
         callbacks.forEach(it -> {
-            if (it.mCallback.get() != null) {
-                it.mExecutor.execute(() -> it.mCallback.get().onDisplayAdded(displayId));
+            DisplayTracker.Callback callback = it.mCallback.get();
+            if (callback != null) {
+                it.mExecutor.execute(() -> callback.onDisplayAdded(displayId));
             }
         });
     }
@@ -198,17 +210,14 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
     @WorkerThread
     private void onDisplayRemoved(int displayId, List<DisplayTrackerCallbackData> callbacks) {
         Assert.isNotMainThread();
-        if (!mInitialized) {
-            return;
-        }
-        if (!isCurrentSystemUIDisplay(mContext, mCarOccupantZoneManager,
-                mUserTracker.getUserHandle(), displayId)) {
+        if (!shouldExecuteDisplayCallback(displayId)) {
             return;
         }
 
         callbacks.forEach(it -> {
-            if (it.mCallback.get() != null) {
-                it.mExecutor.execute(() -> it.mCallback.get().onDisplayRemoved(displayId));
+            DisplayTracker.Callback callback = it.mCallback.get();
+            if (callback != null) {
+                it.mExecutor.execute(() -> callback.onDisplayRemoved(displayId));
             }
         });
     }
@@ -216,19 +225,24 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
     @WorkerThread
     private void onDisplayChanged(int displayId, List<DisplayTrackerCallbackData> callbacks) {
         Assert.isNotMainThread();
-        if (!mInitialized) {
-            return;
-        }
-        if (!isCurrentSystemUIDisplay(mContext, mCarOccupantZoneManager,
-                mUserTracker.getUserHandle(), displayId)) {
+        if (!shouldExecuteDisplayCallback(displayId)) {
             return;
         }
 
         callbacks.forEach(it -> {
-            if (it.mCallback.get() != null) {
-                it.mExecutor.execute(() -> it.mCallback.get().onDisplayChanged(displayId));
+            DisplayTracker.Callback callback = it.mCallback.get();
+            if (callback != null) {
+                it.mExecutor.execute(() -> callback.onDisplayChanged(displayId));
             }
         });
+    }
+
+    private boolean shouldExecuteDisplayCallback(int displayId) {
+        if (!isMUMDSystemUI()) {
+            return true;
+        }
+        return mOccupantZone != null && isCurrentSystemUIDisplay(mCarOccupantZoneManager,
+                mUserTracker.getUserHandle(), displayId);
     }
 
     private final CarServiceProvider.CarServiceOnConnectedListener mCarServiceOnConnectedListener =
@@ -241,7 +255,8 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
                     if (mCarOccupantZoneManager != null) {
                         mOccupantZone = mCarOccupantZoneManager.getOccupantZoneForUser(
                                 mUserTracker.getUserHandle());
-                        mInitialized = true;
+                        mCarOccupantZoneManager.registerOccupantZoneConfigChangeListener(
+                                mConfigChangeListener);
                     }
                 }
             };
@@ -256,10 +271,11 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
         }
 
         boolean sameOrEmpty(DisplayTracker.Callback other) {
-            if (mCallback.get() == null) {
+            DisplayTracker.Callback callback = mCallback.get();
+            if (callback == null) {
                 return true;
             }
-            return mCallback.get().equals(other);
+            return callback.equals(other);
         }
     }
 }

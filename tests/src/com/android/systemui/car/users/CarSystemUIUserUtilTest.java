@@ -55,8 +55,6 @@ public class CarSystemUIUserUtilTest extends SysuiTestCase {
 
     @Mock
     private UserTracker mUserTracker;
-    @Mock
-    private UserManager mUserManager;
 
     @Before
     public void setUp() {
@@ -68,7 +66,6 @@ public class CarSystemUIUserUtilTest extends SysuiTestCase {
                 .strictness(Strictness.LENIENT)
                 .startMocking();
         mContext = spy(mContext);
-        mContext.addMockSystemService(UserManager.class, mUserManager);
         when(mUserTracker.getUserHandle()).thenReturn(mUserHandle);
         AndroidMockitoHelper.mockUmIsHeadlessSystemUserMode(true);
         AndroidMockitoHelper.mockAmGetCurrentUser(mActivityManagerTestUser);
@@ -119,32 +116,32 @@ public class CarSystemUIUserUtilTest extends SysuiTestCase {
 
     @Test
     public void isSecondaryMUMDSystemUI_usersOnSecondaryDisplaysNotSupported_returnsFalse() {
-        when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(false);
+        when(UserManager.isVisibleBackgroundUsersEnabled()).thenReturn(false);
 
-        assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)).isFalse();
+        assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI()).isFalse();
     }
 
     @Test
     public void isSecondaryMUMDSystemUI_systemUser_returnsFalse() {
-        when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(true);
+        when(UserManager.isVisibleBackgroundUsersEnabled()).thenReturn(true);
         when(Process.myUserHandle()).thenReturn(UserHandle.SYSTEM);
 
-        assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)).isFalse();
+        assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI()).isFalse();
     }
 
     @Test
     public void isSecondaryMUMDSystemUI_currentUser_returnsFalse() {
-        when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(true);
+        when(UserManager.isVisibleBackgroundUsersEnabled()).thenReturn(true);
         when(Process.myUserHandle()).thenReturn(UserHandle.of(mActivityManagerTestUser));
 
-        assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)).isFalse();
+        assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI()).isFalse();
     }
 
     @Test
     public void isSecondaryMUMDSystemUI_isSecondaryUser_returnsTrue() {
-        when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(true);
+        when(UserManager.isVisibleBackgroundUsersEnabled()).thenReturn(true);
         when(Process.myUserHandle()).thenReturn(mUserHandle);
 
-        assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)).isTrue();
+        assertThat(CarSystemUIUserUtil.isSecondaryMUMDSystemUI()).isTrue();
     }
 }

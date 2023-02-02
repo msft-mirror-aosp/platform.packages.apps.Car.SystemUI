@@ -33,7 +33,7 @@ public class CarSystemUIApplication extends SystemUIApplication {
 
     @Override
     public void onCreate() {
-        mIsSecondaryUserSystemUI = CarSystemUIUserUtil.isSecondaryMUMDSystemUI(this);
+        mIsSecondaryUserSystemUI = CarSystemUIUserUtil.isSecondaryMUMDSystemUI();
         super.onCreate();
         if (mIsSecondaryUserSystemUI) {
             Car car = Car.createCar(this);

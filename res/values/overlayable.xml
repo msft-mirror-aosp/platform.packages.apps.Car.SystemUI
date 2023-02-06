@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Copyright (C) 2022 The Android Open Source Project
+<!-- Copyright (C) 2023 The Android Open Source Project
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -405,6 +405,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_ic_arrow"/>
       <item type="drawable" name="car_ic_arrow_drop_up"/>
       <item type="drawable" name="car_ic_brightness"/>
+      <item type="drawable" name="car_ic_drive_mode"/>
       <item type="drawable" name="car_ic_home"/>
       <item type="drawable" name="car_ic_home_selected"/>
       <item type="drawable" name="car_ic_hvac"/>
@@ -491,6 +492,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="stat_sys_signal_null"/>
       <item type="drawable" name="status_icon_background"/>
       <item type="drawable" name="status_icon_panel_bg"/>
+      <item type="drawable" name="system_animation_ongoing_dot"/>
       <item type="drawable" name="system_bar_background"/>
       <item type="drawable" name="system_bar_background_pill"/>
       <item type="drawable" name="system_bar_button_background"/>
@@ -536,6 +538,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="direction_face_and_floor"/>
       <item type="id" name="direction_floor"/>
       <item type="id" name="display_input_lock_icon"/>
+      <item type="id" name="drive_mode_panel"/>
       <item type="id" name="driver_hvac"/>
       <item type="id" name="empty_notification_text"/>
       <item type="id" name="exit_button"/>
@@ -565,6 +568,10 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="hvac_temperature_bar"/>
       <item type="id" name="hvac_temperature_text"/>
       <item type="id" name="icon"/>
+      <item type="id" name="immersive_cam_indicator"/>
+      <item type="id" name="immersive_cam_indicator_container"/>
+      <item type="id" name="immersive_mic_indicator"/>
+      <item type="id" name="immersive_mic_indicator_container"/>
       <item type="id" name="immersive_privacy_camera"/>
       <item type="id" name="immersive_privacy_microphone"/>
       <item type="id" name="inactive_background"/>
@@ -602,6 +609,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="qc_connectivity_footer_button"/>
       <item type="id" name="qc_display_footer_button"/>
       <item type="id" name="qc_display_status_icon"/>
+      <item type="id" name="qc_drive_mode_status_icon"/>
       <item type="id" name="qc_entry_points_container"/>
       <item type="id" name="qc_location_status_icon"/>
       <item type="id" name="qc_mic_footer_button"/>
@@ -705,6 +713,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="hvac_panel_container"/>
       <item type="layout" name="hvac_panel_handle_bar"/>
       <item type="layout" name="hvac_temperature_bar_overlay"/>
+      <item type="layout" name="immersive_cam_indicator"/>
+      <item type="layout" name="immersive_mic_indicator"/>
       <item type="layout" name="mic_privacy_chip"/>
       <item type="layout" name="notification_center_activity"/>
       <item type="layout" name="notification_handle_bar"/>
@@ -718,6 +728,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="qc_camera_panel"/>
       <item type="layout" name="qc_connectivity_panel"/>
       <item type="layout" name="qc_display_panel"/>
+      <item type="layout" name="qc_drive_mode_panel"/>
       <item type="layout" name="qc_mic_panel"/>
       <item type="layout" name="qc_profile_switcher"/>
       <item type="layout" name="status_bar_wifi_group"/>
@@ -741,6 +752,9 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="config_notificationPanelViewMediator"/>
       <item type="string" name="config_statusBarComponent"/>
       <item type="string" name="debug_button_text"/>
+      <item type="string" name="drive_mode_modes_comfort"/>
+      <item type="string" name="drive_mode_modes_eco"/>
+      <item type="string" name="drive_mode_modes_sport"/>
       <item type="string" name="end_session"/>
       <item type="string" name="exit_button_close_application"/>
       <item type="string" name="exit_button_go_back"/>
@@ -768,6 +782,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="privacy_chip_use_sensor_subtext"/>
       <item type="string" name="profile_limit_reached_message"/>
       <item type="string" name="profile_limit_reached_title"/>
+      <item type="string" name="qc_drive_mode_active_subtitle"/>
       <item type="string" name="qc_footer_bluetooth_settings"/>
       <item type="string" name="qc_footer_display_settings"/>
       <item type="string" name="qc_footer_network_internet_settings"/>
@@ -783,6 +798,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="status_icon_bluetooth_disconnected"/>
       <item type="string" name="status_icon_bluetooth_off"/>
       <item type="string" name="status_icon_display_status"/>
+      <item type="string" name="status_icon_drive_mode"/>
       <item type="string" name="status_icon_signal_hotspot"/>
       <item type="string" name="status_icon_signal_mobile"/>
       <item type="string" name="status_icon_signal_wifi"/>
@@ -819,6 +835,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="style" name="VolumeButtons"/>
       <item type="xml" name="camera_privacy_chip_scene"/>
       <item type="xml" name="car_volume_items"/>
+      <item type="xml" name="immersive_camera_scene"/>
+      <item type="xml" name="immersive_mic_scene"/>
       <item type="xml" name="mic_privacy_chip_scene"/>
     </policy>
   </overlayable>

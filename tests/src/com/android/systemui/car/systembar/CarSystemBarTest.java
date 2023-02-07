@@ -16,8 +16,6 @@
 
 package com.android.systemui.car.systembar;
 
-import static android.view.InsetsState.ITYPE_NAVIGATION_BAR;
-import static android.view.InsetsState.ITYPE_STATUS_BAR;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
 import static android.view.WindowInsetsController.APPEARANCE_OPAQUE_STATUS_BARS;
 import static android.view.WindowInsetsController.BEHAVIOR_DEFAULT;
@@ -155,7 +153,7 @@ public class CarSystemBarTest extends SysuiTestCase {
                 BEHAVIOR_DEFAULT,
                 WindowInsets.Type.defaultVisible(),
                 /* packageName= */ null,
-                /* transientBarTypes= */ new int[]{},
+                /* transientBarTypes= */ 0,
                 /* letterboxDetails= */ null);
         try {
             when(mBarService.registerStatusBar(any())).thenReturn(mBarResult);
@@ -272,7 +270,7 @@ public class CarSystemBarTest extends SysuiTestCase {
         mCarSystemBar.start();
 
         int randomDisplay = Display.DEFAULT_DISPLAY + 10;
-        int[] insetTypes = new int[]{};
+        int insetTypes = 0;
         mCarSystemBar.showTransient(randomDisplay, insetTypes);
 
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isFalse();
@@ -285,7 +283,7 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
 
-        int[] insetTypes = new int[]{};
+        int insetTypes = 0;
         mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes);
 
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isFalse();
@@ -298,7 +296,7 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
 
-        int[] insetTypes = new int[]{ITYPE_STATUS_BAR};
+        int insetTypes = WindowInsets.Type.statusBars();
         mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes);
 
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
@@ -311,7 +309,7 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
 
-        int[] insetTypes = new int[]{};
+        int insetTypes = 0;
         mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes);
 
         assertThat(mCarSystemBar.isNavBarTransientShown()).isFalse();
@@ -324,7 +322,7 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
 
-        int[] insetTypes = new int[]{ITYPE_NAVIGATION_BAR};
+        int insetTypes = WindowInsets.Type.navigationBars();
         mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes);
 
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
@@ -337,11 +335,11 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
         mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY,
-                new int[]{ITYPE_STATUS_BAR, ITYPE_NAVIGATION_BAR});
+                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
 
-        int[] insetTypes = new int[]{};
+        int insetTypes = 0;
         int randomDisplay = Display.DEFAULT_DISPLAY + 10;
         mCarSystemBar.abortTransient(randomDisplay, insetTypes);
 
@@ -357,11 +355,11 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
         mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY,
-                new int[]{ITYPE_STATUS_BAR, ITYPE_NAVIGATION_BAR});
+                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
 
-        int[] insetTypes = new int[]{};
+        int insetTypes = 0;
         mCarSystemBar.abortTransient(Display.DEFAULT_DISPLAY, insetTypes);
 
         // The transient booleans were not cleared.
@@ -376,11 +374,11 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
         mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY,
-                new int[]{ITYPE_STATUS_BAR, ITYPE_NAVIGATION_BAR});
+                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
 
-        int[] insetTypes = new int[]{ITYPE_STATUS_BAR};
+        int insetTypes = WindowInsets.Type.statusBars();
         mCarSystemBar.abortTransient(Display.DEFAULT_DISPLAY, insetTypes);
 
         // The transient booleans were cleared.
@@ -395,11 +393,11 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
         mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY,
-                new int[]{ITYPE_STATUS_BAR, ITYPE_NAVIGATION_BAR});
+                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
 
-        int[] insetTypes = new int[]{ITYPE_NAVIGATION_BAR};
+        int insetTypes = WindowInsets.Type.navigationBars();
         mCarSystemBar.abortTransient(Display.DEFAULT_DISPLAY, insetTypes);
 
         // The transient booleans were cleared.

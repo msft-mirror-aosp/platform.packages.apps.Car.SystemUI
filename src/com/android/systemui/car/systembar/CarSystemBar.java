@@ -16,9 +16,6 @@
 
 package com.android.systemui.car.systembar;
 
-import static android.view.InsetsState.ITYPE_NAVIGATION_BAR;
-import static android.view.InsetsState.ITYPE_STATUS_BAR;
-import static android.view.InsetsState.containsType;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
 
 import static com.android.systemui.statusbar.phone.BarTransitions.MODE_SEMI_TRANSPARENT;
@@ -35,6 +32,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.WindowInsets.Type.InsetsType;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
@@ -542,17 +540,17 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     }
 
     @Override
-    public void showTransient(int displayId, int[] types) {
+    public void showTransient(int displayId, int types) {
         if (displayId != mDisplayId) {
             return;
         }
-        if (containsType(types, ITYPE_STATUS_BAR)) {
+        if ((types & WindowInsets.Type.statusBars()) != 0) {
             if (!mStatusBarTransientShown) {
                 mStatusBarTransientShown = true;
                 handleTransientChanged();
             }
         }
-        if (containsType(types, ITYPE_NAVIGATION_BAR)) {
+        if ((types & WindowInsets.Type.navigationBars()) != 0) {
             if (!mNavBarTransientShown) {
                 mNavBarTransientShown = true;
                 handleTransientChanged();
@@ -561,11 +559,11 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     }
 
     @Override
-    public void abortTransient(int displayId, int[] types) {
+    public void abortTransient(int displayId, int types) {
         if (displayId != mDisplayId) {
             return;
         }
-        if (!containsType(types, ITYPE_STATUS_BAR) && !containsType(types, ITYPE_NAVIGATION_BAR)) {
+        if ((types & (WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars())) == 0) {
             return;
         }
         clearTransient();

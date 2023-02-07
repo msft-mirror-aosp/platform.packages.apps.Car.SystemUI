@@ -17,12 +17,14 @@
 package com.android.systemui.car.decor;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.InsetsState;
 import android.view.View;
 import android.view.WindowInsets.Type.InsetsType;
 import android.view.WindowInsetsController;
 
 import androidx.annotation.UiThread;
+import androidx.constraintlayout.motion.widget.MotionLayout;
 
 import com.android.internal.statusbar.LetterboxDetails;
 import com.android.internal.view.AppearanceRegion;
@@ -53,10 +55,12 @@ import javax.inject.Inject;
 @SysUISingleton
 public class CarPrivacyChipViewController extends PrivacyDotViewController
         implements CommandQueue.Callbacks {
+    private static final String TAG = CarPrivacyChipViewController.class.getSimpleName();
     private boolean mAreaVisible;
     private boolean mHasAnimation;
     private final @InsetsType int mBarType;
     private long mDuration;
+    private DelayableExecutor mExecutor;
 
     @Inject
     public CarPrivacyChipViewController(
@@ -85,34 +89,34 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
         boolean shouldShow = state.shouldShowDot();
         View designatedCorner = state.getDesignatedCorner();
         if (mAreaVisible && shouldShow && designatedCorner != null) {
-            showIndicator(state, mHasAnimation);
+            showIndicator(state, mHasAnimation && mAreaVisible);
         } else {
             if (designatedCorner.getVisibility() == View.VISIBLE) {
-                hideIndicator(state, mHasAnimation);
+                hideIndicator(state, mHasAnimation && mAreaVisible);
             }
         }
     }
 
     @UiThread
     private void showIndicator(ViewState viewState, boolean animate) {
+        Log.d(TAG, "Show the immersive indicator");
         View container = viewState.getDesignatedCorner();
         container.setVisibility(View.VISIBLE);
-        container.setAlpha(1f);
 
-        View cameraView = container.findViewById(R.id.immersive_privacy_camera);
-        View micView = container.findViewById(R.id.immersive_privacy_microphone);
+        MotionLayout cameraView = container.findViewById(R.id.immersive_cam_indicator_container);
+        MotionLayout micView = container.findViewById(R.id.immersive_mic_indicator_container);
 
         String contentDescription = viewState.getContentDescription();
         if (contentDescription.contains(PrivacyType.TYPE_CAMERA.getLogName())) {
-            updateViewVisibility(cameraView, View.VISIBLE, animate);
+            showIcon(cameraView, R.id.immersive_camera_transition_show, animate);
         } else {
-            updateViewVisibility(cameraView, View.GONE, animate);
+            hideIcon(cameraView, R.id.immersive_camera_transition_hide, animate);
         }
 
         if (contentDescription.contains(PrivacyType.TYPE_MICROPHONE.getLogName())) {
-            updateViewVisibility(micView, View.VISIBLE, animate);
+            showIcon(micView, R.id.immersive_mic_transition_show, animate);
         } else {
-            updateViewVisibility(micView, View.GONE, animate);
+            hideIcon(micView, R.id.immersive_mic_transition_hide, animate);
         }
 
         if (getShowingListener() != null) {
@@ -122,24 +126,38 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
 
     @UiThread
     private void hideIndicator(ViewState viewState, boolean animate) {
+        Log.d(TAG, "Hide the immersive indicators");
         View container = viewState.getDesignatedCorner();
 
-        View cameraView = container.findViewById(R.id.immersive_privacy_camera);
-        View micView = container.findViewById(R.id.immersive_privacy_microphone);
-        updateViewVisibility(cameraView, View.GONE, animate);
-        updateViewVisibility(micView, View.GONE, animate);
+        MotionLayout cameraView = container.findViewById(R.id.immersive_cam_indicator_container);
+        MotionLayout micView = container.findViewById(R.id.immersive_mic_indicator_container);
+        hideIcon(cameraView, R.id.immersive_camera_transition_hide, animate);
+        hideIcon(micView, R.id.immersive_mic_transition_hide, animate);
 
-        container.setVisibility(View.INVISIBLE);
         if (getShowingListener() != null) {
             getShowingListener().onPrivacyDotHidden(container);
         }
     }
 
     @UiThread
-    private void updateViewVisibility(View view, int visibility, boolean animate) {
-        // TODO(b/248145978): Add animation for transition.
-        view.setVisibility(visibility);
-        view.setAlpha(visibility == View.VISIBLE ? 1f : 0f);
+    private void showIcon(MotionLayout view, int transitionId, boolean animated) {
+        if (animated) {
+            view.setTransition(transitionId);
+            view.transitionToEnd();
+        }
+        view.setVisibility(View.VISIBLE);
+    }
+
+    @UiThread
+    private void hideIcon(MotionLayout view, int transitionId, boolean animated) {
+        if (view.getVisibility() == View.VISIBLE) {
+            if (animated) {
+                view.setTransition(transitionId);
+                view.transitionToEnd();
+            } else {
+                view.setVisibility(View.GONE);
+            }
+        }
     }
 
     @Override
@@ -155,10 +173,10 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
         boolean newAreaVisibility = (mBarType & requestedVisibleTypes) == 0;
         if (newAreaVisibility != mAreaVisible) {
             mAreaVisible = newAreaVisibility;
-            DelayableExecutor executor = getUiExecutor();
+            mExecutor = getUiExecutor();
             // Null check to avoid crashing caused by debug.disable_screen_decorations=true
-            if (executor != null) {
-                executor.execute(() -> updateDotView(getCurrentViewState()));
+            if (mExecutor != null) {
+                mExecutor.execute(() -> updateDotView(getCurrentViewState()));
             }
         }
     }

@@ -21,6 +21,7 @@ import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_LOGOU
 
 import android.annotation.NonNull;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,9 +32,8 @@ import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 
-import com.android.systemui.CarSystemUIApplication;
-import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.userpicker.UserPickerController.Callbacks;
 import com.android.systemui.settings.DisplayTracker;
 
@@ -48,28 +48,44 @@ import javax.inject.Inject;
  * It has user picker controller object for the executed display, and cleans it up
  * when the activity is destroyed.
  */
-@UserPickerScope
 public final class UserPickerActivity extends Activity {
     private static final String TAG = UserPickerActivity.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     private UserPickerActivityComponent mUserPickerActivityComponent;
 
-    @Inject
-    UserPickerController mController;
-    @Inject
-    SnackbarManager mSnackbarManager;
-    @Inject
-    DialogManager mDialogManager;
+    private UserPickerController mController;
+    private SnackbarManager mSnackbarManager;
+    private DialogManager mDialogManager;
+
     @Inject
     DisplayTracker mDisplayTracker;
-
     private UserPickerAdapter mAdapter;
     private UserPickerView mUserPickerView;
     private View mRootView;
     private View mHeaderBarTextForLogout;
     private View mLogoutButton;
     private View mBackButton;
+
+    @Inject
+    UserPickerActivity(
+            Context context, //application context
+            DisplayTracker displayTracker,
+            CarServiceProvider carServiceProvider
+    ) {
+        super();
+        mUserPickerActivityComponent = DaggerUserPickerActivityComponent.builder()
+                .context(context)
+                .carServiceProvider(carServiceProvider)
+                .displayTracker(displayTracker)
+                .build();
+        //Component.inject(this) is not working because constructor and activity itself is
+        //scoped to SystemUiScope but the deps below are scoped to UserPickerScope
+        mDialogManager = mUserPickerActivityComponent.dialogManager();
+        mSnackbarManager = mUserPickerActivityComponent.snackbarManager();
+        mController = mUserPickerActivityComponent.userPickerController();
+    }
+
 
     private final Callbacks mCallbacks = new Callbacks() {
         @Override
@@ -96,9 +112,6 @@ public final class UserPickerActivity extends Activity {
             return;
         }
 
-        // Dependency injection starts.
-        injectDependencies();
-
         if (DEBUG) {
             Slog.d(TAG, "onCreate: userId=" + getUserId() + " displayId=" + getDisplayId());
         }
@@ -116,16 +129,6 @@ public final class UserPickerActivity extends Activity {
         initController();
 
         mController.onConfigurationChanged();
-    }
-
-    private void injectDependencies() {
-        CarSystemUIApplication app = (CarSystemUIApplication) getApplication();
-        for (CoreStartable c : app.getServices()) {
-            if (c instanceof UserPicker) {
-                mUserPickerActivityComponent = ((UserPicker) c).inject(this);
-                break;
-            }
-        }
     }
 
     private void initViews() {

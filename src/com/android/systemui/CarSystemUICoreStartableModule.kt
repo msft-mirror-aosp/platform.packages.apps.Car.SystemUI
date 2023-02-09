@@ -174,12 +174,6 @@ abstract class CarSystemUICoreStartableModule {
     @ClassKey(ThemeOverlayController::class)
     abstract fun bindThemeOverlayController(sysui: ThemeOverlayController): CoreStartable
 
-    /** Inject into UserPicker  */
-    @Binds
-    @IntoMap
-    @ClassKey(UserPicker::class)
-    abstract fun bindUserPicker(service: UserPicker): CoreStartable
-
     /** Inject into VolumeUI.  */
     @Binds
     @IntoMap

@@ -60,7 +60,6 @@ import android.util.SparseIntArray;
 
 import com.android.internal.annotations.GuardedBy;
 import com.android.systemui.R;
-import com.android.systemui.dagger.SysUISingleton;
 
 import java.util.List;
 import java.util.Set;
@@ -78,7 +77,7 @@ import javax.inject.Inject;
  * <p>This class handles user event such as creating, removing, unlocking, stopped, and so on.
  * Also, it provides methods for creating, stopping, starting users.
  */
-@SysUISingleton
+@UserPickerScope
 public final class UserEventManager {
     private static final String TAG = UserEventManager.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);

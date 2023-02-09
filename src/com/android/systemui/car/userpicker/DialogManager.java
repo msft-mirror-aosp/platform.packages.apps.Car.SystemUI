@@ -73,14 +73,13 @@ final class DialogManager {
     private int mDisplayId;
 
     @Inject
-    DialogManager(Context context) {
-        updateTexts(context);
-    }
+    DialogManager() { }
 
     void initContextFromView(View rootView) {
         // Dialog manager needs activity context, so sets view's context and display id.
         mContext = rootView.getContext();
         mDisplayId = mContext.getDisplayId();
+        updateTexts(mContext);
     }
 
     void updateTexts(Context context) {

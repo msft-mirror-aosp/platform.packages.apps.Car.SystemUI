@@ -16,29 +16,50 @@
 
 package com.android.systemui.car.userpicker;
 
-import dagger.Subcomponent;
+import android.content.Context;
+
+import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.settings.DisplayTracker;
+
+import dagger.BindsInstance;
+import dagger.Component;
 
 /**
- * Injects dependencies for {@link UserPickerActivity}, and has {@link UserPickerScope}.
- * There are {@link UserPickerActivity}, {@link UserPickerController}, {@link DialogManager},
- * and {@link SnackbarManager} in {@link UserPickerScope}.
+ * Injects dependencies for {@link UserPickerActivity} that has {@link UserPickerScope}.
  */
 @UserPickerScope
-@Subcomponent
+@Component
 public interface UserPickerActivityComponent {
+
     /**
-     * Builder for a {@link UserPickerActivityComponent}
+     * Builder for UserPickerActivityComponent
      */
-    @Subcomponent.Builder
+    @Component.Builder
     interface Builder {
+        @BindsInstance
+        Builder context(Context context);
+
+        @BindsInstance
+        Builder carServiceProvider(CarServiceProvider carServiceProvider);
+
+        @BindsInstance
+        Builder displayTracker(DisplayTracker displayTracker);
+
         UserPickerActivityComponent build();
     }
 
     /**
-     * Injects dependencies for {@link UserPickerActivity}
-     *
-     * @param activity {@link UserPickerActivity} to be injected by
-     * {@link UserPickerActivityComponent}.
+     * required to provide a link to DialogManager
      */
-    void inject(UserPickerActivity activity);
+    DialogManager dialogManager();
+
+    /**
+     * required to provide a link to SnackbarManager
+     */
+    SnackbarManager snackbarManager();
+
+    /**
+     * required to provide a link to UserPickerController
+     */
+    UserPickerController userPickerController();
 }

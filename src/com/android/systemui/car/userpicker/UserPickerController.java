@@ -58,6 +58,7 @@ import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
+@UserPickerScope
 final class UserPickerController {
     private static final String TAG = UserPickerController.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);

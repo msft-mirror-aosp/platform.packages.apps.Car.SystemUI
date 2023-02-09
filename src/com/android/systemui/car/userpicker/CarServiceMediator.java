@@ -49,7 +49,6 @@ import android.view.Display;
 
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
-import com.android.systemui.dagger.SysUISingleton;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +57,7 @@ import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
 
-@SysUISingleton
+@UserPickerScope
 final class CarServiceMediator {
     private static final String TAG = CarServiceMediator.class.getSimpleName();
 

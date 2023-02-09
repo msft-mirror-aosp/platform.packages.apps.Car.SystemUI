@@ -14,15 +14,26 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.userpicker;
+package com.android.systemui;
 
+import android.app.Activity;
+
+import com.android.systemui.car.userpicker.UserPickerActivity;
+import com.android.systemui.dagger.DefaultActivityBinder;
+
+import dagger.Binds;
 import dagger.Module;
+import dagger.multibindings.ClassKey;
+import dagger.multibindings.IntoMap;
 
 /**
- * Module for {@link UserPickerComponent}.
- * It is used to set {@link UserPickerActivityComponent} as subcomponent of
- * {@link UserPickerComponent}.
+ * Provides all injectable activities related to Car
  */
-@Module(subcomponents = UserPickerActivityComponent.class)
-public abstract class UserPickerModule {
+@Module
+public abstract class CarSystemUIActivityBinder extends DefaultActivityBinder {
+    /** Inject into UserPickerActivity. */
+    @Binds
+    @IntoMap
+    @ClassKey(UserPickerActivity.class)
+    public abstract Activity bindUserPickerActivity(UserPickerActivity activity);
 }

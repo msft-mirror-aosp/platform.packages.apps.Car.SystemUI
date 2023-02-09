@@ -43,6 +43,7 @@ import android.car.user.CarUserManager;
 import android.car.user.CarUserManager.UserLifecycleListener;
 import android.car.user.UserLifecycleEventFilter;
 import android.content.Context;
+import android.util.Pair;
 import android.util.Slog;
 import android.view.Display;
 
@@ -50,7 +51,9 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.SysUISingleton;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -73,6 +76,8 @@ final class CarServiceMediator {
 
     private final Context mContext;
     private final CarServiceProvider mCarServiceProvider;
+    private final Map<UserLifecycleListener, Pair<Executor, UserLifecycleEventFilter>>
+            mUserLifecycleListeners = new HashMap<>();
 
     @Inject
     CarServiceMediator(Context context, CarServiceProvider carServiceProvider) {
@@ -87,6 +92,13 @@ final class CarServiceMediator {
         mCarOccupantZoneManager = car.getCarManager(CarOccupantZoneManager.class);
         mCarUserManager = car.getCarManager(CarUserManager.class);
         mCarPowerManager = car.getCarManager(CarPowerManager.class);
+        //re-register listeners in case of CarService crash and recreation
+        if (mCarUserManager != null) {
+            for (UserLifecycleListener listener : mUserLifecycleListeners.keySet()) {
+                mCarUserManager.addListener(mUserLifecycleListeners.get(listener).first,
+                        mUserLifecycleListeners.get(listener).second, listener);
+            }
+        }
     }
 
     void updateTexts() {
@@ -100,10 +112,12 @@ final class CarServiceMediator {
 
     void registerUserChangeEventsListener(Executor receiver, UserLifecycleEventFilter filter,
             UserLifecycleListener listener) {
-        mCarServiceProvider.addListener(car -> {
-            CarUserManager carUserManager = car.getCarManager(CarUserManager.class);
-            carUserManager.addListener(receiver, filter, listener);
-        });
+        mUserLifecycleListeners.put(listener, new Pair<>(receiver, filter));
+        if (mCarUserManager != null) {
+            mCarServiceProvider.addListener(car -> {
+                mCarUserManager.addListener(receiver, filter, listener);
+            });
+        }
     }
 
     @Nullable

@@ -35,7 +35,7 @@ import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.keyguard.KeyguardSecurityContainerController;
+import com.android.keyguard.KeyguardHostViewController;
 import com.android.keyguard.KeyguardSecurityModel;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.ViewMediatorCallback;
@@ -102,12 +102,12 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
         mExecutor = new FakeExecutor(new FakeSystemClock());
 
         KeyguardBouncerComponent keyguardBouncerComponent = mock(KeyguardBouncerComponent.class);
-        KeyguardSecurityContainerController securityContainerController = mock(
-                KeyguardSecurityContainerController.class);
+        KeyguardHostViewController keyguardHostViewController = mock(
+                KeyguardHostViewController.class);
         when(mKeyguardBouncerComponentFactory.create(any(ViewGroup.class))).thenReturn(
                 keyguardBouncerComponent);
-        when(keyguardBouncerComponent.getSecurityContainerController()).thenReturn(
-                securityContainerController);
+        when(keyguardBouncerComponent.getKeyguardHostViewController()).thenReturn(
+                keyguardHostViewController);
 
         mCarKeyguardViewController = new CarKeyguardViewController(
                 mContext,

@@ -18,7 +18,6 @@ package com.android.systemui.car.decor;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.InsetsState;
 import android.view.View;
 import android.view.WindowInsets.Type.InsetsType;
 import android.view.WindowInsetsController;
@@ -74,8 +73,8 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
                 animationScheduler, shadeExpansionStateManager);
         commandQueue.addCallback(this);
         mAnimationHelper = new CarPrivacyChipAnimationHelper(context);
-        mBarType = InsetsState.toPublicType(SystemBarConfigs.BAR_TYPE_MAP[
-                context.getResources().getInteger(R.integer.config_privacyIndicatorLocation)]);
+        mBarType = SystemBarConfigs.BAR_PROVIDER_MAP[context.getResources().getInteger(
+                R.integer.config_privacyIndicatorLocation)].getType();
     }
 
     @Override

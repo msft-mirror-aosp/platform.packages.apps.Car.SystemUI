@@ -20,18 +20,15 @@ import static android.os.UserHandle.USER_SYSTEM;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
-import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.UserHandle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.Slog;
 
 final class ActivityHelper {
     private static final String TAG = ActivityHelper.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
-
-    private static final String DEFAULT_SYSTEMUI_PACKAGE_NAME = "com.android.systemui";
 
     static boolean startUserPickerAsUserSystem(Activity activity) {
         int userId = activity.getUserId();
@@ -44,36 +41,17 @@ final class ActivityHelper {
                 Slog.d(TAG, "Calling user is not system, so use trampoline to go to system user, "
                         + "and stop this user(" + userId + ") for logout!");
             }
+            Context context = activity.getApplicationContext();
             activity.finish();
 
-            Intent intent = new Intent().setClassName(getSystemUIPackageName(activity),
+            Intent intent = new Intent().setClassName(UserPickerActivity.class.getPackageName(),
                     UserPickerActivity.class.getName())
                     .addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             ActivityOptions options = ActivityOptions.makeBasic()
                     .setLaunchDisplayId(displayId);
-            activity.startActivityAsUser(intent, options.toBundle(), UserHandle.SYSTEM);
+            context.startActivityAsUser(intent, options.toBundle(), UserHandle.SYSTEM);
             return false;
         }
         return true;
-    }
-
-    private static String getSystemUIPackageName(Activity activity) {
-        String flattenName = activity.getString(com.android.internal.R.string
-                .config_systemUIServiceComponent);
-        if (TextUtils.isEmpty(flattenName)) {
-            Slog.w(TAG, "No "
-                    + "com.android.internal.R.string.config_systemUIServiceComponent resource");
-            return DEFAULT_SYSTEMUI_PACKAGE_NAME;
-        }
-        try {
-            ComponentName componentName = ComponentName.unflattenFromString(flattenName);
-            String packageName = componentName.getPackageName();
-            return packageName != null ? packageName : DEFAULT_SYSTEMUI_PACKAGE_NAME;
-        } catch (RuntimeException e) {
-            Slog.w(TAG, "Invalid component name defined by "
-                    + "com.android.internal.R.string.config_systemUIServiceComponent resource: "
-                    + flattenName, e);
-        }
-        return DEFAULT_SYSTEMUI_PACKAGE_NAME;
     }
 }

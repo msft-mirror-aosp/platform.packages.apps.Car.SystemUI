@@ -45,6 +45,9 @@ public interface UserPickerActivityComponent {
         @BindsInstance
         Builder displayTracker(DisplayTracker displayTracker);
 
+        @BindsInstance
+        Builder userPickerSharedState(UserPickerSharedState userPickerSharedState);
+
         UserPickerActivityComponent build();
     }
 

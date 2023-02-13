@@ -17,7 +17,6 @@
 package com.android.systemui.car.userpicker;
 
 import static android.app.ActivityManager.USER_OP_SUCCESS;
-import static android.car.CarOccupantZoneManager.INVALID_USER_ID;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_CREATED;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_REMOVED;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_STARTING;
@@ -52,17 +51,13 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.os.UserHandle;
 import android.os.UserManager;
-import android.util.ArraySet;
 import android.util.Log;
 import android.util.Slog;
 import android.util.SparseArray;
-import android.util.SparseIntArray;
 
-import com.android.internal.annotations.GuardedBy;
 import com.android.systemui.R;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -97,6 +92,7 @@ public final class UserEventManager {
     private final UserManager mUserManager;
     private final ActivityManager mActivityManager;
     private final CarServiceMediator mCarServiceMediator;
+    private final UserPickerSharedState mUserPickerSharedState;
 
     /**
      * {@link UserPickerController} is per-display object. It adds listener to UserEventManager to
@@ -105,25 +101,6 @@ public final class UserEventManager {
      */
     private final SparseArray<OnUpdateUsersListener> mUpdateListeners;
 
-    /**
-     * Same user icon can be clicked from different displays, and then, different thread can be
-     * started for user login with same user id. In this case, mUsersLoginStarted will block the
-     * thread of the next clicked display.
-     */
-    @GuardedBy("mLock")
-    private final SparseIntArray mUsersLoginStarted;
-
-    /**
-     * When changing the user to another one, the user will be stopped and new user is started.
-     * In this situation, if we click the stopping user icon in user picker on another display,
-     * that user can not login to secondary displays by the core logic for 'pending user start'.
-     * (b/254526109) To avoid this, we track the stopping users to block the stopping user is
-     * clicked until completely stopped.
-     */
-    @GuardedBy("mLock")
-    private final Set<Integer> mStoppingUsers = new ArraySet<>();
-
-    private final Object mLock = new Object();
     private final Handler mMainHandler;
 
     /**
@@ -132,19 +109,7 @@ public final class UserEventManager {
     private final ExecutorService mUserLifecycleReceiver;
 
     private final UserLifecycleListener mUserLifecycleListener = event -> {
-        int eventType = event.getEventType();
-        int userId = event.getUserId();
-        if (DEBUG) {
-            Slog.d(TAG, "event=" + lifecycleEventTypeToString(eventType) + " userId=" + userId);
-        }
-        if (eventType == USER_LIFECYCLE_EVENT_TYPE_STOPPING) {
-            addStoppingUserId(userId);
-        } else if (eventType == USER_LIFECYCLE_EVENT_TYPE_STOPPED) {
-            if (isStoppingUser(userId)) {
-                removeStoppingUserId(userId);
-            }
-        }
-        runUpdateUsersOnMainThread(userId, eventType);
+        onUserEvent(event);
     };
 
     private final BroadcastReceiver mUserUpdateReceiver = new BroadcastReceiver() {
@@ -155,14 +120,15 @@ public final class UserEventManager {
     };
 
     @Inject
-    UserEventManager(Context context, CarServiceMediator carServiceMediator) {
+    UserEventManager(Context context, CarServiceMediator carServiceMediator,
+            UserPickerSharedState userPickerSharedState) {
         mUpdateListeners = new SparseArray<>();
-        mUsersLoginStarted = new SparseIntArray();
         mContext = context.getApplicationContext();
         mUserLifecycleReceiver = Executors.newSingleThreadExecutor();
         mMainHandler = new Handler(Looper.getMainLooper());
         mUserManager = mContext.getSystemService(UserManager.class);
         mActivityManager = mContext.getSystemService(ActivityManager.class);
+        mUserPickerSharedState = userPickerSharedState;
         mCarServiceMediator = carServiceMediator;
         mCarServiceMediator.registerUserChangeEventsListener(mUserLifecycleReceiver, mFilter,
                 mUserLifecycleListener);
@@ -177,83 +143,20 @@ public final class UserEventManager {
         mContext.unregisterReceiver(mUserUpdateReceiver);
     }
 
-    /**
-     * This method is to prevent repeated clicks on the same user icon on different displays.
-     * It is called before starting user, and check the user id is in mUsersLoginStarted or not.
-     * If the user id exists on there, it returns false, and worker thread which is responsible for
-     * user start can not start the user. Otherwise, the user id is mapped with the display id, it
-     * returns true, and worker can start the user.
-     *
-     * @param displayId user want to login
-     * @param userId to login to the display
-     * @return true if user can log in to the display, otherwise false.
-     */
-    boolean setUserLoginStarted(int displayId, @UserIdInt int userId) {
+    private void onUserEvent(CarUserManager.UserLifecycleEvent event) {
+        int eventType = event.getEventType();
+        int userId = event.getUserId();
         if (DEBUG) {
-            Slog.d(TAG, "setUserLoginStarted: userId=" + userId + " displayId=" + displayId);
+            Slog.d(TAG, "event=" + lifecycleEventTypeToString(eventType) + " userId=" + userId);
         }
-        synchronized (mLock) {
-            for (int i = 0; i < mUsersLoginStarted.size(); i++) {
-                int startedUser = mUsersLoginStarted.valueAt(i);
-                if (startedUser == userId) {
-                    Slog.w(TAG, "setUserLoginStarted: already started on display "
-                            + mUsersLoginStarted.keyAt(i));
-                    return false;
-                }
+        if (eventType == USER_LIFECYCLE_EVENT_TYPE_STOPPING) {
+            mUserPickerSharedState.addStoppingUserId(userId);
+        } else if (eventType == USER_LIFECYCLE_EVENT_TYPE_STOPPED) {
+            if (mUserPickerSharedState.isStoppingUser(userId)) {
+                mUserPickerSharedState.removeStoppingUserId(userId);
             }
-            mUsersLoginStarted.put(displayId, userId);
-            return true;
         }
-    }
-
-    /**
-     * This method is to release user id from mUsersLoginStarted. When the started user is unlocked
-     * state, it is called, or it can be called if it succeeded in preoccupying the display by
-     * adding the user id to the map, but failed to start the user in the subsequent process.
-     */
-    void resetUserLoginStarted(int displayId) {
-        if (DEBUG) {
-            Slog.d(TAG, "resetUserLoginStarted: displayId=" + displayId);
-        }
-        synchronized (mLock) {
-            mUsersLoginStarted.put(displayId, INVALID_USER_ID);
-        }
-    }
-
-    /**
-     * Gets user id to be logging into the display.
-     * It is used when the user is unlocked.
-     *
-     * @param displayId
-     * @return user id to be logging into the display
-     */
-    int getUserLoginStarted(int displayId) {
-        synchronized (mLock) {
-            return mUsersLoginStarted.get(displayId, INVALID_USER_ID);
-        }
-    }
-
-    // The user who is stopping can not start again on secondary displays now.<b/254526109>
-    // So, we manage the list of stopping users, and block starting them again until they are
-    // completely stopped. It is short term solution to solve the problem.
-    private void addStoppingUserId(@UserIdInt int userId) {
-        synchronized (mLock) {
-            mStoppingUsers.add(userId);
-        }
-    }
-
-    // removes from the blocked list when completely stopped
-    private void removeStoppingUserId(Integer userId) {
-        synchronized (mLock) {
-            mStoppingUsers.remove(userId);
-        }
-    }
-
-    // check whether the user is on stopping.
-    boolean isStoppingUser(@UserIdInt int userId) {
-        synchronized (mLock) {
-            return mStoppingUsers.contains(userId);
-        }
+        runUpdateUsersOnMainThread(userId, eventType);
     }
 
     private void registerUserInfoChangedReceiver() {
@@ -410,7 +313,7 @@ public final class UserEventManager {
                 // completed. In the case of user switching, to avoid clicking stopping user, we can
                 // block previous current user immediately here by adding to the list of stopping
                 // users.
-                addStoppingUserId(prevCurrentUser);
+                mUserPickerSharedState.addStoppingUserId(prevCurrentUser);
                 isUserStarted = mActivityManager.switchUser(userId);
             } else {
                 // TODO(b/257335554): will be changed to use CarUserManager.

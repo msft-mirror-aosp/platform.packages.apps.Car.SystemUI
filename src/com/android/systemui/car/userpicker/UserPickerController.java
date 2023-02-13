@@ -87,6 +87,7 @@ final class UserPickerController {
     private final LockPatternUtils mLockPatternUtils;
     private final ExecutorService mWorker;
     private final DisplayTracker mDisplayTracker;
+    private final UserPickerSharedState mUserPickerSharedState;
 
     private Context mContext;
     private UserEventManager mUserEventManager;
@@ -129,22 +130,7 @@ final class UserPickerController {
     };
 
     private OnUpdateUsersListener mUsersUpdateListener = (userId, userState) -> {
-        if (DEBUG) {
-            Slog.d(TAG, "OnUsersUpdateListener: userId=" + userId
-                    + " userState=" + lifecycleEventTypeToString(userState)
-                    + " displayId=" + mDisplayId);
-        }
-        if (userState == USER_LIFECYCLE_EVENT_TYPE_UNLOCKED) {
-            if (mUserEventManager.getUserLoginStarted(mDisplayId) == userId) {
-                if (DEBUG) {
-                    Slog.d(TAG, "user " + userId + " unlocked. finish user picker."
-                            + " displayId=" + mDisplayId);
-                }
-                mCallbacks.onFinishRequested();
-                mUserEventManager.resetUserLoginStarted(mDisplayId);
-            }
-        }
-        mCallbacks.onUpdateUsers(createUserRecords());
+        onUserUpdate(userId, userState);
     };
 
     private Runnable mAddUserRunnable = () -> {
@@ -170,7 +156,8 @@ final class UserPickerController {
     @Inject
     UserPickerController(Context context, UserEventManager userEventManager,
             CarServiceMediator carServiceMediator, DialogManager dialogManager,
-            SnackbarManager snackbarManager, DisplayTracker displayTracker) {
+            SnackbarManager snackbarManager, DisplayTracker displayTracker,
+            UserPickerSharedState userPickerSharedState) {
         mContext = context;
         mUserEventManager = userEventManager;
         mCarServiceMediator = carServiceMediator;
@@ -179,12 +166,32 @@ final class UserPickerController {
         mLockPatternUtils = new LockPatternUtils(mContext);
         mUserIconProvider = new UserIconProvider();
         mDisplayTracker = displayTracker;
+        mUserPickerSharedState = userPickerSharedState;
         mWorker = Executors.newSingleThreadExecutor();
     }
 
     void onConfigurationChanged() {
         updateTexts();
         updateUsers();
+    }
+
+    private void onUserUpdate(int userId, int userState) {
+        if (DEBUG) {
+            Slog.d(TAG, "OnUsersUpdateListener: userId=" + userId
+                    + " userState=" + lifecycleEventTypeToString(userState)
+                    + " displayId=" + mDisplayId);
+        }
+        if (userState == USER_LIFECYCLE_EVENT_TYPE_UNLOCKED) {
+            if (mUserPickerSharedState.getUserLoginStarted(mDisplayId) == userId) {
+                if (DEBUG) {
+                    Slog.d(TAG, "user " + userId + " unlocked. finish user picker."
+                            + " displayId=" + mDisplayId);
+                }
+                mCallbacks.onFinishRequested();
+                mUserPickerSharedState.resetUserLoginStarted(mDisplayId);
+            }
+        }
+        mCallbacks.onUpdateUsers(createUserRecords());
     }
 
     private void updateTexts() {
@@ -221,7 +228,7 @@ final class UserPickerController {
         if (DEBUG) {
             Slog.d(TAG, "onDestroy: unregisterOnUsersUpdateListener. displayId=" + mDisplayId);
         }
-        mUserEventManager.resetUserLoginStarted(mDisplayId);
+        mUserPickerSharedState.resetUserLoginStarted(mDisplayId);
         mUserEventManager.unregisterOnUpdateUsersListener(mDisplayId);
         mUserEventManager.onDestroy();
     }
@@ -255,7 +262,7 @@ final class UserPickerController {
         mIsUserPickerClickable = false;
         int userId = mCarServiceMediator.getUserForDisplay(mDisplayId);
         if (userId != INVALID_USER_ID) {
-            mUserEventManager.resetUserLoginStarted(mDisplayId);
+            mUserPickerSharedState.resetUserLoginStarted(mDisplayId);
             mUserEventManager.stopUserUnchecked(userId, mDisplayId);
             mUserEventManager.runUpdateUsersOnMainThread(userId, 0);
             mIsUserPickerClickable = true;
@@ -302,7 +309,7 @@ final class UserPickerController {
                     /* mIsLoggedIn= */ loggedInDisplayId != INVALID_DISPLAY,
                     /* mLoggedInDisplay= */ loggedInDisplayId,
                     /* mSeatLocationName= */ mCarServiceMediator.getSeatString(loggedInDisplayId),
-                    /* mIsStopping= */ mUserEventManager.isStoppingUser(userInfo.id));
+                    /* mIsStopping= */ mUserPickerSharedState.isStoppingUser(userInfo.id));
             userRecords.add(record);
 
             if (DEBUG) {
@@ -368,7 +375,7 @@ final class UserPickerController {
 
             // Second, check user has been already logged-in in another display or is stopping.
             if (userRecord.mIsLoggedIn && userRecord.mLoggedInDisplay != mDisplayId
-                    || mUserEventManager.isStoppingUser(userId)) {
+                    || mUserPickerSharedState.isStoppingUser(userId)) {
                 int messageResId = userRecord.mIsStopping ? R.string.wait_for_until_stopped_message
                         : R.string.already_logged_in_message;
                 runOnMainHandler(REQ_SHOW_SNACKBAR,
@@ -393,7 +400,7 @@ final class UserPickerController {
                     userId = creationResult.getUser().getIdentifier();
                 }
 
-                if (!mUserEventManager.setUserLoginStarted(mDisplayId, userId)) {
+                if (!mUserPickerSharedState.setUserLoginStarted(mDisplayId, userId)) {
                     return;
                 }
 
@@ -419,7 +426,7 @@ final class UserPickerController {
                     }
                 } else {
                     runOnMainHandler(REQ_DISMISS_SWITCHING_DIALOG);
-                    mUserEventManager.resetUserLoginStarted(mDisplayId);
+                    mUserPickerSharedState.resetUserLoginStarted(mDisplayId);
                 }
             }
         });

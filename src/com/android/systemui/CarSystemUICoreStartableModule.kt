@@ -18,14 +18,12 @@ package com.android.systemui
 
 import android.content.Context
 import com.android.keyguard.KeyguardBiometricLockoutLogger
-import com.android.systemui.R
 import com.android.systemui.biometrics.AuthController
 import com.android.systemui.car.cluster.ClusterDisplayController
 import com.android.systemui.car.input.DisplayInputSinkController
 import com.android.systemui.car.systembar.CarSystemBar
 import com.android.systemui.car.systembar.CarSystemBarMediator
 import com.android.systemui.car.toast.CarToastUI
-import com.android.systemui.car.userpicker.UserPicker
 import com.android.systemui.car.users.CarSystemUIUserUtil
 import com.android.systemui.car.voicerecognition.ConnectedDeviceVoiceRecognitionNotifier
 import com.android.systemui.car.volume.VolumeUI

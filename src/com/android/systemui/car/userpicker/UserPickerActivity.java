@@ -71,13 +71,15 @@ public final class UserPickerActivity extends Activity {
     UserPickerActivity(
             Context context, //application context
             DisplayTracker displayTracker,
-            CarServiceProvider carServiceProvider
+            CarServiceProvider carServiceProvider,
+            UserPickerSharedState userPickerSharedState
     ) {
         super();
         mUserPickerActivityComponent = DaggerUserPickerActivityComponent.builder()
                 .context(context)
                 .carServiceProvider(carServiceProvider)
                 .displayTracker(displayTracker)
+                .userPickerSharedState(userPickerSharedState)
                 .build();
         //Component.inject(this) is not working because constructor and activity itself is
         //scoped to SystemUiScope but the deps below are scoped to UserPickerScope

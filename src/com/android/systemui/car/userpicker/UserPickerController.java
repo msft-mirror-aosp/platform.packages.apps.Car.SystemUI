@@ -223,6 +223,7 @@ final class UserPickerController {
         }
         mUserEventManager.resetUserLoginStarted(mDisplayId);
         mUserEventManager.unregisterOnUpdateUsersListener(mDisplayId);
+        mUserEventManager.onDestroy();
     }
 
     OnClickListener getOnClickListener(UserRecord userRecord) {

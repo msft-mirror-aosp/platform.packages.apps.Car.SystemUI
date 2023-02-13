@@ -78,11 +78,19 @@ final class CarServiceMediator {
     private final Map<UserLifecycleListener, Pair<Executor, UserLifecycleEventFilter>>
             mUserLifecycleListeners = new HashMap<>();
 
+    private final CarServiceProvider.CarServiceOnConnectedListener mServiceOnConnectedListener =
+            new CarServiceProvider.CarServiceOnConnectedListener() {
+                @Override
+                public void onConnected(Car car) {
+                    onConnect(car);
+                }
+            };
+
     @Inject
     CarServiceMediator(Context context, CarServiceProvider carServiceProvider) {
         mContext = context.getApplicationContext();
         mCarServiceProvider = carServiceProvider;
-        mCarServiceProvider.addListener(car -> onConnect(car));
+        mCarServiceProvider.addListener(mServiceOnConnectedListener);
 
         updateTexts();
     }
@@ -117,6 +125,14 @@ final class CarServiceMediator {
                 mCarUserManager.addListener(receiver, filter, listener);
             });
         }
+    }
+
+    void onDestroy() {
+        for (UserLifecycleListener listener : mUserLifecycleListeners.keySet()) {
+            mCarUserManager.removeListener(listener);
+        }
+        mUserLifecycleListeners.clear();
+        mCarServiceProvider.removeListener(mServiceOnConnectedListener);
     }
 
     @Nullable

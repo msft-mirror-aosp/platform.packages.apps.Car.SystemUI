@@ -170,6 +170,14 @@ public final class UserEventManager {
     }
 
     /**
+     * Unregisters all the listeners when the owners is being destroyed
+     */
+    void onDestroy() {
+        mCarServiceMediator.onDestroy();
+        mContext.unregisterReceiver(mUserUpdateReceiver);
+    }
+
+    /**
      * This method is to prevent repeated clicks on the same user icon on different displays.
      * It is called before starting user, and check the user id is in mUsersLoginStarted or not.
      * If the user id exists on there, it returns false, and worker thread which is responsible for

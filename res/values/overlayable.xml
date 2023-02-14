@@ -804,6 +804,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="status_icon_signal_hotspot"/>
       <item type="string" name="status_icon_signal_mobile"/>
       <item type="string" name="status_icon_signal_wifi"/>
+      <item type="string" name="system_bar_app_drawer_intent"/>
       <item type="string" name="system_bar_applications_label"/>
       <item type="string" name="system_bar_climate_control_label"/>
       <item type="string" name="system_bar_home_label"/>

@@ -204,4 +204,11 @@
     <integer name="config_displayInputLockIconAnimDuration">250</integer>
     <!-- The number of milliseconds before the display input lock icon auto-dismisses. -->
     <integer name="config_displayInputLockIconDismissDelay">250</integer>
+
+    <!-- Determines whether the secondary user SystemUI must be overlaid -->
+    <bool name="config_enableSecondaryUserRRO">false</bool>
+    <!-- RRO package name of the secondary user SystemUI -->
+    <string name="config_secondaryUserSystemUIRROPackageName">
+        com.android.systemui.md.passenger.car.rro
+    </string>
 </resources>

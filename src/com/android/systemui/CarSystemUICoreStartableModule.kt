@@ -37,7 +37,6 @@ import com.android.systemui.power.PowerUI
 import com.android.systemui.theme.ThemeOverlayController
 import com.android.systemui.usb.StorageNotification
 import com.android.systemui.util.NotificationChannels
-import com.android.systemui.util.leak.GarbageMonitor
 import com.android.systemui.wmshell.WMShell
 import dagger.Binds
 import dagger.Module
@@ -108,12 +107,6 @@ abstract class CarSystemUICoreStartableModule {
     abstract fun bindConnectedDeviceVoiceRecognitionNotifier(
             service: ConnectedDeviceVoiceRecognitionNotifier
     ): CoreStartable
-
-    /** Inject into GarbageMonitor.Service.  */
-    @Binds
-    @IntoMap
-    @ClassKey(GarbageMonitor::class)
-    abstract fun bindGarbageMonitorService(sysui: GarbageMonitor.Service): CoreStartable
 
     /** Inject into KeyguardBiometricLockoutLogger.  */
     @Binds

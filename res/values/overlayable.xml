@@ -120,8 +120,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="car_volume_dialog_tint"/>
       <item type="color" name="car_volume_item_background_color"/>
       <item type="color" name="car_volume_item_divider_color"/>
-      <item type="color" name="display_input_lock_icon_color"/>
       <item type="color" name="display_input_lock_background_color"/>
+      <item type="color" name="display_input_lock_icon_color"/>
       <item type="color" name="docked_divider_background"/>
       <item type="color" name="hvac_background_color"/>
       <item type="color" name="hvac_fan_drawable_fill_color"/>
@@ -262,11 +262,16 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_volume_item_seekbar_padding_vertical"/>
       <item type="dimen" name="common_margin"/>
       <item type="dimen" name="device_management_dialog_subtitle_padding"/>
-      <item type="dimen" name="display_input_lock_text_padding"/>
+      <item type="dimen" name="display_input_lock_background_radius"/>
       <item type="dimen" name="display_input_lock_text_bottom_margin"/>
+      <item type="dimen" name="display_input_lock_text_padding"/>
       <item type="dimen" name="display_input_lock_text_size"/>
       <item type="dimen" name="display_input_lock_text_width"/>
-      <item type="dimen" name="display_input_lock_background_radius"/>
+      <item type="dimen" name="fullscreen_indicator_animation_margin_horizontal_end"/>
+      <item type="dimen" name="fullscreen_indicator_animation_margin_horizontal_start"/>
+      <item type="dimen" name="fullscreen_indicator_animation_margin_vertical_end"/>
+      <item type="dimen" name="fullscreen_indicator_animation_margin_vertical_start"/>
+      <item type="dimen" name="fullscreen_indicator_dot_size"/>
       <item type="dimen" name="fullscreen_indicator_height"/>
       <item type="dimen" name="fullscreen_indicator_padding_horizontal"/>
       <item type="dimen" name="fullscreen_indicator_padding_vertical"/>
@@ -579,7 +584,9 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="immersive_mic_indicator"/>
       <item type="id" name="immersive_mic_indicator_container"/>
       <item type="id" name="immersive_privacy_camera"/>
+      <item type="id" name="immersive_privacy_camera_dot"/>
       <item type="id" name="immersive_privacy_microphone"/>
+      <item type="id" name="immersive_privacy_microphone_dot"/>
       <item type="id" name="inactive_background"/>
       <item type="id" name="inactive_selected_background"/>
       <item type="id" name="inout_container"/>
@@ -760,11 +767,11 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="config_secondaryUserSystemUIRROPackageName"/>
       <item type="string" name="config_statusBarComponent"/>
       <item type="string" name="debug_button_text"/>
+      <item type="string" name="display_input_lock_initial_text"/>
+      <item type="string" name="display_input_lock_text"/>
       <item type="string" name="drive_mode_modes_comfort"/>
       <item type="string" name="drive_mode_modes_eco"/>
       <item type="string" name="drive_mode_modes_sport"/>
-      <item type="string" name="display_input_lock_text"/>
-      <item type="string" name="display_input_lock_initial_text"/>
       <item type="string" name="end_session"/>
       <item type="string" name="exit_button_close_application"/>
       <item type="string" name="exit_button_go_back"/>

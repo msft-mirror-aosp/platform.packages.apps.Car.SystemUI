@@ -57,7 +57,7 @@ import java.util.List;
 public class ActivityBlockingActivity extends Activity {
     private static final int ACTIVITY_MONITORING_DELAY_MS = 1000;
     private static final String TAG = "BlockingActivity";
-    private static final int EGL_CONTEXT_VERSION = 3;
+    private static final int EGL_CONTEXT_VERSION = 2;
     private static final int EGL_CONFIG_SIZE = 8;
     private static final int INVALID_TASK_ID = -1;
     private final Object mLock = new Object();

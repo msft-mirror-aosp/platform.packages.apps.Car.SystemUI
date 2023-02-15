@@ -174,4 +174,8 @@
 
     <!-- Message shown when the lock pattern is focused. [CHAR LIMIT=40] -->
     <string name="lockpattern_does_not_support_rotary">Pattern does not support rotary; please use touch</string>
+
+    <!-- Display Input Lock string -->
+    <string name="display_input_lock_text">Touch screen locked</string>
+    <string name="display_input_lock_initial_text">Your screen has been locked</string>
 </resources>

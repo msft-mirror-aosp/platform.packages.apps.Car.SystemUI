@@ -85,6 +85,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="bool" name="config_enableImmersivePrivacyChipAnimation"/>
       <item type="bool" name="config_enableLeftSystemBar"/>
       <item type="bool" name="config_enableRightSystemBar"/>
+      <item type="bool" name="config_enableSecondaryUserRRO"/>
       <item type="bool" name="config_enableShellMainThread"/>
       <item type="bool" name="config_enableTopSystemBar"/>
       <item type="bool" name="config_hideBottomSystemBarForKeyboard"/>
@@ -750,6 +751,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="car_new_user"/>
       <item type="string" name="config_appGridComponentName"/>
       <item type="string" name="config_notificationPanelViewMediator"/>
+      <item type="string" name="config_secondaryUserSystemUIRROPackageName"/>
       <item type="string" name="config_statusBarComponent"/>
       <item type="string" name="debug_button_text"/>
       <item type="string" name="drive_mode_modes_comfort"/>
@@ -802,6 +804,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="status_icon_signal_hotspot"/>
       <item type="string" name="status_icon_signal_mobile"/>
       <item type="string" name="status_icon_signal_wifi"/>
+      <item type="string" name="system_bar_app_drawer_intent"/>
       <item type="string" name="system_bar_applications_label"/>
       <item type="string" name="system_bar_climate_control_label"/>
       <item type="string" name="system_bar_home_label"/>

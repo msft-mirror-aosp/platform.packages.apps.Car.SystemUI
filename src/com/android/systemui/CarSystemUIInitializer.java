@@ -17,6 +17,7 @@
 package com.android.systemui;
 
 import android.content.Context;
+import android.os.Process;
 import android.os.UserHandle;
 
 import com.android.systemui.car.users.CarSystemUIUserUtil;
@@ -61,5 +62,8 @@ public class CarSystemUIInitializer extends SystemUIInitializer {
     private void initWmComponents(CarWMComponent carWm) {
         carWm.getDisplaySystemBarsController();
         carWm.getMDSystemBarController();
+        if (Process.myUserHandle().isSystem()) {
+            carWm.getCarSystemUIProxy();
+        }
     }
 }

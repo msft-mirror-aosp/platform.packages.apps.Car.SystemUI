@@ -18,8 +18,11 @@ package com.android.systemui.wmshell;
 
 import com.android.systemui.dagger.WMComponent;
 import com.android.systemui.wm.DisplaySystemBarsController;
-import com.android.wm.shell.dagger.WMSingleton;
+import com.android.systemui.wm.MDSystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
+import com.android.wm.shell.dagger.WMSingleton;
+
+import java.util.Optional;
 
 import dagger.Subcomponent;
 
@@ -44,4 +47,10 @@ public interface CarWMComponent extends WMComponent {
 
     @WMSingleton
     DisplaySystemBarsController getDisplaySystemBarsController();
+
+    /**
+     * gets the SystemBarController for Inset events.
+     */
+    @WMSingleton
+    Optional<MDSystemBarsController> getMDSystemBarController();
 }

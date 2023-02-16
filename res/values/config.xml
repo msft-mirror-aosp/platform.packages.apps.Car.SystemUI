@@ -186,5 +186,6 @@
     <!-- Determines whether the shell task organizer be registered automatiacly or not.
          It needs to be disabled for CarSystemUI as CarLauncher already registers one. With 2
          organizers there can be recovery problems if either of the process crashes. -->
-    <bool name="config_registerShellTaskOrganizerOnInit">false</bool>
+    <!-- TODO(b/228598071): Enabled this to fix b/250675259. -->
+    <bool name="config_registerShellTaskOrganizerOnInit">true</bool>
 </resources>

@@ -169,4 +169,16 @@
             @dimen/car_quick_controls_footer_button_horizontal_padding
         </item>
     </style>
+
+    <!-- Style for message text of user picker alert dialog. -->
+    <style name="UserPickerDialogMessageNormalText">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">@dimen/car_body4_size</item>
+        <item name="android:textColor">@*android:color/car_body4</item>
+    </style>
+    <style name="UserPickerDialogMessageLargeText">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">@dimen/car_body2_size</item>
+        <item name="android:textColor">@*android:color/car_body4</item>
+    </style>
 </resources>

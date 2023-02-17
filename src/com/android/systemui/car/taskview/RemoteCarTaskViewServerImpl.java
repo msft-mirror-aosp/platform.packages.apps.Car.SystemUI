@@ -43,12 +43,14 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     private final SyncTransactionQueue mSyncQueue;
     private final CarTaskViewClient mCarTaskViewClient;
     private final TaskViewTaskController mTaskViewTaskController;
+    private final CarSystemUIProxyImpl mCarSystemUIProxy;
     private final SparseArray<Rect> mInsets = new SparseArray<>();
 
     private final CarTaskViewHost mHostImpl = new CarTaskViewHost() {
         @Override
         public void release() {
             mTaskViewTaskController.release();
+            mCarSystemUIProxy.onCarTaskViewReleased(RemoteCarTaskViewServerImpl.this);
         }
 
         @Override
@@ -119,9 +121,11 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             ShellTaskOrganizer organizer,
             SyncTransactionQueue syncQueue,
             CarTaskViewClient carTaskViewClient,
+            CarSystemUIProxyImpl carSystemUIProxy,
             TaskViewTransitions taskViewTransitions) {
         mSyncQueue = syncQueue;
         mCarTaskViewClient = carTaskViewClient;
+        mCarSystemUIProxy = carSystemUIProxy;
 
         mTaskViewTaskController =
                 new TaskViewTaskController(context, organizer, taskViewTransitions, syncQueue);
@@ -135,6 +139,16 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     @Override
     public Rect getCurrentBoundsOnScreen() {
         return mCarTaskViewClient.getCurrentBoundsOnScreen();
+    }
+
+    @Override
+    public String toString() {
+        ActivityManager.RunningTaskInfo taskInfo = mTaskViewTaskController.getTaskInfo();
+        return "RemoteCarTaskViewServerImpl {"
+                + "mInsets=" + mInsets
+                + ", taskId=" + (taskInfo == null ? "null" : taskInfo.taskId)
+                + ", taskInfo=" + (taskInfo == null ? "null" : taskInfo)
+                + "}";
     }
 
     @Override

@@ -20,13 +20,19 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.IWindowManager;
 
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
+import com.android.systemui.wm.MDSystemBarsController;
 import com.android.wm.shell.common.DisplayController;
+import com.android.wm.shell.common.DisplayImeController;
 import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.dagger.WMShellBaseModule;
 import com.android.wm.shell.dagger.WMSingleton;
 import com.android.wm.shell.pip.Pip;
+import com.android.wm.shell.sysui.ShellInit;
+
+import java.util.Optional;
 
 import dagger.BindsOptionalOf;
 import dagger.Module;
@@ -44,6 +50,19 @@ public abstract class CarWMShellModule {
             @Main Handler mainHandler) {
         return new DisplaySystemBarsController(context, wmService, displayController,
                 displayInsetsController, mainHandler);
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<MDSystemBarsController> provideMUMDPerDisplayInsetsChangeController(
+            DisplayImeController displayImeController,
+            @Main Handler mainHandler,
+            ShellInit shellInit) {
+        if (CarSystemUIUserUtil.isMUMDSystemUI()) {
+            return Optional.of(
+                    new MDSystemBarsController(displayImeController, mainHandler, shellInit));
+        }
+        return Optional.empty();
     }
 
     @BindsOptionalOf

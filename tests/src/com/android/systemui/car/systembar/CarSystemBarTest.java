@@ -55,7 +55,6 @@ import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.hvac.HvacController;
-import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.FakeDisplayTracker;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.phone.AutoHideController;
@@ -80,6 +79,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.internal.InOrderImpl;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -175,7 +175,7 @@ public class CarSystemBarTest extends SysuiTestCase {
                 mButtonSelectionStateListener, mExecutor, mUiBgExecutor, mBarService,
                 () -> mKeyguardStateController, () -> mIconPolicy, mHvacController, mSignalPolicy,
                 new SystemBarConfigs(mTestableResources.getResources()),
-                mock(ConfigurationController.class), displayTracker);
+                mock(ConfigurationController.class), displayTracker, Optional.empty());
         mCarSystemBar.setSignalPolicy(mSignalPolicy);
     }
 

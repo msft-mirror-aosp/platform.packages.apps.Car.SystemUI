@@ -48,6 +48,7 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.hvac.HvacController;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -65,9 +66,11 @@ import com.android.systemui.statusbar.phone.SysuiDarkIconDispatcher;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.util.concurrency.DelayableExecutor;
+import com.android.systemui.wm.MDSystemBarsController;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -76,7 +79,8 @@ import dagger.Lazy;
 
 /** Navigation bars customized for the automotive use case. */
 public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
-        ConfigurationController.ConfigurationListener {
+        ConfigurationController.ConfigurationListener,
+        MDSystemBarsController.Listener {
     private final Context mContext;
     private final CarSystemBarController mCarSystemBarController;
     private final SysuiDarkIconDispatcher mStatusBarIconController;
@@ -132,6 +136,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     private boolean mNavBarTransientShown;
 
     private boolean mIsUiModeNight = false;
+    private MDSystemBarsController mMDSystemBarsController;
 
     @Inject
     public CarSystemBar(Context context,
@@ -153,7 +158,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
             StatusBarSignalPolicy signalPolicy,
             SystemBarConfigs systemBarConfigs,
             ConfigurationController configurationController,
-            DisplayTracker displayTracker
+            DisplayTracker displayTracker,
+            Optional<MDSystemBarsController> mdSystemBarsController
     ) {
         mContext = context;
         mCarSystemBarController = carSystemBarController;
@@ -175,6 +181,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mUiModeManager = mContext.getSystemService(UiModeManager.class);
         mDisplayTracker = displayTracker;
         configurationController.addCallback(this);
+        mMDSystemBarsController = mdSystemBarsController.orElse(null);
     }
 
     @Override
@@ -193,24 +200,32 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mCommandQueue.addCallback(this);
 
         RegisterStatusBarResult result = null;
-        try {
-            result = mBarService.registerStatusBar(mCommandQueue);
-        } catch (RemoteException ex) {
-            ex.rethrowFromSystemServer();
+        //Register only for Primary User.
+        if (!CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
+            try {
+                result = mBarService.registerStatusBar(mCommandQueue);
+            } catch (RemoteException ex) {
+                ex.rethrowFromSystemServer();
+            }
+        } else if (mMDSystemBarsController != null) {
+            mMDSystemBarsController.addListener(this, mDisplayId);
         }
 
-        onSystemBarAttributesChanged(mDisplayId, result.mAppearance, result.mAppearanceRegions,
-                result.mNavbarColorManagedByIme, result.mBehavior, result.mRequestedVisibleTypes,
-                result.mPackageName, result.mLetterboxDetails);
+        if (result != null) {
+            onSystemBarAttributesChanged(mDisplayId, result.mAppearance, result.mAppearanceRegions,
+                    result.mNavbarColorManagedByIme, result.mBehavior,
+                    result.mRequestedVisibleTypes,
+                    result.mPackageName, result.mLetterboxDetails);
 
-        // StatusBarManagerService has a back up of IME token and it's restored here.
-        setImeWindowStatus(mDisplayId, result.mImeToken, result.mImeWindowVis,
-                result.mImeBackDisposition, result.mShowImeSwitcher);
+            // StatusBarManagerService has a back up of IME token and it's restored here.
+            setImeWindowStatus(mDisplayId, result.mImeToken, result.mImeWindowVis,
+                    result.mImeBackDisposition, result.mShowImeSwitcher);
 
-        // Set up the initial icon state
-        int numIcons = result.mIcons.size();
-        for (int i = 0; i < numIcons; i++) {
-            mCommandQueue.setIcon(result.mIcons.keyAt(i), result.mIcons.valueAt(i));
+            // Set up the initial icon state
+            int numIcons = result.mIcons.size();
+            for (int i = 0; i < numIcons; i++) {
+                mCommandQueue.setIcon(result.mIcons.keyAt(i), result.mIcons.valueAt(i));
+            }
         }
 
         mAutoHideController.setStatusBar(new AutoHideUiElement() {
@@ -451,6 +466,10 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
 
         boolean isKeyboardVisible = (vis & InputMethodService.IME_VISIBLE) != 0;
 
+        updateKeyboardVisibility(isKeyboardVisible);
+    }
+
+    private void updateKeyboardVisibility(boolean isKeyboardVisible) {
         if (mHideTopBarForKeyboard) {
             mCarSystemBarController.setTopWindowVisibility(
                     isKeyboardVisible ? View.GONE : View.VISIBLE);
@@ -680,5 +699,10 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     @VisibleForTesting
     void setUiModeManager(UiModeManager uiModeManager) {
         mUiModeManager = uiModeManager;
+    }
+
+    @Override
+    public void onKeyboardVisibilityChanged(boolean show) {
+        updateKeyboardVisibility(show);
     }
 }

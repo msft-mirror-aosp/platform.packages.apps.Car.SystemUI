@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2023 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.android.systemui;
+package com.android.systemui.car.userpicker;
 
-import com.android.systemui.dagger.DefaultBroadcastReceiverBinder;
-import com.android.systemui.dagger.DefaultServiceBinder;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import dagger.Module;
+import java.lang.annotation.Retention;
+
+import javax.inject.Scope;
 
 /**
- * Supply Activities, Services, and SystemUI Objects for CarSystemUI.
+ * Scope for {@link UserPickerActivity} lifecycle.
+ * It separates activity and singleton scopes.
  */
-@Module(includes = {
-        CarSystemUIActivityBinder.class,
-        DefaultBroadcastReceiverBinder.class,
-        DefaultServiceBinder.class})
-public class CarComponentBinder {
+@Scope
+@Retention(RUNTIME)
+public @interface UserPickerScope {
 }

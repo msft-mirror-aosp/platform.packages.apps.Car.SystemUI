@@ -132,10 +132,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     }
 
     private void setUpLogout() {
-        UserInfo user1 = generateUser(1000, "User1", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
-        UserInfo user2 = generateUser(1001, "User2", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
+        UserInfo user1 = generateUser(1000, "User1");
+        UserInfo user2 = generateUser(1001, "User2");
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
         when(mDevicePolicyManager.isDeviceManaged()).thenReturn(true);
@@ -179,12 +177,10 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     public void switchNotAllowed_returnsOnlyCurrentUser() {
         when(mUserManager.getUserSwitchability(any()))
                 .thenReturn(SWITCHABILITY_STATUS_USER_SWITCH_DISALLOWED);
-        UserInfo currentUser = generateUser(mUserTracker.getUserId(),
-                "Current User", /* supportsSwitch= */ true, /* isGuest= */ false);
+        UserInfo currentUser = generateUser(mUserTracker.getUserId(), "Current User");
         mAliveUsers.add(currentUser);
         when(mUserManager.getUserInfo(mUserTracker.getUserId())).thenReturn(currentUser);
-        UserInfo otherUser = generateUser(1001, "Other User", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
+        UserInfo otherUser = generateUser(1001, "Other User");
         mAliveUsers.add(otherUser);
         List<QCRow> rows = getProfileRows();
         assertThat(rows).hasSize(1);
@@ -193,10 +189,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
     @Test
     public void switchAllowed_usersSwitchable_returnsAllRows() {
-        UserInfo user1 = generateUser(1000, "User1", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
-        UserInfo user2 = generateUser(1001, "User2", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
+        UserInfo user1 = generateUser(1000, "User1");
+        UserInfo user2 = generateUser(1001, "User2");
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
         List<QCRow> rows = getProfileRows();
@@ -212,10 +206,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
     @Test
     public void switchAllowed_orderUsersByCreationTime() {
-        UserInfo user1 = generateUser(1001, "User2", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
-        UserInfo user2 = generateUser(1000, "User1", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
+        UserInfo user1 = generateUser(1001, "User2");
+        UserInfo user2 = generateUser(1000, "User1");
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
         List<QCRow> rows = getProfileRows();
@@ -231,10 +223,9 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
     @Test
     public void switchAllowed_userNotSwitchable_returnsValidRows() {
-        UserInfo user1 = generateUser(1000, "User1", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
+        UserInfo user1 = generateUser(1000, "User1");
         UserInfo user2 = generateUser(1001, "User2", /* supportsSwitch= */ false,
-                /* isGuest= */ false);
+                /* isFull= */ true, /* isGuest= */ false);
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
         List<QCRow> rows = getProfileRows();
@@ -249,10 +240,26 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
     @Test
     public void switchAllowed_userGuest_returnsValidRows() {
-        UserInfo user1 = generateUser(1000, "User1", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
+        UserInfo user1 = generateUser(1000, "User1");
         UserInfo user2 = generateUser(1001, "User2", /* supportsSwitch= */ true,
-                /* isGuest= */ true);
+                /* isFull= */ true, /* isGuest= */ true);
+        mAliveUsers.add(user1);
+        mAliveUsers.add(user2);
+        List<QCRow> rows = getProfileRows();
+        // Expect three rows - one for the valid user, one for the guest user, and one for add user
+        assertThat(rows).hasSize(3);
+        assertThat(rows.get(0).getTitle()).isEqualTo("User1");
+        assertThat(rows.get(1).getTitle()).isEqualTo(
+                mContext.getString(com.android.internal.R.string.guest_name));
+        assertThat(rows.get(2).getTitle()).isEqualTo(
+                mContext.getString(R.string.car_add_user));
+    }
+
+    @Test
+    public void switchAllowed_userNotFull_returnsValidRows() {
+        UserInfo user1 = generateUser(1000, "User1");
+        UserInfo user2 = generateUser(1001, "User2", /* supportsSwitch= */ true,
+                /* isFull= */ false, /* isGuest= */ false);
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
         List<QCRow> rows = getProfileRows();
@@ -269,10 +276,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     public void switchAllowed_addUserDisallowed_returnsValidRows() {
         when(mUserManager.hasUserRestrictionForUser(eq(UserManager.DISALLOW_ADD_USER),
                 any())).thenReturn(true);
-        UserInfo user1 = generateUser(1000, "User1", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
-        UserInfo user2 = generateUser(1001, "User2", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
+        UserInfo user1 = generateUser(1000, "User1");
+        UserInfo user2 = generateUser(1001, "User2");
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
         List<QCRow> rows = getProfileRows();
@@ -287,8 +292,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     @Test
     public void switchAllowed_deviceManaged_returnsValidRows() {
         when(mDevicePolicyManager.isDeviceManaged()).thenReturn(true);
-        UserInfo user1 = generateUser(1000, "User1", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
+        UserInfo user1 = generateUser(1000, "User1");
         mAliveUsers.add(user1);
         List<QCRow> rows = getProfileRows();
         // Expect four rows - one for the device owner message, one for the user,
@@ -307,10 +311,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     public void onUserPressed_triggersSwitch() {
         int currentUserId = 1000;
         int otherUserId = 1001;
-        UserInfo user1 = generateUser(currentUserId, "User1", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
-        UserInfo user2 = generateUser(otherUserId, "User2", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
+        UserInfo user1 = generateUser(currentUserId, "User1");
+        UserInfo user2 = generateUser(otherUserId, "User2");
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
         List<QCRow> rows = getProfileRows();
@@ -334,8 +336,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         guestUserInfo.id = guestUserId;
         when(mUserManager.findCurrentGuestUser()).thenReturn(guestUserInfo);
 
-        UserInfo user1 = generateUser(currentUserId, "User1", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
+        UserInfo user1 = generateUser(currentUserId, "User1");
         mAliveUsers.add(user1);
         List<QCRow> rows = getProfileRows();
         // Expect 3 rows - one for the user, one for the guest user, and one for add user
@@ -351,10 +352,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(true);
         int currentUserId = 1000;
         int secondaryUserId = 1001;
-        UserInfo user1 = generateUser(currentUserId, "User1", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
-        UserInfo user2 = generateUser(secondaryUserId, "User2", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
+        UserInfo user1 = generateUser(currentUserId, "User1");
+        UserInfo user2 = generateUser(secondaryUserId, "User2");
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
         mockUmGetVisibleUsers(mUserManager, currentUserId, secondaryUserId);
@@ -378,12 +377,9 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(true);
         when(mUserTracker.getUserId()).thenReturn(secondaryUserId);
         when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(secondaryUserId));
-        UserInfo user1 = generateUser(currentUserId, "User1", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
-        UserInfo user2 = generateUser(secondaryUserId, "User2", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
-        UserInfo user3 = generateUser(newUserId, "User3", /* supportsSwitch= */ true,
-                /* isGuest= */ false);
+        UserInfo user1 = generateUser(currentUserId, "User1");
+        UserInfo user2 = generateUser(secondaryUserId, "User2");
+        UserInfo user3 = generateUser(newUserId, "User3");
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
         mAliveUsers.add(user3);
@@ -404,12 +400,19 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         return ((QCList) item).getRows();
     }
 
-    private UserInfo generateUser(int id, String name, boolean supportsSwitch, boolean isGuest) {
+    private UserInfo generateUser(int id, String name) {
+        return generateUser(id, name, /* supportsSwitch= */ true, /* isFull= */ true,
+                /* isGuest= */ false);
+    }
+
+    private UserInfo generateUser(int id, String name, boolean supportsSwitch, boolean isFull,
+            boolean isGuest) {
         UserInfo info = mock(UserInfo.class);
         info.id = id;
         info.name = name;
         info.creationTime = System.currentTimeMillis();
-        when(info.supportsSwitchToByUser()).thenReturn(supportsSwitch);
+        when(info.supportsSwitchTo()).thenReturn(supportsSwitch);
+        when(info.isFull()).thenReturn(isFull);
         when(info.isGuest()).thenReturn(isGuest);
         return info;
     }

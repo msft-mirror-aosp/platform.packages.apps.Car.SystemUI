@@ -18,7 +18,6 @@ package com.android.systemui
 
 import android.content.Context
 import com.android.keyguard.KeyguardBiometricLockoutLogger
-import com.android.systemui.R
 import com.android.systemui.biometrics.AuthController
 import com.android.systemui.car.cluster.ClusterDisplayController
 import com.android.systemui.car.input.DisplayInputSinkController
@@ -39,6 +38,7 @@ import com.android.systemui.usb.StorageNotification
 import com.android.systemui.util.NotificationChannels
 import com.android.systemui.wmshell.WMShell
 import dagger.Binds
+import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.ClassKey
@@ -70,15 +70,15 @@ abstract class CarSystemUICoreStartableModule {
         @JvmStatic
         @ClassKey(CarSystemBar::class)
         fun bindCarSystemBar(
-                systemBarService: CarSystemBar,
-                applyRROService: CarSystemBarMediator,
+                systemBarService: Lazy<CarSystemBar>,
+                applyRROService: Lazy<CarSystemBarMediator>,
                 context: Context
         ): CoreStartable {
             if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI() &&
                     context.resources.getBoolean(R.bool.config_enableSecondaryUserRRO)) {
-                return applyRROService
+                return applyRROService.get()
             }
-            return systemBarService
+            return systemBarService.get()
         }
     }
 

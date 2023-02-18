@@ -68,14 +68,14 @@ import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 import com.android.systemui.wm.MDSystemBarsController;
 
+import dagger.Lazy;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
-
-import dagger.Lazy;
 
 /** Navigation bars customized for the automotive use case. */
 public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
@@ -180,6 +180,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mDisplayId = context.getDisplayId();
         mUiModeManager = mContext.getSystemService(UiModeManager.class);
         mDisplayTracker = displayTracker;
+        mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
         configurationController.addCallback(this);
         mMDSystemBarsController = mdSystemBarsController.orElse(null);
     }

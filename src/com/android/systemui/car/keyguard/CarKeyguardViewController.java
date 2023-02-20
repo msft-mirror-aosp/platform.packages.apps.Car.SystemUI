@@ -268,7 +268,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     @Override
     @MainThread
     public void onFinishedGoingToSleep() {
-        mPrimaryBouncerInteractor.onScreenTurnedOff();
+        mPrimaryBouncerInteractor.hide();
     }
 
     @Override

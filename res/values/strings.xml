@@ -174,4 +174,54 @@
 
     <!-- Message shown when the lock pattern is focused. [CHAR LIMIT=40] -->
     <string name="lockpattern_does_not_support_rotary">Pattern does not support rotary; please use touch</string>
+
+    <!-- Display Input Lock string -->
+    <string name="display_input_lock_text">Touch screen locked</string>
+    <string name="display_input_lock_initial_text">Your screen has been locked</string>
+
+    <!-- Title of the alert dialog to ask user to confirm logout. -->
+    <string name="user_logout_title">Are you sure you want to log out?</string>
+    <!-- Message to inform user that all open applications will be closed. -->
+    <string name="user_logout_message">This will close all open applications</string>
+    <!-- Text for button that logs out current user. -->
+    <string name="user_logout">Log out</string>
+
+    <!-- User Picker: guest name -->
+    <string name="car_guest">Guest</string>
+    <!-- User Picker: user switching message -->
+    <string name="user_switching_message">Switching user</string>
+    <!-- User Picker: user adding message -->
+    <string name="user_adding_message">Adding new user</string>
+    <!-- User Picker: max user limit reached title -->
+    <string name="max_user_limit_reached_title">User limit reached</string>
+    <!-- User Picker: max user limit reached message -->
+    <string name="max_user_limit_reached_message">"You can add up to "</string>
+    <!-- User Picker: confirm add user title -->
+    <string name="confirm_add_user_title">Add new user?</string>
+    <!-- User Picker: the message when user is already logged-in state -->
+    <string name="already_logged_in_message">Already logged in another display</string>
+    <!-- User Picker: header bar text in logged-out state -->
+    <string name="header_bar_text_in_logged_out_state">Pick a profile to start</string>
+    <!-- User Picker: text for logged-in state -->
+    <string name="logged_in_text">Logged in</string>
+    <!-- User Picker: prefix text for logged-in state of other seat -->
+    <string name="prefix_logged_in_info_for_other_seat">In use by <xliff:g id="seat_location" example="Driver">%s</xliff:g></string>
+    <!-- User Picker: snack bar message when adding user is requested concurrently
+    from another display-->
+    <string name="create_user_failed_message">Could not add user now. Try it after a while.</string>
+    <!-- User Picker: snack bar message when creating guest user is requested concurrently
+    with user addition request -->
+    <string name="guest_creation_failed_message">Try to login as guest after a while</string>
+    <!-- User Picker: text when user is stopping -->
+    <string name="stopping_user_text">Stopping</string>
+    <!-- User Picker: snack bar message when clicking stopping user -->
+    <string name="wait_for_until_stopped_message">Please wait until user has been stopped</string>
+
+    <!-- User Picker: seat string -->
+    <string name="seat_driver">driver</string>
+    <string name="seat_front">front</string>
+    <string name="seat_rear">rear</string>
+    <string name="seat_left_side">left</string>
+    <string name="seat_center_side">center</string>
+    <string name="seat_right_side">right</string>
 </resources>

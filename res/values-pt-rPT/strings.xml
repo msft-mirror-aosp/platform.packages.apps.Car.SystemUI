@@ -87,4 +87,29 @@
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"Definições de som"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"Definições de perfis e contas"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"O padrão não sup. control. rotativo; use o toque"</string>
+    <string name="display_input_lock_text" msgid="8524876126635885614">"Ecrã tátil bloqueado"</string>
+    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"O ecrã foi bloqueado"</string>
+    <string name="user_logout_title" msgid="5534754139319586681">"Quer mesmo terminar sessão?"</string>
+    <string name="user_logout_message" msgid="7804089876692575056">"Esta ação fecha todas as aplicações abertas"</string>
+    <string name="user_logout" msgid="2934184154258330491">"Terminar sessão"</string>
+    <string name="car_guest" msgid="768913000117469596">"Convidado"</string>
+    <string name="user_switching_message" msgid="634395959804046394">"A mudar de utilizador"</string>
+    <string name="user_adding_message" msgid="7328589666615053611">"A adicionar novo utilizador"</string>
+    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"Limite de utilizadores alcançado"</string>
+    <string name="max_user_limit_reached_message" msgid="644904407853005163">"Pode adicionar até "</string>
+    <string name="confirm_add_user_title" msgid="1237839494207086048">"Adicionar novo utilizador?"</string>
+    <string name="already_logged_in_message" msgid="2440895716293348878">"Já com sessão iniciada noutro ecrã"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"Escolha um perfil para começar"</string>
+    <string name="logged_in_text" msgid="932290859654786874">"Sessão iniciada"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"Em utilização por <xliff:g id="SEAT_LOCATION">%s</xliff:g>"</string>
+    <string name="create_user_failed_message" msgid="7107927788723239958">"Não foi possível adicionar o utilizador agora. Experimente após algum tempo."</string>
+    <string name="guest_creation_failed_message" msgid="124079314799870297">"Experimente iniciar sessão como convidado após algum tempo"</string>
+    <string name="stopping_user_text" msgid="8582746159702773548">"A parar"</string>
+    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"Aguarde até o utilizador ter sido parado"</string>
+    <string name="seat_driver" msgid="4502591979520445677">"condutor"</string>
+    <string name="seat_front" msgid="836133281052793377">"frente"</string>
+    <string name="seat_rear" msgid="403133444964528577">"traseira"</string>
+    <string name="seat_left_side" msgid="7460757956924015769">"lado esquerdo"</string>
+    <string name="seat_center_side" msgid="6661501442901282386">"centro"</string>
+    <string name="seat_right_side" msgid="6735434879559763096">"lado direito"</string>
 </resources>

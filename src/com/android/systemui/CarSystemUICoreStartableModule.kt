@@ -16,12 +16,15 @@
 
 package com.android.systemui
 
+import android.content.Context
 import com.android.keyguard.KeyguardBiometricLockoutLogger
 import com.android.systemui.biometrics.AuthController
 import com.android.systemui.car.cluster.ClusterDisplayController
 import com.android.systemui.car.input.DisplayInputSinkController
 import com.android.systemui.car.systembar.CarSystemBar
+import com.android.systemui.car.systembar.CarSystemBarMediator
 import com.android.systemui.car.toast.CarToastUI
+import com.android.systemui.car.users.CarSystemUIUserUtil
 import com.android.systemui.car.voicerecognition.ConnectedDeviceVoiceRecognitionNotifier
 import com.android.systemui.car.volume.VolumeUI
 import com.android.systemui.car.window.SystemUIOverlayWindowManager
@@ -33,10 +36,11 @@ import com.android.systemui.power.PowerUI
 import com.android.systemui.theme.ThemeOverlayController
 import com.android.systemui.usb.StorageNotification
 import com.android.systemui.util.NotificationChannels
-import com.android.systemui.util.leak.GarbageMonitor
 import com.android.systemui.wmshell.WMShell
 import dagger.Binds
+import dagger.Lazy
 import dagger.Module
+import dagger.Provides
 import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
 import dagger.multibindings.Multibinds
@@ -55,10 +59,28 @@ abstract class CarSystemUICoreStartableModule {
     abstract fun bindAuthController(service: AuthController): CoreStartable
 
     /** Inject into CarSystemBar.  */
-    @Binds
-    @IntoMap
-    @ClassKey(CarSystemBar::class)
-    abstract fun bindCarSystemBar(service: CarSystemBar): CoreStartable
+    companion object {
+        /**
+         * TODO(): b/260206944,
+         * @return CarSystemBarMediator for SecondaryMUMDSystemUI which blocks CarSystemBar#start()
+         * util RROs are applied, otherwise return CarSystemBar
+         */
+        @Provides
+        @IntoMap
+        @JvmStatic
+        @ClassKey(CarSystemBar::class)
+        fun bindCarSystemBar(
+                systemBarService: Lazy<CarSystemBar>,
+                applyRROService: Lazy<CarSystemBarMediator>,
+                context: Context
+        ): CoreStartable {
+            if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI() &&
+                    context.resources.getBoolean(R.bool.config_enableSecondaryUserRRO)) {
+                return applyRROService.get()
+            }
+            return systemBarService.get()
+        }
+    }
 
     /** Inject into CarToastUI.  */
     @Binds
@@ -83,21 +105,15 @@ abstract class CarSystemUICoreStartableModule {
     @IntoMap
     @ClassKey(ConnectedDeviceVoiceRecognitionNotifier::class)
     abstract fun bindConnectedDeviceVoiceRecognitionNotifier(
-        service: ConnectedDeviceVoiceRecognitionNotifier
+            service: ConnectedDeviceVoiceRecognitionNotifier
     ): CoreStartable
-
-    /** Inject into GarbageMonitor.Service.  */
-    @Binds
-    @IntoMap
-    @ClassKey(GarbageMonitor::class)
-    abstract fun bindGarbageMonitorService(sysui: GarbageMonitor.Service): CoreStartable
 
     /** Inject into KeyguardBiometricLockoutLogger.  */
     @Binds
     @IntoMap
     @ClassKey(KeyguardBiometricLockoutLogger::class)
     abstract fun bindKeyguardBiometricLockoutLogger(
-        sysui: KeyguardBiometricLockoutLogger
+            sysui: KeyguardBiometricLockoutLogger
     ): CoreStartable
 
     /** Inject into KeyguardViewMediator.  */
@@ -148,7 +164,7 @@ abstract class CarSystemUICoreStartableModule {
     @IntoMap
     @ClassKey(SystemUIOverlayWindowManager::class)
     abstract fun bindSystemUIOverlayWindowManager(
-        sysui: SystemUIOverlayWindowManager
+            sysui: SystemUIOverlayWindowManager
     ): CoreStartable
 
     /** Inject into ThemeOverlayController.  */

@@ -89,7 +89,7 @@
                 systemui:componentNames="@string/config_appGridComponentName"
                 systemui:highlightWhenSelected="true"
                 systemui:icon="@drawable/car_ic_apps"
-                systemui:intent="intent:#Intent;action=com.android.car.carlauncher.ACTION_APP_GRID;package=com.android.car.carlauncher;launchFlags=0x24000000;end"
+                systemui:intent="@string/system_bar_app_drawer_intent"
                 systemui:clearBackStack="true"/>
 
             <com.android.systemui.car.systembar.HvacButton

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2023 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,24 @@
 
 package com.android.systemui;
 
-import com.android.systemui.dagger.DefaultBroadcastReceiverBinder;
-import com.android.systemui.dagger.DefaultServiceBinder;
+import android.app.Activity;
 
+import com.android.systemui.car.userpicker.UserPickerActivity;
+import com.android.systemui.dagger.DefaultActivityBinder;
+
+import dagger.Binds;
 import dagger.Module;
+import dagger.multibindings.ClassKey;
+import dagger.multibindings.IntoMap;
 
 /**
- * Supply Activities, Services, and SystemUI Objects for CarSystemUI.
+ * Provides all injectable activities related to Car
  */
-@Module(includes = {
-        CarSystemUIActivityBinder.class,
-        DefaultBroadcastReceiverBinder.class,
-        DefaultServiceBinder.class})
-public class CarComponentBinder {
+@Module
+public abstract class CarSystemUIActivityBinder extends DefaultActivityBinder {
+    /** Inject into UserPickerActivity. */
+    @Binds
+    @IntoMap
+    @ClassKey(UserPickerActivity.class)
+    public abstract Activity bindUserPickerActivity(UserPickerActivity activity);
 }

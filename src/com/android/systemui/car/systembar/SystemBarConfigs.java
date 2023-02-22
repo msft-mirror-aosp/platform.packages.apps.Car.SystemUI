@@ -96,7 +96,10 @@ public class SystemBarConfigs {
     @Inject
     public SystemBarConfigs(@Main Resources resources) {
         mResources = resources;
+        init();
+    }
 
+    private void init() {
         populateMaps();
         readConfigs();
 
@@ -107,6 +110,20 @@ public class SystemBarConfigs {
 
         setInsetPaddingsForOverlappingCorners();
         sortSystemBarSidesByZOrder();
+    }
+
+    /**
+     * Invalidate cached resources and fetch from resources config file.
+     * TODO: b/260206944, Can remove this after we have a fix for overlaid resources not applied.
+     * <p>
+     * Since SystemBarConfig is a Scoped(Dagger Singleton Annotation), We will have stale values, of
+     * all the resources after the RRO is applied.
+     * Another way is to remove the Scope(Singleton), but the downside is that it will be re-created
+     * everytime.
+     * </p>
+     */
+    void resetSystemBarConfigs() {
+        init();
     }
 
     protected WindowManager.LayoutParams getLayoutParamsBySide(@SystemBarSide int side) {
@@ -351,6 +368,7 @@ public class SystemBarConfigs {
             }
         });
 
+        mSystemBarSidesByZOrder.clear();
         systemBarsByZOrder.forEach(systemBarConfig -> {
             mSystemBarSidesByZOrder.add(systemBarConfig.getSide());
         });

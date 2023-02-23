@@ -22,15 +22,12 @@ import static android.widget.ListPopupWindow.WRAP_CONTENT;
 import android.annotation.ColorInt;
 import android.annotation.DimenRes;
 import android.annotation.LayoutRes;
-import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.car.drivingstate.CarUxRestrictions;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.UserHandle;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,7 +50,6 @@ import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.qc.QCFooterButton;
 import com.android.systemui.car.qc.SystemUIQCView;
 import com.android.systemui.car.qc.SystemUIQCViewController;
-import com.android.systemui.car.userpicker.UserPickerActivity;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
@@ -312,14 +308,9 @@ public class StatusIconPanelController {
             registerFocusListener(true);
 
             if (CarSystemUIUserUtil.isMUMDSystemUI()
-                    && mPanelLayoutRes == R.layout.qc_profile_switcher
-                    && mContext.getDisplayId() == Display.DEFAULT_DISPLAY) {
+                    && mPanelLayoutRes == R.layout.qc_profile_switcher) {
                 // TODO(b/269490856): consider removal of UserPicker carve-outs
-                Intent intent = new Intent(mContext, UserPickerActivity.class).setFlags(
-                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                ActivityOptions options = ActivityOptions.makeBasic()
-                        .setLaunchDisplayId(mContext.getDisplayId());
-                mContext.startActivityAsUser(intent, options.toBundle(), UserHandle.SYSTEM);
+                CarSystemUIUserUtil.launchUserPicker(mContext);
             } else {
                 // TODO(b/202563671): remove yOffsetPixel when the PopupWindow API is updated.
                 mPanel.showAsDropDown(mAnchorView, xOffset, yOffset, gravity);

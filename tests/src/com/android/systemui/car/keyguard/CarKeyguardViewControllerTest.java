@@ -246,6 +246,12 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
     }
 
     @Test
+    public void onFinishedGoingToSleep() {
+        mCarKeyguardViewController.onFinishedGoingToSleep();
+        verify(mPrimaryBouncerInteractor).hide();
+    }
+
+    @Test
     public void onDeviceWakeUpWhileKeyguardShown_bouncerNotSecure_keyguardIsNotVisible() {
         setIsSecure(false);
         mCarKeyguardViewController.onStartedGoingToSleep();

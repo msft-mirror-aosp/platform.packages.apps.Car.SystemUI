@@ -87,4 +87,29 @@
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"ხმის პარამეტრები"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"პროფილებისა და ანგარიშების პარამეტრები"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"ნიმუშს არ აქვს როტაციულის მხარდაჭერა; ისარგებლეთ შეხებით"</string>
+    <string name="display_input_lock_text" msgid="8524876126635885614">"სენსორული ეკრანი დაბლოკილია"</string>
+    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"თქვენი ეკრანი დაიბლოკა"</string>
+    <string name="user_logout_title" msgid="5534754139319586681">"დარწმუნებული ხართ, რომ გსურთ გამოსვლა?"</string>
+    <string name="user_logout_message" msgid="7804089876692575056">"ეს დახურავს ყველა ღია აპს"</string>
+    <string name="user_logout" msgid="2934184154258330491">"სისტემიდან გასვლა"</string>
+    <string name="car_guest" msgid="768913000117469596">"სტუმარი"</string>
+    <string name="user_switching_message" msgid="634395959804046394">"მომხმარებლის გადართვა"</string>
+    <string name="user_adding_message" msgid="7328589666615053611">"ემატება ახალი მომხმარებელი"</string>
+    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"მიღწეულია მომხმარებელთა ლიმიტი"</string>
+    <string name="max_user_limit_reached_message" msgid="644904407853005163">"შეგიძლიათ დაამატოთ შემდეგ რაოდენობამდე: "</string>
+    <string name="confirm_add_user_title" msgid="1237839494207086048">"გსურთ ახალი მომხმარებლის დამატება?"</string>
+    <string name="already_logged_in_message" msgid="2440895716293348878">"უკვე შესული ხართ სხვა ეკრანზე"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"დასაწყებად აირჩიეთ პროფილი"</string>
+    <string name="logged_in_text" msgid="932290859654786874">"სისტემაში შესული"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"გამოიყენება <xliff:g id="SEAT_LOCATION">%s</xliff:g>-ის მიერ"</string>
+    <string name="create_user_failed_message" msgid="7107927788723239958">"მომხმარებლის დამატება ახლა ვერ მოხერხდა. ცოტა ხნის შემდეგ ცადეთ."</string>
+    <string name="guest_creation_failed_message" msgid="124079314799870297">"შეეცადეთ შეხვიდეთ როგორც სტუმარი გარკვეული პერიოდის შემდეგ"</string>
+    <string name="stopping_user_text" msgid="8582746159702773548">"ჩერდება"</string>
+    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"გთხოვთ, დაელოდოთ მომხმარებლის შეჩერებას"</string>
+    <string name="seat_driver" msgid="4502591979520445677">"მძღოლი"</string>
+    <string name="seat_front" msgid="836133281052793377">"წინა"</string>
+    <string name="seat_rear" msgid="403133444964528577">"უკანა"</string>
+    <string name="seat_left_side" msgid="7460757956924015769">"მარცხენა"</string>
+    <string name="seat_center_side" msgid="6661501442901282386">"შუა"</string>
+    <string name="seat_right_side" msgid="6735434879559763096">"მარჯვენა"</string>
 </resources>

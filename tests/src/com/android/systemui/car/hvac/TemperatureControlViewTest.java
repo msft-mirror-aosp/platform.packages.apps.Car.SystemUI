@@ -115,7 +115,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ false);
-        float increment = mTemperatureControlView.getTemperatureIncrementInCelsius();
+        float increment = mTemperatureControlView.getCelsiusTemperatureIncrement();
         float expectedNewTemperature = (float) mCarPropertyValue.getValue() + increment;
 
         // Hold the button down for more than BUTTON_REPEAT_INTERVAL_MS * 2 but less than
@@ -136,7 +136,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ false);
-        float increment = mTemperatureControlView.getTemperatureIncrementInCelsius();
+        float increment = mTemperatureControlView.getCelsiusTemperatureIncrement();
         float expectedNewTemperature = (float) mCarPropertyValue.getValue() - increment;
 
         // Hold the button down for more than BUTTON_REPEAT_INTERVAL_MS * 2 but less than
@@ -157,9 +157,8 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
-        float increment = mTemperatureControlView.getTemperatureIncrementInFahrenheit();
-        float expectedNewTemperature = fahrenheitToCelsius(
-                celsiusToFahrenheit((float) mCarPropertyValue.getValue()) + increment);
+        float increment = mTemperatureControlView.getFahrenheitTemperatureIncrement();
+        float expectedNewTemperature = (float) mCarPropertyValue.getValue() + increment;
 
         // Hold the button down for more than BUTTON_REPEAT_INTERVAL_MS * 2 but less than
         // BUTTON_REPEAT_INTERVAL_MS * 3 so that the temperature is incremented twice after the
@@ -179,9 +178,8 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
         int intervalTimes = 3;
-        float increment = mTemperatureControlView.getTemperatureIncrementInFahrenheit();
-        float expectedNewTemperature = fahrenheitToCelsius(
-                celsiusToFahrenheit((float) mCarPropertyValue.getValue()) - increment);
+        float increment = mTemperatureControlView.getFahrenheitTemperatureIncrement();
+        float expectedNewTemperature = (float) mCarPropertyValue.getValue() - increment;
 
         // Hold the button down for more than BUTTON_REPEAT_INTERVAL_MS * 2 but less than
         // BUTTON_REPEAT_INTERVAL_MS * 3 so that the temperature is decremented twice after the

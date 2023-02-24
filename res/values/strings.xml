@@ -38,6 +38,8 @@
     <string name="voice_recognition_toast">Voice recognition now handled by connected Bluetooth device</string>
     <!-- Title for button that adds a new profile. [CHAR LIMIT=30] -->
     <string name="car_add_user">Add a profile</string>
+    <!-- Title for button that ends current user session. [CHAR LIMIT=30] -->
+    <string name="end_session">End session</string>
     <!-- Default name of the new profile created. [CHAR LIMIT=30] -->
     <string name="car_new_user">New Profile</string>
     <!-- Title of the alert dialog to ask user to confirm creation of new profile. [CHAR LIMIT=30] -->
@@ -109,6 +111,36 @@
     <!--- Content of dialog triggered if the camera is disabled but an app tried to access it. [CHAR LIMIT=NONE] -->
     <string name="sensor_privacy_start_use_camera_dialog_content">To continue, turn on the infotainment system camera. This will turn on the camera for all apps that have permission.</string>
 
+    <!-- System bar contentDescription for home menu-->
+    <string name="system_bar_home_label">Home Screen</string>
+    <!-- System bar contentDescription for Dialer-->
+    <string name="system_bar_phone_label">Phone</string>
+    <!-- System bar contentDescription for Launcher-->
+    <string name="system_bar_applications_label">Applications</string>
+    <!-- System bar contentDescription for HVAC-->
+    <string name="system_bar_climate_control_label">Climate Control</string>
+    <!-- System bar contentDescription for Notifications-->
+    <string name="system_bar_notifications_label">Notifications</string>
+    <!-- System bar contentDescription for Maps-->
+    <string name="system_bar_maps_label">Maps</string>
+    <!-- System bar contentDescription for Media-->
+    <string name="system_bar_media_label">Media</string>
+
+    <!-- Adjust temperature view lower temperature label-->
+    <string name="hvac_decrease_button_label">Lower temperature</string>
+    <!-- Adjust temperature view raise temperature label-->
+    <string name="hvac_increase_button_label">Raise temperature</string>
+
+    <!-- Status icon for bluetooth settings in status bar-->
+    <string name="status_icon_bluetooth_disconnected">Bluetooth Setting: Disconnected</string>
+    <string name="status_icon_bluetooth_connected">Bluetooth Setting: Connected</string>
+    <string name="status_icon_bluetooth_off">Bluetooth Setting: Bluetooth off</string>
+    <!-- Status icon for signal settings in status bar-->
+    <string name="status_icon_signal_mobile">Signal Settings: Using Mobile Data</string>
+    <string name="status_icon_signal_wifi">Signal Settings: Wifi On</string>
+    <string name="status_icon_signal_hotspot">Signal Settings: Hotspot On</string>
+    <!-- Status icon for display settings in status bar-->
+    <string name="status_icon_display_status">Display Settings</string>
 
     <!-- Blocking activity: Message to show to user when a feature of current application is not allowed. [CHAR LIMIT=120] -->
     <string name="activity_blocked_text">You can\u2019t use this feature while driving</string>

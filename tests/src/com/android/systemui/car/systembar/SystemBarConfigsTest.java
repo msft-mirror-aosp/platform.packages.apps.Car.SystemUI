@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import android.app.UiModeManager;
 import android.content.res.Resources;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
@@ -294,9 +295,11 @@ public class SystemBarConfigsTest extends SysuiTestCase {
                 PowerManagerHelper powerManagerHelper,
                 BroadcastDispatcher broadcastDispatcher,
                 CarDeviceProvisionedController carDeviceProvisionedController,
-                ConfigurationController configurationController) {
+                ConfigurationController configurationController,
+                UiModeManager uiModeManager) {
             super(carSystemBarController, notificationPanelViewController, powerManagerHelper,
-                    broadcastDispatcher, carDeviceProvisionedController, configurationController);
+                    broadcastDispatcher, carDeviceProvisionedController, configurationController,
+                    uiModeManager);
         }
     }
 }

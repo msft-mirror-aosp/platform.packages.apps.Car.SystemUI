@@ -209,7 +209,7 @@
 
     <!-- Determines whether the car system UI should register the System UI Proxy with the
      CarService. -->
-    <bool name="config_registerCarSystemUIProxy">false</bool>
+    <bool name="config_registerCarSystemUIProxy">true</bool>
 
     <!-- Determines whether the secondary user SystemUI must be overlaid -->
     <bool name="config_enableSecondaryUserRRO">false</bool>

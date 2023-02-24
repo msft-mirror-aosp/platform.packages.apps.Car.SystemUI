@@ -23,12 +23,16 @@ import static com.android.car.ui.utils.CarUiUtils.drawableToBitmap;
 
 import android.annotation.Nullable;
 import android.annotation.UserIdInt;
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.admin.DevicePolicyManager;
 import android.car.Car;
+import android.car.SyncResultCallback;
 import android.car.user.CarUserManager;
 import android.car.user.UserCreationResult;
+import android.car.user.UserStartRequest;
+import android.car.user.UserStopRequest;
+import android.car.user.UserStopResponse;
+import android.car.user.UserSwitchRequest;
 import android.car.user.UserSwitchResult;
 import android.car.util.concurrent.AsyncFuture;
 import android.content.Context;
@@ -275,30 +279,54 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     }
 
     private void switchForegroundUser(@UserIdInt int userId) {
-        AsyncFuture<UserSwitchResult> userSwitchResultFuture =
-                mCarUserManager.switchUser(userId);
-        UserSwitchResult userSwitchResult;
+        UserSwitchResult userSwitchResult = null;
         try {
-            userSwitchResult = userSwitchResultFuture.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            SyncResultCallback<UserSwitchResult> userSwitchCallback = new SyncResultCallback<>();
+            mCarUserManager.switchUser(
+                    new UserSwitchRequest.Builder(UserHandle.of(userId)).build(),
+                    Runnable::run, userSwitchCallback);
+            userSwitchResult = userSwitchCallback.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            Log.w(TAG, "Could not switch user.", e);
-            return;
+            Log.w(TAG, "Exception while switching to the user " + userId, e);
         }
-        if (userSwitchResult == null) {
-            Log.w(TAG, "Timed out while switching user: " + TIMEOUT_MS + "ms");
-        } else if (!userSwitchResult.isSuccess()) {
+        if (userSwitchResult == null || !userSwitchResult.isSuccess()) {
             Log.w(TAG, "Could not switch user: " + userSwitchResult);
         }
     }
 
     private void switchSecondaryUser(@UserIdInt int userId) {
-        ActivityManager am = mContext.getSystemService(ActivityManager.class);
-        boolean success = am.stopUser(mUserTracker.getUserId(), /* force= */ true);
-        if (!success) {
-            Log.w(TAG, "Cound not stop user " + userId);
+        try {
+            SyncResultCallback<UserStopResponse> userStopCallback = new SyncResultCallback<>();
+            mCarUserManager.stopUser(
+                    new UserStopRequest.Builder(mUserTracker.getUserHandle()).setForce().build(),
+                    Runnable::run, userStopCallback);
+            UserStopResponse userStopResponse =
+                    userStopCallback.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            if (!userStopResponse.isSuccess()) {
+                Log.w(TAG, "Could not stop user " + mUserTracker.getUserId() + ". Response: "
+                        + userStopResponse);
+                return;
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Exception while stopping user " + mUserTracker.getUserId(), e);
             return;
         }
-        am.startUserInBackgroundVisibleOnDisplay(userId, mContext.getDisplayId());
+
+        int displayId = mContext.getDisplayId();
+        try {
+            mCarUserManager.startUser(
+                    new UserStartRequest.Builder(UserHandle.of(userId)).setDisplayId(
+                            displayId).build(),
+                    Runnable::run,
+                    response -> {
+                        if (!response.isSuccess()) {
+                            Log.e(TAG, "Could not start user " + userId + " on display "
+                                    + displayId + ". Response: " + response);
+                        }
+                    });
+        } catch (Exception e) {
+            Log.w(TAG, "Exception while starting user " + userId + " on display " + displayId, e);
+        }
     }
 
     private void logoutUser() {

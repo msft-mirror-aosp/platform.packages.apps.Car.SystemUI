@@ -25,6 +25,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.Slog;
+import android.util.SparseArray;
 import android.view.SurfaceControl;
 import android.window.WindowContainerTransaction;
 
@@ -41,6 +43,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     private final SyncTransactionQueue mSyncQueue;
     private final CarTaskViewClient mCarTaskViewClient;
     private final TaskViewTaskController mTaskViewTaskController;
+    private final SparseArray<Rect> mInsets = new SparseArray<>();
 
     private final CarTaskViewHost mHostImpl = new CarTaskViewHost() {
         @Override
@@ -90,6 +93,25 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             wct.reorder(taskInfo.token, /* onTop= */ true);
             mSyncQueue.queue(wct);
         }
+
+        @Override
+        public void addInsets(SparseArray<Rect> insetsProviderRects) {
+            mInsets.clear();
+            int numInsetsProviderRects = insetsProviderRects.size();
+            for (int i = 0; i < numInsetsProviderRects; i++) {
+                mInsets.append(insetsProviderRects.keyAt(i), insetsProviderRects.valueAt(i));
+            }
+            applyInsets();
+        }
+
+        @Override
+        public void removeInsets(int[] insetsTypes) {
+            if (mTaskViewTaskController.getTaskInfo() == null) {
+                Slog.w(TAG, "Cannot remove insets as the task token is not present.");
+                return;
+            }
+            removeAppliedInsets(insetsTypes);
+        }
     };
 
     public RemoteCarTaskViewServerImpl(
@@ -122,6 +144,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
 
     @Override
     public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo, SurfaceControl leash) {
+        applyInsets();
         mCarTaskViewClient.onTaskAppeared(taskInfo, leash);
     }
 
@@ -133,5 +156,42 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     @Override
     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
         mCarTaskViewClient.onTaskVanished(taskInfo);
+    }
+
+    private void applyInsets() {
+        if (mInsets == null || mInsets.size() == 0) {
+            Slog.w(TAG, "Cannot apply null or empty insets");
+            return;
+        }
+        if (mTaskViewTaskController.getTaskInfo() == null) {
+            Slog.w(TAG, "Cannot apply insets as the task token is not present.");
+            return;
+        }
+        WindowContainerTransaction wct = new WindowContainerTransaction();
+        for (int i = 0; i < mInsets.size(); i++) {
+            wct.addRectInsetsProvider(mTaskViewTaskController.getTaskInfo().token,
+                    mInsets.valueAt(i), new int[]{mInsets.keyAt(i)});
+        }
+        mSyncQueue.queue(wct);
+    }
+
+    private void removeAppliedInsets(int[] insetsTypes) {
+        if (mInsets.size() == 0) {
+            Slog.w(TAG, "No insets set.");
+            return;
+        }
+        WindowContainerTransaction wct = new WindowContainerTransaction();
+        for (int i = 0; i < insetsTypes.length; i++) {
+            int insetsType = insetsTypes[i];
+            if (mInsets.indexOfKey(insetsType) != -1) {
+                wct.removeInsetsProvider(mTaskViewTaskController.getTaskInfo().token,
+                        new int[]{insetsType});
+                mInsets.remove(insetsType);
+            } else {
+                Slog.w(TAG, "Insets type: " + insetsType + " can't be removed as it was not "
+                        + "applied as part of the last addInsets()");
+            }
+        }
+        mSyncQueue.queue(wct);
     }
 }

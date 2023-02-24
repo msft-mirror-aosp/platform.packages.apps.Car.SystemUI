@@ -18,40 +18,128 @@ package com.android.systemui.car.taskview;
 
 import android.app.ActivityManager;
 import android.car.app.CarActivityManager;
+import android.content.Context;
+import android.util.Log;
+import android.util.Slog;
 import android.view.SurfaceControl;
 
+import com.android.systemui.car.CarServiceProvider;
+import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.fullscreen.FullscreenTaskListener;
+import com.android.wm.shell.recents.RecentTasksController;
+import com.android.wm.shell.sysui.ShellInit;
+import com.android.wm.shell.windowdecor.WindowDecorViewModel;
+
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * The Car version of FullscreenTaskListener, which reports Task lifecycle to CarService.
+ * The Car version of {@link FullscreenTaskListener}, which reports Task lifecycle to CarService
+ * only when the {@link CarSystemUIProxyImpl} should be registered.
+ *
+ * <p>When {@link CarSystemUIProxyImpl#shouldRegisterCarSystemUIProxy(Context)} returns true, the
+ * task organizer is registered by the system ui alone and hence SystemUI is responsible to act as
+ * a task monitor for the car service.
+ *
+ * <p>On legacy system where a task organizer is registered by system ui and car launcher both,
+ * this listener will not forward task lifecycle to car service as this would end up sending
+ * multiple task events to the car service.
  */
 public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
-    private final CarActivityManager mCarActivityManager;
+
+    private static final String TAG = "CarFullscrTaskMonitor";
+    private static final boolean DBG = Log.isLoggable(TAG, Log.DEBUG);
+    private final AtomicReference<CarActivityManager> mCarActivityManagerRef =
+            new AtomicReference<>();
+    private final boolean mShouldConnectToCarActivityService;
 
     public CarFullscreenTaskMonitorListener(
-            CarActivityManager carActivityManager,
-            SyncTransactionQueue syncQueue) {
-        super(syncQueue);
-        mCarActivityManager = carActivityManager;
+            Context context,
+            CarServiceProvider carServiceProvider,
+            ShellInit shellInit,
+            ShellTaskOrganizer shellTaskOrganizer,
+            SyncTransactionQueue syncQueue,
+            Optional<RecentTasksController> recentTasksOptional,
+            Optional<WindowDecorViewModel> windowDecorViewModelOptional) {
+        super(shellInit, shellTaskOrganizer, syncQueue, recentTasksOptional,
+                windowDecorViewModelOptional);
+
+        // Rely on whether or not CarSystemUIProxy should be registered to account for these cases:
+        // 1. Legacy system where System UI + launcher both register a TaskOrganizer.
+        //    CarFullScreenTaskMonitorListener will not forward the task lifecycle to the car
+        //    service, as launcher has its own FullScreenTaskMonitorListener.
+        // 2. MUMD system where only System UI registers a TaskOrganizer but the user associated
+        //    with the current display is not a system user. CarSystemUIProxy will be registered
+        //    for system user alone and hence CarFullScreenTaskMonitorListener should be registered
+        //    only then.
+        mShouldConnectToCarActivityService =
+                CarSystemUIProxyImpl.shouldRegisterCarSystemUIProxy(context);
+
+        if (mShouldConnectToCarActivityService) {
+            carServiceProvider.addListener(car ->
+                    mCarActivityManagerRef.set(car.getCarManager(CarActivityManager.class)));
+        }
     }
 
     @Override
     public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo,
             SurfaceControl leash) {
         super.onTaskAppeared(taskInfo, leash);
-        mCarActivityManager.onTaskAppeared(taskInfo, leash);
+
+        if (!mShouldConnectToCarActivityService) {
+            if (DBG) {
+                Slog.w(TAG, "onTaskAppeared() handled in SystemUI as conditions not met for "
+                        + "connecting to car service.");
+            }
+            return;
+        }
+
+        CarActivityManager carAM = mCarActivityManagerRef.get();
+        if (carAM != null) {
+            carAM.onTaskAppeared(taskInfo, leash);
+        } else {
+            Slog.w(TAG, "CarActivityManager is null, skip onTaskAppeared: taskInfo=" + taskInfo);
+        }
     }
 
     @Override
     public void onTaskInfoChanged(ActivityManager.RunningTaskInfo taskInfo) {
         super.onTaskInfoChanged(taskInfo);
-        mCarActivityManager.onTaskInfoChanged(taskInfo);
+
+        if (!mShouldConnectToCarActivityService) {
+            if (DBG) {
+                Slog.w(TAG, "onTaskInfoChanged() handled in SystemUI as conditions not met for "
+                        + "connecting to car service.");
+            }
+            return;
+        }
+
+        CarActivityManager carAM = mCarActivityManagerRef.get();
+        if (carAM != null) {
+            carAM.onTaskInfoChanged(taskInfo);
+        } else {
+            Slog.w(TAG, "CarActivityManager is null, skip onTaskInfoChanged: taskInfo=" + taskInfo);
+        }
     }
 
     @Override
     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
         super.onTaskVanished(taskInfo);
-        mCarActivityManager.onTaskVanished(taskInfo);
+
+        if (!mShouldConnectToCarActivityService) {
+            if (DBG) {
+                Slog.w(TAG, "onTaskVanished() handled in SystemUI as conditions not met for "
+                        + "connecting to car service.");
+            }
+            return;
+        }
+
+        CarActivityManager carAM = mCarActivityManagerRef.get();
+        if (carAM != null) {
+            carAM.onTaskVanished(taskInfo);
+        } else {
+            Slog.w(TAG, "CarActivityManager is null, skip onTaskVanished: taskInfo=" + taskInfo);
+        }
     }
 }

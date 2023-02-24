@@ -87,10 +87,8 @@
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"Configuració del so"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"Configuració dels perfils i els comptes"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"Patró de rotació no admès; utilitza un tàctil"</string>
-    <!-- no translation found for display_input_lock_text (8524876126635885614) -->
-    <skip />
-    <!-- no translation found for display_input_lock_initial_text (7497552507312397576) -->
-    <skip />
+    <string name="display_input_lock_text" msgid="8524876126635885614">"Pantalla tàctil bloquejada"</string>
+    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"La pantalla s\'ha bloquejat"</string>
     <!-- no translation found for user_logout_title (5534754139319586681) -->
     <skip />
     <!-- no translation found for user_logout_message (7804089876692575056) -->

@@ -30,15 +30,21 @@ import android.os.Process;
 import android.util.Slog;
 import android.window.TaskAppearedInfo;
 
+import androidx.annotation.NonNull;
+
+import com.android.systemui.Dumpable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.dump.DumpManager;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.TaskViewTransitions;
 import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.dagger.WMSingleton;
-import com.android.wm.shell.fullscreen.FullscreenTaskListener;
 
+import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -48,13 +54,35 @@ import javax.inject.Inject;
  */
 @WMSingleton
 public final class CarSystemUIProxyImpl
-        implements CarSystemUIProxy, CarServiceProvider.CarServiceOnConnectedListener {
+        implements CarSystemUIProxy, CarServiceProvider.CarServiceOnConnectedListener, Dumpable {
     private static final String TAG = CarSystemUIProxyImpl.class.getSimpleName();
 
     private final Context mContext;
     private final SyncTransactionQueue mSyncQueue;
     private final ShellTaskOrganizer mTaskOrganizer;
     private final TaskViewTransitions mTaskViewTransitions;
+    private boolean mConnected;
+    private final Set<RemoteCarTaskViewServerImpl> mRemoteCarTaskViewServerSet = new HashSet<>();
+
+    /**
+     * Returns true if {@link CarSystemUIProxyImpl} should be registered, false otherwise.
+     * This could be false because of reasons like:
+     * <ul>
+     *     <li>Current user is not a system user.</li>
+     *     <li>Or {@code config_registerCarSystemUIProxy} is disabled.</li>
+     * </ul>
+     */
+    public static boolean shouldRegisterCarSystemUIProxy(Context context) {
+        if (!Process.myUserHandle().isSystem()) {
+            Slog.i(TAG, "Non system user.");
+            return false;
+        }
+        if (!context.getResources().getBoolean(R.bool.config_registerCarSystemUIProxy)) {
+            Slog.i(TAG, "config_registerCarSystemUIProxy disabled");
+            return false;
+        }
+        return true;
+    }
 
     @Inject
     CarSystemUIProxyImpl(
@@ -62,20 +90,18 @@ public final class CarSystemUIProxyImpl
             CarServiceProvider carServiceProvider,
             SyncTransactionQueue syncTransactionQueue,
             ShellTaskOrganizer taskOrganizer,
-            TaskViewTransitions taskViewTransitions) {
+            TaskViewTransitions taskViewTransitions,
+            DumpManager dumpManager) {
         mContext = context;
         mTaskOrganizer = taskOrganizer;
         mSyncQueue = syncTransactionQueue;
         mTaskViewTransitions = taskViewTransitions;
 
-        if (!Process.myUserHandle().isSystem()) {
-            Slog.e(TAG, "Non system user, quitting.");
+        if (!shouldRegisterCarSystemUIProxy(mContext)) {
+            Slog.i(TAG, "Not registering CarSystemUIProxy.");
             return;
         }
-        if (!context.getResources().getBoolean(R.bool.config_registerCarSystemUIProxy)) {
-            Slog.d(TAG, "registerCarSystemUIProxy disabled, quitting.");
-            return;
-        }
+        dumpManager.registerDumpable(this);
         carServiceProvider.addListener(this);
     }
 
@@ -87,20 +113,39 @@ public final class CarSystemUIProxyImpl
                         mTaskOrganizer,
                         mSyncQueue,
                         carTaskViewClient,
+                        this,
                         mTaskViewTransitions);
+        mRemoteCarTaskViewServerSet.add(remoteCarTaskViewServerImpl);
         return remoteCarTaskViewServerImpl.getHostImpl();
+    }
+
+    void onCarTaskViewReleased(RemoteCarTaskViewServerImpl remoteCarTaskViewServer) {
+        mRemoteCarTaskViewServerSet.remove(remoteCarTaskViewServer);
     }
 
     @Override
     public void onConnected(Car car) {
+        mConnected = true;
+        // mTaskOragnizer is already registered. registerOrganizer() here is just used to get all
+        // the existing multi window tasks.
         cleanUpExistingTaskViewTasks(mTaskOrganizer.registerOrganizer());
 
         CarActivityManager carActivityManager = car.getCarManager(CarActivityManager.class);
-        FullscreenTaskListener fullscreenTaskListener = new CarFullscreenTaskMonitorListener(
-                carActivityManager, mSyncQueue);
 
         carActivityManager.registerTaskMonitor();
         carActivityManager.registerCarSystemUIProxy(this);
+    }
+
+    @Override
+    public void dump(@NonNull PrintWriter pw, @NonNull String[] args) {
+        pw.println("  user:" + mContext.getUserId());
+        pw.println("  shouldRegisterCarSystemUiProxy:" + shouldRegisterCarSystemUIProxy(mContext));
+        pw.println("  mConnected:" + mConnected);
+        pw.println("  mRemoteCarTaskViewServerSet size:" + mRemoteCarTaskViewServerSet.size());
+        pw.println("  mRemoteCarTaskViewServerSet:");
+        for (RemoteCarTaskViewServerImpl remoteCarTaskViewServer : mRemoteCarTaskViewServerSet) {
+            pw.println("    " + remoteCarTaskViewServer);
+        }
     }
 
     private static void cleanUpExistingTaskViewTasks(List<TaskAppearedInfo> taskAppearedInfos) {

@@ -30,15 +30,22 @@ import android.os.Process;
 import android.util.Slog;
 import android.window.TaskAppearedInfo;
 
+import androidx.annotation.NonNull;
+
+import com.android.systemui.Dumpable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.dump.DumpManager;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.TaskViewTransitions;
 import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.dagger.WMSingleton;
 import com.android.wm.shell.fullscreen.FullscreenTaskListener;
 
+import java.io.PrintWriter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -48,13 +55,15 @@ import javax.inject.Inject;
  */
 @WMSingleton
 public final class CarSystemUIProxyImpl
-        implements CarSystemUIProxy, CarServiceProvider.CarServiceOnConnectedListener {
+        implements CarSystemUIProxy, CarServiceProvider.CarServiceOnConnectedListener, Dumpable {
     private static final String TAG = CarSystemUIProxyImpl.class.getSimpleName();
 
     private final Context mContext;
     private final SyncTransactionQueue mSyncQueue;
     private final ShellTaskOrganizer mTaskOrganizer;
     private final TaskViewTransitions mTaskViewTransitions;
+    private boolean mConnected;
+    private final Set<RemoteCarTaskViewServerImpl> mRemoteCarTaskViewServerSet = new HashSet<>();
 
     @Inject
     CarSystemUIProxyImpl(
@@ -62,7 +71,8 @@ public final class CarSystemUIProxyImpl
             CarServiceProvider carServiceProvider,
             SyncTransactionQueue syncTransactionQueue,
             ShellTaskOrganizer taskOrganizer,
-            TaskViewTransitions taskViewTransitions) {
+            TaskViewTransitions taskViewTransitions,
+            DumpManager dumpManager) {
         mContext = context;
         mTaskOrganizer = taskOrganizer;
         mSyncQueue = syncTransactionQueue;
@@ -72,6 +82,8 @@ public final class CarSystemUIProxyImpl
             Slog.e(TAG, "Non system user, quitting.");
             return;
         }
+        dumpManager.registerDumpable(this);
+
         if (!context.getResources().getBoolean(R.bool.config_registerCarSystemUIProxy)) {
             Slog.d(TAG, "registerCarSystemUIProxy disabled, quitting.");
             return;
@@ -87,12 +99,19 @@ public final class CarSystemUIProxyImpl
                         mTaskOrganizer,
                         mSyncQueue,
                         carTaskViewClient,
+                        this,
                         mTaskViewTransitions);
+        mRemoteCarTaskViewServerSet.add(remoteCarTaskViewServerImpl);
         return remoteCarTaskViewServerImpl.getHostImpl();
+    }
+
+    void onCarTaskViewReleased(RemoteCarTaskViewServerImpl remoteCarTaskViewServer) {
+        mRemoteCarTaskViewServerSet.remove(remoteCarTaskViewServer);
     }
 
     @Override
     public void onConnected(Car car) {
+        mConnected = true;
         cleanUpExistingTaskViewTasks(mTaskOrganizer.registerOrganizer());
 
         CarActivityManager carActivityManager = car.getCarManager(CarActivityManager.class);
@@ -101,6 +120,16 @@ public final class CarSystemUIProxyImpl
 
         carActivityManager.registerTaskMonitor();
         carActivityManager.registerCarSystemUIProxy(this);
+    }
+
+    @Override
+    public void dump(@NonNull PrintWriter pw, @NonNull String[] args) {
+        pw.println("  mConnected:" + mConnected);
+        pw.println("  mRemoteCarTaskViewServerSet size:" + mRemoteCarTaskViewServerSet.size());
+        pw.println("  mRemoteCarTaskViewServerSet:");
+        for (RemoteCarTaskViewServerImpl remoteCarTaskViewServer : mRemoteCarTaskViewServerSet) {
+            pw.println("    " + remoteCarTaskViewServer);
+        }
     }
 
     private static void cleanUpExistingTaskViewTasks(List<TaskAppearedInfo> taskAppearedInfos) {

@@ -60,6 +60,7 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
     private boolean mHasAnimation;
     private final @InsetsType int mBarType;
     private long mDuration;
+    private long mDotTransitionDelay;
     private DelayableExecutor mExecutor;
 
     @Inject
@@ -81,6 +82,8 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
                 context.getResources().getInteger(R.integer.config_privacyIndicatorLocation)]);
         mDuration = Long.valueOf(
                 context.getResources().getInteger(R.integer.privacy_indicator_animation_duration));
+        mDotTransitionDelay = Long.valueOf(
+                context.getResources().getInteger(R.integer.privacy_chip_pill_to_circle_delay));
     }
 
     @Override
@@ -108,13 +111,15 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
 
         String contentDescription = viewState.getContentDescription();
         if (contentDescription.contains(PrivacyType.TYPE_CAMERA.getLogName())) {
-            showIcon(cameraView, R.id.immersive_camera_transition_show, animate);
+            showIcon(cameraView, R.id.immersive_camera_transition_show,
+                    R.id.immersive_camera_transition_collapse, animate);
         } else {
             hideIcon(cameraView, R.id.immersive_camera_transition_hide, animate);
         }
 
         if (contentDescription.contains(PrivacyType.TYPE_MICROPHONE.getLogName())) {
-            showIcon(micView, R.id.immersive_mic_transition_show, animate);
+            showIcon(micView, R.id.immersive_mic_transition_show,
+                    R.id.immersive_mic_transition_collapse, animate);
         } else {
             hideIcon(micView, R.id.immersive_mic_transition_hide, animate);
         }
@@ -140,10 +145,40 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
     }
 
     @UiThread
-    private void showIcon(MotionLayout view, int transitionId, boolean animated) {
+    private void showIcon(MotionLayout view, int showTransitionId,
+            int collapseTransistionId, boolean animated) {
         if (animated) {
-            view.setTransition(transitionId);
+            view.setTransition(showTransitionId);
             view.transitionToEnd();
+            view.addTransitionListener(new MotionLayout.TransitionListener() {
+                @Override
+                public void onTransitionStarted(MotionLayout motionLayout, int i, int i1) {
+                    // Do nothing.
+                }
+
+                @Override
+                public void onTransitionChange(MotionLayout motionLayout, int i, int i1, float v) {
+                    // Do nothing.
+                }
+
+                @Override
+                public void onTransitionCompleted(MotionLayout motionLayout, int i) {
+                    mExecutor.executeDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            view.setTransition(collapseTransistionId);
+                            view.transitionToEnd();
+                        }
+                    }, mDotTransitionDelay);
+                    view.removeTransitionListener(this);
+                }
+
+                @Override
+                public void onTransitionTrigger(MotionLayout motionLayout, int i, boolean b,
+                        float v) {
+                    // Do nothing.
+                }
+            });
         }
         view.setVisibility(View.VISIBLE);
     }

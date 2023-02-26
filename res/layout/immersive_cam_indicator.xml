@@ -30,6 +30,20 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:scaleType="center"
-        android:src="@drawable/ic_camera_light"
-        android:background="@drawable/privacy_chip_active_background_pill"/>
+        android:src="@drawable/ic_camera_dark"
+        android:background="@drawable/privacy_chip_active_background_pill"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <ImageView
+        android:id="@+id/immersive_privacy_camera_dot"
+        android:contentDescription="@null"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:scaleType="center"
+        android:src="@drawable/system_animation_ongoing_dot"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 </androidx.constraintlayout.motion.widget.MotionLayout>

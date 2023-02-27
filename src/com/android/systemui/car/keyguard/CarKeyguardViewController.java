@@ -142,7 +142,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
     private OnKeyguardCancelClickedListener mKeyguardCancelClickedListener;
     private boolean mShowing;
-    private boolean mIsOccluded;
     private boolean mIsSleeping;
     private int mToastShowDurationMillisecond;
     private ViewGroup mKeyguardContainer;
@@ -229,7 +228,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
         if (mShowing) return;
 
         mShowing = true;
-        mKeyguardStateController.notifyKeyguardState(mShowing, /* occluded= */ false);
+        mKeyguardStateController.notifyKeyguardState(mShowing,
+                mKeyguardStateController.isOccluded());
         mCarSystemBarController.showAllKeyguardButtons(/* isSetUp= */ true);
         start();
         reset(/* hideBouncerWhenShowing= */ false);
@@ -243,7 +243,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
         mViewMediatorCallback.readyForKeyguardDone();
         mShowing = false;
-        mKeyguardStateController.notifyKeyguardState(mShowing, /* occluded= */ false);
+        mKeyguardStateController.notifyKeyguardState(mShowing,
+                mKeyguardStateController.isOccluded());
         mPrimaryBouncerInteractor.hide();
         mCarSystemBarController.showAllNavigationButtons(/* isSetUp= */ true);
         stop();
@@ -287,7 +288,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
     @Override
     @MainThread
     public void setOccluded(boolean occluded, boolean animate) {
-        mIsOccluded = occluded;
+        mKeyguardStateController.notifyKeyguardState(
+                mKeyguardStateController.isShowing(), occluded);
         getOverlayViewGlobalStateController().setOccluded(occluded);
         if (occluded) {
             mCarSystemBarController.showAllOcclusionButtons(/* isSetup= */ true);
@@ -314,7 +316,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         // If dismissing and collapsing Keyguard is requested (e.g. by a Keyguard-dismissing
         // Activity) while Keyguard is occluded, unocclude Keyguard so the user can authenticate to
         // dismiss Keyguard.
-        if (mIsOccluded) {
+        if (mKeyguardStateController.isOccluded()) {
             setOccluded(/* occluded= */ false, /* animate= */ false);
         }
         if (!isSecure()) {

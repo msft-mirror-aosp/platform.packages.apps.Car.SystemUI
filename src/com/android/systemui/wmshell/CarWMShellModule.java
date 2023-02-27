@@ -58,7 +58,7 @@ public abstract class CarWMShellModule {
             DisplayImeController displayImeController,
             @Main Handler mainHandler,
             ShellInit shellInit) {
-        if (CarSystemUIUserUtil.isMUMDSystemUI()) {
+        if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
             return Optional.of(
                     new MDSystemBarsController(displayImeController, mainHandler, shellInit));
         }

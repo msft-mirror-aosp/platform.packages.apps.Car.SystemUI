@@ -87,4 +87,29 @@
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"సౌండ్ సెట్టింగ్‌లు"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"ప్రొఫైళ్లు &amp; ఖాతాల సెట్టింగ్‌లు"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"ఆకృతి రోటరీకి సపోర్ట్ చేయదు; \'తాకండి\'"</string>
+    <string name="display_input_lock_text" msgid="8524876126635885614">"టచ్ స్క్రీన్ లాక్ చేయబడింది"</string>
+    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"మీ స్క్రీన్ లాక్ చేయబడింది"</string>
+    <string name="user_logout_title" msgid="5534754139319586681">"మీరు ఖచ్చితంగా లాగ్ అవుట్ చేయాలనుకుంటున్నారా?"</string>
+    <string name="user_logout_message" msgid="7804089876692575056">"ఇది అన్ని ఓపెన్ అప్లికేషన్‌లను మూసివేస్తుంది"</string>
+    <string name="user_logout" msgid="2934184154258330491">"లాగ్ అవుట్ చేయండి"</string>
+    <string name="car_guest" msgid="768913000117469596">"గెస్ట్"</string>
+    <string name="user_switching_message" msgid="634395959804046394">"యూజర్‌ను స్విచ్ చేస్తున్నారు"</string>
+    <string name="user_adding_message" msgid="7328589666615053611">"కొత్త యూజర్‌ను జోడిస్తోంది"</string>
+    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"యూజర్ పరిమితిని చేరుకున్నారు"</string>
+    <string name="max_user_limit_reached_message" msgid="644904407853005163">"మీరు గరిష్ఠంగా కొన్నింటి వరకు జోడించవచ్చు "</string>
+    <string name="confirm_add_user_title" msgid="1237839494207086048">"కొత్త యూజర్‌ను జోడించాలా?"</string>
+    <string name="already_logged_in_message" msgid="2440895716293348878">"ఇప్పటికే మరొక డిస్‌ప్లేలో లాగిన్ చేయబడింది"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"ప్రారంభించడానికి ప్రొఫైల్‌ను ఎంచుకోండి"</string>
+    <string name="logged_in_text" msgid="932290859654786874">"లాగిన్ చేశారు"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"<xliff:g id="SEAT_LOCATION">%s</xliff:g> ద్వారా ఉపయోగంలో ఉంది"</string>
+    <string name="create_user_failed_message" msgid="7107927788723239958">"ఇప్పుడు యూజర్‌ను జోడించడం సాధ్యపడలేదు. కాసేపటి తర్వాత ట్రై చేయండి."</string>
+    <string name="guest_creation_failed_message" msgid="124079314799870297">"కాసేపటి తర్వాత గెస్ట్‌గా లాగిన్ అవ్వడానికి ట్రై చేయండి"</string>
+    <string name="stopping_user_text" msgid="8582746159702773548">"ఆపివేస్తోంది"</string>
+    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"దయచేసి యూజర్‌ను ఆపివేసే వరకు వేచి ఉండండి"</string>
+    <string name="seat_driver" msgid="4502591979520445677">"డ్రైవర్"</string>
+    <string name="seat_front" msgid="836133281052793377">"ముందువైపు"</string>
+    <string name="seat_rear" msgid="403133444964528577">"వెనుక భాగం"</string>
+    <string name="seat_left_side" msgid="7460757956924015769">"ఎడమ"</string>
+    <string name="seat_center_side" msgid="6661501442901282386">"మధ్యలో"</string>
+    <string name="seat_right_side" msgid="6735434879559763096">"కుడి"</string>
 </resources>

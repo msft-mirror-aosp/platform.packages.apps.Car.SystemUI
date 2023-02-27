@@ -89,49 +89,27 @@
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"தொடுதல் முறையைப் பயன்படுத்தவும்"</string>
     <string name="display_input_lock_text" msgid="8524876126635885614">"தொடுதிரை லாக் செய்யப்பட்டது"</string>
     <string name="display_input_lock_initial_text" msgid="7497552507312397576">"உங்கள் திரை லாக் செய்யப்பட்டது"</string>
-    <!-- no translation found for user_logout_title (5534754139319586681) -->
-    <skip />
-    <!-- no translation found for user_logout_message (7804089876692575056) -->
-    <skip />
-    <!-- no translation found for user_logout (2934184154258330491) -->
-    <skip />
+    <string name="user_logout_title" msgid="5534754139319586681">"நிச்சயமாக வெளியேற விரும்புகிறீர்களா?"</string>
+    <string name="user_logout_message" msgid="7804089876692575056">"திறந்திருக்கும் அனைத்து ஆப்ஸையும் இது மூடும்"</string>
+    <string name="user_logout" msgid="2934184154258330491">"வெளியேறு"</string>
     <string name="car_guest" msgid="768913000117469596">"கெஸ்ட்"</string>
-    <!-- no translation found for user_switching_message (634395959804046394) -->
-    <skip />
-    <!-- no translation found for user_adding_message (7328589666615053611) -->
-    <skip />
-    <!-- no translation found for max_user_limit_reached_title (8713446223097215112) -->
-    <skip />
-    <!-- no translation found for max_user_limit_reached_message (644904407853005163) -->
-    <skip />
-    <!-- no translation found for confirm_add_user_title (1237839494207086048) -->
-    <skip />
-    <!-- no translation found for already_logged_in_message (2440895716293348878) -->
-    <skip />
-    <!-- no translation found for header_bar_text_in_logged_out_state (6012093149493906956) -->
-    <skip />
-    <!-- no translation found for logged_in_text (932290859654786874) -->
-    <skip />
-    <!-- no translation found for prefix_logged_in_info_for_other_seat (1768113737410046246) -->
-    <skip />
-    <!-- no translation found for create_user_failed_message (7107927788723239958) -->
-    <skip />
-    <!-- no translation found for guest_creation_failed_message (124079314799870297) -->
-    <skip />
-    <!-- no translation found for stopping_user_text (8582746159702773548) -->
-    <skip />
-    <!-- no translation found for wait_for_until_stopped_message (96033243744574465) -->
-    <skip />
-    <!-- no translation found for seat_driver (4502591979520445677) -->
-    <skip />
-    <!-- no translation found for seat_front (836133281052793377) -->
-    <skip />
-    <!-- no translation found for seat_rear (403133444964528577) -->
-    <skip />
-    <!-- no translation found for seat_left_side (7460757956924015769) -->
-    <skip />
-    <!-- no translation found for seat_center_side (6661501442901282386) -->
-    <skip />
-    <!-- no translation found for seat_right_side (6735434879559763096) -->
-    <skip />
+    <string name="user_switching_message" msgid="634395959804046394">"பயனரை மாற்றுகிறது"</string>
+    <string name="user_adding_message" msgid="7328589666615053611">"புதிய பயனர் சேர்க்கப்படுகிறார்"</string>
+    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"இதற்கு மேல் பயனர்களைச் சேர்க்க முடியாது"</string>
+    <string name="max_user_limit_reached_message" msgid="644904407853005163">"அதிகபட்சமாக இவ்வளவு பயனர்களைச் சேர்க்கலாம்: "</string>
+    <string name="confirm_add_user_title" msgid="1237839494207086048">"புதிய பயனரைச் சேர்க்கவா?"</string>
+    <string name="already_logged_in_message" msgid="2440895716293348878">"வேறொரு டிஸ்ப்ளேயில் ஏற்கெனவே உள்நுழைந்துள்ளீர்கள்"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"தொடங்குவதற்கு ஒரு சுயவிவரத்தைத் தேர்வுசெய்யுங்கள்"</string>
+    <string name="logged_in_text" msgid="932290859654786874">"உள்நுழைந்துள்ளீர்கள்"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"<xliff:g id="SEAT_LOCATION">%s</xliff:g> ஆல் பயன்படுத்தப்படுகிறது"</string>
+    <string name="create_user_failed_message" msgid="7107927788723239958">"இப்போது பயனரைச் சேர்க்க முடியவில்லை. சிறிது நேரத்திற்குப் பிறகு முயலவும்."</string>
+    <string name="guest_creation_failed_message" msgid="124079314799870297">"சிறிது நேரத்திற்குப் பிறகு விருந்தினராக உள்நுழைய முயலவும்"</string>
+    <string name="stopping_user_text" msgid="8582746159702773548">"நிறுத்துகிறார்"</string>
+    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"பயனர் நிறுத்தப்படும் வரை காத்திருக்கவும்"</string>
+    <string name="seat_driver" msgid="4502591979520445677">"ஓட்டுநர்"</string>
+    <string name="seat_front" msgid="836133281052793377">"முன்புறம்"</string>
+    <string name="seat_rear" msgid="403133444964528577">"பின்புறம்"</string>
+    <string name="seat_left_side" msgid="7460757956924015769">"இடதுபுறம்"</string>
+    <string name="seat_center_side" msgid="6661501442901282386">"மையம்"</string>
+    <string name="seat_right_side" msgid="6735434879559763096">"வலதுபுறம்"</string>
 </resources>

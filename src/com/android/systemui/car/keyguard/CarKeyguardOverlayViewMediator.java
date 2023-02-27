@@ -16,6 +16,9 @@
 
 package com.android.systemui.car.keyguard;
 
+import android.content.Context;
+
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.userswitcher.FullScreenUserSwitcherViewController;
 import com.android.systemui.car.window.OverlayViewMediator;
 import com.android.systemui.dagger.SysUISingleton;
@@ -29,22 +32,32 @@ import javax.inject.Inject;
 @SysUISingleton
 public class CarKeyguardOverlayViewMediator implements OverlayViewMediator {
 
+    private final Context mContext;
     private final CarKeyguardViewController mCarKeyguardViewController;
     private final FullScreenUserSwitcherViewController mFullScreenUserSwitcherViewController;
 
     @Inject
     public CarKeyguardOverlayViewMediator(
+            Context context,
             CarKeyguardViewController carKeyguardViewController,
             FullScreenUserSwitcherViewController fullScreenUserSwitcherViewController
     ) {
+        mContext = context;
         mCarKeyguardViewController = carKeyguardViewController;
         mFullScreenUserSwitcherViewController = fullScreenUserSwitcherViewController;
     }
 
     @Override
     public void registerListeners() {
-        mCarKeyguardViewController.registerOnKeyguardCancelClickedListener(
-                mFullScreenUserSwitcherViewController::start);
+        // TODO(b/269490856): consider removal of UserPicker carve-outs
+        if (CarSystemUIUserUtil.isMUMDSystemUI()) {
+            // TODO(b/258238612): update logic to stop passenger users
+            mCarKeyguardViewController.registerOnKeyguardCancelClickedListener(
+                    () -> CarSystemUIUserUtil.launchUserPicker(mContext));
+        } else {
+            mCarKeyguardViewController.registerOnKeyguardCancelClickedListener(
+                    mFullScreenUserSwitcherViewController::start);
+        }
     }
 
     @Override

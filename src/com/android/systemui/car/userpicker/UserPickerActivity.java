@@ -119,6 +119,7 @@ public final class UserPickerActivity extends Activity {
         }
 
         super.onCreate(savedInstanceState);
+        setShowWhenLocked(true);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         LayoutInflater inflater = LayoutInflater.from(this);

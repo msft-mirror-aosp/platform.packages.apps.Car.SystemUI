@@ -93,7 +93,7 @@ public class MDSystemBarsController {
         mDisplayImeController.addPositionProcessor(new DisplayImeController.ImePositionProcessor() {
             @Override
             public void onImeVisibilityChanged(int displayId, boolean isShowing) {
-                if (mListeners.get(displayId) != null) {
+                if (mListeners != null && mListeners.get(displayId) != null) {
                     mMainHandler.post(() -> {
                         for (Listener l: mListeners.get(displayId)) {
                             l.onKeyboardVisibilityChanged(isShowing);

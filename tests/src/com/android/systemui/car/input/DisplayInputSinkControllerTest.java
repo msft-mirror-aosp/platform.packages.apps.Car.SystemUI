@@ -37,7 +37,6 @@ import android.content.ContentResolver;
 import android.database.ContentObserver;
 import android.hardware.display.DisplayManager;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.UserHandle;
@@ -47,8 +46,6 @@ import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.Display;
 import android.view.InputEvent;
-import android.view.WindowManager;
-import android.window.WindowContext;
 
 import androidx.annotation.NonNull;
 import androidx.test.filters.SmallTest;
@@ -78,15 +75,10 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
     @Mock
     private DisplayManager mDisplayManager;
     @Mock
-    private WindowContext mWindowContext;
-    @Mock
     private Display mDisplay;
-    @Mock
-    private WindowManager mWindowManager;
     @Mock
     private DisplayInputSink.OnInputEventListener mCallback;
 
-    private String mInitialSettingValue;
     private MockitoSession mMockingSession;
     private DisplayInputSinkController mDisplayInputSinkController;
     private Handler mHandler;
@@ -109,9 +101,6 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
         mDisplayInputSinkController =
                 new DisplayInputSinkController(mContext, mHandler);
         spyOn(mDisplayInputSinkController);
-        doReturn(mWindowManager).when(mWindowContext).getSystemService(WindowManager.class);
-        doReturn(mWindowContext).when(mContext)
-                .createWindowContext(any(Display.class), anyInt(), any(Bundle.class));
         writeDisplayInputLockSetting(mContentResolver, EMPTY_SETTING_VALUE);
         doAnswer(invocation -> mDisplays.toArray(new Display[0]))
                 .when(mDisplayManager).getDisplays();
@@ -153,7 +142,7 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
     @Test
     public void startDisplayInputLock_withValidDisplay_createsDisplayInputSink() {
         int displayId = 99;
-        doReturn(mDisplay).when(mDisplayManager).getDisplay(eq(displayId));
+        createDisplay(displayId, "testUniqueId");
 
         mDisplayInputSinkController.startDisplayInputLock(displayId);
 
@@ -213,11 +202,10 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
     public void onDisplayAdded_withValidDisplay_callsStartDisplayInputLock() {
         int displayId = 99;
         String uniqueId = "testUniqueId";
+        createDisplay(displayId, uniqueId);
         doReturn(UserHandle.USER_SYSTEM).when(() -> UserHandle.myUserId());
         mDisplayInputSinkController.start();
         mDisplayInputSinkController.mDisplayInputLockSetting.add(uniqueId);
-        doReturn(mDisplay).when(mDisplayManager).getDisplay(eq(displayId));
-        doReturn(uniqueId).when(mDisplay).getUniqueId();
 
         mDisplayInputSinkController.mDisplayListener.onDisplayAdded(displayId);
 
@@ -376,15 +364,18 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
 
     private Display createDisplay(int displayId, String uniqueId) {
         Display display = mock(Display.class);
+        doReturn(display).when(mDisplayManager).getDisplay(displayId);
         doReturn(uniqueId).when(display).getUniqueId();
         doReturn(displayId).when(display).getDisplayId();
         mDisplays.add(display);
+        doReturn(mock(DisplayInputLockInfoWindow.class))
+                .when(mDisplayInputSinkController).createDisplayInputLockInfoWindow(display);
         return display;
     }
 
     private void addDisplayInputSink(int displayId) {
         Display display = mock(Display.class);
-        doReturn(display).when(mDisplayManager).getDisplay(anyInt());
+        doReturn(display).when(mDisplayManager).getDisplay(displayId);
         DisplayInputSink displayInputSinks = new DisplayInputSink(display, mCallback);
         mDisplayInputSinkController.mDisplayInputSinks.put(displayId, displayInputSinks);
         assertThat(mDisplayInputSinkController.mDisplayInputSinks.get(displayId)).isNotNull();

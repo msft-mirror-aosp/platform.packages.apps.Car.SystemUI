@@ -82,8 +82,9 @@ public final class DisplayInputLockInfoWindow {
         mHandler = context.getMainThreadHandler();
         // Construct an instance of WindowManager to add the input lock info window of
         // TYPE_SYSTEM_OVERLAY to the Display `display`.
-        mWindowManager = context.createWindowContext(display, TYPE_SYSTEM_OVERLAY,
-                /* options= */ null).getSystemService(WindowManager.class);
+        mWindowManager = context.createDisplayContext(display)
+                .createWindowContext(TYPE_SYSTEM_OVERLAY, /* options= */ null)
+                .getSystemService(WindowManager.class);
         mLockInfoViewGroup = (ViewGroup) LayoutInflater.from(context)
                 .inflate(R.layout.display_input_locked, /* root= */ null);
         mLockIconView = mLockInfoViewGroup.findViewById(R.id.display_input_lock_icon);

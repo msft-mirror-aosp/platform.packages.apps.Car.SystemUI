@@ -19,6 +19,11 @@ package com.android.systemui.car.keyguard;
 import android.app.trust.TrustManager;
 import android.content.Context;
 import android.os.PowerManager;
+import android.os.RemoteException;
+import android.util.Log;
+import android.view.IRemoteAnimationFinishedCallback;
+import android.view.IRemoteAnimationRunner;
+import android.view.RemoteAnimationTarget;
 
 import com.android.internal.jank.InteractionJankMonitor;
 import com.android.internal.widget.LockPatternUtils;
@@ -32,7 +37,6 @@ import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.dreams.DreamOverlayStateController;
 import com.android.systemui.dump.DumpManager;
-import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
@@ -49,16 +53,22 @@ import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.util.DeviceConfigProxy;
 
-import java.util.concurrent.Executor;
-
 import dagger.Lazy;
+
+import java.util.concurrent.Executor;
 
 /**
  * Car customizations on top of {@link KeyguardViewMediator}. Please refer to that class for
  * more details on specific functionalities.
  */
 public class CarKeyguardViewMediator extends KeyguardViewMediator {
+    private static final String TAG = "CarKeyguardViewMediator";
     private final Context mContext;
+    private final Object mOcclusionLock = new Object();
+    private final IRemoteAnimationRunner mOccludeAnimationRunner =
+            new CarOcclusionAnimationRunner(/* occlude= */ true);
+    private final IRemoteAnimationRunner mUnoccludeAnimationRunner =
+            new CarOcclusionAnimationRunner(/* occlude= */ false);
 
     /**
      * Injected constructor. See {@link CarKeyguardModule}.
@@ -87,7 +97,6 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             ScreenOnCoordinator screenOnCoordinator,
             InteractionJankMonitor interactionJankMonitor,
             DreamOverlayStateController dreamOverlayStateController,
-            FeatureFlags featureFlags,
             Lazy<ShadeController> mShadeControllerLazy,
             Lazy<NotificationShadeWindowController> notificationShadeWindowControllerLazy,
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator,
@@ -99,7 +108,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 statusBarStateController, keyguardStateController,
                 keyguardUnlockAnimationControllerLazy, screenOffAnimationController,
                 notificationShadeDepthController, screenOnCoordinator, interactionJankMonitor,
-                dreamOverlayStateController, featureFlags,
+                dreamOverlayStateController,
                 mShadeControllerLazy,
                 notificationShadeWindowControllerLazy,
                 activityLaunchAnimator,
@@ -115,5 +124,47 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             return;
         }
         super.start();
+    }
+
+    @Override
+    public IRemoteAnimationRunner getOccludeAnimationRunner() {
+        return mOccludeAnimationRunner;
+    }
+
+    @Override
+    public IRemoteAnimationRunner getUnoccludeAnimationRunner() {
+        return mUnoccludeAnimationRunner;
+    }
+
+    private class CarOcclusionAnimationRunner extends IRemoteAnimationRunner.Stub {
+        private final boolean mOcclude;
+        private final String mAnimatorType;
+
+        CarOcclusionAnimationRunner(boolean occlude) {
+            mOcclude = occlude;
+            mAnimatorType = mOcclude ? "OccludeAnimator" : "UnoccludeAnimator";
+        }
+
+        @Override
+        public void onAnimationStart(int transit, RemoteAnimationTarget[] apps,
+                RemoteAnimationTarget[] wallpapers, RemoteAnimationTarget[] nonApps,
+                IRemoteAnimationFinishedCallback finishedCallback) throws RemoteException {
+            synchronized (mOcclusionLock) {
+                Log.d(TAG, String.format("%s#onAnimationStart. Set occluded = %b.",
+                        mAnimatorType, mOcclude));
+                setOccluded(mOcclude, /* animate= */ false);
+                finishedCallback.onAnimationFinished();
+            }
+        }
+
+        @Override
+        public void onAnimationCancelled(boolean isKeyguardOccluded)
+                throws RemoteException {
+            synchronized (mOcclusionLock) {
+                Log.d(TAG, String.format("%s cancelled by WM. Setting occluded state to: %b",
+                        mAnimatorType, isKeyguardOccluded));
+                setOccluded(isKeyguardOccluded, /* animate= */ false);
+            }
+        }
     }
 }

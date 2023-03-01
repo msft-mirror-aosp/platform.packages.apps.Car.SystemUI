@@ -220,32 +220,28 @@ public final class DisplayInputSinkController implements CoreStartable {
             }
             return;
         }
-        Context uContext = mContext.createDisplayContext(display);
-        if (uContext == null) {
-            Slog.d(TAG, "User context to create DisplayInputLockInfoWindow is null");
-            uContext = mContext;
-        }
-        // Context needs to be effectively final
-        Context userContext = uContext;
         Slog.i(TAG, "Start input lock for display " + displayId);
-
-        DisplayInputLockInfoWindow lockInfoWindow =
-                new DisplayInputLockInfoWindow(userContext, display,
-                        R.string.display_input_lock_initial_text,
-                        R.integer.config_displayInputLockInitialDismissDelay);
+        DisplayInputLockInfoWindow lockInfoWindow = createDisplayInputLockInfoWindow(display);
         DisplayInputSink.OnInputEventListener callback = (event) -> {
             if (DBG) {
                 Slog.d(TAG, "Received input events while input is locked for display "
                         + event.getDisplayId());
             }
-            lockInfoWindow.setText(userContext, R.string.display_input_lock_text);
-            lockInfoWindow.setDismissDelay(userContext,
+            lockInfoWindow.setText(mContext, R.string.display_input_lock_text);
+            lockInfoWindow.setDismissDelay(mContext,
                     R.integer.config_displayInputLockIconDismissDelay);
             lockInfoWindow.show();
         };
         mDisplayInputSinks.put(displayId, new DisplayInputSink(display, callback));
         // Now that the display input lock is started, let's inform the user of it.
         lockInfoWindow.show();
+    }
+
+    @VisibleForTesting
+    DisplayInputLockInfoWindow createDisplayInputLockInfoWindow(Display display) {
+        return new DisplayInputLockInfoWindow(mContext, display,
+                        R.string.display_input_lock_initial_text,
+                        R.integer.config_displayInputLockInitialDismissDelay);
     }
 
     @VisibleForTesting

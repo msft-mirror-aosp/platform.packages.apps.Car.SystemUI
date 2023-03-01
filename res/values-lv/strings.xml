@@ -87,53 +87,29 @@
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"Skaņas iestatījumi"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"Profilu un kontu iestatījumi"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"Tiek atbalstīta skārienievade, bet ne rotācija."</string>
-    <!-- no translation found for display_input_lock_text (8524876126635885614) -->
-    <skip />
-    <!-- no translation found for display_input_lock_initial_text (7497552507312397576) -->
-    <skip />
-    <!-- no translation found for user_logout_title (5534754139319586681) -->
-    <skip />
-    <!-- no translation found for user_logout_message (7804089876692575056) -->
-    <skip />
-    <!-- no translation found for user_logout (2934184154258330491) -->
-    <skip />
+    <string name="display_input_lock_text" msgid="8524876126635885614">"Skārienekrāns ir bloķēts"</string>
+    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"Jūsu ekrāns ir bloķēts"</string>
+    <string name="user_logout_title" msgid="5534754139319586681">"Vai tiešām vēlaties atteikties?"</string>
+    <string name="user_logout_message" msgid="7804089876692575056">"Tādējādi tiks aizvērtas visas atvērtās lietojumprogrammas."</string>
+    <string name="user_logout" msgid="2934184154258330491">"Atteikties"</string>
     <string name="car_guest" msgid="768913000117469596">"Viesis"</string>
-    <!-- no translation found for user_switching_message (634395959804046394) -->
-    <skip />
-    <!-- no translation found for user_adding_message (7328589666615053611) -->
-    <skip />
-    <!-- no translation found for max_user_limit_reached_title (8713446223097215112) -->
-    <skip />
-    <!-- no translation found for max_user_limit_reached_message (644904407853005163) -->
-    <skip />
-    <!-- no translation found for confirm_add_user_title (1237839494207086048) -->
-    <skip />
-    <!-- no translation found for already_logged_in_message (2440895716293348878) -->
-    <skip />
-    <!-- no translation found for header_bar_text_in_logged_out_state (6012093149493906956) -->
-    <skip />
-    <!-- no translation found for logged_in_text (932290859654786874) -->
-    <skip />
-    <!-- no translation found for prefix_logged_in_info_for_other_seat (1768113737410046246) -->
-    <skip />
-    <!-- no translation found for create_user_failed_message (7107927788723239958) -->
-    <skip />
-    <!-- no translation found for guest_creation_failed_message (124079314799870297) -->
-    <skip />
-    <!-- no translation found for stopping_user_text (8582746159702773548) -->
-    <skip />
-    <!-- no translation found for wait_for_until_stopped_message (96033243744574465) -->
-    <skip />
-    <!-- no translation found for seat_driver (4502591979520445677) -->
-    <skip />
-    <!-- no translation found for seat_front (836133281052793377) -->
-    <skip />
-    <!-- no translation found for seat_rear (403133444964528577) -->
-    <skip />
-    <!-- no translation found for seat_left_side (7460757956924015769) -->
-    <skip />
-    <!-- no translation found for seat_center_side (6661501442901282386) -->
-    <skip />
-    <!-- no translation found for seat_right_side (6735434879559763096) -->
-    <skip />
+    <string name="user_switching_message" msgid="634395959804046394">"Notiek lietotāja pārslēgšana…"</string>
+    <string name="user_adding_message" msgid="7328589666615053611">"Notiek jauna lietotāja pievienošana…"</string>
+    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"Sasniegts lietotāju ierobežojums"</string>
+    <string name="max_user_limit_reached_message" msgid="644904407853005163">"Varat pievienot līdz pat "</string>
+    <string name="confirm_add_user_title" msgid="1237839494207086048">"Vai pievienot jaunu lietotāju?"</string>
+    <string name="already_logged_in_message" msgid="2440895716293348878">"Jau pieteicies citā displejā"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"Izvēlieties profilu, lai sāktu darbu"</string>
+    <string name="logged_in_text" msgid="932290859654786874">"Pieteicies"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"Izmanto lietotājs <xliff:g id="SEAT_LOCATION">%s</xliff:g>"</string>
+    <string name="create_user_failed_message" msgid="7107927788723239958">"Nevarēja pievienot lietotāju. Pēc brīža mēģiniet vēlreiz."</string>
+    <string name="guest_creation_failed_message" msgid="124079314799870297">"Pēc brīža mēģiniet pieteikties kā viesis."</string>
+    <string name="stopping_user_text" msgid="8582746159702773548">"Notiek apturēšana…"</string>
+    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"Lūdzu, uzgaidiet, līdz lietotāja darbība ir apturēta."</string>
+    <string name="seat_driver" msgid="4502591979520445677">"vadītāja sēdeklī"</string>
+    <string name="seat_front" msgid="836133281052793377">"priekšējā sēdeklī"</string>
+    <string name="seat_rear" msgid="403133444964528577">"aizmugurējā sēdeklī"</string>
+    <string name="seat_left_side" msgid="7460757956924015769">"sēdeklī pa kreisi"</string>
+    <string name="seat_center_side" msgid="6661501442901282386">"vidējā sēdeklī"</string>
+    <string name="seat_right_side" msgid="6735434879559763096">"sēdeklī pa labi"</string>
 </resources>

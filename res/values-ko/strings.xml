@@ -87,53 +87,29 @@
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"소리 설정"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"프로필 및 계정 설정"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"로터리 패턴은 지원되지 않습니다. 터치를 사용하세요."</string>
-    <!-- no translation found for display_input_lock_text (8524876126635885614) -->
-    <skip />
-    <!-- no translation found for display_input_lock_initial_text (7497552507312397576) -->
-    <skip />
-    <!-- no translation found for user_logout_title (5534754139319586681) -->
-    <skip />
-    <!-- no translation found for user_logout_message (7804089876692575056) -->
-    <skip />
-    <!-- no translation found for user_logout (2934184154258330491) -->
-    <skip />
+    <string name="display_input_lock_text" msgid="8524876126635885614">"터치스크린 잠김"</string>
+    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"화면 잠김"</string>
+    <string name="user_logout_title" msgid="5534754139319586681">"로그아웃하시겠습니까?"</string>
+    <string name="user_logout_message" msgid="7804089876692575056">"모든 열려 있는 애플리케이션이 닫힙니다."</string>
+    <string name="user_logout" msgid="2934184154258330491">"로그아웃"</string>
     <string name="car_guest" msgid="768913000117469596">"게스트"</string>
-    <!-- no translation found for user_switching_message (634395959804046394) -->
-    <skip />
-    <!-- no translation found for user_adding_message (7328589666615053611) -->
-    <skip />
-    <!-- no translation found for max_user_limit_reached_title (8713446223097215112) -->
-    <skip />
-    <!-- no translation found for max_user_limit_reached_message (644904407853005163) -->
-    <skip />
-    <!-- no translation found for confirm_add_user_title (1237839494207086048) -->
-    <skip />
-    <!-- no translation found for already_logged_in_message (2440895716293348878) -->
-    <skip />
-    <!-- no translation found for header_bar_text_in_logged_out_state (6012093149493906956) -->
-    <skip />
-    <!-- no translation found for logged_in_text (932290859654786874) -->
-    <skip />
-    <!-- no translation found for prefix_logged_in_info_for_other_seat (1768113737410046246) -->
-    <skip />
-    <!-- no translation found for create_user_failed_message (7107927788723239958) -->
-    <skip />
-    <!-- no translation found for guest_creation_failed_message (124079314799870297) -->
-    <skip />
-    <!-- no translation found for stopping_user_text (8582746159702773548) -->
-    <skip />
-    <!-- no translation found for wait_for_until_stopped_message (96033243744574465) -->
-    <skip />
-    <!-- no translation found for seat_driver (4502591979520445677) -->
-    <skip />
-    <!-- no translation found for seat_front (836133281052793377) -->
-    <skip />
-    <!-- no translation found for seat_rear (403133444964528577) -->
-    <skip />
-    <!-- no translation found for seat_left_side (7460757956924015769) -->
-    <skip />
-    <!-- no translation found for seat_center_side (6661501442901282386) -->
-    <skip />
-    <!-- no translation found for seat_right_side (6735434879559763096) -->
-    <skip />
+    <string name="user_switching_message" msgid="634395959804046394">"사용자 전환 중"</string>
+    <string name="user_adding_message" msgid="7328589666615053611">"새 사용자 추가 중"</string>
+    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"사용자 제한 도달"</string>
+    <string name="max_user_limit_reached_message" msgid="644904407853005163">"최대 추가 가능 인원: "</string>
+    <string name="confirm_add_user_title" msgid="1237839494207086048">"새 사용자를 추가하시겠습니까?"</string>
+    <string name="already_logged_in_message" msgid="2440895716293348878">"이미 다른 디스플레이에 로그인됨"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"프로필을 선택하여 시작"</string>
+    <string name="logged_in_text" msgid="932290859654786874">"로그인한 상태"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"<xliff:g id="SEAT_LOCATION">%s</xliff:g>에서 사용 중"</string>
+    <string name="create_user_failed_message" msgid="7107927788723239958">"지금은 사용자를 추가할 수 없습니다. 나중에 다시 시도하세요."</string>
+    <string name="guest_creation_failed_message" msgid="124079314799870297">"잠시 후 게스트로 로그인해 보세요."</string>
+    <string name="stopping_user_text" msgid="8582746159702773548">"중지"</string>
+    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"사용자자 중지될 때까지 기다리세요"</string>
+    <string name="seat_driver" msgid="4502591979520445677">"드라이버"</string>
+    <string name="seat_front" msgid="836133281052793377">"전면"</string>
+    <string name="seat_rear" msgid="403133444964528577">"후면"</string>
+    <string name="seat_left_side" msgid="7460757956924015769">"왼쪽"</string>
+    <string name="seat_center_side" msgid="6661501442901282386">"가운데"</string>
+    <string name="seat_right_side" msgid="6735434879559763096">"오른쪽"</string>
 </resources>

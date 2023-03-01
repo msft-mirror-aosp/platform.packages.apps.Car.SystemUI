@@ -89,49 +89,27 @@
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"Ezin da erabili biratze bidezko idazketa; erabili ukipen-keinuak"</string>
     <string name="display_input_lock_text" msgid="8524876126635885614">"Blokeatu da ukipen-pantaila"</string>
     <string name="display_input_lock_initial_text" msgid="7497552507312397576">"Blokeatu da pantaila"</string>
-    <!-- no translation found for user_logout_title (5534754139319586681) -->
-    <skip />
-    <!-- no translation found for user_logout_message (7804089876692575056) -->
-    <skip />
-    <!-- no translation found for user_logout (2934184154258330491) -->
-    <skip />
+    <string name="user_logout_title" msgid="5534754139319586681">"Ziur saioa amaitu nahi duzula?"</string>
+    <string name="user_logout_message" msgid="7804089876692575056">"Irekitako aplikazio guztiak itxiko dira"</string>
+    <string name="user_logout" msgid="2934184154258330491">"Amaitu saioa"</string>
     <string name="car_guest" msgid="768913000117469596">"Gonbidatua"</string>
-    <!-- no translation found for user_switching_message (634395959804046394) -->
-    <skip />
-    <!-- no translation found for user_adding_message (7328589666615053611) -->
-    <skip />
-    <!-- no translation found for max_user_limit_reached_title (8713446223097215112) -->
-    <skip />
-    <!-- no translation found for max_user_limit_reached_message (644904407853005163) -->
-    <skip />
-    <!-- no translation found for confirm_add_user_title (1237839494207086048) -->
-    <skip />
-    <!-- no translation found for already_logged_in_message (2440895716293348878) -->
-    <skip />
-    <!-- no translation found for header_bar_text_in_logged_out_state (6012093149493906956) -->
-    <skip />
-    <!-- no translation found for logged_in_text (932290859654786874) -->
-    <skip />
-    <!-- no translation found for prefix_logged_in_info_for_other_seat (1768113737410046246) -->
-    <skip />
-    <!-- no translation found for create_user_failed_message (7107927788723239958) -->
-    <skip />
-    <!-- no translation found for guest_creation_failed_message (124079314799870297) -->
-    <skip />
-    <!-- no translation found for stopping_user_text (8582746159702773548) -->
-    <skip />
-    <!-- no translation found for wait_for_until_stopped_message (96033243744574465) -->
-    <skip />
-    <!-- no translation found for seat_driver (4502591979520445677) -->
-    <skip />
-    <!-- no translation found for seat_front (836133281052793377) -->
-    <skip />
-    <!-- no translation found for seat_rear (403133444964528577) -->
-    <skip />
-    <!-- no translation found for seat_left_side (7460757956924015769) -->
-    <skip />
-    <!-- no translation found for seat_center_side (6661501442901282386) -->
-    <skip />
-    <!-- no translation found for seat_right_side (6735434879559763096) -->
-    <skip />
+    <string name="user_switching_message" msgid="634395959804046394">"Erabiltzailea aldatzen"</string>
+    <string name="user_adding_message" msgid="7328589666615053611">"Beste erabiltzaile bat gehitzen"</string>
+    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"Erabiltzaile-mugara iritsi zara"</string>
+    <string name="max_user_limit_reached_message" msgid="644904407853005163">"Hauek gehi ditzakezu gehienez: "</string>
+    <string name="confirm_add_user_title" msgid="1237839494207086048">"Beste erabiltzaile bat gehitu nahi duzu?"</string>
+    <string name="already_logged_in_message" msgid="2440895716293348878">"Beste pantaila batean saioa hasita daukazu jada"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"Hasteko, hautatu profil bat"</string>
+    <string name="logged_in_text" msgid="932290859654786874">"Saioa hasita"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"Eserleku honetako erabiltzaileak saioa hasita dauka: <xliff:g id="SEAT_LOCATION">%s</xliff:g>"</string>
+    <string name="create_user_failed_message" msgid="7107927788723239958">"Ezin izan da gehitu erabiltzailea. Saiatu tarte bat igaro ondoren."</string>
+    <string name="guest_creation_failed_message" msgid="124079314799870297">"Tarte bat igaro ondoren, probatu saioa gonbidatu gisa hasten"</string>
+    <string name="stopping_user_text" msgid="8582746159702773548">"Gelditzen"</string>
+    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"Itxaron erabiltzailea gelditu arte"</string>
+    <string name="seat_driver" msgid="4502591979520445677">"gidaria"</string>
+    <string name="seat_front" msgid="836133281052793377">"aurrekoa"</string>
+    <string name="seat_rear" msgid="403133444964528577">"atzekoa"</string>
+    <string name="seat_left_side" msgid="7460757956924015769">"ezkerrekoa"</string>
+    <string name="seat_center_side" msgid="6661501442901282386">"erdikoa"</string>
+    <string name="seat_right_side" msgid="6735434879559763096">"eskuinekoa"</string>
 </resources>

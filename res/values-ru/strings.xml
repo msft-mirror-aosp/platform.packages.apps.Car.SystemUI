@@ -87,10 +87,8 @@
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"Настройки звука"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"Настройки профилей и аккаунтов"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"Граф. ключ невозможно ввести вращением."</string>
-    <!-- no translation found for display_input_lock_text (8524876126635885614) -->
-    <skip />
-    <!-- no translation found for display_input_lock_initial_text (7497552507312397576) -->
-    <skip />
+    <string name="display_input_lock_text" msgid="8524876126635885614">"Сенсорный экран заблокирован"</string>
+    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"Экран заблокирован"</string>
     <string name="user_logout_title" msgid="5534754139319586681">"Вы уверены, что хотите выйти?"</string>
     <string name="user_logout_message" msgid="7804089876692575056">"Все открытые приложения будут закрыты."</string>
     <string name="user_logout" msgid="2934184154258330491">"Выйти"</string>

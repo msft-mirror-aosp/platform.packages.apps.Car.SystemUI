@@ -286,6 +286,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="fullscreen_indicator_animation_margin_horizontal_start"/>
       <item type="dimen" name="fullscreen_indicator_animation_margin_vertical_end"/>
       <item type="dimen" name="fullscreen_indicator_animation_margin_vertical_start"/>
+      <item type="dimen" name="fullscreen_indicator_container_width"/>
       <item type="dimen" name="fullscreen_indicator_dot_size"/>
       <item type="dimen" name="fullscreen_indicator_height"/>
       <item type="dimen" name="fullscreen_indicator_padding_horizontal"/>
@@ -611,14 +612,10 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="hvac_temperature_bar"/>
       <item type="id" name="hvac_temperature_text"/>
       <item type="id" name="icon"/>
-      <item type="id" name="immersive_cam_indicator"/>
-      <item type="id" name="immersive_cam_indicator_container"/>
-      <item type="id" name="immersive_mic_indicator"/>
-      <item type="id" name="immersive_mic_indicator_container"/>
+      <item type="id" name="immersive_indicator_container"/>
       <item type="id" name="immersive_privacy_camera"/>
-      <item type="id" name="immersive_privacy_camera_dot"/>
+      <item type="id" name="immersive_privacy_dot"/>
       <item type="id" name="immersive_privacy_microphone"/>
-      <item type="id" name="immersive_privacy_microphone_dot"/>
       <item type="id" name="inactive_background"/>
       <item type="id" name="inactive_selected_background"/>
       <item type="id" name="inout_container"/>
@@ -765,8 +762,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="hvac_panel_container"/>
       <item type="layout" name="hvac_panel_handle_bar"/>
       <item type="layout" name="hvac_temperature_bar_overlay"/>
-      <item type="layout" name="immersive_cam_indicator"/>
-      <item type="layout" name="immersive_mic_indicator"/>
+      <item type="layout" name="immersive_privacy_chip"/>
       <item type="layout" name="mic_privacy_chip"/>
       <item type="layout" name="notification_center_activity"/>
       <item type="layout" name="notification_handle_bar"/>
@@ -877,8 +873,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="status_icon_signal_hotspot"/>
       <item type="string" name="status_icon_signal_mobile"/>
       <item type="string" name="status_icon_signal_wifi"/>
-      <item type="string" name="system_bar_app_drawer_intent"/>
       <item type="string" name="stopping_user_text"/>
+      <item type="string" name="system_bar_app_drawer_intent"/>
       <item type="string" name="system_bar_applications_label"/>
       <item type="string" name="system_bar_climate_control_label"/>
       <item type="string" name="system_bar_home_label"/>
@@ -921,8 +917,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="style" name="VolumeButtons"/>
       <item type="xml" name="camera_privacy_chip_scene"/>
       <item type="xml" name="car_volume_items"/>
-      <item type="xml" name="immersive_camera_scene"/>
-      <item type="xml" name="immersive_mic_scene"/>
+      <item type="xml" name="immersive_privacy_chip_scene"/>
       <item type="xml" name="mic_privacy_chip_scene"/>
     </policy>
   </overlayable>

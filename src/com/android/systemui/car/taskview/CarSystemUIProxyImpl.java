@@ -96,12 +96,12 @@ public final class CarSystemUIProxyImpl
         mTaskOrganizer = taskOrganizer;
         mSyncQueue = syncTransactionQueue;
         mTaskViewTransitions = taskViewTransitions;
+        dumpManager.registerDumpable(this);
 
         if (!shouldRegisterCarSystemUIProxy(mContext)) {
             Slog.i(TAG, "Not registering CarSystemUIProxy.");
             return;
         }
-        dumpManager.registerDumpable(this);
         carServiceProvider.addListener(this);
     }
 

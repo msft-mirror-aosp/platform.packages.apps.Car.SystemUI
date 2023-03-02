@@ -54,6 +54,7 @@ import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerCallbackInt
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerInteractor;
 import com.android.systemui.keyguard.ui.binder.KeyguardBouncerViewBinder;
 import com.android.systemui.keyguard.ui.viewmodel.KeyguardBouncerViewModel;
+import com.android.systemui.keyguard.ui.viewmodel.PrimaryBouncerToGoneTransitionViewModel;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.NotificationPanelViewController;
 import com.android.systemui.shade.ShadeExpansionStateManager;
@@ -145,6 +146,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private boolean mIsSleeping;
     private int mToastShowDurationMillisecond;
     private ViewGroup mKeyguardContainer;
+    private PrimaryBouncerToGoneTransitionViewModel mPrimaryBouncerToGoneTransitionViewModel;
 
     @Inject
     public CarKeyguardViewController(
@@ -164,6 +166,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
             PrimaryBouncerInteractor primaryBouncerInteractor,
             KeyguardSecurityModel keyguardSecurityModel,
             KeyguardBouncerViewModel keyguardBouncerViewModel,
+            PrimaryBouncerToGoneTransitionViewModel primaryBouncerToGoneTransitionViewModel,
             KeyguardBouncerComponent.Factory keyguardBouncerComponentFactory) {
 
         super(R.id.keyguard_stub, overlayViewGlobalStateController);
@@ -184,6 +187,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mKeyguardSecurityModel = keyguardSecurityModel;
         mKeyguardBouncerViewModel = keyguardBouncerViewModel;
         mKeyguardBouncerComponentFactory = keyguardBouncerComponentFactory;
+        mPrimaryBouncerToGoneTransitionViewModel = primaryBouncerToGoneTransitionViewModel;
 
         mToastShowDurationMillisecond = mContext.getResources().getInteger(
                 R.integer.car_keyguard_toast_show_duration_millisecond);
@@ -204,7 +208,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
     public void onFinishInflate() {
         mKeyguardContainer = getLayout().findViewById(R.id.keyguard_container);
         KeyguardBouncerViewBinder.bind(mKeyguardContainer,
-                mKeyguardBouncerViewModel, mKeyguardBouncerComponentFactory);
+                mKeyguardBouncerViewModel, mPrimaryBouncerToGoneTransitionViewModel,
+                mKeyguardBouncerComponentFactory);
         mBiometricUnlockControllerLazy.get().setKeyguardViewController(this);
     }
 

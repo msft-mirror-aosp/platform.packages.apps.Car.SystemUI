@@ -16,11 +16,16 @@
 
 package com.android.systemui.car.taskview;
 
+import static android.app.WindowConfiguration.WINDOWING_MODE_FULLSCREEN;
+
 import android.app.ActivityManager;
+import android.car.Car;
 import android.car.app.CarActivityManager;
 import android.content.Context;
+import android.hardware.display.DisplayManager;
 import android.util.Log;
 import android.util.Slog;
+import android.view.Display;
 import android.view.SurfaceControl;
 
 import com.android.systemui.car.CarServiceProvider;
@@ -31,6 +36,8 @@ import com.android.wm.shell.recents.RecentTasksController;
 import com.android.wm.shell.sysui.ShellInit;
 import com.android.wm.shell.windowdecor.WindowDecorViewModel;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -52,6 +59,8 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
     private static final boolean DBG = Log.isLoggable(TAG, Log.DEBUG);
     private final AtomicReference<CarActivityManager> mCarActivityManagerRef =
             new AtomicReference<>();
+    private final ShellTaskOrganizer mShellTaskOrganizer;
+    private final DisplayManager mDisplayManager;
     private final boolean mShouldConnectToCarActivityService;
 
     public CarFullscreenTaskMonitorListener(
@@ -65,6 +74,8 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
         super(shellInit, shellTaskOrganizer, syncQueue, recentTasksOptional,
                 windowDecorViewModelOptional);
 
+        mShellTaskOrganizer = shellTaskOrganizer;
+        mDisplayManager = context.getSystemService(DisplayManager.class);
         // Rely on whether or not CarSystemUIProxy should be registered to account for these cases:
         // 1. Legacy system where System UI + launcher both register a TaskOrganizer.
         //    CarFullScreenTaskMonitorListener will not forward the task lifecycle to the car
@@ -77,8 +88,7 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
                 CarSystemUIProxyImpl.shouldRegisterCarSystemUIProxy(context);
 
         if (mShouldConnectToCarActivityService) {
-            carServiceProvider.addListener(car ->
-                    mCarActivityManagerRef.set(car.getCarManager(CarActivityManager.class)));
+            carServiceProvider.addListener(this::onCarConnected);
         }
     }
 
@@ -141,5 +151,36 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
         } else {
             Slog.w(TAG, "CarActivityManager is null, skip onTaskVanished: taskInfo=" + taskInfo);
         }
+    }
+
+    private void onCarConnected(Car car) {
+        mCarActivityManagerRef.set(car.getCarManager(CarActivityManager.class));
+        // The tasks that have already appeared need to be reported to the CarActivityManager.
+        // The code uses null as the leash because there is no way to get the leash at the moment.
+        // And the leash is only required for mirroring cases. Those tasks will anyway appear after
+        // the car service is connected and hence will go via the {@link #onTaskAppeared} flow.
+        List<ActivityManager.RunningTaskInfo> runningFullscreenTaskInfos =
+                getRunningFullscreenTasks();
+        for (ActivityManager.RunningTaskInfo runningTaskInfo : runningFullscreenTaskInfos) {
+            Slog.d(TAG, "Sending onTaskAppeared for an already existing fullscreen task: "
+                    + runningTaskInfo.taskId);
+            mCarActivityManagerRef.get().onTaskAppeared(runningTaskInfo, null);
+        }
+    }
+
+    private List<ActivityManager.RunningTaskInfo> getRunningFullscreenTasks() {
+        Display[] displays = mDisplayManager.getDisplays();
+        List<ActivityManager.RunningTaskInfo> fullScreenTaskInfos = new ArrayList<>();
+        for (int i = 0; i < displays.length; i++) {
+            List<ActivityManager.RunningTaskInfo> taskInfos =
+                    mShellTaskOrganizer.getRunningTasks(displays[i].getDisplayId());
+            for (ActivityManager.RunningTaskInfo taskInfo : taskInfos) {
+                // In Auto, only TaskView tasks have WINDOWING_MODE_MULTI_WINDOW as of now.
+                if (taskInfo.getWindowingMode() == WINDOWING_MODE_FULLSCREEN) {
+                    fullScreenTaskInfos.add(taskInfo);
+                }
+            }
+        }
+        return fullScreenTaskInfos;
     }
 }

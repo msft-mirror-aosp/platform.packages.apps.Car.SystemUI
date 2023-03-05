@@ -16,8 +16,11 @@
 
 package com.android.systemui.car.taskview;
 
+import static android.app.ActivityTaskManager.INVALID_TASK_ID;
+
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
+import android.app.ActivityTaskManager;
 import android.app.PendingIntent;
 import android.car.app.CarTaskViewClient;
 import android.car.app.CarTaskViewHost;
@@ -49,7 +52,16 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     private final CarTaskViewHost mHostImpl = new CarTaskViewHost() {
         @Override
         public void release() {
+            mInsets.clear();
+            int taskIdToRemove = INVALID_TASK_ID;
+            if (mTaskViewTaskController.getTaskInfo() != null) {
+                taskIdToRemove = mTaskViewTaskController.getTaskInfo().taskId;
+            }
             mTaskViewTaskController.release();
+            if (taskIdToRemove != INVALID_TASK_ID) {
+                Slog.w(TAG, "Removing embedded task: " + taskIdToRemove);
+                ActivityTaskManager.getInstance().removeTask(taskIdToRemove);
+            }
             mCarSystemUIProxy.onCarTaskViewReleased(RemoteCarTaskViewServerImpl.this);
         }
 

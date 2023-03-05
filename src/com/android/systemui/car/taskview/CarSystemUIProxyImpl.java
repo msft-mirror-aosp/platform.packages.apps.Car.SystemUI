@@ -18,17 +18,18 @@ package com.android.systemui.car.taskview;
 
 import static android.app.WindowConfiguration.WINDOWING_MODE_MULTI_WINDOW;
 
+import android.app.ActivityManager;
 import android.app.ActivityTaskManager;
-import android.app.TaskInfo;
 import android.car.Car;
 import android.car.app.CarActivityManager;
 import android.car.app.CarSystemUIProxy;
 import android.car.app.CarTaskViewClient;
 import android.car.app.CarTaskViewHost;
 import android.content.Context;
+import android.hardware.display.DisplayManager;
 import android.os.Process;
 import android.util.Slog;
-import android.window.TaskAppearedInfo;
+import android.view.Display;
 
 import androidx.annotation.NonNull;
 
@@ -63,6 +64,7 @@ public final class CarSystemUIProxyImpl
     private final TaskViewTransitions mTaskViewTransitions;
     private boolean mConnected;
     private final Set<RemoteCarTaskViewServerImpl> mRemoteCarTaskViewServerSet = new HashSet<>();
+    private final DisplayManager mDisplayManager;
 
     /**
      * Returns true if {@link CarSystemUIProxyImpl} should be registered, false otherwise.
@@ -96,6 +98,7 @@ public final class CarSystemUIProxyImpl
         mTaskOrganizer = taskOrganizer;
         mSyncQueue = syncTransactionQueue;
         mTaskViewTransitions = taskViewTransitions;
+        mDisplayManager = mContext.getSystemService(DisplayManager.class);
         dumpManager.registerDumpable(this);
 
         if (!shouldRegisterCarSystemUIProxy(mContext)) {
@@ -126,12 +129,9 @@ public final class CarSystemUIProxyImpl
     @Override
     public void onConnected(Car car) {
         mConnected = true;
-        // mTaskOragnizer is already registered. registerOrganizer() here is just used to get all
-        // the existing multi window tasks.
-        cleanUpExistingTaskViewTasks(mTaskOrganizer.registerOrganizer());
+        removeExistingTaskViewTasks();
 
         CarActivityManager carActivityManager = car.getCarManager(CarActivityManager.class);
-
         carActivityManager.registerTaskMonitor();
         carActivityManager.registerCarSystemUIProxy(this);
     }
@@ -148,10 +148,18 @@ public final class CarSystemUIProxyImpl
         }
     }
 
-    private static void cleanUpExistingTaskViewTasks(List<TaskAppearedInfo> taskAppearedInfos) {
+    private void removeExistingTaskViewTasks() {
+        Display[] displays = mDisplayManager.getDisplays();
+        for (int i = 0; i < displays.length; i++) {
+            List<ActivityManager.RunningTaskInfo> taskInfos =
+                    mTaskOrganizer.getRunningTasks(displays[i].getDisplayId());
+            removeMultiWindowTasks(taskInfos);
+        }
+    }
+
+    private static void removeMultiWindowTasks(List<ActivityManager.RunningTaskInfo> taskInfos) {
         ActivityTaskManager atm = ActivityTaskManager.getInstance();
-        for (TaskAppearedInfo taskAppearedInfo : taskAppearedInfos) {
-            TaskInfo taskInfo = taskAppearedInfo.getTaskInfo();
+        for (ActivityManager.RunningTaskInfo taskInfo : taskInfos) {
             // In Auto, only TaskView tasks have WINDOWING_MODE_MULTI_WINDOW as of now.
             if (taskInfo.getWindowingMode() == WINDOWING_MODE_MULTI_WINDOW) {
                 Slog.d(TAG, "Found a dangling task, removing: " + taskInfo.taskId);

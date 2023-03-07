@@ -209,7 +209,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                 ex.rethrowFromSystemServer();
             }
         } else if (mMDSystemBarsController != null) {
-            mMDSystemBarsController.addListener(this, mDisplayId);
+            mMDSystemBarsController.addListener(this);
         }
 
         if (result != null) {

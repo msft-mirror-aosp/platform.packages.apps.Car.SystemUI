@@ -157,7 +157,9 @@ public class CarSystemBarView extends LinearLayout {
     }
 
     void updateControlCenterButtonVisibility(boolean isMumd) {
-        mControlCenterButton.setVisibility(isMumd ? VISIBLE : GONE);
+        if (mControlCenterButton != null) {
+            mControlCenterButton.setVisibility(isMumd ? VISIBLE : GONE);
+        }
     }
 
     // Used to forward touch events even if the touch was initiated from a child component

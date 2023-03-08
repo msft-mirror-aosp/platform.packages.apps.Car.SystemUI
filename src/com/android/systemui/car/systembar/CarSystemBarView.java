@@ -75,6 +75,7 @@ public class CarSystemBarView extends LinearLayout {
     // used to wire in open/close gestures for overlay panels
     private Set<OnTouchListener> mStatusBarWindowTouchListeners;
     private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
+    private CarSystemBarButton mControlCenterButton;
 
     public CarSystemBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -94,6 +95,7 @@ public class CarSystemBarView extends LinearLayout {
         mHvacButton = findViewById(R.id.hvac);
         mQcEntryPointsContainer = findViewById(R.id.qc_entry_points_container);
         mReadOnlyIconsContainer = findViewById(R.id.read_only_icons_container);
+        mControlCenterButton = findViewById(R.id.control_center_nav);
         if (mNotificationsButton != null) {
             mNotificationsButton.setOnClickListener(this::onNotificationsClick);
         }
@@ -151,6 +153,12 @@ public class CarSystemBarView extends LinearLayout {
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 setupSystemBarButtons(viewGroup.getChildAt(i), userTracker);
             }
+        }
+    }
+
+    void updateControlCenterButtonVisibility(boolean isMumd) {
+        if (mControlCenterButton != null) {
+            mControlCenterButton.setVisibility(isMumd ? VISIBLE : GONE);
         }
     }
 

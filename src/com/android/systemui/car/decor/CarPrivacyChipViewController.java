@@ -92,7 +92,8 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
             mAnimationHelper.hidePrivacyDotWithoutAnimation(designatedCorner);
         } else if (mAreaVisible && areaVisibilityChange) {
             String contentDescription = state.getContentDescription();
-            if (useCamera(contentDescription) || useMic(contentDescription)) {
+            if (state.getSystemPrivacyEventIsActive()
+                    && (useCamera(contentDescription) || useMic(contentDescription))) {
                 mAnimationHelper.showPrivacyDot(designatedCorner);
             }
         } else {

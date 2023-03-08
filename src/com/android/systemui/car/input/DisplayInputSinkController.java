@@ -38,6 +38,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.systemui.CoreStartable;
+import com.android.systemui.R;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 
@@ -212,7 +213,6 @@ public final class DisplayInputSinkController implements CoreStartable {
             Slog.w(TAG, "Unable to start display input lock: no valid display " + displayId);
             return;
         }
-
         if (isDisplayInputLockStarted(displayId)) {
             // Already started input lock for the given display.
             if (DBG) {
@@ -220,21 +220,28 @@ public final class DisplayInputSinkController implements CoreStartable {
             }
             return;
         }
-
         Slog.i(TAG, "Start input lock for display " + displayId);
-
-        DisplayInputLockInfoWindow lockInfoWindow =
-                new DisplayInputLockInfoWindow(mContext, display);
+        DisplayInputLockInfoWindow lockInfoWindow = createDisplayInputLockInfoWindow(display);
         DisplayInputSink.OnInputEventListener callback = (event) -> {
             if (DBG) {
                 Slog.d(TAG, "Received input events while input is locked for display "
                         + event.getDisplayId());
             }
+            lockInfoWindow.setText(mContext, R.string.display_input_lock_text);
+            lockInfoWindow.setDismissDelay(mContext,
+                    R.integer.config_displayInputLockIconDismissDelay);
             lockInfoWindow.show();
         };
         mDisplayInputSinks.put(displayId, new DisplayInputSink(display, callback));
         // Now that the display input lock is started, let's inform the user of it.
         lockInfoWindow.show();
+    }
+
+    @VisibleForTesting
+    DisplayInputLockInfoWindow createDisplayInputLockInfoWindow(Display display) {
+        return new DisplayInputLockInfoWindow(mContext, display,
+                        R.string.display_input_lock_initial_text,
+                        R.integer.config_displayInputLockInitialDismissDelay);
     }
 
     @VisibleForTesting

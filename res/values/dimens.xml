@@ -386,8 +386,30 @@
     <dimen name="fullscreen_indicator_padding_horizontal">12dp</dimen>
     <dimen name="fullscreen_indicator_height">56dp</dimen>
     <dimen name="fullscreen_indicator_width">80dp</dimen>
+    <dimen name="fullscreen_indicator_container_width">172dp</dimen>
+    <dimen name="fullscreen_indicator_dot_size">16dp</dimen>
+    <dimen name="fullscreen_indicator_animation_margin_vertical_start">78dp</dimen>
+    <dimen name="fullscreen_indicator_animation_margin_horizontal_start">54dp</dimen>
+    <dimen name="fullscreen_indicator_animation_margin_vertical_end">0dp</dimen>
+    <dimen name="fullscreen_indicator_animation_margin_horizontal_end">0dp</dimen>
 
     <!-- Dimensions for Display Input Lock -->
-    <dimen name="display_input_lock_icon_width">415dp</dimen>
-    <dimen name="display_input_lock_icon_height">415dp</dimen>
+    <dimen name="display_input_lock_text_padding">32dp</dimen>
+    <dimen name="display_input_lock_text_bottom_margin">24dp</dimen>
+    <dimen name="display_input_lock_text_size">24sp</dimen>
+    <dimen name="display_input_lock_text_width">642dp</dimen>
+    <dimen name="display_input_lock_background_radius">8dp</dimen>
+
+    <!-- Dimensions for user picker -->
+    <dimen name="user_picker_button_size">76dp</dimen>
+    <dimen name="user_picker_button_padding_size">15dp</dimen>
+    <dimen name="user_picker_common_margin_size">32dp</dimen>
+    <dimen name="user_picker_logout_button_margin_right_size">84dp</dimen>
+    <dimen name="user_picker_snack_bar_text_size">24sp</dimen>
+    <dimen name="user_picker_user_avatar_size">96dp</dimen>
+    <dimen name="user_picker_user_avatar_border_size">111dp</dimen>
+    <dimen name="user_picker_user_name_text_size">32sp</dimen>
+    <dimen name="user_picker_login_state_text_size">16sp</dimen>
+    <dimen name="user_picker_clock_elevation_size">5dp</dimen>
+    <dimen name="user_picker_alert_dialog_common_padding_size">24dp</dimen>
 </resources>

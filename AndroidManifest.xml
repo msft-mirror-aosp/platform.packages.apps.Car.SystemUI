@@ -49,6 +49,8 @@
     <uses-permission android:name="android.permission.OBSERVE_SENSOR_PRIVACY" />
     <!-- Permission for read-only access to phone state, namely the status of any ongoing calls -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <!-- This permission is required to register the car system ui proxy -->
+    <uses-permission android:name="android.car.permission.REGISTER_CAR_SYSTEM_UI_PROXY"/>
     <!-- use for ActivityBlockingActivity to tell whether it's on driver or passenger display -->
     <uses-permission android:name="android.car.permission.ACCESS_PRIVATE_DISPLAY_ID"/>
 
@@ -62,6 +64,7 @@
             android:excludeFromRecents="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"
+            android:showForAllUsers="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -73,6 +76,21 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:exported="false"
             android:launchMode="singleTask">
+        </activity>
+        <activity
+            android:name=".car.userpicker.UserPickerActivity"
+            android:label="UserPicker"
+            android:icon="@drawable/ic_user_picker"
+            android:launchMode="singleTop"
+            android:showForAllUsers="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|locale|density|layoutDirection"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:directBootAware="true"
+            android:theme="@style/Theme.UserPicker">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
         </activity>
     </application>
 </manifest>

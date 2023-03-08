@@ -35,7 +35,7 @@ import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.keyguard.KeyguardHostViewController;
+import com.android.keyguard.KeyguardSecurityContainerController;
 import com.android.keyguard.KeyguardSecurityModel;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.ViewMediatorCallback;
@@ -49,6 +49,7 @@ import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerCallbackInteractor;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerInteractor;
 import com.android.systemui.keyguard.ui.viewmodel.KeyguardBouncerViewModel;
+import com.android.systemui.keyguard.ui.viewmodel.PrimaryBouncerToGoneTransitionViewModel;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
@@ -91,6 +92,8 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
     private KeyguardBouncerViewModel mKeyguardBouncerViewModel;
     @Mock
     private KeyguardBouncerComponent.Factory mKeyguardBouncerComponentFactory;
+    @Mock
+    private PrimaryBouncerToGoneTransitionViewModel mPrimaryBouncerToGoneTransitionViewModel;
 
     @Before
     public void setUp() {
@@ -102,12 +105,12 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
         mExecutor = new FakeExecutor(new FakeSystemClock());
 
         KeyguardBouncerComponent keyguardBouncerComponent = mock(KeyguardBouncerComponent.class);
-        KeyguardHostViewController keyguardHostViewController = mock(
-                KeyguardHostViewController.class);
+        KeyguardSecurityContainerController securityContainerController = mock(
+                KeyguardSecurityContainerController.class);
         when(mKeyguardBouncerComponentFactory.create(any(ViewGroup.class))).thenReturn(
                 keyguardBouncerComponent);
-        when(keyguardBouncerComponent.getKeyguardHostViewController()).thenReturn(
-                keyguardHostViewController);
+        when(keyguardBouncerComponent.getSecurityContainerController()).thenReturn(
+                securityContainerController);
 
         mCarKeyguardViewController = new CarKeyguardViewController(
                 mContext,
@@ -126,6 +129,7 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
                 mPrimaryBouncerInteractor,
                 mKeyguardSecurityModel,
                 mKeyguardBouncerViewModel,
+                mPrimaryBouncerToGoneTransitionViewModel,
                 mKeyguardBouncerComponentFactory
         );
         mCarKeyguardViewController.inflate((ViewGroup) LayoutInflater.from(mContext).inflate(
@@ -243,6 +247,12 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
                 any());
         inOrder.verify(mOverlayViewGlobalStateController, never()).hideView(
                 eq(mCarKeyguardViewController), any());
+    }
+
+    @Test
+    public void onFinishedGoingToSleep() {
+        mCarKeyguardViewController.onFinishedGoingToSleep();
+        verify(mPrimaryBouncerInteractor).hide();
     }
 
     @Test

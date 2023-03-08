@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2023 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:systemui="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.android.car.ui.FocusParkingView
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"/>
+    <com.android.car.ui.FocusArea
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageButton
+                android:id="@+id/back_button"
+                android:layout_width="@dimen/user_picker_button_size"
+                android:layout_height="@dimen/user_picker_button_size"
+                android:src="@drawable/userpicker_ic_arrow_back"
+                android:background="?android:attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:padding="@dimen/user_picker_button_padding_size"
+                android:gravity="center"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"/>
+
+            <TextView
+                android:id="@+id/message"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/user_picker_button_size"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:visibility="gone"
+                android:text="@string/header_bar_text_in_logged_out_state"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"/>
+
+            <ImageButton
+                android:id="@+id/logout_button_icon_view"
+                android:layout_width="@dimen/user_picker_button_size"
+                android:layout_height="@dimen/user_picker_button_size"
+                android:src="@drawable/car_ic_logout"
+                android:background="?android:attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:padding="@dimen/user_picker_button_padding_size"
+                android:gravity="center"
+                android:visibility="gone"
+                android:layout_marginRight="@dimen/user_picker_logout_button_margin_right_size"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/power_button_icon_view"/>
+            <!-- TODO<b/254526109>: Resource icon Duplicate to QuickControls -->
+            <ImageButton
+                android:id="@+id/power_button_icon_view"
+                android:layout_width="@dimen/user_picker_button_size"
+                android:layout_height="@dimen/user_picker_button_size"
+                android:src="@drawable/userpicker_ic_power"
+                android:background="?android:attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:padding="@dimen/user_picker_button_padding_size"
+                android:gravity="center"
+                android:visibility="visible"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"/>
+
+            <com.android.systemui.car.userpicker.UserPickerView
+                android:id="@+id/user_picker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/user_picker_common_margin_size"
+                android:layout_marginBottom="@dimen/user_picker_common_margin_size"
+                app:layout_constraintTop_toBottomOf="@id/power_button_icon_view"
+                app:layout_constraintLeft_toLeftOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.android.car.ui.FocusArea>
+</FrameLayout>

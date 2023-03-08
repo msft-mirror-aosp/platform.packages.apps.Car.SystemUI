@@ -50,6 +50,7 @@ import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.qc.QCFooterButton;
 import com.android.systemui.car.qc.SystemUIQCView;
 import com.android.systemui.car.qc.SystemUIQCViewController;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
@@ -306,13 +307,18 @@ public class StatusIconPanelController {
 
             registerFocusListener(true);
 
-            // TODO(b/202563671): remove yOffsetPixel when the PopupWindow API is updated.
-            mPanel.showAsDropDown(mAnchorView, xOffset, yOffset, gravity);
-            mAnchorView.setSelected(true);
-            highlightStatusIcon(true);
-            setAnimatedStatusIconHighlightedStatus(true);
-
-            dimBehind(mPanel);
+            if (CarSystemUIUserUtil.isMUMDSystemUI()
+                    && mPanelLayoutRes == R.layout.qc_profile_switcher) {
+                // TODO(b/269490856): consider removal of UserPicker carve-outs
+                CarSystemUIUserUtil.launchUserPicker(mContext);
+            } else {
+                // TODO(b/202563671): remove yOffsetPixel when the PopupWindow API is updated.
+                mPanel.showAsDropDown(mAnchorView, xOffset, yOffset, gravity);
+                mAnchorView.setSelected(true);
+                highlightStatusIcon(true);
+                setAnimatedStatusIconHighlightedStatus(true);
+                dimBehind(mPanel);
+            }
         };
 
         mAnchorView.setOnClickListener(mOnClickListener);

@@ -27,7 +27,6 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.car.statusicon.StatusIconController;
 import com.android.systemui.car.statusicon.StatusIconGroupContainerController;
-import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
@@ -59,20 +58,12 @@ public class QuickControlsEntryPointsController extends StatusIconGroupContainer
     @Override
     @ArrayRes
     protected int getStatusIconControllersStringArray() {
-        if (!CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
-            return R.array.config_quickControlsEntryPointIconControllers;
-        } else {
-            return R.array.config_quickControlsEntryPointIconControllerForSecondaryMUMDSystemUI;
-        }
+        return R.array.config_quickControlsEntryPointIconControllers;
     }
 
     @Override
     @LayoutRes
     public int getButtonViewLayout() {
-        if (!CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
-            return R.layout.car_qc_entry_points_button;
-        } else {
-            return R.layout.car_qc_entry_point_button_for_secondary_mumd_systemui;
-        }
+        return R.layout.car_qc_entry_points_button;
     }
 }

@@ -132,14 +132,6 @@
         <item>com.android.systemui.car.statusicon.ui.DisplayStatusIconController</item>
     </string-array>
 
-    <!-- List of StatusIconControllers associated with icons to display for QC entry points for
-         secondary MUMD SystemUI. The icons will be added to the view in the order their controllers
-         appear on this list. -->
-    <string-array name="config_quickControlsEntryPointIconControllerForSecondaryMUMDSystemUI" translatable="false">
-        <item>com.android.systemui.car.statusicon.ui.QuickControlsStatusIconListController</item>
-    </string-array>
-
-
     <string-array name="config_quickControlsSubIconControllers" translatable="false">
         <item>com.android.systemui.car.statusicon.ui.MediaVolumeStatusIconController</item>
         <item>com.android.systemui.car.statusicon.ui.SignalStatusIconController</item>

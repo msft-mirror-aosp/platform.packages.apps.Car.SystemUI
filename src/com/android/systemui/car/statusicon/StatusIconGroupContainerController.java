@@ -28,10 +28,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
+
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.qc.SystemUIQCViewController;
+import com.android.systemui.car.statusicon.ui.QCPanelReadOnlyIconsController;
+import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointContainer;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
@@ -62,6 +66,8 @@ public abstract class StatusIconGroupContainerController {
     private final String[] mStatusIconControllerNames;
     private final Set<StatusIconPanelController> mStatusIconPanelControllers;
     private Map<String, View> mStatusIconViewClassMap;
+    @Nullable
+    private final QCPanelReadOnlyIconsController mQCPanelReadOnlyIconsController;
 
     public StatusIconGroupContainerController(
             Context context,
@@ -71,6 +77,20 @@ public abstract class StatusIconGroupContainerController {
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider,
             Map<Class<?>, Provider<StatusIconController>> iconControllerCreators) {
+        this(context, userTracker, resources, broadcastDispatcher, configurationController,
+                qcViewControllerProvider, iconControllerCreators,
+                /* qcPanelReadOnlyIconsController= */ null);
+    }
+
+    public StatusIconGroupContainerController(
+            Context context,
+            UserTracker userTracker,
+            @Main Resources resources,
+            BroadcastDispatcher broadcastDispatcher,
+            ConfigurationController configurationController,
+            Provider<SystemUIQCViewController> qcViewControllerProvider,
+            Map<Class<?>, Provider<StatusIconController>> iconControllerCreators,
+            QCPanelReadOnlyIconsController qcPanelReadOnlyIconsController) {
         mContext = context;
         mUserTracker = userTracker;
         mResources = resources;
@@ -78,6 +98,8 @@ public abstract class StatusIconGroupContainerController {
         mConfigurationController = configurationController;
         mQCViewControllerProvider = qcViewControllerProvider;
         mIconControllerCreators = iconControllerCreators;
+        mQCPanelReadOnlyIconsController = qcPanelReadOnlyIconsController;
+
         mIconTag = mResources.getString(R.string.qc_icon_tag);
         mStatusIconControllerNames = mResources.getStringArray(
                 getStatusIconControllersStringArray());
@@ -133,10 +155,25 @@ public abstract class StatusIconGroupContainerController {
                     && statusIconController.getPanelContentLayout() != PANEL_CONTENT_LAYOUT_NONE) {
                 StatusIconPanelController panelController = new StatusIconPanelController(mContext,
                         mUserTracker, mBroadcastDispatcher, mConfigurationController,
-                        mQCViewControllerProvider);
-                panelController.attachPanel(entryPointView,
-                        statusIconController.getPanelContentLayout(),
-                        statusIconController.getPanelWidth());
+                        mQCViewControllerProvider, /* isDisabledWhileDriving= */ false,
+                        mQCPanelReadOnlyIconsController);
+                if (containerViewGroup instanceof QuickControlsEntryPointContainer) {
+                    QuickControlsEntryPointContainer qcEntryPointContainer =
+                            (QuickControlsEntryPointContainer) containerViewGroup;
+                    int gravity = qcEntryPointContainer.getPanelGravity();
+                    boolean showAsDropDown = qcEntryPointContainer.showAsDropDown();
+                    int offset = mContext.getResources().getDimensionPixelSize(
+                            R.dimen.car_quick_controls_panel_margin);
+                    panelController.attachPanel(entryPointView,
+                            statusIconController.getPanelContentLayout(),
+                            statusIconController.getPanelWidth(),
+                            /* xOffset= */ offset, /* yOffset= */ offset, gravity, showAsDropDown);
+                } else {
+                    panelController.attachPanel(entryPointView,
+                            statusIconController.getPanelContentLayout(),
+                            statusIconController.getPanelWidth());
+                }
+
                 mStatusIconPanelControllers.add(panelController);
             }
             containerViewGroup.addView(entryPointView);

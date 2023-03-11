@@ -59,6 +59,8 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
     private SystemUIQCViewController mSystemUIQCViewController;
     @Mock
     private Map mIconControllerCreators;
+    @Mock
+    private QCPanelReadOnlyIconsController mQCPanelReadOnlyIconsController;
 
     @Before
     public void setUp() {
@@ -70,7 +72,8 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
                 mBroadcastDispatcher,
                 mConfigurationController,
                 () -> mSystemUIQCViewController,
-                mIconControllerCreators);
+                mIconControllerCreators,
+                mQCPanelReadOnlyIconsController);
     }
 
     @Test

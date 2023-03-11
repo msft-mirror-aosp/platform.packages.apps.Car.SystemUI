@@ -91,7 +91,7 @@ public final class DisplayInputSink {
     /**
      * Removes surface and display input listener for the display input sink.
      */
-    public void remove() {
+    public void release() {
         if (mCallback != null) {
             removeDisplayInputListener();
         }

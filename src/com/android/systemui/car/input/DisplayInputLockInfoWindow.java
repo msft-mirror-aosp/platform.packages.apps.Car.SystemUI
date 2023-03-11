@@ -196,4 +196,10 @@ public final class DisplayInputLockInfoWindow {
         // already been laid out. If it hasn't been laid out, it hasn't been drawn to screen yet.
         return mLockInfoViewGroup.isLaidOut();
     }
+
+    @Override
+    public String toString() {
+        return mLp.getTitle() + "{shown=" + mIsShown
+                + ", transitioning=" + mIsTransitioningToHide + "}";
+    }
 }

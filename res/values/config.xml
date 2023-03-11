@@ -132,11 +132,32 @@
         <item>com.android.systemui.car.statusicon.ui.DisplayStatusIconController</item>
     </string-array>
 
+    <!-- List of StatusIconControllers associated with icons to display for QC entry points for
+         secondary MUMD SystemUI. The icons will be added to the view in the order their controllers
+         appear on this list. -->
+    <string-array name="config_quickControlsEntryPointIconControllerForSecondaryMUMDSystemUI" translatable="false">
+        <item>com.android.systemui.car.statusicon.ui.QuickControlsStatusIconListController</item>
+    </string-array>
+
+
+    <string-array name="config_quickControlsSubIconControllers" translatable="false">
+        <item>com.android.systemui.car.statusicon.ui.MediaVolumeStatusIconController</item>
+        <item>com.android.systemui.car.statusicon.ui.SignalStatusIconController</item>
+    </string-array>
+
     <!-- List of StatusIconControllers associated with read-only status icons.
          The icons will be added to the view in the order their controllers appear on this list.-->
     <string-array name="config_readOnlyIconControllers" translatable="false">
         <item>com.android.systemui.car.statusicon.ui.LocationStatusIconController</item>
         <item>com.android.systemui.car.statusicon.ui.PhoneCallStatusIconController</item>
+    </string-array>
+
+    <!-- List of StatusIconControllers associated with read-only status icons for QC panels.
+         The icons will be added to the view in the order their controllers appear on this list. -->
+    <string-array name="config_qcPanelReadOnlyIconControllers" translatable="false">
+        <item>com.android.systemui.car.statusicon.ui.LocationStatusIconController</item>
+        <item>com.android.systemui.car.statusicon.ui.MobileSignalStatusIconController</item>
+        <item>com.android.systemui.car.statusicon.ui.WifiSignalStatusIconController</item>
     </string-array>
 
     <!-- List of package names that are allowed sources of app installation. -->

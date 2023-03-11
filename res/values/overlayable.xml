@@ -31,7 +31,9 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="anim" name="car_user_switcher_open_pod_animation"/>
       <item type="array" name="config_allowedAppInstallSources"/>
       <item type="array" name="config_carSystemUIOverlayViewsMediators"/>
+      <item type="array" name="config_qcPanelReadOnlyIconControllers"/>
       <item type="array" name="config_quickControlsEntryPointIconControllers"/>
+      <item type="array" name="config_quickControlsSubIconControllers"/>
       <item type="array" name="config_readOnlyIconControllers"/>
       <item type="array" name="config_restrictedToastsPackageNameAllowList"/>
       <item type="array" name="config_statusBarIconsToExclude"/>
@@ -65,12 +67,14 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="attr" name="offValue"/>
       <item type="attr" name="onValue"/>
       <item type="attr" name="packages"/>
+      <item type="attr" name="panelGravity"/>
       <item type="attr" name="preventToggleOff"/>
       <item type="attr" name="remoteQCProvider"/>
       <item type="attr" name="seatTemperatureIconDrawableList"/>
       <item type="attr" name="seatTemperatureType"/>
       <item type="attr" name="selectedAlpha"/>
       <item type="attr" name="selectedIcon"/>
+      <item type="attr" name="showAsDropDown"/>
       <item type="attr" name="showMoreWhenSelected"/>
       <item type="attr" name="toggleSelected"/>
       <item type="attr" name="unselectedAlpha"/>
@@ -108,6 +112,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="car_nav_icon_fill_color"/>
       <item type="color" name="car_nav_icon_fill_color_selected"/>
       <item type="color" name="car_nav_unseen_indicator_color"/>
+      <item type="color" name="car_quick_controls_button_background_pill_color"/>
       <item type="color" name="car_quick_controls_icon_drawable_color"/>
       <item type="color" name="car_seekbar_track_background"/>
       <item type="color" name="car_seekbar_track_secondary_progress"/>
@@ -170,6 +175,22 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="system_bar_text_color_with_selection"/>
       <item type="color" name="system_bar_text_selected_color"/>
       <item type="color" name="system_bar_text_unavailable_color"/>
+      <item type="color" name="user_background_icon_1"/>
+      <item type="color" name="user_background_icon_2"/>
+      <item type="color" name="user_background_icon_3"/>
+      <item type="color" name="user_background_icon_4"/>
+      <item type="color" name="user_background_icon_5"/>
+      <item type="color" name="user_background_icon_6"/>
+      <item type="color" name="user_background_icon_7"/>
+      <item type="color" name="user_background_icon_8"/>
+      <item type="color" name="user_name_icon_1"/>
+      <item type="color" name="user_name_icon_2"/>
+      <item type="color" name="user_name_icon_3"/>
+      <item type="color" name="user_name_icon_4"/>
+      <item type="color" name="user_name_icon_5"/>
+      <item type="color" name="user_name_icon_6"/>
+      <item type="color" name="user_name_icon_7"/>
+      <item type="color" name="user_name_icon_8"/>
       <item type="color" name="user_picker_background_color"/>
       <item type="color" name="user_picker_login_state_text_color"/>
       <item type="color" name="user_picker_snack_bar_background_color"/>
@@ -234,6 +255,10 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_quick_controls_footer_button_vertical_margin"/>
       <item type="dimen" name="car_quick_controls_icon_drawable_height"/>
       <item type="dimen" name="car_quick_controls_icon_drawable_width"/>
+      <item type="dimen" name="car_quick_controls_panel_default_width"/>
+      <item type="dimen" name="car_quick_controls_panel_footer_button_view_height"/>
+      <item type="dimen" name="car_quick_controls_panel_footer_button_view_padding"/>
+      <item type="dimen" name="car_quick_controls_panel_margin"/>
       <item type="dimen" name="car_read_only_status_icon_height"/>
       <item type="dimen" name="car_read_only_status_icon_width"/>
       <item type="dimen" name="car_right_system_bar_width"/>
@@ -276,6 +301,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_volume_item_seekbar_margin_vertical"/>
       <item type="dimen" name="car_volume_item_seekbar_padding_vertical"/>
       <item type="dimen" name="common_margin"/>
+      <item type="dimen" name="confirm_logout_dialog_dim"/>
       <item type="dimen" name="device_management_dialog_subtitle_padding"/>
       <item type="dimen" name="display_input_lock_background_radius"/>
       <item type="dimen" name="display_input_lock_text_bottom_margin"/>
@@ -415,6 +441,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="temperature_off_text_bg_height"/>
       <item type="dimen" name="temperature_off_text_bg_width"/>
       <item type="dimen" name="temperature_side_margin"/>
+      <item type="dimen" name="user_icon_background_size"/>
+      <item type="dimen" name="user_icon_text_size"/>
       <item type="dimen" name="user_picker_alert_dialog_common_padding_size"/>
       <item type="dimen" name="user_picker_button_padding_size"/>
       <item type="dimen" name="user_picker_button_size"/>
@@ -444,6 +472,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_ic_arrow"/>
       <item type="drawable" name="car_ic_arrow_drop_up"/>
       <item type="drawable" name="car_ic_brightness"/>
+      <item type="drawable" name="car_ic_chevron_right"/>
       <item type="drawable" name="car_ic_control_center"/>
       <item type="drawable" name="car_ic_drive_mode"/>
       <item type="drawable" name="car_ic_home"/>
@@ -453,6 +482,9 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_ic_keyboard_arrow_down"/>
       <item type="drawable" name="car_ic_logout"/>
       <item type="drawable" name="car_ic_managed_device"/>
+      <item type="drawable" name="car_ic_media_volume_down"/>
+      <item type="drawable" name="car_ic_media_volume_off"/>
+      <item type="drawable" name="car_ic_media_volume_up"/>
       <item type="drawable" name="car_ic_music"/>
       <item type="drawable" name="car_ic_music_mute"/>
       <item type="drawable" name="car_ic_music_selected"/>
@@ -466,14 +498,17 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_ic_phone_selected"/>
       <item type="drawable" name="car_ic_phone_volume"/>
       <item type="drawable" name="car_ic_phone_volume_mute"/>
+      <item type="drawable" name="car_ic_power"/>
       <item type="drawable" name="car_ic_selection_bg"/>
       <item type="drawable" name="car_ic_settings_icon"/>
       <item type="drawable" name="car_ic_unseen_indicator"/>
       <item type="drawable" name="car_ic_users_icon"/>
       <item type="drawable" name="car_ic_ux_restricted"/>
+      <item type="drawable" name="car_quick_controls_button_background_pill"/>
       <item type="drawable" name="car_rounded_bg_bottom"/>
       <item type="drawable" name="car_seekbar_thumb"/>
       <item type="drawable" name="car_stat_sys_data_bluetooth_indicator"/>
+      <item type="drawable" name="car_user_icon_circle_background"/>
       <item type="drawable" name="display_input_locked_background"/>
       <item type="drawable" name="fan_speed_inset"/>
       <item type="drawable" name="hvac_decrease_button"/>
@@ -565,6 +600,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="car_nav_button_more_icon"/>
       <item type="id" name="car_nav_button_unseen_icon"/>
       <item type="id" name="car_top_bar"/>
+      <item type="id" name="chevron_right"/>
       <item type="id" name="circular_active_indicator_horizontal_guideline"/>
       <item type="id" name="circular_active_indicator_vertical_guideline"/>
       <item type="id" name="clock"/>
@@ -574,6 +610,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="current_user_frame"/>
       <item type="id" name="dark_icon"/>
       <item type="id" name="dark_muted_icon"/>
+      <item type="id" name="date"/>
       <item type="id" name="debug_info"/>
       <item type="id" name="defroster_button"/>
       <item type="id" name="device_management_disclosures"/>
@@ -597,12 +634,14 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="fan_speed_4"/>
       <item type="id" name="focus_parking_view"/>
       <item type="id" name="focus_view"/>
+      <item type="id" name="footer_container"/>
       <item type="id" name="fullscreen_user_switcher_stub"/>
       <item type="id" name="glass_pane"/>
       <item type="id" name="grid"/>
       <item type="id" name="grid_nav"/>
       <item type="id" name="handle_bar"/>
       <item type="id" name="header"/>
+      <item type="id" name="header_container"/>
       <item type="id" name="home"/>
       <item type="id" name="hvac"/>
       <item type="id" name="hvac_decrease_button"/>
@@ -626,6 +665,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="light_muted_icon"/>
       <item type="id" name="lock_screen_nav_buttons"/>
       <item type="id" name="logged_in_info"/>
+      <item type="id" name="logout_button"/>
       <item type="id" name="logout_button_icon_view"/>
       <item type="id" name="manage_button"/>
       <item type="id" name="max_width_guideline"/>
@@ -660,19 +700,27 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="qc_drive_mode_status_icon"/>
       <item type="id" name="qc_entry_points_container"/>
       <item type="id" name="qc_location_status_icon"/>
+      <item type="id" name="qc_media_volume_status_icon"/>
       <item type="id" name="qc_mic_footer_button"/>
+      <item type="id" name="qc_mobile_signal_status_icon"/>
       <item type="id" name="qc_phone_call_status_icon"/>
       <item type="id" name="qc_profile_footer_button"/>
+      <item type="id" name="qc_scroll_container"/>
       <item type="id" name="qc_signal_status_icon"/>
+      <item type="id" name="qc_status_icon_list"/>
+      <item type="id" name="qc_wifi_signal_status_icon"/>
       <item type="id" name="qs_car_top_bar"/>
       <item type="id" name="read_only_icons_container"/>
+      <item type="id" name="read_only_status_icons_container"/>
       <item type="id" name="rear_defroster_button"/>
       <item type="id" name="recycle_air_button"/>
+      <item type="id" name="screen_off_button"/>
       <item type="id" name="scrollView"/>
       <item type="id" name="seat_heat_level_button_left"/>
       <item type="id" name="seat_heat_level_button_right"/>
       <item type="id" name="segment_container"/>
       <item type="id" name="settingsIcon"/>
+      <item type="id" name="settings_button"/>
       <item type="id" name="statusIcons"/>
       <item type="id" name="supplemental_icon"/>
       <item type="id" name="supplemental_icon_divider"/>
@@ -682,7 +730,9 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="top_guideline"/>
       <item type="id" name="user_avatar"/>
       <item type="id" name="user_avatar_border"/>
+      <item type="id" name="user_button"/>
       <item type="id" name="user_grid"/>
+      <item type="id" name="user_icon"/>
       <item type="id" name="user_loading"/>
       <item type="id" name="user_loading_avatar"/>
       <item type="id" name="user_name"/>
@@ -746,6 +796,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="car_left_system_bar"/>
       <item type="layout" name="car_left_system_bar_unprovisioned"/>
       <item type="layout" name="car_qc_entry_points_button"/>
+      <item type="layout" name="car_quick_controls_panel"/>
       <item type="layout" name="car_right_system_bar"/>
       <item type="layout" name="car_right_system_bar_unprovisioned"/>
       <item type="layout" name="car_status_bar_header"/>
@@ -907,10 +958,12 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="style" name="HvacTemperatureControlIcon"/>
       <item type="style" name="HvacTemperatureFont"/>
       <item type="style" name="QCFooterButtonStyle"/>
+      <item type="style" name="QCFooterButtonViewStyle"/>
       <item type="style" name="QuickControlEntryPointButton"/>
       <item type="style" name="SystemBarButton"/>
       <item type="style" name="TextAppearance.CarStatus"/>
       <item type="style" name="TextAppearance.SystemBar.Clock"/>
+      <item type="style" name="TextAppearance.SystemBar.ClockWithSelection"/>
       <item type="style" name="TextAppearance.SystemBar.Username"/>
       <item type="style" name="TextAppearance.Toast"/>
       <item type="style" name="Theme.Notification"/>

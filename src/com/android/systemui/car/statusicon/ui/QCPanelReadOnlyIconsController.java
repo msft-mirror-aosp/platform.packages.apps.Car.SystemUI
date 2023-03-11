@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 The Android Open Source Project
+ * Copyright (C) 2023 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,11 @@
 
 package com.android.systemui.car.statusicon.ui;
 
-import android.annotation.ArrayRes;
-import android.annotation.LayoutRes;
 import android.content.Context;
 import android.content.res.Resources;
 
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.car.statusicon.StatusIconController;
 import com.android.systemui.car.statusicon.StatusIconGroupContainerController;
@@ -37,33 +34,24 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 /**
- * A controller for Quick Controls Entry Points
+ *  A Controller for a group of read-only status icons in quick controls panel.
  */
-public class QuickControlsEntryPointsController extends StatusIconGroupContainerController {
+public class QCPanelReadOnlyIconsController extends StatusIconGroupContainerController {
+
     @Inject
-    QuickControlsEntryPointsController(
-            Context context,
+    public QCPanelReadOnlyIconsController(Context context,
             UserTracker userTracker,
             @Main Resources resources,
-            CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider,
-            Map<Class<?>, Provider<StatusIconController>> iconControllerCreators,
-            QCPanelReadOnlyIconsController qcPanelReadOnlyIconsController) {
+            Map<Class<?>, Provider<StatusIconController>> iconControllerCreators) {
         super(context, userTracker, resources, broadcastDispatcher, configurationController,
-                qcViewControllerProvider, iconControllerCreators, qcPanelReadOnlyIconsController);
+                qcViewControllerProvider, iconControllerCreators);
     }
 
     @Override
-    @ArrayRes
     protected int getStatusIconControllersStringArray() {
-        return R.array.config_quickControlsEntryPointIconControllers;
-    }
-
-    @Override
-    @LayoutRes
-    public int getButtonViewLayout() {
-        return R.layout.car_qc_entry_points_button;
+        return R.array.config_qcPanelReadOnlyIconControllers;
     }
 }

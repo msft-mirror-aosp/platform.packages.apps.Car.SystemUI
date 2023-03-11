@@ -26,12 +26,13 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
+import android.car.Car;
+import android.car.CarOccupantZoneManager;
+import android.car.hardware.power.CarPowerManager;
 import android.car.settings.CarSettings;
 import android.content.ContentResolver;
 import android.database.ContentObserver;
@@ -39,18 +40,26 @@ import android.hardware.display.DisplayManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.provider.Settings;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
+import android.util.ArraySet;
+import android.util.Log;
+import android.util.SparseArray;
 import android.view.Display;
+import android.view.InputDevice;
 import android.view.InputEvent;
+import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.SysuiTestCase;
+import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.CarServiceProvider.CarServiceOnConnectedListener;
 import com.android.systemui.car.CarSystemUiTest;
 
 import org.junit.After;
@@ -61,29 +70,45 @@ import org.mockito.Mock;
 import org.mockito.MockitoSession;
 import org.mockito.quality.Strictness;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
 public class DisplayInputSinkControllerTest extends SysuiTestCase {
+    private static final String TAG = DisplayInputSinkControllerTest.class.getSimpleName();
 
     private static final String EMPTY_SETTING_VALUE = "";
 
     @Mock
     private DisplayManager mDisplayManager;
     @Mock
-    private Display mDisplay;
-    @Mock
     private DisplayInputSink.OnInputEventListener mCallback;
+    @Mock
+    private CarServiceProvider mCarServiceProvider;
+    @Mock
+    private Car mCar;
+    @Mock
+    private CarPowerManager mCarPowerManager;
+    @Mock
+    private CarOccupantZoneManager mCarOccupantZoneManager;
 
     private MockitoSession mMockingSession;
     private DisplayInputSinkController mDisplayInputSinkController;
     private Handler mHandler;
     private ContentResolver mContentResolver;
-    private List<Display> mDisplays = new ArrayList<Display>();
+    private final SparseArray<DisplayInputSink> mDisplayInputSinks = new SparseArray<>();
+    private final SparseArray<DisplayInputLockInfoWindow> mDisplayInputLockWindows =
+            new SparseArray<>();
+    private final ArraySet<String> mDisplayInputLockSetting = new ArraySet<>();
+    private final SparseArray<Display> mPassengerDisplays = new SparseArray();
+    @Mock
+    private Display mPassengerDisplay1;
+    private final int mPassengerDisplayId1 = 1001;
+    private final String mPassengerDisplayUniqueId1 = "testUniqueId1001";
+    @Mock
+    private Display mPassengerDisplay2;
+    private final int mPassengerDisplayId2 = 1002;
+    private final String mPassengerDisplayUniqueId2 = "testUniqueId1002";
 
     @Before
     public void setUp() {
@@ -99,11 +124,21 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
         mHandler = new Handler(Looper.getMainLooper());
         doReturn(mDisplayManager).when(mContext).getSystemService(DisplayManager.class);
         mDisplayInputSinkController =
-                new DisplayInputSinkController(mContext, mHandler);
+                new DisplayInputSinkController(mContext, mHandler, mCarServiceProvider,
+                        mDisplayInputSinks, mDisplayInputLockWindows, mDisplayInputLockSetting,
+                        mPassengerDisplays);
         spyOn(mDisplayInputSinkController);
         writeDisplayInputLockSetting(mContentResolver, EMPTY_SETTING_VALUE);
-        doAnswer(invocation -> mDisplays.toArray(new Display[0]))
-                .when(mDisplayManager).getDisplays();
+        doAnswer(invocation -> {
+            CarServiceOnConnectedListener listener = invocation.getArgument(0);
+            listener.onConnected(mCar);
+            return null;
+        }).when(mCarServiceProvider).addListener(any(CarServiceOnConnectedListener.class));
+        doReturn(mCarPowerManager).when(mCar).getCarManager(CarPowerManager.class);
+        doReturn(mCarOccupantZoneManager).when(mCar).getCarManager(CarOccupantZoneManager.class);
+        // Initialize two displays as passenger displays.
+        setUpDisplay(mPassengerDisplay1, mPassengerDisplayId1, mPassengerDisplayUniqueId1);
+        setUpDisplay(mPassengerDisplay2, mPassengerDisplayId2, mPassengerDisplayUniqueId2);
     }
 
     @After
@@ -140,221 +175,273 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void startDisplayInputLock_withValidDisplay_createsDisplayInputSink() {
-        int displayId = 99;
-        createDisplay(displayId, "testUniqueId");
+    public void mayStartDisplayInputLock_withValidDisplay_createsDisplayInputSink() {
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isFalse();
 
-        mDisplayInputSinkController.startDisplayInputLock(displayId);
+        mDisplayInputSinkController.mayStartDisplayInputLock(mPassengerDisplay1);
 
-        assertThat(mDisplayInputSinkController.mDisplayInputSinks.size()).isEqualTo(1);
-        assertThat(mDisplayInputSinkController.mDisplayInputSinks.get(displayId)).isNotNull();
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
     }
 
     @Test
-    public void startDisplayInputLock_withInvalidDisplay_doesNotCreateDisplayInputSink() {
-        int displayId = 99;
-        doReturn(null).when(mDisplayManager).getDisplay(eq(displayId));
+    public void mayStartDisplayInputLock_alreadyStarted_displayInputSinkRemainsSame() {
+        addDisplayInputLock(mPassengerDisplay1);
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
 
-        mDisplayInputSinkController.startDisplayInputLock(displayId);
+        mDisplayInputSinkController.mayStartDisplayInputLock(mPassengerDisplay1);
 
-        assertThat(mDisplayInputSinkController.mDisplayInputSinks.size()).isEqualTo(0);
-        assertThat(mDisplayInputSinkController.mDisplayInputSinks.get(displayId)).isNull();
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
     }
 
     @Test
-    public void startDisplayInputLock_alreadyStarted_displayInputSinkRemainsSame() {
-        int displayId = 99;
-        doReturn(mDisplay).when(mDisplayManager).getDisplay(eq(displayId));
-        addDisplayInputSink(displayId);
+    public void mayStopDisplayInputLockLocked_inputLockStarted_removesDisplayInputSink() {
+        addDisplayInputLock(mPassengerDisplay1);
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
 
-        mDisplayInputSinkController.startDisplayInputLock(displayId);
+        mDisplayInputSinkController.mayStopDisplayInputLock(mPassengerDisplayId1);
 
-        assertThat(mDisplayInputSinkController.mDisplayInputSinks.size()).isEqualTo(1);
-        assertThat(mDisplayInputSinkController.mDisplayInputSinks.get(displayId)).isNotNull();
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isFalse();
     }
 
     @Test
-    public void stopDisplayInputLockLocked_inputLockStarted_removesDisplayInputSink() {
-        int displayId = 99;
-        addDisplayInputSink(displayId);
+    public void mayStopDisplayInputLockLocked_inputLockNotStarted_doesNotStopDisplayInputLock() {
+        addDisplayInputLock(mPassengerDisplay2);
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(isInputLockStarted(mPassengerDisplayId2)).isTrue();
 
-        mDisplayInputSinkController.stopDisplayInputLock(displayId);
+        mDisplayInputSinkController.mayStopDisplayInputLock(mPassengerDisplayId1);
 
-        assertThat(mDisplayInputSinkController.mDisplayInputSinks.size()).isEqualTo(0);
-        assertThat(mDisplayInputSinkController.mDisplayInputSinks.get(displayId)).isNull();
-    }
-
-    @Test
-    public void stopDisplayInputLockLocked_inputLockNotStarted_doesNotStopDisplayInputLock() {
-        int displayId = 99;
-        int inputLockedDisplayId = 100;
-        addDisplayInputSink(inputLockedDisplayId);
-
-        mDisplayInputSinkController.stopDisplayInputLock(displayId);
-
-        assertThat(mDisplayInputSinkController.mDisplayInputSinks.size()).isEqualTo(1);
-        assertThat(mDisplayInputSinkController.mDisplayInputSinks.get(displayId)).isNull();
-        assertThat(mDisplayInputSinkController.mDisplayInputSinks.get(inputLockedDisplayId))
-                .isNotNull();
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(isInputLockStarted(mPassengerDisplayId2)).isTrue();
     }
 
     @Test
     public void onDisplayAdded_withValidDisplay_callsStartDisplayInputLock() {
-        int displayId = 99;
-        String uniqueId = "testUniqueId";
-        createDisplay(displayId, uniqueId);
         doReturn(UserHandle.USER_SYSTEM).when(() -> UserHandle.myUserId());
         mDisplayInputSinkController.start();
-        mDisplayInputSinkController.mDisplayInputLockSetting.add(uniqueId);
+        mDisplayInputLockSetting.add(mPassengerDisplayUniqueId2);
 
-        mDisplayInputSinkController.mDisplayListener.onDisplayAdded(displayId);
+        mDisplayInputSinkController.mDisplayListener.onDisplayAdded(mPassengerDisplayId2);
 
-        verify(mDisplayInputSinkController).startDisplayInputLock(eq(displayId));
+        assertThat(isInputLockStarted(mPassengerDisplayId2)).isTrue();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId2)).isFalse();
     }
 
     @Test
-    public void onDisplayAdded_withNullDisplay_doesNotCallStartDisplayInputLock() {
-        int displayId = 99;
-        String uniqueId = "testUniqueId";
-        doReturn(UserHandle.USER_SYSTEM).when(() -> UserHandle.myUserId());
-        mDisplayInputSinkController.start();
-        mDisplayInputSinkController.mDisplayInputLockSetting.add(uniqueId);
-        doReturn(null).when(mDisplayManager).getDisplay(eq(displayId));
-        doReturn(uniqueId).when(mDisplay).getUniqueId();
+    public void onDisplayAdded_withNonPassengerDisplay_doesNotCallStartDisplayInputLock() {
+        int nonPassengerDisplayId = 999;
+        String nonPassengerUniqueId = "testUniqueId999";
+        mDisplayInputLockSetting.add(nonPassengerUniqueId);
 
-        mDisplayInputSinkController.mDisplayListener.onDisplayAdded(displayId);
+        mDisplayInputSinkController.mDisplayListener.onDisplayAdded(nonPassengerDisplayId);
 
-        verify(mDisplayInputSinkController, never()).startDisplayInputLock(eq(displayId));
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(isInputLockStarted(mPassengerDisplayId2)).isFalse();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId2)).isFalse();
     }
 
     @Test
     public void onDisplayRemoved_inputLockStarted_callsStopDisplayInputLock() {
-        int displayId = 99;
         doReturn(UserHandle.USER_SYSTEM).when(() -> UserHandle.myUserId());
         mDisplayInputSinkController.start();
-        addDisplayInputSink(displayId);
+        addDisplayInputLock(mPassengerDisplay1);
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
 
-        mDisplayInputSinkController.mDisplayListener.onDisplayRemoved(displayId);
+        mDisplayInputSinkController.mDisplayListener.onDisplayRemoved(mPassengerDisplayId1);
 
-        verify(mDisplayInputSinkController).stopDisplayInputLock(eq(displayId));
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
+    }
+
+    @Test
+    public void onDisplayChangedToTurnOff_onUnlockedDisplay_startsDisplayInputMonitor() {
+        doReturn(Display.STATE_OFF).when(mPassengerDisplay1).getState();
+
+        mDisplayInputSinkController.mDisplayListener.onDisplayChanged(mPassengerDisplayId1);
+
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isTrue();
+    }
+
+    @Test
+    public void onDisplayChangedToTurnOff_onLockedDisplay_doesNotStartsDisplayInputLockOrMonitor() {
+        addDisplayInputLock(mPassengerDisplay1);
+        doReturn(Display.STATE_OFF).when(mPassengerDisplay1).getState();
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
+        DisplayInputLockInfoWindow lockWindow = mDisplayInputLockWindows.get(mPassengerDisplayId1);
+
+        mDisplayInputSinkController.mDisplayListener.onDisplayChanged(mPassengerDisplayId1);
+
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(mDisplayInputLockWindows.get(mPassengerDisplayId1)).isSameInstanceAs(lockWindow);
+    }
+
+    @Test
+    public void onDisplayChangedToTurnOn_onUnlockedDisplay_stopsDisplayInputMonitor() {
+        addDisplayInputMonitor(mPassengerDisplay1);
+        doReturn(Display.STATE_ON).when(mPassengerDisplay1).getState();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isTrue();
+
+        mDisplayInputSinkController.mDisplayListener.onDisplayChanged(mPassengerDisplayId1);
+
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
+    }
+
+    @Test
+    public void onDisplayChangedToTurnOn_onLockedDisplay_doesNotStopDisplayInputLockOrMonitor() {
+        addDisplayInputLock(mPassengerDisplay1);
+        doReturn(Display.STATE_ON).when(mPassengerDisplay1).getState();
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
+        DisplayInputLockInfoWindow lockWindow = mDisplayInputLockWindows.get(mPassengerDisplayId1);
+
+        mDisplayInputSinkController.mDisplayListener.onDisplayChanged(mPassengerDisplayId1);
+
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(mDisplayInputLockWindows.get(mPassengerDisplayId1)).isSameInstanceAs(lockWindow);
     }
 
     @Test
     public void refreshDisplayInputLock_withValidSettingValue_callsStartDisplayInputLock() {
-        int displayId = 99;
-        String displayUniqueId = "testUniqueId";
-        createDisplay(displayId, displayUniqueId);
-        writeDisplayInputLockSetting(mContentResolver, displayUniqueId);
+        writeDisplayInputLockSetting(mContentResolver, mPassengerDisplayUniqueId1);
 
-        mDisplayInputSinkController.refreshDisplayInputLock();
+        mDisplayInputSinkController.refreshDisplayInputLockSetting();
 
-        assertThat(mDisplayInputSinkController.mDisplayInputLockSetting.size()).isEqualTo(1);
-        verify(mDisplayInputSinkController).startDisplayInputLock(eq(displayId));
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
     }
 
     @Test
     public void refreshDisplayInputLock_withInvalidSettingValue_doesNotCallStartDisplayInputLock() {
-        int displayId = 99;
-        String displayUniqueId = "validUniqueId";
         String settingUniqueId = "invalidUniqueId";
-        createDisplay(displayId, displayUniqueId);
         writeDisplayInputLockSetting(mContentResolver, settingUniqueId);
 
-        mDisplayInputSinkController.refreshDisplayInputLock();
+        mDisplayInputSinkController.refreshDisplayInputLockSetting();
 
-        assertThat(mDisplayInputSinkController.mDisplayInputLockSetting.size()).isEqualTo(0);
-        verify(mDisplayInputSinkController, never())
-                .startDisplayInputLock(eq(displayId));
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(isInputLockStarted(mPassengerDisplayId2)).isFalse();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId2)).isFalse();
     }
 
     @Test
     public void refreshDisplayInputLock_duplicateEntriesInSettingValue_onlyOneEntryIsValid() {
-        int displayId = 99;
-        String displayUniqueId = "testUniqueId";
-        String settingUniqueId = displayUniqueId + "," + displayUniqueId;
-        createDisplay(displayId, displayUniqueId);
-        writeDisplayInputLockSetting(mContentResolver, settingUniqueId);
+        writeDisplayInputLockSetting(mContentResolver,
+                mPassengerDisplayUniqueId1 + "," + mPassengerDisplayUniqueId1);
 
-        mDisplayInputSinkController.refreshDisplayInputLock();
+        mDisplayInputSinkController.refreshDisplayInputLockSetting();
 
-        assertThat(mDisplayInputSinkController.mDisplayInputLockSetting.size()).isEqualTo(1);
-        verify(mDisplayInputSinkController, times(1)).startDisplayInputLock(eq(displayId));
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
     }
 
     @Test
     public void refreshDisplayInputLock_inputLockAlreadyStarted_doesNotCallStartDisplayInputLock() {
-        int inputLockedDisplayId = 99;
-        String displayUniqueId = "testUniqueId";
-        addDisplayInputSink(inputLockedDisplayId);
-        createDisplay(inputLockedDisplayId, displayUniqueId);
-        writeDisplayInputLockSetting(mContentResolver, displayUniqueId);
+        addDisplayInputLock(mPassengerDisplay1);
+        writeDisplayInputLockSetting(mContentResolver, mPassengerDisplayUniqueId1);
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
 
-        mDisplayInputSinkController.refreshDisplayInputLock();
+        mDisplayInputSinkController.refreshDisplayInputLockSetting();
 
-        assertThat(mDisplayInputSinkController.mDisplayInputLockSetting.size()).isEqualTo(1);
-        verify(mDisplayInputSinkController, never())
-                .startDisplayInputLock(eq(inputLockedDisplayId));
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
     }
 
     @Test
     public void refreshDisplayInputLock_settingValueReplaced_stopsExistingLockAndStartsNewLock() {
-        int inputLockedDisplayId = 99;
-        int displayId = 100;
-        String displayUniqueId = "testUniqueId";
-        addDisplayInputSink(inputLockedDisplayId);
-        createDisplay(displayId, displayUniqueId);
-        writeDisplayInputLockSetting(mContentResolver, displayUniqueId);
+        addDisplayInputLock(mPassengerDisplay1);
+        writeDisplayInputLockSetting(mContentResolver, mPassengerDisplayUniqueId2);
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
 
-        mDisplayInputSinkController.refreshDisplayInputLock();
+        mDisplayInputSinkController.refreshDisplayInputLockSetting();
 
-        verify(mDisplayInputSinkController).stopDisplayInputLock(eq(inputLockedDisplayId));
-        verify(mDisplayInputSinkController).startDisplayInputLock(eq(displayId));
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(isInputLockStarted(mPassengerDisplayId2)).isTrue();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId2)).isFalse();
     }
 
     @Test
     public void refreshDisplayInputLock_multiEntriesInSettingValue_startsDisplayInputLockForEach() {
-        int displayId1 = 99;
-        int displayId2 = 100;
-        String displayUniqueId1 = "testUniqueId1";
-        String displayUniqueId2 = "testUniqueId2";
-        String settingUniqueId = displayUniqueId1 + "," + displayUniqueId2;
-        createDisplay(displayId1, displayUniqueId1);
-        createDisplay(displayId2, displayUniqueId2);
-        writeDisplayInputLockSetting(mContentResolver, settingUniqueId);
+        writeDisplayInputLockSetting(mContentResolver,
+                mPassengerDisplayUniqueId1 + "," + mPassengerDisplayUniqueId2);
 
-        mDisplayInputSinkController.refreshDisplayInputLock();
+        mDisplayInputSinkController.refreshDisplayInputLockSetting();
 
-        verify(mDisplayInputSinkController).startDisplayInputLock(eq(displayId1));
-        verify(mDisplayInputSinkController).startDisplayInputLock(eq(displayId2));
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(isInputLockStarted(mPassengerDisplayId2)).isTrue();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId2)).isFalse();
     }
 
     @Test
     public void refreshDisplayInputLock_settingValueRemoved_stopsDisplayInputLockForEach() {
-        int displayId1 = 99;
-        int displayId2 = 100;
-        String displayUniqueId1 = "testUniqueId1";
-        String displayUniqueId2 = "testUniqueId2";
-        addDisplayInputSink(displayId1);
-        addDisplayInputSink(displayId2);
+        addDisplayInputLock(mPassengerDisplay1);
+        addDisplayInputLock(mPassengerDisplay2);
         writeDisplayInputLockSetting(mContentResolver, EMPTY_SETTING_VALUE);
-        createDisplay(displayId1, displayUniqueId1);
-        createDisplay(displayId2, displayUniqueId2);
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
+        assertThat(isInputLockStarted(mPassengerDisplayId2)).isTrue();
 
-        mDisplayInputSinkController.refreshDisplayInputLock();
+        mDisplayInputSinkController.refreshDisplayInputLockSetting();
 
-        verify(mDisplayInputSinkController).stopDisplayInputLock(eq(displayId1));
-        verify(mDisplayInputSinkController).stopDisplayInputLock(eq(displayId2));
+        assertThat(isInputLockStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
+        assertThat(isInputLockStarted(mPassengerDisplayId2)).isFalse();
+        assertThat(isInputMonitorStarted(mPassengerDisplayId2)).isFalse();
     }
 
     @Test
     public void onInputEvent_inputEventReceived_callbackOnInputEvent() {
-        doReturn(mDisplay).when(mDisplayManager).getDisplay(anyInt());
         DisplayInputSink displayInputSinks =
-                new DisplayInputSink(mDisplay, mCallback);
+                new DisplayInputSink(mPassengerDisplay1, mCallback);
 
         displayInputSinks.mInputEventReceiver.onInputEvent(mock(InputEvent.class));
 
         verify(mCallback).onInputEvent(any(InputEvent.class));
+    }
+
+    @Test
+    public void displayInputMonitorCallback_triggers_notifyUserActivity() {
+        doReturn(UserHandle.USER_SYSTEM).when(() -> UserHandle.myUserId());
+        mDisplayInputSinkController.start();  // To setup CarPowerManager
+
+        doReturn(Display.STATE_OFF).when(mPassengerDisplay1).getState();
+        mDisplayInputSinkController.mDisplayListener.onDisplayChanged(mPassengerDisplayId1);
+
+        DisplayInputSink inputSink = mDisplayInputSinks.get(mPassengerDisplayId1);
+        assertThat(inputSink).isNotNull();
+
+        MotionEvent event = obtainMotionEvent(MotionEvent.ACTION_DOWN, 0, 0, mPassengerDisplayId1);
+        inputSink.mInputEventReceiver.onInputEvent(event);
+
+        verify(mCarPowerManager, times(1)).notifyUserActivity(mPassengerDisplayId1);
+    }
+
+    @Test
+    public void displayInputLockCallback_triggers_notifyUserActivity() {
+        doReturn(UserHandle.USER_SYSTEM).when(() -> UserHandle.myUserId());
+        writeDisplayInputLockSetting(mContentResolver, mPassengerDisplayUniqueId2);
+        mDisplayInputSinkController.start();  // To setup CarPowerManager and start the input lock.
+
+        assertThat(isInputLockStarted(mPassengerDisplayId2)).isTrue();
+        DisplayInputSink inputSink = mDisplayInputSinks.get(mPassengerDisplayId2);
+        assertThat(inputSink).isNotNull();
+
+        MotionEvent event = obtainMotionEvent(MotionEvent.ACTION_DOWN, 0, 0, mPassengerDisplayId2);
+        inputSink.mInputEventReceiver.onInputEvent(event);
+
+        verify(mCarPowerManager, times(1)).notifyUserActivity(mPassengerDisplayId2);
+    }
+
+    private MotionEvent obtainMotionEvent(int action, int x, int y, int displayId) {
+        long eventTime = SystemClock.uptimeMillis();
+        return MotionEvent.obtain(eventTime, eventTime, action, x, y,
+                /* pressure= */ 1.0f, /* size= */ 1.0f, /* metaState= */ 0,
+                /* xPrecision= */ 1.0f, /* yPrecision= */ 1.0f,
+                /* deviceId= */ 0, /* edgeFlags= */ 0, InputDevice.SOURCE_CLASS_POINTER, displayId);
     }
 
     private void writeDisplayInputLockSetting(@NonNull ContentResolver resolver,
@@ -362,22 +449,51 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
         Settings.Global.putString(resolver, CarSettings.Global.DISPLAY_INPUT_LOCK, value);
     }
 
-    private Display createDisplay(int displayId, String uniqueId) {
-        Display display = mock(Display.class);
+
+    private void setUpDisplay(Display display, int displayId, String uniqueId) {
         doReturn(display).when(mDisplayManager).getDisplay(displayId);
         doReturn(uniqueId).when(display).getUniqueId();
         doReturn(displayId).when(display).getDisplayId();
-        mDisplays.add(display);
+        mPassengerDisplays.put(displayId, display);
         doReturn(mock(DisplayInputLockInfoWindow.class))
                 .when(mDisplayInputSinkController).createDisplayInputLockInfoWindow(display);
-        return display;
     }
 
-    private void addDisplayInputSink(int displayId) {
-        Display display = mock(Display.class);
-        doReturn(display).when(mDisplayManager).getDisplay(displayId);
+    private boolean isInputLockStarted(int displayId) {
+        if (!mDisplayInputLockWindows.contains(displayId)) {
+            Log.d(TAG, "isInputLockStarted: No DisplayInputLockWindow for display#" + displayId);
+            return false;
+        }
+        if (!mDisplayInputSinks.contains(displayId)) {
+            Log.d(TAG, "isInputLockStarted: No DisplayInputSink for display#" + displayId);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isInputMonitorStarted(int displayId) {
+        if (mDisplayInputLockWindows.contains(displayId)) {
+            Log.d(TAG, "isInputMonitorStarted: InputLock started for display#" + displayId);
+            return false;
+        }
+        if (!mDisplayInputSinks.contains(displayId)) {
+            Log.d(TAG, "isInputMonitorStarted: No DisplayInputSink for display#" + displayId);
+            return false;
+        }
+        return true;
+    }
+
+    private void addDisplayInputLock(Display display) {
+        mDisplayInputLockSetting.add(display.getUniqueId());
+        int displayId = display.getDisplayId();
+        mDisplayInputLockWindows.put(displayId, mock(DisplayInputLockInfoWindow.class));
         DisplayInputSink displayInputSinks = new DisplayInputSink(display, mCallback);
-        mDisplayInputSinkController.mDisplayInputSinks.put(displayId, displayInputSinks);
-        assertThat(mDisplayInputSinkController.mDisplayInputSinks.get(displayId)).isNotNull();
+        mDisplayInputSinks.put(displayId, displayInputSinks);
+    }
+
+    private void addDisplayInputMonitor(Display display) {
+        int displayId = display.getDisplayId();
+        DisplayInputSink displayInputSinks = new DisplayInputSink(display, mCallback);
+        mDisplayInputSinks.put(displayId, displayInputSinks);
     }
 }

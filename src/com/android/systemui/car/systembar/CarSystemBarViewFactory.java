@@ -28,6 +28,7 @@ import com.android.car.ui.FocusParkingView;
 import com.android.systemui.R;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.settings.UserTracker;
@@ -88,6 +89,12 @@ public class CarSystemBarViewFactory {
         mQuickControlsEntryPointsController = quickControlsEntryPointsController;
         mReadOnlyIconsController = readOnlyIconsController;
         mUserTracker = userTracker;
+
+        // Change top/bottom system bars layout for secondary MUMD SystemUI.
+        if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
+            sLayoutMap.put(Type.TOP, R.layout.car_top_system_bar_for_secondary_mumd_systemui);
+            sLayoutMap.put(Type.BOTTOM, R.layout.car_bottom_system_bar_for_secondary_mumd_systemui);
+        }
     }
 
     /** Gets the top window. */

@@ -27,6 +27,8 @@ import android.os.UserManager;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.systemui.R;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.userswitcher.UserIconProvider;
@@ -43,7 +45,8 @@ public class QCUserPickerButton extends QCFooterButtonView {
     private CarActivityManager mCarActivityManager;
     private UserIconProvider mUserIconProvider;
     private UserManager mUserManager;
-    private UserNameViewController mUserNameViewController;
+    @VisibleForTesting
+    UserNameViewController mUserNameViewController;
 
     public QCUserPickerButton(Context context) {
         this(context, null);

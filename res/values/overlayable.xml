@@ -32,7 +32,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="array" name="config_allowedAppInstallSources"/>
       <item type="array" name="config_carSystemUIOverlayViewsMediators"/>
       <item type="array" name="config_qcPanelReadOnlyIconControllers"/>
-      <item type="array" name="config_quickControlsEntryPointIconControllerForSecondaryMUMDSystemUI"/>
       <item type="array" name="config_quickControlsEntryPointIconControllers"/>
       <item type="array" name="config_quickControlsSubIconControllers"/>
       <item type="array" name="config_readOnlyIconControllers"/>
@@ -791,13 +790,11 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="adjustable_temperature_view"/>
       <item type="layout" name="camera_privacy_chip"/>
       <item type="layout" name="car_bottom_system_bar"/>
-      <item type="layout" name="car_bottom_system_bar_for_secondary_mumd_systemui"/>
       <item type="layout" name="car_bottom_system_bar_unprovisioned"/>
       <item type="layout" name="car_fullscreen_user_pod"/>
       <item type="layout" name="car_fullscreen_user_switcher"/>
       <item type="layout" name="car_left_system_bar"/>
       <item type="layout" name="car_left_system_bar_unprovisioned"/>
-      <item type="layout" name="car_qc_entry_point_button_for_secondary_mumd_systemui"/>
       <item type="layout" name="car_qc_entry_points_button"/>
       <item type="layout" name="car_quick_controls_panel"/>
       <item type="layout" name="car_right_system_bar"/>
@@ -805,7 +802,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="car_status_bar_header"/>
       <item type="layout" name="car_system_bar_button"/>
       <item type="layout" name="car_top_system_bar"/>
-      <item type="layout" name="car_top_system_bar_for_secondary_mumd_systemui"/>
       <item type="layout" name="car_top_system_bar_unprovisioned"/>
       <item type="layout" name="car_user_switching_dialog"/>
       <item type="layout" name="car_volume_dialog"/>

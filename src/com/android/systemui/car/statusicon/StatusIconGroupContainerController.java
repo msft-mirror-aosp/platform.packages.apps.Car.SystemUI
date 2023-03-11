@@ -62,8 +62,8 @@ public abstract class StatusIconGroupContainerController {
     private final ConfigurationController mConfigurationController;
     private final Provider<SystemUIQCViewController> mQCViewControllerProvider;
     private final Map<Class<?>, Provider<StatusIconController>> mIconControllerCreators;
-    private final String mIconTag;
-    private final String[] mStatusIconControllerNames;
+    private String mIconTag;
+    private String[] mStatusIconControllerNames;
     private final Set<StatusIconPanelController> mStatusIconPanelControllers;
     private Map<String, View> mStatusIconViewClassMap;
     @Nullable
@@ -100,11 +100,15 @@ public abstract class StatusIconGroupContainerController {
         mIconControllerCreators = iconControllerCreators;
         mQCPanelReadOnlyIconsController = qcPanelReadOnlyIconsController;
 
+        initResources();
+        mStatusIconViewClassMap = new HashMap<>();
+        mStatusIconPanelControllers = new HashSet<>();
+    }
+
+    private void initResources() {
         mIconTag = mResources.getString(R.string.qc_icon_tag);
         mStatusIconControllerNames = mResources.getStringArray(
                 getStatusIconControllersStringArray());
-        mStatusIconViewClassMap = new HashMap<>();
-        mStatusIconPanelControllers = new HashSet<>();
     }
 
     private static <T> T resolve(String className, Map<Class<?>, Provider<T>> creators) {
@@ -204,6 +208,7 @@ public abstract class StatusIconGroupContainerController {
         }
         mStatusIconPanelControllers.clear();
         mStatusIconViewClassMap.clear();
+        initResources();
     }
 
     @ArrayRes

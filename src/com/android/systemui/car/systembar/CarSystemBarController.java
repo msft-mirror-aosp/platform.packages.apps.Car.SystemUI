@@ -158,6 +158,7 @@ public class CarSystemBarController {
      */
     void resetSystemBarConfigs() {
         mSystemBarConfigs.resetSystemBarConfigs();
+        mCarSystemBarViewFactory.resetCache();
         readConfigs();
     }
 

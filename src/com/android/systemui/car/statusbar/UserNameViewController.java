@@ -59,8 +59,10 @@ public class UserNameViewController {
     @VisibleForTesting
     UserIconProvider mUserIconProvider;
 
-    private ArrayList<TextView> mUserNameViews = new ArrayList<TextView>();
-    private ArrayList<ImageView> mUserIconViews = new ArrayList<ImageView>();
+    @VisibleForTesting
+    ArrayList<TextView> mUserNameViews = new ArrayList<TextView>();
+    @VisibleForTesting
+    ArrayList<ImageView> mUserIconViews = new ArrayList<ImageView>();
 
     private final BroadcastReceiver mUserUpdateReceiver = new BroadcastReceiver() {
         @Override

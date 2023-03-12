@@ -49,9 +49,10 @@ public class QuickControlsEntryPointsController extends StatusIconGroupContainer
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider,
-            Map<Class<?>, Provider<StatusIconController>> iconControllerCreators) {
+            Map<Class<?>, Provider<StatusIconController>> iconControllerCreators,
+            QCPanelReadOnlyIconsController qcPanelReadOnlyIconsController) {
         super(context, userTracker, resources, broadcastDispatcher, configurationController,
-                qcViewControllerProvider, iconControllerCreators);
+                qcViewControllerProvider, iconControllerCreators, qcPanelReadOnlyIconsController);
     }
 
     @Override

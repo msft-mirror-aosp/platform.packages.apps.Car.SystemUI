@@ -75,7 +75,8 @@ abstract class CarSystemUICoreStartableModule {
                 applyRROService: Lazy<CarSystemBarMediator>,
                 context: Context
         ): CoreStartable {
-            if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI() &&
+            if ((CarSystemUIUserUtil.isSecondaryMUMDSystemUI() ||
+                    CarSystemUIUserUtil.isMUPANDSystemUI()) &&
                     context.resources.getBoolean(R.bool.config_enableSecondaryUserRRO)) {
                 return applyRROService.get()
             }

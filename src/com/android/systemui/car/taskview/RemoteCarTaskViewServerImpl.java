@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.DeadSystemRuntimeException;
 import android.util.Slog;
 import android.util.SparseArray;
 import android.view.SurfaceControl;
@@ -48,10 +49,15 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     private final TaskViewTaskController mTaskViewTaskController;
     private final CarSystemUIProxyImpl mCarSystemUIProxy;
     private final SparseArray<Rect> mInsets = new SparseArray<>();
+    private boolean mReleased;
 
     private final CarTaskViewHost mHostImpl = new CarTaskViewHost() {
         @Override
         public void release() {
+            if (mReleased) {
+                Slog.w(TAG, "TaskView server part already released");
+                return;
+            }
             mInsets.clear();
             int taskIdToRemove = INVALID_TASK_ID;
             if (mTaskViewTaskController.getTaskInfo() != null) {
@@ -63,6 +69,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
                 ActivityTaskManager.getInstance().removeTask(taskIdToRemove);
             }
             mCarSystemUIProxy.onCarTaskViewReleased(RemoteCarTaskViewServerImpl.this);
+            mReleased = true;
         }
 
         @Override
@@ -150,7 +157,14 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
 
     @Override
     public Rect getCurrentBoundsOnScreen() {
-        return mCarTaskViewClient.getCurrentBoundsOnScreen();
+        try {
+            return mCarTaskViewClient.getCurrentBoundsOnScreen();
+        } catch (DeadSystemRuntimeException ex) {
+            Slog.w(TAG, "Failed to call getCurrentBoundsOnScreen() as TaskView client has "
+                    + "already died. Host part will be released shortly.");
+        }
+        return new Rect(0, 0, 0, 0); // If it reaches here, it means that
+        // the host side is already being released so it doesn't matter what is returned from here.
     }
 
     @Override
@@ -165,23 +179,43 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
 
     @Override
     public void setResizeBgColor(SurfaceControl.Transaction transaction, int color) {
-        mCarTaskViewClient.setResizeBackgroundColor(transaction, color);
+        try {
+            mCarTaskViewClient.setResizeBackgroundColor(transaction, color);
+        } catch (DeadSystemRuntimeException e) {
+            Slog.w(TAG, "Failed to call setResizeBackgroundColor() as TaskView client has "
+                    + "already died. Host part will be released shortly.");
+        }
     }
 
     @Override
     public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo, SurfaceControl leash) {
         applyInsets();
-        mCarTaskViewClient.onTaskAppeared(taskInfo, leash);
+        try {
+            mCarTaskViewClient.onTaskAppeared(taskInfo, leash);
+        } catch (DeadSystemRuntimeException e) {
+            Slog.w(TAG, "Failed to call onTaskAppeared() as TaskView client has already died, "
+                    + "already died. Host part will be released shortly.");
+        }
     }
 
     @Override
     public void onTaskInfoChanged(ActivityManager.RunningTaskInfo taskInfo) {
-        mCarTaskViewClient.onTaskInfoChanged(taskInfo);
+        try {
+            mCarTaskViewClient.onTaskInfoChanged(taskInfo);
+        } catch (DeadSystemRuntimeException e) {
+            Slog.w(TAG, "Failed to call onTaskInfoChanged() as TaskView client has already died, "
+                    + "already died. Host part will be released shortly.");
+        }
     }
 
     @Override
     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
-        mCarTaskViewClient.onTaskVanished(taskInfo);
+        try {
+            mCarTaskViewClient.onTaskVanished(taskInfo);
+        } catch (DeadSystemRuntimeException e) {
+            Slog.w(TAG, "Failed to call onTaskVanished() as TaskView client has already died, "
+                    + "already died. Host part will be released shortly.");
+        }
     }
 
     private void applyInsets() {

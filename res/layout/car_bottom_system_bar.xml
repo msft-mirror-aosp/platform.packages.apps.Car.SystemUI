@@ -82,7 +82,7 @@
                 systemui:packages="com.android.car.dialer"
                 systemui:clearBackStack="true"/>
 
-            <com.android.systemui.car.systembar.CarSystemBarButton
+            <com.android.systemui.car.systembar.AppGridButton
                 android:id="@+id/grid_nav"
                 android:contentDescription="@string/system_bar_applications_label"
                 style="@style/SystemBarButton"

@@ -18,7 +18,6 @@ package com.android.systemui.car.volume;
 
 import android.car.Car;
 import android.car.media.CarAudioManager;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Handler;
@@ -39,7 +38,7 @@ import dagger.Lazy;
 
 /** The entry point for controlling the volume ui in cars. */
 @SysUISingleton
-public class VolumeUI extends CoreStartable {
+public class VolumeUI implements CoreStartable {
 
     private static final String TAG = "VolumeUI";
     private final Resources mResources;
@@ -76,13 +75,11 @@ public class VolumeUI extends CoreStartable {
 
     @Inject
     public VolumeUI(
-            Context context,
             @Main Resources resources,
             @Main Handler mainHandler,
             CarServiceProvider carServiceProvider,
             Lazy<VolumeDialogComponent> volumeDialogComponentLazy
     ) {
-        super(context);
         mResources = resources;
         mMainHandler = mainHandler;
         mCarServiceProvider = carServiceProvider;
@@ -109,8 +106,7 @@ public class VolumeUI extends CoreStartable {
     }
 
     @Override
-    protected void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
+    public void onConfigurationChanged(Configuration newConfig) {
         if (!mEnabled) return;
         if (mVolumeDialogComponent != null) {
             mVolumeDialogComponent.onConfigurationChanged(newConfig);

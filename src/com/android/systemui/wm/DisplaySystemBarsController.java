@@ -33,6 +33,7 @@ import android.view.InsetsState;
 import android.view.WindowInsets;
 import android.view.WindowInsets.Type.InsetsType;
 import android.view.inputmethod.ImeTracker;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -112,11 +113,14 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
 
         PerDisplay(int displayId) {
             mDisplayId = displayId;
+            InputMethodManager inputMethodManager =
+                    mContext.getSystemService(InputMethodManager.class);
             mInsetsController = new InsetsController(
                     new DisplaySystemBarsInsetsControllerHost(mHandler, requestedVisibleTypes -> {
                         mRequestedVisibleTypes = requestedVisibleTypes;
                         updateDisplayWindowRequestedVisibleTypes();
-                    }));
+                    }, inputMethodManager)
+            );
         }
 
         public void register() {

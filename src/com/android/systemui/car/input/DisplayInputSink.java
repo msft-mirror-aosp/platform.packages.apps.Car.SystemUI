@@ -117,6 +117,7 @@ public final class DisplayInputSink {
                     /* hostInputToken= */ null,
                     FLAG_NOT_FOCUSABLE,
                     PRIVATE_FLAG_TRUSTED_OVERLAY,
+                    /* inputFeatures= */ 0,
                     TYPE_INPUT_CONSUMER,
                     /* windowToken= */ null,
                     mFocusGrantToken,

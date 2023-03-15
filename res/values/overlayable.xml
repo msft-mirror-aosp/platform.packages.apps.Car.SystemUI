@@ -499,6 +499,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_ic_phone_volume"/>
       <item type="drawable" name="car_ic_phone_volume_mute"/>
       <item type="drawable" name="car_ic_power"/>
+      <item type="drawable" name="car_ic_recents"/>
       <item type="drawable" name="car_ic_selection_bg"/>
       <item type="drawable" name="car_ic_settings_icon"/>
       <item type="drawable" name="car_ic_unseen_indicator"/>

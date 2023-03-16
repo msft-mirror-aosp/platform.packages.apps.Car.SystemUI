@@ -33,6 +33,7 @@ import com.android.systemui.keyguard.KeyguardViewMediator
 import com.android.systemui.log.SessionTracker
 import com.android.systemui.media.RingtonePlayer
 import com.android.systemui.power.PowerUI
+import com.android.systemui.recents.Recents
 import com.android.systemui.theme.ThemeOverlayController
 import com.android.systemui.usb.StorageNotification
 import com.android.systemui.util.NotificationChannels
@@ -184,4 +185,10 @@ abstract class CarSystemUICoreStartableModule {
     @IntoMap
     @ClassKey(WMShell::class)
     abstract fun bindWMShell(sysui: WMShell): CoreStartable
+
+    /** Inject into Recents.  */
+    @Binds
+    @IntoMap
+    @ClassKey(Recents::class)
+    abstract fun bindRecents(sysui: Recents): CoreStartable
 }

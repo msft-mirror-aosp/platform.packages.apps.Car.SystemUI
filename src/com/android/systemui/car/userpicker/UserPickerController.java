@@ -29,7 +29,6 @@ import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_CHANG
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_LOGOUT;
 
 import android.annotation.IntDef;
-import android.annotation.NonNull;
 import android.annotation.UserIdInt;
 import android.app.ActivityManager;
 import android.car.user.UserCreationResult;
@@ -42,6 +41,8 @@ import android.util.Log;
 import android.util.Slog;
 import android.view.View.OnClickListener;
 
+import androidx.annotation.NonNull;
+
 import com.android.internal.widget.LockPatternUtils;
 import com.android.systemui.R;
 import com.android.systemui.car.userpicker.UserEventManager.OnUpdateUsersListener;
@@ -49,6 +50,7 @@ import com.android.systemui.car.userpicker.UserRecord.OnClickListenerCreatorBase
 import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.settings.DisplayTracker;
 
+import java.io.PrintWriter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -472,6 +474,17 @@ final class UserPickerController {
     void startAddNewUser() {
         runOnMainHandler(REQ_SHOW_ADDING_DIALOG);
         mWorker.execute(mAddUserRunnable);
+    }
+
+    void dump(@NonNull PrintWriter pw) {
+        pw.println("  " + getClass().getSimpleName() + ":");
+        if (mHeaderState.getState() == HEADER_STATE_CHANGE_USER) {
+            int loggedInUserId = mCarServiceMediator.getUserForDisplay(mDisplayId);
+            pw.println("    Logged-in user : " + loggedInUserId
+                    + (isGuestUser(loggedInUserId) ? "(guest)" : ""));
+        }
+        pw.println("    mHeaderState=" + mHeaderState.toString());
+        pw.println("    mIsUserPickerClickable=" + mIsUserPickerClickable);
     }
 
     class OnClickListenerCreator extends OnClickListenerCreatorBase {

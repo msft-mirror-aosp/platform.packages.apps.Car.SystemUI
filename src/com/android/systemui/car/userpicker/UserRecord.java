@@ -96,14 +96,16 @@ final class UserRecord {
         if (DEBUG) {
             StringBuilder sb = new StringBuilder();
             sb.append("UserRecord@").append(Integer.toHexString(hashCode())).append(" [");
-            sb.append("userId=").append(mInfo.id).append(" ");
-            sb.append("name=").append(mName).append(" ");
+            if (mInfo != null) {
+                sb.append("userId=").append(mInfo.id).append(" ");
+            }
+            sb.append("name='").append(mName).append("' ");
             sb.append("isStartGuestSession=").append(mIsStartGuestSession).append(" ");
             sb.append("isAddUser=").append(mIsAddUser).append(" ");
             sb.append("isForeground=").append(mIsForeground).append(" ");
             sb.append("isLoggedIn=").append(mIsLoggedIn).append(" ");
             sb.append("loggedInDisplay=").append(mLoggedInDisplay).append(" ");
-            sb.append("seatLocationName=").append(mSeatLocationName).append(" ");
+            sb.append("seatLocationName='").append(mSeatLocationName).append("' ");
             sb.append("isStopping=").append(mIsStopping).append("]");
             return sb.toString();
         } else {

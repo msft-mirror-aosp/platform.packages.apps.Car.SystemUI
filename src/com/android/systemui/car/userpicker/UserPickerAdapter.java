@@ -16,17 +16,18 @@
 
 package com.android.systemui.car.userpicker;
 
-import android.annotation.NonNull;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import com.android.systemui.R;
 import com.android.systemui.car.userpicker.UserPickerView.UserPickerAdapterViewHolder;
 
+import java.io.PrintWriter;
 import java.util.List;
 
 final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
@@ -124,5 +125,13 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
         mPrefixOtherSeatLoggedInInfo = mContext
                 .getString(R.string.prefix_logged_in_info_for_other_seat);
         mStoppingUserText = mContext.getString(R.string.stopping_user_text);
+    }
+
+    void dump(@NonNull PrintWriter pw) {
+        pw.println("  UserRecords : ");
+        for (int i = 0; i < mUsers.size(); i++) {
+            UserRecord userRecord = mUsers.get(i);
+            pw.println("    " + userRecord.toString());
+        }
     }
 }

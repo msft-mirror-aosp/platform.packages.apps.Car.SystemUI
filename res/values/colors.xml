@@ -140,6 +140,7 @@
 
     <!-- Color for user picker -->
     <color name="user_picker_background_color">#000000</color>
+    <color name="user_picker_bottom_bar_color">#1D1F22</color>
     <color name="user_picker_snack_bar_transparent_color">#FFFFFF</color>
     <color name="user_picker_snack_bar_background_color">#282a2d</color>
     <color name="user_picker_user_name_color">#fff8f9fa</color>

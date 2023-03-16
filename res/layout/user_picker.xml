@@ -21,11 +21,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <com.android.car.ui.FocusParkingView
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
     <com.android.car.ui.FocusArea
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:gravity="center">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -90,6 +90,35 @@
                 android:layout_marginBottom="@dimen/user_picker_common_margin_size"
                 app:layout_constraintTop_toBottomOf="@id/power_button_icon_view"
                 app:layout_constraintLeft_toLeftOf="parent"/>
+
+            <LinearLayout
+                android:id="@+id/user_picker_bottom_bar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/car_bottom_system_bar_height"
+                android:orientation="horizontal"
+                android:background="@color/user_picker_bottom_bar_color"
+                android:gravity="right"
+                app:layout_constraintVertical_bias="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+                <LinearLayout
+                    android:id="@+id/user_picker_status_icon_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"/>
+                <com.android.systemui.statusbar.policy.Clock
+                    android:id="@+id/user_picker_bottom_bar_clock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/car_body3_size"
+                    android:layout_gravity="center"
+                    android:elevation="5dp"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.SystemBar.Clock"
+                    systemui:amPmStyle="gone"/>
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.android.car.ui.FocusArea>
 </FrameLayout>

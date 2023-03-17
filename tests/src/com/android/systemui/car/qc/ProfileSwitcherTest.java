@@ -25,19 +25,23 @@ import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.ActivityManager;
 import android.app.admin.DevicePolicyManager;
+import android.car.SyncResultCallback;
 import android.car.user.CarUserManager;
 import android.car.user.UserCreationResult;
+import android.car.user.UserStartRequest;
+import android.car.user.UserStopRequest;
+import android.car.user.UserStopResponse;
+import android.car.user.UserSwitchRequest;
 import android.car.user.UserSwitchResult;
 import android.car.util.concurrent.AsyncFuture;
 import android.content.Intent;
@@ -63,6 +67,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoSession;
 import org.mockito.quality.Strictness;
@@ -90,8 +95,6 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     private DevicePolicyManager mDevicePolicyManager;
     @Mock
     private CarUserManager mCarUserManager;
-    @Mock
-    private ActivityManager mActivityManager;
 
     @Before
     public void setUp() throws ExecutionException, InterruptedException, TimeoutException {
@@ -101,7 +104,6 @@ public class ProfileSwitcherTest extends SysuiTestCase {
                 .strictness(Strictness.LENIENT)
                 .startMocking();
 
-        mContext.addMockSystemService(ActivityManager.class, mActivityManager);
         when(mUserTracker.getUserId()).thenReturn(1000);
         when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(1000));
         when(mUserManager.getAliveUsers()).thenReturn(mAliveUsers);
@@ -110,7 +112,6 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         mockUmGetVisibleUsers(mUserManager, 1000);
         when(mDevicePolicyManager.isDeviceManaged()).thenReturn(false);
         when(mDevicePolicyManager.isOrganizationOwnedDeviceWithManagedProfile()).thenReturn(false);
-        when(mActivityManager.stopUser(anyInt(), anyBoolean())).thenReturn(true);
         doReturn(false).when(() -> CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
 
         AsyncFuture<UserSwitchResult> switchResultFuture = mock(AsyncFuture.class);
@@ -320,7 +321,11 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         assertThat(rows).hasSize(4);
         QCRow otherUserRow = rows.get(1);
         otherUserRow.getActionHandler().onAction(otherUserRow, mContext, new Intent());
-        verify(mCarUserManager).switchUser(otherUserId);
+
+        ArgumentCaptor<UserSwitchRequest> requestCaptor =
+                ArgumentCaptor.forClass(UserSwitchRequest.class);
+        verify(mCarUserManager).switchUser(requestCaptor.capture(), any(), any());
+        assertThat(requestCaptor.getValue().getUserHandle().getIdentifier()).isEqualTo(otherUserId);
     }
 
     @Test
@@ -344,7 +349,11 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         QCRow guestRow = rows.get(1);
         guestRow.getActionHandler().onAction(guestRow, mContext, new Intent());
         verify(mCarUserManager).createGuest(any());
-        verify(mCarUserManager).switchUser(guestUserId);
+
+        ArgumentCaptor<UserSwitchRequest> requestCaptor =
+                ArgumentCaptor.forClass(UserSwitchRequest.class);
+        verify(mCarUserManager).switchUser(requestCaptor.capture(), any(), any());
+        assertThat(requestCaptor.getValue().getUserHandle().getIdentifier()).isEqualTo(guestUserId);
     }
 
     @Test
@@ -364,8 +373,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         otherUserRow.getActionHandler().onAction(otherUserRow, mContext, new Intent());
         // Verify nothing happens
         verify(mCarUserManager, never()).switchUser(secondaryUserId);
-        verify(mActivityManager, never()).stopUser(anyInt(), anyBoolean());
-        verify(mActivityManager, never()).startUserInBackgroundVisibleOnDisplay(anyInt(), anyInt());
+        verify(mCarUserManager, never()).stopUser(any(), any(), any());
+        verify(mCarUserManager, never()).startUser(any(), any(), any());
     }
 
     @Test
@@ -388,9 +397,25 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         // Expect five rows - one for each user, one for the guest user, and one for add user
         assertThat(rows).hasSize(5);
         QCRow newUserRow = rows.get(2);
+        // Make the stopUser() call to succeed, so it can proceed to startUser().
+        doAnswer(invocation -> {
+            SyncResultCallback<UserStopResponse> callback = invocation.getArgument(2);
+            callback.onResult(new UserStopResponse(UserStopResponse.STATUS_SUCCESSFUL));
+            return null;
+        }).when(mCarUserManager).stopUser(any(), any(), any());
+
         newUserRow.getActionHandler().onAction(newUserRow, mContext, new Intent());
-        verify(mActivityManager).stopUser(eq(secondaryUserId), anyBoolean());
-        verify(mActivityManager).startUserInBackgroundVisibleOnDisplay(eq(newUserId), anyInt());
+
+        ArgumentCaptor<UserStopRequest> stopRequestCaptor =
+                ArgumentCaptor.forClass(UserStopRequest.class);
+        verify(mCarUserManager).stopUser(stopRequestCaptor.capture(), any(), any());
+        assertThat(stopRequestCaptor.getValue().getUserHandle().getIdentifier())
+                .isEqualTo(secondaryUserId);
+        ArgumentCaptor<UserStartRequest> startRequestCaptor =
+                ArgumentCaptor.forClass(UserStartRequest.class);
+        verify(mCarUserManager).startUser(startRequestCaptor.capture(), any(), any());
+        assertThat(startRequestCaptor.getValue().getUserHandle().getIdentifier())
+                .isEqualTo(newUserId);
     }
 
     private List<QCRow> getProfileRows() {

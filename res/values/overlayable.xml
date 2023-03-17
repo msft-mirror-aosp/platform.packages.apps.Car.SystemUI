@@ -37,6 +37,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="array" name="config_readOnlyIconControllers"/>
       <item type="array" name="config_restrictedToastsPackageNameAllowList"/>
       <item type="array" name="config_statusBarIconsToExclude"/>
+      <item type="array" name="config_userpickerReadOnlyIconControllers"/>
       <item type="array" name="hvac_heated_seat_default_icons"/>
       <item type="array" name="hvac_temperature_control_levels"/>
       <item type="array" name="hvac_temperature_level_backgrounds"/>
@@ -192,6 +193,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="user_name_icon_7"/>
       <item type="color" name="user_name_icon_8"/>
       <item type="color" name="user_picker_background_color"/>
+      <item type="color" name="user_picker_bottom_bar_color"/>
       <item type="color" name="user_picker_login_state_text_color"/>
       <item type="color" name="user_picker_snack_bar_background_color"/>
       <item type="color" name="user_picker_snack_bar_transparent_color"/>
@@ -740,6 +742,9 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="user_name_container"/>
       <item type="id" name="user_name_text"/>
       <item type="id" name="user_picker"/>
+      <item type="id" name="user_picker_bottom_bar"/>
+      <item type="id" name="user_picker_bottom_bar_clock"/>
+      <item type="id" name="user_picker_status_icon_container"/>
       <item type="id" name="user_switcher_container"/>
       <item type="id" name="user_switcher_focus_area"/>
       <item type="id" name="user_switching_dialog_stub"/>
@@ -841,6 +846,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="user_picker_alert_dialog_large_center_message"/>
       <item type="layout" name="user_picker_alert_dialog_normal_message"/>
       <item type="layout" name="user_picker_user_pod"/>
+      <item type="layout" name="user_picker_status_icon_layout"/>
       <item type="string" name="activity_blocked_text"/>
       <item type="string" name="already_logged_in_message"/>
       <item type="string" name="camera_privacy_chip_app_recently_used_camera_suffix"/>

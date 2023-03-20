@@ -367,7 +367,6 @@ public final class UserEventManager {
 
         // We do not need to unassign the user from the occupant zone, because it is handled by
         // CarUserService#onUserInvisible().
-
         try {
             SyncResultCallback<UserStopResponse> userStopCallback = new SyncResultCallback<>();
             mCarUserManager.stopUser(new UserStopRequest.Builder(UserHandle.of(userId)).build(),

@@ -44,8 +44,7 @@ final class ActivityHelper {
             Context context = activity.getApplicationContext();
             activity.finish();
 
-            Intent intent = new Intent().setClassName(UserPickerActivity.class.getPackageName(),
-                    UserPickerActivity.class.getName())
+            Intent intent = new Intent(context, UserPickerActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             ActivityOptions options = ActivityOptions.makeBasic()
                     .setLaunchDisplayId(displayId);

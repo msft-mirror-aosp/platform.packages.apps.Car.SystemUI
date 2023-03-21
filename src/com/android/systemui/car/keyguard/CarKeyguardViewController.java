@@ -97,6 +97,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private final KeyguardSecurityModel mKeyguardSecurityModel;
     private final KeyguardBouncerViewModel mKeyguardBouncerViewModel;
     private final KeyguardBouncerComponent.Factory mKeyguardBouncerComponentFactory;
+    private final LockPatternUtils mLockPatternUtils;
     private final PrimaryBouncerExpansionCallback mExpansionCallback =
             new PrimaryBouncerExpansionCallback() {
                 @Override
@@ -118,11 +119,11 @@ public class CarKeyguardViewController extends OverlayViewController implements
                 @Override
                 public void onStartingToShow() {
                     // TODO: Remove this code block when b/158386500 is addressed properly.
-                    LockPatternUtils utils = new LockPatternUtils(mContext);
                     int currentUser = mUserTracker.getUserId();
-                    if (utils.getCredentialTypeForUser(currentUser) == CREDENTIAL_TYPE_PATTERN
-                            && !utils.isVisiblePatternEnabled(currentUser)) {
-                        utils.setVisiblePatternEnabled(true, currentUser);
+                    if (mLockPatternUtils.getCredentialTypeForUser(currentUser)
+                            == CREDENTIAL_TYPE_PATTERN
+                            && !mLockPatternUtils.isVisiblePatternEnabled(currentUser)) {
+                        mLockPatternUtils.setVisiblePatternEnabled(true, currentUser);
                         Log.w(TAG, "Pattern is invisible for the current user. "
                                 + "Setting it to be visible.");
                     }
@@ -167,7 +168,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
             KeyguardSecurityModel keyguardSecurityModel,
             KeyguardBouncerViewModel keyguardBouncerViewModel,
             PrimaryBouncerToGoneTransitionViewModel primaryBouncerToGoneTransitionViewModel,
-            KeyguardBouncerComponent.Factory keyguardBouncerComponentFactory) {
+            KeyguardBouncerComponent.Factory keyguardBouncerComponentFactory,
+            LockPatternUtils lockPatternUtils) {
 
         super(R.id.keyguard_stub, overlayViewGlobalStateController);
 
@@ -187,6 +189,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mKeyguardSecurityModel = keyguardSecurityModel;
         mKeyguardBouncerViewModel = keyguardBouncerViewModel;
         mKeyguardBouncerComponentFactory = keyguardBouncerComponentFactory;
+        mLockPatternUtils = lockPatternUtils;
         mPrimaryBouncerToGoneTransitionViewModel = primaryBouncerToGoneTransitionViewModel;
 
         mToastShowDurationMillisecond = mContext.getResources().getInteger(

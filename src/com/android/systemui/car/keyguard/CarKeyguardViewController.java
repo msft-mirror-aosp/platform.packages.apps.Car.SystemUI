@@ -49,6 +49,7 @@ import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.keyguard.data.BouncerView;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerCallbackInteractor;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerCallbackInteractor.PrimaryBouncerExpansionCallback;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerInteractor;
@@ -98,6 +99,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private final KeyguardBouncerViewModel mKeyguardBouncerViewModel;
     private final KeyguardBouncerComponent.Factory mKeyguardBouncerComponentFactory;
     private final LockPatternUtils mLockPatternUtils;
+    private final BouncerView mBouncerView;
     private final PrimaryBouncerExpansionCallback mExpansionCallback =
             new PrimaryBouncerExpansionCallback() {
                 @Override
@@ -169,7 +171,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
             KeyguardBouncerViewModel keyguardBouncerViewModel,
             PrimaryBouncerToGoneTransitionViewModel primaryBouncerToGoneTransitionViewModel,
             KeyguardBouncerComponent.Factory keyguardBouncerComponentFactory,
-            LockPatternUtils lockPatternUtils) {
+            LockPatternUtils lockPatternUtils,
+            BouncerView bouncerView) {
 
         super(R.id.keyguard_stub, overlayViewGlobalStateController);
 
@@ -191,6 +194,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mKeyguardBouncerComponentFactory = keyguardBouncerComponentFactory;
         mLockPatternUtils = lockPatternUtils;
         mPrimaryBouncerToGoneTransitionViewModel = primaryBouncerToGoneTransitionViewModel;
+        mBouncerView = bouncerView;
 
         mToastShowDurationMillisecond = mContext.getResources().getInteger(
                 R.integer.car_keyguard_toast_show_duration_millisecond);
@@ -441,6 +445,16 @@ public class CarKeyguardViewController extends OverlayViewController implements
      */
     public void hideKeyguardToPrepareBouncer() {
         getLayout().setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public boolean setAllowRotaryFocus(boolean allowRotaryFocus) {
+        boolean changed = super.setAllowRotaryFocus(allowRotaryFocus);
+        if (changed && allowRotaryFocus && mBouncerView.getDelegate() != null) {
+            // Resume the view so it can regain focus
+            mBouncerView.getDelegate().resume();
+        }
+        return changed;
     }
 
     private void revealKeyguardIfBouncerPrepared() {

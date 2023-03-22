@@ -427,6 +427,24 @@ public class CarKeyguardViewController extends OverlayViewController implements
         getLayout().setVisibility(View.INVISIBLE);
     }
 
+    @Override
+    public boolean setAllowRotaryFocus(boolean allowRotaryFocus) {
+        boolean changed = super.setAllowRotaryFocus(allowRotaryFocus);
+        // When focus on keyguard becomes allowed, focus needs to be restored back to the pin entry
+        // view. Depending on the timing of the calls, pinView may believe it is focused
+        // (isFocused()=true) but the root view does not believe anything is focused
+        // (findFocus()=null). To guarantee that the view is fully focused, it is necessary to
+        // clear and refocus the element.
+        if (changed && allowRotaryFocus && getLayout() != null) {
+            View pinView = getLayout().findViewById(R.id.pinEntry);
+            if (pinView != null) {
+                pinView.clearFocus();
+                pinView.requestFocus();
+            }
+        }
+        return changed;
+    }
+
     private void revealKeyguardIfBouncerPrepared() {
         int reattemptDelayMillis = 50;
         Runnable revealKeyguard = () -> {

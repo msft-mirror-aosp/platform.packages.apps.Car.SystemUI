@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.keyguard;
 
+import android.app.IActivityTaskManager;
 import android.app.trust.TrustManager;
 import android.content.Context;
 import android.os.PowerManager;
@@ -112,7 +113,8 @@ public class CarKeyguardModule {
             Lazy<ShadeController> shadeController,
             Lazy<NotificationShadeWindowController> notificationShadeWindowController,
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator,
-            Lazy<ScrimController> scrimControllerLazy) {
+            Lazy<ScrimController> scrimControllerLazy,
+            IActivityTaskManager activityTaskManagerService) {
         return new CarKeyguardViewMediator(
                 context,
                 userTracker,
@@ -142,7 +144,8 @@ public class CarKeyguardModule {
                 shadeController,
                 notificationShadeWindowController,
                 activityLaunchAnimator,
-                scrimControllerLazy);
+                scrimControllerLazy,
+                activityTaskManagerService);
     }
 
     /** */

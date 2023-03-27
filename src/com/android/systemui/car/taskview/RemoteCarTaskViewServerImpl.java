@@ -35,10 +35,10 @@ import android.view.SurfaceControl;
 import android.window.WindowContainerTransaction;
 
 import com.android.wm.shell.ShellTaskOrganizer;
-import com.android.wm.shell.TaskViewBase;
-import com.android.wm.shell.TaskViewTaskController;
-import com.android.wm.shell.TaskViewTransitions;
 import com.android.wm.shell.common.SyncTransactionQueue;
+import com.android.wm.shell.taskview.TaskViewBase;
+import com.android.wm.shell.taskview.TaskViewTaskController;
+import com.android.wm.shell.taskview.TaskViewTransitions;
 
 /** Server side implementation for the {@code RemoteCarTaskView}. */
 public class RemoteCarTaskViewServerImpl implements TaskViewBase {

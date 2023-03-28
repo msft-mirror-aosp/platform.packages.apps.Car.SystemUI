@@ -58,6 +58,8 @@ import android.util.Log;
 import android.util.Slog;
 import android.util.SparseArray;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.systemui.R;
 
 import java.util.List;
@@ -111,7 +113,8 @@ public final class UserEventManager {
      */
     private final ExecutorService mUserLifecycleReceiver;
 
-    private final UserLifecycleListener mUserLifecycleListener = event -> {
+    @VisibleForTesting
+    final UserLifecycleListener mUserLifecycleListener = event -> {
         onUserEvent(event);
     };
 

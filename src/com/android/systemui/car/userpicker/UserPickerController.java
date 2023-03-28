@@ -42,6 +42,7 @@ import android.util.Slog;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import com.android.internal.widget.LockPatternUtils;
 import com.android.systemui.R;
@@ -274,7 +275,8 @@ final class UserPickerController {
         }
     }
 
-    private List<UserRecord> createUserRecords() {
+    @VisibleForTesting
+    List<UserRecord> createUserRecords() {
         if (DEBUG) {
             Slog.d(TAG, "createUserRecords. displayId=" + mDisplayId);
         }

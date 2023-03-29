@@ -44,6 +44,7 @@ import com.android.dx.mockito.inline.extended.ExtendedMockito;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.privacy.CameraPrivacyElementsProviderImpl;
 import com.android.systemui.car.privacy.MicPrivacyElementsProviderImpl;
@@ -86,6 +87,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     @Mock
     private UserTracker mUserTracker;
+    @Mock
+    private CarServiceProvider mCarServiceProvider;
     @Mock
     private ActivityManager mActivityManager;
     @Mock
@@ -143,9 +146,10 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     private CarSystemBarController createSystemBarController() {
         return new CarSystemBarController(mSpiedContext, mUserTracker, mCarSystemBarViewFactory,
-                mBroadcastDispatcher, mConfigurationController, mButtonSelectionStateController,
-                () -> mUserNameViewController, () -> mMicPrivacyChipViewController,
-                () -> mCameraPrivacyChipViewController, mButtonRoleHolderController,
+                mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
+                mButtonSelectionStateController, () -> mUserNameViewController,
+                () -> mMicPrivacyChipViewController, () -> mCameraPrivacyChipViewController,
+                mButtonRoleHolderController,
                 new SystemBarConfigs(mTestableResources.getResources()),
                 () -> mSystemUIQCViewController, () -> mMicPrivacyElementsProvider,
                 () -> mCameraPrivacyElementsProvider);

@@ -16,8 +16,11 @@
 
 package com.android.systemui.car.keyguard;
 
+import android.car.app.CarActivityManager;
 import android.content.Context;
+import android.util.Log;
 
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.userswitcher.FullScreenUserSwitcherViewController;
 import com.android.systemui.car.window.OverlayViewMediator;
@@ -31,20 +34,25 @@ import javax.inject.Inject;
  */
 @SysUISingleton
 public class CarKeyguardOverlayViewMediator implements OverlayViewMediator {
+    private static final String TAG = CarKeyguardOverlayViewMediator.class.getName();
 
     private final Context mContext;
     private final CarKeyguardViewController mCarKeyguardViewController;
     private final FullScreenUserSwitcherViewController mFullScreenUserSwitcherViewController;
+    private CarActivityManager mCarActivityManager;
 
     @Inject
     public CarKeyguardOverlayViewMediator(
             Context context,
             CarKeyguardViewController carKeyguardViewController,
-            FullScreenUserSwitcherViewController fullScreenUserSwitcherViewController
+            FullScreenUserSwitcherViewController fullScreenUserSwitcherViewController,
+            CarServiceProvider carServiceProvider
     ) {
         mContext = context;
         mCarKeyguardViewController = carKeyguardViewController;
         mFullScreenUserSwitcherViewController = fullScreenUserSwitcherViewController;
+        carServiceProvider.addListener(
+                car -> mCarActivityManager = car.getCarManager(CarActivityManager.class));
     }
 
     @Override
@@ -53,7 +61,13 @@ public class CarKeyguardOverlayViewMediator implements OverlayViewMediator {
         if (CarSystemUIUserUtil.isMUMDSystemUI()) {
             // TODO(b/258238612): update logic to stop passenger users
             mCarKeyguardViewController.registerOnKeyguardCancelClickedListener(
-                    () -> CarSystemUIUserUtil.launchUserPicker(mContext));
+                    () -> {
+                        if (mCarActivityManager != null) {
+                            mCarActivityManager.startUserPickerOnDisplay(mContext.getDisplayId());
+                        } else {
+                            Log.e(TAG, "Can't start UserPicker - CarActivityManager is null");
+                        }
+                    });
         } else {
             mCarKeyguardViewController.registerOnKeyguardCancelClickedListener(
                     mFullScreenUserSwitcherViewController::start);

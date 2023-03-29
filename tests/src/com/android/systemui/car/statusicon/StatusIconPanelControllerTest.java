@@ -44,6 +44,7 @@ import com.android.car.ui.FocusParkingView;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.settings.UserTracker;
@@ -70,6 +71,8 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
     @Mock
     private UserTracker mUserTracker;
     @Mock
+    private CarServiceProvider mCarServiceProvider;
+    @Mock
     private BroadcastDispatcher mBroadcastDispatcher;
     @Mock
     private ConfigurationController mConfigurationController;
@@ -86,7 +89,8 @@ public class StatusIconPanelControllerTest extends SysuiTestCase {
         when(mUserTracker.getUserHandle()).thenReturn(mUserHandle);
 
         mStatusIconPanelController = new StatusIconPanelController(mContext, mUserTracker,
-                mBroadcastDispatcher, mConfigurationController, () -> mSystemUIQCViewController);
+                mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
+                () -> mSystemUIQCViewController);
         spyOn(mStatusIconPanelController);
         mAnchorView = spy(new ImageView(mContext));
         mAnchorView.setTag(mIconTag);

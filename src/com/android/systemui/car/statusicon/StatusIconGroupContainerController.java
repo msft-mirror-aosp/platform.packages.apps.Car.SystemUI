@@ -33,6 +33,7 @@ import androidx.annotation.Nullable;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.car.statusicon.ui.QCPanelReadOnlyIconsController;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointContainer;
@@ -57,6 +58,7 @@ import javax.inject.Provider;
 public abstract class StatusIconGroupContainerController {
     private final Context mContext;
     private final UserTracker mUserTracker;
+    private final CarServiceProvider mCarServiceProvider;
     private final Resources mResources;
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final ConfigurationController mConfigurationController;
@@ -72,19 +74,21 @@ public abstract class StatusIconGroupContainerController {
     public StatusIconGroupContainerController(
             Context context,
             UserTracker userTracker,
+            CarServiceProvider carServiceProvider,
             @Main Resources resources,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider,
             Map<Class<?>, Provider<StatusIconController>> iconControllerCreators) {
-        this(context, userTracker, resources, broadcastDispatcher, configurationController,
-                qcViewControllerProvider, iconControllerCreators,
+        this(context, userTracker, carServiceProvider, resources, broadcastDispatcher,
+                configurationController, qcViewControllerProvider, iconControllerCreators,
                 /* qcPanelReadOnlyIconsController= */ null);
     }
 
     public StatusIconGroupContainerController(
             Context context,
             UserTracker userTracker,
+            CarServiceProvider carServiceProvider,
             @Main Resources resources,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
@@ -93,6 +97,7 @@ public abstract class StatusIconGroupContainerController {
             QCPanelReadOnlyIconsController qcPanelReadOnlyIconsController) {
         mContext = context;
         mUserTracker = userTracker;
+        mCarServiceProvider = carServiceProvider;
         mResources = resources;
         mBroadcastDispatcher = broadcastDispatcher;
         mConfigurationController = configurationController;
@@ -158,9 +163,9 @@ public abstract class StatusIconGroupContainerController {
             if (shouldAttachPanel
                     && statusIconController.getPanelContentLayout() != PANEL_CONTENT_LAYOUT_NONE) {
                 StatusIconPanelController panelController = new StatusIconPanelController(mContext,
-                        mUserTracker, mBroadcastDispatcher, mConfigurationController,
-                        mQCViewControllerProvider, /* isDisabledWhileDriving= */ false,
-                        mQCPanelReadOnlyIconsController);
+                        mUserTracker, mCarServiceProvider, mBroadcastDispatcher,
+                        mConfigurationController, mQCViewControllerProvider,
+                        /* isDisabledWhileDriving= */ false, mQCPanelReadOnlyIconsController);
                 if (containerViewGroup instanceof QuickControlsEntryPointContainer) {
                     QuickControlsEntryPointContainer qcEntryPointContainer =
                             (QuickControlsEntryPointContainer) containerViewGroup;

@@ -17,17 +17,14 @@
 package com.android.systemui.car.users;
 
 import android.app.ActivityManager;
-import android.app.ActivityOptions;
 import android.car.CarOccupantZoneManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
 
 import androidx.annotation.Nullable;
 
-import com.android.systemui.car.userpicker.UserPickerActivity;
 import com.android.systemui.settings.UserTracker;
 
 /**
@@ -90,16 +87,5 @@ public final class CarSystemUIUserUtil {
                 carOccupantZoneManager.getOccupantZoneForUser(userHandle);
         return carOccupantZoneManager.getAllDisplaysForOccupant(occupantZone).stream().anyMatch(
                 d -> d.getDisplayId() == displayId);
-    }
-
-    /**
-     * Launch the SystemUI UserPicker as the system user on the current primary display.
-     */
-    public static void launchUserPicker(Context context) {
-        Intent intent = new Intent(context, UserPickerActivity.class).setFlags(
-                Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        ActivityOptions options = ActivityOptions.makeBasic()
-                .setLaunchDisplayId(context.getDisplayId());
-        context.startActivityAsUser(intent, options.toBundle(), UserHandle.SYSTEM);
     }
 }

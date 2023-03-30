@@ -18,7 +18,6 @@ package com.android.systemui.car.taskview;
 
 import static android.app.ActivityTaskManager.INVALID_TASK_ID;
 
-import android.annotation.NonNull;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.ActivityTaskManager;
@@ -30,11 +29,8 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.DeadSystemRuntimeException;
-import android.os.Binder;
 import android.util.Slog;
 import android.util.SparseArray;
-import android.view.InsetsFrameProvider;
-import android.view.InsetsSource;
 import android.view.SurfaceControl;
 import android.window.WindowContainerTransaction;
 
@@ -52,8 +48,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     private final CarTaskViewClient mCarTaskViewClient;
     private final TaskViewTaskController mTaskViewTaskController;
     private final CarSystemUIProxyImpl mCarSystemUIProxy;
-    private final Binder mInsetsOwner = new Binder();
-    private final SparseArray<InsetsFrameProvider> mInsets = new SparseArray<>();
+    private final SparseArray<Rect> mInsets = new SparseArray<>();
     private boolean mReleased;
 
     private final CarTaskViewHost mHostImpl = new CarTaskViewHost() {
@@ -121,35 +116,22 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         }
 
         @Override
-        public void addInsets(int index, int type, @NonNull Rect frame) {
+        public void addInsets(SparseArray<Rect> insetsProviderRects) {
             mInsets.clear();
-            mInsets.append(InsetsSource.createId(mInsetsOwner, index, type),
-                    new InsetsFrameProvider(mInsetsOwner, index, type)
-                            .setArbitraryRectangle(frame));
+            int numInsetsProviderRects = insetsProviderRects.size();
+            for (int i = 0; i < numInsetsProviderRects; i++) {
+                mInsets.append(insetsProviderRects.keyAt(i), insetsProviderRects.valueAt(i));
+            }
             applyInsets();
         }
 
         @Override
-        public void removeInsets(int index, int type) {
+        public void removeInsets(int[] insetsTypes) {
             if (mTaskViewTaskController.getTaskInfo() == null) {
                 Slog.w(TAG, "Cannot remove insets as the task token is not present.");
                 return;
             }
-            if (mInsets.size() == 0) {
-                Slog.w(TAG, "No insets set.");
-                return;
-            }
-            int id = InsetsSource.createId(mInsetsOwner, index, type);
-            WindowContainerTransaction wct = new WindowContainerTransaction();
-            if (mInsets.contains(id)) {
-                wct.removeInsetsSource(mTaskViewTaskController.getTaskInfo().token,
-                        mInsetsOwner, index, type);
-                mInsets.remove(id);
-            } else {
-                Slog.w(TAG, "Insets type: " + type + " can't be removed as it was not "
-                        + "applied as part of the last addInsets()");
-            }
-            mSyncQueue.queue(wct);
+            removeAppliedInsets(insetsTypes);
         }
     };
 
@@ -237,7 +219,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     }
 
     private void applyInsets() {
-        if (mInsets.size() == 0) {
+        if (mInsets == null || mInsets.size() == 0) {
             Slog.w(TAG, "Cannot apply null or empty insets");
             return;
         }
@@ -247,9 +229,28 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         }
         WindowContainerTransaction wct = new WindowContainerTransaction();
         for (int i = 0; i < mInsets.size(); i++) {
-            final InsetsFrameProvider p = mInsets.valueAt(i);
-            wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
-                    p.getOwner(), p.getIndex(), p.getType(), p.getArbitraryRectangle());
+            wct.addRectInsetsProvider(mTaskViewTaskController.getTaskInfo().token,
+                    mInsets.valueAt(i), new int[]{mInsets.keyAt(i)});
+        }
+        mSyncQueue.queue(wct);
+    }
+
+    private void removeAppliedInsets(int[] insetsTypes) {
+        if (mInsets.size() == 0) {
+            Slog.w(TAG, "No insets set.");
+            return;
+        }
+        WindowContainerTransaction wct = new WindowContainerTransaction();
+        for (int i = 0; i < insetsTypes.length; i++) {
+            int insetsType = insetsTypes[i];
+            if (mInsets.indexOfKey(insetsType) != -1) {
+                wct.removeInsetsProvider(mTaskViewTaskController.getTaskInfo().token,
+                        new int[]{insetsType});
+                mInsets.remove(insetsType);
+            } else {
+                Slog.w(TAG, "Insets type: " + insetsType + " can't be removed as it was not "
+                        + "applied as part of the last addInsets()");
+            }
         }
         mSyncQueue.queue(wct);
     }

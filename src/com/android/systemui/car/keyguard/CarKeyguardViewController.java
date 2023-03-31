@@ -335,7 +335,11 @@ public class CarKeyguardViewController extends OverlayViewController implements
     @Override
     @MainThread
     public void startPreHideAnimation(Runnable finishRunnable) {
-        mPrimaryBouncerInteractor.startDisappearAnimation(finishRunnable);
+        if (isBouncerShowing()) {
+            mPrimaryBouncerInteractor.startDisappearAnimation(finishRunnable);
+        } else if (finishRunnable != null) {
+            finishRunnable.run();
+        }
     }
 
     @Override

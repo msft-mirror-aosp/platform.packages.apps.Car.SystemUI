@@ -62,8 +62,8 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
     private FanSpeedBarSegment mFanSpeed3;
     private FanSpeedBarSegment mFanSpeed4;
 
-    private boolean mPowerOn;
-    private boolean mAutoOn;
+    private boolean mPowerOn = false;
+    private boolean mAutoOn = false;
 
     private float mOnAlpha;
     private float mOffAlpha;
@@ -202,6 +202,7 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
                 mCornerRadius, mCornerRadius, 0, 0});
         mMaxButton.setBackground(maxButtonBg);
         mMaxButton.setTextColor(mButtonInactiveTextColor);
+        updateViewPerAvailability();
     }
 
     @Override

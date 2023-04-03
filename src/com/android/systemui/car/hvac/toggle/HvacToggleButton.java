@@ -50,8 +50,8 @@ public abstract class HvacToggleButton<PropertyType> extends ImageButton impleme
     private int mPropertyId;
     private int mAreaId;
     private boolean mIsOn;
-    private boolean mPowerOn;
-    private boolean mAutoOn;
+    private boolean mPowerOn = false;
+    private boolean mAutoOn = false;
     private boolean mTurnOffIfPowerOff;
     private boolean mTurnOffIfAutoOn;
     private Drawable mOnDrawable;

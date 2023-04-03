@@ -162,8 +162,8 @@ public class UserPickerActivity extends Activity implements Dumpable {
         initController();
 
         mController.onConfigurationChanged();
-        mDumpManager.registerNormalDumpable(
-                /* name= */ TAG + "#" + getDisplayId(), /* module= */ this);
+        String name = String.format("%s displayId=%d taskId=%d", TAG, getDisplayId(), getTaskId());
+        mDumpManager.registerNormalDumpable(name, /* module= */ this);
     }
 
     private void initViews() {

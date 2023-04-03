@@ -77,8 +77,8 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
     private final Map<Integer, Integer> mButtonIndicesByDirection = new HashMap<>();
 
     private HvacPropertySetter mHvacPropertySetter;
-    private boolean mPowerOn;
-    private boolean mAutoOn;
+    private boolean mPowerOn = false;
+    private boolean mAutoOn = false;
     private float mOnAlpha;
     private float mOffAlpha;
     private int mCurrentDirection = INVALID_ID;
@@ -118,6 +118,7 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
             });
             mButtons.add(button);
         }
+        updateViewPerAvailability();
     }
 
     @Override

@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.userpicker;
 
+import static android.view.WindowManager.LayoutParams.SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS;
+
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_CHANGE_USER;
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_LOGOUT;
 
@@ -31,6 +33,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -162,8 +165,14 @@ public class UserPickerActivity extends Activity implements Dumpable {
         initController();
 
         mController.onConfigurationChanged();
-        mDumpManager.registerNormalDumpable(
-                /* name= */ TAG + "#" + getDisplayId(), /* module= */ this);
+        String name = String.format("%s displayId=%d taskId=%d", TAG, getDisplayId(), getTaskId());
+        mDumpManager.registerNormalDumpable(name, /* module= */ this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getWindow().addSystemFlags(SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS);
     }
 
     private void initViews() {
@@ -213,6 +222,16 @@ public class UserPickerActivity extends Activity implements Dumpable {
     @VisibleForTesting
     UserPickerAdapter createUserPickerAdapter() {
         return new UserPickerAdapter(this);
+    }
+
+    @Override
+    protected void onStop() {
+        Window window = getWindow();
+        WindowManager.LayoutParams attrs = window.getAttributes();
+        attrs.privateFlags &= ~SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS;
+        window.setAttributes(attrs);
+
+        super.onStop();
     }
 
     @Override

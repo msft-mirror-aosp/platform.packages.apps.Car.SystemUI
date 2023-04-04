@@ -23,6 +23,7 @@ import android.annotation.ColorInt;
 import android.annotation.DimenRes;
 import android.annotation.LayoutRes;
 import android.app.PendingIntent;
+import android.car.app.CarActivityManager;
 import android.car.drivingstate.CarUxRestrictions;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -48,6 +49,7 @@ import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.qc.QCFooterButton;
 import com.android.systemui.car.qc.QCFooterButtonView;
 import com.android.systemui.car.qc.QCHeaderReadOnlyIconsContainer;
@@ -70,6 +72,7 @@ public class StatusIconPanelController {
 
     private final Context mContext;
     private final UserTracker mUserTracker;
+    private final CarServiceProvider mCarServiceProvider;
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final ConfigurationController mConfigurationController;
     private final Provider<SystemUIQCViewController> mQCViewControllerProvider;
@@ -91,6 +94,7 @@ public class StatusIconPanelController {
     private View mAnchorView;
     private ImageView mStatusIconView;
     private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
+    private CarActivityManager mCarActivityManager;
     private float mDimValue = -1.0f;
     private View.OnClickListener mOnClickListener;
     private boolean mIsPanelDestroyed;
@@ -114,6 +118,11 @@ public class StatusIconPanelController {
                         mPanel.dismiss();
                     }
                 }
+            };
+
+    private final CarServiceProvider.CarServiceOnConnectedListener mCarServiceOnConnectedListener =
+            car -> {
+                mCarActivityManager = car.getCarManager(CarActivityManager.class);
             };
 
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -168,21 +177,23 @@ public class StatusIconPanelController {
     public StatusIconPanelController(
             Context context,
             UserTracker userTracker,
+            CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider) {
-        this(context, userTracker, broadcastDispatcher, configurationController,
+        this(context, userTracker, carServiceProvider, broadcastDispatcher, configurationController,
                 qcViewControllerProvider, /* isDisabledWhileDriving= */ false);
     }
 
     public StatusIconPanelController(
             Context context,
             UserTracker userTracker,
+            CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider,
             boolean isDisabledWhileDriving) {
-        this(context, userTracker, broadcastDispatcher, configurationController,
+        this(context, userTracker, carServiceProvider, broadcastDispatcher, configurationController,
                 qcViewControllerProvider, isDisabledWhileDriving,
                 /* qcPanelReadOnlyIconsController= */ null);
     }
@@ -190,6 +201,7 @@ public class StatusIconPanelController {
     public StatusIconPanelController(
             Context context,
             UserTracker userTracker,
+            CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider,
@@ -197,6 +209,7 @@ public class StatusIconPanelController {
             QCPanelReadOnlyIconsController qcPanelReadOnlyIconsController) {
         mContext = context;
         mUserTracker = userTracker;
+        mCarServiceProvider = carServiceProvider;
         mBroadcastDispatcher = broadcastDispatcher;
         mConfigurationController = configurationController;
         mQCViewControllerProvider = qcViewControllerProvider;
@@ -309,6 +322,8 @@ public class StatusIconPanelController {
             throw new IllegalStateException("Attempting to attach destroyed panel");
         }
 
+        mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
+
         if (mAnchorView == null) {
             mAnchorView = view;
         }
@@ -345,7 +360,9 @@ public class StatusIconPanelController {
             if (CarSystemUIUserUtil.isMUMDSystemUI()
                     && mPanelLayoutRes == R.layout.qc_profile_switcher) {
                 // TODO(b/269490856): consider removal of UserPicker carve-outs
-                CarSystemUIUserUtil.launchUserPicker(mContext);
+                if (mCarActivityManager != null) {
+                    mCarActivityManager.startUserPickerOnDisplay(mContext.getDisplayId());
+                }
             } else {
                 if (showAsDropDown) {
                     // TODO(b/202563671): remove yOffsetPixel when the PopupWindow API is updated.
@@ -377,6 +394,7 @@ public class StatusIconPanelController {
         if (mCarUxRestrictionsUtil != null) {
             mCarUxRestrictionsUtil.unregister(mUxRestrictionsChangedListener);
         }
+        mCarServiceProvider.removeListener(mCarServiceOnConnectedListener);
         mConfigurationController.removeCallback(mConfigurationListener);
         mUserTracker.removeCallback(mUserTrackerCallback);
         mBroadcastDispatcher.unregisterReceiver(mBroadcastReceiver);

@@ -48,8 +48,8 @@ public class ReadOnlyIconsController extends StatusIconGroupContainerController 
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider,
             Map<Class<?>, Provider<StatusIconController>> iconControllerCreators) {
-        super(context, userTracker, resources, broadcastDispatcher, configurationController,
-                qcViewControllerProvider, iconControllerCreators);
+        super(context, userTracker, carServiceProvider, resources, broadcastDispatcher,
+                configurationController, qcViewControllerProvider, iconControllerCreators);
     }
 
     @Override

@@ -53,9 +53,9 @@ import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.util.DeviceConfigProxy;
 
-import dagger.Lazy;
-
 import java.util.concurrent.Executor;
+
+import dagger.Lazy;
 
 /**
  * Car customizations on top of {@link KeyguardViewMediator}. Please refer to that class for

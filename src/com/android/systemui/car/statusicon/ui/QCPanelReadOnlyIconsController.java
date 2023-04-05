@@ -21,6 +21,7 @@ import android.content.res.Resources;
 
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.car.statusicon.StatusIconController;
 import com.android.systemui.car.statusicon.StatusIconGroupContainerController;
@@ -41,13 +42,14 @@ public class QCPanelReadOnlyIconsController extends StatusIconGroupContainerCont
     @Inject
     public QCPanelReadOnlyIconsController(Context context,
             UserTracker userTracker,
+            CarServiceProvider carServiceProvider,
             @Main Resources resources,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider,
             Map<Class<?>, Provider<StatusIconController>> iconControllerCreators) {
-        super(context, userTracker, resources, broadcastDispatcher, configurationController,
-                qcViewControllerProvider, iconControllerCreators);
+        super(context, userTracker, carServiceProvider, resources, broadcastDispatcher,
+                configurationController, qcViewControllerProvider, iconControllerCreators);
     }
 
     @Override

@@ -40,6 +40,7 @@ import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.systemui.dreams.DreamOverlayStateController;
 import com.android.systemui.dump.DumpManager;
+import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
@@ -58,11 +59,12 @@ import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.util.DeviceConfigProxy;
 
-import java.util.concurrent.Executor;
-
 import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
+
+
+import java.util.concurrent.Executor;
 
 /**
  * Dagger Module providing keyguard.
@@ -114,7 +116,8 @@ public class CarKeyguardModule {
             Lazy<NotificationShadeWindowController> notificationShadeWindowController,
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator,
             Lazy<ScrimController> scrimControllerLazy,
-            IActivityTaskManager activityTaskManagerService) {
+            IActivityTaskManager activityTaskManagerService,
+            FeatureFlags featureFlags) {
         return new CarKeyguardViewMediator(
                 context,
                 userTracker,
@@ -145,7 +148,8 @@ public class CarKeyguardModule {
                 notificationShadeWindowController,
                 activityLaunchAnimator,
                 scrimControllerLazy,
-                activityTaskManagerService);
+                activityTaskManagerService,
+                featureFlags);
     }
 
     /** */

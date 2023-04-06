@@ -38,6 +38,7 @@ import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.dreams.DreamOverlayStateController;
 import com.android.systemui.dump.DumpManager;
+import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
@@ -102,7 +103,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             Lazy<NotificationShadeWindowController> notificationShadeWindowControllerLazy,
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator,
             Lazy<ScrimController> scrimControllerLazy,
-            IActivityTaskManager activityTaskManagerService) {
+            IActivityTaskManager activityTaskManagerService,
+            FeatureFlags featureFlags) {
         super(context, userTracker, falsingCollector, lockPatternUtils, broadcastDispatcher,
                 statusBarKeyguardViewManagerLazy, dismissCallbackRegistry, keyguardUpdateMonitor,
                 dumpManager, uiBgExecutor, powerManager, trustManager, userSwitcherController,
@@ -115,7 +117,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 notificationShadeWindowControllerLazy,
                 activityLaunchAnimator,
                 scrimControllerLazy,
-                activityTaskManagerService);
+                activityTaskManagerService,
+                featureFlags);
         mContext = context;
     }
 

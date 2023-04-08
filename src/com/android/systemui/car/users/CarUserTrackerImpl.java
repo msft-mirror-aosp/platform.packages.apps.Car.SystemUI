@@ -40,6 +40,16 @@ public class CarUserTrackerImpl extends UserTrackerImpl {
     }
 
     @Override
+    public void handleBeforeUserSwitching(int newUserId) {
+        if (mIsSecondaryUserSystemUI) {
+            // Secondary user SystemUI instances are not running on foreground users, so they should
+            // not be impacted by foreground user switches.
+            return;
+        }
+        super.handleBeforeUserSwitching(newUserId);
+    }
+
+    @Override
     public void handleUserSwitching(int newUserId) {
         if (mIsSecondaryUserSystemUI) {
             // Secondary user SystemUI instances are not running on foreground users, so they should

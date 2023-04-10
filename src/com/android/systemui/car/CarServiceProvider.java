@@ -23,15 +23,17 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.internal.annotations.GuardedBy;
-import com.android.systemui.dagger.SysUISingleton;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /** Provides a common connection to the car service that can be shared. */
-@SysUISingleton
+// It needs to be @Singleton scoped because it is used by a number of components in @WMSingleton &
+// @SysUISingleton scopes.
+@Singleton
 public class CarServiceProvider {
 
     private final Context mContext;
@@ -65,7 +67,6 @@ public class CarServiceProvider {
                         }
                     }
                 });
-
     }
 
     @VisibleForTesting

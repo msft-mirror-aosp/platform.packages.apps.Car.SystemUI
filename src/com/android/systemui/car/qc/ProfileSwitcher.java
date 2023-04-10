@@ -23,12 +23,16 @@ import static com.android.car.ui.utils.CarUiUtils.drawableToBitmap;
 
 import android.annotation.Nullable;
 import android.annotation.UserIdInt;
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.admin.DevicePolicyManager;
 import android.car.Car;
+import android.car.SyncResultCallback;
 import android.car.user.CarUserManager;
 import android.car.user.UserCreationResult;
+import android.car.user.UserStartRequest;
+import android.car.user.UserStopRequest;
+import android.car.user.UserStopResponse;
+import android.car.user.UserSwitchRequest;
 import android.car.user.UserSwitchResult;
 import android.car.util.concurrent.AsyncFuture;
 import android.content.Context;
@@ -58,6 +62,7 @@ import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.internal.util.UserIcons;
 import com.android.settingslib.utils.StringUtil;
 import com.android.systemui.R;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.settings.UserTracker;
@@ -73,25 +78,26 @@ import javax.inject.Inject;
  */
 public class ProfileSwitcher extends BaseLocalQCProvider {
     private static final String TAG = ProfileSwitcher.class.getSimpleName();
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
     private static final int TIMEOUT_MS = CarProperties.user_hal_timeout().orElse(5_000) + 500;
 
     protected final UserTracker mUserTracker;
     protected final UserIconProvider mUserIconProvider;
     private final UserManager mUserManager;
     private final DevicePolicyManager mDevicePolicyManager;
-    private final Car mCar;
-    private final CarUserManager mCarUserManager;
+    @Nullable
+    private CarUserManager mCarUserManager;
     protected boolean mPendingUserAdd;
 
     @Inject
-    public ProfileSwitcher(Context context, UserTracker userTracker) {
+    public ProfileSwitcher(Context context, UserTracker userTracker,
+            CarServiceProvider carServiceProvider) {
         super(context);
         mUserTracker = userTracker;
         mUserManager = context.getSystemService(UserManager.class);
         mDevicePolicyManager = context.getSystemService(DevicePolicyManager.class);
         mUserIconProvider = new UserIconProvider();
-        mCar = Car.createCar(context);
-        mCarUserManager = (CarUserManager) mCar.getCarManager(Car.CAR_USER_SERVICE);
+        carServiceProvider.addListener(this::onCarConnected);
     }
 
     @VisibleForTesting
@@ -102,12 +108,14 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         mUserManager = userManager;
         mDevicePolicyManager = devicePolicyManager;
         mUserIconProvider = new UserIconProvider();
-        mCar = null;
         mCarUserManager = carUserManager;
     }
 
     @Override
     public QCItem getQCItem() {
+        if (mCarUserManager == null) {
+            return null;
+        }
         QCList.Builder listBuilder = new QCList.Builder();
 
         if (mDevicePolicyManager.isDeviceManaged()
@@ -145,18 +153,11 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         return listBuilder.build();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mCar != null) {
-            mCar.disconnect();
-        }
-    }
-
     private List<UserInfo> getProfileList() {
         return mUserManager.getAliveUsers()
                 .stream()
-                .filter(userInfo -> userInfo.supportsSwitchToByUser() && !userInfo.isGuest())
+                .filter(userInfo -> userInfo.supportsSwitchTo() && userInfo.isFull()
+                        && !userInfo.isGuest())
                 .sorted((u1, u2) -> Long.signum(u1.creationTime - u2.creationTime))
                 .collect(Collectors.toList());
     }
@@ -265,7 +266,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                         Toast.LENGTH_LONG).show();
                 return;
             }
-            if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)) {
+            if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
                 switchSecondaryUser(userId);
                 return;
             }
@@ -274,30 +275,54 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     }
 
     private void switchForegroundUser(@UserIdInt int userId) {
-        AsyncFuture<UserSwitchResult> userSwitchResultFuture =
-                mCarUserManager.switchUser(userId);
-        UserSwitchResult userSwitchResult;
+        UserSwitchResult userSwitchResult = null;
         try {
-            userSwitchResult = userSwitchResultFuture.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            SyncResultCallback<UserSwitchResult> userSwitchCallback = new SyncResultCallback<>();
+            mCarUserManager.switchUser(
+                    new UserSwitchRequest.Builder(UserHandle.of(userId)).build(),
+                    Runnable::run, userSwitchCallback);
+            userSwitchResult = userSwitchCallback.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
-            Log.w(TAG, "Could not switch user.", e);
-            return;
+            Log.w(TAG, "Exception while switching to the user " + userId, e);
         }
-        if (userSwitchResult == null) {
-            Log.w(TAG, "Timed out while switching user: " + TIMEOUT_MS + "ms");
-        } else if (!userSwitchResult.isSuccess()) {
+        if (userSwitchResult == null || !userSwitchResult.isSuccess()) {
             Log.w(TAG, "Could not switch user: " + userSwitchResult);
         }
     }
 
     private void switchSecondaryUser(@UserIdInt int userId) {
-        ActivityManager am = mContext.getSystemService(ActivityManager.class);
-        boolean success = am.stopUser(mUserTracker.getUserId(), /* force= */ true);
-        if (!success) {
-            Log.w(TAG, "Cound not stop user " + userId);
+        try {
+            SyncResultCallback<UserStopResponse> userStopCallback = new SyncResultCallback<>();
+            mCarUserManager.stopUser(
+                    new UserStopRequest.Builder(mUserTracker.getUserHandle()).setForce().build(),
+                    Runnable::run, userStopCallback);
+            UserStopResponse userStopResponse =
+                    userStopCallback.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            if (!userStopResponse.isSuccess()) {
+                Log.w(TAG, "Could not stop user " + mUserTracker.getUserId() + ". Response: "
+                        + userStopResponse);
+                return;
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Exception while stopping user " + mUserTracker.getUserId(), e);
             return;
         }
-        am.startUserInBackgroundVisibleOnDisplay(userId, mContext.getDisplayId());
+
+        int displayId = mContext.getDisplayId();
+        try {
+            mCarUserManager.startUser(
+                    new UserStartRequest.Builder(UserHandle.of(userId)).setDisplayId(
+                            displayId).build(),
+                    Runnable::run,
+                    response -> {
+                        if (!response.isSuccess()) {
+                            Log.e(TAG, "Could not start user " + userId + " on display "
+                                    + displayId + ". Response: " + response);
+                        }
+                    });
+        } catch (Exception e) {
+            Log.w(TAG, "Exception while starting user " + userId + " on display " + displayId, e);
+        }
     }
 
     private void logoutUser() {
@@ -425,6 +450,14 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         window.getAttributes().setFitInsetsTypes(
                 window.getAttributes().getFitInsetsTypes() & ~statusBars());
+    }
+
+    private void onCarConnected(Car car) {
+        if (DEBUG) {
+            Log.d(TAG, "car connected");
+        }
+        mCarUserManager = car.getCarManager(CarUserManager.class);
+        notifyChange();
     }
 
     private class AddNewUserTask extends AsyncTask<String, Void, UserInfo> {

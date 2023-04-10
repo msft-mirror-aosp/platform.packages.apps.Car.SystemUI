@@ -139,7 +139,7 @@ public class UserGridRecyclerView extends RecyclerView {
     private List<UserInfo> getUsersForUserGrid() {
         return mUserManager.getAliveUsers()
                 .stream()
-                .filter(UserInfo::supportsSwitchToByUser)
+                .filter(userInfo -> userInfo.supportsSwitchTo() && userInfo.isFull())
                 .sorted((u1, u2) -> Long.signum(u1.creationTime - u2.creationTime))
                 .collect(Collectors.toList());
     }

@@ -25,9 +25,11 @@ import android.os.UserHandle;
 import android.os.UserManager;
 
 import com.android.systemui.CoreStartable;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Background;
 import com.android.systemui.dump.DumpManager;
+import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.UserContentResolverProvider;
 import com.android.systemui.settings.UserContextProvider;
 import com.android.systemui.settings.UserFileManager;
@@ -77,6 +79,17 @@ public abstract class CarMultiUserUtilsModule {
         return tracker;
     }
 
+    @SysUISingleton
+    @Provides
+    static DisplayTracker provideDisplayTracker(
+            Context context,
+            UserTracker userTracker,
+            CarServiceProvider carServiceProvider,
+            @Background Handler handler
+    ) {
+        return new CarDisplayTrackerImpl(context, userTracker, carServiceProvider, handler);
+    }
+
     @Binds
     @IntoMap
     @ClassKey(UserFileManagerImpl.class)
@@ -84,4 +97,6 @@ public abstract class CarMultiUserUtilsModule {
 
     @Binds
     abstract UserFileManager bindUserFileManager(UserFileManagerImpl impl);
+
+
 }

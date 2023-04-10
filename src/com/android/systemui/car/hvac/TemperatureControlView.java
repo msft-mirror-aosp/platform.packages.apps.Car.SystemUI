@@ -45,8 +45,8 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     private final int mAvailableTextColor;
     private final int mUnavailableTextColor;
 
-    private boolean mPowerOn;
-    private boolean mTemperatureSetAvailable;
+    private boolean mPowerOn = false;
+    private boolean mTemperatureSetAvailable = false;
     private HvacPropertySetter mHvacPropertySetter;
     private TextView mTempTextView;
     private String mTempInDisplay;
@@ -61,8 +61,8 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     private float mTemperatureRoundFahrenheit;
     private float mTemperatureIncrementCelsius;
     private float mTemperatureIncrementFahrenheit;
-    private float mCurrentTempC;
-    private boolean mDisplayInFahrenheit;
+    private float mCurrentTempC = -1.0f;
+    private boolean mDisplayInFahrenheit = true;
 
     public TemperatureControlView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -95,6 +95,7 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
         mIncreaseButton = requireViewById(R.id.hvac_increase_button);
         mDecreaseButton = requireViewById(R.id.hvac_decrease_button);
         initButtons();
+        updateTemperatureView();
     }
 
     @Override

@@ -44,11 +44,14 @@ public class DisplaySystemBarsInsetsControllerHost implements InsetsController.H
     private final Handler mHandler;
     private final float[] mTmpFloat9 = new float[9];
     private final Consumer<Integer> mRequestedVisibleTypesCallback;
+    private final InputMethodManager mInputMethodManager;
 
     public DisplaySystemBarsInsetsControllerHost(Handler handler,
-            Consumer<Integer> requestedVisibleTypesCallback) {
+            Consumer<Integer> requestedVisibleTypesCallback,
+            InputMethodManager inputMethodManager) {
         mHandler = handler;
         mRequestedVisibleTypesCallback = requestedVisibleTypesCallback;
+        mInputMethodManager = inputMethodManager;
     }
 
     @Override
@@ -142,7 +145,7 @@ public class DisplaySystemBarsInsetsControllerHost implements InsetsController.H
 
     @Override
     public InputMethodManager getInputMethodManager() {
-        return null;
+        return mInputMethodManager;
     }
 
     @Override

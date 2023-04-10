@@ -17,6 +17,7 @@
 package com.android.systemui.car.users;
 
 import android.app.ActivityManager;
+import android.car.CarOccupantZoneManager;
 import android.content.Context;
 import android.os.Process;
 import android.os.UserHandle;
@@ -56,14 +57,35 @@ public final class CarSystemUIUserUtil {
     }
 
     /**
+     * Helper function that returns {@code true} if the current system supports MUMD.
+     */
+    public static boolean isMUMDSystemUI() {
+        return UserManager.isVisibleBackgroundUsersEnabled();
+    }
+
+    /**
      * Helper function that returns {@code true} if the current instance of SystemUI is running as
      * a secondary user on MUMD system.
      */
-    public static boolean isSecondaryMUMDSystemUI(Context context) {
-        UserManager userManager = context.getSystemService(UserManager.class);
+    public static boolean isSecondaryMUMDSystemUI() {
         UserHandle myUserHandle = Process.myUserHandle();
-        return userManager.isVisibleBackgroundUsersSupported()
+        return isMUMDSystemUI()
                 && !myUserHandle.isSystem()
                 && myUserHandle.getIdentifier() != ActivityManager.getCurrentUser();
+    }
+
+    /**
+     * Helper function that returns {@code true} if the specified displayId is associated with the
+     * current SystemUI instance.
+     */
+    public static boolean isCurrentSystemUIDisplay(CarOccupantZoneManager carOccupantZoneManager,
+            UserHandle userHandle, int displayId) {
+        if (!isMUMDSystemUI()) {
+            return true;
+        }
+        CarOccupantZoneManager.OccupantZoneInfo occupantZone =
+                carOccupantZoneManager.getOccupantZoneForUser(userHandle);
+        return carOccupantZoneManager.getAllDisplaysForOccupant(occupantZone).stream().anyMatch(
+                d -> d.getDisplayId() == displayId);
     }
 }

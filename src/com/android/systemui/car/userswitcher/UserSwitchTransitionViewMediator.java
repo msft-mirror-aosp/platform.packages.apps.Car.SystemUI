@@ -65,7 +65,7 @@ public class UserSwitchTransitionViewMediator implements OverlayViewMediator,
                     (CarUserManager) car.getCarManager(Car.CAR_USER_SERVICE);
 
             if (carUserManager != null) {
-                if (!CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext)) {
+                if (!CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
                     // TODO_MD: allow for callback from non-system user (and per user).
                     carUserManager.setUserSwitchUiCallback(this);
                 }

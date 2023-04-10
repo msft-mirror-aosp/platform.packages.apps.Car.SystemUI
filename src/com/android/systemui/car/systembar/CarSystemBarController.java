@@ -79,10 +79,11 @@ public class CarSystemBarController {
     private final Lazy<MicPrivacyElementsProviderImpl> mMicPrivacyElementsProviderLazy;
     private final Lazy<CameraPrivacyElementsProviderImpl> mCameraPrivacyElementsProviderLazy;
 
-    private final boolean mShowTop;
-    private final boolean mShowBottom;
-    private final boolean mShowLeft;
-    private final boolean mShowRight;
+    private final SystemBarConfigs mSystemBarConfigs;
+    private boolean mShowTop;
+    private boolean mShowBottom;
+    private boolean mShowLeft;
+    private boolean mShowRight;
     private final int mPrivacyChipXOffset;
 
     @IdRes
@@ -147,15 +148,29 @@ public class CarSystemBarController {
         mQCViewControllerProvider = qcViewControllerProvider;
         mMicPrivacyElementsProviderLazy = micPrivacyElementsProvider;
         mCameraPrivacyElementsProviderLazy = cameraPrivacyElementsProvider;
+        mSystemBarConfigs = systemBarConfigs;
 
         // Read configuration.
-        mShowTop = systemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.TOP);
-        mShowBottom = systemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.BOTTOM);
-        mShowLeft = systemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.LEFT);
-        mShowRight = systemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.RIGHT);
-
+        readConfigs();
         mPrivacyChipXOffset = -context.getResources()
                 .getDimensionPixelOffset(R.dimen.privacy_chip_horizontal_padding);
+    }
+
+    /**
+     * Invalidate SystemBarConfigs and fetch again from Resources.
+     * TODO(): b/260206944, Can remove this after we have a fix for overlaid resources not applied.
+     */
+    void resetSystemBarConfigs() {
+        mSystemBarConfigs.resetSystemBarConfigs();
+        mCarSystemBarViewFactory.resetCache();
+        readConfigs();
+    }
+
+    private void readConfigs() {
+        mShowTop = mSystemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.TOP);
+        mShowBottom = mSystemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.BOTTOM);
+        mShowLeft = mSystemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.LEFT);
+        mShowRight = mSystemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.RIGHT);
     }
 
     /**
@@ -436,11 +451,12 @@ public class CarSystemBarController {
             NotificationsShadeController notifShadeController,
             HvacPanelController hvacPanelController,
             HvacPanelOverlayViewController hvacPanelOverlayViewController) {
-        view.updateHomeButtonVisibility(CarSystemUIUserUtil.isSecondaryMUMDSystemUI(mContext));
+        view.updateHomeButtonVisibility(CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
         view.setStatusBarWindowTouchListeners(statusBarTouchListeners);
         view.setNotificationsPanelController(notifShadeController);
         view.setHvacPanelController(hvacPanelController);
         view.registerHvacPanelOverlayViewController(hvacPanelOverlayViewController);
+        view.updateControlCenterButtonVisibility(CarSystemUIUserUtil.isMUMDSystemUI());
         mButtonSelectionStateController.addAllButtonsWithSelectionState(view);
         mButtonRoleHolderController.addAllButtonsWithRoleName(view);
         mUserNameViewControllerLazy.get().addUserNameView(view);
@@ -455,10 +471,10 @@ public class CarSystemBarController {
             panelController = new StatusIconPanelController(mContext, mUserTracker,
                     mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
                     mQCViewControllerProvider);
-        }
-        panelController.attachPanel(mTopView.requireViewById(chipId), panelLayoutRes,
+            panelController.attachPanel(mTopView.requireViewById(chipId), panelLayoutRes,
                 R.dimen.car_sensor_qc_panel_width, mPrivacyChipXOffset,
                 panelController.getDefaultYOffset(), Gravity.TOP | Gravity.END);
+        }
 
         return panelController;
     }

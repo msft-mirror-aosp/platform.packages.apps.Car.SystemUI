@@ -46,6 +46,14 @@ public final class SystemUIQCViewController {
     private final Map<Class<?>, Provider<BaseLocalQCProvider>> mLocalQCProviderCreators;
     private SystemUIQCView mView;
     private BaseQCController mController;
+    private boolean mUserChangedCallbackRegistered;
+
+    private final UserTracker.Callback mUserChangedCallback = new UserTracker.Callback() {
+        @Override
+        public void onUserChanged(int newUser, Context userContext) {
+            rebindController();
+        }
+    };
 
     @Inject
     public SystemUIQCViewController(Context context, UserTracker userTracker,
@@ -71,6 +79,10 @@ public final class SystemUIQCViewController {
                                 uri.getAuthority())).build();
             }
             bindRemoteQCView(uri);
+            if (!mUserChangedCallbackRegistered) {
+                mUserTracker.addCallback(mUserChangedCallback, mContext.getMainExecutor());
+                mUserChangedCallbackRegistered = true;
+            }
         } else if (mView.getLocalClassString() != null) {
             bindLocalQCView(mView.getLocalClassString());
         }
@@ -89,12 +101,28 @@ public final class SystemUIQCViewController {
      * Destroys the current QCView and associated controller.
      */
     public void destroy() {
+        resetViewAndController();
+        if (mUserChangedCallbackRegistered) {
+            mUserTracker.removeCallback(mUserChangedCallback);
+            mUserChangedCallbackRegistered = false;
+        }
+    }
+
+    private void rebindController() {
+        if (mView == null) {
+            return;
+        }
+        resetViewAndController();
+        attachView(mView);
+    }
+
+    private void resetViewAndController() {
         if (mController != null) {
             mController.destroy();
             mController = null;
         }
         if (mView != null) {
-            mView.removeAllViews();
+            mView.onChanged(/* qcItem= */ null);
         }
     }
 

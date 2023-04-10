@@ -63,6 +63,7 @@
     <string name="system_bar_notifications_label" msgid="6039158514903928210">"জাননী"</string>
     <string name="system_bar_maps_label" msgid="7883864993280235380">"Maps"</string>
     <string name="system_bar_media_label" msgid="6156112139796274847">"মিডিয়া"</string>
+    <string name="system_bar_control_center_label" msgid="5269256399167811590">"নিয়ন্ত্ৰণ কেন্দ্ৰ"</string>
     <string name="hvac_decrease_button_label" msgid="5628481079099995286">"উষ্ণতা হ্ৰাস কৰক"</string>
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"উষ্ণতা বৃদ্ধি কৰক"</string>
     <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"ব্লুটুথৰ ছেটিং: সংযোগ বিচ্ছিন্ন কৰা হ’ল"</string>
@@ -72,19 +73,14 @@
     <string name="status_icon_signal_wifi" msgid="1257569337648058522">"ছিগনেলৰ ছেটিং: ৱাই-ফাই অন আছে"</string>
     <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"ছিগনেলৰ ছেটিং: হ’টস্প’ট অন আছে"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"ডিছপ্লে’ৰ ছেটিং"</string>
-    <!-- no translation found for status_icon_drive_mode (3938622431486261076) -->
-    <skip />
+    <string name="status_icon_drive_mode" msgid="3938622431486261076">"ড্ৰাইভ ম’ড"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"আপুনি গাড়ী চলাই থকাৰ সময়ত এই সুবিধাটো ব্যৱহাৰ কৰিব নোৱাৰে"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"এপ্‌টো বন্ধ কৰক"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"উভতি যাওক"</string>
-    <!-- no translation found for drive_mode_modes_comfort (628724737960743004) -->
-    <skip />
-    <!-- no translation found for drive_mode_modes_eco (7694931508925737653) -->
-    <skip />
-    <!-- no translation found for drive_mode_modes_sport (7664603138389270601) -->
-    <skip />
-    <!-- no translation found for qc_drive_mode_active_subtitle (3667965966971747414) -->
-    <skip />
+    <string name="drive_mode_modes_comfort" msgid="628724737960743004">"আৰামদায়ক"</string>
+    <string name="drive_mode_modes_eco" msgid="7694931508925737653">"ইক’"</string>
+    <string name="drive_mode_modes_sport" msgid="7664603138389270601">"ক্ৰীড়াসূলভ"</string>
+    <string name="qc_drive_mode_active_subtitle" msgid="3667965966971747414">"সক্ৰিয়"</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"ছেটিং"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"ব্লুটুথ ছেটিং"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"নেটৱৰ্ক আৰু ইণ্টাৰনেট ছেটিং"</string>
@@ -92,4 +88,29 @@
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"ধ্বনিৰ ছেটিং"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"প্ৰ’ফাইল আৰু একাউণ্ট ছেটিং"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"আৰ্হিটোৱে ৰ’টেৰী সমৰ্থন কৰে; স্পৰ্শ কৰাটো ব্যৱহাৰ কৰক"</string>
+    <string name="display_input_lock_text" msgid="8524876126635885614">"টাচ্চ স্ক্ৰীন লক কৰা হৈছে"</string>
+    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"আপোনাৰ স্ক্ৰীন লক কৰা হৈছে"</string>
+    <string name="user_logout_title" msgid="5534754139319586681">"আপুনি লগ আউট কৰিব বিচাৰে বুলি নিশ্চিতনে?"</string>
+    <string name="user_logout_message" msgid="7804089876692575056">"এইটোৱে খোল খাই থকা আটাইবোৰ এপ্লিকেশ্বন বন্ধ কৰিব"</string>
+    <string name="user_logout" msgid="2934184154258330491">"লগ আউট কৰক"</string>
+    <string name="car_guest" msgid="768913000117469596">"অতিথি"</string>
+    <string name="user_switching_message" msgid="634395959804046394">"ব্যৱহাৰকাৰী সলনি কৰি থকা হৈছে"</string>
+    <string name="user_adding_message" msgid="7328589666615053611">"নতুন ব্যৱহাৰকাৰী যোগ দি থকা হৈছে"</string>
+    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"ব্যৱহাৰকাৰীৰ সৰ্বাধিক সংখ্যাত উপনীত হৈছে"</string>
+    <string name="max_user_limit_reached_message" msgid="644904407853005163">"যোগ কৰিব পৰা ব্যৱহাৰকাৰীৰ সৰ্বাধিক সংখ্যা "</string>
+    <string name="confirm_add_user_title" msgid="1237839494207086048">"নতুন ব্যৱহাৰকাৰী যোগ দিবনে?"</string>
+    <string name="already_logged_in_message" msgid="2440895716293348878">"আন এটা ডিছপ্লে’ত ইতিমধ্যে লগ ইন কৰা আছে"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"আৰম্ভ কৰিবলৈ এটা প্ৰ’ফাইল বাছনি কৰক"</string>
+    <string name="logged_in_text" msgid="932290859654786874">"লগ ইন কৰা আছে"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"<xliff:g id="SEAT_LOCATION">%s</xliff:g>এ ব্যৱহাৰ কৰি আছে"</string>
+    <string name="create_user_failed_message" msgid="7107927788723239958">"এতিয়া ব্যৱহাৰকাৰী যোগ দিব পৰা নগ’ল। অলপ সময়ৰ পাছত চেষ্টা কৰি চাওক।"</string>
+    <string name="guest_creation_failed_message" msgid="124079314799870297">"অলপ সময়ৰ পাছত অতিথি হিচাপে লগ ইন কৰিবলৈ চেষ্টা কৰক"</string>
+    <string name="stopping_user_text" msgid="8582746159702773548">"ৰখাই থকা হৈছে"</string>
+    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"ব্যৱহাৰকাৰীক নৰখোৱালৈকে অনুগ্ৰহ কৰি অপেক্ষা কৰক"</string>
+    <string name="seat_driver" msgid="4502591979520445677">"চালকৰ আসন"</string>
+    <string name="seat_front" msgid="836133281052793377">"সন্মুখৰ আসন"</string>
+    <string name="seat_rear" msgid="403133444964528577">"পিছফালৰ আসন"</string>
+    <string name="seat_left_side" msgid="7460757956924015769">"বাওঁফালৰ আসন"</string>
+    <string name="seat_center_side" msgid="6661501442901282386">"মাজৰ আসন"</string>
+    <string name="seat_right_side" msgid="6735434879559763096">"সোঁফালৰ আসন"</string>
 </resources>

@@ -123,12 +123,12 @@ public class CarSystemBarButton extends LinearLayout {
         super.setSelected(selected);
         mSelected = selected;
 
-        refreshIconAlpha();
+        refreshIconAlpha(mIcon);
 
         if (mShowMoreWhenSelected && mMoreIcon != null) {
             mMoreIcon.setVisibility(selected ? VISIBLE : GONE);
         }
-        updateImage();
+        updateImage(mIcon);
     }
 
     /** Gets whether the icon is in a selected state. */
@@ -141,7 +141,7 @@ public class CarSystemBarButton extends LinearLayout {
      */
     public void setUnseen(boolean hasUnseen) {
         mHasUnseen = hasUnseen;
-        updateImage();
+        updateImage(mIcon);
     }
 
     /**
@@ -151,8 +151,8 @@ public class CarSystemBarButton extends LinearLayout {
     public void setDisabled(boolean disabled, @Nullable Runnable runnable) {
         mDisabled = disabled;
         mOnClickWhileDisabledRunnable = runnable;
-        refreshIconAlpha();
-        updateImage();
+        refreshIconAlpha(mIcon);
+        updateImage(mIcon);
     }
 
     /** Gets whether the icon is disabled */
@@ -173,7 +173,7 @@ public class CarSystemBarButton extends LinearLayout {
      */
     public void setAppIcon(Drawable appIcon) {
         mAppIcon = appIcon;
-        updateImage();
+        updateImage(mIcon);
     }
 
     /** Gets the icon of the app currently associated to the role of this button. */
@@ -249,7 +249,6 @@ public class CarSystemBarButton extends LinearLayout {
         return mHighlightWhenSelected || mShowMoreWhenSelected;
     }
 
-    @VisibleForTesting
     protected float getSelectedAlpha() {
         return mSelectedAlpha;
     }
@@ -409,26 +408,26 @@ public class CarSystemBarButton extends LinearLayout {
         mToggleSelectedState = typedArray.getBoolean(
                 R.styleable.CarSystemBarButton_toggleSelected, false);
         mIcon = findViewById(R.id.car_nav_button_icon_image);
-        refreshIconAlpha();
+        refreshIconAlpha(mIcon);
         mMoreIcon = findViewById(R.id.car_nav_button_more_icon);
         mUnseenIcon = findViewById(R.id.car_nav_button_unseen_icon);
-        updateImage();
+        updateImage(mIcon);
     }
 
-    private void updateImage() {
+    protected void updateImage(AlphaOptimizedImageView icon) {
         if (mIsDefaultAppIconForRoleEnabled && mAppIcon != null) {
-            mIcon.setImageDrawable(mAppIcon);
+            icon.setImageDrawable(mAppIcon);
         } else {
-            mIcon.setImageResource(mSelected ? mSelectedIconResourceId : mIconResourceId);
+            icon.setImageResource(mSelected ? mSelectedIconResourceId : mIconResourceId);
         }
         mUnseenIcon.setVisibility(mHasUnseen ? VISIBLE : GONE);
     }
 
-    private void refreshIconAlpha() {
+    protected void refreshIconAlpha(AlphaOptimizedImageView icon) {
         if (mDisabled) {
-            mIcon.setAlpha(DISABLED_ALPHA);
+            icon.setAlpha(DISABLED_ALPHA);
         } else {
-            mIcon.setAlpha(mHighlightWhenSelected && mSelected ? mSelectedAlpha : mUnselectedAlpha);
+            icon.setAlpha(mHighlightWhenSelected && mSelected ? mSelectedAlpha : mUnselectedAlpha);
         }
     }
 }

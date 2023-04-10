@@ -63,6 +63,7 @@
     <string name="system_bar_notifications_label" msgid="6039158514903928210">"ਸੂਚਨਾਵਾਂ"</string>
     <string name="system_bar_maps_label" msgid="7883864993280235380">"Maps"</string>
     <string name="system_bar_media_label" msgid="6156112139796274847">"ਮੀਡੀਆ"</string>
+    <string name="system_bar_control_center_label" msgid="5269256399167811590">"ਕੰਟਰੋਲ ਕੇਂਦਰ"</string>
     <string name="hvac_decrease_button_label" msgid="5628481079099995286">"ਤਾਪਮਾਨ ਘਟਾਓ"</string>
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"ਤਾਪਮਾਨ ਵਧਾਓ"</string>
     <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"ਬਲੂਟੁੱਥ ਸੈਟਿੰਗ: ਡਿਸਕਨੈਕਟ ਕੀਤਾ ਗਿਆ"</string>
@@ -72,19 +73,14 @@
     <string name="status_icon_signal_wifi" msgid="1257569337648058522">"ਸਿਗਨਲ ਸੈਟਿੰਗਾਂ: ਵਾਈ-ਫਾਈ ਚਾਲੂ ਹੈ"</string>
     <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"ਸਿਗਨਲ ਸੈਟਿੰਗਾਂ: ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"ਡਿਸਪਲੇ ਸੈਟਿੰਗਾਂ"</string>
-    <!-- no translation found for status_icon_drive_mode (3938622431486261076) -->
-    <skip />
+    <string name="status_icon_drive_mode" msgid="3938622431486261076">"ਡਰਾਈਵ ਮੋਡ"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"ਤੁਸੀਂ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਗੱਡੀ ਚਲਾਉਂਦੇ ਸਮੇਂ ਨਹੀਂ ਵਰਤ ਸਕਦੇ"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"ਐਪ ਬੰਦ ਕਰੋ"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"ਪਿੱਛੇ ਜਾਓ"</string>
-    <!-- no translation found for drive_mode_modes_comfort (628724737960743004) -->
-    <skip />
-    <!-- no translation found for drive_mode_modes_eco (7694931508925737653) -->
-    <skip />
-    <!-- no translation found for drive_mode_modes_sport (7664603138389270601) -->
-    <skip />
-    <!-- no translation found for qc_drive_mode_active_subtitle (3667965966971747414) -->
-    <skip />
+    <string name="drive_mode_modes_comfort" msgid="628724737960743004">"ਆਰਾਮ"</string>
+    <string name="drive_mode_modes_eco" msgid="7694931508925737653">"ਈਕੋ ਮੋਡ"</string>
+    <string name="drive_mode_modes_sport" msgid="7664603138389270601">"ਖੇਡ"</string>
+    <string name="qc_drive_mode_active_subtitle" msgid="3667965966971747414">"ਕਿਰਿਆਸ਼ੀਲ"</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"ਸੈਟਿੰਗਾਂ"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"ਨੈੱਟਵਰਕ ਅਤੇ ਇੰਟਰਨੈੱਟ ਸੈਟਿੰਗਾਂ"</string>
@@ -92,4 +88,29 @@
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"ਧੁਨੀ ਸੈਟਿੰਗਾਂ"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"ਪ੍ਰੋਫਾਈਲ ਅਤੇ ਖਾਤਾ ਸੈਟਿੰਗਾਂ"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"ਪੈਟਰਨ ਰੋਟਰੀ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ, ਕਿਰਪਾ ਕਰਕੇ ਸਪਰਸ਼ ਵਰਤੋ"</string>
+    <string name="display_input_lock_text" msgid="8524876126635885614">"ਟੱਚ-ਸਕ੍ਰੀਨ ਨੂੰ ਲਾਕ ਕੀਤਾ ਗਿਆ"</string>
+    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ ਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ"</string>
+    <string name="user_logout_title" msgid="5534754139319586681">"ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਲੌਗ-ਆਊਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?"</string>
+    <string name="user_logout_message" msgid="7804089876692575056">"ਇਸ ਨਾਲ ਸਾਰੀ ਖੁੱਲ੍ਹੀਆਂ ਐਪਲੀਕੇਸ਼ਨਾਂ ਬੰਦ ਹੋ ਜਾਣਗੀਆਂ"</string>
+    <string name="user_logout" msgid="2934184154258330491">"ਲੌਗ-ਆਊਟ ਕਰੋ"</string>
+    <string name="car_guest" msgid="768913000117469596">"ਮਹਿਮਾਨ"</string>
+    <string name="user_switching_message" msgid="634395959804046394">"ਵਰਤੋਂਕਾਰ ਨੂੰ ਸਵਿੱਚ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"</string>
+    <string name="user_adding_message" msgid="7328589666615053611">"ਨਵਾਂ ਵਰਤੋਂਕਾਰ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"</string>
+    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"ਵਰਤੋਂਕਾਰ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਸੀਮਾ ਪੂਰੀ ਹੋਈ"</string>
+    <string name="max_user_limit_reached_message" msgid="644904407853005163">"ਤੁਸੀਂ ਵੱਧੋ-ਵੱਧ ਇੰਨੇ ਵਰਤੋਂਕਾਰ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ "</string>
+    <string name="confirm_add_user_title" msgid="1237839494207086048">"ਕੀ ਨਵਾਂ ਵਰਤੋਂਕਾਰ ਸ਼ਾਮਲ ਕਰਨਾ ਹੈ?"</string>
+    <string name="already_logged_in_message" msgid="2440895716293348878">"ਪਹਿਲਾਂ ਹੀ ਕਿਸੇ ਹੋਰ ਡਿਸਪਲੇ \'ਤੇ ਲੌਗ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਕੋਈ ਪ੍ਰੋਫਾਈਲ ਚੁਣੋ"</string>
+    <string name="logged_in_text" msgid="932290859654786874">"ਲੌਗ-ਇਨ ਕੀਤਾ ਗਿਆ"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"<xliff:g id="SEAT_LOCATION">%s</xliff:g> ਵੱਲੋਂ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"</string>
+    <string name="create_user_failed_message" msgid="7107927788723239958">"ਹੁਣੇ ਵਰਤੋਂਕਾਰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਥੋੜ੍ਹੀ ਦੇਰ ਤੱਕ ਇਹ ਕਰ ਕੇ ਦੇਖੋ।"</string>
+    <string name="guest_creation_failed_message" msgid="124079314799870297">"ਥੋੜ੍ਹੀ ਦੇਰ ਤੱਕ ਮਹਿਮਾਨ ਵਜੋਂ ਲੌਗ-ਇਨ ਕਰ ਕੇ ਦੇਖੋ"</string>
+    <string name="stopping_user_text" msgid="8582746159702773548">"ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"</string>
+    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"ਕਿਰਪਾ ਕਰਕੇ ਵਰਤੋਂਕਾਰ ਦੇ ਬੰਦ ਹੋਣ ਤੱਕ ਉਡੀਕ ਕਰੋ"</string>
+    <string name="seat_driver" msgid="4502591979520445677">"ਡਰਾਈਵਰ"</string>
+    <string name="seat_front" msgid="836133281052793377">"ਅਗਲਾ"</string>
+    <string name="seat_rear" msgid="403133444964528577">"ਪਿਛਲਾ"</string>
+    <string name="seat_left_side" msgid="7460757956924015769">"ਖੱਬਾ"</string>
+    <string name="seat_center_side" msgid="6661501442901282386">"ਵਿਚਕਾਰ"</string>
+    <string name="seat_right_side" msgid="6735434879559763096">"ਸੱਜਾ"</string>
 </resources>

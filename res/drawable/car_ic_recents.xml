@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (C) 2022 The Android Open Source Project
+  ~ Copyright (C) 2023 The Android Open Source Project
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -14,15 +14,13 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <vector
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="48dp"
-    android:height="48dp"
-    android:viewportHeight="48.0"
-    android:viewportWidth="48.0">
+    android:width="@dimen/system_bar_icon_drawing_size"
+    android:height="@dimen/system_bar_icon_drawing_size"
+    android:viewportWidth="44"
+    android:viewportHeight="44">
     <path
-        android:fillColor="@android:color/white"
-        android:strokeColor="@android:color/black" android:strokeWidth="0.3"
-        android:pathData="M36,16h-2v-4c0,-5.52 -4.48,-10 -10,-10S14,6.48 14,12v4h-2c-2.21,0 -4,1.79 -4,4v20c0,2.21 1.79,4 4,4h24c2.21,0 4,-1.79 4,-4L40,20c0,-2.21 -1.79,-4 -4,-4zM24,34c-2.21,0 -4,-1.79 -4,-4s1.79,-4 4,-4 4,1.79 4,4 -1.79,4 -4,4zM30.2,16L17.8,16v-4c0,-3.42 2.78,-6.2 6.2,-6.2 3.42,0 6.2,2.78 6.2,6.2v4z"/>
+        android:fillColor="@color/car_nav_icon_fill_color"
+        android:pathData="M15,7L29,7A8,8 0,0 1,37 15L37,29A8,8 0,0 1,29 37L15,37A8,8 0,0 1,7 29L7,15A8,8 0,0 1,15 7z"/>
 </vector>

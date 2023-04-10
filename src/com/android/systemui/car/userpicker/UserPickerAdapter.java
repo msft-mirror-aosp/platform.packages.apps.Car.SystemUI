@@ -50,6 +50,7 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
 
     private final Context mContext;
     private final int mDisplayId;
+    private final float mDisabledAlpha;
 
     private List<UserRecord> mUsers;
     private String mLoggedInText;
@@ -59,6 +60,7 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
     UserPickerAdapter(Context context) {
         mContext = context;
         mDisplayId = mContext.getDisplayId();
+        mDisabledAlpha = mContext.getResources().getFloat(R.fraction.user_picker_disabled_alpha);
 
         updateTexts();
     }
@@ -71,6 +73,7 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
         if (!userRecord.mIsStopping && !userRecord.mIsLoggedIn) {
             holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
             holder.mLoggedInTextView.setText("");
+            updateAlpha(holder, /* disabled= */ false);
             return;
         }
 
@@ -80,19 +83,29 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
             holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
             holder.mLoggedInTextView.setTextColor(color);
             holder.mLoggedInTextView.setText(mStoppingUserText);
+            updateAlpha(holder, /* disabled= */ true);
         } else if (userRecord.mIsLoggedIn) {
             if (userRecord.mLoggedInDisplay == mDisplayId) {
                 holder.mUserBorderImageView.setColorFilter(color);
                 holder.mUserBorderImageView.setVisibility(View.VISIBLE);
                 holder.mLoggedInTextView.setTextColor(color);
                 holder.mLoggedInTextView.setText(mLoggedInText);
+                updateAlpha(holder, /* disabled= */ false);
             } else {
                 holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
                 holder.mLoggedInTextView.setTextColor(color);
                 holder.mLoggedInTextView.setText(String.format(mPrefixOtherSeatLoggedInInfo,
                         userRecord.mSeatLocationName));
+                updateAlpha(holder, /* disabled= */ true);
             }
         }
+    }
+
+    private void updateAlpha(UserPickerAdapterViewHolder holder, boolean disabled) {
+        float alpha = disabled ? mDisabledAlpha : 1.0f;
+        holder.mUserAvatarImageView.setAlpha(alpha);
+        holder.mUserNameTextView.setAlpha(alpha);
+        holder.mLoggedInTextView.setAlpha(alpha);
     }
 
     @Override

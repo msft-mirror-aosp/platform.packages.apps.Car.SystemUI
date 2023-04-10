@@ -22,5 +22,6 @@
     </style>
     <style name="Theme.UserPicker" parent="Theme.MaterialComponents">
         <item name="android:windowDisablePreview">true</item>
+        <item name="snackbarTextViewStyle">@style/UserPickerSnackBarText</item>
     </style>
 </resources>

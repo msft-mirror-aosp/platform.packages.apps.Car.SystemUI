@@ -63,6 +63,7 @@ public class UserPickerActivity extends Activity implements Dumpable {
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     private UserPickerActivityComponent mUserPickerActivityComponent;
+    private boolean mIsDriver;
 
     @Inject
     UserPickerReadOnlyIconsController mUserPickerReadOnlyIconsController;
@@ -153,6 +154,7 @@ public class UserPickerActivity extends Activity implements Dumpable {
 
     @VisibleForTesting
     void init() {
+        mIsDriver = getDisplayId() == mDisplayTracker.getDefaultDisplayId();
         LayoutInflater inflater = LayoutInflater.from(this);
         mRootView = inflater.inflate(R.layout.user_picker, null);
         if (getWindow() != null) {
@@ -178,6 +180,9 @@ public class UserPickerActivity extends Activity implements Dumpable {
     private void initViews() {
         View powerBtn = mRootView.findViewById(R.id.power_button_icon_view);
         powerBtn.setOnClickListener(v -> mController.screenOffDisplay());
+        if (mIsDriver) {
+            powerBtn.setVisibility(View.GONE);
+        }
         mHeaderBarTextForLogout = mRootView.findViewById(R.id.message);
 
         mLogoutButton = mRootView.findViewById(R.id.logout_button_icon_view);
@@ -269,7 +274,7 @@ public class UserPickerActivity extends Activity implements Dumpable {
             case HEADER_STATE_CHANGE_USER:
                 mHeaderBarTextForLogout.setVisibility(View.GONE);
                 mBackButton.setVisibility(View.VISIBLE);
-                if (getDisplayId() != mDisplayTracker.getDefaultDisplayId()) {
+                if (!mIsDriver) {
                     mLogoutButton.setVisibility(View.VISIBLE);
                 }
                 break;

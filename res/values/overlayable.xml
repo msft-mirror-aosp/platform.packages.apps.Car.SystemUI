@@ -193,6 +193,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="user_name_icon_7"/>
       <item type="color" name="user_name_icon_8"/>
       <item type="color" name="user_picker_background_color"/>
+      <item type="color" name="user_picker_background_pill_color"/>
       <item type="color" name="user_picker_bottom_bar_color"/>
       <item type="color" name="user_picker_login_state_text_color"/>
       <item type="color" name="user_picker_snack_bar_background_color"/>
@@ -450,8 +451,13 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="user_picker_button_size"/>
       <item type="dimen" name="user_picker_clock_elevation_size"/>
       <item type="dimen" name="user_picker_common_margin_size"/>
+      <item type="dimen" name="user_picker_header_margin"/>
       <item type="dimen" name="user_picker_login_state_text_size"/>
       <item type="dimen" name="user_picker_logout_button_margin_right_size"/>
+      <item type="dimen" name="user_picker_pill_button_height"/>
+      <item type="dimen" name="user_picker_pill_button_width"/>
+      <item type="dimen" name="user_picker_pill_header_margin"/>
+      <item type="dimen" name="user_picker_pill_radius"/>
       <item type="dimen" name="user_picker_snack_bar_text_size"/>
       <item type="dimen" name="user_picker_user_avatar_border_size"/>
       <item type="dimen" name="user_picker_user_avatar_size"/>
@@ -578,12 +584,14 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="system_bar_pill_rotary_background"/>
       <item type="drawable" name="temperature_bar_background"/>
       <item type="drawable" name="userpicker_ic_arrow_back"/>
+      <item type="drawable" name="userpicker_ic_background"/>
       <item type="drawable" name="userpicker_ic_power"/>
       <item type="drawable" name="volume_dialog_background"/>
       <item type="fraction" name="celsius_temperature_increment"/>
       <item type="fraction" name="celsius_temperature_round"/>
       <item type="fraction" name="fahrenheit_temperature_increment"/>
       <item type="fraction" name="fahrenheit_temperature_round"/>
+      <item type="fraction" name="user_picker_disabled_alpha"/>
       <item type="id" name="ac_button"/>
       <item type="id" name="ac_master_switch"/>
       <item type="id" name="action_button_container"/>
@@ -644,6 +652,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="grid_nav"/>
       <item type="id" name="handle_bar"/>
       <item type="id" name="header"/>
+      <item type="id" name="header_barrier"/>
       <item type="id" name="header_container"/>
       <item type="id" name="home"/>
       <item type="id" name="hvac"/>
@@ -845,8 +854,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="user_picker"/>
       <item type="layout" name="user_picker_alert_dialog_large_center_message"/>
       <item type="layout" name="user_picker_alert_dialog_normal_message"/>
-      <item type="layout" name="user_picker_user_pod"/>
       <item type="layout" name="user_picker_status_icon_layout"/>
+      <item type="layout" name="user_picker_user_pod"/>
       <item type="string" name="activity_blocked_text"/>
       <item type="string" name="already_logged_in_message"/>
       <item type="string" name="camera_privacy_chip_app_recently_used_camera_suffix"/>
@@ -977,6 +986,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="style" name="Theme.UserPicker"/>
       <item type="style" name="UserPickerDialogMessageLargeText"/>
       <item type="style" name="UserPickerDialogMessageNormalText"/>
+      <item type="style" name="UserPickerSnackBarText"/>
       <item type="style" name="VolumeButtons"/>
       <item type="xml" name="camera_privacy_chip_scene"/>
       <item type="xml" name="car_volume_items"/>

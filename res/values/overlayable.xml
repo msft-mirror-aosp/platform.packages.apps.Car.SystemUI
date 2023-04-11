@@ -583,6 +583,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="system_bar_button_background"/>
       <item type="drawable" name="system_bar_pill_rotary_background"/>
       <item type="drawable" name="temperature_bar_background"/>
+      <item type="drawable" name="user_picker_splash_icon"/>
       <item type="drawable" name="userpicker_ic_arrow_back"/>
       <item type="drawable" name="userpicker_ic_background"/>
       <item type="drawable" name="userpicker_ic_power"/>

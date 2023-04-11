@@ -97,11 +97,11 @@
             <com.android.systemui.car.userpicker.UserPickerView
                 android:id="@+id/user_picker"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_marginTop="@dimen/user_picker_common_margin_size"
-                android:layout_marginBottom="@dimen/user_picker_common_margin_size"
                 app:layout_constraintTop_toBottomOf="@+id/header_barrier"
-                app:layout_constraintLeft_toLeftOf="parent"/>
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/user_picker_bottom_bar"/>
 
             <LinearLayout
                 android:id="@+id/user_picker_bottom_bar"

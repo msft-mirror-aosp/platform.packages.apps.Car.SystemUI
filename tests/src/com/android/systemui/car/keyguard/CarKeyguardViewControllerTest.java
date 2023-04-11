@@ -47,6 +47,7 @@ import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.CarSystemBarController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
+import com.android.systemui.keyguard.data.BouncerView;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerCallbackInteractor;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerInteractor;
 import com.android.systemui.keyguard.ui.viewmodel.KeyguardBouncerViewModel;
@@ -97,6 +98,8 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
     private PrimaryBouncerToGoneTransitionViewModel mPrimaryBouncerToGoneTransitionViewModel;
     @Mock
     private LockPatternUtils mLockPatternUtils;
+    @Mock
+    private BouncerView mBouncerView;
 
     @Before
     public void setUp() {
@@ -134,7 +137,8 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
                 mKeyguardBouncerViewModel,
                 mPrimaryBouncerToGoneTransitionViewModel,
                 mKeyguardBouncerComponentFactory,
-                mLockPatternUtils
+                mLockPatternUtils,
+                mBouncerView
         );
         mCarKeyguardViewController.inflate((ViewGroup) LayoutInflater.from(mContext).inflate(
                 R.layout.sysui_overlay_window, /* root= */ null));

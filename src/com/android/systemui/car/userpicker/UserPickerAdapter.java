@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import com.android.systemui.R;
@@ -33,7 +34,8 @@ import java.util.List;
 final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
 
     // TODO<b/254526109>: Temporary Res Duplicate to QuickContorols. Remove them in phase 2.
-    private static final int[] USER_PICKER_USER_COLORS = {
+    @VisibleForTesting
+    static final int[] USER_PICKER_USER_COLORS = {
             R.color.userpicker_color_1,
             R.color.userpicker_color_2,
             R.color.userpicker_color_3,
@@ -43,7 +45,8 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
             R.color.userpicker_color_7,
             R.color.userpicker_color_8
     };
-    private static final int USER_PICKER_GUEST_COLOR = R.color.userpicker_guest_color;
+    @VisibleForTesting
+    static final int USER_PICKER_GUEST_COLOR = R.color.userpicker_guest_color;
 
     private final Context mContext;
     private final int mDisplayId;

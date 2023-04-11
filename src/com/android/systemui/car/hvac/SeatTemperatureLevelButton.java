@@ -49,7 +49,7 @@ public class SeatTemperatureLevelButton extends ImageButton implements HvacView 
     private int mAreaId;
     private HvacPropertySetter mHvacPropertySetter;
     private Drawable mCurrentIcon;
-    private int mCurrentLevel;
+    private int mCurrentLevel = -1;
     private int mTotalLevelCount;
     private int mTemperatureLevelType;
 

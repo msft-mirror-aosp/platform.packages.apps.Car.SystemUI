@@ -62,6 +62,7 @@ import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.internal.util.UserIcons;
 import com.android.settingslib.utils.StringUtil;
 import com.android.systemui.R;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.settings.UserTracker;
@@ -77,25 +78,26 @@ import javax.inject.Inject;
  */
 public class ProfileSwitcher extends BaseLocalQCProvider {
     private static final String TAG = ProfileSwitcher.class.getSimpleName();
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
     private static final int TIMEOUT_MS = CarProperties.user_hal_timeout().orElse(5_000) + 500;
 
     protected final UserTracker mUserTracker;
     protected final UserIconProvider mUserIconProvider;
     private final UserManager mUserManager;
     private final DevicePolicyManager mDevicePolicyManager;
-    private final Car mCar;
-    private final CarUserManager mCarUserManager;
+    @Nullable
+    private CarUserManager mCarUserManager;
     protected boolean mPendingUserAdd;
 
     @Inject
-    public ProfileSwitcher(Context context, UserTracker userTracker) {
+    public ProfileSwitcher(Context context, UserTracker userTracker,
+            CarServiceProvider carServiceProvider) {
         super(context);
         mUserTracker = userTracker;
         mUserManager = context.getSystemService(UserManager.class);
         mDevicePolicyManager = context.getSystemService(DevicePolicyManager.class);
         mUserIconProvider = new UserIconProvider();
-        mCar = Car.createCar(context);
-        mCarUserManager = (CarUserManager) mCar.getCarManager(Car.CAR_USER_SERVICE);
+        carServiceProvider.addListener(this::onCarConnected);
     }
 
     @VisibleForTesting
@@ -106,12 +108,14 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         mUserManager = userManager;
         mDevicePolicyManager = devicePolicyManager;
         mUserIconProvider = new UserIconProvider();
-        mCar = null;
         mCarUserManager = carUserManager;
     }
 
     @Override
     public QCItem getQCItem() {
+        if (mCarUserManager == null) {
+            return null;
+        }
         QCList.Builder listBuilder = new QCList.Builder();
 
         if (mDevicePolicyManager.isDeviceManaged()
@@ -147,14 +151,6 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             listBuilder.addRow(createLogOutRow());
         }
         return listBuilder.build();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mCar != null) {
-            mCar.disconnect();
-        }
     }
 
     private List<UserInfo> getProfileList() {
@@ -454,6 +450,14 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         window.getAttributes().setFitInsetsTypes(
                 window.getAttributes().getFitInsetsTypes() & ~statusBars());
+    }
+
+    private void onCarConnected(Car car) {
+        if (DEBUG) {
+            Log.d(TAG, "car connected");
+        }
+        mCarUserManager = car.getCarManager(CarUserManager.class);
+        notifyChange();
     }
 
     private class AddNewUserTask extends AsyncTask<String, Void, UserInfo> {

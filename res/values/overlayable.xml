@@ -591,6 +591,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="fraction" name="celsius_temperature_round"/>
       <item type="fraction" name="fahrenheit_temperature_increment"/>
       <item type="fraction" name="fahrenheit_temperature_round"/>
+      <item type="fraction" name="user_picker_disabled_alpha"/>
       <item type="id" name="ac_button"/>
       <item type="id" name="ac_master_switch"/>
       <item type="id" name="action_button_container"/>
@@ -985,6 +986,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="style" name="Theme.UserPicker"/>
       <item type="style" name="UserPickerDialogMessageLargeText"/>
       <item type="style" name="UserPickerDialogMessageNormalText"/>
+      <item type="style" name="UserPickerSnackBarText"/>
       <item type="style" name="VolumeButtons"/>
       <item type="xml" name="camera_privacy_chip_scene"/>
       <item type="xml" name="car_volume_items"/>

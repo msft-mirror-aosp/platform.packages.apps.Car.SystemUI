@@ -23,6 +23,8 @@ import android.util.Log;
 import android.util.Slog;
 import android.view.View;
 
+import androidx.annotation.IdRes;
+
 import com.android.systemui.R;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -35,15 +37,21 @@ final class SnackbarManager {
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     private int mDisplayId;
-    private View mAnchorView;
+    private View mRootView;
+    @IdRes
+    private int mAnchorViewId = View.NO_ID;
     private int mSnackbarBackgroundTint;
 
     @Inject
     SnackbarManager() {}
 
-    void setRootView(View anchorView) {
-        Context context = anchorView.getContext();
-        mAnchorView = anchorView;
+    void setRootView(View rootView, @IdRes int anchorViewId) {
+        Context context = rootView.getContext();
+        mRootView = rootView;
+        if (mRootView.findViewById(anchorViewId) != null) {
+            // ensure view exists
+            mAnchorViewId = anchorViewId;
+        }
         mDisplayId = context.getDisplayId();
         mSnackbarBackgroundTint = context.getColor(R.color.user_picker_snack_bar_background_color);
     }
@@ -52,9 +60,12 @@ final class SnackbarManager {
         if (DEBUG) {
             Slog.d(TAG, "showSnackBar: displayId=" + mDisplayId);
         }
-        Snackbar snackbar = Snackbar.make(mAnchorView, message, Snackbar.LENGTH_SHORT);
+        Snackbar snackbar = Snackbar.make(mRootView, message, Snackbar.LENGTH_SHORT);
         snackbar.setBackgroundTint(mSnackbarBackgroundTint);
         snackbar.setTextColor(Color.WHITE);
+        if (mAnchorViewId != View.NO_ID) {
+            snackbar.setAnchorView(mAnchorViewId);
+        }
         snackbar.show();
     }
 }

@@ -219,7 +219,7 @@ public class UserPickerActivity extends Activity implements Dumpable {
 
     private void initManagers(View rootView) {
         mDialogManager.initContextFromView(rootView);
-        mSnackbarManager.setRootView(rootView);
+        mSnackbarManager.setRootView(rootView, R.id.user_picker_bottom_bar);
     }
 
     private void initController() {

@@ -161,13 +161,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
         }
 
         @Override
-        public void onAnimationCancelled(boolean isKeyguardOccluded)
-                throws RemoteException {
-            synchronized (mOcclusionLock) {
-                Log.d(TAG, String.format("%s cancelled by WM. Setting occluded state to: %b",
-                        mAnimatorType, isKeyguardOccluded));
-                setOccluded(isKeyguardOccluded, /* animate= */ false);
-            }
+        public void onAnimationCancelled() throws RemoteException {
+            Log.d(TAG, String.format("%s cancelled by WM.", mAnimatorType));
         }
     }
 }

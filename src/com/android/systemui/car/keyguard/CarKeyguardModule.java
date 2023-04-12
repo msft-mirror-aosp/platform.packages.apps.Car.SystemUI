@@ -43,6 +43,7 @@ import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
+import com.android.systemui.keyguard.dagger.KeyguardFaceAuthNotSupportedModule;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
 import com.android.systemui.keyguard.domain.quickaffordance.KeyguardQuickAffordanceModule;
 import com.android.systemui.navigationbar.NavigationModeController;
@@ -76,6 +77,7 @@ import java.util.concurrent.Executor;
         includes = {
                 FalsingModule.class,
                 KeyguardQuickAffordanceModule.class,
+                KeyguardFaceAuthNotSupportedModule.class,
                 KeyguardRepositoryModule.class,
         })
 public class CarKeyguardModule {

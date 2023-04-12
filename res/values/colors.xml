@@ -145,6 +145,8 @@
     <color name="user_picker_snack_bar_background_color">#282a2d</color>
     <color name="user_picker_user_name_color">#fff8f9fa</color>
     <color name="user_picker_login_state_text_color">#66B5FF</color>
+    <color name="user_picker_background_pill_color">#282A2D</color>
+    <drawable name="user_picker_splash_icon">@android:color/transparent</drawable>
 
     <!-- TODO<b/254526109>: Color for user picker that duplicate to QuickControls -->
     <color name="userpicker_color_1">#FF6259</color>

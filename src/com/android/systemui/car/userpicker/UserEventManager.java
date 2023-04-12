@@ -99,7 +99,6 @@ public final class UserEventManager {
     private final Context mContext;
     private final UserManager mUserManager;
     private final CarServiceMediator mCarServiceMediator;
-    private final CarUserManager mCarUserManager;
     private final UserPickerSharedState mUserPickerSharedState;
 
     /**
@@ -147,7 +146,6 @@ public final class UserEventManager {
         mUserManager = mContext.getSystemService(UserManager.class);
         mUserPickerSharedState = userPickerSharedState;
         mCarServiceMediator = carServiceMediator;
-        mCarUserManager = carServiceMediator.getCarUserManager();
         mCarServiceMediator.registerUserChangeEventsListener(mUserLifecycleReceiver, mFilter,
                 mUserLifecycleListener);
         registerUserInfoChangedReceiver();
@@ -327,6 +325,11 @@ public final class UserEventManager {
                     + " prevCurrentUser=" + prevCurrentUser + " isFgUserStart=" + isFgUserStart);
         }
         UserHandle userHandle = UserHandle.of(userId);
+        CarUserManager carUserManager = mCarServiceMediator.getCarUserManager();
+        if (carUserManager == null) {
+            Slog.w(TAG, "car user manager is not available when starting user " + userId);
+            return false;
+        }
         if (isFgUserStart) {
             // Old user will be stopped by {@link UserController} after user switching
             // completed. In the case of user switching, to avoid clicking stopping user, we can
@@ -336,7 +339,7 @@ public final class UserEventManager {
             try {
                 SyncResultCallback<UserSwitchResult> userSwitchCallback =
                         new SyncResultCallback<>();
-                mCarUserManager.switchUser(new UserSwitchRequest.Builder(
+                carUserManager.switchUser(new UserSwitchRequest.Builder(
                         userHandle).build(), Runnable::run, userSwitchCallback);
                 UserSwitchResult userSwitchResult =
                         userSwitchCallback.get(USER_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -356,7 +359,7 @@ public final class UserEventManager {
 
         try {
             SyncResultCallback<UserStartResponse> userStartCallback = new SyncResultCallback<>();
-            mCarUserManager.startUser(
+            carUserManager.startUser(
                     new UserStartRequest.Builder(UserHandle.of(userId))
                             .setDisplayId(displayId).build(),
                     Runnable::run, userStartCallback);
@@ -384,12 +387,18 @@ public final class UserEventManager {
 
         mUserPickerSharedState.addStoppingUserId(userId);
 
+        CarUserManager carUserManager = mCarServiceMediator.getCarUserManager();
+        if (carUserManager == null) {
+            Slog.w(TAG, "car user manager is not available when stopping user " + userId);
+            return false;
+        }
+
         // We do not need to unassign the user from the occupant zone, because it is handled by
         // CarUserService#onUserInvisible().
         try {
             mUserInvisibleWaiter.init(userId);
             SyncResultCallback<UserStopResponse> userStopCallback = new SyncResultCallback<>();
-            mCarUserManager.stopUser(new UserStopRequest.Builder(UserHandle.of(userId)).build(),
+            carUserManager.stopUser(new UserStopRequest.Builder(UserHandle.of(userId)).build(),
                     Runnable::run, userStopCallback);
             UserStopResponse userStopResponse =
                     userStopCallback.get(USER_TIMEOUT_MS, TimeUnit.MILLISECONDS);

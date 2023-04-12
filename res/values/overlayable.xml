@@ -845,8 +845,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="user_picker"/>
       <item type="layout" name="user_picker_alert_dialog_large_center_message"/>
       <item type="layout" name="user_picker_alert_dialog_normal_message"/>
-      <item type="layout" name="user_picker_user_pod"/>
       <item type="layout" name="user_picker_status_icon_layout"/>
+      <item type="layout" name="user_picker_user_pod"/>
       <item type="string" name="activity_blocked_text"/>
       <item type="string" name="already_logged_in_message"/>
       <item type="string" name="camera_privacy_chip_app_recently_used_camera_suffix"/>
@@ -859,6 +859,9 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="camera_privacy_chip_on_toast"/>
       <item type="string" name="car_add_user"/>
       <item type="string" name="car_guest"/>
+      <item type="string" name="car_keyguard_enter_your_password"/>
+      <item type="string" name="car_keyguard_enter_your_pattern"/>
+      <item type="string" name="car_keyguard_enter_your_pin"/>
       <item type="string" name="car_loading_profile"/>
       <item type="string" name="car_loading_profile_developer_message"/>
       <item type="string" name="car_new_user"/>
@@ -889,6 +892,9 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="hvac_temperature_format_celsius"/>
       <item type="string" name="hvac_temperature_format_fahrenheit"/>
       <item type="string" name="hvac_temperature_off"/>
+      <item type="string" name="keyguard_enter_your_password"/>
+      <item type="string" name="keyguard_enter_your_pattern"/>
+      <item type="string" name="keyguard_enter_your_pin"/>
       <item type="string" name="lockpattern_does_not_support_rotary"/>
       <item type="string" name="logged_in_text"/>
       <item type="string" name="max_user_limit_reached_message"/>

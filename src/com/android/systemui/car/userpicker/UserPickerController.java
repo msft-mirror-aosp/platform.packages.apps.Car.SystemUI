@@ -380,10 +380,15 @@ final class UserPickerController {
             // Second, check user has been already logged-in in another display or is stopping.
             if (userRecord.mIsLoggedIn && userRecord.mLoggedInDisplay != mDisplayId
                     || mUserPickerSharedState.isStoppingUser(userId)) {
-                int messageResId = userRecord.mIsStopping ? R.string.wait_for_until_stopped_message
-                        : R.string.already_logged_in_message;
-                runOnMainHandler(REQ_SHOW_SNACKBAR,
-                        mContext.getString(messageResId));
+                String message;
+                if (userRecord.mIsStopping) {
+                    message = mContext.getString(R.string.wait_for_until_stopped_message,
+                            userRecord.mName);
+                } else {
+                    message = mContext.getString(R.string.already_logged_in_message,
+                            userRecord.mName, userRecord.mSeatLocationName);
+                }
+                runOnMainHandler(REQ_SHOW_SNACKBAR, message);
                 mIsUserPickerClickable = true;
                 return;
             }

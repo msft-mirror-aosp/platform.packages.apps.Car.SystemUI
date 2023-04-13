@@ -181,7 +181,7 @@ final class DialogManager {
                 message = mUserAddingMessage;
                 break;
             case DIALOG_TYPE_MAX_USER_COUNT_REACHED:
-                message = mMaxUserLimitReachedMessage + getMaxSupportedUsers();
+                message = String.format(mMaxUserLimitReachedMessage, getMaxSupportedUsers());
                 break;
             case DIALOG_TYPE_CONFIRM_ADD_USER:
                 message = mConfirmAddUserMessage;

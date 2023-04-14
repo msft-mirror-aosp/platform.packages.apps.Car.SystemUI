@@ -202,5 +202,6 @@
     <style name="UserPickerSnackBarText" parent="Widget.MaterialComponents.Snackbar.TextView">
         <item name="android:textSize">@dimen/car_body3_size</item>
         <item name="android:layout_margin">@dimen/car_padding_2</item>
+        <item name="android:maxLines">2</item>
     </style>
 </resources>

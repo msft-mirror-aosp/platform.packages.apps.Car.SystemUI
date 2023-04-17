@@ -19,6 +19,9 @@ package com.android.systemui.car.statusicon.ui;
 import android.annotation.ArrayRes;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 
@@ -99,14 +102,24 @@ public class QuickControlsStatusIconListController extends StatusIconController 
     protected void updateStatus() {
         // Combine the icons.
         Drawable[] layers = new Drawable[mSubControllers.size()];
+        int iconWidth = mContext.getResources().getDimensionPixelSize(
+                R.dimen.car_quick_controls_entry_points_icon_width);
         for (int i = 0; i < mSubControllers.size(); i++) {
-            layers[i] = mSubControllers.get(i).getIconDrawableToDisplay();
+            // Convert to BitmapDrawable in order to apply insets to drawable that reflects
+            // the result of drawing on canvas. Otherwise, insets can only be applied to the
+            // original static drawable, not the result drawn to the canvas.
+            Drawable origDrawable = mSubControllers.get(i).getIconDrawableToDisplay();
+            Bitmap icon = Bitmap.createBitmap(/* width= */ iconWidth, /* height= */ iconWidth,
+                    Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(icon);
+            origDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            origDrawable.draw(canvas);
+
+            layers[i] = new BitmapDrawable(mContext.getResources(), icon);
         }
         LayerDrawable drawable = new LayerDrawable(layers);
 
         // Align the icons.
-        int iconWidth = mContext.getResources().getDimensionPixelSize(
-                R.dimen.car_quick_controls_entry_points_icon_width);
         int layerInset = 0;
         for (int i = 1; i < mSubControllers.size(); i++) {
             layerInset += iconWidth;

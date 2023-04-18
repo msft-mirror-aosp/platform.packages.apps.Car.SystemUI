@@ -24,7 +24,6 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"VYP."</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Rozpoznávanie hlasu teraz prebieha v pripoj. zar. Bluetooth"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Pridať profil"</string>
-    <string name="end_session" msgid="2765206020435441421">"Ukončiť reláciu"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Nový profil"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Chcete pridať nový profil?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Po vytvorení by si mala príslušná osoba nový profil prispôsobiť podľa seba."</string>
@@ -56,22 +55,6 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"OK"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Chcete zapnúť kameru vozidla?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Ak chcete pokračovať, zapnite kameru palubného systému. Kameru tak zapnete pre všetky aplikácie, ktoré majú povolenie."</string>
-    <string name="system_bar_home_label" msgid="8413273833405495948">"Plocha"</string>
-    <string name="system_bar_phone_label" msgid="5664288201806823777">"Telefón"</string>
-    <string name="system_bar_applications_label" msgid="7081862804211786227">"Aplikácie"</string>
-    <string name="system_bar_climate_control_label" msgid="4091187805919276017">"Ovládanie ovzdušia"</string>
-    <string name="system_bar_notifications_label" msgid="6039158514903928210">"Upozornenia"</string>
-    <string name="system_bar_maps_label" msgid="7883864993280235380">"Mapy"</string>
-    <string name="system_bar_media_label" msgid="6156112139796274847">"Médiá"</string>
-    <string name="hvac_decrease_button_label" msgid="5628481079099995286">"Znížiť teplotu"</string>
-    <string name="hvac_increase_button_label" msgid="2855688290787396792">"Zvýšiť teplotu"</string>
-    <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"Nastavenie Bluetooth: odpojené"</string>
-    <string name="status_icon_bluetooth_connected" msgid="4548446117525711779">"Nastavenie Bluetooth: pripojené"</string>
-    <string name="status_icon_bluetooth_off" msgid="5435041393564635821">"Nastavenie Bluetooth: Bluetooth je vypnutý"</string>
-    <string name="status_icon_signal_mobile" msgid="7264721079060179783">"Nastavenia signálu: používajú sa mobilné dáta"</string>
-    <string name="status_icon_signal_wifi" msgid="1257569337648058522">"Nastavenia signálu: pripojenie Wi‑Fi je zapnuté"</string>
-    <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"Nastavenia signálu: hotspot je zapnutý"</string>
-    <string name="status_icon_display_status" msgid="2970020923181359144">"Nastavenia zobrazenia"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Túto funkciu nie je možné používať za jazdy"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Zavrieť aplikáciu"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Späť"</string>

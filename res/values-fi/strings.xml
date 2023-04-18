@@ -24,7 +24,6 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"POIS"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Äänentunnistus tehdään nyt yhdistetyllä Bluetooth-laitteella"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Lisää profiili"</string>
-    <string name="end_session" msgid="2765206020435441421">"Lopeta istunto"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Uusi profiili"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Lisätäänkö uusi profiili?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Kun olet luonut uuden profiilin, sen omistajan pitäisi personoida se itselleen sopivaksi."</string>
@@ -56,22 +55,6 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"OK"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Laitetaanko ajoneuvon kamera päälle?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Laita infotainment-järjestelmän kamera päälle, niin voit jatkaa. Kamera laitetaan päälle kaikissa sovelluksissa, joilla on lupa."</string>
-    <string name="system_bar_home_label" msgid="8413273833405495948">"Aloitusnäyttö"</string>
-    <string name="system_bar_phone_label" msgid="5664288201806823777">"Puhelin"</string>
-    <string name="system_bar_applications_label" msgid="7081862804211786227">"Sovellukset"</string>
-    <string name="system_bar_climate_control_label" msgid="4091187805919276017">"Lämpötilan hallinta"</string>
-    <string name="system_bar_notifications_label" msgid="6039158514903928210">"Ilmoitukset"</string>
-    <string name="system_bar_maps_label" msgid="7883864993280235380">"Maps"</string>
-    <string name="system_bar_media_label" msgid="6156112139796274847">"Media"</string>
-    <string name="hvac_decrease_button_label" msgid="5628481079099995286">"Laske lämpötilaa"</string>
-    <string name="hvac_increase_button_label" msgid="2855688290787396792">"Nosta lämpötilaa"</string>
-    <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"Bluetooth-asetus: Ei yhdistetty"</string>
-    <string name="status_icon_bluetooth_connected" msgid="4548446117525711779">"Bluetooth-asetus: Yhdistetty"</string>
-    <string name="status_icon_bluetooth_off" msgid="5435041393564635821">"Bluetooth-asetus: Bluetooth ei päällä"</string>
-    <string name="status_icon_signal_mobile" msgid="7264721079060179783">"Signaaliasetukset: Mobiilidata käytössä"</string>
-    <string name="status_icon_signal_wifi" msgid="1257569337648058522">"Signaaliasetukset: Wi-Fi päällä"</string>
-    <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"Signaaliasetukset: Hotspot päällä"</string>
-    <string name="status_icon_display_status" msgid="2970020923181359144">"Näyttöasetukset"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Et voi käyttää ominaisuutta ajon aikana"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Sulje sovellus"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Takaisin"</string>

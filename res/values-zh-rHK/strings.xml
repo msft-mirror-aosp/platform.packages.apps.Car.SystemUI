@@ -24,7 +24,6 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"關閉"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"現在由已連線的藍牙裝置處理語音辨識作業"</string>
     <string name="car_add_user" msgid="6182764665687382136">"新增設定檔"</string>
-    <string name="end_session" msgid="2765206020435441421">"結束工作時段"</string>
     <string name="car_new_user" msgid="6766334721724989964">"新設定檔"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"要新增設定檔嗎？"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"建立新設定檔後使用者需要自行自訂。"</string>
@@ -56,22 +55,6 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"確定"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"要開啟車輛相機嗎？"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"如要繼續，請開啟資訊娛樂系統相機。所有擁有權限的應用程式都會開啟相機。"</string>
-    <string name="system_bar_home_label" msgid="8413273833405495948">"主畫面"</string>
-    <string name="system_bar_phone_label" msgid="5664288201806823777">"手機"</string>
-    <string name="system_bar_applications_label" msgid="7081862804211786227">"應用程式"</string>
-    <string name="system_bar_climate_control_label" msgid="4091187805919276017">"溫度控制項"</string>
-    <string name="system_bar_notifications_label" msgid="6039158514903928210">"通知"</string>
-    <string name="system_bar_maps_label" msgid="7883864993280235380">"地圖"</string>
-    <string name="system_bar_media_label" msgid="6156112139796274847">"媒體"</string>
-    <string name="hvac_decrease_button_label" msgid="5628481079099995286">"調低溫度"</string>
-    <string name="hvac_increase_button_label" msgid="2855688290787396792">"調高溫度"</string>
-    <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"藍牙設定：已中斷連接"</string>
-    <string name="status_icon_bluetooth_connected" msgid="4548446117525711779">"藍牙設定：已連接"</string>
-    <string name="status_icon_bluetooth_off" msgid="5435041393564635821">"藍牙設定：已關閉藍牙"</string>
-    <string name="status_icon_signal_mobile" msgid="7264721079060179783">"訊號設定：正在使用流動數據"</string>
-    <string name="status_icon_signal_wifi" msgid="1257569337648058522">"訊號設定：已開啟 Wi-Fi"</string>
-    <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"訊號設定：已開啟熱點"</string>
-    <string name="status_icon_display_status" msgid="2970020923181359144">"顯示設定"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"您無法在駕駛時使用此功能"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"關閉應用程式"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"返回"</string>

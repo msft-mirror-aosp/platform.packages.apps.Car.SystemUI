@@ -58,6 +58,7 @@ android_library {
         "SystemUI-proto",
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
+        "animationlib",
     ],
 
     libs: [

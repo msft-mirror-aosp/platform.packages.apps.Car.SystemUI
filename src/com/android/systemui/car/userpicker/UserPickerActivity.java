@@ -20,6 +20,7 @@ import static android.view.WindowManager.LayoutParams.SYSTEM_FLAG_HIDE_NON_SYSTE
 
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_CHANGE_USER;
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_LOGOUT;
+import static com.android.systemui.car.users.CarSystemUIUserUtil.isMUPANDSystemUI;
 
 import android.app.Activity;
 import android.content.Context;
@@ -154,7 +155,7 @@ public class UserPickerActivity extends Activity implements Dumpable {
 
     @VisibleForTesting
     void init() {
-        mIsDriver = getDisplayId() == mDisplayTracker.getDefaultDisplayId();
+        mIsDriver = !isMUPANDSystemUI() && getDisplayId() == mDisplayTracker.getDefaultDisplayId();
         LayoutInflater inflater = LayoutInflater.from(this);
         mRootView = inflater.inflate(R.layout.user_picker, null);
         if (getWindow() != null) {

@@ -75,6 +75,15 @@ public final class CarSystemUIUserUtil {
     }
 
     /**
+     * Helper function that returns {@code true} if the current instance of SystemUI is running as
+     * the system user on a MUPAND system.
+     */
+    public static boolean isMUPANDSystemUI() {
+        return UserManager.isVisibleBackgroundUsersOnDefaultDisplayEnabled()
+                && Process.myUserHandle().isSystem();
+    }
+
+    /**
      * Helper function that returns {@code true} if the specified displayId is associated with the
      * current SystemUI instance.
      */

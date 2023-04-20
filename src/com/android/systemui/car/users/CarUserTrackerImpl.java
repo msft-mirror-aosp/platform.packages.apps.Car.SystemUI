@@ -30,18 +30,20 @@ import com.android.systemui.settings.UserTrackerImpl;
  *
  */
 public class CarUserTrackerImpl extends UserTrackerImpl {
-    private final boolean mIsSecondaryUserSystemUI;
+    // Indicates whether or not a UserTracker instance should ignore user switch events. This is
+    // typically used for background users who should not be influenced by foreground user switches.
+    private final boolean mShouldIgnoreUserSwitch;
 
     public CarUserTrackerImpl(Context context, UserManager userManager,
             IActivityManager iActivityManager, DumpManager dumpManager,
-            Handler backgroundHandler, boolean isSecondaryUserSystemUI) {
+            Handler backgroundHandler, boolean ignoreUserSwitch) {
         super(context, userManager, iActivityManager, dumpManager, backgroundHandler);
-        mIsSecondaryUserSystemUI = isSecondaryUserSystemUI;
+        mShouldIgnoreUserSwitch = ignoreUserSwitch;
     }
 
     @Override
     public void handleBeforeUserSwitching(int newUserId) {
-        if (mIsSecondaryUserSystemUI) {
+        if (mShouldIgnoreUserSwitch) {
             // Secondary user SystemUI instances are not running on foreground users, so they should
             // not be impacted by foreground user switches.
             return;
@@ -51,7 +53,7 @@ public class CarUserTrackerImpl extends UserTrackerImpl {
 
     @Override
     public void handleUserSwitching(int newUserId) {
-        if (mIsSecondaryUserSystemUI) {
+        if (mShouldIgnoreUserSwitch) {
             // Secondary user SystemUI instances are not running on foreground users, so they should
             // not be impacted by foreground user switches.
             return;
@@ -61,7 +63,7 @@ public class CarUserTrackerImpl extends UserTrackerImpl {
 
     @Override
     public void handleUserSwitchComplete(int newUserId) {
-        if (mIsSecondaryUserSystemUI) {
+        if (mShouldIgnoreUserSwitch) {
             // Secondary user SystemUI instances are not running on foreground users, so they should
             // not be impacted by foreground user switches.
             return;
@@ -71,7 +73,7 @@ public class CarUserTrackerImpl extends UserTrackerImpl {
 
     @Override
     protected void handleProfilesChanged() {
-        if (mIsSecondaryUserSystemUI) {
+        if (mShouldIgnoreUserSwitch) {
             // Profile changes are only sent for the primary user, so they should be ignored by
             // secondary users.
             return;

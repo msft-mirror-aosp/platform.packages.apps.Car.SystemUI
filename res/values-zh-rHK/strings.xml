@@ -27,8 +27,8 @@
     <string name="end_session" msgid="2765206020435441421">"結束工作時段"</string>
     <string name="car_new_user" msgid="6766334721724989964">"新設定檔"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"要新增設定檔嗎？"</string>
-    <string name="user_add_user_message_setup" msgid="6136074867764164790">"建立新設定檔後使用者需要自行自訂。"</string>
-    <string name="user_add_user_message_update" msgid="3310089453006545712">"任何設定檔都可以為其他所有設定檔更新應用程式。"</string>
+    <string name="user_add_user_message_setup" msgid="1639791240776969175">"新增設定檔後，帳戶持有人便可進行自訂。"</string>
+    <string name="user_add_user_message_update" msgid="4507063398890966360">"任何設定檔均可安裝應用程式更新，隨後便可供所有設定檔使用。"</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"已達設定檔數量上限"</string>
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{只可建立一個設定檔。}other{您可建立最多 # 個設定檔。}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"正在載入"</string>
@@ -94,23 +94,29 @@
     <string name="user_logout_message" msgid="7804089876692575056">"此操作會關閉所有已開啟的應用程式"</string>
     <string name="user_logout" msgid="2934184154258330491">"登出"</string>
     <string name="car_guest" msgid="768913000117469596">"訪客"</string>
-    <string name="user_switching_message" msgid="634395959804046394">"切換使用者"</string>
-    <string name="user_adding_message" msgid="7328589666615053611">"正在新增使用者"</string>
-    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"已達到使用者上限"</string>
-    <string name="max_user_limit_reached_message" msgid="644904407853005163">"最多可增加 "</string>
-    <string name="confirm_add_user_title" msgid="1237839494207086048">"新增使用者？"</string>
-    <string name="already_logged_in_message" msgid="2440895716293348878">"已登入其他顯示屏"</string>
-    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"選擇個人檔案以開始"</string>
-    <string name="logged_in_text" msgid="932290859654786874">"已登入"</string>
-    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"<xliff:g id="SEAT_LOCATION">%s</xliff:g>正在使用"</string>
-    <string name="create_user_failed_message" msgid="7107927788723239958">"目前無法新增使用者。請稍後再試。"</string>
-    <string name="guest_creation_failed_message" msgid="124079314799870297">"請稍後再嘗試以訪客身份登入"</string>
-    <string name="stopping_user_text" msgid="8582746159702773548">"正在停止"</string>
-    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"請等待使用者停止"</string>
+    <string name="user_switching_message" msgid="5346172662613832946">"正在切換設定檔…"</string>
+    <string name="user_adding_message" msgid="4700853604381151415">"正在新增設定檔…"</string>
+    <string name="max_user_limit_reached_title" msgid="7319012467112549458"></string>
+    <string name="max_user_limit_reached_message" msgid="1445188223628919167">"您可建立最多 <xliff:g id="USER_LIMIT">%d</xliff:g> 個設定檔"</string>
+    <string name="confirm_add_user_title" msgid="75853419607883551">"要新增設定檔嗎？"</string>
+    <string name="already_logged_in_message" msgid="3657131706472825219">"如要繼續，<xliff:g id="USER_NAME">%1$s</xliff:g> 必須登出<xliff:g id="SEAT_LOCATION">%2$s</xliff:g>螢幕"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="3903097856063608991">"選取要啟動的設定檔"</string>
+    <string name="logged_in_text" msgid="742324514947999718">"已登入"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="7438545665671460955">"已登入<xliff:g id="SEAT_LOCATION">%s</xliff:g>螢幕"</string>
+    <string name="create_user_failed_message" msgid="4539847475822170735">"無法新增設定檔。請稍後再試。"</string>
+    <string name="guest_creation_failed_message" msgid="8198126434029601949">"無法啟動訪客設定檔。請稍後再試。"</string>
+    <string name="stopping_user_text" msgid="4946464635279894684">"正在登出…"</string>
+    <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"正在將 <xliff:g id="USER_NAME">%s</xliff:g> 登出。請稍後再試。"</string>
     <string name="seat_driver" msgid="4502591979520445677">"司機座位"</string>
     <string name="seat_front" msgid="836133281052793377">"前排座位"</string>
     <string name="seat_rear" msgid="403133444964528577">"車尾座位"</string>
     <string name="seat_left_side" msgid="7460757956924015769">"左側座位"</string>
     <string name="seat_center_side" msgid="6661501442901282386">"中間座位"</string>
     <string name="seat_right_side" msgid="6735434879559763096">"右側座位"</string>
+    <string name="keyguard_enter_your_pin" msgid="141736439348916894"></string>
+    <string name="keyguard_enter_your_pattern" msgid="4004401928097798697"></string>
+    <string name="keyguard_enter_your_password" msgid="1345546935461513721"></string>
+    <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"請輸入 PIN"</string>
+    <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"請畫出圖案"</string>
+    <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"請輸入密碼"</string>
 </resources>

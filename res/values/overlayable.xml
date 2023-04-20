@@ -150,7 +150,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="privacy_chip_indicator_color"/>
       <item type="color" name="privacy_chip_indicator_outside_stroke_color"/>
       <item type="color" name="privacy_chip_light_icon_color"/>
-      <item type="color" name="status_bar_background_color"/>
       <item type="color" name="status_icon_highlighted_color"/>
       <item type="color" name="status_icon_not_highlighted_color"/>
       <item type="color" name="status_icon_panel_bg_color"/>

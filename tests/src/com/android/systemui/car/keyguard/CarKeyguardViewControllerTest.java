@@ -85,7 +85,7 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
 
         when(mKeyguardBouncerFactory.create(
                 any(ViewGroup.class),
-                any(KeyguardBouncer.BouncerExpansionCallback.class)))
+                any(KeyguardBouncer.PrimaryBouncerExpansionCallback.class)))
                 .thenReturn(mBouncer);
         when(mSystemUIOverlayWindowController.getBaseLayout()).thenReturn(mockBaseLayout);
         mExecutor = new FakeExecutor(new FakeSystemClock());

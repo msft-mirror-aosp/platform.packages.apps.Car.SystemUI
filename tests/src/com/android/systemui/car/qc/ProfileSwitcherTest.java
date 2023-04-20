@@ -37,8 +37,8 @@ import android.car.user.UserSwitchResult;
 import android.car.util.concurrent.AsyncFuture;
 import android.content.Intent;
 import android.content.pm.UserInfo;
-import android.os.UserManager;
 import android.os.UserHandle;
+import android.os.UserManager;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 
@@ -177,6 +177,25 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     }
 
     @Test
+    public void switchAllowed_orderUsersByCreationTime() {
+        UserInfo user1 = generateUser(1001, "User2", /* supportsSwitch= */ true,
+                /* isGuest= */ false);
+        UserInfo user2 = generateUser(1000, "User1", /* supportsSwitch= */ true,
+                /* isGuest= */ false);
+        mAliveUsers.add(user1);
+        mAliveUsers.add(user2);
+        List<QCRow> rows = getProfileRows();
+        // Expect four rows - one for each user, one for the guest user, and one for add user
+        assertThat(rows).hasSize(4);
+        assertThat(rows.get(0).getTitle()).isEqualTo("User2");
+        assertThat(rows.get(1).getTitle()).isEqualTo("User1");
+        assertThat(rows.get(2).getTitle()).isEqualTo(
+                mContext.getString(com.android.internal.R.string.guest_name));
+        assertThat(rows.get(3).getTitle()).isEqualTo(
+                mContext.getString(R.string.car_add_user));
+    }
+
+    @Test
     public void switchAllowed_userNotSwitchable_returnsValidRows() {
         UserInfo user1 = generateUser(1000, "User1", /* supportsSwitch= */ true,
                 /* isGuest= */ false);
@@ -304,6 +323,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         UserInfo info = mock(UserInfo.class);
         info.id = id;
         info.name = name;
+        info.creationTime = System.currentTimeMillis();
         when(info.supportsSwitchToByUser()).thenReturn(supportsSwitch);
         when(info.isGuest()).thenReturn(isGuest);
         return info;

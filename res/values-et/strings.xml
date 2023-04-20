@@ -27,8 +27,8 @@
     <string name="end_session" msgid="2765206020435441421">"Lõpeta seanss"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Uus profiil"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Kas lisada uus profiil?"</string>
-    <string name="user_add_user_message_setup" msgid="6136074867764164790">"Pärast uue profiili loomist saab kasutaja selle endale sobivaks kohandada."</string>
-    <string name="user_add_user_message_update" msgid="3310089453006545712">"Rakendusi saab värskendada mis tahes profiililt ja neid saavad kasutada kõik muud profiilid."</string>
+    <string name="user_add_user_message_setup" msgid="1639791240776969175">"Pärast uue profiili lisamist saab konto omanik seda kohandada."</string>
+    <string name="user_add_user_message_update" msgid="4507063398890966360">"Iga profiil saab installida rakenduse värskenduse, mis on seejärel saadaval kõigile profiilidele."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"Profiilide maksimaalne arv on täis"</string>
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Luua saab ainult ühe profiili.}other{Võite lisada kuni # profiili.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Laadimine"</string>
@@ -94,23 +94,29 @@
     <string name="user_logout_message" msgid="7804089876692575056">"Sellega suletakse kõik avatud rakendused"</string>
     <string name="user_logout" msgid="2934184154258330491">"Logi välja"</string>
     <string name="car_guest" msgid="768913000117469596">"Külaline"</string>
-    <string name="user_switching_message" msgid="634395959804046394">"Kasutaja vahetamine"</string>
-    <string name="user_adding_message" msgid="7328589666615053611">"Uue kasutaja lisamine"</string>
-    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"Kasutajate limiit on täis"</string>
-    <string name="max_user_limit_reached_message" msgid="644904407853005163">"Saate lisada kuni "</string>
-    <string name="confirm_add_user_title" msgid="1237839494207086048">"Kas lisada uus kasutaja?"</string>
-    <string name="already_logged_in_message" msgid="2440895716293348878">"Teisel ekraanil juba sisse logitud"</string>
-    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"Valige alustuseks profiil"</string>
-    <string name="logged_in_text" msgid="932290859654786874">"Sisse logitud"</string>
-    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"Seda kasutab <xliff:g id="SEAT_LOCATION">%s</xliff:g>"</string>
-    <string name="create_user_failed_message" msgid="7107927788723239958">"Kasutajat ei saanud praegu lisada. Proovige mõne aja pärast uuesti."</string>
-    <string name="guest_creation_failed_message" msgid="124079314799870297">"Proovige mõne aja pärast külalisena sisse logida"</string>
-    <string name="stopping_user_text" msgid="8582746159702773548">"Peatumine"</string>
-    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"Oodake, kuni kasutaja on peatunud"</string>
+    <string name="user_switching_message" msgid="5346172662613832946">"Profiili vahetamine …"</string>
+    <string name="user_adding_message" msgid="4700853604381151415">"Uue profiili lisamine …"</string>
+    <string name="max_user_limit_reached_title" msgid="7319012467112549458"></string>
+    <string name="max_user_limit_reached_message" msgid="1445188223628919167">"Saate lisada kuni <xliff:g id="USER_LIMIT">%d</xliff:g> profiili"</string>
+    <string name="confirm_add_user_title" msgid="75853419607883551">"Kas lisada uus profiil?"</string>
+    <string name="already_logged_in_message" msgid="3657131706472825219">"Jätkamiseks peab kasutaja <xliff:g id="USER_NAME">%1$s</xliff:g> logima kuval <xliff:g id="SEAT_LOCATION">%2$s</xliff:g> välja"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="3903097856063608991">"Alustamiseks valige profiil"</string>
+    <string name="logged_in_text" msgid="742324514947999718">"Sisse logitud"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="7438545665671460955">"Kuval <xliff:g id="SEAT_LOCATION">%s</xliff:g> sisse logitud"</string>
+    <string name="create_user_failed_message" msgid="4539847475822170735">"Uut profiili ei saa lisada. Proovige hiljem uuesti."</string>
+    <string name="guest_creation_failed_message" msgid="8198126434029601949">"Külalise profiili ei saa käivitada. Proovige hiljem uuesti."</string>
+    <string name="stopping_user_text" msgid="4946464635279894684">"Väljalogimine …"</string>
+    <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"Kasutaja <xliff:g id="USER_NAME">%s</xliff:g> väljalogimine on pooleli. Proovige hiljem uuesti."</string>
     <string name="seat_driver" msgid="4502591979520445677">"juht"</string>
     <string name="seat_front" msgid="836133281052793377">"eesmine"</string>
     <string name="seat_rear" msgid="403133444964528577">"tagumine"</string>
     <string name="seat_left_side" msgid="7460757956924015769">"vasak"</string>
     <string name="seat_center_side" msgid="6661501442901282386">"keskmine"</string>
     <string name="seat_right_side" msgid="6735434879559763096">"parem"</string>
+    <string name="keyguard_enter_your_pin" msgid="141736439348916894"></string>
+    <string name="keyguard_enter_your_pattern" msgid="4004401928097798697"></string>
+    <string name="keyguard_enter_your_password" msgid="1345546935461513721"></string>
+    <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"Sisestage PIN-kood"</string>
+    <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"Sisestage muster"</string>
+    <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"Sisestage parool"</string>
 </resources>

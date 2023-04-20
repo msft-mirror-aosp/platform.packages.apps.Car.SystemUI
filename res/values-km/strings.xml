@@ -27,8 +27,8 @@
     <string name="end_session" msgid="2765206020435441421">"បញ្ចប់​សម័យ"</string>
     <string name="car_new_user" msgid="6766334721724989964">"កម្រងព័ត៌មាន​ថ្មី"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"បញ្ចូល​កម្រងព័ត៌មានថ្មី​ឬ?"</string>
-    <string name="user_add_user_message_setup" msgid="6136074867764164790">"បន្ទាប់ពីអ្នកបង្កើតកម្រងព័ត៌មានថ្មី បុគ្គលនោះគួរតែប្ដូរកម្រងព័ត៌មាននោះតាមបំណងសម្រាប់ខ្លួនគាត់ផ្ទាល់។"</string>
-    <string name="user_add_user_message_update" msgid="3310089453006545712">"កម្មវិធីអាចត្រូវដំឡើងកំណែពីកម្រងព័ត៌មានទាំងឡាយសម្រាប់ប្រើប្រាស់ដោយកម្រងព័ត៌មានផ្សេងទៀតទាំងអស់។"</string>
+    <string name="user_add_user_message_setup" msgid="1639791240776969175">"បន្ទាប់ពីអ្នកបញ្ចូលកម្រងព័ត៌មានថ្មី ម្ចាស់គណនីអាចប្ដូរវាបានតាមបំណង។"</string>
+    <string name="user_add_user_message_update" msgid="4507063398890966360">"កម្រងព័ត៌មានមួយណាក៏អាចដំឡើងកំណែកម្មវិធីថ្មីបានដែរ ដែលក្រោយមកនឹងអាចប្រើបានដោយកម្រងព័ត៌មានទាំងអស់។"</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"បានឈានដល់​ដែនកំណត់នៃកម្រងព័ត៌មានហើយ"</string>
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{អាចបង្កើតកម្រងព័ត៌មានបានតែ​មួយ​ប៉ុណ្ណោះ។}other{អ្នកអាច​បញ្ចូល​កម្រងព័ត៌មាន​បានរហូតដល់ #។}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"កំពុងផ្ទុក"</string>
@@ -94,23 +94,29 @@
     <string name="user_logout_message" msgid="7804089876692575056">"ការធ្វើបែបនេះ​នឹងបិទកម្មវិធី​ដែលបើកទាំងអស់"</string>
     <string name="user_logout" msgid="2934184154258330491">"ចេញពីគណនី"</string>
     <string name="car_guest" msgid="768913000117469596">"ភ្ញៀវ"</string>
-    <string name="user_switching_message" msgid="634395959804046394">"កំពុងប្ដូរអ្នកប្រើប្រាស់"</string>
-    <string name="user_adding_message" msgid="7328589666615053611">"កំពុងបញ្ចូល​អ្នកប្រើប្រាស់ថ្មី"</string>
-    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"​បាន​ឈាន​ដល់ចំនួន​កំណត់អ្នកប្រើប្រាស់"</string>
-    <string name="max_user_limit_reached_message" msgid="644904407853005163">"អ្នកអាចបញ្ចូល​បានរហូតដល់ "</string>
-    <string name="confirm_add_user_title" msgid="1237839494207086048">"បញ្ចូល​អ្នកប្រើប្រាស់​ថ្មីឬ?"</string>
-    <string name="already_logged_in_message" msgid="2440895716293348878">"បានចូលគណនីក្នុង​ឧបករណ៍បញ្ចាំង​ផ្សេងទៀតរួចហើយ"</string>
-    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"ជ្រើសរើស​កម្រងព័ត៌មាន ដើម្បីចាប់ផ្ដើម"</string>
-    <string name="logged_in_text" msgid="932290859654786874">"បានចូលគណនី"</string>
-    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"កំពុងប្រើដោយ <xliff:g id="SEAT_LOCATION">%s</xliff:g>"</string>
-    <string name="create_user_failed_message" msgid="7107927788723239958">"មិនអាចបញ្ចូល​អ្នកប្រើប្រាស់​ឥឡូវនេះបានទេ។ សាកល្បង បន្ទាប់ពីនេះបន្តិច។"</string>
-    <string name="guest_creation_failed_message" msgid="124079314799870297">"ព្យាយាមចូលគណនីជាភ្ញៀវ បន្ទាប់ពីនេះបន្តិច"</string>
-    <string name="stopping_user_text" msgid="8582746159702773548">"កំពុងឈប់"</string>
-    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"សូមរង់ចាំ រហូតដល់​អ្នកប្រើប្រាស់​ត្រូវបានបញ្ឈប់"</string>
+    <string name="user_switching_message" msgid="5346172662613832946">"កំពុងប្ដូរកម្រងព័ត៌មាន…"</string>
+    <string name="user_adding_message" msgid="4700853604381151415">"កំពុងបញ្ចូលកម្រងព័ត៌មានថ្មី…"</string>
+    <string name="max_user_limit_reached_title" msgid="7319012467112549458"></string>
+    <string name="max_user_limit_reached_message" msgid="1445188223628919167">"អ្នកអាចបញ្ចូលកម្រងព័ត៌មានបានរហូតដល់ <xliff:g id="USER_LIMIT">%d</xliff:g>"</string>
+    <string name="confirm_add_user_title" msgid="75853419607883551">"បញ្ចូល​កម្រងព័ត៌មានថ្មី​ឬ?"</string>
+    <string name="already_logged_in_message" msgid="3657131706472825219">"ដើម្បីបន្ត <xliff:g id="USER_NAME">%1$s</xliff:g> គួរតែចេញពីគណនីនៃអេក្រង់របស់<xliff:g id="SEAT_LOCATION">%2$s</xliff:g>"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="3903097856063608991">"ជ្រើសរើសកម្រងព័ត៌មានដើម្បីចាប់ផ្ដើម"</string>
+    <string name="logged_in_text" msgid="742324514947999718">"បានចូលគណនី"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="7438545665671460955">"បានចូលគណនីនៅលើអេក្រង់របស់<xliff:g id="SEAT_LOCATION">%s</xliff:g>"</string>
+    <string name="create_user_failed_message" msgid="4539847475822170735">"មិនអាចបញ្ចូលកម្រងព័ត៌មានថ្មីបានទេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។"</string>
+    <string name="guest_creation_failed_message" msgid="8198126434029601949">"មិនអាចចាប់ផ្ដើមកម្រងព័ត៌មានភ្ញៀវបានទេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។"</string>
+    <string name="stopping_user_text" msgid="4946464635279894684">"កំពុង​ចេញពីគណនី…"</string>
+    <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> កំពុងចេញពីគណនី។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។"</string>
     <string name="seat_driver" msgid="4502591979520445677">"អ្នកបើកបរ"</string>
     <string name="seat_front" msgid="836133281052793377">"មុខ"</string>
     <string name="seat_rear" msgid="403133444964528577">"ក្រោយ"</string>
     <string name="seat_left_side" msgid="7460757956924015769">"ឆ្វេង"</string>
     <string name="seat_center_side" msgid="6661501442901282386">"កណ្តាល"</string>
     <string name="seat_right_side" msgid="6735434879559763096">"ស្តាំ"</string>
+    <string name="keyguard_enter_your_pin" msgid="141736439348916894"></string>
+    <string name="keyguard_enter_your_pattern" msgid="4004401928097798697"></string>
+    <string name="keyguard_enter_your_password" msgid="1345546935461513721"></string>
+    <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"បញ្ចូល​កូដ PIN របស់​អ្នក"</string>
+    <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"បញ្ចូល​លំនាំ​របស់​អ្នក"</string>
+    <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"បញ្ចូល​ពាក្យ​សម្ងាត់​របស់អ្នក"</string>
 </resources>

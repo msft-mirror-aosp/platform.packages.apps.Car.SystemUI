@@ -27,8 +27,8 @@
     <string name="end_session" msgid="2765206020435441421">"Sitzung beenden"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Neues Profil"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Neues Profil hinzufügen?"</string>
-    <string name="user_add_user_message_setup" msgid="6136074867764164790">"Wenn du ein neues Profil hinzufügst, sollte diese Person ihr Profil noch selbst einrichten."</string>
-    <string name="user_add_user_message_update" msgid="3310089453006545712">"Apps können von jedem Profil aus aktualisiert und dann von allen Profilen genutzt werden."</string>
+    <string name="user_add_user_message_setup" msgid="1639791240776969175">"Wenn du ein neues Profil hinzugefügt hast, kann es der Kontoinhaber personalisieren."</string>
+    <string name="user_add_user_message_update" msgid="4507063398890966360">"App-Updates können über jedes Profil installiert werden und sind dann für alle Profile verfügbar."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"Maximale Profilanzahl erreicht"</string>
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Du kannst maximal ein Profil erstellen.}other{Du kannst maximal # Profile hinzufügen.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Wird geladen"</string>
@@ -94,23 +94,29 @@
     <string name="user_logout_message" msgid="7804089876692575056">"Dadurch werden alle geöffneten Apps geschlossen"</string>
     <string name="user_logout" msgid="2934184154258330491">"Abmelden"</string>
     <string name="car_guest" msgid="768913000117469596">"Gast"</string>
-    <string name="user_switching_message" msgid="634395959804046394">"Nutzer wird gewechselt"</string>
-    <string name="user_adding_message" msgid="7328589666615053611">"Neuer Nutzer wird hinzugefügt"</string>
-    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"Nutzerlimit erreicht"</string>
-    <string name="max_user_limit_reached_message" msgid="644904407853005163">"Du kannst Folgendes hinzufügen: "</string>
-    <string name="confirm_add_user_title" msgid="1237839494207086048">"Neuen Nutzer hinzufügen?"</string>
-    <string name="already_logged_in_message" msgid="2440895716293348878">"Du bist bereits auf einem anderen Display angemeldet"</string>
-    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"Wähle zuerst ein Profil aus"</string>
-    <string name="logged_in_text" msgid="932290859654786874">"Angemeldet"</string>
-    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"Verwendet von <xliff:g id="SEAT_LOCATION">%s</xliff:g>"</string>
-    <string name="create_user_failed_message" msgid="7107927788723239958">"Nutzer konnte nicht hinzugefügt werden. Versuche es später noch einmal."</string>
-    <string name="guest_creation_failed_message" msgid="124079314799870297">"Versuche, dich später als Gast anzumelden"</string>
-    <string name="stopping_user_text" msgid="8582746159702773548">"Wird beendet"</string>
-    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"Bitte warte, bis der Nutzer gestoppt wurde"</string>
+    <string name="user_switching_message" msgid="5346172662613832946">"Profil wird gewechselt..."</string>
+    <string name="user_adding_message" msgid="4700853604381151415">"Neues Profil wird hinzugefügt…"</string>
+    <string name="max_user_limit_reached_title" msgid="7319012467112549458"></string>
+    <string name="max_user_limit_reached_message" msgid="1445188223628919167">"Du kannst maximal <xliff:g id="USER_LIMIT">%d</xliff:g> Profile hinzufügen"</string>
+    <string name="confirm_add_user_title" msgid="75853419607883551">"Neues Profil hinzufügen?"</string>
+    <string name="already_logged_in_message" msgid="3657131706472825219">"Zum Fortfahren muss sich <xliff:g id="USER_NAME">%1$s</xliff:g> vom Bildschirm „<xliff:g id="SEAT_LOCATION">%2$s</xliff:g>“ abmelden"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="3903097856063608991">"Zum Starten Profil auswählen"</string>
+    <string name="logged_in_text" msgid="742324514947999718">"Angemeldet"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="7438545665671460955">"Auf dem Bildschirm „<xliff:g id="SEAT_LOCATION">%s</xliff:g>“ angemeldet"</string>
+    <string name="create_user_failed_message" msgid="4539847475822170735">"Es konnte kein neues Profil hinzugefügt werden. Bitte versuche es später noch einmal."</string>
+    <string name="guest_creation_failed_message" msgid="8198126434029601949">"Es konnte kein Gastprofil gestartet werden. Bitte versuche es später noch einmal."</string>
+    <string name="stopping_user_text" msgid="4946464635279894684">"Abmeldung erfolgt…"</string>
+    <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> wird abgemeldet. Bitte versuche es später noch einmal."</string>
     <string name="seat_driver" msgid="4502591979520445677">"Fahrer"</string>
     <string name="seat_front" msgid="836133281052793377">"vorne"</string>
     <string name="seat_rear" msgid="403133444964528577">"hinten"</string>
     <string name="seat_left_side" msgid="7460757956924015769">"links"</string>
     <string name="seat_center_side" msgid="6661501442901282386">"in der Mitte"</string>
     <string name="seat_right_side" msgid="6735434879559763096">"rechts"</string>
+    <string name="keyguard_enter_your_pin" msgid="141736439348916894"></string>
+    <string name="keyguard_enter_your_pattern" msgid="4004401928097798697"></string>
+    <string name="keyguard_enter_your_password" msgid="1345546935461513721"></string>
+    <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"PIN eingeben"</string>
+    <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"Muster eingeben"</string>
+    <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"Passwort eingeben"</string>
 </resources>

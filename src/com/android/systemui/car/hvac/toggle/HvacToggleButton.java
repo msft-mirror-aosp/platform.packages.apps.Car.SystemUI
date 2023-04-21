@@ -44,12 +44,14 @@ public abstract class HvacToggleButton<PropertyType> extends ImageButton impleme
     protected static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;
     private static final String TAG = "HvacToggleButton";
     private static final int INVALID_ID = -1;
+    private static final int VEHICLE_AREA_MASK = 0x0f000000;
+    private static final int VEHICLE_AREA_SEAT = 0x05000000;
 
     private int mPropertyId;
     private int mAreaId;
     private boolean mIsOn;
-    private boolean mPowerOn;
-    private boolean mAutoOn;
+    private boolean mPowerOn = false;
+    private boolean mAutoOn = false;
     private boolean mTurnOffIfPowerOff;
     private boolean mTurnOffIfAutoOn;
     private Drawable mOnDrawable;
@@ -128,12 +130,14 @@ public abstract class HvacToggleButton<PropertyType> extends ImageButton impleme
     protected abstract boolean isToggleOn();
 
     protected boolean shouldAllowControl() {
-        if (mTurnOffIfPowerOff && !mPowerOn) {
-            return false;
-        }
+        if ((mPropertyId & VEHICLE_AREA_MASK) == VEHICLE_AREA_SEAT) {
+            if (mTurnOffIfPowerOff && !mPowerOn) {
+                return false;
+            }
 
-        if (mTurnOffIfAutoOn && mAutoOn) {
-            return false;
+            if (mTurnOffIfAutoOn && mAutoOn) {
+                return false;
+            }
         }
 
         return true;

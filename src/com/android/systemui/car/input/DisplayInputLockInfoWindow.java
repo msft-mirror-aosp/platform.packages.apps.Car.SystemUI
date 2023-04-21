@@ -41,8 +41,8 @@ import android.widget.TextView;
 
 import androidx.annotation.MainThread;
 
+import com.android.app.animation.Interpolators;
 import com.android.systemui.R;
-import com.android.systemui.animation.Interpolators;
 
 /**
  * An implementation to show a lock icon on the screen when user touches it,
@@ -82,8 +82,9 @@ public final class DisplayInputLockInfoWindow {
         mHandler = context.getMainThreadHandler();
         // Construct an instance of WindowManager to add the input lock info window of
         // TYPE_SYSTEM_OVERLAY to the Display `display`.
-        mWindowManager = context.createWindowContext(display, TYPE_SYSTEM_OVERLAY,
-                /* options= */ null).getSystemService(WindowManager.class);
+        mWindowManager = context.createDisplayContext(display)
+                .createWindowContext(TYPE_SYSTEM_OVERLAY, /* options= */ null)
+                .getSystemService(WindowManager.class);
         mLockInfoViewGroup = (ViewGroup) LayoutInflater.from(context)
                 .inflate(R.layout.display_input_locked, /* root= */ null);
         mLockIconView = mLockInfoViewGroup.findViewById(R.id.display_input_lock_icon);
@@ -194,5 +195,11 @@ public final class DisplayInputLockInfoWindow {
         // The lock icon view is animated only if the container view {@code mLockInfoViewGroup} has
         // already been laid out. If it hasn't been laid out, it hasn't been drawn to screen yet.
         return mLockInfoViewGroup.isLaidOut();
+    }
+
+    @Override
+    public String toString() {
+        return mLp.getTitle() + "{shown=" + mIsShown
+                + ", transitioning=" + mIsTransitioningToHide + "}";
     }
 }

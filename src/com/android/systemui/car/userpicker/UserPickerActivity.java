@@ -16,10 +16,12 @@
 
 package com.android.systemui.car.userpicker;
 
+import static android.view.WindowManager.LayoutParams.SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS;
+
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_CHANGE_USER;
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_LOGOUT;
+import static com.android.systemui.car.users.CarSystemUIUserUtil.isMUPANDSystemUI;
 
-import android.annotation.NonNull;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -28,15 +30,24 @@ import android.util.Log;
 import android.util.Slog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
+import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+
+import com.android.systemui.Dumpable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.statusicon.ui.UserPickerReadOnlyIconsController;
 import com.android.systemui.car.userpicker.UserPickerController.Callbacks;
+import com.android.systemui.dump.DumpManager;
 import com.android.systemui.settings.DisplayTracker;
 
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -48,24 +59,38 @@ import javax.inject.Inject;
  * It has user picker controller object for the executed display, and cleans it up
  * when the activity is destroyed.
  */
-public final class UserPickerActivity extends Activity {
+public class UserPickerActivity extends Activity implements Dumpable {
     private static final String TAG = UserPickerActivity.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     private UserPickerActivityComponent mUserPickerActivityComponent;
-
-    private UserPickerController mController;
-    private SnackbarManager mSnackbarManager;
-    private DialogManager mDialogManager;
+    private boolean mIsDriver;
 
     @Inject
+    UserPickerReadOnlyIconsController mUserPickerReadOnlyIconsController;
+    @Inject
     DisplayTracker mDisplayTracker;
-    private UserPickerAdapter mAdapter;
-    private UserPickerView mUserPickerView;
-    private View mRootView;
-    private View mHeaderBarTextForLogout;
-    private View mLogoutButton;
-    private View mBackButton;
+    @Inject
+    DumpManager mDumpManager;
+
+    @VisibleForTesting
+    UserPickerController mController;
+    @VisibleForTesting
+    SnackbarManager mSnackbarManager;
+    @VisibleForTesting
+    DialogManager mDialogManager;
+    @VisibleForTesting
+    UserPickerAdapter mAdapter;
+    @VisibleForTesting
+    UserPickerView mUserPickerView;
+    @VisibleForTesting
+    View mRootView;
+    @VisibleForTesting
+    View mHeaderBarTextForLogout;
+    @VisibleForTesting
+    View mLogoutButton;
+    @VisibleForTesting
+    View mBackButton;
 
     @Inject
     UserPickerActivity(
@@ -74,7 +99,7 @@ public final class UserPickerActivity extends Activity {
             CarServiceProvider carServiceProvider,
             UserPickerSharedState userPickerSharedState
     ) {
-        super();
+        this();
         mUserPickerActivityComponent = DaggerUserPickerActivityComponent.builder()
                 .context(context)
                 .carServiceProvider(carServiceProvider)
@@ -88,6 +113,10 @@ public final class UserPickerActivity extends Activity {
         mController = mUserPickerActivityComponent.userPickerController();
     }
 
+    @VisibleForTesting
+    UserPickerActivity() {
+        super();
+    }
 
     private final Callbacks mCallbacks = new Callbacks() {
         @Override
@@ -119,34 +148,63 @@ public final class UserPickerActivity extends Activity {
         }
 
         super.onCreate(savedInstanceState);
+        setShowWhenLocked(true);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        init();
+    }
 
+    @VisibleForTesting
+    void init() {
+        mIsDriver = !isMUPANDSystemUI() && getDisplayId() == mDisplayTracker.getDefaultDisplayId();
         LayoutInflater inflater = LayoutInflater.from(this);
         mRootView = inflater.inflate(R.layout.user_picker, null);
-        setContentView(mRootView);
+        if (getWindow() != null) {
+            setContentView(mRootView);
+            initWindow();
+        }
 
-        initWindow();
         initManagers(mRootView);
         initViews();
         initController();
 
         mController.onConfigurationChanged();
+        String dumpableName = TAG + "#" + getDisplayId();
+        mDumpManager.unregisterDumpable(dumpableName);
+        mDumpManager.registerNormalDumpable(dumpableName, /* module= */ this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getWindow().addSystemFlags(SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS);
     }
 
     private void initViews() {
         View powerBtn = mRootView.findViewById(R.id.power_button_icon_view);
         powerBtn.setOnClickListener(v -> mController.screenOffDisplay());
+        if (mIsDriver) {
+            powerBtn.setVisibility(View.GONE);
+        }
         mHeaderBarTextForLogout = mRootView.findViewById(R.id.message);
 
         mLogoutButton = mRootView.findViewById(R.id.logout_button_icon_view);
         mLogoutButton.setOnClickListener(v -> mController.logoutUser());
 
         mBackButton = mRootView.findViewById(R.id.back_button);
-        mBackButton.setOnClickListener(v -> finishAndRemoveTask());
+        mBackButton.setOnClickListener(v -> {
+            finishAndRemoveTask();
+        });
 
         mUserPickerView = (UserPickerView) mRootView.findViewById(R.id.user_picker);
-        mAdapter = new UserPickerAdapter(this);
+        mAdapter = createUserPickerAdapter();
         mUserPickerView.setAdapter(mAdapter);
+
+        ViewGroup statusIconContainer = mRootView
+                .findViewById(R.id.user_picker_status_icon_container);
+        if (statusIconContainer != null && mUserPickerReadOnlyIconsController != null) {
+            mUserPickerReadOnlyIconsController.addIconViews(statusIconContainer,
+                    /* shouldAttachPanel= */ false);
+        }
     }
 
     private void initWindow() {
@@ -161,11 +219,26 @@ public final class UserPickerActivity extends Activity {
 
     private void initManagers(View rootView) {
         mDialogManager.initContextFromView(rootView);
-        mSnackbarManager.setRootView(rootView);
+        mSnackbarManager.setRootView(rootView, R.id.user_picker_bottom_bar);
     }
 
     private void initController() {
         mController.init(mCallbacks, getDisplayId());
+    }
+
+    @VisibleForTesting
+    UserPickerAdapter createUserPickerAdapter() {
+        return new UserPickerAdapter(this);
+    }
+
+    @Override
+    protected void onStop() {
+        Window window = getWindow();
+        WindowManager.LayoutParams attrs = window.getAttributes();
+        attrs.privateFlags &= ~SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS;
+        window.setAttributes(attrs);
+
+        super.onStop();
     }
 
     @Override
@@ -179,6 +252,7 @@ public final class UserPickerActivity extends Activity {
         if (mDialogManager != null) {
             mDialogManager.clearAllDialogs();
         }
+        mDumpManager.unregisterDumpable(TAG + "#" + getDisplayId());
 
         super.onDestroy();
     }
@@ -190,23 +264,32 @@ public final class UserPickerActivity extends Activity {
         mController.onConfigurationChanged();
     }
 
-    private void setupHeaderBar(HeaderState headerState) {
+    @VisibleForTesting
+    void setupHeaderBar(HeaderState headerState) {
         int state = headerState.getState();
         switch (state) {
             case HEADER_STATE_LOGOUT:
                 mHeaderBarTextForLogout.setVisibility(View.VISIBLE);
-                mBackButton.setVisibility(View.INVISIBLE);
-                if (getDisplayId() != mDisplayTracker.getDefaultDisplayId()) {
-                    mLogoutButton.setVisibility(View.INVISIBLE);
-                }
+                mBackButton.setVisibility(View.GONE);
+                mLogoutButton.setVisibility(View.GONE);
                 break;
             case HEADER_STATE_CHANGE_USER:
-                mHeaderBarTextForLogout.setVisibility(View.INVISIBLE);
+                mHeaderBarTextForLogout.setVisibility(View.GONE);
                 mBackButton.setVisibility(View.VISIBLE);
-                if (getDisplayId() != mDisplayTracker.getDefaultDisplayId()) {
+                if (!mIsDriver) {
                     mLogoutButton.setVisibility(View.VISIBLE);
                 }
                 break;
+        }
+    }
+
+    @Override
+    public void dump(@NonNull PrintWriter pw, @NonNull String[] args) {
+        if (mController != null) {
+            mController.dump(pw);
+        }
+        if (mUserPickerView != null && mUserPickerView.getAdapter() != null) {
+            ((UserPickerAdapter) mUserPickerView.getAdapter()).dump(pw);
         }
     }
 }

@@ -19,6 +19,9 @@ package com.android.systemui.car.qc;
 import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.systemui.car.privacy.CameraQcPanel;
 import com.android.systemui.car.privacy.MicQcPanel;
+import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.car.statusicon.ui.MobileSignalStatusIconController;
+import com.android.systemui.car.statusicon.ui.WifiSignalStatusIconController;
 
 import dagger.Binds;
 import dagger.Module;
@@ -57,4 +60,18 @@ public abstract class QuickControlsModule {
     @ClassKey(DriveModeQcPanel.class)
     public abstract BaseLocalQCProvider bindDriveModeQcPanel(
             DriveModeQcPanel driveModeQcPanel);
+
+    /** Injects MobileSignalStatusIconController. */
+    @Binds
+    @IntoMap
+    @ClassKey(MobileSignalStatusIconController.class)
+    public abstract StatusIconController bindMobileSignalStatusIconController(
+            MobileSignalStatusIconController mobileSignalStatusIconController);
+
+    /** Injects WifiSignalStatusIconController. */
+    @Binds
+    @IntoMap
+    @ClassKey(WifiSignalStatusIconController.class)
+    public abstract StatusIconController bindWifiSignalStatusIconController(
+            WifiSignalStatusIconController wifiSignalStatusIconController);
 }

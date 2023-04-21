@@ -17,27 +17,38 @@
 <androidx.constraintlayout.motion.widget.MotionLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/immersive_cam_indicator"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent"
+    android:layout_height="@dimen/fullscreen_indicator_height"
+    android:layout_width="@dimen/fullscreen_indicator_container_width"
     android:layout_marginTop="@dimen/fullscreen_indicator_padding_vertical"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    app:layoutDescription="@xml/immersive_camera_scene">
+    app:layoutDescription="@xml/immersive_privacy_chip_scene">
     <ImageView
-        android:id="@+id/immersive_privacy_camera"
+        android:id="@+id/immersive_privacy_microphone"
         android:contentDescription="@null"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
+        android:layout_height="@dimen/fullscreen_indicator_height"
+        android:layout_width="@dimen/fullscreen_indicator_width"
         android:scaleType="center"
-        android:src="@drawable/ic_camera_dark"
+        android:src="@drawable/ic_mic_dark"
         android:background="@drawable/privacy_chip_active_background_pill"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
     <ImageView
-        android:id="@+id/immersive_privacy_camera_dot"
+        android:id="@+id/immersive_privacy_camera"
+        android:contentDescription="@null"
+        android:layout_height="@dimen/fullscreen_indicator_height"
+        android:layout_width="@dimen/fullscreen_indicator_width"
+        android:scaleType="center"
+        android:src="@drawable/ic_camera_dark"
+        android:background="@drawable/privacy_chip_active_background_pill"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <ImageView
+        android:id="@+id/immersive_privacy_dot"
         android:contentDescription="@null"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"

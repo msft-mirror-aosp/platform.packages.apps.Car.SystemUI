@@ -28,10 +28,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
+
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.qc.SystemUIQCViewController;
+import com.android.systemui.car.statusicon.ui.QCPanelReadOnlyIconsController;
+import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointContainer;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
@@ -53,36 +58,62 @@ import javax.inject.Provider;
 public abstract class StatusIconGroupContainerController {
     private final Context mContext;
     private final UserTracker mUserTracker;
+    private final CarServiceProvider mCarServiceProvider;
     private final Resources mResources;
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final ConfigurationController mConfigurationController;
     private final Provider<SystemUIQCViewController> mQCViewControllerProvider;
     private final Map<Class<?>, Provider<StatusIconController>> mIconControllerCreators;
-    private final String mIconTag;
-    private final String[] mStatusIconControllerNames;
+    private String mIconTag;
+    private String[] mStatusIconControllerNames;
     private final Set<StatusIconPanelController> mStatusIconPanelControllers;
     private Map<String, View> mStatusIconViewClassMap;
+    @Nullable
+    private final QCPanelReadOnlyIconsController mQCPanelReadOnlyIconsController;
 
     public StatusIconGroupContainerController(
             Context context,
             UserTracker userTracker,
+            CarServiceProvider carServiceProvider,
             @Main Resources resources,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider,
             Map<Class<?>, Provider<StatusIconController>> iconControllerCreators) {
+        this(context, userTracker, carServiceProvider, resources, broadcastDispatcher,
+                configurationController, qcViewControllerProvider, iconControllerCreators,
+                /* qcPanelReadOnlyIconsController= */ null);
+    }
+
+    public StatusIconGroupContainerController(
+            Context context,
+            UserTracker userTracker,
+            CarServiceProvider carServiceProvider,
+            @Main Resources resources,
+            BroadcastDispatcher broadcastDispatcher,
+            ConfigurationController configurationController,
+            Provider<SystemUIQCViewController> qcViewControllerProvider,
+            Map<Class<?>, Provider<StatusIconController>> iconControllerCreators,
+            QCPanelReadOnlyIconsController qcPanelReadOnlyIconsController) {
         mContext = context;
         mUserTracker = userTracker;
+        mCarServiceProvider = carServiceProvider;
         mResources = resources;
         mBroadcastDispatcher = broadcastDispatcher;
         mConfigurationController = configurationController;
         mQCViewControllerProvider = qcViewControllerProvider;
         mIconControllerCreators = iconControllerCreators;
+        mQCPanelReadOnlyIconsController = qcPanelReadOnlyIconsController;
+
+        initResources();
+        mStatusIconViewClassMap = new HashMap<>();
+        mStatusIconPanelControllers = new HashSet<>();
+    }
+
+    private void initResources() {
         mIconTag = mResources.getString(R.string.qc_icon_tag);
         mStatusIconControllerNames = mResources.getStringArray(
                 getStatusIconControllersStringArray());
-        mStatusIconViewClassMap = new HashMap<>();
-        mStatusIconPanelControllers = new HashSet<>();
     }
 
     private static <T> T resolve(String className, Map<Class<?>, Provider<T>> creators) {
@@ -132,11 +163,26 @@ public abstract class StatusIconGroupContainerController {
             if (shouldAttachPanel
                     && statusIconController.getPanelContentLayout() != PANEL_CONTENT_LAYOUT_NONE) {
                 StatusIconPanelController panelController = new StatusIconPanelController(mContext,
-                        mUserTracker, mBroadcastDispatcher, mConfigurationController,
-                        mQCViewControllerProvider);
-                panelController.attachPanel(entryPointView,
-                        statusIconController.getPanelContentLayout(),
-                        statusIconController.getPanelWidth());
+                        mUserTracker, mCarServiceProvider, mBroadcastDispatcher,
+                        mConfigurationController, mQCViewControllerProvider,
+                        /* isDisabledWhileDriving= */ false, mQCPanelReadOnlyIconsController);
+                if (containerViewGroup instanceof QuickControlsEntryPointContainer) {
+                    QuickControlsEntryPointContainer qcEntryPointContainer =
+                            (QuickControlsEntryPointContainer) containerViewGroup;
+                    int gravity = qcEntryPointContainer.getPanelGravity();
+                    boolean showAsDropDown = qcEntryPointContainer.showAsDropDown();
+                    int offset = mContext.getResources().getDimensionPixelSize(
+                            R.dimen.car_quick_controls_panel_margin);
+                    panelController.attachPanel(entryPointView,
+                            statusIconController.getPanelContentLayout(),
+                            statusIconController.getPanelWidth(),
+                            /* xOffset= */ offset, /* yOffset= */ offset, gravity, showAsDropDown);
+                } else {
+                    panelController.attachPanel(entryPointView,
+                            statusIconController.getPanelContentLayout(),
+                            statusIconController.getPanelWidth());
+                }
+
                 mStatusIconPanelControllers.add(panelController);
             }
             containerViewGroup.addView(entryPointView);
@@ -167,6 +213,7 @@ public abstract class StatusIconGroupContainerController {
         }
         mStatusIconPanelControllers.clear();
         mStatusIconViewClassMap.clear();
+        initResources();
     }
 
     @ArrayRes

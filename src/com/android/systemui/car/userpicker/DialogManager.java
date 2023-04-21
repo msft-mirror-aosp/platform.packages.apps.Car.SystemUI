@@ -34,6 +34,8 @@ import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.systemui.R;
 
 import java.lang.annotation.Retention;
@@ -60,7 +62,8 @@ final class DialogManager {
     @Retention(RetentionPolicy.SOURCE)
     public @interface DialogType {}
 
-    private final UserPickerDialogs mUserPickerDialogs = new UserPickerDialogs();
+    @VisibleForTesting
+    final UserPickerDialogs mUserPickerDialogs = new UserPickerDialogs();
 
     private String mUserSwitchingMessage;
     private String mUserAddingMessage;
@@ -178,7 +181,7 @@ final class DialogManager {
                 message = mUserAddingMessage;
                 break;
             case DIALOG_TYPE_MAX_USER_COUNT_REACHED:
-                message = mMaxUserLimitReachedMessage + getMaxSupportedUsers();
+                message = String.format(mMaxUserLimitReachedMessage, getMaxSupportedUsers());
                 break;
             case DIALOG_TYPE_CONFIRM_ADD_USER:
                 message = mConfirmAddUserMessage;
@@ -258,7 +261,8 @@ final class DialogManager {
         mUserPickerDialogs.clear();
     }
 
-    private final class UserPickerDialogs {
+    @VisibleForTesting
+    final class UserPickerDialogs {
         final SparseArray<Dialog> mDialogs = new SparseArray<>();
 
         Dialog get(int type) {

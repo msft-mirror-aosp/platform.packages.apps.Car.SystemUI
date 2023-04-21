@@ -47,6 +47,8 @@ import android.util.Pair;
 import android.util.Slog;
 import android.view.Display;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 
@@ -95,7 +97,8 @@ final class CarServiceMediator {
         updateTexts();
     }
 
-    private void onConnect(Car car) {
+    @VisibleForTesting
+    void onConnect(Car car) {
         mCarOccupantZoneManager = car.getCarManager(CarOccupantZoneManager.class);
         mCarUserManager = car.getCarManager(CarUserManager.class);
         mCarPowerManager = car.getCarManager(CarPowerManager.class);

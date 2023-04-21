@@ -20,7 +20,6 @@ import android.content.Context;
 import android.os.Process;
 import android.os.UserHandle;
 
-import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.GlobalRootComponent;
 import com.android.systemui.dagger.SysUIComponent;
 import com.android.systemui.dagger.WMComponent;
@@ -47,12 +46,8 @@ public class CarSystemUIInitializer extends SystemUIInitializer {
         CarWMComponent carWm = (CarWMComponent) wm;
         initWmComponents(carWm);
         boolean isSystemUser = UserHandle.myUserId() == UserHandle.USER_SYSTEM;
-        // For non-system process of system UI, initialize the WM components here, as the
-        // SystemUIInitializer#init() does not call it, but is required to run ShellInit#init()
-        // to initialize the necessary callbacks for DisplayIme and DisplayInsets.
-        if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
-            getWMComponent().init();
-        }
+        //Note: The WMComponents are only initialized for user-0/system-user.
+
         return ((CarSysUIComponent.Builder) sysUIBuilder).setRootTaskDisplayAreaOrganizer(
                         isSystemUser ? Optional.of(carWm.getRootTaskDisplayAreaOrganizer())
                                 : Optional.empty())
@@ -61,7 +56,6 @@ public class CarSystemUIInitializer extends SystemUIInitializer {
 
     private void initWmComponents(CarWMComponent carWm) {
         carWm.getDisplaySystemBarsController();
-        carWm.getMDSystemBarController();
         if (Process.myUserHandle().isSystem()) {
             carWm.getCarSystemUIProxy();
         }

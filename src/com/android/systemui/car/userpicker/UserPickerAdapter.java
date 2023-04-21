@@ -16,23 +16,26 @@
 
 package com.android.systemui.car.userpicker;
 
-import android.annotation.NonNull;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import com.android.systemui.R;
 import com.android.systemui.car.userpicker.UserPickerView.UserPickerAdapterViewHolder;
 
+import java.io.PrintWriter;
 import java.util.List;
 
 final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
 
     // TODO<b/254526109>: Temporary Res Duplicate to QuickContorols. Remove them in phase 2.
-    private static final int[] USER_PICKER_USER_COLORS = {
+    @VisibleForTesting
+    static final int[] USER_PICKER_USER_COLORS = {
             R.color.userpicker_color_1,
             R.color.userpicker_color_2,
             R.color.userpicker_color_3,
@@ -42,10 +45,12 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
             R.color.userpicker_color_7,
             R.color.userpicker_color_8
     };
-    private static final int USER_PICKER_GUEST_COLOR = R.color.userpicker_guest_color;
+    @VisibleForTesting
+    static final int USER_PICKER_GUEST_COLOR = R.color.userpicker_guest_color;
 
     private final Context mContext;
     private final int mDisplayId;
+    private final float mDisabledAlpha;
 
     private List<UserRecord> mUsers;
     private String mLoggedInText;
@@ -55,6 +60,7 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
     UserPickerAdapter(Context context) {
         mContext = context;
         mDisplayId = mContext.getDisplayId();
+        mDisabledAlpha = mContext.getResources().getFloat(R.fraction.user_picker_disabled_alpha);
 
         updateTexts();
     }
@@ -67,6 +73,7 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
         if (!userRecord.mIsStopping && !userRecord.mIsLoggedIn) {
             holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
             holder.mLoggedInTextView.setText("");
+            updateAlpha(holder, /* disabled= */ false);
             return;
         }
 
@@ -76,19 +83,29 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
             holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
             holder.mLoggedInTextView.setTextColor(color);
             holder.mLoggedInTextView.setText(mStoppingUserText);
+            updateAlpha(holder, /* disabled= */ true);
         } else if (userRecord.mIsLoggedIn) {
             if (userRecord.mLoggedInDisplay == mDisplayId) {
                 holder.mUserBorderImageView.setColorFilter(color);
                 holder.mUserBorderImageView.setVisibility(View.VISIBLE);
                 holder.mLoggedInTextView.setTextColor(color);
                 holder.mLoggedInTextView.setText(mLoggedInText);
+                updateAlpha(holder, /* disabled= */ false);
             } else {
                 holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
                 holder.mLoggedInTextView.setTextColor(color);
                 holder.mLoggedInTextView.setText(String.format(mPrefixOtherSeatLoggedInInfo,
                         userRecord.mSeatLocationName));
+                updateAlpha(holder, /* disabled= */ true);
             }
         }
+    }
+
+    private void updateAlpha(UserPickerAdapterViewHolder holder, boolean disabled) {
+        float alpha = disabled ? mDisabledAlpha : 1.0f;
+        holder.mUserAvatarImageView.setAlpha(alpha);
+        holder.mUserNameTextView.setAlpha(alpha);
+        holder.mLoggedInTextView.setAlpha(alpha);
     }
 
     @Override
@@ -124,5 +141,13 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
         mPrefixOtherSeatLoggedInInfo = mContext
                 .getString(R.string.prefix_logged_in_info_for_other_seat);
         mStoppingUserText = mContext.getString(R.string.stopping_user_text);
+    }
+
+    void dump(@NonNull PrintWriter pw) {
+        pw.println("  UserRecords : ");
+        for (int i = 0; i < mUsers.size(); i++) {
+            UserRecord userRecord = mUsers.get(i);
+            pw.println("    " + userRecord.toString());
+        }
     }
 }

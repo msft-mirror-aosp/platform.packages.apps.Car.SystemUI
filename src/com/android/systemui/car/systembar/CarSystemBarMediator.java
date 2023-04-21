@@ -69,8 +69,14 @@ public class CarSystemBarMediator implements CoreStartable {
         if (DEBUG) {
             Log.d(TAG, "start(), toggle RRO package:" + rroPackageName);
         }
-        mOverlayManager.setEnabled(rroPackageName, false, mUserTracker.getUserHandle());
-        mOverlayManager.setEnabled(rroPackageName, true, mUserTracker.getUserHandle());
+        try {
+            mOverlayManager.setEnabled(rroPackageName, false, mUserTracker.getUserHandle());
+            mOverlayManager.setEnabled(rroPackageName, true, mUserTracker.getUserHandle());
+        } catch (IllegalArgumentException ex) {
+            Log.w(TAG, "Failed to set overlay package: " + ex);
+            mCarSystemBar.start();
+            mCarSystemBarStarted = true;
+        }
     }
 
     @Override

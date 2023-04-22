@@ -24,8 +24,9 @@
     <string name="hvac_temperature_off" msgid="8370977023494579242">"DESATIVADO"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Reconhecimento de voz agora através do disp. Bluetooth lig."</string>
     <string name="car_add_user" msgid="6182764665687382136">"Adicionar perfil"</string>
+    <string name="end_session" msgid="2765206020435441421">"Terminar sessão"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Novo perfil"</string>
-    <string name="user_add_profile_title" msgid="828371911076521952">"Quer adicionar o novo perfil?"</string>
+    <string name="user_add_profile_title" msgid="828371911076521952">"Adicionar o novo perfil?"</string>
     <string name="user_add_user_message_setup" msgid="6136074867764164790">"Depois de criar um novo perfil, deve ser a pessoa em questão a personalizá-lo."</string>
     <string name="user_add_user_message_update" msgid="3310089453006545712">"As apps podem ser atualizadas a partir de qualquer perfil para utilização por todos os perfis."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"Limite de perfis atingido"</string>
@@ -55,6 +56,22 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"OK"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Ativar a câmara do veículo?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Para continuar, ative a câmara do sistema de infoentretenimento. Esta ação irá ativar a câmara para todas as apps que têm autorização."</string>
+    <string name="system_bar_home_label" msgid="8413273833405495948">"Ecrã principal"</string>
+    <string name="system_bar_phone_label" msgid="5664288201806823777">"Telefone"</string>
+    <string name="system_bar_applications_label" msgid="7081862804211786227">"Aplicações"</string>
+    <string name="system_bar_climate_control_label" msgid="4091187805919276017">"Controlo de climatização"</string>
+    <string name="system_bar_notifications_label" msgid="6039158514903928210">"Notificações"</string>
+    <string name="system_bar_maps_label" msgid="7883864993280235380">"Mapas"</string>
+    <string name="system_bar_media_label" msgid="6156112139796274847">"Multimédia"</string>
+    <string name="hvac_decrease_button_label" msgid="5628481079099995286">"Diminuir a temperatura"</string>
+    <string name="hvac_increase_button_label" msgid="2855688290787396792">"Aumentar a temperatura"</string>
+    <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"Definição do Bluetooth: desligado"</string>
+    <string name="status_icon_bluetooth_connected" msgid="4548446117525711779">"Definição do Bluetooth: ligado"</string>
+    <string name="status_icon_bluetooth_off" msgid="5435041393564635821">"Definição do Bluetooth: Bluetooth desligado"</string>
+    <string name="status_icon_signal_mobile" msgid="7264721079060179783">"Definições do sinal: utilização de dados móveis"</string>
+    <string name="status_icon_signal_wifi" msgid="1257569337648058522">"Definições do sinal: Wi-Fi ativado"</string>
+    <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"Definições do sinal: zona Wi-Fi ativada"</string>
+    <string name="status_icon_display_status" msgid="2970020923181359144">"Definições do ecrã"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Não pode usar esta funcionalidade enquanto conduz"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Fechar app"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Anterior"</string>

@@ -25,6 +25,7 @@ import android.hardware.input.InputManager;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 
+import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.shared.system.TaskStackChangeListener;
 import com.android.systemui.shared.system.TaskStackChangeListeners;
@@ -39,6 +40,7 @@ import com.android.systemui.statusbar.AlphaOptimizedImageView;
 public class AppGridButton extends CarSystemBarButton {
     private final InputManager mInputManager;
     private final ComponentName mRecentsComponentName;
+    private final TaskStackChangeListener mTaskStackChangeListener;
     private boolean mIsRecentsActive;
 
     public AppGridButton(Context context, AttributeSet attrs) {
@@ -46,23 +48,24 @@ public class AppGridButton extends CarSystemBarButton {
         mInputManager = context.getSystemService(InputManager.class);
         mRecentsComponentName = ComponentName.unflattenFromString(context.getString(
                 com.android.internal.R.string.config_recentsComponentName));
-        TaskStackChangeListeners.getInstance().registerTaskStackListener(
-                new TaskStackChangeListener() {
-                    @Override
-                    public void onTaskMovedToFront(ActivityManager.RunningTaskInfo taskInfo) {
-                        if (mRecentsComponentName == null) {
-                            return;
-                        }
-                        if (mRecentsComponentName.getClassName().equals(
-                                taskInfo.topActivity.getClassName())) {
-                            mIsRecentsActive = true;
-                            return;
-                        }
-                        if (mIsRecentsActive) {
-                            mIsRecentsActive = false;
-                        }
-                    }
-                });
+        mTaskStackChangeListener = new TaskStackChangeListener() {
+            @Override
+            public void onTaskMovedToFront(ActivityManager.RunningTaskInfo taskInfo) {
+                if (mRecentsComponentName == null) {
+                    return;
+                }
+                ComponentName topComponent =
+                        taskInfo.topActivity != null ? taskInfo.topActivity
+                                : taskInfo.baseIntent.getComponent();
+                if (topComponent != null && mRecentsComponentName.getClassName().equals(
+                        topComponent.getClassName())) {
+                    mIsRecentsActive = true;
+                    return;
+                }
+                mIsRecentsActive = false;
+            }
+        };
+        TaskStackChangeListeners.getInstance().registerTaskStackListener(mTaskStackChangeListener);
     }
 
     @Override
@@ -112,5 +115,20 @@ public class AppGridButton extends CarSystemBarButton {
         mInputManager.injectInputEvent(
                 new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_APP_SWITCH),
                 InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+    }
+
+    @VisibleForTesting
+    void setIsRecentsActive(boolean isRecentsActive) {
+        mIsRecentsActive = isRecentsActive;
+    }
+
+    @VisibleForTesting
+    boolean getIsRecentsActive() {
+        return mIsRecentsActive;
+    }
+
+    @VisibleForTesting
+    TaskStackChangeListener getTaskStackChangeListener() {
+        return mTaskStackChangeListener;
     }
 }

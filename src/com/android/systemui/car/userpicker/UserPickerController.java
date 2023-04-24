@@ -150,6 +150,7 @@ final class UserPickerController {
             mIsUserPickerClickable = false;
             handleUserSelected(userRecord);
         } else {
+            Slog.w(TAG, "Unsuccessful UserCreationResult:" + result.toString());
             // Show snack bar message for the failure of user creation.
             runOnMainHandler(REQ_SHOW_SNACKBAR,
                     mContext.getString(R.string.create_user_failed_message));
@@ -400,6 +401,13 @@ final class UserPickerController {
                     runOnMainHandler(REQ_SHOW_SWITCHING_DIALOG);
                     UserCreationResult creationResult = mUserEventManager.createGuest();
                     if (creationResult == null || !creationResult.isSuccess()) {
+                        if (creationResult == null) {
+                            Slog.w(TAG, "Guest UserCreationResult is null");
+                        } else if (!creationResult.isSuccess()) {
+                            Slog.w(TAG, "Unsuccessful guest UserCreationResult: "
+                                    + creationResult.toString());
+                        }
+
                         runOnMainHandler(REQ_DISMISS_SWITCHING_DIALOG);
                         // Show snack bar message for the failure of guest creation.
                         runOnMainHandler(REQ_SHOW_SNACKBAR,

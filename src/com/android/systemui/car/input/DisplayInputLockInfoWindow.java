@@ -41,8 +41,8 @@ import android.widget.TextView;
 
 import androidx.annotation.MainThread;
 
-import com.android.app.animation.Interpolators;
 import com.android.systemui.R;
+import com.android.systemui.animation.Interpolators;
 
 /**
  * An implementation to show a lock icon on the screen when user touches it,

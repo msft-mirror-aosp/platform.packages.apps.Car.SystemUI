@@ -109,7 +109,7 @@ public final class CarSystemUIProxyImpl
     }
 
     @Override
-    public CarTaskViewHost createCarTaskView(CarTaskViewClient carTaskViewClient) {
+    public CarTaskViewHost createControlledCarTaskView(CarTaskViewClient carTaskViewClient) {
         RemoteCarTaskViewServerImpl remoteCarTaskViewServerImpl =
                 new RemoteCarTaskViewServerImpl(
                         mContext,

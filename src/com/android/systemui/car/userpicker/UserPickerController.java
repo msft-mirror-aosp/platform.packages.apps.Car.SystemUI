@@ -23,6 +23,7 @@ import static android.view.Display.INVALID_DISPLAY;
 
 import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_ADDING_USER;
 import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_CONFIRM_ADD_USER;
+import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_CONFIRM_LOGOUT;
 import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_MAX_USER_COUNT_REACHED;
 import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_SWITCHING;
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_CHANGE_USER;
@@ -265,14 +266,21 @@ final class UserPickerController {
         mIsUserPickerClickable = false;
         int userId = mCarServiceMediator.getUserForDisplay(mDisplayId);
         if (userId != INVALID_USER_ID) {
-            mUserPickerSharedState.resetUserLoginStarted(mDisplayId);
-            mUserEventManager.stopUserUnchecked(userId, mDisplayId);
-            mUserEventManager.runUpdateUsersOnMainThread(userId, 0);
-            mIsUserPickerClickable = true;
-            mHeaderState.setState(HEADER_STATE_LOGOUT);
+            mDialogManager.showDialog(
+                    DIALOG_TYPE_CONFIRM_LOGOUT,
+                    () -> logoutUserInternal(userId),
+                    () -> mIsUserPickerClickable = true);
         } else {
             mIsUserPickerClickable = true;
         }
+    }
+
+    private void logoutUserInternal(int userId) {
+        mUserPickerSharedState.resetUserLoginStarted(mDisplayId);
+        mUserEventManager.stopUserUnchecked(userId, mDisplayId);
+        mUserEventManager.runUpdateUsersOnMainThread(userId, 0);
+        mIsUserPickerClickable = true;
+        mHeaderState.setState(HEADER_STATE_LOGOUT);
     }
 
     @VisibleForTesting

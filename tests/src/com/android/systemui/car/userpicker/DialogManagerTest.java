@@ -123,4 +123,14 @@ public class DialogManagerTest extends UserPickerTestCase {
         verify(mDialogManager).dismissDialog(eq(dialogtype));
         assertThat(mDialogManager.mUserPickerDialogs.get(dialogtype)).isNull();
     }
+
+    @Test
+    public void showConfirmLogoutDialog_callShowConfirmLogoutDialog() {
+        int dialogtype = mDialogManager.DIALOG_TYPE_CONFIRM_LOGOUT;
+        assertThat(mDialogManager.mUserPickerDialogs.get(dialogtype)).isNull();
+        mDialogManager.showDialog(dialogtype);
+
+        verify(mDialogManager).showDialog(eq(dialogtype));
+        assertThat(mDialogManager.mUserPickerDialogs.get(dialogtype)).isNotNull();
+    }
 }

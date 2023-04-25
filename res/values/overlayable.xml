@@ -325,6 +325,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="hvac_icon_drawable_width"/>
       <item type="dimen" name="hvac_max_value_celsius"/>
       <item type="dimen" name="hvac_min_value_celsius"/>
+      <item type="dimen" name="hvac_min_value_fahrenheit"/>
       <item type="dimen" name="hvac_panel_bottom_padding"/>
       <item type="dimen" name="hvac_panel_button_dimen"/>
       <item type="dimen" name="hvac_panel_button_height"/>

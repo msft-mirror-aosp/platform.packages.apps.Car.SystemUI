@@ -24,6 +24,7 @@ import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_LOGOU
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.when;
 
 import android.content.res.Configuration;
 import android.testing.AndroidTestingRunner;
@@ -69,18 +70,18 @@ public class UserPickerActivityHeaderTest extends UserPickerTestCase {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        when(mMockDisplayTracker.getDefaultDisplayId()).thenReturn(MAIN_DISPLAY_ID);
 
         mHeaderstate = new HeaderState(mMockCallbacks);
 
         mUserPickerActivity = new UserPickerTestActivity(mContext,
                 mMockUserPickerController, mMockUserPickerAdapter, mMockDialogManager,
                 mMockSnackbarManager, mMockDisplayTracker, mMockDumpManager);
-        mUserPickerActivity.init();
     }
 
     @Test
     public void pressBackButton_changeUserState_finishActivity() {
-        doReturn(FRONT_PASSENGER_DISPLAY_ID).when(mContext).getDisplayId();
+        init(/* isPassenger= */ true);
         mHeaderstate.setState(HEADER_STATE_CHANGE_USER);
         mUserPickerActivity.setupHeaderBar(mHeaderstate);
 
@@ -92,6 +93,7 @@ public class UserPickerActivityHeaderTest extends UserPickerTestCase {
 
     @Test
     public void checkButtonsVisibility_logoutState_invisibleButtons() {
+        init(/* isPassenger= */ true);
         mHeaderstate.setState(HEADER_STATE_LOGOUT);
         mUserPickerActivity.setupHeaderBar(mHeaderstate);
 
@@ -101,7 +103,7 @@ public class UserPickerActivityHeaderTest extends UserPickerTestCase {
 
     @Test
     public void checkTextView_changeUserState_invisibleTextView() {
-        doReturn(FRONT_PASSENGER_DISPLAY_ID).when(mContext).getDisplayId();
+        init(/* isPassenger= */ true);
         mHeaderstate.setState(HEADER_STATE_CHANGE_USER);
         mUserPickerActivity.setupHeaderBar(mHeaderstate);
 
@@ -111,6 +113,7 @@ public class UserPickerActivityHeaderTest extends UserPickerTestCase {
 
     @Test
     public void checkTextView_logoutState_visibleTextView() {
+        init(/* isPassenger= */ true);
         mHeaderstate.setState(HEADER_STATE_LOGOUT);
         mUserPickerActivity.setupHeaderBar(mHeaderstate);
 
@@ -120,8 +123,7 @@ public class UserPickerActivityHeaderTest extends UserPickerTestCase {
 
     @Test
     public void logoutUser_pressLogoutButton_stopUser() {
-        doNothing().when(mMockUserPickerController).logoutUser();
-        doReturn(FRONT_PASSENGER_DISPLAY_ID).when(mContext).getDisplayId();
+        init(/* isPassenger= */ true);
         mHeaderstate.setState(HEADER_STATE_CHANGE_USER);
         mUserPickerActivity.setupHeaderBar(mHeaderstate);
 
@@ -134,7 +136,7 @@ public class UserPickerActivityHeaderTest extends UserPickerTestCase {
     @Test
     public void pressPowerButton_screenOff() {
         doNothing().when(mMockUserPickerController).screenOffDisplay();
-        doReturn(FRONT_PASSENGER_DISPLAY_ID).when(mContext).getDisplayId();
+        init(/* isPassenger= */ true);
         mHeaderstate.setState(HEADER_STATE_CHANGE_USER);
         mUserPickerActivity.setupHeaderBar(mHeaderstate);
 
@@ -147,7 +149,7 @@ public class UserPickerActivityHeaderTest extends UserPickerTestCase {
 
     @Test
     public void checkLogoutButton_inDriverSeat_invisibleLogoutButton() {
-        doReturn(MAIN_DISPLAY_ID).when(mContext).getDisplayId();
+        init(/* isPassenger= */ false);
         mHeaderstate.setState(HEADER_STATE_CHANGE_USER);
         mUserPickerActivity.setupHeaderBar(mHeaderstate);
 
@@ -157,7 +159,7 @@ public class UserPickerActivityHeaderTest extends UserPickerTestCase {
 
     @Test
     public void onConfigurationChanged_changeConfiguration_callSetAdapter() {
-        doReturn(FRONT_PASSENGER_DISPLAY_ID).when(mContext).getDisplayId();
+        init(/* isPassenger= */ true);
         mHeaderstate.setState(HEADER_STATE_CHANGE_USER);
         mUserPickerActivity.setupHeaderBar(mHeaderstate);
         // initial settings
@@ -183,5 +185,11 @@ public class UserPickerActivityHeaderTest extends UserPickerTestCase {
         clearInvocations(mMockUserPickerAdapter);
         // reset configuration
         mUserPickerActivity.onConfigurationChanged(origConfiguration);
+    }
+
+    private void init(boolean isPassenger) {
+        int displayId = isPassenger ? FRONT_PASSENGER_DISPLAY_ID : MAIN_DISPLAY_ID;
+        doReturn(displayId).when(mContext).getDisplayId();
+        mUserPickerActivity.init();
     }
 }

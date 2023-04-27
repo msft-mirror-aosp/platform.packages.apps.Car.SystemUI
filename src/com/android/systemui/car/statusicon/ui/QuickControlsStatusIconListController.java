@@ -104,6 +104,8 @@ public class QuickControlsStatusIconListController extends StatusIconController 
         Drawable[] layers = new Drawable[mSubControllers.size()];
         int iconWidth = mContext.getResources().getDimensionPixelSize(
                 R.dimen.car_quick_controls_entry_points_icon_width);
+        int iconSpace = mContext.getResources().getDimensionPixelSize(
+                R.dimen.car_quick_controls_entry_points_icon_space);
         for (int i = 0; i < mSubControllers.size(); i++) {
             // Convert to BitmapDrawable in order to apply insets to drawable that reflects
             // the result of drawing on canvas. Otherwise, insets can only be applied to the
@@ -122,7 +124,7 @@ public class QuickControlsStatusIconListController extends StatusIconController 
         // Align the icons.
         int layerInset = 0;
         for (int i = 1; i < mSubControllers.size(); i++) {
-            layerInset += iconWidth;
+            layerInset += iconWidth + iconSpace;
             drawable.setLayerInsetStart(i, layerInset);
         }
         drawable.setLayerInsetEnd(0, layerInset);

@@ -195,7 +195,7 @@ public class SystemDialogsViewController {
                 return mContext.getString(R.string.monitoring_description_two_named_vpns,
                         vpnName, vpnNameWorkProfile);
             } else {
-                return mContext.getString(R.string.monitoring_description_named_vpn,
+                return mContext.getString(R.string.monitoring_description_managed_device_named_vpn,
                         vpnName != null ? vpnName : vpnNameWorkProfile);
             }
         } else {

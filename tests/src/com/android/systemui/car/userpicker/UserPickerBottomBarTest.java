@@ -21,6 +21,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertNotNull;
 
+import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
@@ -42,6 +43,7 @@ import org.mockito.MockitoAnnotations;
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
+@SmallTest
 public class UserPickerBottomBarTest extends UserPickerTestCase {
     private static final String TAG = UserPickerBottomBarTest.class.getSimpleName();
 

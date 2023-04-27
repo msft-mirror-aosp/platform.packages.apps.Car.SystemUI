@@ -26,6 +26,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.clearInvocations;
 
 import android.content.res.Configuration;
+import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
@@ -47,6 +48,7 @@ import java.util.Locale;
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
+@SmallTest
 public class UserPickerActivityHeaderTest extends UserPickerTestCase {
     private UserPickerTestActivity mUserPickerActivity;
     private HeaderState mHeaderstate;

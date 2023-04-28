@@ -27,8 +27,8 @@
     <string name="end_session" msgid="2765206020435441421">"Phothula isikhathi"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Iphrofayela entsha"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Engeza iphrofayela entsha?"</string>
-    <string name="user_add_user_message_setup" msgid="6136074867764164790">"Ngemva kokuthi wenze iphrofayela entsha, loyo muntu kumele azenzele ngendlela ayifisayo yena."</string>
-    <string name="user_add_user_message_update" msgid="3310089453006545712">"Ama-app angabuyekezwa kunoma iyiphi iphrofayela ukuze asetshenziswe yiwo wonke amanye amaphrofayela."</string>
+    <string name="user_add_user_message_setup" msgid="1639791240776969175">"Ngemva kokwengeza iphrofayela entsha, umnikazi we-akhawunti angayenza ngendlela oyifisayo."</string>
+    <string name="user_add_user_message_update" msgid="4507063398890966360">"Noma iyiphi iphrofayela ingafaka isibuyekezo se-app, esizobe sesitholakala kuwo wonke amaphrofayela."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"Umkhawulo wephrofayela ufinyelelwe"</string>
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Yiphrofayela eyodwa kuphela engenziwa.}one{Ungangeza kufika kumaphrofayela angu-#.}other{Ungangeza kufika kumaphrofayela angu-#.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Iyalayisha"</string>
@@ -94,23 +94,29 @@
     <string name="user_logout_message" msgid="7804089876692575056">"Lokhu kuzovala wonke ama-app avuliwe"</string>
     <string name="user_logout" msgid="2934184154258330491">"Phuma ngemvume"</string>
     <string name="car_guest" msgid="768913000117469596">"Isihambeli"</string>
-    <string name="user_switching_message" msgid="634395959804046394">"Ishintsha umsebenzisi"</string>
-    <string name="user_adding_message" msgid="7328589666615053611">"Ingeza umsebenzisi omusha"</string>
-    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"Kufinyelelwe kumkhawulo womsebenzisi"</string>
-    <string name="max_user_limit_reached_message" msgid="644904407853005163">"Ungangeza kufikela koku- "</string>
-    <string name="confirm_add_user_title" msgid="1237839494207086048">"Engeza umsebenzisi omusha?"</string>
-    <string name="already_logged_in_message" msgid="2440895716293348878">"Usuvele ungene kwesinye isibonisi"</string>
-    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"Khetha iphrofayela ukuze uqale"</string>
-    <string name="logged_in_text" msgid="932290859654786874">"Ungenile"</string>
-    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"Isetshenziswa ngu-<xliff:g id="SEAT_LOCATION">%s</xliff:g>"</string>
-    <string name="create_user_failed_message" msgid="7107927788723239958">"Ayikwazanga ukwengeza umsebenzisi manje. Izame ngemva kwesikhashana."</string>
-    <string name="guest_creation_failed_message" msgid="124079314799870297">"Zama ukungena ngemvume njengesivakashi ngemva kwesikhashana"</string>
-    <string name="stopping_user_text" msgid="8582746159702773548">"iyamisa"</string>
-    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"Sicela ulinde kuze kumiswe umsebenzisi"</string>
+    <string name="user_switching_message" msgid="5346172662613832946">"Ishintsha iphrofayela…"</string>
+    <string name="user_adding_message" msgid="4700853604381151415">"Yengeza iphrofayela entsha…"</string>
+    <string name="max_user_limit_reached_title" msgid="7319012467112549458"></string>
+    <string name="max_user_limit_reached_message" msgid="1445188223628919167">"Ungengeza ukufika kumaphrofayela angu-<xliff:g id="USER_LIMIT">%d</xliff:g>."</string>
+    <string name="confirm_add_user_title" msgid="75853419607883551">"Engeza iphrofayela entsha?"</string>
+    <string name="already_logged_in_message" msgid="3657131706472825219">"Ukuqhubeka, u-<xliff:g id="USER_NAME">%1$s</xliff:g> kumele aphume kusikrini se-<xliff:g id="SEAT_LOCATION">%2$s</xliff:g>"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="3903097856063608991">"Khetha iphrofayela ukuze uqale"</string>
+    <string name="logged_in_text" msgid="742324514947999718">"Ungene ngemvume"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="7438545665671460955">"Ungene ngemvume esikrinini se-<xliff:g id="SEAT_LOCATION">%s</xliff:g>"</string>
+    <string name="create_user_failed_message" msgid="4539847475822170735">"Ayikwazi ukwengeza iphrofayela entsha. Zama futhi ngemuva kwesikhathi."</string>
+    <string name="guest_creation_failed_message" msgid="8198126434029601949">"Ayikwazi ukuqalisa iphrofayela yesivakashi. Zama futhi ngemuva kwesikhathi."</string>
+    <string name="stopping_user_text" msgid="4946464635279894684">"Iphuma ngemvume…"</string>
+    <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"U-<xliff:g id="USER_NAME">%s</xliff:g> ukhishiwe. Zama futhi ngemuva kwesikhathi."</string>
     <string name="seat_driver" msgid="4502591979520445677">"umshayeli"</string>
     <string name="seat_front" msgid="836133281052793377">"phambili"</string>
     <string name="seat_rear" msgid="403133444964528577">"ingemuva"</string>
     <string name="seat_left_side" msgid="7460757956924015769">"kwesokunxele"</string>
     <string name="seat_center_side" msgid="6661501442901282386">"maphakathi"</string>
     <string name="seat_right_side" msgid="6735434879559763096">"kwesokudla"</string>
+    <string name="keyguard_enter_your_pin" msgid="141736439348916894"></string>
+    <string name="keyguard_enter_your_pattern" msgid="4004401928097798697"></string>
+    <string name="keyguard_enter_your_password" msgid="1345546935461513721"></string>
+    <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"Faka Iphinikhodi yakho"</string>
+    <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"Faka iphethini yakho"</string>
+    <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"Faka iphasiwedi yakho"</string>
 </resources>

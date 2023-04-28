@@ -23,6 +23,7 @@ import static android.view.Display.INVALID_DISPLAY;
 
 import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_ADDING_USER;
 import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_CONFIRM_ADD_USER;
+import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_CONFIRM_LOGOUT;
 import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_MAX_USER_COUNT_REACHED;
 import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_SWITCHING;
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_CHANGE_USER;
@@ -150,6 +151,7 @@ final class UserPickerController {
             mIsUserPickerClickable = false;
             handleUserSelected(userRecord);
         } else {
+            Slog.w(TAG, "Unsuccessful UserCreationResult:" + result.toString());
             // Show snack bar message for the failure of user creation.
             runOnMainHandler(REQ_SHOW_SNACKBAR,
                     mContext.getString(R.string.create_user_failed_message));
@@ -265,14 +267,21 @@ final class UserPickerController {
         mIsUserPickerClickable = false;
         int userId = mCarServiceMediator.getUserForDisplay(mDisplayId);
         if (userId != INVALID_USER_ID) {
-            mUserPickerSharedState.resetUserLoginStarted(mDisplayId);
-            mUserEventManager.stopUserUnchecked(userId, mDisplayId);
-            mUserEventManager.runUpdateUsersOnMainThread(userId, 0);
-            mIsUserPickerClickable = true;
-            mHeaderState.setState(HEADER_STATE_LOGOUT);
+            mDialogManager.showDialog(
+                    DIALOG_TYPE_CONFIRM_LOGOUT,
+                    () -> logoutUserInternal(userId),
+                    () -> mIsUserPickerClickable = true);
         } else {
             mIsUserPickerClickable = true;
         }
+    }
+
+    private void logoutUserInternal(int userId) {
+        mUserPickerSharedState.resetUserLoginStarted(mDisplayId);
+        mUserEventManager.stopUserUnchecked(userId, mDisplayId);
+        mUserEventManager.runUpdateUsersOnMainThread(userId, 0);
+        mIsUserPickerClickable = true;
+        mHeaderState.setState(HEADER_STATE_LOGOUT);
     }
 
     @VisibleForTesting
@@ -380,10 +389,15 @@ final class UserPickerController {
             // Second, check user has been already logged-in in another display or is stopping.
             if (userRecord.mIsLoggedIn && userRecord.mLoggedInDisplay != mDisplayId
                     || mUserPickerSharedState.isStoppingUser(userId)) {
-                int messageResId = userRecord.mIsStopping ? R.string.wait_for_until_stopped_message
-                        : R.string.already_logged_in_message;
-                runOnMainHandler(REQ_SHOW_SNACKBAR,
-                        mContext.getString(messageResId));
+                String message;
+                if (userRecord.mIsStopping) {
+                    message = mContext.getString(R.string.wait_for_until_stopped_message,
+                            userRecord.mName);
+                } else {
+                    message = mContext.getString(R.string.already_logged_in_message,
+                            userRecord.mName, userRecord.mSeatLocationName);
+                }
+                runOnMainHandler(REQ_SHOW_SNACKBAR, message);
                 mIsUserPickerClickable = true;
                 return;
             }
@@ -395,6 +409,13 @@ final class UserPickerController {
                     runOnMainHandler(REQ_SHOW_SWITCHING_DIALOG);
                     UserCreationResult creationResult = mUserEventManager.createGuest();
                     if (creationResult == null || !creationResult.isSuccess()) {
+                        if (creationResult == null) {
+                            Slog.w(TAG, "Guest UserCreationResult is null");
+                        } else if (!creationResult.isSuccess()) {
+                            Slog.w(TAG, "Unsuccessful guest UserCreationResult: "
+                                    + creationResult.toString());
+                        }
+
                         runOnMainHandler(REQ_DISMISS_SWITCHING_DIALOG);
                         // Show snack bar message for the failure of guest creation.
                         runOnMainHandler(REQ_SHOW_SNACKBAR,

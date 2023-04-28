@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.hvac;
 
+import static android.car.VehicleAreaType.VEHICLE_AREA_TYPE_GLOBAL;
+import static android.car.VehicleAreaType.VEHICLE_AREA_TYPE_SEAT;
 import static android.car.VehiclePropertyIds.HVAC_ACTUAL_FAN_SPEED_RPM;
 import static android.car.VehiclePropertyIds.HVAC_AC_ON;
 import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
@@ -91,8 +93,6 @@ public class HvacController implements HvacPropertySetter,
                     HVAC_AUTO_RECIRC_ON, HVAC_SEAT_VENTILATION, HVAC_ELECTRIC_DEFROSTER_ON};
     private static final int[] HVAC_PROPERTIES_TO_GET_ON_INIT = {HVAC_POWER_ON, HVAC_AUTO_ON};
     private static final int GLOBAL_AREA_ID = 0;
-    private static final int VEHICLE_AREA_GLOBAL = 0x01000000;
-    private static final int VEHICLE_AREA_SEAT = 0x05000000;
 
     @IntDef(value = {HVAC_FAN_SPEED, HVAC_FAN_DIRECTION, HVAC_TEMPERATURE_CURRENT,
             HVAC_TEMPERATURE_SET, HVAC_DEFROSTER, HVAC_AC_ON, HVAC_MAX_AC_ON, HVAC_MAX_DEFROST_ON,
@@ -314,7 +314,7 @@ public class HvacController implements HvacPropertySetter,
                         CarPropertyConfig carPropertyConfig =
                                 mCarPropertyManager.getCarPropertyConfig(propId);
                         if (carPropertyConfig == null
-                                || carPropertyConfig.getAreaType() != VEHICLE_AREA_SEAT) {
+                                || carPropertyConfig.getAreaType() != VEHICLE_AREA_TYPE_SEAT) {
                             continue;
                         }
 
@@ -396,7 +396,7 @@ public class HvacController implements HvacPropertySetter,
 
         int valueAreaType = mCarPropertyManager.getCarPropertyConfig(value.getPropertyId())
                 .getAreaType();
-        if (valueAreaType == VEHICLE_AREA_GLOBAL) {
+        if (valueAreaType == VEHICLE_AREA_TYPE_GLOBAL) {
             mHvacPropertyViewMap.forEach((propId, areaIds) -> {
                 areaIds.forEach((areaId, views) -> {
                     views.forEach(v -> v.onPropertyChanged(value));

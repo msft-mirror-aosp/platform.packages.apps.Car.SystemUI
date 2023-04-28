@@ -36,6 +36,7 @@ import android.car.user.UserCreationResult;
 import android.car.util.concurrent.AsyncFuture;
 import android.content.Intent;
 import android.os.UserManager;
+import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 
@@ -53,6 +54,7 @@ import org.mockito.quality.Strictness;
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
+@SmallTest
 public class UserEventManagerTest extends UserPickerTestCase {
     private UserEventManager mUserEventManager;
 

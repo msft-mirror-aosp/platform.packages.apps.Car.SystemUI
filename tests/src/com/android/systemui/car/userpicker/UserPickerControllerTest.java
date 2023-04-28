@@ -35,6 +35,7 @@ import android.app.ActivityManager;
 import android.car.test.mocks.AndroidMockitoHelper;
 import android.car.user.UserCreationResult;
 import android.content.pm.UserInfo;
+import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
@@ -60,6 +61,7 @@ import java.util.List;
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
+@SmallTest
 public class UserPickerControllerTest extends UserPickerTestCase {
     private UserPickerController mUserPickerController;
     private SnackbarManager mSnackbarManager;

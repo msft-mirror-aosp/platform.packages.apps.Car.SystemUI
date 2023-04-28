@@ -23,6 +23,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import android.content.pm.UserInfo;
 import android.graphics.Rect;
+import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.LayoutInflater;
@@ -52,6 +53,7 @@ import java.util.List;
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
+@SmallTest
 public class UserPickerViewTest extends UserPickerTestCase {
     private UserPickerView mUserPickerView;
     private UserPickerAdapter mAdapter;

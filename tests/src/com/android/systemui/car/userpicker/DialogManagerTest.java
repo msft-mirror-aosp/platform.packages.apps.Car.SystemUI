@@ -23,6 +23,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.eq;
 
+import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
@@ -39,13 +40,13 @@ import org.mockito.MockitoAnnotations;
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
+@SmallTest
 public class DialogManagerTest extends UserPickerTestCase {
     private DialogManager mDialogManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-
         doReturn(MAIN_DISPLAY_ID).when(mContext).getDisplayId();
         mDialogManager = new DialogManager();
         View rootView = mInflater.inflate(R.layout.user_picker, null);

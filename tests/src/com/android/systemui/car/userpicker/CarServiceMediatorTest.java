@@ -42,6 +42,7 @@ import android.car.CarOccupantZoneManager.OccupantZoneInfo;
 import android.car.hardware.power.CarPowerManager;
 import android.car.user.CarUserManager;
 import android.content.pm.UserInfo;
+import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.Display;
@@ -63,6 +64,7 @@ import java.util.List;
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
+@SmallTest
 public class CarServiceMediatorTest extends UserPickerTestCase {
     private CarServiceMediator mCarServiceMediator;
 

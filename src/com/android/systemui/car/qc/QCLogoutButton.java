@@ -98,6 +98,8 @@ public class QCLogoutButton extends QCFooterButtonView {
     }
 
     private void showDialog() {
+        Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+        getContext().sendBroadcastAsUser(intent, getCurrentUserHandle(getContext(), mUserTracker));
         AlertDialog dialog = createDialog();
 
         // Sets window flags for the SysUI dialog

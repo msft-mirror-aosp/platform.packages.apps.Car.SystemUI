@@ -249,6 +249,7 @@
     <dimen name="car_quick_controls_entry_points_button_margin_start">12dp</dimen>
     <dimen name="car_quick_controls_entry_points_button_margin_end">12dp</dimen>
     <dimen name="car_quick_controls_entry_points_icon_width">36dp</dimen>
+    <dimen name="car_quick_controls_entry_points_icon_space">12dp</dimen>
 
     <dimen name="car_quick_controls_icon_drawable_width">24dp</dimen>
     <dimen name="car_quick_controls_icon_drawable_height">24dp</dimen>

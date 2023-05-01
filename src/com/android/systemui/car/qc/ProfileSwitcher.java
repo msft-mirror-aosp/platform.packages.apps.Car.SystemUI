@@ -102,12 +102,13 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
 
     @VisibleForTesting
     ProfileSwitcher(Context context, UserTracker userTracker, UserManager userManager,
-            DevicePolicyManager devicePolicyManager, CarUserManager carUserManager) {
+            DevicePolicyManager devicePolicyManager, CarUserManager carUserManager,
+            UserIconProvider userIconProvider) {
         super(context);
         mUserTracker = userTracker;
         mUserManager = userManager;
         mDevicePolicyManager = devicePolicyManager;
-        mUserIconProvider = new UserIconProvider();
+        mUserIconProvider = userIconProvider;
         mCarUserManager = carUserManager;
     }
 
@@ -356,8 +357,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         // CreateGuest will return null if a guest already exists.
         UserInfo newGuest = getUserInfo(future);
         if (newGuest != null) {
-            new UserIconProvider().assignDefaultIcon(
-                    mUserManager, context.getResources(), newGuest);
+            UserHelper.assignDefaultIcon(context, newGuest.getUserHandle());
             return newGuest;
         }
         return mUserManager.findCurrentGuestUser();

@@ -29,6 +29,7 @@ import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
@@ -101,6 +102,8 @@ public class HvacPanelOverlayViewControllerTest extends SysuiTestCase {
                 mock(ViewGroup.LayoutParams.class));
         when(mockHvacPanelView.getParent()).thenReturn(mockHvacPanelParentView);
         when(mockHvacPanelView.getLayoutParams()).thenReturn(mock(ViewGroup.LayoutParams.class));
+        when(mockHvacPanelView.findViewById(R.id.hvac_temperature_text)).thenReturn(
+                mock(TextView.class));
         when(mockLayout.findViewById(R.id.hvac_panel)).thenReturn(mockHvacPanelView);
         mHvacPanelOverlayViewController.setLayout(mockLayout);
 

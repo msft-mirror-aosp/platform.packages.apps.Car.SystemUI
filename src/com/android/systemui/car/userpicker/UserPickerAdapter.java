@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
+import com.android.car.internal.user.UserHelper;
 import com.android.systemui.R;
 import com.android.systemui.car.userpicker.UserPickerView.UserPickerAdapterViewHolder;
 
@@ -32,19 +33,6 @@ import java.io.PrintWriter;
 import java.util.List;
 
 final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
-
-    // TODO<b/254526109>: Temporary Res Duplicate to QuickContorols. Remove them in phase 2.
-    @VisibleForTesting
-    static final int[] USER_PICKER_USER_COLORS = {
-            R.color.userpicker_color_1,
-            R.color.userpicker_color_2,
-            R.color.userpicker_color_3,
-            R.color.userpicker_color_4,
-            R.color.userpicker_color_5,
-            R.color.userpicker_color_6,
-            R.color.userpicker_color_7,
-            R.color.userpicker_color_8
-    };
     @VisibleForTesting
     static final int USER_PICKER_GUEST_COLOR = R.color.userpicker_guest_color;
 
@@ -77,8 +65,8 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
             return;
         }
 
-        int color = mContext.getColor(userRecord.mIsStartGuestSession ? USER_PICKER_GUEST_COLOR
-                : USER_PICKER_USER_COLORS[userRecord.mInfo.id % USER_PICKER_USER_COLORS.length]);
+        int color = userRecord.mIsStartGuestSession ? mContext.getColor(USER_PICKER_GUEST_COLOR)
+                : UserHelper.getUserNameIconColor(mContext, userRecord.mInfo.getUserHandle());
         if (userRecord.mIsStopping) {
             holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
             holder.mLoggedInTextView.setTextColor(color);

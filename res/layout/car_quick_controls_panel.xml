@@ -90,7 +90,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        app:remoteQCProvider="content://com.android.car.settings.qc/hotspot_row_with_action"/>
+                        app:remoteQCProvider="content://com.android.car.settings.qc/hotspot_row"/>
                     <com.android.systemui.car.qc.SystemUIQCView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

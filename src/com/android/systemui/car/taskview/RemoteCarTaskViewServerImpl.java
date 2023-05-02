@@ -33,7 +33,6 @@ import android.os.Bundle;
 import android.os.DeadSystemRuntimeException;
 import android.util.Slog;
 import android.util.SparseArray;
-import android.view.InsetsFrameProvider;
 import android.view.InsetsSource;
 import android.view.SurfaceControl;
 import android.window.WindowContainerTransaction;
@@ -53,7 +52,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     private final TaskViewTaskController mTaskViewTaskController;
     private final CarSystemUIProxyImpl mCarSystemUIProxy;
     private final Binder mInsetsOwner = new Binder();
-    private final SparseArray<InsetsFrameProvider> mInsets = new SparseArray<>();
+    private final SparseArray<Rect> mInsets = new SparseArray<>();
     private boolean mReleased;
 
     private final CarTaskViewHost mHostImpl = new CarTaskViewHost() {
@@ -122,9 +121,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
 
         @Override
         public void addInsets(int index, int type, @NonNull Rect frame) {
-            InsetsFrameProvider p =
-                    new InsetsFrameProvider(mInsetsOwner, index, type).setArbitraryRectangle(frame);
-            mInsets.append(InsetsSource.createId(mInsetsOwner, index, type), p);
+            mInsets.append(InsetsSource.createId(mInsetsOwner, index, type), frame);
 
             if (mTaskViewTaskController.getTaskInfo() == null) {
                 // The insets will be applied later as part of onTaskAppeared.
@@ -133,7 +130,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             }
             WindowContainerTransaction wct = new WindowContainerTransaction();
             wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
-                    p.getOwner(), p.getIndex(), p.getType(), p.getArbitraryRectangle());
+                    mInsetsOwner, index, type, frame);
             mSyncQueue.queue(wct);
         }
 
@@ -256,9 +253,10 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         }
         WindowContainerTransaction wct = new WindowContainerTransaction();
         for (int i = 0; i < mInsets.size(); i++) {
-            final InsetsFrameProvider p = mInsets.valueAt(i);
+            final int id = mInsets.keyAt(i);
+            final Rect frame = mInsets.valueAt(i);
             wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
-                    p.getOwner(), p.getIndex(), p.getType(), p.getArbitraryRectangle());
+                    mInsetsOwner, InsetsSource.getIndex(id), InsetsSource.getType(id), frame);
         }
         mSyncQueue.queue(wct);
     }

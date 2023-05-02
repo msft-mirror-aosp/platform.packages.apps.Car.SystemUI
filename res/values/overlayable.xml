@@ -179,11 +179,10 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="user_picker_background_color"/>
       <item type="color" name="user_picker_background_pill_color"/>
       <item type="color" name="user_picker_bottom_bar_color"/>
-      <item type="color" name="user_picker_login_state_text_color"/>
+      <item type="color" name="user_picker_login_state_color"/>
       <item type="color" name="user_picker_snack_bar_background_color"/>
       <item type="color" name="user_picker_snack_bar_transparent_color"/>
       <item type="color" name="user_picker_user_name_color"/>
-      <item type="color" name="userpicker_guest_color"/>
       <item type="dimen" name="activity_blocking_action_button_corner_radius"/>
       <item type="dimen" name="activity_blocking_action_button_height"/>
       <item type="dimen" name="activity_blocking_action_button_max_width"/>
@@ -227,8 +226,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_quick_controls_entry_points_button_margin_start"/>
       <item type="dimen" name="car_quick_controls_entry_points_button_margin_top"/>
       <item type="dimen" name="car_quick_controls_entry_points_button_width"/>
-      <item type="dimen" name="car_quick_controls_entry_points_icon_width"/>
       <item type="dimen" name="car_quick_controls_entry_points_icon_space"/>
+      <item type="dimen" name="car_quick_controls_entry_points_icon_width"/>
       <item type="dimen" name="car_quick_controls_footer_button_horizontal_padding"/>
       <item type="dimen" name="car_quick_controls_footer_button_min_height"/>
       <item type="dimen" name="car_quick_controls_footer_button_start_margin"/>
@@ -429,16 +428,20 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="user_picker_clock_elevation_size"/>
       <item type="dimen" name="user_picker_common_margin_size"/>
       <item type="dimen" name="user_picker_header_margin"/>
+      <item type="dimen" name="user_picker_horizontal_space_between_users"/>
       <item type="dimen" name="user_picker_login_state_text_size"/>
       <item type="dimen" name="user_picker_logout_button_margin_right_size"/>
       <item type="dimen" name="user_picker_pill_button_height"/>
       <item type="dimen" name="user_picker_pill_button_width"/>
       <item type="dimen" name="user_picker_pill_header_margin"/>
+      <item type="dimen" name="user_picker_pill_padding_horizontal"/>
+      <item type="dimen" name="user_picker_pill_padding_vertical"/>
       <item type="dimen" name="user_picker_pill_radius"/>
       <item type="dimen" name="user_picker_snack_bar_text_size"/>
       <item type="dimen" name="user_picker_user_avatar_border_size"/>
       <item type="dimen" name="user_picker_user_avatar_size"/>
       <item type="dimen" name="user_picker_user_name_text_size"/>
+      <item type="dimen" name="user_picker_vertical_space_between_users"/>
       <item type="dimen" name="volume_button_size"/>
       <item type="dimen" name="volume_dialog_elevation"/>
       <item type="dimen" name="volume_dialog_panel_width"/>

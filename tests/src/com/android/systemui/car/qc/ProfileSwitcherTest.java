@@ -44,8 +44,10 @@ import android.car.user.UserStopResponse;
 import android.car.user.UserSwitchRequest;
 import android.car.user.UserSwitchResult;
 import android.car.util.concurrent.AsyncFuture;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.UserInfo;
+import android.graphics.drawable.Drawable;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.testing.AndroidTestingRunner;
@@ -61,6 +63,7 @@ import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
+import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.settings.UserTracker;
 
 import org.junit.After;
@@ -95,6 +98,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     private DevicePolicyManager mDevicePolicyManager;
     @Mock
     private CarUserManager mCarUserManager;
+    @Mock
+    private UserIconProvider mUserIconProvider;
 
     @Before
     public void setUp() throws ExecutionException, InterruptedException, TimeoutException {
@@ -113,6 +118,12 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         when(mDevicePolicyManager.isDeviceManaged()).thenReturn(false);
         when(mDevicePolicyManager.isOrganizationOwnedDeviceWithManagedProfile()).thenReturn(false);
         doReturn(false).when(() -> CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
+        Drawable testDrawable = mContext.getDrawable(R.drawable.ic_android);
+        when(mUserIconProvider.getDrawableWithBadge(any(Context.class), any(UserInfo.class)))
+                .thenReturn(testDrawable);
+        when(mUserIconProvider.getDrawableWithBadge(any(Context.class), any(Drawable.class)))
+                .thenReturn(testDrawable);
+        when(mUserIconProvider.getRoundedGuestDefaultIcon(any())).thenReturn(testDrawable);
 
         AsyncFuture<UserSwitchResult> switchResultFuture = mock(AsyncFuture.class);
         UserSwitchResult switchResult = mock(UserSwitchResult.class);
@@ -121,7 +132,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         when(mCarUserManager.switchUser(anyInt())).thenReturn(switchResultFuture);
 
         mProfileSwitcher = new ProfileSwitcher(mContext, mUserTracker, mUserManager,
-                mDevicePolicyManager, mCarUserManager);
+                mDevicePolicyManager, mCarUserManager, mUserIconProvider);
     }
 
     @After

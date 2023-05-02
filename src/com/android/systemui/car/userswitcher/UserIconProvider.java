@@ -29,6 +29,7 @@ import android.os.UserManager;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
 import com.android.car.admin.ui.UserAvatarView;
+import com.android.car.internal.user.UserHelper;
 import com.android.internal.util.UserIcons;
 import com.android.systemui.R;
 
@@ -36,29 +37,6 @@ import com.android.systemui.R;
  * Simple class for providing icons for users.
  */
 public class UserIconProvider {
-
-    private static final int[] USER_NAME_ICON_COLORS = {
-        R.color.user_name_icon_1,
-        R.color.user_name_icon_2,
-        R.color.user_name_icon_3,
-        R.color.user_name_icon_4,
-        R.color.user_name_icon_5,
-        R.color.user_name_icon_6,
-        R.color.user_name_icon_7,
-        R.color.user_name_icon_8
-    };
-
-    private static final int[] USER_BACKGROUND_ICON_COLORS = {
-        R.color.user_background_icon_1,
-        R.color.user_background_icon_2,
-        R.color.user_background_icon_3,
-        R.color.user_background_icon_4,
-        R.color.user_background_icon_5,
-        R.color.user_background_icon_6,
-        R.color.user_background_icon_7,
-        R.color.user_background_icon_8
-    };
-
     /**
      * Sets a rounded icon with the first letter of the given user name.
      * This method will update UserManager to use that icon.
@@ -67,9 +45,7 @@ public class UserIconProvider {
      * @param context Context to use for resources
      */
     public void setRoundedUserIcon(UserInfo userInfo, Context context) {
-        UserManager userManager = UserManager.get(context);
-        Resources res = context.getResources();
-        assignDefaultIcon(userManager, res, userInfo);
+        UserHelper.assignDefaultIcon(context, userInfo.getUserHandle());
     }
 
     /**
@@ -81,12 +57,12 @@ public class UserIconProvider {
      * @return {@link RoundedBitmapDrawable} representing the icon for the user.
      */
     public Drawable getRoundedUserIcon(UserInfo userInfo, Context context) {
-        UserManager userManager = UserManager.get(context);
+        UserManager userManager = context.getSystemService(UserManager.class);
         Resources res = context.getResources();
         Bitmap icon = userManager.getUserIcon(userInfo.id);
 
         if (icon == null) {
-            icon = assignDefaultIcon(userManager, res, userInfo);
+            icon = UserHelper.assignDefaultIcon(context, userInfo.getUserHandle());
         }
 
         return new BitmapDrawable(res, icon);
@@ -141,76 +117,6 @@ public class UserIconProvider {
     public Drawable getRoundedGuestDefaultIcon(Resources resources) {
         Bitmap icon = getGuestUserDefaultIcon(resources);
         return new BitmapDrawable(resources, icon);
-    }
-
-    /**
-     * Returns a {@link Drawable} for the given {@code icon} scaled to the appropriate size.
-     */
-    private static BitmapDrawable scaleUserIcon(Resources res, Bitmap icon) {
-        int desiredSize = res.getDimensionPixelSize(R.dimen.car_primary_icon_size);
-        Bitmap scaledIcon =
-                Bitmap.createScaledBitmap(icon, desiredSize, desiredSize, /*filter=*/ true);
-        return new BitmapDrawable(res, scaledIcon);
-    }
-
-    /**
-     * Assigns a default icon to a user according to the user's id. Handles Guest icon and non-guest
-     * user icons.
-     *
-     * @param userManager {@link UserManager} to set user icon
-     * @param resources {@link Resources} to grab icons from
-     * @param userInfo User whose the first letter of user name is set to default icon.
-     * @return Bitmap of the user icon.
-     */
-    public Bitmap assignDefaultIcon(
-            UserManager userManager, Resources resources, UserInfo userInfo) {
-        Bitmap bitmap = userInfo.isGuest()
-                ? getGuestUserDefaultIcon(resources)
-                : getUserDefaultIcon(resources, userInfo);
-        userManager.setUserIcon(userInfo.id, bitmap);
-        return bitmap;
-    }
-
-    /**
-     * Gets a bitmap representing the first letter of user name.
-     *
-     * @param resources The resources to pull from
-     * @param userInfo User whose the first letter of user name is set to default icon.
-     * @return Default user icon
-     */
-    private Bitmap getUserDefaultIcon(Resources resources, UserInfo userInfo) {
-        return UserIcons.convertToBitmap(
-                UserIcons.getDefaultUserIcon(resources, userInfo.id, /* light= */ false));
-//        TODO(b/268396237): Update user icons everywhere
-//        Drawable icon = resources.getDrawable(
-//                R.drawable.car_user_icon_circle_background, /*Theme=*/ null).mutate();
-//        icon.setBounds(/*left=*/ 0, /*top=*/ 0,
-//                icon.getIntrinsicWidth(), icon.getIntrinsicHeight());
-//        // Set color for the background of the user icon.
-//        int backgroundColor = resources.getColor(
-//                USER_BACKGROUND_ICON_COLORS[userInfo.id % USER_BACKGROUND_ICON_COLORS.length]);
-//        icon.setColorFilter(new BlendModeColorFilter(backgroundColor, BlendMode.SRC_IN));
-//
-//        Bitmap userIconBitmap = UserIcons.convertToBitmap(icon);
-//
-//        // Set the first letter of user name as user icon.
-//        String firstLetter = userInfo.name.substring(/*beginIndex=*/ 0, /*endIndex=*/ 1);
-//        Paint paint = new Paint();
-//        paint.setStyle(Paint.Style.FILL);
-//        paint.setColor(resources.getColor(
-//                USER_NAME_ICON_COLORS[userInfo.id % USER_NAME_ICON_COLORS.length]));
-//        paint.setTextSize(resources.getDimension(R.dimen.user_icon_text_size));
-//        paint.setTextAlign(Paint.Align.LEFT);
-//
-//        // Draw text in center of the canvas.
-//        Canvas canvas = new Canvas(userIconBitmap);
-//        Rect textBounds = new Rect();
-//        paint.getTextBounds(firstLetter, /*start=*/0, /*end=*/1, textBounds);
-//        float x = canvas.getWidth() * 0.5f - textBounds.exactCenterX();
-//        float y = canvas.getHeight() * 0.5f - textBounds.exactCenterY();
-//        canvas.drawText(firstLetter, x, y, paint);
-//
-//        return userIconBitmap;
     }
 
     private Bitmap getGuestUserDefaultIcon(Resources resources) {

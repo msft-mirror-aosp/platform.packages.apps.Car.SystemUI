@@ -156,6 +156,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="keyguard_keypad_image_color"/>
       <item type="color" name="list_divider_color"/>
       <item type="color" name="notification_divider_color"/>
+      <item type="color" name="notification_handle_bar_color"/>
       <item type="color" name="notification_ripple_untinted_color"/>
       <item type="color" name="notification_shade_background_color"/>
       <item type="color" name="privacy_chip_dark_icon_color"/>
@@ -335,13 +336,10 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="hvac_panel_fan_direction_margin"/>
       <item type="dimen" name="hvac_panel_full_expanded_height"/>
       <item type="dimen" name="hvac_panel_group_height"/>
+      <item type="dimen" name="hvac_panel_handle_bar_frame_padding"/>
       <item type="dimen" name="hvac_panel_handle_bar_height"/>
-      <item type="dimen" name="hvac_panel_handle_bar_margin_bottom"/>
-      <item type="dimen" name="hvac_panel_handle_bar_margin_end"/>
-      <item type="dimen" name="hvac_panel_handle_bar_margin_start"/>
-      <item type="dimen" name="hvac_panel_handle_bar_margin_top"/>
       <item type="dimen" name="hvac_panel_handle_bar_radius"/>
-      <item type="dimen" name="hvac_panel_list_padding_bottom"/>
+      <item type="dimen" name="hvac_panel_handle_bar_width"/>
       <item type="dimen" name="hvac_panel_margin"/>
       <item type="dimen" name="hvac_panel_row_animation_height_shift"/>
       <item type="dimen" name="hvac_panel_row_margin"/>
@@ -376,12 +374,10 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="notification_panel_margin_top"/>
       <item type="dimen" name="notification_panel_padding_bottom"/>
       <item type="dimen" name="notification_panel_width"/>
+      <item type="dimen" name="notification_shade_handle_bar_frame_padding"/>
       <item type="dimen" name="notification_shade_handle_bar_height"/>
-      <item type="dimen" name="notification_shade_handle_bar_margin_bottom"/>
-      <item type="dimen" name="notification_shade_handle_bar_margin_end"/>
-      <item type="dimen" name="notification_shade_handle_bar_margin_start"/>
-      <item type="dimen" name="notification_shade_handle_bar_margin_top"/>
       <item type="dimen" name="notification_shade_handle_bar_radius"/>
+      <item type="dimen" name="notification_shade_handle_bar_width"/>
       <item type="dimen" name="notification_shade_list_padding_bottom"/>
       <item type="dimen" name="notification_shadow_radius"/>
       <item type="dimen" name="privacy_chip_dialog_icon_height"/>

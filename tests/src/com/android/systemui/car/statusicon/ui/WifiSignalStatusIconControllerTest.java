@@ -18,6 +18,10 @@ package com.android.systemui.car.statusicon.ui;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+
 import android.content.res.Resources;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
@@ -58,18 +62,32 @@ public class WifiSignalStatusIconControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void onUpdateStatus_showsWifiIcon() {
-        mWifiSignalStatusIconController.setWifiIndicators(getWifiIndicator());
+    public void onUpdateStatus_updatesWifiIcon() {
+        mWifiSignalStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ true));
 
         assertThat(mWifiSignalStatusIconController.getIconDrawableToDisplay()).isEqualTo(
                 mWifiSignalStatusIconController.getWifiSignalIconDrawable());
     }
 
-    private WifiIndicators getWifiIndicator() {
+    @Test
+    public void onUpdateStatus_wifiEnabled_showsWifiIndicatorIcon() {
+        mWifiSignalStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ true));
+
+        verify(mResources).getDrawable(eq(R.drawable.icon), any());
+    }
+
+    @Test
+    public void onUpdateStatus_wifiDisabled_showsDisabledWifiIcon() {
+        mWifiSignalStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ false));
+
+        verify(mResources).getDrawable(eq(R.drawable.ic_status_wifi_disabled), any());
+    }
+
+    private WifiIndicators getWifiIndicator(boolean enabled) {
         IconState iconState = new IconState(/* visible= */ true, R.drawable.icon,
                 /* contentDescription= */ "");
-        return new WifiIndicators(/* enabled= */ true, iconState, /* qsIcon= */ null,
-                /* activityIn= */ false, /* activityOut= */ false, /* qsDescription=" */ "",
-                /* isTransient= */ false, /* statusLabel= */ "");
+        return new WifiIndicators(enabled, iconState, /* qsIcon= */ null, /* activityIn= */ false,
+                /* activityOut= */ false, /* qsDescription=" */ "", /* isTransient= */ false,
+                /* statusLabel= */ "");
     }
 }

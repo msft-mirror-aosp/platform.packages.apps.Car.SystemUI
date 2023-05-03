@@ -118,5 +118,5 @@
     <string name="keyguard_enter_your_password" msgid="1345546935461513721"></string>
     <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"మీ PINను ఎంటర్ చేయండి"</string>
     <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"మీ ఆకృతిని ఎంటర్ చేయండి"</string>
-    <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"మీ పాస్‌వర్డ్‌ను ఎంటర్ చేయండి"</string>
+    <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"మీ పాస్‌వర్డ్‌ను నమోదు చేయండి"</string>
 </resources>

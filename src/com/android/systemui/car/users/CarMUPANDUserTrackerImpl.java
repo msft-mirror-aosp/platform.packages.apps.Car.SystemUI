@@ -28,7 +28,6 @@ import android.car.user.CarUserManager;
 import android.car.user.UserLifecycleEventFilter;
 import android.content.Context;
 import android.os.Handler;
-import android.os.HandlerExecutor;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.util.Log;
@@ -40,6 +39,7 @@ import com.android.systemui.settings.UserTrackerImpl;
 
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Custom user tracking class extended from {@link UserTrackerImpl} specifically for
@@ -52,7 +52,7 @@ public class CarMUPANDUserTrackerImpl extends UserTrackerImpl {
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     private final CarServiceProvider mCarServiceProvider;
-    private final Executor mBackgroundExecutor;
+    private final Executor mCarUserManagerCallbackExecutor;
     private CarOccupantZoneManager mCarOccupantZoneManager;
 
     private final UserLifecycleEventFilter mFilter = new UserLifecycleEventFilter.Builder()
@@ -98,7 +98,7 @@ public class CarMUPANDUserTrackerImpl extends UserTrackerImpl {
             IActivityManager iActivityManager, DumpManager dumpManager,
             Handler backgroundHandler, CarServiceProvider carServiceProvider) {
         super(context, userManager, iActivityManager, dumpManager, backgroundHandler);
-        mBackgroundExecutor = new HandlerExecutor(backgroundHandler);
+        mCarUserManagerCallbackExecutor = Executors.newSingleThreadExecutor();
         mCarServiceProvider = carServiceProvider;
     }
 
@@ -143,7 +143,7 @@ public class CarMUPANDUserTrackerImpl extends UserTrackerImpl {
                     mCarOccupantZoneManager = car.getCarManager(CarOccupantZoneManager.class);
                     CarUserManager carUserManager = car.getCarManager(CarUserManager.class);
                     if (carUserManager != null) {
-                        carUserManager.addListener(mBackgroundExecutor, mFilter,
+                        carUserManager.addListener(mCarUserManagerCallbackExecutor, mFilter,
                                 mUserLifecycleListener);
                     }
                 }

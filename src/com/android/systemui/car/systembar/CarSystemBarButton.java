@@ -99,6 +99,10 @@ public class CarSystemBarButton extends LinearLayout {
 
     public CarSystemBarButton(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        // Do not move this init call. All logic should be carried out after this.
+        init();
+
         mContext = context;
         mActivityManager = mContext.getSystemService(ActivityManager.class);
         View.inflate(mContext, R.layout.car_system_bar_button, /* root= */ this);
@@ -109,6 +113,12 @@ public class CarSystemBarButton extends LinearLayout {
         setUpIntents(typedArray);
         setUpIcons(typedArray);
         typedArray.recycle();
+    }
+
+    /**
+     * Initializer for child classes.
+     */
+    protected void init() {
     }
 
     /**

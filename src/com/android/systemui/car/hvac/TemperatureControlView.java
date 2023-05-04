@@ -38,6 +38,7 @@ import com.android.systemui.R;
 
 public class TemperatureControlView extends LinearLayout implements HvacView {
     protected static final int BUTTON_REPEAT_INTERVAL_MS = 500;
+    protected TextView mTempTextView;
 
     private static final int INVALID_ID = -1;
 
@@ -48,7 +49,6 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     private boolean mPowerOn = false;
     private boolean mTemperatureSetAvailable = false;
     private HvacPropertySetter mHvacPropertySetter;
-    private TextView mTempTextView;
     private String mTempInDisplay;
     private View mIncreaseButton;
     private View mDecreaseButton;

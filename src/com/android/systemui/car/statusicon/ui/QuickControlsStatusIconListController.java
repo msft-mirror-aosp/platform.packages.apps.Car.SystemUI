@@ -111,6 +111,9 @@ public class QuickControlsStatusIconListController extends StatusIconController 
             // the result of drawing on canvas. Otherwise, insets can only be applied to the
             // original static drawable, not the result drawn to the canvas.
             Drawable origDrawable = mSubControllers.get(i).getIconDrawableToDisplay();
+            if (origDrawable == null) {
+                continue;
+            }
             Bitmap icon = Bitmap.createBitmap(/* width= */ iconWidth, /* height= */ iconWidth,
                     Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(icon);

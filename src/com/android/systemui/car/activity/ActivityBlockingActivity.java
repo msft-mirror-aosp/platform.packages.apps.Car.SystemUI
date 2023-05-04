@@ -413,9 +413,7 @@ public class ActivityBlockingActivity extends Activity {
             Slog.d(TAG, String.format("display id: %d, driver display id: %d",
                     displayId, driverDisplayId));
         }
-        String intentCategory = displayId == driverDisplayId ? Intent.CATEGORY_HOME
-                : Intent.CATEGORY_SECONDARY_HOME;
-        startMain.addCategory(intentCategory);
+        startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivityAsUser(startMain, UserHandle.of(userOnDisplay));
         finish();

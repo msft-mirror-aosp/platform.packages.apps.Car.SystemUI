@@ -67,8 +67,15 @@ public class WifiSignalStatusIconController extends StatusIconController impleme
 
     @Override
     public void setWifiIndicators(WifiIndicators indicators) {
-        mWifiSignalIconDrawable = mResources.getDrawable(indicators.statusIcon.icon,
-                mContext.getTheme());
+        if (indicators.enabled) {
+            mWifiSignalIconDrawable = mResources.getDrawable(indicators.statusIcon.icon,
+                    mContext.getTheme());
+        } else {
+            // Base implementation of Wi-Fi icons does not include a disabled state (uses same icon
+            // as disconnected state). For clarity, use a specific icon for disabled Wi-Fi state.
+            mWifiSignalIconDrawable = mResources.getDrawable(R.drawable.ic_status_wifi_disabled,
+                    mContext.getTheme());
+        }
         updateStatus();
     }
 

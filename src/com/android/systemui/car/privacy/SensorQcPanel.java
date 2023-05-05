@@ -49,7 +49,8 @@ import java.util.stream.Collectors;
  * A {@link BaseLocalQCProvider} that builds the sensor (such as microphone or camera) privacy
  * panel.
  */
-public abstract class SensorQcPanel extends BaseLocalQCProvider {
+public abstract class SensorQcPanel extends BaseLocalQCProvider
+        implements SensorInfoUpdateListener {
     private static final String TAG = "SensorQcPanel";
 
     private final String mPhoneCallTitle;
@@ -214,6 +215,21 @@ public abstract class SensorQcPanel extends BaseLocalQCProvider {
         }
     }
 
+    @Override
+    public void onSensorInfoUpdate() {
+        notifyChange();
+    }
+
+    @Override
+    protected void onSubscribed() {
+        mSensorInfoProvider.setSensorInfoUpdateListener(this);
+    }
+
+    @Override
+    protected void onUnsubscribed() {
+        mSensorInfoProvider.setSensorInfoUpdateListener(null);
+    }
+
     /**
      * A helper object that retrieves sensor
      * {@link com.android.systemui.privacy.PrivacyDialog.PrivacyElement} list for
@@ -246,6 +262,11 @@ public abstract class SensorQcPanel extends BaseLocalQCProvider {
          * Informs {@link SensorQcPanel} to update its state.
          */
         void setNotifyUpdateRunnable(Runnable runnable);
+
+        /**
+         * Set the listener to monitor the update.
+         */
+        void setSensorInfoUpdateListener(SensorInfoUpdateListener listener);
     }
 
     private static class SensorToggleActionHandler implements QCItem.ActionHandler {

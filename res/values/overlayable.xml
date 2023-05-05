@@ -394,6 +394,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="scrim_behind_alpha"/>
       <item type="dimen" name="side_margin"/>
       <item type="dimen" name="signal_icon_size"/>
+      <item type="dimen" name="signal_icon_size_roaming"/>
       <item type="dimen" name="status_bar_header_height"/>
       <item type="dimen" name="status_bar_icon_scale_factor"/>
       <item type="dimen" name="status_bar_system_icon_spacing"/>

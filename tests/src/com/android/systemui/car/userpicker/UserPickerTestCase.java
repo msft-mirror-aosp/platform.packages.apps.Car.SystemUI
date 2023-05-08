@@ -69,7 +69,7 @@ public abstract class UserPickerTestCase extends SysuiTestCase {
     static final int ZONE_ID_FRONT = 1;
     static final int ZONE_ID_REAR = 2;
 
-    final int mRefreshLayoutSize = 800;
+    final int mRefreshLayoutSize = 1200;
 
     final LayoutInflater mInflater = LayoutInflater.from(mContext);
     final String mGuestLabel = mContext.getString(R.string.car_guest);

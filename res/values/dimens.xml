@@ -139,12 +139,10 @@
     <dimen name="car_volume_item_corner_radius">@*android:dimen/car_radius_3</dimen>
 
     <!-- Car notification shade-->
+    <dimen name="notification_shade_handle_bar_frame_padding">10dp</dimen>
+    <dimen name="notification_shade_handle_bar_width">64dp</dimen>
     <dimen name="notification_shade_handle_bar_height">10dp</dimen>
     <dimen name="notification_shade_handle_bar_radius">20dp</dimen>
-    <dimen name="notification_shade_handle_bar_margin_start">200dp</dimen>
-    <dimen name="notification_shade_handle_bar_margin_end">200dp</dimen>
-    <dimen name="notification_shade_handle_bar_margin_top">20dp</dimen>
-    <dimen name="notification_shade_handle_bar_margin_bottom">10dp</dimen>
     <dimen name="notification_shade_list_padding_bottom">0dp</dimen>
 
     <!-- The alpha for the scrim behind the notification shade. This value is 1 so that the
@@ -279,13 +277,10 @@
 
     <dimen name="hvac_center_panel_width">760dp</dimen>
 
+    <dimen name="hvac_panel_handle_bar_frame_padding">10dp</dimen>
+    <dimen name="hvac_panel_handle_bar_width">64dp</dimen>
     <dimen name="hvac_panel_handle_bar_height">10dp</dimen>
     <dimen name="hvac_panel_handle_bar_radius">20dp</dimen>
-    <dimen name="hvac_panel_handle_bar_margin_start">200dp</dimen>
-    <dimen name="hvac_panel_handle_bar_margin_end">200dp</dimen>
-    <dimen name="hvac_panel_handle_bar_margin_top">10dp</dimen>
-    <dimen name="hvac_panel_handle_bar_margin_bottom">10dp</dimen>
-    <dimen name="hvac_panel_list_padding_bottom">50dp</dimen>
     <dimen name="hvac_panel_button_dimen">96dp</dimen>
 
     <dimen name="temperature_side_margin">32dp</dimen>

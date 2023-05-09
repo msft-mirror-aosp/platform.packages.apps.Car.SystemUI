@@ -23,6 +23,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.internal.annotations.GuardedBy;
+import com.android.systemui.car.dagger.CarSysUIDumpable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class CarServiceProvider {
     private Car mCar;
 
     @Inject
-    public CarServiceProvider(Context context) {
+    public CarServiceProvider(@CarSysUIDumpable Context context) {
         mContext = context;
         mCar = Car.createCar(mContext, /* handler= */ null, Car.CAR_WAIT_TIMEOUT_DO_NOT_WAIT,
                 (car, ready) -> {

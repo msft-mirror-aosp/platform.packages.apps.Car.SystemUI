@@ -20,22 +20,20 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
-import com.android.car.internal.user.UserHelper;
 import com.android.systemui.R;
-import com.android.systemui.car.userpicker.UserPickerView.UserPickerAdapterViewHolder;
 
 import java.io.PrintWriter;
 import java.util.List;
 
-final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
-    @VisibleForTesting
-    static final int USER_PICKER_GUEST_COLOR = R.color.userpicker_guest_color;
-
+final class UserPickerAdapter extends Adapter<UserPickerAdapter.UserPickerAdapterViewHolder> {
     private final Context mContext;
     private final int mDisplayId;
     private final float mDisabledAlpha;
@@ -65,23 +63,17 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
             return;
         }
 
-        int color = userRecord.mIsStartGuestSession ? mContext.getColor(USER_PICKER_GUEST_COLOR)
-                : UserHelper.getUserNameIconColor(mContext, userRecord.mInfo.getUserHandle());
         if (userRecord.mIsStopping) {
             holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
-            holder.mLoggedInTextView.setTextColor(color);
             holder.mLoggedInTextView.setText(mStoppingUserText);
             updateAlpha(holder, /* disabled= */ true);
         } else if (userRecord.mIsLoggedIn) {
             if (userRecord.mLoggedInDisplay == mDisplayId) {
-                holder.mUserBorderImageView.setColorFilter(color);
                 holder.mUserBorderImageView.setVisibility(View.VISIBLE);
-                holder.mLoggedInTextView.setTextColor(color);
                 holder.mLoggedInTextView.setText(mLoggedInText);
                 updateAlpha(holder, /* disabled= */ false);
             } else {
                 holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
-                holder.mLoggedInTextView.setTextColor(color);
                 holder.mLoggedInTextView.setText(String.format(mPrefixOtherSeatLoggedInInfo,
                         userRecord.mSeatLocationName));
                 updateAlpha(holder, /* disabled= */ true);
@@ -136,6 +128,25 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
         for (int i = 0; i < mUsers.size(); i++) {
             UserRecord userRecord = mUsers.get(i);
             pw.println("    " + userRecord.toString());
+        }
+    }
+
+    static final class UserPickerAdapterViewHolder extends RecyclerView.ViewHolder {
+        public final ImageView mUserAvatarImageView;
+        public final TextView mUserNameTextView;
+        public final ImageView mUserBorderImageView;
+        public final TextView mLoggedInTextView;
+        public final View mView;
+        public final FrameLayout mFrame;
+
+        UserPickerAdapterViewHolder(View view) {
+            super(view);
+            mView = view;
+            mUserAvatarImageView = view.findViewById(R.id.user_avatar);
+            mUserNameTextView = view.findViewById(R.id.user_name);
+            mUserBorderImageView = view.findViewById(R.id.user_avatar_border);
+            mLoggedInTextView = view.findViewById(R.id.logged_in_info);
+            mFrame = view.findViewById(R.id.current_user_frame);
         }
     }
 }

@@ -31,6 +31,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.car.hardware.CarPropertyConfig;
 import android.car.hardware.CarPropertyValue;
 import android.os.SystemClock;
 import android.testing.AndroidTestingRunner;
@@ -52,6 +53,8 @@ import org.mockito.AdditionalMatchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.List;
+
 @CarSystemUiTest
 @SmallTest
 @RunWith(AndroidTestingRunner.class)
@@ -60,10 +63,13 @@ public class TemperatureControlViewTest extends SysuiTestCase {
     private static final int GLOBAL_AREA_ID = 117;
     private static final int AREA_ID = 99;
     private static final int PROPERTY_ID = HVAC_TEMPERATURE_SET;
+    private static final List<Integer> CONFIG_ARRAY = List.of(160, 280, 5, 600, 840, 10);
 
     private TemperatureControlView mTemperatureControlView;
     @Mock
     private HvacPropertySetter mHvacPropertySetter;
+    @Mock
+    private CarPropertyConfig mCarPropertyConfig;
     @Mock
     private CarPropertyValue mCarPropertyValue;
     @Mock
@@ -81,6 +87,8 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         when(mCarPropertyValue.getPropertyId()).thenReturn(HVAC_TEMPERATURE_SET);
         when(mCarPropertyValue.getStatus()).thenReturn(CarPropertyValue.STATUS_AVAILABLE);
         when(mCarPropertyValue.getValue()).thenReturn(20f);
+        when(mCarPropertyConfig.getConfigArray()).thenReturn(CONFIG_ARRAY);
+        mTemperatureControlView.setConfigInfo(mCarPropertyConfig);
     }
 
     @Test
@@ -104,7 +112,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
 
         assertThat(mTemperatureControlView.getTempInDisplay()).isEqualTo(
                 String.format(mTemperatureControlView.getTempFormatInFahrenheit(),
-                        celsiusToFahrenheit(20f)));
+                        68f));
     }
 
     @Test
@@ -157,7 +165,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
-        float increment = mTemperatureControlView.getFahrenheitTemperatureIncrement();
+        float increment = mTemperatureControlView.getCelsiusTemperatureIncrement();
         float expectedNewTemperature = (float) mCarPropertyValue.getValue() + increment;
 
         // Hold the button down for more than BUTTON_REPEAT_INTERVAL_MS * 2 but less than
@@ -178,7 +186,7 @@ public class TemperatureControlViewTest extends SysuiTestCase {
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
         int intervalTimes = 3;
-        float increment = mTemperatureControlView.getFahrenheitTemperatureIncrement();
+        float increment = mTemperatureControlView.getCelsiusTemperatureIncrement();
         float expectedNewTemperature = (float) mCarPropertyValue.getValue() - increment;
 
         // Hold the button down for more than BUTTON_REPEAT_INTERVAL_MS * 2 but less than
@@ -237,14 +245,6 @@ public class TemperatureControlViewTest extends SysuiTestCase {
     private MotionEvent createMotionEvent(int action) {
         long eventTime = SystemClock.uptimeMillis();
         return MotionEvent.obtain(0, eventTime, action, 0, 0, 0);
-    }
-
-    // This test suite does not use HvacUtils to avoid assuming HvacUtils is implemented correctly.
-    private static float celsiusToFahrenheit(float tempC) {
-        return (tempC * 9f / 5f) + 32;
-    }
-    private static float fahrenheitToCelsius(float tempF) {
-        return (tempF - 32) * 5f / 9f;
     }
 
     private void setPowerPropertyValue(boolean value) {

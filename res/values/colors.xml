@@ -18,8 +18,8 @@
     <!-- colors for user switcher -->
     <color name="car_user_switcher_background_color">#000000</color>
     <color name="car_user_switcher_name_text_color">@*android:color/car_body1_light</color>
-    <color name="car_user_switcher_add_user_background_color">#131313</color>
-    <color name="car_user_switcher_add_user_add_sign_color">@*android:color/car_body1_light</color>
+    <color name="car_user_switcher_add_user_background_color">#202124</color>
+    <color name="car_user_switcher_add_user_add_sign_color">#DADCE0</color>
     <color name="car_managed_device_icon_color">@android:color/white</color>
     <color name="car_nav_icon_fill_color">#8F8F8F</color>
     <color name="car_nav_icon_fill_color_selected">#ffffff</color>
@@ -143,14 +143,13 @@
 
     <!-- Color for user picker -->
     <color name="user_picker_background_color">#000000</color>
-    <color name="user_picker_bottom_bar_color">#1D1F22</color>
+    <color name="user_picker_bottom_bar_color">@color/user_picker_background_color</color>
     <color name="user_picker_snack_bar_transparent_color">#FFFFFF</color>
     <color name="user_picker_snack_bar_background_color">#282a2d</color>
     <color name="user_picker_user_name_color">#fff8f9fa</color>
-    <color name="user_picker_login_state_text_color">#66B5FF</color>
+    <color name="user_picker_login_state_color">@*android:color/car_accent</color>
     <color name="user_picker_background_pill_color">#282A2D</color>
     <drawable name="user_picker_splash_icon">@android:color/transparent</drawable>
-    <color name="userpicker_guest_color">#DADCE0</color>
 
     <!-- Color for button background in the quick controls panel. -->
     <color name="car_quick_controls_button_background_pill_color">#3C4043</color>

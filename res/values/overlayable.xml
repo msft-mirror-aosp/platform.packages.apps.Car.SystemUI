@@ -492,7 +492,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_seekbar_thumb"/>
       <item type="drawable" name="car_stat_sys_data_bluetooth_indicator"/>
       <item type="drawable" name="car_user_icon_circle_background"/>
-      <item type="drawable" name="display_input_locked_background"/>
       <item type="drawable" name="fan_speed_inset"/>
       <item type="drawable" name="hvac_decrease_button"/>
       <item type="drawable" name="hvac_increase_button"/>
@@ -607,7 +606,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="direction_face"/>
       <item type="id" name="direction_face_and_floor"/>
       <item type="id" name="direction_floor"/>
-      <item type="id" name="display_input_lock_icon"/>
       <item type="id" name="drive_mode_panel"/>
       <item type="id" name="driver_hvac"/>
       <item type="id" name="empty_notification_text"/>
@@ -799,7 +797,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="car_volume_item"/>
       <item type="layout" name="default_status_icon"/>
       <item type="layout" name="device_management_dialog"/>
-      <item type="layout" name="display_input_locked"/>
       <item type="layout" name="fan_direction"/>
       <item type="layout" name="fan_speed"/>
       <item type="layout" name="hvac_panel"/>
@@ -857,7 +854,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="confirm_add_user_title"/>
       <item type="string" name="create_user_failed_message"/>
       <item type="string" name="debug_button_text"/>
-      <item type="string" name="display_input_lock_initial_text"/>
+      <item type="string" name="display_input_lock_started_text"/>
+      <item type="string" name="display_input_lock_stopped_text"/>
       <item type="string" name="display_input_lock_text"/>
       <item type="string" name="drive_mode_modes_comfort"/>
       <item type="string" name="drive_mode_modes_eco"/>

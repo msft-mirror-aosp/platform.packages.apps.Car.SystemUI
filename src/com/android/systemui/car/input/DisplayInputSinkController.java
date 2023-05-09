@@ -39,6 +39,8 @@ import android.util.Log;
 import android.util.Slog;
 import android.util.SparseArray;
 import android.view.Display;
+import android.view.MotionEvent;
+import android.widget.Toast;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
@@ -51,6 +53,8 @@ import com.android.systemui.dagger.qualifiers.Main;
 
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.UnaryOperator;
 
 import javax.inject.Inject;
 
@@ -85,7 +89,7 @@ public final class DisplayInputSinkController implements CoreStartable {
     private final SparseArray<DisplayInputSink> mDisplayInputSinks;
 
     // Map of input locks that are currently on going. (key: displayId)
-    private final SparseArray<DisplayInputLockInfoWindow> mDisplayInputLockWindows;
+    private final ArraySet<Integer> mDisplayInputLockedDisplays;
 
     // A set of display unique ids from the display input lock setting.
     private final ArraySet<String> mDisplayInputLockSetting;
@@ -109,7 +113,7 @@ public final class DisplayInputSinkController implements CoreStartable {
         @MainThread
         public void onDisplayRemoved(int displayId) {
             if (!mPassengerDisplays.contains(displayId)) return;
-            mayStopDisplayInputLock(displayId);
+            mayStopDisplayInputLock(mDisplayManager.getDisplay(displayId));
             mayStopDisplayInputMonitor(displayId);
         }
 
@@ -134,7 +138,7 @@ public final class DisplayInputSinkController implements CoreStartable {
             CarServiceProvider carServiceProvider) {
         this(context, handler, carServiceProvider,
                 new SparseArray<DisplayInputSink>(INITIAL_INPUT_SINK_CAPACITY),
-                new SparseArray<DisplayInputLockInfoWindow>(INITIAL_INPUT_SINK_CAPACITY),
+                new ArraySet<Integer>(INITIAL_INPUT_SINK_CAPACITY),
                 new ArraySet<String>(INITIAL_INPUT_SINK_CAPACITY),
                 new SparseArray<Display>(INITIAL_INPUT_SINK_CAPACITY));
     }
@@ -143,7 +147,7 @@ public final class DisplayInputSinkController implements CoreStartable {
     DisplayInputSinkController(Context context, @Main Handler handler,
             CarServiceProvider carServiceProvider,
             SparseArray<DisplayInputSink> displayInputSinks,
-            SparseArray<DisplayInputLockInfoWindow> displayInputLockWindows,
+            ArraySet<Integer> displayInputLockedDisplays,
             ArraySet<String> displayInputLockSetting,
             SparseArray<Display> passengerDisplays) {
         mContext = context;
@@ -160,7 +164,7 @@ public final class DisplayInputSinkController implements CoreStartable {
         mCarServiceProvider = carServiceProvider;
 
         mDisplayInputSinks = displayInputSinks;
-        mDisplayInputLockWindows = displayInputLockWindows;
+        mDisplayInputLockedDisplays = displayInputLockedDisplays;
         mDisplayInputLockSetting = displayInputLockSetting;
         mPassengerDisplays = passengerDisplays;
     }
@@ -226,10 +230,10 @@ public final class DisplayInputSinkController implements CoreStartable {
             mayStopDisplayInputMonitor(displayId);
             mayStartDisplayInputLock(display);
         } else if (Display.isOffState(display.getState())) {
-            mayStopDisplayInputLock(displayId);
+            mayStopDisplayInputLock(display);
             mayStartDisplayInputMonitor(display);
         } else {
-            mayStopDisplayInputLock(displayId);
+            mayStopDisplayInputLock(display);
             mayStopDisplayInputMonitor(displayId);
         }
     }
@@ -270,7 +274,7 @@ public final class DisplayInputSinkController implements CoreStartable {
     }
 
     private boolean isDisplayInputLockStarted(int displayId) {
-        return mDisplayInputLockWindows.get(displayId) != null;
+        return mDisplayInputLockedDisplays.contains(displayId);
     }
 
     private boolean isDisplayInputMonitorStarted(int displayId) {
@@ -287,9 +291,15 @@ public final class DisplayInputSinkController implements CoreStartable {
         }
 
         Slog.i(TAG, "Start input lock for display " + displayId);
-        DisplayInputLockInfoWindow lockInfoWindow = createDisplayInputLockInfoWindow(display);
-        mDisplayInputLockWindows.put(displayId, lockInfoWindow);
-
+        mDisplayInputLockedDisplays.add(displayId);
+        Context displayContext = mContext.createDisplayContext(display);
+        AtomicReference<Toast> toastRef = new AtomicReference<>(null);
+        UnaryOperator<Toast> cancelToast = (toast) -> {
+            toast.cancel();
+            return toast;
+        };
+        UnaryOperator<Toast> createToast = (toast) -> Toast.makeText(displayContext,
+                R.string.display_input_lock_text, Toast.LENGTH_SHORT);
         DisplayInputSink.OnInputEventListener callback = (event) -> {
             if (DBG) {
                 Slog.d(TAG, "Received input events while input is locked for display#"
@@ -298,14 +308,24 @@ public final class DisplayInputSinkController implements CoreStartable {
             if (mCarPowerManager != null) {
                 mCarPowerManager.notifyUserActivity(event.getDisplayId());
             }
-            lockInfoWindow.setText(mContext, R.string.display_input_lock_text);
-            lockInfoWindow.setDismissDelay(mContext,
-                    R.integer.config_displayInputLockIconDismissDelay);
-            lockInfoWindow.show();
+            Runnable r = () -> {
+                // MotionEvents for clicks are ACTION_DOWN + ACTION_UP
+                // Only capture one of those events so the Toast shows once per click
+                if (event instanceof MotionEvent
+                        && ((MotionEvent) event).getAction() == MotionEvent.ACTION_DOWN) {
+                    if (toastRef.get() != null) {
+                        toastRef.updateAndGet(cancelToast);
+                    }
+                    toastRef.updateAndGet(createToast).show();
+                }
+            };
+            mHandler.post(r);
         };
         mDisplayInputSinks.put(displayId, new DisplayInputSink(display, callback));
         // Now that the display input lock is started, let's inform the user of it.
-        lockInfoWindow.show();
+        mHandler.post(() -> Toast.makeText(displayContext, R.string.display_input_lock_started_text,
+                Toast.LENGTH_SHORT).show());
+
     }
 
     private void mayStartDisplayInputMonitor(Display display) {
@@ -330,21 +350,17 @@ public final class DisplayInputSinkController implements CoreStartable {
     }
 
     @VisibleForTesting
-    DisplayInputLockInfoWindow createDisplayInputLockInfoWindow(Display display) {
-        return new DisplayInputLockInfoWindow(mContext, display,
-                        R.string.display_input_lock_initial_text,
-                        R.integer.config_displayInputLockInitialDismissDelay);
-    }
-
-    @VisibleForTesting
-    void mayStopDisplayInputLock(int displayId) {
+    void mayStopDisplayInputLock(Display display) {
+        int displayId = display.getDisplayId();
         if (!isDisplayInputLockStarted(displayId)) {
             if (DBG) Slog.d(TAG, "There is no input lock started for display#" + displayId);
             return;
         }
         Slog.i(TAG, "Stop input lock for display#" + displayId);
+        mHandler.post(() -> Toast.makeText(mContext.createDisplayContext(display),
+                R.string.display_input_lock_stopped_text, Toast.LENGTH_SHORT).show());
         removeDisplayInputSink(displayId);
-        mDisplayInputLockWindows.remove(displayId);
+        mDisplayInputLockedDisplays.remove(displayId);
     }
 
     private void mayStopDisplayInputMonitor(int displayId) {
@@ -376,10 +392,9 @@ public final class DisplayInputSinkController implements CoreStartable {
         }
 
         pw.println("DisplayInputLockedWindows:");
-        size = mDisplayInputLockWindows.size();
+        size = mDisplayInputLockedDisplays.size();
         for (int i = 0; i < size; i++) {
-            DisplayInputLockInfoWindow lockInfoWindow = mDisplayInputLockWindows.valueAt(i);
-            pw.printf("  %s\n", lockInfoWindow.toString());
+            pw.printf("  %s\n", mDisplayInputLockedDisplays.valueAt(i).toString());
         }
 
         pw.printf("DisplayInputLockSetting: %s\n", mDisplayInputLockSetting);

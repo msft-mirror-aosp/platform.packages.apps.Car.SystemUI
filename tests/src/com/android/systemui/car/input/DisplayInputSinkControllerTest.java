@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.input;
 
+import static android.view.DisplayAdjustments.DEFAULT_DISPLAY_ADJUSTMENTS;
+
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.doAnswer;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;
@@ -50,6 +52,7 @@ import android.util.ArraySet;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Display;
+import android.view.DisplayAdjustments;
 import android.view.InputDevice;
 import android.view.InputEvent;
 import android.view.MotionEvent;
@@ -97,8 +100,7 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
     private Handler mHandler;
     private ContentResolver mContentResolver;
     private final SparseArray<DisplayInputSink> mDisplayInputSinks = new SparseArray<>();
-    private final SparseArray<DisplayInputLockInfoWindow> mDisplayInputLockWindows =
-            new SparseArray<>();
+    private final ArraySet<Integer> mDisplayInputLockWindows = new ArraySet<>();
     private final ArraySet<String> mDisplayInputLockSetting = new ArraySet<>();
     private final SparseArray<Display> mPassengerDisplays = new SparseArray();
     @Mock
@@ -198,7 +200,7 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
         addDisplayInputLock(mPassengerDisplay1);
         assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
 
-        mDisplayInputSinkController.mayStopDisplayInputLock(mPassengerDisplayId1);
+        mDisplayInputSinkController.mayStopDisplayInputLock(mPassengerDisplay1);
 
         assertThat(isInputLockStarted(mPassengerDisplayId1)).isFalse();
     }
@@ -209,7 +211,7 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
         assertThat(isInputLockStarted(mPassengerDisplayId1)).isFalse();
         assertThat(isInputLockStarted(mPassengerDisplayId2)).isTrue();
 
-        mDisplayInputSinkController.mayStopDisplayInputLock(mPassengerDisplayId1);
+        mDisplayInputSinkController.mayStopDisplayInputLock(mPassengerDisplay1);
 
         assertThat(isInputLockStarted(mPassengerDisplayId1)).isFalse();
         assertThat(isInputLockStarted(mPassengerDisplayId2)).isTrue();
@@ -269,13 +271,12 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
         addDisplayInputLock(mPassengerDisplay1);
         doReturn(Display.STATE_OFF).when(mPassengerDisplay1).getState();
         assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
-        DisplayInputLockInfoWindow lockWindow = mDisplayInputLockWindows.get(mPassengerDisplayId1);
 
         mDisplayInputSinkController.mDisplayListener.onDisplayChanged(mPassengerDisplayId1);
 
         assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
         assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
-        assertThat(mDisplayInputLockWindows.get(mPassengerDisplayId1)).isSameInstanceAs(lockWindow);
+        assertThat(mDisplayInputLockWindows.contains(mPassengerDisplayId1)).isTrue();
     }
 
     @Test
@@ -295,13 +296,12 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
         addDisplayInputLock(mPassengerDisplay1);
         doReturn(Display.STATE_ON).when(mPassengerDisplay1).getState();
         assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
-        DisplayInputLockInfoWindow lockWindow = mDisplayInputLockWindows.get(mPassengerDisplayId1);
 
         mDisplayInputSinkController.mDisplayListener.onDisplayChanged(mPassengerDisplayId1);
 
         assertThat(isInputLockStarted(mPassengerDisplayId1)).isTrue();
         assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
-        assertThat(mDisplayInputLockWindows.get(mPassengerDisplayId1)).isSameInstanceAs(lockWindow);
+        assertThat(mDisplayInputLockWindows.contains(mPassengerDisplayId1)).isTrue();
     }
 
     @Test
@@ -451,12 +451,12 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
 
 
     private void setUpDisplay(Display display, int displayId, String uniqueId) {
+        DisplayAdjustments daj = DEFAULT_DISPLAY_ADJUSTMENTS;
         doReturn(display).when(mDisplayManager).getDisplay(displayId);
         doReturn(uniqueId).when(display).getUniqueId();
         doReturn(displayId).when(display).getDisplayId();
+        doReturn(daj).when(display).getDisplayAdjustments();
         mPassengerDisplays.put(displayId, display);
-        doReturn(mock(DisplayInputLockInfoWindow.class))
-                .when(mDisplayInputSinkController).createDisplayInputLockInfoWindow(display);
     }
 
     private boolean isInputLockStarted(int displayId) {
@@ -486,7 +486,7 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
     private void addDisplayInputLock(Display display) {
         mDisplayInputLockSetting.add(display.getUniqueId());
         int displayId = display.getDisplayId();
-        mDisplayInputLockWindows.put(displayId, mock(DisplayInputLockInfoWindow.class));
+        mDisplayInputLockWindows.add(displayId);
         DisplayInputSink displayInputSinks = new DisplayInputSink(display, mCallback);
         mDisplayInputSinks.put(displayId, displayInputSinks);
     }

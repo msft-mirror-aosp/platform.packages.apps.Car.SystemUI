@@ -169,7 +169,13 @@
         systemui:hvacAreaId="4"
         systemui:seatTemperatureType="heating"
         systemui:seatTemperatureIconDrawableList="@array/hvac_heated_seat_default_icons"/>
-    <include
-        layout="@layout/hvac_panel_handle_bar"
-        app:layout_constraintTop_toTopOf="parent"/>
+
+    <FrameLayout
+        android:id="@+id/handle_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/hvac_panel_handle_bar_frame_padding">
+        <include layout="@layout/hvac_panel_handle_bar"/>
+    </FrameLayout>
+
 </com.android.systemui.car.hvac.HvacPanelView>

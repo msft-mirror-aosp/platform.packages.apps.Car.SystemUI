@@ -567,9 +567,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="userpicker_ic_power"/>
       <item type="drawable" name="volume_dialog_background"/>
       <item type="fraction" name="celsius_temperature_increment"/>
-      <item type="fraction" name="celsius_temperature_round"/>
       <item type="fraction" name="fahrenheit_temperature_increment"/>
-      <item type="fraction" name="fahrenheit_temperature_round"/>
       <item type="fraction" name="user_picker_disabled_alpha"/>
       <item type="id" name="ac_button"/>
       <item type="id" name="ac_master_switch"/>

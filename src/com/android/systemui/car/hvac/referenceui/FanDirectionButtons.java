@@ -20,6 +20,7 @@ import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
 import static android.car.VehiclePropertyIds.HVAC_FAN_DIRECTION;
 import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 
+import android.car.hardware.CarPropertyConfig;
 import android.car.hardware.CarPropertyValue;
 import android.content.Context;
 import android.os.Build;
@@ -127,6 +128,11 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
     }
 
     @Override
+    public void setConfigInfo(CarPropertyConfig<?> carPropertyConfig) {
+        // no-op.
+    }
+
+    @Override
     public void onPropertyChanged(CarPropertyValue value) {
         if (value.getPropertyId() == HVAC_FAN_DIRECTION) {
             int newDirection = INVALID_ID;
@@ -135,7 +141,7 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
             }
             if (!mButtonDirections.contains(newDirection)) {
                 if (DEBUG) {
-                    Log.w(TAG, "Button is not defined for direction: " + newDirection);
+                    Log.d(TAG, "Button is not defined for direction: " + newDirection);
                 }
                 return;
             }

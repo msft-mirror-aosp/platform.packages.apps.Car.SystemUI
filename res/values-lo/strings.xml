@@ -89,7 +89,8 @@
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"ການຕັ້ງຄ່າໂປຣໄຟລ໌ ແລະ ບັນຊີ"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"ຮູບແບບບໍ່ຮອງຮັບປຸ່ມໝຸນ, ກະລຸນາໃຊ້ໜ້າຈໍສຳຜັດ"</string>
     <string name="display_input_lock_text" msgid="8524876126635885614">"ໜ້າຈໍສຳຜັດລັອກຢູ່"</string>
-    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"ໜ້າຈໍຂອງທ່ານຖືກລັອກ"</string>
+    <string name="display_input_lock_started_text" msgid="2434054522800802134">"ໜ້າຈໍຂອງທ່ານຖືກລັອກ"</string>
+    <string name="display_input_lock_stopped_text" msgid="2454939902188129876">"ໜ້າຈໍຂອງທ່ານຖືກປົດລັອກແລ້ວ"</string>
     <string name="user_logout_title" msgid="5534754139319586681">"ທ່ານແນ່ໃຈບໍວ່າຕ້ອງການອອກຈາກລະບົບ?"</string>
     <string name="user_logout_message" msgid="7804089876692575056">"ສິ່ງນີ້ຈະປິດແອັບພລິເຄຊັນທີ່ເປີດທັງໝົດ"</string>
     <string name="user_logout" msgid="2934184154258330491">"ອອກຈາກລະບົບ"</string>

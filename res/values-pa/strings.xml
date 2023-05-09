@@ -89,7 +89,10 @@
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"ਪ੍ਰੋਫਾਈਲ ਅਤੇ ਖਾਤਾ ਸੈਟਿੰਗਾਂ"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"ਪੈਟਰਨ ਰੋਟਰੀ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ, ਕਿਰਪਾ ਕਰਕੇ ਸਪਰਸ਼ ਵਰਤੋ"</string>
     <string name="display_input_lock_text" msgid="8524876126635885614">"ਟੱਚ-ਸਕ੍ਰੀਨ ਨੂੰ ਲਾਕ ਕੀਤਾ ਗਿਆ"</string>
-    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ ਲਾਕ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ"</string>
+    <!-- no translation found for display_input_lock_started_text (2434054522800802134) -->
+    <skip />
+    <!-- no translation found for display_input_lock_stopped_text (2454939902188129876) -->
+    <skip />
     <string name="user_logout_title" msgid="5534754139319586681">"ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਲੌਗ-ਆਊਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?"</string>
     <string name="user_logout_message" msgid="7804089876692575056">"ਇਸ ਨਾਲ ਸਾਰੀ ਖੁੱਲ੍ਹੀਆਂ ਐਪਲੀਕੇਸ਼ਨਾਂ ਬੰਦ ਹੋ ਜਾਣਗੀਆਂ"</string>
     <string name="user_logout" msgid="2934184154258330491">"ਲੌਗ-ਆਊਟ ਕਰੋ"</string>

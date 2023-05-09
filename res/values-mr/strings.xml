@@ -89,7 +89,10 @@
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"प्रोफाइल आणि खात्यांची सेटिंग्ज"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"रोटरीला पॅटर्नचा सपोर्ट नाही; कृपया टच वापरा"</string>
     <string name="display_input_lock_text" msgid="8524876126635885614">"टच स्क्रीन लॉक केली आहे"</string>
-    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"तुमची स्क्रीन लॉक करण्यात आली आहे"</string>
+    <!-- no translation found for display_input_lock_started_text (2434054522800802134) -->
+    <skip />
+    <!-- no translation found for display_input_lock_stopped_text (2454939902188129876) -->
+    <skip />
     <string name="user_logout_title" msgid="5534754139319586681">"तुम्हाला नक्की लॉग आउट करायचे आहे का?"</string>
     <string name="user_logout_message" msgid="7804089876692575056">"यामुळे उघडी असलेली सर्व अ‍ॅप्लिकेशन बंद केली जातील"</string>
     <string name="user_logout" msgid="2934184154258330491">"लॉग आउट करा"</string>

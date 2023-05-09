@@ -80,6 +80,7 @@
     <!--These values represent MIN and MAX for hvac-->
     <item name="hvac_min_value_celsius" format="float" type="dimen">16</item>
     <item name="hvac_max_value_celsius" format="float" type="dimen">28</item>
+    <item name="hvac_min_value_fahrenheit" format="float" type="dimen">60</item>
 
     <!-- Largest size an avatar might need to be drawn in the user picker, status bar, or
          quick settings header -->

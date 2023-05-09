@@ -20,6 +20,7 @@ import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
 import static android.car.VehiclePropertyIds.HVAC_FAN_SPEED;
 import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 
+import android.car.hardware.CarPropertyConfig;
 import android.car.hardware.CarPropertyValue;
 import android.content.Context;
 import android.content.res.Resources;
@@ -106,6 +107,11 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
     @Override
     public void setHvacPropertySetter(HvacPropertySetter hvacPropertySetter) {
         mHvacPropertySetter = hvacPropertySetter;
+    }
+
+    @Override
+    public void setConfigInfo(CarPropertyConfig<?> carPropertyConfig) {
+        // no-op.
     }
 
     @Override

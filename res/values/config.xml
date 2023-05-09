@@ -153,7 +153,6 @@
     </string-array>
 
     <string-array name="config_userpickerReadOnlyIconControllers" translatable="false">
-        <item>com.android.systemui.car.statusicon.ui.SignalStatusIconController</item>
     </string-array>
 
     <!-- List of package names that are allowed sources of app installation. -->

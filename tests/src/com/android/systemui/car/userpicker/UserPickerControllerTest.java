@@ -135,8 +135,8 @@ public class UserPickerControllerTest extends UserPickerTestCase {
 
         mSnackbarManager = new SnackbarManager();
         mUserPickerSharedState = new UserPickerSharedState();
-        View rootView = mInflater.inflate(R.layout.user_picker, null);
-        mSnackbarManager.setRootView(rootView, R.id.user_picker_bottom_bar);
+        View rootView = mInflater.inflate(R.layout.test_empty_layout, null);
+        mSnackbarManager.setRootView(rootView, R.id.test_empty_layout_frame);
 
         mUserPickerController = new UserPickerController(mContext, mMockUserEventManager,
                 mMockCarServiceMediator, mMockDialogManager, mSnackbarManager,

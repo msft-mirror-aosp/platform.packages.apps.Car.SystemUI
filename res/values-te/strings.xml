@@ -89,7 +89,10 @@
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"ప్రొఫైళ్లు &amp; ఖాతాల సెట్టింగ్‌లు"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"ఆకృతి రోటరీకి సపోర్ట్ చేయదు; \'తాకండి\'"</string>
     <string name="display_input_lock_text" msgid="8524876126635885614">"టచ్ స్క్రీన్ లాక్ చేయబడింది"</string>
-    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"మీ స్క్రీన్ లాక్ చేయబడింది"</string>
+    <!-- no translation found for display_input_lock_started_text (2434054522800802134) -->
+    <skip />
+    <!-- no translation found for display_input_lock_stopped_text (2454939902188129876) -->
+    <skip />
     <string name="user_logout_title" msgid="5534754139319586681">"మీరు ఖచ్చితంగా లాగ్ అవుట్ చేయాలనుకుంటున్నారా?"</string>
     <string name="user_logout_message" msgid="7804089876692575056">"ఇది అన్ని ఓపెన్ అప్లికేషన్‌లను మూసివేస్తుంది"</string>
     <string name="user_logout" msgid="2934184154258330491">"లాగ్ అవుట్ చేయండి"</string>
@@ -118,5 +121,5 @@
     <string name="keyguard_enter_your_password" msgid="1345546935461513721"></string>
     <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"మీ PINను ఎంటర్ చేయండి"</string>
     <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"మీ ఆకృతిని ఎంటర్ చేయండి"</string>
-    <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"మీ పాస్‌వర్డ్‌ను నమోదు చేయండి"</string>
+    <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"మీ పాస్‌వర్డ్‌ను ఎంటర్ చేయండి"</string>
 </resources>

@@ -34,6 +34,8 @@ import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.systemui.R;
 
 import java.lang.annotation.Retention;
@@ -50,17 +52,20 @@ final class DialogManager {
     static final int DIALOG_TYPE_ADDING_USER = 1;
     static final int DIALOG_TYPE_MAX_USER_COUNT_REACHED = 2;
     static final int DIALOG_TYPE_CONFIRM_ADD_USER = 3;
+    static final int DIALOG_TYPE_CONFIRM_LOGOUT = 4;
 
     @IntDef(prefix = { "DIALOG_TYPE_" }, value = {
         DIALOG_TYPE_SWITCHING,
         DIALOG_TYPE_ADDING_USER,
         DIALOG_TYPE_MAX_USER_COUNT_REACHED,
         DIALOG_TYPE_CONFIRM_ADD_USER,
+        DIALOG_TYPE_CONFIRM_LOGOUT,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DialogType {}
 
-    private final UserPickerDialogs mUserPickerDialogs = new UserPickerDialogs();
+    @VisibleForTesting
+    final UserPickerDialogs mUserPickerDialogs = new UserPickerDialogs();
 
     private String mUserSwitchingMessage;
     private String mUserAddingMessage;
@@ -68,6 +73,8 @@ final class DialogManager {
     private String mMaxUserLimitReachedMessage;
     private String mConfirmAddUserTitle;
     private String mConfirmAddUserMessage;
+    private String mConfirmLogoutTitle;
+    private String mConfirmLogoutMessage;
 
     private Context mContext;
     private int mDisplayId;
@@ -93,6 +100,8 @@ final class DialogManager {
                 .concat(lineSeparator)
                 .concat(lineSeparator)
                 .concat(context.getString(R.string.user_add_user_message_update));
+        mConfirmLogoutTitle = context.getString(R.string.user_logout_title);
+        mConfirmLogoutMessage = context.getString(R.string.user_logout_message);
     }
 
     void showDialog(@DialogType int type) {
@@ -100,6 +109,10 @@ final class DialogManager {
     }
 
     void showDialog(@DialogType int type, Runnable positiveCallback) {
+        showDialog(type, positiveCallback, null);
+    }
+
+    void showDialog(@DialogType int type, Runnable positiveCallback, Runnable cancelCallback) {
         if (DEBUG) {
             Slog.d(TAG, "showDialog: displayId=" + mDisplayId + " type=" + type);
         }
@@ -107,7 +120,7 @@ final class DialogManager {
         Dialog dialog = mUserPickerDialogs.get(type);
         if (dialog == null) {
             dialog = createAlertDialog(mContext, getDialogTitle(type), getDialogMessage(type),
-                    positiveCallback, type);
+                    positiveCallback, cancelCallback, type);
         }
 
         if (dialog != null) {
@@ -162,6 +175,9 @@ final class DialogManager {
             case DIALOG_TYPE_CONFIRM_ADD_USER:
                 title = mConfirmAddUserTitle;
                 break;
+            case DIALOG_TYPE_CONFIRM_LOGOUT:
+                title = mConfirmLogoutTitle;
+                break;
             default:
                 Slog.w(TAG, "No dialog title for given type, " + typeToString(type));
         }
@@ -178,10 +194,13 @@ final class DialogManager {
                 message = mUserAddingMessage;
                 break;
             case DIALOG_TYPE_MAX_USER_COUNT_REACHED:
-                message = mMaxUserLimitReachedMessage + getMaxSupportedUsers();
+                message = String.format(mMaxUserLimitReachedMessage, getMaxSupportedUsers());
                 break;
             case DIALOG_TYPE_CONFIRM_ADD_USER:
                 message = mConfirmAddUserMessage;
+                break;
+            case DIALOG_TYPE_CONFIRM_LOGOUT:
+                message = mConfirmLogoutMessage;
                 break;
             default:
                 Slog.w(TAG, "No dialog message for given type, " + typeToString(type));
@@ -199,13 +218,16 @@ final class DialogManager {
                 return "DIALOG_TYPE_MAX_USER_COUNT_REACHED";
             case DIALOG_TYPE_CONFIRM_ADD_USER:
                 return "DIALOG_TYPE_CONFIRM_ADD_USER";
+            case DIALOG_TYPE_CONFIRM_LOGOUT:
+                return "DIALOG_TYPE_CONFIRM_LOGOUT";
             default:
                 return "";
         }
     }
 
     private AlertDialog createAlertDialog(Context context, String title, String message,
-                                          Runnable positiveCallback, @DialogType int type) {
+                                          Runnable positiveCallback, Runnable cancelCallback,
+                                          @DialogType int type) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context,
                 com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert);
         TextView messageView = null;
@@ -213,6 +235,7 @@ final class DialogManager {
         switch (type) {
             case DIALOG_TYPE_MAX_USER_COUNT_REACHED:
             case DIALOG_TYPE_CONFIRM_ADD_USER:
+            case DIALOG_TYPE_CONFIRM_LOGOUT:
                 builder.setTitle(title);
                 builder.setPositiveButton(android.R.string.ok, (d, w) -> {
                     if (positiveCallback != null) {
@@ -220,7 +243,14 @@ final class DialogManager {
                     }
                 });
                 if (positiveCallback != null) {
-                    builder.setNegativeButton(android.R.string.cancel, null);
+                    builder.setNegativeButton(android.R.string.cancel, (d, w) -> {
+                        if (cancelCallback != null) {
+                            cancelCallback.run();
+                        }
+                    });
+                }
+                if (cancelCallback != null) {
+                    builder.setOnCancelListener(dialog -> cancelCallback.run());
                 }
                 builder.setOnDismissListener(d -> removeDialog(type));
                 messageView = (TextView) LayoutInflater.from(context)
@@ -258,7 +288,8 @@ final class DialogManager {
         mUserPickerDialogs.clear();
     }
 
-    private final class UserPickerDialogs {
+    @VisibleForTesting
+    final class UserPickerDialogs {
         final SparseArray<Dialog> mDialogs = new SparseArray<>();
 
         Dialog get(int type) {

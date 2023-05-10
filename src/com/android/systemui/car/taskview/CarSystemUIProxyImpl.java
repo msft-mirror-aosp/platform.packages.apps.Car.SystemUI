@@ -38,9 +38,9 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dump.DumpManager;
 import com.android.wm.shell.ShellTaskOrganizer;
-import com.android.wm.shell.TaskViewTransitions;
 import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.dagger.WMSingleton;
+import com.android.wm.shell.taskview.TaskViewTransitions;
 
 import java.io.PrintWriter;
 import java.util.HashSet;
@@ -109,7 +109,7 @@ public final class CarSystemUIProxyImpl
     }
 
     @Override
-    public CarTaskViewHost createCarTaskView(CarTaskViewClient carTaskViewClient) {
+    public CarTaskViewHost createControlledCarTaskView(CarTaskViewClient carTaskViewClient) {
         RemoteCarTaskViewServerImpl remoteCarTaskViewServerImpl =
                 new RemoteCarTaskViewServerImpl(
                         mContext,

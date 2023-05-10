@@ -28,7 +28,6 @@ import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.systemui.wm.MDSystemBarsController;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.common.DisplayController;
-import com.android.wm.shell.common.DisplayImeController;
 import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.dagger.DynamicOverride;
@@ -40,11 +39,11 @@ import com.android.wm.shell.recents.RecentTasksController;
 import com.android.wm.shell.sysui.ShellInit;
 import com.android.wm.shell.windowdecor.WindowDecorViewModel;
 
+import java.util.Optional;
+
 import dagger.BindsOptionalOf;
 import dagger.Module;
 import dagger.Provides;
-
-import java.util.Optional;
 
 /** Provides dependencies from {@link com.android.wm.shell} for CarSystemUI. */
 @Module(includes = WMShellBaseModule.class)
@@ -63,12 +62,12 @@ public abstract class CarWMShellModule {
     @WMSingleton
     @Provides
     static Optional<MDSystemBarsController> provideMUMDPerDisplayInsetsChangeController(
-            DisplayImeController displayImeController,
+            IWindowManager windowManager,
             @Main Handler mainHandler,
-            ShellInit shellInit) {
+            Context context) {
         if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
             return Optional.of(
-                    new MDSystemBarsController(displayImeController, mainHandler, shellInit));
+                    new MDSystemBarsController(windowManager, mainHandler, context));
         }
         return Optional.empty();
     }

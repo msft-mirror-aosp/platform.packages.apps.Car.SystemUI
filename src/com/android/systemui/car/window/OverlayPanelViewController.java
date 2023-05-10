@@ -246,7 +246,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
             return;
         }
 
-        if (!isPanelExpanded() || !isPanelVisible()) {
+        if (!isPanelExpanded() && !isPanelVisible()) {
             return;
         }
 

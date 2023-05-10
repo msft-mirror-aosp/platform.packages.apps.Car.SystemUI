@@ -26,6 +26,7 @@ import android.view.IRemoteAnimationRunner;
 import android.view.RemoteAnimationTarget;
 
 import com.android.internal.jank.InteractionJankMonitor;
+import com.android.internal.logging.UiEventLogger;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardDisplayManager;
 import com.android.keyguard.KeyguardUpdateMonitor;
@@ -37,9 +38,11 @@ import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.dreams.DreamOverlayStateController;
 import com.android.systemui.dump.DumpManager;
+import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
+import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationModeController;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.ShadeController;
@@ -53,9 +56,9 @@ import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.util.DeviceConfigProxy;
 
-import dagger.Lazy;
-
 import java.util.concurrent.Executor;
+
+import dagger.Lazy;
 
 /**
  * Car customizations on top of {@link KeyguardViewMediator}. Please refer to that class for
@@ -74,6 +77,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
      * Injected constructor. See {@link CarKeyguardModule}.
      */
     public CarKeyguardViewMediator(Context context,
+            UiEventLogger uiEventLogger,
+            SessionTracker sessionTracker,
             UserTracker userTracker,
             FalsingCollector falsingCollector,
             LockPatternUtils lockPatternUtils,
@@ -100,8 +105,10 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             Lazy<ShadeController> mShadeControllerLazy,
             Lazy<NotificationShadeWindowController> notificationShadeWindowControllerLazy,
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator,
-            Lazy<ScrimController> scrimControllerLazy) {
-        super(context, userTracker, falsingCollector, lockPatternUtils, broadcastDispatcher,
+            Lazy<ScrimController> scrimControllerLazy,
+            FeatureFlags featureFlags) {
+        super(context, uiEventLogger, sessionTracker,
+                userTracker, falsingCollector, lockPatternUtils, broadcastDispatcher,
                 statusBarKeyguardViewManagerLazy, dismissCallbackRegistry, keyguardUpdateMonitor,
                 dumpManager, uiBgExecutor, powerManager, trustManager, userSwitcherController,
                 deviceConfig, navigationModeController, keyguardDisplayManager, dozeParameters,
@@ -112,7 +119,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 mShadeControllerLazy,
                 notificationShadeWindowControllerLazy,
                 activityLaunchAnimator,
-                scrimControllerLazy);
+                scrimControllerLazy, featureFlags);
         mContext = context;
     }
 
@@ -158,13 +165,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
         }
 
         @Override
-        public void onAnimationCancelled(boolean isKeyguardOccluded)
-                throws RemoteException {
-            synchronized (mOcclusionLock) {
-                Log.d(TAG, String.format("%s cancelled by WM. Setting occluded state to: %b",
-                        mAnimatorType, isKeyguardOccluded));
-                setOccluded(isKeyguardOccluded, /* animate= */ false);
-            }
+        public void onAnimationCancelled() throws RemoteException {
+            Log.d(TAG, String.format("%s cancelled by WM.", mAnimatorType));
         }
     }
 }

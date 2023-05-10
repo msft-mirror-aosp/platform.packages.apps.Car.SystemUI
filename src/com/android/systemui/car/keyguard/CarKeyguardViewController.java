@@ -49,6 +49,7 @@ import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.keyguard.data.BouncerView;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerCallbackInteractor;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerCallbackInteractor.PrimaryBouncerExpansionCallback;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerInteractor;
@@ -56,8 +57,8 @@ import com.android.systemui.keyguard.ui.binder.KeyguardBouncerViewBinder;
 import com.android.systemui.keyguard.ui.viewmodel.KeyguardBouncerViewModel;
 import com.android.systemui.keyguard.ui.viewmodel.PrimaryBouncerToGoneTransitionViewModel;
 import com.android.systemui.settings.UserTracker;
-import com.android.systemui.shade.NotificationPanelViewController;
 import com.android.systemui.shade.ShadeExpansionStateManager;
+import com.android.systemui.shade.ShadeViewController;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
 import com.android.systemui.statusbar.phone.CentralSurfaces;
 import com.android.systemui.statusbar.phone.KeyguardBypassController;
@@ -97,6 +98,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private final KeyguardSecurityModel mKeyguardSecurityModel;
     private final KeyguardBouncerViewModel mKeyguardBouncerViewModel;
     private final KeyguardBouncerComponent.Factory mKeyguardBouncerComponentFactory;
+    private final LockPatternUtils mLockPatternUtils;
+    private final BouncerView mBouncerView;
     private final PrimaryBouncerExpansionCallback mExpansionCallback =
             new PrimaryBouncerExpansionCallback() {
                 @Override
@@ -118,11 +121,11 @@ public class CarKeyguardViewController extends OverlayViewController implements
                 @Override
                 public void onStartingToShow() {
                     // TODO: Remove this code block when b/158386500 is addressed properly.
-                    LockPatternUtils utils = new LockPatternUtils(mContext);
                     int currentUser = mUserTracker.getUserId();
-                    if (utils.getCredentialTypeForUser(currentUser) == CREDENTIAL_TYPE_PATTERN
-                            && !utils.isVisiblePatternEnabled(currentUser)) {
-                        utils.setVisiblePatternEnabled(true, currentUser);
+                    if (mLockPatternUtils.getCredentialTypeForUser(currentUser)
+                            == CREDENTIAL_TYPE_PATTERN
+                            && !mLockPatternUtils.isVisiblePatternEnabled(currentUser)) {
+                        mLockPatternUtils.setVisiblePatternEnabled(true, currentUser);
                         Log.w(TAG, "Pattern is invisible for the current user. "
                                 + "Setting it to be visible.");
                     }
@@ -167,7 +170,9 @@ public class CarKeyguardViewController extends OverlayViewController implements
             KeyguardSecurityModel keyguardSecurityModel,
             KeyguardBouncerViewModel keyguardBouncerViewModel,
             PrimaryBouncerToGoneTransitionViewModel primaryBouncerToGoneTransitionViewModel,
-            KeyguardBouncerComponent.Factory keyguardBouncerComponentFactory) {
+            KeyguardBouncerComponent.Factory keyguardBouncerComponentFactory,
+            LockPatternUtils lockPatternUtils,
+            BouncerView bouncerView) {
 
         super(R.id.keyguard_stub, overlayViewGlobalStateController);
 
@@ -187,7 +192,9 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mKeyguardSecurityModel = keyguardSecurityModel;
         mKeyguardBouncerViewModel = keyguardBouncerViewModel;
         mKeyguardBouncerComponentFactory = keyguardBouncerComponentFactory;
+        mLockPatternUtils = lockPatternUtils;
         mPrimaryBouncerToGoneTransitionViewModel = primaryBouncerToGoneTransitionViewModel;
+        mBouncerView = bouncerView;
 
         mToastShowDurationMillisecond = mContext.getResources().getInteger(
                 R.integer.car_keyguard_toast_show_duration_millisecond);
@@ -332,7 +339,11 @@ public class CarKeyguardViewController extends OverlayViewController implements
     @Override
     @MainThread
     public void startPreHideAnimation(Runnable finishRunnable) {
-        mPrimaryBouncerInteractor.startDisappearAnimation(finishRunnable);
+        if (isBouncerShowing()) {
+            mPrimaryBouncerInteractor.startDisappearAnimation(finishRunnable);
+        } else if (finishRunnable != null) {
+            finishRunnable.run();
+        }
     }
 
     @Override
@@ -423,7 +434,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     @Override
     public void registerCentralSurfaces(
             CentralSurfaces centralSurfaces,
-            NotificationPanelViewController notificationPanelViewController,
+            ShadeViewController shadeViewController,
             ShadeExpansionStateManager shadeExpansionStateManager,
             BiometricUnlockController biometricUnlockController,
             View notificationContainer,
@@ -438,6 +449,16 @@ public class CarKeyguardViewController extends OverlayViewController implements
      */
     public void hideKeyguardToPrepareBouncer() {
         getLayout().setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public boolean setAllowRotaryFocus(boolean allowRotaryFocus) {
+        boolean changed = super.setAllowRotaryFocus(allowRotaryFocus);
+        if (changed && allowRotaryFocus && mBouncerView.getDelegate() != null) {
+            // Resume the view so it can regain focus
+            mBouncerView.getDelegate().resume();
+        }
+        return changed;
     }
 
     private void revealKeyguardIfBouncerPrepared() {

@@ -31,7 +31,7 @@ import javax.inject.Inject;
 
 /**
  * Implementation of NotificationPanelViewMediator that sets the notification panel to be opened
- * from the top navigation bar.
+ * from the bottom navigation bar.
  */
 @SysUISingleton
 public class BottomNotificationPanelViewMediator extends NotificationPanelViewMediator {
@@ -59,11 +59,5 @@ public class BottomNotificationPanelViewMediator extends NotificationPanelViewMe
                 uiModeManager);
         notificationPanelViewController.setOverlayDirection(
                 OverlayPanelViewController.OVERLAY_FROM_BOTTOM_BAR);
-    }
-
-    @Override
-    protected void registerBottomBarTouchListener() {
-        getCarSystemBarController().registerBottomBarTouchListener(
-                getNotificationPanelViewController().getDragOpenTouchListener());
     }
 }

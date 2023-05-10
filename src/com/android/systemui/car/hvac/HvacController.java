@@ -286,7 +286,18 @@ public class HvacController implements HvacPropertySetter,
                 HvacView hvacView = (HvacView) rootView;
                 @HvacProperty Integer propId = hvacView.getHvacPropertyToView();
                 @AreaId Integer targetAreaId = hvacView.getAreaId();
+
+                CarPropertyConfig carPropertyConfig =
+                        mCarPropertyManager.getCarPropertyConfig(propId);
+                if (carPropertyConfig == null) {
+                    throw new IllegalArgumentException(
+                            "Cannot register hvac view for property: "
+                            + VehiclePropertyIds.toString(propId)
+                            + " because property is not implemented.");
+                }
+
                 hvacView.setHvacPropertySetter(this);
+                hvacView.setConfigInfo(carPropertyConfig);
 
                 ArrayList<Integer> supportedAreaIds = getAreaIdsFromTargetAreaId(propId.intValue(),
                         targetAreaId.intValue());
@@ -311,10 +322,7 @@ public class HvacController implements HvacPropertySetter,
                             hvacView.onHvacTemperatureUnitChanged(usesFahrenheit);
                         }
 
-                        CarPropertyConfig carPropertyConfig =
-                                mCarPropertyManager.getCarPropertyConfig(propId);
-                        if (carPropertyConfig == null
-                                || carPropertyConfig.getAreaType() != VEHICLE_AREA_TYPE_SEAT) {
+                        if (carPropertyConfig.getAreaType() != VEHICLE_AREA_TYPE_SEAT) {
                             continue;
                         }
 

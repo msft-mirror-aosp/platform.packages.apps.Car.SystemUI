@@ -49,7 +49,7 @@ public class DialogManagerTest extends UserPickerTestCase {
         MockitoAnnotations.initMocks(this);
         doReturn(MAIN_DISPLAY_ID).when(mContext).getDisplayId();
         mDialogManager = new DialogManager();
-        View rootView = mInflater.inflate(R.layout.user_picker, null);
+        View rootView = mInflater.inflate(R.layout.test_empty_layout, null);
         mDialogManager.initContextFromView(rootView);
         spyOn(mDialogManager);
     }

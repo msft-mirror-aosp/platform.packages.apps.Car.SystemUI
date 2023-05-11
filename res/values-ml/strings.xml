@@ -89,7 +89,10 @@
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"പ്രൊഫൈലുകളും അക്കൗണ്ടുകളും ക്രമീകരണം"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"റോട്ടറിക്ക് പാറ്റേണിന്റെ പിന്തുണയില്ല, ടച്ച് ഉപയോഗിക്കൂ"</string>
     <string name="display_input_lock_text" msgid="8524876126635885614">"ടച്ച്‌ സ്‌ക്രീൻ ലോക്ക് ചെയ്തു"</string>
-    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"നിങ്ങളുടെ സ്ക്രീൻ ലോക്ക് ചെയ്തിരിക്കുന്നു"</string>
+    <!-- no translation found for display_input_lock_started_text (2434054522800802134) -->
+    <skip />
+    <!-- no translation found for display_input_lock_stopped_text (2454939902188129876) -->
+    <skip />
     <string name="user_logout_title" msgid="5534754139319586681">"ലോഗ് ഔട്ട് ചെയ്യണമെന്ന് ഉറപ്പാണോ?"</string>
     <string name="user_logout_message" msgid="7804089876692575056">"ഇത്, തുറന്നിരിക്കുന്ന എല്ലാ ആപ്പുകളും അടയ്ക്കും"</string>
     <string name="user_logout" msgid="2934184154258330491">"ലോഗൗട്ട് ചെയ്യുക"</string>

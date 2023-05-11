@@ -186,6 +186,7 @@
         </item>
     </style>
 
+    <!-- UserPicker -->
     <!-- Style for message text of user picker alert dialog. -->
     <style name="UserPickerDialogMessageNormalText">
         <item name="android:textStyle">normal</item>
@@ -196,5 +197,11 @@
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">@dimen/car_body2_size</item>
         <item name="android:textColor">@*android:color/car_body4</item>
+    </style>
+    <!-- Style user picker snackbar. -->
+    <style name="UserPickerSnackBarText" parent="Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:textSize">@dimen/car_body3_size</item>
+        <item name="android:layout_margin">@dimen/car_padding_2</item>
+        <item name="android:maxLines">2</item>
     </style>
 </resources>

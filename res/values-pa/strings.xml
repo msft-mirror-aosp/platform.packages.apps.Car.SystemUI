@@ -27,8 +27,8 @@
     <string name="end_session" msgid="2765206020435441421">"ਸੈਸ਼ਨ ਸਮਾਪਤ ਕਰੋ"</string>
     <string name="car_new_user" msgid="6766334721724989964">"ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"ਕੀ ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰਨਾ ਹੈ?"</string>
-    <string name="user_add_user_message_setup" msgid="6136074867764164790">"ਤੁਹਾਡੇ ਵੱਲੋਂ ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਬਣਾਉਣ ਤੋਂ ਬਾਅਦ, ਉਸ ਵਿਅਕਤੀ ਨੂੰ ਖੁਦ ਲਈ ਇਸਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨਾ ਚਾਹੀਦਾ ਹੈ।"</string>
-    <string name="user_add_user_message_update" msgid="3310089453006545712">"ਐਪਾਂ ਨੂੰ ਹੋਰ ਸਾਰੇ ਪ੍ਰੋਫਾਈਲਾਂ ਵੱਲੋਂ ਵਰਤੇ ਜਾਣ ਲਈ ਕਿਸੇ ਵੀ ਪ੍ਰੋਫਾਈਲ ਤੋਂ ਅੱਪਡੇਟ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।"</string>
+    <string name="user_add_user_message_setup" msgid="1639791240776969175">"ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਖਾਤਾ ਧਾਰਕ ਉਸਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰ ਸਕਦਾ ਹੈ।"</string>
+    <string name="user_add_user_message_update" msgid="4507063398890966360">"ਕੋਈ ਵੀ ਪ੍ਰੋਫਾਈਲ ਐਪ ਸੰਬੰਧੀ ਅੱਪਡੇਟ ਸਥਾਪਤ ਕਰ ਸਕਦਾ ਹੈ, ਜੋ ਉਸ ਤੋਂ ਬਾਅਦ ਸਾਰੇ ਪ੍ਰੋਫਾਈਲਾਂ ਲਈ ਉਪਲਬਧ ਹੋਵੇਗਾ।"</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"ਪ੍ਰੋਫਾਈਲ ਬਣਾਉਣ ਦੀ ਸੀਮਾ ਪੂਰੀ ਹੋ ਗਈ"</string>
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{ਸਿਰਫ਼ ਇੱਕ ਪ੍ਰੋਫਾਈਲ ਬਣਾਇਆ ਜਾ ਸਕਦਾ ਹੈ।}one{ਤੁਸੀਂ # ਤੱਕ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ।}other{ਤੁਸੀਂ # ਤੱਕ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ।}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"</string>
@@ -94,23 +94,29 @@
     <string name="user_logout_message" msgid="7804089876692575056">"ਇਸ ਨਾਲ ਸਾਰੀ ਖੁੱਲ੍ਹੀਆਂ ਐਪਲੀਕੇਸ਼ਨਾਂ ਬੰਦ ਹੋ ਜਾਣਗੀਆਂ"</string>
     <string name="user_logout" msgid="2934184154258330491">"ਲੌਗ-ਆਊਟ ਕਰੋ"</string>
     <string name="car_guest" msgid="768913000117469596">"ਮਹਿਮਾਨ"</string>
-    <string name="user_switching_message" msgid="634395959804046394">"ਵਰਤੋਂਕਾਰ ਨੂੰ ਸਵਿੱਚ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"</string>
-    <string name="user_adding_message" msgid="7328589666615053611">"ਨਵਾਂ ਵਰਤੋਂਕਾਰ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"</string>
-    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"ਵਰਤੋਂਕਾਰ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਸੀਮਾ ਪੂਰੀ ਹੋਈ"</string>
-    <string name="max_user_limit_reached_message" msgid="644904407853005163">"ਤੁਸੀਂ ਵੱਧੋ-ਵੱਧ ਇੰਨੇ ਵਰਤੋਂਕਾਰ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ "</string>
-    <string name="confirm_add_user_title" msgid="1237839494207086048">"ਕੀ ਨਵਾਂ ਵਰਤੋਂਕਾਰ ਸ਼ਾਮਲ ਕਰਨਾ ਹੈ?"</string>
-    <string name="already_logged_in_message" msgid="2440895716293348878">"ਪਹਿਲਾਂ ਹੀ ਕਿਸੇ ਹੋਰ ਡਿਸਪਲੇ \'ਤੇ ਲੌਗ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ"</string>
-    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਕੋਈ ਪ੍ਰੋਫਾਈਲ ਚੁਣੋ"</string>
-    <string name="logged_in_text" msgid="932290859654786874">"ਲੌਗ-ਇਨ ਕੀਤਾ ਗਿਆ"</string>
-    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"<xliff:g id="SEAT_LOCATION">%s</xliff:g> ਵੱਲੋਂ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"</string>
-    <string name="create_user_failed_message" msgid="7107927788723239958">"ਹੁਣੇ ਵਰਤੋਂਕਾਰ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਥੋੜ੍ਹੀ ਦੇਰ ਤੱਕ ਇਹ ਕਰ ਕੇ ਦੇਖੋ।"</string>
-    <string name="guest_creation_failed_message" msgid="124079314799870297">"ਥੋੜ੍ਹੀ ਦੇਰ ਤੱਕ ਮਹਿਮਾਨ ਵਜੋਂ ਲੌਗ-ਇਨ ਕਰ ਕੇ ਦੇਖੋ"</string>
-    <string name="stopping_user_text" msgid="8582746159702773548">"ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"</string>
-    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"ਕਿਰਪਾ ਕਰਕੇ ਵਰਤੋਂਕਾਰ ਦੇ ਬੰਦ ਹੋਣ ਤੱਕ ਉਡੀਕ ਕਰੋ"</string>
+    <string name="user_switching_message" msgid="5346172662613832946">"ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸਵਿੱਚ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…"</string>
+    <string name="user_adding_message" msgid="4700853604381151415">"ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…"</string>
+    <string name="max_user_limit_reached_title" msgid="7319012467112549458"></string>
+    <string name="max_user_limit_reached_message" msgid="1445188223628919167">"ਤੁਸੀਂ <xliff:g id="USER_LIMIT">%d</xliff:g> ਪ੍ਰੋਫਾਈਲਾਂ ਤੱਕ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ"</string>
+    <string name="confirm_add_user_title" msgid="75853419607883551">"ਕੀ ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰਨਾ ਹੈ?"</string>
+    <string name="already_logged_in_message" msgid="3657131706472825219">"ਜਾਰੀ ਰੱਖਣ ਲਈ, <xliff:g id="USER_NAME">%1$s</xliff:g> ਨੂੰ <xliff:g id="SEAT_LOCATION">%2$s</xliff:g> ਦੀ ਸਕ੍ਰੀਨ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰਨਾ ਪਵੇਗਾ"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="3903097856063608991">"ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਪ੍ਰੋਫਾਈਲ ਚੁਣੋ"</string>
+    <string name="logged_in_text" msgid="742324514947999718">"ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="7438545665671460955">"<xliff:g id="SEAT_LOCATION">%s</xliff:g> ਦੀ ਸਕ੍ਰੀਨ \'ਤੇ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ"</string>
+    <string name="create_user_failed_message" msgid="4539847475822170735">"ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।"</string>
+    <string name="guest_creation_failed_message" msgid="8198126434029601949">"ਮਹਿਮਾਨ ਪ੍ਰੋਫਾਈਲ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।"</string>
+    <string name="stopping_user_text" msgid="4946464635279894684">"ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…"</string>
+    <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> ਨੂੰ ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।"</string>
     <string name="seat_driver" msgid="4502591979520445677">"ਡਰਾਈਵਰ"</string>
     <string name="seat_front" msgid="836133281052793377">"ਅਗਲਾ"</string>
     <string name="seat_rear" msgid="403133444964528577">"ਪਿਛਲਾ"</string>
     <string name="seat_left_side" msgid="7460757956924015769">"ਖੱਬਾ"</string>
     <string name="seat_center_side" msgid="6661501442901282386">"ਵਿਚਕਾਰ"</string>
     <string name="seat_right_side" msgid="6735434879559763096">"ਸੱਜਾ"</string>
+    <string name="keyguard_enter_your_pin" msgid="141736439348916894"></string>
+    <string name="keyguard_enter_your_pattern" msgid="4004401928097798697"></string>
+    <string name="keyguard_enter_your_password" msgid="1345546935461513721"></string>
+    <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"ਆਪਣਾ ਪਿੰਨ ਦਾਖਲ ਕਰੋ"</string>
+    <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"ਆਪਣਾ ਪੈਟਰਨ ਦਾਖਲ ਕਰੋ"</string>
+    <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"ਆਪਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ"</string>
 </resources>

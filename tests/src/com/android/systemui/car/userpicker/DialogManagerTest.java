@@ -23,6 +23,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.eq;
 
+import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
@@ -39,13 +40,13 @@ import org.mockito.MockitoAnnotations;
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
+@SmallTest
 public class DialogManagerTest extends UserPickerTestCase {
     private DialogManager mDialogManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-
         doReturn(MAIN_DISPLAY_ID).when(mContext).getDisplayId();
         mDialogManager = new DialogManager();
         View rootView = mInflater.inflate(R.layout.user_picker, null);
@@ -122,5 +123,15 @@ public class DialogManagerTest extends UserPickerTestCase {
         mDialogManager.dismissDialog(dialogtype);
         verify(mDialogManager).dismissDialog(eq(dialogtype));
         assertThat(mDialogManager.mUserPickerDialogs.get(dialogtype)).isNull();
+    }
+
+    @Test
+    public void showConfirmLogoutDialog_callShowConfirmLogoutDialog() {
+        int dialogtype = mDialogManager.DIALOG_TYPE_CONFIRM_LOGOUT;
+        assertThat(mDialogManager.mUserPickerDialogs.get(dialogtype)).isNull();
+        mDialogManager.showDialog(dialogtype);
+
+        verify(mDialogManager).showDialog(eq(dialogtype));
+        assertThat(mDialogManager.mUserPickerDialogs.get(dialogtype)).isNotNull();
     }
 }

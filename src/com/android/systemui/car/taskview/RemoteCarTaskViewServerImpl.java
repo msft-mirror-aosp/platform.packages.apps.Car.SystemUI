@@ -28,12 +28,11 @@ import android.car.app.CarTaskViewHost;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.DeadSystemRuntimeException;
-import android.os.Binder;
 import android.util.Slog;
 import android.util.SparseArray;
-import android.view.InsetsFrameProvider;
 import android.view.InsetsSource;
 import android.view.SurfaceControl;
 import android.window.WindowContainerTransaction;
@@ -53,7 +52,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     private final TaskViewTaskController mTaskViewTaskController;
     private final CarSystemUIProxyImpl mCarSystemUIProxy;
     private final Binder mInsetsOwner = new Binder();
-    private final SparseArray<InsetsFrameProvider> mInsets = new SparseArray<>();
+    private final SparseArray<Rect> mInsets = new SparseArray<>();
     private boolean mReleased;
 
     private final CarTaskViewHost mHostImpl = new CarTaskViewHost() {
@@ -122,33 +121,40 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
 
         @Override
         public void addInsets(int index, int type, @NonNull Rect frame) {
-            mInsets.clear();
-            mInsets.append(InsetsSource.createId(mInsetsOwner, index, type),
-                    new InsetsFrameProvider(mInsetsOwner, index, type)
-                            .setArbitraryRectangle(frame));
-            applyInsets();
+            mInsets.append(InsetsSource.createId(mInsetsOwner, index, type), frame);
+
+            if (mTaskViewTaskController.getTaskInfo() == null) {
+                // The insets will be applied later as part of onTaskAppeared.
+                Slog.w(TAG, "Cannot apply insets as the task token is not present.");
+                return;
+            }
+            WindowContainerTransaction wct = new WindowContainerTransaction();
+            wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
+                    mInsetsOwner, index, type, frame);
+            mSyncQueue.queue(wct);
         }
 
         @Override
         public void removeInsets(int index, int type) {
-            if (mTaskViewTaskController.getTaskInfo() == null) {
-                Slog.w(TAG, "Cannot remove insets as the task token is not present.");
-                return;
-            }
             if (mInsets.size() == 0) {
                 Slog.w(TAG, "No insets set.");
                 return;
             }
             int id = InsetsSource.createId(mInsetsOwner, index, type);
-            WindowContainerTransaction wct = new WindowContainerTransaction();
-            if (mInsets.contains(id)) {
-                wct.removeInsetsSource(mTaskViewTaskController.getTaskInfo().token,
-                        mInsetsOwner, index, type);
-                mInsets.remove(id);
-            } else {
+            if (!mInsets.contains(id)) {
                 Slog.w(TAG, "Insets type: " + type + " can't be removed as it was not "
                         + "applied as part of the last addInsets()");
+                return;
             }
+            mInsets.remove(id);
+
+            if (mTaskViewTaskController.getTaskInfo() == null) {
+                Slog.w(TAG, "Cannot remove insets as the task token is not present.");
+                return;
+            }
+            WindowContainerTransaction wct = new WindowContainerTransaction();
+            wct.removeInsetsSource(mTaskViewTaskController.getTaskInfo().token,
+                    mInsetsOwner, index, type);
             mSyncQueue.queue(wct);
         }
     };
@@ -207,7 +213,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
 
     @Override
     public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo, SurfaceControl leash) {
-        applyInsets();
+        applyAllInsets();
         try {
             mCarTaskViewClient.onTaskAppeared(taskInfo, leash);
         } catch (DeadSystemRuntimeException e) {
@@ -236,7 +242,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         }
     }
 
-    private void applyInsets() {
+    private void applyAllInsets() {
         if (mInsets.size() == 0) {
             Slog.w(TAG, "Cannot apply null or empty insets");
             return;
@@ -247,9 +253,10 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         }
         WindowContainerTransaction wct = new WindowContainerTransaction();
         for (int i = 0; i < mInsets.size(); i++) {
-            final InsetsFrameProvider p = mInsets.valueAt(i);
+            final int id = mInsets.keyAt(i);
+            final Rect frame = mInsets.valueAt(i);
             wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
-                    p.getOwner(), p.getIndex(), p.getType(), p.getArbitraryRectangle());
+                    mInsetsOwner, InsetsSource.getIndex(id), InsetsSource.getType(id), frame);
         }
         mSyncQueue.queue(wct);
     }

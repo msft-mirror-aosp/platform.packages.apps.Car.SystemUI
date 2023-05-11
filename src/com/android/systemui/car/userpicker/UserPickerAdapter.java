@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
+import com.android.car.internal.user.UserHelper;
 import com.android.systemui.R;
 import com.android.systemui.car.userpicker.UserPickerView.UserPickerAdapterViewHolder;
 
@@ -32,24 +33,12 @@ import java.io.PrintWriter;
 import java.util.List;
 
 final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
-
-    // TODO<b/254526109>: Temporary Res Duplicate to QuickContorols. Remove them in phase 2.
-    @VisibleForTesting
-    static final int[] USER_PICKER_USER_COLORS = {
-            R.color.userpicker_color_1,
-            R.color.userpicker_color_2,
-            R.color.userpicker_color_3,
-            R.color.userpicker_color_4,
-            R.color.userpicker_color_5,
-            R.color.userpicker_color_6,
-            R.color.userpicker_color_7,
-            R.color.userpicker_color_8
-    };
     @VisibleForTesting
     static final int USER_PICKER_GUEST_COLOR = R.color.userpicker_guest_color;
 
     private final Context mContext;
     private final int mDisplayId;
+    private final float mDisabledAlpha;
 
     private List<UserRecord> mUsers;
     private String mLoggedInText;
@@ -59,6 +48,7 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
     UserPickerAdapter(Context context) {
         mContext = context;
         mDisplayId = mContext.getDisplayId();
+        mDisabledAlpha = mContext.getResources().getFloat(R.fraction.user_picker_disabled_alpha);
 
         updateTexts();
     }
@@ -71,28 +61,39 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapterViewHolder> {
         if (!userRecord.mIsStopping && !userRecord.mIsLoggedIn) {
             holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
             holder.mLoggedInTextView.setText("");
+            updateAlpha(holder, /* disabled= */ false);
             return;
         }
 
-        int color = mContext.getColor(userRecord.mIsStartGuestSession ? USER_PICKER_GUEST_COLOR
-                : USER_PICKER_USER_COLORS[userRecord.mInfo.id % USER_PICKER_USER_COLORS.length]);
+        int color = userRecord.mIsStartGuestSession ? mContext.getColor(USER_PICKER_GUEST_COLOR)
+                : UserHelper.getUserNameIconColor(mContext, userRecord.mInfo.getUserHandle());
         if (userRecord.mIsStopping) {
             holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
             holder.mLoggedInTextView.setTextColor(color);
             holder.mLoggedInTextView.setText(mStoppingUserText);
+            updateAlpha(holder, /* disabled= */ true);
         } else if (userRecord.mIsLoggedIn) {
             if (userRecord.mLoggedInDisplay == mDisplayId) {
                 holder.mUserBorderImageView.setColorFilter(color);
                 holder.mUserBorderImageView.setVisibility(View.VISIBLE);
                 holder.mLoggedInTextView.setTextColor(color);
                 holder.mLoggedInTextView.setText(mLoggedInText);
+                updateAlpha(holder, /* disabled= */ false);
             } else {
                 holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
                 holder.mLoggedInTextView.setTextColor(color);
                 holder.mLoggedInTextView.setText(String.format(mPrefixOtherSeatLoggedInInfo,
                         userRecord.mSeatLocationName));
+                updateAlpha(holder, /* disabled= */ true);
             }
         }
+    }
+
+    private void updateAlpha(UserPickerAdapterViewHolder holder, boolean disabled) {
+        float alpha = disabled ? mDisabledAlpha : 1.0f;
+        holder.mUserAvatarImageView.setAlpha(alpha);
+        holder.mUserNameTextView.setAlpha(alpha);
+        holder.mLoggedInTextView.setAlpha(alpha);
     }
 
     @Override

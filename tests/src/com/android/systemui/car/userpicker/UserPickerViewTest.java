@@ -23,6 +23,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 import android.content.pm.UserInfo;
 import android.graphics.Rect;
+import android.os.UserManager;
+import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.LayoutInflater;
@@ -34,6 +36,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 
+import com.android.car.internal.user.UserHelper;
 import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.userpicker.UserPickerView.ItemSpacingDecoration;
@@ -52,11 +55,15 @@ import java.util.List;
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
+@SmallTest
 public class UserPickerViewTest extends UserPickerTestCase {
     private UserPickerView mUserPickerView;
     private UserPickerAdapter mAdapter;
     @Mock
     private UserIconProvider mMockUserIconProvider;
+    @Mock
+    private UserManager mMockUserManager;
+
 
     private UserRecord mDriver;
     private UserRecord mFront;
@@ -74,6 +81,10 @@ public class UserPickerViewTest extends UserPickerTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        doReturn(mDriverUserInfo).when(mMockUserManager).getUserInfo(USER_ID_DRIVER);
+        doReturn(mFrontUserInfo).when(mMockUserManager).getUserInfo(USER_ID_FRONT);
+        doReturn(mRearUserInfo).when(mMockUserManager).getUserInfo(USER_ID_REAR);
+        mContext.addMockSystemService(UserManager.class, mMockUserManager);
         doReturn(FRONT_PASSENGER_DISPLAY_ID).when(mContext).getDisplayId();
         View mRootView = LayoutInflater.from(mContext).inflate(R.layout.user_picker, null);
         mUserPickerView = (UserPickerView) mRootView.findViewById(R.id.user_picker);
@@ -371,7 +382,8 @@ public class UserPickerViewTest extends UserPickerTestCase {
                     /* mIsLoggedIn= */ true, /* mLoggedInDisplay= */ startId + i,
                     /* mSeatLocationName= */ "Test", /* mIsStopping= */ false)
             );
-            colorlist[i] = mContext.getColor(mAdapter.USER_PICKER_USER_COLORS[i]);
+            doReturn(userInfo).when(mMockUserManager).getUserInfo(userInfo.id);
+            colorlist[i] = UserHelper.getUserNameIconColor(mContext, userInfo.getUserHandle());
         }
         userRecords.add(
                 UserRecord.create(null, /* mName= */ mGuestLabel,

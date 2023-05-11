@@ -37,6 +37,7 @@ import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.dreams.DreamOverlayStateController;
 import com.android.systemui.dump.DumpManager;
+import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
@@ -100,7 +101,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             Lazy<ShadeController> mShadeControllerLazy,
             Lazy<NotificationShadeWindowController> notificationShadeWindowControllerLazy,
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator,
-            Lazy<ScrimController> scrimControllerLazy) {
+            Lazy<ScrimController> scrimControllerLazy,
+            FeatureFlags featureFlags) {
         super(context, userTracker, falsingCollector, lockPatternUtils, broadcastDispatcher,
                 statusBarKeyguardViewManagerLazy, dismissCallbackRegistry, keyguardUpdateMonitor,
                 dumpManager, uiBgExecutor, powerManager, trustManager, userSwitcherController,
@@ -112,7 +114,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 mShadeControllerLazy,
                 notificationShadeWindowControllerLazy,
                 activityLaunchAnimator,
-                scrimControllerLazy);
+                scrimControllerLazy, featureFlags);
         mContext = context;
     }
 
@@ -158,13 +160,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
         }
 
         @Override
-        public void onAnimationCancelled(boolean isKeyguardOccluded)
-                throws RemoteException {
-            synchronized (mOcclusionLock) {
-                Log.d(TAG, String.format("%s cancelled by WM. Setting occluded state to: %b",
-                        mAnimatorType, isKeyguardOccluded));
-                setOccluded(isKeyguardOccluded, /* animate= */ false);
-            }
+        public void onAnimationCancelled() throws RemoteException {
+            Log.d(TAG, String.format("%s cancelled by WM.", mAnimatorType));
         }
     }
 }

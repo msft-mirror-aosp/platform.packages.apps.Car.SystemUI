@@ -27,8 +27,8 @@
     <string name="end_session" msgid="2765206020435441421">"ಸೆಷನ್ ಅಂತ್ಯಗೊಳಿಸಿ"</string>
     <string name="car_new_user" msgid="6766334721724989964">"ಹೊಸ ಪ್ರೊಫೈಲ್"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"ಹೊಸ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಬೇಕೇ?"</string>
-    <string name="user_add_user_message_setup" msgid="6136074867764164790">"ನೀವು ಹೊಸ ಪ್ರೊಫೈಲ್ ಅನ್ನು ರಚಿಸಿದ ನಂತರ, ಆ ವ್ಯಕ್ತಿಯು ಅದನ್ನು ತಮಗಾಗಿ ಕಸ್ಟಮೈಸ್ ಮಾಡಬೇಕು."</string>
-    <string name="user_add_user_message_update" msgid="3310089453006545712">"ಇತರ ಎಲ್ಲಾ ಪ್ರೊಫೈಲ್‌ಗಳ ಬಳಕೆಗಾಗಿ ಯಾವುದೇ ಪ್ರೊಫೈಲ್‌ನಿಂದ ಆ್ಯಪ್‌ಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬಹುದು."</string>
+    <string name="user_add_user_message_setup" msgid="1639791240776969175">"ನೀವು ಹೊಸ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಿದ ನಂತರ, ಖಾತೆದಾರರು ಅದನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಬಹುದು."</string>
+    <string name="user_add_user_message_update" msgid="4507063398890966360">"ಆ್ಯಪ್ ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಯಾವುದೇ ಪ್ರೊಫೈಲ್ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬಹುದು, ಅದು ನಂತರ ಎಲ್ಲಾ ಪ್ರೊಫೈಲ್‌ಗಳಲ್ಲಿ ಲಭ್ಯ."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"ಪ್ರೊಫೈಲ್‌ನ ಮಿತಿಯನ್ನು ತಲುಪಿದ್ದೀರಿ"</string>
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{ಒಂದು ಪ್ರೊಫೈಲ್ ಅನ್ನು ಮಾತ್ರ ರಚಿಸಬಹುದು.}one{ನೀವು ಗರಿಷ್ಠ # ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಸೇರಿಸಬಹುದು.}other{ನೀವು ಗರಿಷ್ಠ # ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಸೇರಿಸಬಹುದು.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"ಲೋಡ್ ಆಗುತ್ತಿದೆ"</string>
@@ -94,23 +94,29 @@
     <string name="user_logout_message" msgid="7804089876692575056">"ಇದು ಎಲ್ಲಾ ತೆರೆದ ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಮುಚ್ಚುತ್ತದೆ"</string>
     <string name="user_logout" msgid="2934184154258330491">"ಲಾಗ್‌ ಔಟ್‌ ಮಾಡಿ"</string>
     <string name="car_guest" msgid="768913000117469596">"ಅತಿಥಿ"</string>
-    <string name="user_switching_message" msgid="634395959804046394">"ಬಳಕೆದಾರರನ್ನು ಬದಲಿಸಲಾಗುತ್ತಿದೆ"</string>
-    <string name="user_adding_message" msgid="7328589666615053611">"ಹೊಸ ಬಳಕೆದಾರರನ್ನು ಸೇರಿಸಲಾಗುತ್ತಿದೆ"</string>
-    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"ಬಳಕೆದಾರರ ಮಿತಿ ತಲುಪಿದೆ"</string>
-    <string name="max_user_limit_reached_message" msgid="644904407853005163">"ಸೇರಿಸಬಹುದಾದ ಗರಿಷ್ಠ ಸಂಖ್ಯೆಯ ಬಳಕೆದಾರರ ಸಂಖ್ಯೆ "</string>
-    <string name="confirm_add_user_title" msgid="1237839494207086048">"ಹೊಸ ಬಳಕೆದಾರರನ್ನು ಸೇರಿಸಬೇಕೆ?"</string>
-    <string name="already_logged_in_message" msgid="2440895716293348878">"ಈಗಾಗಲೇ ಮತ್ತೊಂದು ಡಿಸ್‌ಪ್ಲೇಗೆ ಲಾಗ್ ಇನ್ ಮಾಡಲಾಗಿದೆ"</string>
-    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"ಪ್ರಾರಂಭಿಸಲು ಪ್ರೊಫೈಲ್ ಅನ್ನು ಆರಿಸಿ"</string>
-    <string name="logged_in_text" msgid="932290859654786874">"ಲಾಗ್‌ ಇನ್‌ ಮಾಡಲಾಗಿದೆ"</string>
-    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"<xliff:g id="SEAT_LOCATION">%s</xliff:g> ನಿಂದ ಬಳಕೆಯಲ್ಲಿದೆ"</string>
-    <string name="create_user_failed_message" msgid="7107927788723239958">"ಈಗ ಬಳಕೆದಾರರನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಪ್ರಯತ್ನಿಸಿ."</string>
-    <string name="guest_creation_failed_message" msgid="124079314799870297">"ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಅತಿಥಿಯಾಗಿ ಲಾಗಿನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ"</string>
-    <string name="stopping_user_text" msgid="8582746159702773548">"ನಿಲ್ಲಿಸಲಾಗುತ್ತಿದೆ"</string>
-    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"ಬಳಕೆದಾರರನ್ನು ನಿಲ್ಲಿಸುವವರೆಗೆ ನಿರೀಕ್ಷಿಸಿ"</string>
+    <string name="user_switching_message" msgid="5346172662613832946">"ಪ್ರೊಫೈಲ್ ಬದಲಿಸಲಾಗುತ್ತಿದೆ…"</string>
+    <string name="user_adding_message" msgid="4700853604381151415">"ಹೊಸ ಪ್ರೊಫೈಲ್ ಸೇರಿಸಲಾಗುತ್ತಿದೆ…"</string>
+    <string name="max_user_limit_reached_title" msgid="7319012467112549458"></string>
+    <string name="max_user_limit_reached_message" msgid="1445188223628919167">"ನೀವು ಗರಿಷ್ಠ <xliff:g id="USER_LIMIT">%d</xliff:g> ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಸೇರಿಸಬಹುದು"</string>
+    <string name="confirm_add_user_title" msgid="75853419607883551">"ಹೊಸ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಬೇಕೇ?"</string>
+    <string name="already_logged_in_message" msgid="3657131706472825219">"ಮುಂದುವರಿಸಲು, <xliff:g id="USER_NAME">%1$s</xliff:g> ಅವರು <xliff:g id="SEAT_LOCATION">%2$s</xliff:g> ಸ್ಕ್ರೀನ್ ಅನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಬೇಕು"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="3903097856063608991">"ಪ್ರಾರಂಭಿಸಲು ಪ್ರೊಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ"</string>
+    <string name="logged_in_text" msgid="742324514947999718">"ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="7438545665671460955">"Signed in on <xliff:g id="SEAT_LOCATION">%s</xliff:g> ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ"</string>
+    <string name="create_user_failed_message" msgid="4539847475822170735">"ಹೊಸ ಪ್ರೊಫೈಲ್ ಸೇರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ."</string>
+    <string name="guest_creation_failed_message" msgid="8198126434029601949">"ಅತಿಥಿ ಪ್ರೊಫೈಲ್ ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ."</string>
+    <string name="stopping_user_text" msgid="4946464635279894684">"ಸೈನ್ ಔಟ್ ಆಗುತ್ತಿದೆ…"</string>
+    <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> ಅವರ ಸೈನ್ ಔಟ್ ಆಗುತ್ತಿದ್ದಾರೆ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ."</string>
     <string name="seat_driver" msgid="4502591979520445677">"ಡ್ರೈವರ್"</string>
     <string name="seat_front" msgid="836133281052793377">"ಮುಂದೆ"</string>
     <string name="seat_rear" msgid="403133444964528577">"ಹಿಂಭಾಗ"</string>
     <string name="seat_left_side" msgid="7460757956924015769">"ಎಡ"</string>
     <string name="seat_center_side" msgid="6661501442901282386">"ಮಧ್ಯಭಾಗ"</string>
     <string name="seat_right_side" msgid="6735434879559763096">"ಬಲ"</string>
+    <string name="keyguard_enter_your_pin" msgid="141736439348916894"></string>
+    <string name="keyguard_enter_your_pattern" msgid="4004401928097798697"></string>
+    <string name="keyguard_enter_your_password" msgid="1345546935461513721"></string>
+    <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"ನಿಮ್ಮ ಪಿನ್ ನಮೂದಿಸಿ"</string>
+    <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"ನಿಮ್ಮ ಪ್ಯಾಟರ್ನ್ ನಮೂದಿಸಿ"</string>
+    <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ"</string>
 </resources>

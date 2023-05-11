@@ -17,6 +17,7 @@
 package com.android.systemui.car.userpicker;
 
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_CREATED;
+import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_INVISIBLE;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_REMOVED;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_STARTING;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_STOPPED;
@@ -63,6 +64,7 @@ import androidx.annotation.VisibleForTesting;
 import com.android.systemui.R;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -86,6 +88,7 @@ public final class UserEventManager {
 
     private final UserLifecycleEventFilter mFilter = new UserLifecycleEventFilter.Builder()
             .addEventType(USER_LIFECYCLE_EVENT_TYPE_SWITCHING)
+            .addEventType(USER_LIFECYCLE_EVENT_TYPE_INVISIBLE)
             .addEventType(USER_LIFECYCLE_EVENT_TYPE_CREATED)
             .addEventType(USER_LIFECYCLE_EVENT_TYPE_REMOVED)
             .addEventType(USER_LIFECYCLE_EVENT_TYPE_UNLOCKED)
@@ -96,7 +99,6 @@ public final class UserEventManager {
     private final Context mContext;
     private final UserManager mUserManager;
     private final CarServiceMediator mCarServiceMediator;
-    private final CarUserManager mCarUserManager;
     private final UserPickerSharedState mUserPickerSharedState;
 
     /**
@@ -107,6 +109,15 @@ public final class UserEventManager {
     private final SparseArray<OnUpdateUsersListener> mUpdateListeners;
 
     private final Handler mMainHandler;
+
+    /**
+     * This is used to wait until previous user is in invisible state.
+     * When changing user, previous user is stopped, and new user is started. But new user can not
+     * be started if occupant zone is not unassigned for previous user yet, and occupant zone
+     * unassignment is processed on user invisible event. In this reason, we should wait until
+     * previous user is in invisible state for stable user starting. <b/275973135>
+     */
+    private final UserInvisibleWaiter mUserInvisibleWaiter = new UserInvisibleWaiter();
 
     /**
      * We don't use the main thread for UX responsiveness when handling user events.
@@ -135,7 +146,6 @@ public final class UserEventManager {
         mUserManager = mContext.getSystemService(UserManager.class);
         mUserPickerSharedState = userPickerSharedState;
         mCarServiceMediator = carServiceMediator;
-        mCarUserManager = carServiceMediator.getCarUserManager();
         mCarServiceMediator.registerUserChangeEventsListener(mUserLifecycleReceiver, mFilter,
                 mUserLifecycleListener);
         registerUserInfoChangedReceiver();
@@ -161,6 +171,8 @@ public final class UserEventManager {
             if (mUserPickerSharedState.isStoppingUser(userId)) {
                 mUserPickerSharedState.removeStoppingUserId(userId);
             }
+        } else if (eventType == USER_LIFECYCLE_EVENT_TYPE_INVISIBLE) {
+            mUserInvisibleWaiter.onUserInvisible(userId);
         }
         runUpdateUsersOnMainThread(userId, eventType);
     }
@@ -313,6 +325,11 @@ public final class UserEventManager {
                     + " prevCurrentUser=" + prevCurrentUser + " isFgUserStart=" + isFgUserStart);
         }
         UserHandle userHandle = UserHandle.of(userId);
+        CarUserManager carUserManager = mCarServiceMediator.getCarUserManager();
+        if (carUserManager == null) {
+            Slog.w(TAG, "car user manager is not available when starting user " + userId);
+            return false;
+        }
         if (isFgUserStart) {
             // Old user will be stopped by {@link UserController} after user switching
             // completed. In the case of user switching, to avoid clicking stopping user, we can
@@ -322,7 +339,7 @@ public final class UserEventManager {
             try {
                 SyncResultCallback<UserSwitchResult> userSwitchCallback =
                         new SyncResultCallback<>();
-                mCarUserManager.switchUser(new UserSwitchRequest.Builder(
+                carUserManager.switchUser(new UserSwitchRequest.Builder(
                         userHandle).build(), Runnable::run, userSwitchCallback);
                 UserSwitchResult userSwitchResult =
                         userSwitchCallback.get(USER_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -342,7 +359,7 @@ public final class UserEventManager {
 
         try {
             SyncResultCallback<UserStartResponse> userStartCallback = new SyncResultCallback<>();
-            mCarUserManager.startUser(
+            carUserManager.startUser(
                     new UserStartRequest.Builder(UserHandle.of(userId))
                             .setDisplayId(displayId).build(),
                     Runnable::run, userStartCallback);
@@ -368,18 +385,27 @@ public final class UserEventManager {
             Slog.d(TAG, "stop user:" + userId);
         }
 
+        mUserPickerSharedState.addStoppingUserId(userId);
+
+        CarUserManager carUserManager = mCarServiceMediator.getCarUserManager();
+        if (carUserManager == null) {
+            Slog.w(TAG, "car user manager is not available when stopping user " + userId);
+            return false;
+        }
+
         // We do not need to unassign the user from the occupant zone, because it is handled by
         // CarUserService#onUserInvisible().
         try {
+            mUserInvisibleWaiter.init(userId);
             SyncResultCallback<UserStopResponse> userStopCallback = new SyncResultCallback<>();
-            mCarUserManager.stopUser(new UserStopRequest.Builder(UserHandle.of(userId)).build(),
+            carUserManager.stopUser(new UserStopRequest.Builder(UserHandle.of(userId)).build(),
                     Runnable::run, userStopCallback);
             UserStopResponse userStopResponse =
                     userStopCallback.get(USER_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             if (userStopResponse.isSuccess()) {
                 Slog.i(TAG, "Successful stopUser for user " + userId + " on display " + displayId
                         + ". Result: " + userStopResponse);
-                return true;
+                return mUserInvisibleWaiter.waitUserInvisible();
             }
             Slog.w(TAG, "stopUser failed for user " + userId + " on display " + displayId
                     + ". Result: " + userStopResponse);
@@ -388,7 +414,39 @@ public final class UserEventManager {
                     + displayId, e);
         }
 
+        mUserPickerSharedState.removeStoppingUserId(userId);
         return false;
+    }
+
+    private static class UserInvisibleWaiter {
+        private @UserIdInt int mUserId;
+        private CountDownLatch mWaiter;
+
+        void init(@UserIdInt int userId) {
+            mUserId = userId;
+            mWaiter = new CountDownLatch(1);
+        }
+
+        boolean waitUserInvisible() {
+            if (mWaiter != null) {
+                try {
+                    // This method returns false when timeout occurs so that user can re-try to
+                    // login. A timeout means that stopUser() has been called successfully, but
+                    // the user hasn't changed to invisible yet.
+                    return mWaiter.await(USER_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                    mWaiter = null;
+                }
+            }
+            return true;
+        }
+
+        void onUserInvisible(@UserIdInt int userId) {
+            if (userId == mUserId && mWaiter != null) {
+                mWaiter.countDown();
+                mWaiter = null;
+            }
+        }
     }
 
     /**

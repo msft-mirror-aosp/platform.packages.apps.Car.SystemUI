@@ -16,20 +16,17 @@
 
 package com.android.systemui.car.userswitcher;
 
-import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.spyOn;
-import static com.android.dx.mockito.inline.extended.ExtendedMockito.verify;
 
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.content.pm.UserInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -40,7 +37,8 @@ import android.testing.TestableLooper;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.internal.util.UserIcons;
+import com.android.car.internal.user.UserHelper;
+import com.android.dx.mockito.inline.extended.ExtendedMockito;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 
@@ -79,11 +77,11 @@ public class UserIconProviderTest extends SysuiTestCase {
         mMockingSession = mockitoSession()
                 .initMocks(this)
                 .spyStatic(UserManager.class)
-                .spyStatic(UserIcons.class)
+                .spyStatic(UserHelper.class)
                 .strictness(Strictness.WARN)
                 .startMocking();
 
-        doReturn(mUserManager).when(()-> UserManager.get(mContext));
+        mContext.addMockSystemService(UserManager.class, mUserManager);
         when(mUserManager.getUserInfo(mUserInfo.id)).thenReturn(mUserInfo);
         when(mUserManager.getUserInfo(mGuestUserInfo.id)).thenReturn(mGuestUserInfo);
 
@@ -109,31 +107,13 @@ public class UserIconProviderTest extends SysuiTestCase {
     }
 
     @Test
-    public void assignDefaultIcon_withGuestUser_updateGuestUserIcon() {
-        mUserIconProvider.assignDefaultIcon(mUserManager, mResources, mGuestUserInfo);
-
-        verify(() -> UserIcons.getDefaultUserIcon(any(Resources.class), anyInt(), anyBoolean()));
-        verify(() -> UserIcons.convertToBitmap(any(Drawable.class)));
-        verify(mUserManager).setUserIcon(eq(mGuestUserInfo.id), any(Bitmap.class));
-    }
-
-    @Test
-    public void assignDefaultIcon_withNotGuestUser_updateNotGuestUserIcon() {
-        mUserIconProvider.assignDefaultIcon(mUserManager, mResources, mUserInfo);
-
-        verify(() -> UserIcons.getDefaultUserIcon(any(Resources.class), anyInt(), anyBoolean()));
-        verify(() -> UserIcons.convertToBitmap(any(Drawable.class)));
-        verify(mUserManager).setUserIcon(eq(mUserInfo.id), any(Bitmap.class));
-    }
-
-    @Test
     public void getRoundedUserIcon_notExistUserIcon_assignDefaultIcon() {
         when(mUserManager.getUserIcon(mUserInfo.id)).thenReturn(null);
 
         mUserIconProvider.getRoundedUserIcon(mUserInfo, mContext);
 
-        verify(mUserIconProvider).assignDefaultIcon(any(UserManager.class), any(Resources.class),
-                        eq(mUserInfo));
+        ExtendedMockito.verify(() -> UserHelper.assignDefaultIcon(any(Context.class),
+                eq(mUserInfo.getUserHandle())));
     }
 
     @Test
@@ -142,7 +122,7 @@ public class UserIconProviderTest extends SysuiTestCase {
 
         mUserIconProvider.getRoundedUserIcon(mUserInfo, mContext);
 
-        verify(mUserIconProvider, never()).assignDefaultIcon(any(UserManager.class),
-                        any(Resources.class), eq(mUserInfo));
+        ExtendedMockito.verify(() -> UserHelper.assignDefaultIcon(any(Context.class),
+                eq(mUserInfo.getUserHandle())), never());
     }
 }

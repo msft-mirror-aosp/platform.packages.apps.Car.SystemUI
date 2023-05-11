@@ -27,8 +27,8 @@
     <string name="end_session" msgid="2765206020435441421">"সেশন শেষ করুন"</string>
     <string name="car_new_user" msgid="6766334721724989964">"নতুন প্রোফাইল"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"নতুন প্রোফাইল যোগ করতে চান?"</string>
-    <string name="user_add_user_message_setup" msgid="6136074867764164790">"আপনি নতুন প্রোফাইল তৈরি করার পর, ব্যবহারকারীর সেটিকে কাস্টমাইজ করে নিতে হবে।"</string>
-    <string name="user_add_user_message_update" msgid="3310089453006545712">"অ্যাপ যেকোনও প্রোফাইল থেকে আপডেট করা যাবে যাতে অন্যান্য সমস্ত প্রোফাইল সেটি ব্যবহার করতে পারে।"</string>
+    <string name="user_add_user_message_setup" msgid="1639791240776969175">"নতুন প্রোফাইল যোগ করার পর, যার অ্যাকাউন্ট তিনি এটি কাস্টমাইজ করতে পারবেন।"</string>
+    <string name="user_add_user_message_update" msgid="4507063398890966360">"যেকোনও প্রোফাইল, অ্যাপ আপডেট ইনস্টল করতে পারবে, যেটি তারপরে সব প্রোফাইলে উপলভ্য হবে।"</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"আর কোনও প্রোফাইল যোগ করা যাবে না"</string>
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{শুধুমাত্র একটি প্রোফাইল তৈরি করা যাবে।}one{আপনি সর্বাধিক #টি প্রোফাইল যোগ করতে পারবেন।}other{আপনি সর্বাধিক #টি প্রোফাইল যোগ করতে পারবেন।}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"লোড হচ্ছে"</string>
@@ -94,23 +94,29 @@
     <string name="user_logout_message" msgid="7804089876692575056">"এর ফলে খোলা রয়েছে এমন সবকটি অ্যাপ্লিকেশন বন্ধ হয়ে যাবে"</string>
     <string name="user_logout" msgid="2934184154258330491">"লগ আউট করুন"</string>
     <string name="car_guest" msgid="768913000117469596">"অতিথি"</string>
-    <string name="user_switching_message" msgid="634395959804046394">"ব্যবহারকারীকে পরিবর্তন করা হচ্ছে"</string>
-    <string name="user_adding_message" msgid="7328589666615053611">"নতুন ব্যবহারকারী যোগ করা হচ্ছে"</string>
-    <string name="max_user_limit_reached_title" msgid="8713446223097215112">"আর কোনও ব্যবহারকারীকে যোগ করা যাবে না"</string>
-    <string name="max_user_limit_reached_message" msgid="644904407853005163">"আপনি সর্বাধিক যোগ করতে পারবেন "</string>
-    <string name="confirm_add_user_title" msgid="1237839494207086048">"নতুন ব্যবহারকারী যোগ করবেন?"</string>
-    <string name="already_logged_in_message" msgid="2440895716293348878">"ইতিমধ্যেই অন্য ডিসপ্লেতে লগ-ইন করা হয়েছে"</string>
-    <string name="header_bar_text_in_logged_out_state" msgid="6012093149493906956">"শুরু করতে একটি প্রোফাইল বেছে নিন"</string>
-    <string name="logged_in_text" msgid="932290859654786874">"লগ-ইন করা হয়েছে"</string>
-    <string name="prefix_logged_in_info_for_other_seat" msgid="1768113737410046246">"<xliff:g id="SEAT_LOCATION">%s</xliff:g> ব্যবহার করছেন"</string>
-    <string name="create_user_failed_message" msgid="7107927788723239958">"ব্যবহারকারীকে এখন যোগ করা যায়নি। একটু পরে চেষ্টা করুন।"</string>
-    <string name="guest_creation_failed_message" msgid="124079314799870297">"একটু পরে গেস্ট হিসেবে লগ-ইন করার চেষ্টা করুন"</string>
-    <string name="stopping_user_text" msgid="8582746159702773548">"থামানো হচ্ছে"</string>
-    <string name="wait_for_until_stopped_message" msgid="96033243744574465">"ব্যবহারকারী না থামা পর্যন্ত অপেক্ষা করুন"</string>
+    <string name="user_switching_message" msgid="5346172662613832946">"প্রোফাইল পাল্টানো হচ্ছে…"</string>
+    <string name="user_adding_message" msgid="4700853604381151415">"নতুন প্রোফাইল যোগ করা হচ্ছে…"</string>
+    <string name="max_user_limit_reached_title" msgid="7319012467112549458"></string>
+    <string name="max_user_limit_reached_message" msgid="1445188223628919167">"আপনি সর্বাধিক <xliff:g id="USER_LIMIT">%d</xliff:g>টি প্রোফাইল যোগ করতে পারবেন"</string>
+    <string name="confirm_add_user_title" msgid="75853419607883551">"নতুন প্রোফাইল যোগ করতে চান?"</string>
+    <string name="already_logged_in_message" msgid="3657131706472825219">"চালিয়ে যেতে, <xliff:g id="USER_NAME">%1$s</xliff:g>-কে <xliff:g id="SEAT_LOCATION">%2$s</xliff:g> স্ক্রিন থেকে সাইন-আউট করতে হবে"</string>
+    <string name="header_bar_text_in_logged_out_state" msgid="3903097856063608991">"চালু করতে প্রোফাইল বেছে নিন"</string>
+    <string name="logged_in_text" msgid="742324514947999718">"সাইন-ইন করেছেন"</string>
+    <string name="prefix_logged_in_info_for_other_seat" msgid="7438545665671460955">"<xliff:g id="SEAT_LOCATION">%s</xliff:g> স্ক্রিনে সাইন-ইন করেছেন"</string>
+    <string name="create_user_failed_message" msgid="4539847475822170735">"নতুন প্রোফাইল যোগ করা যাচ্ছে না। পরে আবার চেষ্টা করুন।"</string>
+    <string name="guest_creation_failed_message" msgid="8198126434029601949">"অতিথি প্রোফাইল চালু করা যাচ্ছে না। পরে আবার চেষ্টা করুন।"</string>
+    <string name="stopping_user_text" msgid="4946464635279894684">"সাইন-আউট করা হচ্ছে…"</string>
+    <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> সাইন-আউট করছেন। পরে আবার চেষ্টা করুন।"</string>
     <string name="seat_driver" msgid="4502591979520445677">"ড্রাইভার"</string>
     <string name="seat_front" msgid="836133281052793377">"সামনের দিক"</string>
     <string name="seat_rear" msgid="403133444964528577">"পিছন দিক"</string>
     <string name="seat_left_side" msgid="7460757956924015769">"বাঁদিক"</string>
     <string name="seat_center_side" msgid="6661501442901282386">"মাঝখান"</string>
     <string name="seat_right_side" msgid="6735434879559763096">"ডান দিক"</string>
+    <string name="keyguard_enter_your_pin" msgid="141736439348916894"></string>
+    <string name="keyguard_enter_your_pattern" msgid="4004401928097798697"></string>
+    <string name="keyguard_enter_your_password" msgid="1345546935461513721"></string>
+    <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"পিন লিখুন"</string>
+    <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"প্যাটার্ন আঁকুন"</string>
+    <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"পাসওয়ার্ড লিখুন"</string>
 </resources>

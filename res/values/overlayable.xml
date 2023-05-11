@@ -176,36 +176,13 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="system_bar_text_color_with_selection"/>
       <item type="color" name="system_bar_text_selected_color"/>
       <item type="color" name="system_bar_text_unavailable_color"/>
-      <item type="color" name="user_background_icon_1"/>
-      <item type="color" name="user_background_icon_2"/>
-      <item type="color" name="user_background_icon_3"/>
-      <item type="color" name="user_background_icon_4"/>
-      <item type="color" name="user_background_icon_5"/>
-      <item type="color" name="user_background_icon_6"/>
-      <item type="color" name="user_background_icon_7"/>
-      <item type="color" name="user_background_icon_8"/>
-      <item type="color" name="user_name_icon_1"/>
-      <item type="color" name="user_name_icon_2"/>
-      <item type="color" name="user_name_icon_3"/>
-      <item type="color" name="user_name_icon_4"/>
-      <item type="color" name="user_name_icon_5"/>
-      <item type="color" name="user_name_icon_6"/>
-      <item type="color" name="user_name_icon_7"/>
-      <item type="color" name="user_name_icon_8"/>
       <item type="color" name="user_picker_background_color"/>
+      <item type="color" name="user_picker_background_pill_color"/>
       <item type="color" name="user_picker_bottom_bar_color"/>
       <item type="color" name="user_picker_login_state_text_color"/>
       <item type="color" name="user_picker_snack_bar_background_color"/>
       <item type="color" name="user_picker_snack_bar_transparent_color"/>
       <item type="color" name="user_picker_user_name_color"/>
-      <item type="color" name="userpicker_color_1"/>
-      <item type="color" name="userpicker_color_2"/>
-      <item type="color" name="userpicker_color_3"/>
-      <item type="color" name="userpicker_color_4"/>
-      <item type="color" name="userpicker_color_5"/>
-      <item type="color" name="userpicker_color_6"/>
-      <item type="color" name="userpicker_color_7"/>
-      <item type="color" name="userpicker_color_8"/>
       <item type="color" name="userpicker_guest_color"/>
       <item type="dimen" name="activity_blocking_action_button_corner_radius"/>
       <item type="dimen" name="activity_blocking_action_button_height"/>
@@ -250,6 +227,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_quick_controls_entry_points_button_margin_start"/>
       <item type="dimen" name="car_quick_controls_entry_points_button_margin_top"/>
       <item type="dimen" name="car_quick_controls_entry_points_button_width"/>
+      <item type="dimen" name="car_quick_controls_entry_points_icon_space"/>
       <item type="dimen" name="car_quick_controls_entry_points_icon_width"/>
       <item type="dimen" name="car_quick_controls_footer_button_horizontal_padding"/>
       <item type="dimen" name="car_quick_controls_footer_button_min_height"/>
@@ -450,8 +428,13 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="user_picker_button_size"/>
       <item type="dimen" name="user_picker_clock_elevation_size"/>
       <item type="dimen" name="user_picker_common_margin_size"/>
+      <item type="dimen" name="user_picker_header_margin"/>
       <item type="dimen" name="user_picker_login_state_text_size"/>
       <item type="dimen" name="user_picker_logout_button_margin_right_size"/>
+      <item type="dimen" name="user_picker_pill_button_height"/>
+      <item type="dimen" name="user_picker_pill_button_width"/>
+      <item type="dimen" name="user_picker_pill_header_margin"/>
+      <item type="dimen" name="user_picker_pill_radius"/>
       <item type="dimen" name="user_picker_snack_bar_text_size"/>
       <item type="dimen" name="user_picker_user_avatar_border_size"/>
       <item type="dimen" name="user_picker_user_avatar_size"/>
@@ -476,6 +459,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="car_ic_brightness"/>
       <item type="drawable" name="car_ic_chevron_right"/>
       <item type="drawable" name="car_ic_control_center"/>
+      <item type="drawable" name="car_ic_control_center_selected"/>
       <item type="drawable" name="car_ic_drive_mode"/>
       <item type="drawable" name="car_ic_home"/>
       <item type="drawable" name="car_ic_home_selected"/>
@@ -560,6 +544,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_seat_heat_level_2"/>
       <item type="drawable" name="ic_seat_heat_level_3"/>
       <item type="drawable" name="ic_seat_heat_off"/>
+      <item type="drawable" name="ic_status_wifi_disabled"/>
       <item type="drawable" name="ic_user_picker"/>
       <item type="drawable" name="notification_handle_bar"/>
       <item type="drawable" name="notification_material_bg"/>
@@ -577,13 +562,16 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="drawable" name="system_bar_button_background"/>
       <item type="drawable" name="system_bar_pill_rotary_background"/>
       <item type="drawable" name="temperature_bar_background"/>
+      <item type="drawable" name="user_picker_splash_icon"/>
       <item type="drawable" name="userpicker_ic_arrow_back"/>
+      <item type="drawable" name="userpicker_ic_background"/>
       <item type="drawable" name="userpicker_ic_power"/>
       <item type="drawable" name="volume_dialog_background"/>
       <item type="fraction" name="celsius_temperature_increment"/>
       <item type="fraction" name="celsius_temperature_round"/>
       <item type="fraction" name="fahrenheit_temperature_increment"/>
       <item type="fraction" name="fahrenheit_temperature_round"/>
+      <item type="fraction" name="user_picker_disabled_alpha"/>
       <item type="id" name="ac_button"/>
       <item type="id" name="ac_master_switch"/>
       <item type="id" name="action_button_container"/>
@@ -644,6 +632,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="id" name="grid_nav"/>
       <item type="id" name="handle_bar"/>
       <item type="id" name="header"/>
+      <item type="id" name="header_barrier"/>
       <item type="id" name="header_container"/>
       <item type="id" name="home"/>
       <item type="id" name="hvac"/>
@@ -845,8 +834,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="layout" name="user_picker"/>
       <item type="layout" name="user_picker_alert_dialog_large_center_message"/>
       <item type="layout" name="user_picker_alert_dialog_normal_message"/>
-      <item type="layout" name="user_picker_user_pod"/>
       <item type="layout" name="user_picker_status_icon_layout"/>
+      <item type="layout" name="user_picker_user_pod"/>
       <item type="string" name="activity_blocked_text"/>
       <item type="string" name="already_logged_in_message"/>
       <item type="string" name="camera_privacy_chip_app_recently_used_camera_suffix"/>
@@ -859,6 +848,9 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="camera_privacy_chip_on_toast"/>
       <item type="string" name="car_add_user"/>
       <item type="string" name="car_guest"/>
+      <item type="string" name="car_keyguard_enter_your_password"/>
+      <item type="string" name="car_keyguard_enter_your_pattern"/>
+      <item type="string" name="car_keyguard_enter_your_pin"/>
       <item type="string" name="car_loading_profile"/>
       <item type="string" name="car_loading_profile_developer_message"/>
       <item type="string" name="car_new_user"/>
@@ -889,6 +881,9 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="hvac_temperature_format_celsius"/>
       <item type="string" name="hvac_temperature_format_fahrenheit"/>
       <item type="string" name="hvac_temperature_off"/>
+      <item type="string" name="keyguard_enter_your_password"/>
+      <item type="string" name="keyguard_enter_your_pattern"/>
+      <item type="string" name="keyguard_enter_your_pin"/>
       <item type="string" name="lockpattern_does_not_support_rotary"/>
       <item type="string" name="logged_in_text"/>
       <item type="string" name="max_user_limit_reached_message"/>
@@ -977,6 +972,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="style" name="Theme.UserPicker"/>
       <item type="style" name="UserPickerDialogMessageLargeText"/>
       <item type="style" name="UserPickerDialogMessageNormalText"/>
+      <item type="style" name="UserPickerSnackBarText"/>
       <item type="style" name="VolumeButtons"/>
       <item type="xml" name="camera_privacy_chip_scene"/>
       <item type="xml" name="car_volume_items"/>

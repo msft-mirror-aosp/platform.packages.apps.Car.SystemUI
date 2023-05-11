@@ -89,7 +89,8 @@
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"Definições de perfis e contas"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"O padrão não sup. control. rotativo; use o toque"</string>
     <string name="display_input_lock_text" msgid="8524876126635885614">"Ecrã tátil bloqueado"</string>
-    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"O ecrã foi bloqueado"</string>
+    <string name="display_input_lock_started_text" msgid="2434054522800802134">"O ecrã foi bloqueado"</string>
+    <string name="display_input_lock_stopped_text" msgid="2454939902188129876">"O ecrã foi desbloqueado"</string>
     <string name="user_logout_title" msgid="5534754139319586681">"Quer mesmo terminar sessão?"</string>
     <string name="user_logout_message" msgid="7804089876692575056">"Esta ação fecha todas as aplicações abertas"</string>
     <string name="user_logout" msgid="2934184154258330491">"Terminar sessão"</string>

@@ -178,9 +178,9 @@
     <string name="lockpattern_does_not_support_rotary">Pattern does not support rotary; please use touch</string>
 
     <!-- Display Input Lock string -->
-    <string name="display_input_lock_text">Touch screen locked</string>
+    <string name="display_input_lock_text">Your screen is locked</string>
     <string name="display_input_lock_started_text">Your screen has been locked</string>
-    <string name="display_input_lock_stopped_text">Your screen has been unlocked</string>
+    <string name="display_input_lock_stopped_text">Your screen is now unlocked</string>
 
     <!-- Title of the alert dialog to ask user to confirm logout. -->
     <string name="user_logout_title">Are you sure you want to log out?</string>

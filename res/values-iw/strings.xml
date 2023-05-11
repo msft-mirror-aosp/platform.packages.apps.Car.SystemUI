@@ -89,7 +89,10 @@
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"הגדרות פרופילים וחשבונות"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"אין תמיכה בקו ביטול נעילה סיבובי. יש להשתמש במגע"</string>
     <string name="display_input_lock_text" msgid="8524876126635885614">"מסך המגע ננעל"</string>
-    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"המסך ננעל"</string>
+    <!-- no translation found for display_input_lock_started_text (2434054522800802134) -->
+    <skip />
+    <!-- no translation found for display_input_lock_stopped_text (2454939902188129876) -->
+    <skip />
     <string name="user_logout_title" msgid="5534754139319586681">"בחרת לצאת מהחשבון. להמשיך?"</string>
     <string name="user_logout_message" msgid="7804089876692575056">"הפעולה הזו תסגור את כל האפליקציות הפתוחות"</string>
     <string name="user_logout" msgid="2934184154258330491">"התנתקות"</string>

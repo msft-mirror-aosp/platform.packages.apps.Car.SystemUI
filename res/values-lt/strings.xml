@@ -89,7 +89,10 @@
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"Profilių ir paskyrų nustatymai"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"Atr. pieš. negalima nubr. sukam. įvest. vald."</string>
     <string name="display_input_lock_text" msgid="8524876126635885614">"Jutiklinis ekranas užrakintas"</string>
-    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"Jūsų ekranas užrakintas"</string>
+    <!-- no translation found for display_input_lock_started_text (2434054522800802134) -->
+    <skip />
+    <!-- no translation found for display_input_lock_stopped_text (2454939902188129876) -->
+    <skip />
     <string name="user_logout_title" msgid="5534754139319586681">"Ar tikrai norite atsijungti?"</string>
     <string name="user_logout_message" msgid="7804089876692575056">"Bus uždarytos visos atidarytos programos"</string>
     <string name="user_logout" msgid="2934184154258330491">"Atsijungti"</string>

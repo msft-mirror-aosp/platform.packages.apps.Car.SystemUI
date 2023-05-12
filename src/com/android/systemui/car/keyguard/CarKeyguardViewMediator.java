@@ -56,6 +56,7 @@ import com.android.systemui.statusbar.phone.ScrimController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.util.DeviceConfigProxy;
+import com.android.wm.shell.keyguard.KeyguardTransitions;
 
 import java.util.concurrent.Executor;
 
@@ -101,6 +102,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             ScreenOffAnimationController screenOffAnimationController,
             Lazy<NotificationShadeDepthController> notificationShadeDepthController,
             ScreenOnCoordinator screenOnCoordinator,
+            KeyguardTransitions keyguardTransitions,
             InteractionJankMonitor interactionJankMonitor,
             DreamOverlayStateController dreamOverlayStateController,
             Lazy<ShadeController> mShadeControllerLazy,
@@ -116,8 +118,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 deviceConfig, navigationModeController, keyguardDisplayManager, dozeParameters,
                 statusBarStateController, keyguardStateController,
                 keyguardUnlockAnimationControllerLazy, screenOffAnimationController,
-                notificationShadeDepthController, screenOnCoordinator, interactionJankMonitor,
-                dreamOverlayStateController,
+                notificationShadeDepthController, screenOnCoordinator, keyguardTransitions,
+                interactionJankMonitor, dreamOverlayStateController,
                 mShadeControllerLazy,
                 notificationShadeWindowControllerLazy,
                 activityLaunchAnimator,

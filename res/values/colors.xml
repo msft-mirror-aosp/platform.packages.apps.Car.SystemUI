@@ -147,7 +147,8 @@
     <color name="user_picker_snack_bar_transparent_color">#FFFFFF</color>
     <color name="user_picker_snack_bar_background_color">#282a2d</color>
     <color name="user_picker_user_name_color">#fff8f9fa</color>
-    <color name="user_picker_login_state_color">@*android:color/car_accent</color>
+    <color name="user_picker_current_login_state_color">@*android:color/car_accent</color>
+    <color name="user_picker_other_login_state_color">#fff8f9fa</color>
     <color name="user_picker_background_pill_color">#282A2D</color>
     <drawable name="user_picker_splash_icon">@android:color/transparent</drawable>
 

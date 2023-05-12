@@ -287,8 +287,13 @@ public class CarVolumeDialogImpl
     @Override
     public void init(int windowType, Callback callback) {
         initDialog();
-        mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
 
+        // The VolumeDialog is not initialized until the first volume change for a particular zone
+        // (to improve boot time by deferring initialization). Therefore, the dialog should be shown
+        // on init to handle the first audio change.
+        mHandler.obtainMessage(H.SHOW, Events.SHOW_REASON_VOLUME_CHANGED).sendToTarget();
+
+        mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
         mContext.registerReceiverAsUser(mHomeButtonPressedBroadcastReceiver,
                 mUserTracker.getUserHandle(), new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
                 /* broadcastPermission= */ null, /* scheduler= */ null, Context.RECEIVER_EXPORTED);

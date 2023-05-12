@@ -60,6 +60,7 @@ import com.android.systemui.statusbar.phone.ScrimController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.util.DeviceConfigProxy;
+import com.android.wm.shell.keyguard.KeyguardTransitions;
 
 import dagger.Lazy;
 import dagger.Module;
@@ -115,6 +116,7 @@ public class CarKeyguardModule {
             ScreenOffAnimationController screenOffAnimationController,
             Lazy<NotificationShadeDepthController> notificationShadeDepthController,
             ScreenOnCoordinator screenOnCoordinator,
+            KeyguardTransitions keyguardTransitions,
             InteractionJankMonitor interactionJankMonitor,
             DreamOverlayStateController dreamOverlayStateController,
             Lazy<ShadeController> shadeController,
@@ -148,6 +150,7 @@ public class CarKeyguardModule {
                 screenOffAnimationController,
                 notificationShadeDepthController,
                 screenOnCoordinator,
+                keyguardTransitions,
                 interactionJankMonitor,
                 dreamOverlayStateController,
                 shadeController,

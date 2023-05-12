@@ -37,6 +37,9 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapter.UserPickerAdapte
     private final Context mContext;
     private final int mDisplayId;
     private final float mDisabledAlpha;
+    private final int mVerticalSpacing;
+    private final int mHorizontalSpacing;
+    private final int mNumCols;
 
     private List<UserRecord> mUsers;
     private String mLoggedInText;
@@ -47,6 +50,11 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapter.UserPickerAdapte
         mContext = context;
         mDisplayId = mContext.getDisplayId();
         mDisabledAlpha = mContext.getResources().getFloat(R.fraction.user_picker_disabled_alpha);
+        mVerticalSpacing = mContext.getResources().getDimensionPixelSize(
+                R.dimen.user_picker_vertical_space_between_users);
+        mHorizontalSpacing = mContext.getResources().getDimensionPixelSize(
+                R.dimen.user_picker_horizontal_space_between_users);
+        mNumCols = mContext.getResources().getInteger(R.integer.user_fullscreen_switcher_num_col);
 
         updateTexts();
     }
@@ -99,6 +107,7 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapter.UserPickerAdapte
 
     @Override
     public void onBindViewHolder(@NonNull UserPickerAdapterViewHolder holder, int position) {
+        setItemSpacing(holder.mView, position);
         UserRecord userRecord = mUsers.get(position);
         holder.mUserAvatarImageView.setImageDrawable(userRecord.mIcon);
         holder.mFrame.setBackgroundResource(0);
@@ -121,6 +130,22 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapter.UserPickerAdapte
         mPrefixOtherSeatLoggedInInfo = mContext
                 .getString(R.string.prefix_logged_in_info_for_other_seat);
         mStoppingUserText = mContext.getString(R.string.stopping_user_text);
+    }
+
+    // TODO(b/281729191) use RecyclerView.ItemDecoration when supported by CarUiRecyclerView
+    private void setItemSpacing(View rootItemView, int position) {
+        ViewGroup.LayoutParams params = rootItemView.getLayoutParams();
+        if (params instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginLayoutParams = (ViewGroup.MarginLayoutParams) params;
+            marginLayoutParams.bottomMargin = mVerticalSpacing;
+
+            int splitHorizontalSpacing = mHorizontalSpacing / mNumCols;
+            int col = position % mNumCols;
+            marginLayoutParams.leftMargin = col * splitHorizontalSpacing;
+            marginLayoutParams.rightMargin = (mNumCols - (col + 1)) * splitHorizontalSpacing;
+
+            rootItemView.setLayoutParams(marginLayoutParams);
+        }
     }
 
     void dump(@NonNull PrintWriter pw) {

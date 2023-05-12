@@ -24,6 +24,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
@@ -37,6 +38,10 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapter.UserPickerAdapte
     private final Context mContext;
     private final int mDisplayId;
     private final float mDisabledAlpha;
+    @ColorInt
+    private final int mCurrentUserSubtitleColor;
+    @ColorInt
+    private final int mOtherUserSubtitleColor;
     private final int mVerticalSpacing;
     private final int mHorizontalSpacing;
     private final int mNumCols;
@@ -50,6 +55,9 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapter.UserPickerAdapte
         mContext = context;
         mDisplayId = mContext.getDisplayId();
         mDisabledAlpha = mContext.getResources().getFloat(R.fraction.user_picker_disabled_alpha);
+        mCurrentUserSubtitleColor = mContext.getColor(
+                R.color.user_picker_current_login_state_color);
+        mOtherUserSubtitleColor = mContext.getColor(R.color.user_picker_other_login_state_color);
         mVerticalSpacing = mContext.getResources().getDimensionPixelSize(
                 R.dimen.user_picker_vertical_space_between_users);
         mHorizontalSpacing = mContext.getResources().getDimensionPixelSize(
@@ -74,16 +82,19 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapter.UserPickerAdapte
         if (userRecord.mIsStopping) {
             holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
             holder.mLoggedInTextView.setText(mStoppingUserText);
+            holder.mLoggedInTextView.setTextColor(mOtherUserSubtitleColor);
             updateAlpha(holder, /* disabled= */ true);
         } else if (userRecord.mIsLoggedIn) {
             if (userRecord.mLoggedInDisplay == mDisplayId) {
                 holder.mUserBorderImageView.setVisibility(View.VISIBLE);
                 holder.mLoggedInTextView.setText(mLoggedInText);
+                holder.mLoggedInTextView.setTextColor(mCurrentUserSubtitleColor);
                 updateAlpha(holder, /* disabled= */ false);
             } else {
                 holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
                 holder.mLoggedInTextView.setText(String.format(mPrefixOtherSeatLoggedInInfo,
                         userRecord.mSeatLocationName));
+                holder.mLoggedInTextView.setTextColor(mOtherUserSubtitleColor);
                 updateAlpha(holder, /* disabled= */ true);
             }
         }

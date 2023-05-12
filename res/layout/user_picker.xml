@@ -36,7 +36,7 @@
             android:scaleType="fitCenter"
             android:padding="@dimen/user_picker_button_padding_size"
             android:layout_marginVertical="@dimen/user_picker_header_margin"
-            android:layout_marginLeft="@dimen/car_padding_4"
+            android:layout_marginLeft="@dimen/user_picker_header_left_margin"
             android:gravity="center"
             android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
@@ -52,7 +52,7 @@
             android:visibility="gone"
             android:text="@string/header_bar_text_in_logged_out_state"
             android:layout_marginVertical="@dimen/user_picker_header_margin"
-            android:layout_marginLeft="@dimen/car_padding_4"
+            android:layout_marginLeft="@dimen/user_picker_header_left_margin"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"/>
 
@@ -99,7 +99,7 @@
             android:id="@+id/user_picker"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/user_picker_common_margin_size"
+            android:layout_marginTop="@*android:dimen/car_padding_4"
             app:layout_constraintTop_toBottomOf="@+id/header_barrier"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

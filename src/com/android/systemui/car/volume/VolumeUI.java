@@ -16,10 +16,14 @@
 
 package com.android.systemui.car.volume;
 
+import static android.car.media.CarAudioManager.INVALID_AUDIO_ZONE;
+
 import android.car.Car;
+import android.car.CarOccupantZoneManager;
 import android.car.media.CarAudioManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.media.AudioManager;
 import android.os.Handler;
 import android.util.Log;
 
@@ -28,13 +32,14 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.volume.VolumeDialogComponent;
+
+import dagger.Lazy;
 
 import java.io.PrintWriter;
 
 import javax.inject.Inject;
-
-import dagger.Lazy;
 
 /** The entry point for controlling the volume ui in cars. */
 @SysUISingleton
@@ -45,20 +50,26 @@ public class VolumeUI implements CoreStartable {
     private final Handler mMainHandler;
     private final CarServiceProvider mCarServiceProvider;
     private final Lazy<VolumeDialogComponent> mVolumeDialogComponentLazy;
+    private final UserTracker mUserTracker;
+    private int mAudioZoneId = INVALID_AUDIO_ZONE;
 
     private final CarAudioManager.CarVolumeCallback mVolumeChangeCallback =
             new CarAudioManager.CarVolumeCallback() {
                 @Override
                 public void onGroupVolumeChanged(int zoneId, int groupId, int flags) {
-                    initVolumeDialogComponent();
+                    initVolumeDialogComponent(zoneId, flags);
                 }
 
                 @Override
                 public void onMasterMuteChanged(int zoneId, int flags) {
-                    initVolumeDialogComponent();
+                    initVolumeDialogComponent(zoneId, flags);
                 }
 
-                private void initVolumeDialogComponent() {
+                private void initVolumeDialogComponent(int zoneId, int flags) {
+                    if (mAudioZoneId != zoneId || (flags & AudioManager.FLAG_SHOW_UI) == 0) {
+                        // only initialize for current audio zone when show requested
+                        return;
+                    }
                     if (mVolumeDialogComponent == null) {
                         mMainHandler.post(() -> {
                             mVolumeDialogComponent = mVolumeDialogComponentLazy.get();
@@ -78,12 +89,14 @@ public class VolumeUI implements CoreStartable {
             @Main Resources resources,
             @Main Handler mainHandler,
             CarServiceProvider carServiceProvider,
-            Lazy<VolumeDialogComponent> volumeDialogComponentLazy
+            Lazy<VolumeDialogComponent> volumeDialogComponentLazy,
+            UserTracker userTracker
     ) {
         mResources = resources;
         mMainHandler = mainHandler;
         mCarServiceProvider = carServiceProvider;
         mVolumeDialogComponentLazy = volumeDialogComponentLazy;
+        mUserTracker = userTracker;
     }
 
     @Override
@@ -94,6 +107,20 @@ public class VolumeUI implements CoreStartable {
 
         mCarServiceProvider.addListener(car -> {
             if (mCarAudioManager != null) {
+                return;
+            }
+
+            CarOccupantZoneManager carOccupantZoneManager =
+                    (CarOccupantZoneManager) car.getCarManager(Car.CAR_OCCUPANT_ZONE_SERVICE);
+            if (carOccupantZoneManager != null) {
+                CarOccupantZoneManager.OccupantZoneInfo info =
+                        carOccupantZoneManager.getOccupantZoneForUser(mUserTracker.getUserHandle());
+                if (info != null) {
+                    mAudioZoneId = carOccupantZoneManager.getAudioZoneIdForOccupant(info);
+                }
+            }
+
+            if (mAudioZoneId == INVALID_AUDIO_ZONE) {
                 return;
             }
 

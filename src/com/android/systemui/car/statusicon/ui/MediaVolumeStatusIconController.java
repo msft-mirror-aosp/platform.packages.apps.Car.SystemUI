@@ -33,6 +33,7 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.statusicon.StatusIconController;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.settings.UserTracker;
 
 import javax.inject.Inject;
 
@@ -51,11 +52,21 @@ public class MediaVolumeStatusIconController extends StatusIconController {
     private int mGroupId;
     private int mZoneId;
 
+    private final UserTracker.Callback mUserTrackerCallback = new UserTracker.Callback() {
+        @Override
+        public void onUserChanged(int newUser, Context userContext) {
+            updateStatus(mZoneId, mGroupId);
+        }
+    };
+
     @Inject
-    MediaVolumeStatusIconController(Context context, @Main Resources resources,
+    MediaVolumeStatusIconController(Context context,
+            UserTracker userTracker,
+            @Main Resources resources,
             CarServiceProvider carServiceProvider) {
         mContext = context;
         mResources = resources;
+        userTracker.addCallback(mUserTrackerCallback, mContext.getMainExecutor());
         carServiceProvider.addListener(car -> {
             CarOccupantZoneManager.OccupantZoneInfo occupantZoneInfo = null;
             CarOccupantZoneManager carOccupantZoneManager =

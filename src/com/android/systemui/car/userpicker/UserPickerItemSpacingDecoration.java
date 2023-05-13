@@ -22,6 +22,7 @@ import android.view.View;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+// TODO(b/281729191) unused until RecyclerView.ItemDecoration is supported by CarUiRecyclerView
 final class UserPickerItemSpacingDecoration extends RecyclerView.ItemDecoration {
     private final int mVerticalSpacing;
     private final int mHorizontalSpacing;

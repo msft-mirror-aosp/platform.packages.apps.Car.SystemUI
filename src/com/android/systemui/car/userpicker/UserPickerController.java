@@ -17,7 +17,6 @@
 package com.android.systemui.car.userpicker;
 
 import static android.car.CarOccupantZoneManager.INVALID_USER_ID;
-import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_STOPPED;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKED;
 import static android.car.user.CarUserManager.lifecycleEventTypeToString;
 import static android.view.Display.INVALID_DISPLAY;
@@ -196,17 +195,23 @@ final class UserPickerController {
                 mCallbacks.onFinishRequested();
                 mUserPickerSharedState.resetUserLoginStarted(mDisplayId);
             }
-        } else if (userState == USER_LIFECYCLE_EVENT_TYPE_STOPPED) {
-            if (mCarServiceMediator.getUserForDisplay(mDisplayId) == INVALID_USER_ID
-                    && mHeaderState.getState() == HEADER_STATE_CHANGE_USER) {
-                if (DEBUG) {
-                    Slog.d(TAG, "user " + userId + " stopped. change header state."
-                            + " displayId=" + mDisplayId);
-                }
-                mHeaderState.setState(HEADER_STATE_LOGOUT);
-            }
         }
+        updateHeaderState();
         mCallbacks.onUpdateUsers(createUserRecords());
+    }
+
+    private void updateHeaderState() {
+        // If a valid user is assigned to a display, show the change user state. Otherwise, show
+        // the logged out state.
+        int desiredState = mCarServiceMediator.getUserForDisplay(mDisplayId) != INVALID_USER_ID
+                ? HEADER_STATE_CHANGE_USER : HEADER_STATE_LOGOUT;
+        if (mHeaderState.getState() != desiredState) {
+            if (DEBUG) {
+                Slog.d(TAG,
+                        "Change HeaderState to " + desiredState + " for displayId=" + mDisplayId);
+            }
+            mHeaderState.setState(desiredState);
+        }
     }
 
     private void updateTexts() {

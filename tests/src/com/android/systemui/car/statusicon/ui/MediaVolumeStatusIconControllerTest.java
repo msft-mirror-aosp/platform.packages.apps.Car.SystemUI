@@ -37,6 +37,7 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.settings.UserTracker;
 
 import org.junit.After;
 import org.junit.Before;
@@ -62,6 +63,8 @@ public class MediaVolumeStatusIconControllerTest extends SysuiTestCase {
     CarAudioManager mCarAudioManager;
     @Mock
     CarServiceProvider mCarServiceProvider;
+    @Mock
+    UserTracker mUserTracker;
 
     private MediaVolumeStatusIconController mMediaVolumeStatusIconController;
     private MockitoSession mMockingSession;
@@ -84,7 +87,7 @@ public class MediaVolumeStatusIconControllerTest extends SysuiTestCase {
                 ArgumentCaptor.forClass(CarServiceProvider.CarServiceOnConnectedListener.class);
 
         mMediaVolumeStatusIconController =
-                new MediaVolumeStatusIconController(mContext, mContext.getResources(),
+                new MediaVolumeStatusIconController(mContext, mUserTracker, mContext.getResources(),
                 mCarServiceProvider);
         verify(mCarServiceProvider).addListener(listenerCaptor.capture());
 

@@ -180,7 +180,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="user_picker_background_color"/>
       <item type="color" name="user_picker_background_pill_color"/>
       <item type="color" name="user_picker_bottom_bar_color"/>
-      <item type="color" name="user_picker_login_state_color"/>
+      <item type="color" name="user_picker_current_login_state_color"/>
+      <item type="color" name="user_picker_other_login_state_color"/>
       <item type="color" name="user_picker_snack_bar_background_color"/>
       <item type="color" name="user_picker_snack_bar_transparent_color"/>
       <item type="color" name="user_picker_user_name_color"/>
@@ -424,7 +425,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="user_picker_button_padding_size"/>
       <item type="dimen" name="user_picker_button_size"/>
       <item type="dimen" name="user_picker_clock_elevation_size"/>
-      <item type="dimen" name="user_picker_common_margin_size"/>
+      <item type="dimen" name="user_picker_header_left_margin"/>
       <item type="dimen" name="user_picker_header_margin"/>
       <item type="dimen" name="user_picker_horizontal_space_between_users"/>
       <item type="dimen" name="user_picker_login_state_text_size"/>

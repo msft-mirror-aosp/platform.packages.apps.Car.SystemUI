@@ -20,16 +20,26 @@ import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_CHANG
 
 import static com.google.common.truth.Truth.assertThat;
 
+import android.test.suitebuilder.annotation.SmallTest;
+import android.testing.AndroidTestingRunner;
+import android.testing.TestableLooper;
 import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import com.android.systemui.car.CarSystemUiTest;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+@CarSystemUiTest
+@RunWith(AndroidTestingRunner.class)
+@TestableLooper.RunWithLooper
+@SmallTest
 public class UserPickerDriverHeaderTest extends UserPickerTestCase {
     @Rule
     public ActivityScenarioRule<UserPickerDriverTestActivity> mActivityRule =

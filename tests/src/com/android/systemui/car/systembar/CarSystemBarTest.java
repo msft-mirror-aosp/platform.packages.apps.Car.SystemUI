@@ -22,6 +22,7 @@ import static android.view.WindowInsetsController.BEHAVIOR_DEFAULT;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assume.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -35,6 +36,7 @@ import android.app.UiModeManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.RemoteException;
+import android.os.UserManager;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.testing.TestableResources;
@@ -422,21 +424,27 @@ public class CarSystemBarTest extends SysuiTestCase {
     }
 
     @Test
-    public void onConfigChanged_setNightModeActivated() {
+    public void onConfigChanged_toggleNightMode() {
+        // get the current mode and then change to the opposite
+        boolean isNightMode = mContext.getResources().getConfiguration().isNightModeActive();
         Configuration config = new Configuration();
-        config.uiMode = Configuration.UI_MODE_NIGHT_YES;
+        config.uiMode =
+                isNightMode ? Configuration.UI_MODE_NIGHT_NO : Configuration.UI_MODE_NIGHT_YES;
         UiModeManager mockUiModeManager = mock(UiModeManager.class);
         mCarSystemBar.setUiModeManager(mockUiModeManager);
 
         mCarSystemBar.onConfigChanged(config);
 
-        verify(mockUiModeManager).setNightModeActivated(true);
+        verify(mockUiModeManager).setNightModeActivated(!isNightMode);
     }
 
     @Test
     public void onConfigChanged_callOnClick_profilePickerViewIsSelected() {
+        // alternative profile picker used on multi-display systems
+        assumeFalse(UserManager.isVisibleBackgroundUsersEnabled());
         Configuration config = new Configuration();
-        config.uiMode = Configuration.UI_MODE_NIGHT_YES;
+        config.uiMode = mContext.getResources().getConfiguration().isNightModeActive()
+                ? Configuration.UI_MODE_NIGHT_NO : Configuration.UI_MODE_NIGHT_YES;
         View mockProfilePickerView = mock(View.class);
         when(mockProfilePickerView.isSelected()).thenReturn(true);
         CarSystemBarView mockTopBarView = mock(CarSystemBarView.class);
@@ -458,7 +466,8 @@ public class CarSystemBarTest extends SysuiTestCase {
     public void onConfigChanged_callQuickControlsOnClickFromClassName_forSelectedQuickControl() {
         String clsName = "testClsName";
         Configuration config = new Configuration();
-        config.uiMode = Configuration.UI_MODE_NIGHT_YES;
+        config.uiMode = mContext.getResources().getConfiguration().isNightModeActive()
+                ? Configuration.UI_MODE_NIGHT_NO : Configuration.UI_MODE_NIGHT_YES;
         when(mCarSystemBarController.getSelectedQuickControlsClassName()).thenReturn(clsName);
         initCarSystemBar();
 

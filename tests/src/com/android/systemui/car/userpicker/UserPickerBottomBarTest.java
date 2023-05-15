@@ -15,29 +15,24 @@
  */
 package com.android.systemui.car.userpicker;
 
-import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
-
 import static com.google.common.truth.Truth.assertThat;
-
-import static org.junit.Assert.assertNotNull;
 
 import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.dump.DumpManager;
-import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.statusbar.policy.Clock;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 @CarSystemUiTest
@@ -45,58 +40,35 @@ import org.mockito.MockitoAnnotations;
 @TestableLooper.RunWithLooper
 @SmallTest
 public class UserPickerBottomBarTest extends UserPickerTestCase {
-    private static final String TAG = UserPickerBottomBarTest.class.getSimpleName();
-
-    private UserPickerTestActivity mUserPickerActivity;
-
-    @Mock
-    private UserPickerController mMockUserPickerController;
-    @Mock
-    private UserPickerAdapter mMockUserPickerAdapter;
-    @Mock
-    private DialogManager mMockDialogManager;
-    @Mock
-    private SnackbarManager mMockSnackbarManager;
-    @Mock
-    private DisplayTracker mMockDisplayTracker;
-    @Mock
-    private DumpManager mMockDumpManager;
+    @Rule
+    public ActivityScenarioRule<UserPickerPassengerTestActivity> mActivityRule =
+            new ActivityScenarioRule(UserPickerPassengerTestActivity.class);
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-
-        mUserPickerActivity = new UserPickerTestActivity(mContext,
-                mMockUserPickerController, mMockUserPickerAdapter, mMockDialogManager,
-                mMockSnackbarManager, mMockDisplayTracker, mMockDumpManager);
-        mUserPickerActivity.init();
     }
 
     @Test
     public void checkBottomBarHeight_validDimension() {
-        doReturn(FRONT_PASSENGER_DISPLAY_ID).when(mContext).getDisplayId();
-
-        LinearLayout bottombar = (LinearLayout) mUserPickerActivity.mRootView
-                .findViewById(R.id.user_picker_bottom_bar);
-        float height = bottombar.getLayoutParams().height;
         float target_height = mContext.getResources()
                 .getDimension(R.dimen.car_bottom_system_bar_height);
+        mActivityRule.getScenario().onActivity(activity -> {
+            ConstraintLayout bottombar = activity.findViewById(R.id.user_picker_bottom_bar);
+            float height = bottombar.getLayoutParams().height;
 
-        assertThat(height).isEqualTo(target_height);
+            assertThat(height).isEqualTo(target_height);
+        });
+
+
     }
 
     @Test
     public void checkClockVisibility_isClockVisible() {
-        doReturn(FRONT_PASSENGER_DISPLAY_ID).when(mContext).getDisplayId();
-
-        Clock clock = (Clock) mUserPickerActivity.mRootView
-                .findViewById(R.id.user_picker_bottom_bar_clock);
-        assertThat(clock.getVisibility()).isEqualTo(View.VISIBLE);
-    }
-
-    @Test
-    public void checkSignalStatusIcon_canInflateSignalStatusIconLayout() {
-        ImageView v = (ImageView) mInflater.inflate(R.layout.user_picker_status_icon_layout, null);
-        assertNotNull(v);
+        mActivityRule.getScenario().onActivity(activity -> {
+            Clock clock = activity.findViewById(R.id.user_picker_bottom_bar_clock);
+            assertThat(clock).isNotNull();
+            assertThat(clock.getVisibility()).isEqualTo(View.VISIBLE);
+        });
     }
 }

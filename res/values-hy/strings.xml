@@ -36,7 +36,7 @@
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g>ն անջատված է։"</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"Օգտագործել <xliff:g id="SENSOR">%1$s</xliff:g>ը"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Թույլտվություն ունեցող հավելվածների համար"</string>
-    <string name="mic_privacy_chip_microphone_settings" msgid="4520886720588226450">"Խոսափողի կարգավորումներ"</string>
+    <string name="privacy_chip_settings" msgid="8028897999244574288">"Գաղտնիության կարգավորումներ"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"<xliff:g id="APP">%1$s</xliff:g> հավելվածն օգտագործում է <xliff:g id="SENSOR">%2$s</xliff:g>ը"</string>
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> հավելվածներն օգտագործում են խոսափողը"</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"<xliff:g id="APP">%1$s</xliff:g> հավելվածը վերջերս օգտագործել է <xliff:g id="SENSOR">%2$s</xliff:g>ը"</string>
@@ -46,7 +46,6 @@
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"Եղավ"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Միացնե՞լ մեքենայի խոսափողը"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Շարունակելու համար միացրեք տեղեկատվաժամանցային համակարգի խոսափողը։ Թույլտվություն ունեցող հավելվածների համար խոսափողը նույնպես կմիանա։"</string>
-    <string name="camera_privacy_chip_camera_settings" msgid="96342672670928980">"Տեսախցիկի կարգավորումներ"</string>
     <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"<xliff:g id="APP">%s</xliff:g>՝ օգտագործում է տեսախցիկը"</string>
     <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"<xliff:g id="APP_LIST">%s</xliff:g>՝ օգտագործում են տեսախցիկը"</string>
     <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"<xliff:g id="APP">%s</xliff:g> հավելվածը վերջերս օգտագործել է տեսախցիկը"</string>
@@ -88,11 +87,9 @@
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"Ձայնի կարգավորումներ"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"Պրոֆիլների և հաշիվների կարգավորումներ"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"Նախշը չի աջակցում պտտաշարժում. օգտագործեք հպում"</string>
-    <string name="display_input_lock_text" msgid="8524876126635885614">"Հպէկրանը կողպված է"</string>
-    <!-- no translation found for display_input_lock_started_text (2434054522800802134) -->
-    <skip />
-    <!-- no translation found for display_input_lock_stopped_text (2454939902188129876) -->
-    <skip />
+    <string name="display_input_lock_text" msgid="1671197665816822205">"Ձեր էկրանը կողպված է"</string>
+    <string name="display_input_lock_started_text" msgid="2434054522800802134">"Ձեր էկրանը կողպվել է"</string>
+    <string name="display_input_lock_stopped_text" msgid="5944577827512246808">"Ձեր էկրանն այժմ ապակողպված է"</string>
     <string name="user_logout_title" msgid="5534754139319586681">"Իսկապե՞ս ուզում եք դուրս գալ"</string>
     <string name="user_logout_message" msgid="7804089876692575056">"Բոլոր բաց հավելվածները կփակվեն"</string>
     <string name="user_logout" msgid="2934184154258330491">"Դուրս գալ"</string>

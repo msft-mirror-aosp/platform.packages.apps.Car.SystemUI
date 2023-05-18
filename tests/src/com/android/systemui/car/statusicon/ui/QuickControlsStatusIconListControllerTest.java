@@ -35,6 +35,7 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.statusicon.StatusIconController;
 import com.android.systemui.lifecycle.InstantTaskExecutorRule;
+import com.android.systemui.settings.UserTracker;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -64,6 +65,8 @@ public class QuickControlsStatusIconListControllerTest extends SysuiTestCase {
     private StatusIconController mStatusIconController;
     @Mock
     CarServiceProvider mCarServiceProvider;
+    @Mock
+    UserTracker mUserTracker;
 
     private MediaVolumeStatusIconController mMediaVolumeStatusIconController;
     private Resources mResources;
@@ -77,8 +80,8 @@ public class QuickControlsStatusIconListControllerTest extends SysuiTestCase {
         MockitoAnnotations.initMocks(this);
         mResources = mContext.getOrCreateTestableResources().getResources();
         spyOn(mResources);
-        mMediaVolumeStatusIconController =
-                new MediaVolumeStatusIconController(mContext, mResources, mCarServiceProvider);
+        mMediaVolumeStatusIconController = new MediaVolumeStatusIconController(mContext,
+                mUserTracker, mResources, mCarServiceProvider);
         spyOn(mMediaVolumeStatusIconController);
         doReturn(mMediaVolumeStatusIconController).when(mProvider).get();
         doReturn(mProvider).when(mIconControllerCreators).get(any());

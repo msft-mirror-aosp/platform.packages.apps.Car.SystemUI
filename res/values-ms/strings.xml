@@ -36,7 +36,7 @@
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> dimatikan."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"Gunakan <xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Untuk apl yang mempunyai kebenaran"</string>
-    <string name="mic_privacy_chip_microphone_settings" msgid="4520886720588226450">"Tetapan mikrofon"</string>
+    <string name="privacy_chip_settings" msgid="8028897999244574288">"Tetapan privasi"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"<xliff:g id="APP">%1$s</xliff:g> sedang menggunakan <xliff:g id="SENSOR">%2$s</xliff:g>"</string>
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> sedang menggunakan mikrofon"</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"<xliff:g id="APP">%1$s</xliff:g> menggunakan <xliff:g id="SENSOR">%2$s</xliff:g> baru-baru ini"</string>
@@ -46,7 +46,6 @@
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"OK"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Hidupkan mikrofon kenderaan?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Untuk meneruskan, hidupkan mikrofon sistem maklumat hibur. Tindakan ini akan menghidupkan mikrofon untuk semua aplikasi yang mempunyai kebenaran."</string>
-    <string name="camera_privacy_chip_camera_settings" msgid="96342672670928980">"Tetapan kamera"</string>
     <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"<xliff:g id="APP">%s</xliff:g> sedang menggunakan kamera"</string>
     <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"<xliff:g id="APP_LIST">%s</xliff:g> sedang menggunakan kamera"</string>
     <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"<xliff:g id="APP">%s</xliff:g> menggunakan kamera baru-baru ini"</string>
@@ -88,11 +87,9 @@
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"Tetapan bunyi"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"Tetapan profil &amp; akaun"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"Corak tak sokong putaran; guna sentuhan"</string>
-    <string name="display_input_lock_text" msgid="8524876126635885614">"Skrin sentuh dikunci"</string>
-    <!-- no translation found for display_input_lock_started_text (2434054522800802134) -->
-    <skip />
-    <!-- no translation found for display_input_lock_stopped_text (2454939902188129876) -->
-    <skip />
+    <string name="display_input_lock_text" msgid="1671197665816822205">"Skrin anda dikunci"</string>
+    <string name="display_input_lock_started_text" msgid="2434054522800802134">"Skrin anda telah dikunci"</string>
+    <string name="display_input_lock_stopped_text" msgid="5944577827512246808">"Kini skrin anda dibuka kunci"</string>
     <string name="user_logout_title" msgid="5534754139319586681">"Adakah anda pasti mahu log keluar?"</string>
     <string name="user_logout_message" msgid="7804089876692575056">"Tindakan ini akan menutup semua aplikasi yang dibuka"</string>
     <string name="user_logout" msgid="2934184154258330491">"Log keluar"</string>

@@ -61,6 +61,9 @@ import com.android.systemui.statusbar.phone.ScrimController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.util.DeviceConfigProxy;
+import com.android.systemui.util.settings.SecureSettings;
+import com.android.systemui.util.settings.SystemSettings;
+import com.android.systemui.util.time.SystemClock;
 import com.android.wm.shell.keyguard.KeyguardTransitions;
 
 import dagger.Lazy;
@@ -125,7 +128,10 @@ public class CarKeyguardModule {
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator,
             Lazy<ScrimController> scrimControllerLazy,
             IActivityTaskManager activityTaskManagerService,
-            FeatureFlags featureFlags) {
+            FeatureFlags featureFlags,
+            SecureSettings secureSettings,
+            SystemSettings systemSettings,
+            SystemClock systemClock) {
         return new CarKeyguardViewMediator(
                 context,
                 uiEventLogger,
@@ -160,7 +166,10 @@ public class CarKeyguardModule {
                 activityLaunchAnimator,
                 scrimControllerLazy,
                 activityTaskManagerService,
-                featureFlags);
+                featureFlags,
+                secureSettings,
+                systemSettings,
+                systemClock);
     }
 
     /** */

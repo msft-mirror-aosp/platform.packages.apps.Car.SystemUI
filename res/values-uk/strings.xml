@@ -36,8 +36,7 @@
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g>: вимкнено."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"Використовувати функцію \"<xliff:g id="SENSOR">%1$s</xliff:g>\""</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Для додатків, яким надано дозвіл"</string>
-    <!-- no translation found for privacy_chip_settings (8028897999244574288) -->
-    <skip />
+    <string name="privacy_chip_settings" msgid="8028897999244574288">"Налаштування конфіденційності"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"Додаток <xliff:g id="APP">%1$s</xliff:g> використовує функцію \"<xliff:g id="SENSOR">%2$s</xliff:g>\""</string>
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"Додатки <xliff:g id="APP_LIST">%s</xliff:g> використовують мікрофон"</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"Додаток <xliff:g id="APP">%1$s</xliff:g> нещодавно використовував функцію \"<xliff:g id="SENSOR">%2$s</xliff:g>\""</string>
@@ -88,11 +87,9 @@
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"Налаштування звуку"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"Налаштування профілів і облікових записів"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"Ключ вводиться лише на сенсорній панелі"</string>
-    <!-- no translation found for display_input_lock_text (1671197665816822205) -->
-    <skip />
+    <string name="display_input_lock_text" msgid="1671197665816822205">"Екран заблоковано"</string>
     <string name="display_input_lock_started_text" msgid="2434054522800802134">"Екран заблоковано"</string>
-    <!-- no translation found for display_input_lock_stopped_text (5944577827512246808) -->
-    <skip />
+    <string name="display_input_lock_stopped_text" msgid="5944577827512246808">"Екран тепер розблоковано"</string>
     <string name="user_logout_title" msgid="5534754139319586681">"Вийти з облікового запису?"</string>
     <string name="user_logout_message" msgid="7804089876692575056">"Усі відкриті додатки буде закрито"</string>
     <string name="user_logout" msgid="2934184154258330491">"Вийти"</string>

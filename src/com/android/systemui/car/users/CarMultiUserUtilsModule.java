@@ -63,13 +63,18 @@ public abstract class CarMultiUserUtilsModule {
             UserManager userManager,
             IActivityManager iActivityManager,
             DumpManager dumpManager,
-            @Background Handler handler
+            @Background Handler handler,
+            CarServiceProvider carServiceProvider
     ) {
+        if (CarSystemUIUserUtil.isMUPANDSystemUI()) {
+            CarMUPANDUserTrackerImpl mupandTracker = new CarMUPANDUserTrackerImpl(context,
+                    userManager, iActivityManager, dumpManager, handler, carServiceProvider);
+            mupandTracker.initialize(ActivityManager.getCurrentUser());
+            return mupandTracker;
+        }
         UserHandle processUser = Process.myUserHandle();
         boolean isSecondaryUserSystemUI =
-                userManager.isVisibleBackgroundUsersSupported()
-                        && !processUser.isSystem()
-                        && processUser.getIdentifier() != ActivityManager.getCurrentUser();
+                CarSystemUIUserUtil.isSecondaryMUMDSystemUI();
         int startingUser = isSecondaryUserSystemUI
                 ? processUser.getIdentifier()
                 : ActivityManager.getCurrentUser();
@@ -97,4 +102,6 @@ public abstract class CarMultiUserUtilsModule {
 
     @Binds
     abstract UserFileManager bindUserFileManager(UserFileManagerImpl impl);
+
+
 }

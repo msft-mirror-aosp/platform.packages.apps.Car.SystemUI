@@ -40,7 +40,7 @@ import com.android.internal.view.BaseIWindow;
 
 /**
  * Creates a {@link InputWindowHandle} that catches all input events. Shows
- * a {@link DisplayInputLockInfoWindow} when input events are received while
+ * a Toast when input events are received while
  * {@link DisplayInputSink} is activated.
  */
 public final class DisplayInputSink {
@@ -91,7 +91,7 @@ public final class DisplayInputSink {
     /**
      * Removes surface and display input listener for the display input sink.
      */
-    public void remove() {
+    public void release() {
         if (mCallback != null) {
             removeDisplayInputListener();
         }
@@ -117,6 +117,7 @@ public final class DisplayInputSink {
                     /* hostInputToken= */ null,
                     FLAG_NOT_FOCUSABLE,
                     PRIVATE_FLAG_TRUSTED_OVERLAY,
+                    /* inputFeatures= */ 0,
                     TYPE_INPUT_CONSUMER,
                     /* windowToken= */ null,
                     mFocusGrantToken,

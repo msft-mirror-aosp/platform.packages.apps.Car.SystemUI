@@ -77,7 +77,7 @@
              config_notificationPanelViewMediator=
                 com.android.systemui.car.notification.BottomNotificationPanelViewMediator -->
     <string name="config_notificationPanelViewMediator" translatable="false">
-        com.android.systemui.car.notification.TopNotificationPanelViewMediator</string>
+        com.android.systemui.car.notification.BottomNotificationPanelViewMediator</string>
 
     <!-- Whether the Notification Panel should be inset by the top system bar. -->
     <bool name="config_notif_panel_inset_by_top_systembar" translatable="false">false</bool>
@@ -132,11 +132,27 @@
         <item>com.android.systemui.car.statusicon.ui.DisplayStatusIconController</item>
     </string-array>
 
+    <string-array name="config_quickControlsSubIconControllers" translatable="false">
+        <item>com.android.systemui.car.statusicon.ui.MediaVolumeStatusIconController</item>
+        <item>com.android.systemui.car.statusicon.ui.SignalStatusIconController</item>
+    </string-array>
+
     <!-- List of StatusIconControllers associated with read-only status icons.
          The icons will be added to the view in the order their controllers appear on this list.-->
     <string-array name="config_readOnlyIconControllers" translatable="false">
         <item>com.android.systemui.car.statusicon.ui.LocationStatusIconController</item>
         <item>com.android.systemui.car.statusicon.ui.PhoneCallStatusIconController</item>
+    </string-array>
+
+    <!-- List of StatusIconControllers associated with read-only status icons for QC panels.
+         The icons will be added to the view in the order their controllers appear on this list. -->
+    <string-array name="config_qcPanelReadOnlyIconControllers" translatable="false">
+        <item>com.android.systemui.car.statusicon.ui.LocationStatusIconController</item>
+        <item>com.android.systemui.car.statusicon.ui.MobileSignalStatusIconController</item>
+        <item>com.android.systemui.car.statusicon.ui.WifiSignalStatusIconController</item>
+    </string-array>
+
+    <string-array name="config_userpickerReadOnlyIconControllers" translatable="false">
     </string-array>
 
     <!-- List of package names that are allowed sources of app installation. -->
@@ -209,10 +225,10 @@
 
     <!-- Determines whether the car system UI should register the System UI Proxy with the
      CarService. -->
-    <bool name="config_registerCarSystemUIProxy">false</bool>
+    <bool name="config_registerCarSystemUIProxy">true</bool>
 
     <!-- Determines whether the secondary user SystemUI must be overlaid -->
-    <bool name="config_enableSecondaryUserRRO">false</bool>
+    <bool name="config_enableSecondaryUserRRO">true</bool>
     <!-- RRO package name of the secondary user SystemUI -->
     <string name="config_secondaryUserSystemUIRROPackageName">
         com.android.systemui.md.passenger.car.rro

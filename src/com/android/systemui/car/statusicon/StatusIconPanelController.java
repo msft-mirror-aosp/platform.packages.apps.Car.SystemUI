@@ -23,6 +23,7 @@ import android.annotation.ColorInt;
 import android.annotation.DimenRes;
 import android.annotation.LayoutRes;
 import android.app.PendingIntent;
+import android.car.app.CarActivityManager;
 import android.car.drivingstate.CarUxRestrictions;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -39,6 +40,7 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.qc.QCItem;
@@ -47,9 +49,13 @@ import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.qc.QCFooterButton;
+import com.android.systemui.car.qc.QCFooterButtonView;
+import com.android.systemui.car.qc.QCHeaderReadOnlyIconsContainer;
 import com.android.systemui.car.qc.SystemUIQCView;
 import com.android.systemui.car.qc.SystemUIQCViewController;
+import com.android.systemui.car.statusicon.ui.QCPanelReadOnlyIconsController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
@@ -66,9 +72,12 @@ public class StatusIconPanelController {
 
     private final Context mContext;
     private final UserTracker mUserTracker;
+    private final CarServiceProvider mCarServiceProvider;
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final ConfigurationController mConfigurationController;
     private final Provider<SystemUIQCViewController> mQCViewControllerProvider;
+    @Nullable
+    private final QCPanelReadOnlyIconsController mQCPanelReadOnlyIconsController;
     private final String mIdentifier;
     private final String mIconTag;
     private final @ColorInt int mIconHighlightedColor;
@@ -85,6 +94,7 @@ public class StatusIconPanelController {
     private View mAnchorView;
     private ImageView mStatusIconView;
     private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
+    private CarActivityManager mCarActivityManager;
     private float mDimValue = -1.0f;
     private View.OnClickListener mOnClickListener;
     private boolean mIsPanelDestroyed;
@@ -108,6 +118,11 @@ public class StatusIconPanelController {
                         mPanel.dismiss();
                     }
                 }
+            };
+
+    private final CarServiceProvider.CarServiceOnConnectedListener mCarServiceOnConnectedListener =
+            car -> {
+                mCarActivityManager = car.getCarManager(CarActivityManager.class);
             };
 
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -162,25 +177,43 @@ public class StatusIconPanelController {
     public StatusIconPanelController(
             Context context,
             UserTracker userTracker,
+            CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider) {
-        this(context, userTracker, broadcastDispatcher, configurationController,
+        this(context, userTracker, carServiceProvider, broadcastDispatcher, configurationController,
                 qcViewControllerProvider, /* isDisabledWhileDriving= */ false);
     }
 
     public StatusIconPanelController(
             Context context,
             UserTracker userTracker,
+            CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider,
             boolean isDisabledWhileDriving) {
+        this(context, userTracker, carServiceProvider, broadcastDispatcher, configurationController,
+                qcViewControllerProvider, isDisabledWhileDriving,
+                /* qcPanelReadOnlyIconsController= */ null);
+    }
+
+    public StatusIconPanelController(
+            Context context,
+            UserTracker userTracker,
+            CarServiceProvider carServiceProvider,
+            BroadcastDispatcher broadcastDispatcher,
+            ConfigurationController configurationController,
+            Provider<SystemUIQCViewController> qcViewControllerProvider,
+            boolean isDisabledWhileDriving,
+            QCPanelReadOnlyIconsController qcPanelReadOnlyIconsController) {
         mContext = context;
         mUserTracker = userTracker;
+        mCarServiceProvider = carServiceProvider;
         mBroadcastDispatcher = broadcastDispatcher;
         mConfigurationController = configurationController;
         mQCViewControllerProvider = qcViewControllerProvider;
+        mQCPanelReadOnlyIconsController = qcPanelReadOnlyIconsController;
         mIdentifier = Integer.toString(System.identityHashCode(this));
 
         mIconTag = mContext.getResources().getString(R.string.qc_icon_tag);
@@ -233,9 +266,10 @@ public class StatusIconPanelController {
     /**
      * Attaches a panel to a root view that toggles the panel visibility when clicked.
      *
-     * Variant of {@link #attachPanel(View, int, int, int, int, int)} with
+     * Variant of {@link #attachPanel(View, int, int, int, int, int, boolean)} with
      * xOffset={@code 0}, yOffset={@link #mYOffsetPixel} &
-     * gravity={@link #DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY}.
+     * gravity={@link #DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY} &
+     * showAsDropDown={@code true}.
      */
     public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes) {
         attachPanel(view, layoutRes, widthRes, DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY);
@@ -244,8 +278,9 @@ public class StatusIconPanelController {
     /**
      * Attaches a panel to a root view that toggles the panel visibility when clicked.
      *
-     * Variant of {@link #attachPanel(View, int, int, int, int, int)} with
-     * xOffset={@code 0} & yOffset={@link #mYOffsetPixel}.
+     * Variant of {@link #attachPanel(View, int, int, int, int, int, boolean)} with
+     * xOffset={@code 0} & yOffset={@link #mYOffsetPixel} &
+     * showAsDropDown={@code true}.
      */
     public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes,
             int gravity) {
@@ -256,8 +291,9 @@ public class StatusIconPanelController {
     /**
      * Attaches a panel to a root view that toggles the panel visibility when clicked.
      *
-     * Variant of {@link #attachPanel(View, int, int, int, int, int)} with
-     * gravity={@link #DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY}.
+     * Variant of {@link #attachPanel(View, int, int, int, int, int, boolean)} with
+     * gravity={@link #DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY} &
+     * showAsDropDown={@code true}.
      */
     public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes,
             int xOffset, int yOffset) {
@@ -267,12 +303,26 @@ public class StatusIconPanelController {
 
     /**
      * Attaches a panel to a root view that toggles the panel visibility when clicked.
+     *
+     * Variant of {@link #attachPanel(View, int, int, int, int, int, boolean)} with
+     * showAsDropDown={@code true}.
      */
     public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes,
             int xOffset, int yOffset, int gravity) {
+        attachPanel(view, layoutRes, widthRes, xOffset, yOffset, gravity,
+                /* showAsDropDown= */ true);
+    }
+
+    /**
+     * Attaches a panel to a root view that toggles the panel visibility when clicked.
+     */
+    public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes,
+            int xOffset, int yOffset, int gravity, boolean showAsDropDown) {
         if (mIsPanelDestroyed) {
             throw new IllegalStateException("Attempting to attach destroyed panel");
         }
+
+        mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
 
         if (mAnchorView == null) {
             mAnchorView = view;
@@ -310,10 +360,21 @@ public class StatusIconPanelController {
             if (CarSystemUIUserUtil.isMUMDSystemUI()
                     && mPanelLayoutRes == R.layout.qc_profile_switcher) {
                 // TODO(b/269490856): consider removal of UserPicker carve-outs
-                CarSystemUIUserUtil.launchUserPicker(mContext);
+                if (mCarActivityManager != null) {
+                    mCarActivityManager.startUserPickerOnDisplay(mContext.getDisplayId());
+                }
             } else {
-                // TODO(b/202563671): remove yOffsetPixel when the PopupWindow API is updated.
-                mPanel.showAsDropDown(mAnchorView, xOffset, yOffset, gravity);
+                if (showAsDropDown) {
+                    // TODO(b/202563671): remove yOffsetPixel when the PopupWindow API is updated.
+                    mPanel.showAsDropDown(mAnchorView, xOffset, yOffset, gravity);
+                } else {
+                    int verticalGravity = gravity & Gravity.VERTICAL_GRAVITY_MASK;
+                    int animationStyle = verticalGravity == Gravity.BOTTOM
+                            ? com.android.internal.R.style.Animation_DropDownUp
+                            : com.android.internal.R.style.Animation_DropDownDown;
+                    mPanel.setAnimationStyle(animationStyle);
+                    mPanel.showAtLocation(mAnchorView, gravity, xOffset, yOffset);
+                }
                 mAnchorView.setSelected(true);
                 highlightStatusIcon(true);
                 setAnimatedStatusIconHighlightedStatus(true);
@@ -333,6 +394,7 @@ public class StatusIconPanelController {
         if (mCarUxRestrictionsUtil != null) {
             mCarUxRestrictionsUtil.unregister(mUxRestrictionsChangedListener);
         }
+        mCarServiceProvider.removeListener(mCarServiceOnConnectedListener);
         mConfigurationController.removeCallback(mConfigurationListener);
         mUserTracker.removeCallback(mUserTrackerCallback);
         mBroadcastDispatcher.unregisterReceiver(mBroadcastReceiver);
@@ -372,11 +434,31 @@ public class StatusIconPanelController {
         return mOnClickListener;
     }
 
+    @VisibleForTesting
+    protected ConfigurationController.ConfigurationListener getConfigurationListener() {
+        return mConfigurationListener;
+    }
+
+    @VisibleForTesting
+    protected UserTracker.Callback getUserTrackerCallback() {
+        return mUserTrackerCallback;
+    }
+
+    @VisibleForTesting
+    protected ViewTreeObserver.OnGlobalFocusChangeListener getFocusChangeListener() {
+        return mFocusChangeListener;
+    }
+
+    @VisibleForTesting
+    protected QCView.QCActionListener getQCActionListener() {
+        return mQCActionListener;
+    }
+
     /**
      * Create the PopupWindow panel and assign to {@link mPanel}.
      * @return true if the panel was created, false otherwise
      */
-    private boolean createPanel() {
+    boolean createPanel() {
         if (mPanelWidthRes == 0 || mPanelLayoutRes == 0) {
             return false;
         }
@@ -386,6 +468,7 @@ public class StatusIconPanelController {
         mPanelContent = (ViewGroup) LayoutInflater.from(mContext).inflate(mPanelLayoutRes,
                 /* root= */ null);
         mPanelContent.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+        findQcHeaderViews(mPanelContent);
         findQcViews(mPanelContent);
         findQcFooterViews(mPanelContent);
         mPanel = new PopupWindow(mPanelContent, panelWidth, WRAP_CONTENT);
@@ -456,6 +539,20 @@ public class StatusIconPanelController {
         createPanel();
     }
 
+    private void findQcHeaderViews(ViewGroup rootView) {
+        for (int i = 0; i < rootView.getChildCount(); i++) {
+            View v = rootView.getChildAt(i);
+            if (v instanceof QCHeaderReadOnlyIconsContainer) {
+                if (mQCPanelReadOnlyIconsController != null) {
+                    mQCPanelReadOnlyIconsController.addIconViews(
+                            (QCHeaderReadOnlyIconsContainer) v, /* shouldAttachPanel= */ false);
+                }
+            } else if (v instanceof ViewGroup) {
+                this.findQcHeaderViews((ViewGroup) v);
+            }
+        }
+    }
+
     private void findQcViews(ViewGroup rootView) {
         for (int i = 0; i < rootView.getChildCount(); i++) {
             View v = rootView.getChildAt(i);
@@ -476,6 +573,9 @@ public class StatusIconPanelController {
             View v = rootView.getChildAt(i);
             if (v instanceof QCFooterButton) {
                 ((QCFooterButton) v).setUserTracker(mUserTracker);
+            } else if (v instanceof QCFooterButtonView) {
+                ((QCFooterButtonView) v).setUserTracker(mUserTracker);
+                ((QCFooterButtonView) v).setBroadcastDispatcher(mBroadcastDispatcher);
             } else if (v instanceof ViewGroup) {
                 this.findQcFooterViews((ViewGroup) v);
             }

@@ -16,8 +16,8 @@
 
 package com.android.systemui.car.userpicker;
 
-import static android.app.ActivityManager.USER_OP_SUCCESS;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_CREATED;
+import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_INVISIBLE;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_REMOVED;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_STARTING;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_STOPPED;
@@ -34,12 +34,17 @@ import android.annotation.MainThread;
 import android.annotation.Nullable;
 import android.annotation.UserIdInt;
 import android.app.ActivityManager;
-import android.app.IActivityManager;
-import android.car.CarOccupantZoneManager;
+import android.car.SyncResultCallback;
 import android.car.user.CarUserManager;
 import android.car.user.CarUserManager.UserLifecycleListener;
 import android.car.user.UserCreationResult;
 import android.car.user.UserLifecycleEventFilter;
+import android.car.user.UserStartRequest;
+import android.car.user.UserStartResponse;
+import android.car.user.UserStopRequest;
+import android.car.user.UserStopResponse;
+import android.car.user.UserSwitchRequest;
+import android.car.user.UserSwitchResult;
 import android.car.util.concurrent.AsyncFuture;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -48,16 +53,18 @@ import android.content.IntentFilter;
 import android.content.pm.UserInfo;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.RemoteException;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.util.Log;
 import android.util.Slog;
 import android.util.SparseArray;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.systemui.R;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -77,10 +84,11 @@ public final class UserEventManager {
     private static final String TAG = UserEventManager.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
-    private static final long CREATE_USER_TIMEOUT_MS = 10_000;
+    private static final long USER_TIMEOUT_MS = 10_000;
 
     private final UserLifecycleEventFilter mFilter = new UserLifecycleEventFilter.Builder()
             .addEventType(USER_LIFECYCLE_EVENT_TYPE_SWITCHING)
+            .addEventType(USER_LIFECYCLE_EVENT_TYPE_INVISIBLE)
             .addEventType(USER_LIFECYCLE_EVENT_TYPE_CREATED)
             .addEventType(USER_LIFECYCLE_EVENT_TYPE_REMOVED)
             .addEventType(USER_LIFECYCLE_EVENT_TYPE_UNLOCKED)
@@ -90,7 +98,6 @@ public final class UserEventManager {
 
     private final Context mContext;
     private final UserManager mUserManager;
-    private final ActivityManager mActivityManager;
     private final CarServiceMediator mCarServiceMediator;
     private final UserPickerSharedState mUserPickerSharedState;
 
@@ -104,11 +111,21 @@ public final class UserEventManager {
     private final Handler mMainHandler;
 
     /**
+     * This is used to wait until previous user is in invisible state.
+     * When changing user, previous user is stopped, and new user is started. But new user can not
+     * be started if occupant zone is not unassigned for previous user yet, and occupant zone
+     * unassignment is processed on user invisible event. In this reason, we should wait until
+     * previous user is in invisible state for stable user starting. <b/275973135>
+     */
+    private final UserInvisibleWaiter mUserInvisibleWaiter = new UserInvisibleWaiter();
+
+    /**
      * We don't use the main thread for UX responsiveness when handling user events.
      */
     private final ExecutorService mUserLifecycleReceiver;
 
-    private final UserLifecycleListener mUserLifecycleListener = event -> {
+    @VisibleForTesting
+    final UserLifecycleListener mUserLifecycleListener = event -> {
         onUserEvent(event);
     };
 
@@ -127,7 +144,6 @@ public final class UserEventManager {
         mUserLifecycleReceiver = Executors.newSingleThreadExecutor();
         mMainHandler = new Handler(Looper.getMainLooper());
         mUserManager = mContext.getSystemService(UserManager.class);
-        mActivityManager = mContext.getSystemService(ActivityManager.class);
         mUserPickerSharedState = userPickerSharedState;
         mCarServiceMediator = carServiceMediator;
         mCarServiceMediator.registerUserChangeEventsListener(mUserLifecycleReceiver, mFilter,
@@ -155,6 +171,8 @@ public final class UserEventManager {
             if (mUserPickerSharedState.isStoppingUser(userId)) {
                 mUserPickerSharedState.removeStoppingUserId(userId);
             }
+        } else if (eventType == USER_LIFECYCLE_EVENT_TYPE_INVISIBLE) {
+            mUserInvisibleWaiter.onUserInvisible(userId);
         }
         runUpdateUsersOnMainThread(userId, eventType);
     }
@@ -273,9 +291,9 @@ public final class UserEventManager {
     private UserCreationResult getUserCreationResult(AsyncFuture<UserCreationResult> future) {
         UserCreationResult result = null;
         try {
-            result = future.get(CREATE_USER_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            result = future.get(USER_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             if (result == null) {
-                Slog.e(TAG, "Timed out creating guest after " + CREATE_USER_TIMEOUT_MS + "ms...");
+                Slog.e(TAG, "Timed out creating guest after " + USER_TIMEOUT_MS + "ms...");
                 return null;
             }
         } catch (InterruptedException e) {
@@ -306,60 +324,129 @@ public final class UserEventManager {
                     + mUserManager.isUserUnlocked(userId) + " displayId=" + displayId
                     + " prevCurrentUser=" + prevCurrentUser + " isFgUserStart=" + isFgUserStart);
         }
-        boolean isUserStarted = false;
-        try {
-            if (isFgUserStart) {
-                // Old user will be stopped by {@link UserController} after user switching
-                // completed. In the case of user switching, to avoid clicking stopping user, we can
-                // block previous current user immediately here by adding to the list of stopping
-                // users.
-                mUserPickerSharedState.addStoppingUserId(prevCurrentUser);
-                isUserStarted = mActivityManager.switchUser(userId);
-            } else {
-                // TODO(b/257335554): will be changed to use CarUserManager.
-                isUserStarted = mActivityManager
-                        .startUserInBackgroundVisibleOnDisplay(userId, displayId);
-            }
-        } catch (Exception e) {
-            Slog.e(TAG, "switchUser or startUserInBackgroundOnSecondaryDisplay failed.", e);
-        } finally {
-            if (!isUserStarted) {
-                if (isFgUserStart) {
-                    Slog.w(TAG, "could not switch user on display " + displayId);
-                } else {
-                    Slog.w(TAG, "could not start user in background on display " + displayId);
+        UserHandle userHandle = UserHandle.of(userId);
+        CarUserManager carUserManager = mCarServiceMediator.getCarUserManager();
+        if (carUserManager == null) {
+            Slog.w(TAG, "car user manager is not available when starting user " + userId);
+            return false;
+        }
+        if (isFgUserStart) {
+            // Old user will be stopped by {@link UserController} after user switching
+            // completed. In the case of user switching, to avoid clicking stopping user, we can
+            // block previous current user immediately here by adding to the list of stopping
+            // users.
+            mUserPickerSharedState.addStoppingUserId(prevCurrentUser);
+            try {
+                SyncResultCallback<UserSwitchResult> userSwitchCallback =
+                        new SyncResultCallback<>();
+                carUserManager.switchUser(new UserSwitchRequest.Builder(
+                        userHandle).build(), Runnable::run, userSwitchCallback);
+                UserSwitchResult userSwitchResult =
+                        userSwitchCallback.get(USER_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                if (userSwitchResult.isSuccess()) {
+                    Slog.i(TAG, "Successful switchUser from " + prevCurrentUser + " to " + userId
+                            + ". Result: " + userSwitchResult);
+                    return true;
                 }
+                Slog.w(TAG, "Failed to switchUser from " + prevCurrentUser + " to " + userId
+                        + ". Result: " + userSwitchResult);
+            } catch (Exception e) {
+                Slog.e(TAG, "Exception during switchUser from " + prevCurrentUser + " to "
+                        + userId, e);
+                return false;
             }
         }
-        return isUserStarted;
+
+        try {
+            SyncResultCallback<UserStartResponse> userStartCallback = new SyncResultCallback<>();
+            carUserManager.startUser(
+                    new UserStartRequest.Builder(UserHandle.of(userId))
+                            .setDisplayId(displayId).build(),
+                    Runnable::run, userStartCallback);
+            UserStartResponse userStartResponse =
+                    userStartCallback.get(USER_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            if (userStartResponse.isSuccess()) {
+                Slog.i(TAG, "Successful startUser for user " + userId + " on display "
+                        + displayId + ". Result: " + userStartResponse);
+                return true;
+            }
+            Slog.w(TAG, "startUser failed for " + userId + " on display " + displayId
+                    + ". Result: " + userStartResponse);
+        } catch (Exception e) {
+            Slog.e(TAG, "Exception during startUser for user " + userId + " on display "
+                    + displayId, e);
+        }
+
+        return false;
     }
 
     boolean stopUserUnchecked(@UserIdInt int userId, int displayId) {
         if (DEBUG) {
             Slog.d(TAG, "stop user:" + userId);
         }
-        boolean isStopping = false;
 
-        // Unassign the user from the occupant zone before stop user.
-        if (mCarServiceMediator.unassignOccupantZoneForDisplay(displayId)
-                != CarOccupantZoneManager.USER_ASSIGNMENT_RESULT_OK) {
-            Slog.e(TAG, "failed to unassign occupant zone for display " + displayId
-                    + " when stopping user " + userId);
+        mUserPickerSharedState.addStoppingUserId(userId);
+
+        CarUserManager carUserManager = mCarServiceMediator.getCarUserManager();
+        if (carUserManager == null) {
+            Slog.w(TAG, "car user manager is not available when stopping user " + userId);
             return false;
         }
 
+        // We do not need to unassign the user from the occupant zone, because it is handled by
+        // CarUserService#onUserInvisible().
         try {
-            // TODO(b/257335554): will be changed to use CarUserManager.
-            IActivityManager am = ActivityManager.getService();
-            isStopping = am.stopUserWithDelayedLocking(userId, /* force= */ false,
-                    /* callback= */ null) == USER_OP_SUCCESS;
-        } catch (RemoteException e) {
-            isStopping = false;
+            mUserInvisibleWaiter.init(userId);
+            SyncResultCallback<UserStopResponse> userStopCallback = new SyncResultCallback<>();
+            carUserManager.stopUser(new UserStopRequest.Builder(UserHandle.of(userId)).build(),
+                    Runnable::run, userStopCallback);
+            UserStopResponse userStopResponse =
+                    userStopCallback.get(USER_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            if (userStopResponse.isSuccess()) {
+                Slog.i(TAG, "Successful stopUser for user " + userId + " on display " + displayId
+                        + ". Result: " + userStopResponse);
+                return mUserInvisibleWaiter.waitUserInvisible();
+            }
+            Slog.w(TAG, "stopUser failed for user " + userId + " on display " + displayId
+                    + ". Result: " + userStopResponse);
+        } catch (Exception e) {
+            Slog.e(TAG, "Exception during stopUser for user " + userId + " on display "
+                    + displayId, e);
         }
-        if (!isStopping) {
-            Slog.e(TAG, "Cannot stop user " + userId);
+
+        mUserPickerSharedState.removeStoppingUserId(userId);
+        return false;
+    }
+
+    private static class UserInvisibleWaiter {
+        private @UserIdInt int mUserId;
+        private CountDownLatch mWaiter;
+
+        void init(@UserIdInt int userId) {
+            mUserId = userId;
+            mWaiter = new CountDownLatch(1);
         }
-        return isStopping;
+
+        boolean waitUserInvisible() {
+            if (mWaiter != null) {
+                try {
+                    // This method returns false when timeout occurs so that user can re-try to
+                    // login. A timeout means that stopUser() has been called successfully, but
+                    // the user hasn't changed to invisible yet.
+                    return mWaiter.await(USER_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                    mWaiter = null;
+                }
+            }
+            return true;
+        }
+
+        void onUserInvisible(@UserIdInt int userId) {
+            if (userId == mUserId && mWaiter != null) {
+                mWaiter.countDown();
+                mWaiter = null;
+            }
+        }
     }
 
     /**

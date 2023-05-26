@@ -477,8 +477,7 @@ public class UserGridRecyclerView extends RecyclerView {
             // CreateGuest will return null if a guest already exists.
             UserInfo newGuest = getUserInfo(future);
             if (newGuest != null) {
-                new UserIconProvider().assignDefaultIcon(
-                        mUserManager, context.getResources(), newGuest);
+                UserHelper.assignDefaultIcon(context, newGuest.getUserHandle());
                 return newGuest;
             }
 

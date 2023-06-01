@@ -400,6 +400,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
     @Override
     public ViewRootImpl getViewRootImpl() {
+        if (getLayout() == null) return null;
         return ((View) getLayout().getParent()).getViewRootImpl();
     }
 

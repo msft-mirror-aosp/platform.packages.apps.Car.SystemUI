@@ -20,7 +20,7 @@
     <item type="id" name="lock_screen_nav_buttons"/>
     <item type="id" name="hvac_panel_close_button"/>
 
-    <!-- Values assigneed to quick control views    -->
+    <!-- Values assigned to quick control views    -->
     <item type="id" name="qc_display_status_icon"/>
     <item type="id" name="qc_bluetooth_status_icon"/>
     <item type="id" name="qc_signal_status_icon"/>

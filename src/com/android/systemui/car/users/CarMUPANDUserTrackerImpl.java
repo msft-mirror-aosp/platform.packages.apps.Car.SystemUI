@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.users;
 
+import static android.car.CarOccupantZoneManager.INVALID_USER_ID;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_INVISIBLE;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_STARTING;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_VISIBLE;
@@ -33,6 +34,7 @@ import android.os.UserManager;
 import android.util.Log;
 import android.view.Display;
 
+import com.android.systemui.InitController;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.settings.UserTrackerImpl;
@@ -54,6 +56,7 @@ public class CarMUPANDUserTrackerImpl extends UserTrackerImpl {
     private final CarServiceProvider mCarServiceProvider;
     private final Executor mCarUserManagerCallbackExecutor;
     private CarOccupantZoneManager mCarOccupantZoneManager;
+    private boolean mIsPostInit;
 
     private final UserLifecycleEventFilter mFilter = new UserLifecycleEventFilter.Builder()
             .addEventType(USER_LIFECYCLE_EVENT_TYPE_STARTING)
@@ -79,12 +82,6 @@ public class CarMUPANDUserTrackerImpl extends UserTrackerImpl {
             return;
         }
 
-        if (userId == getUserId()) {
-            if (DEBUG) {
-                Log.d(TAG, String.format("User %d already assigned to display", userId));
-            }
-            return;
-        }
         if (getDisplayIdForUser(userId) == Display.DEFAULT_DISPLAY) {
             if (DEBUG) {
                 Log.d(TAG, String.format("Assigning user %d to default display SysUI", userId));
@@ -96,10 +93,16 @@ public class CarMUPANDUserTrackerImpl extends UserTrackerImpl {
 
     public CarMUPANDUserTrackerImpl(Context context, UserManager userManager,
             IActivityManager iActivityManager, DumpManager dumpManager,
-            Handler backgroundHandler, CarServiceProvider carServiceProvider) {
+            Handler backgroundHandler, CarServiceProvider carServiceProvider,
+            InitController initController) {
         super(context, userManager, iActivityManager, dumpManager, backgroundHandler);
         mCarUserManagerCallbackExecutor = Executors.newSingleThreadExecutor();
         mCarServiceProvider = carServiceProvider;
+
+        initController.addPostInitTask(() -> {
+            maybePerformInitialUserSwitch();
+            mIsPostInit = true;
+        });
     }
 
     @Override
@@ -131,9 +134,26 @@ public class CarMUPANDUserTrackerImpl extends UserTrackerImpl {
     }
 
     private void performUserSwitch(int userId) {
+        if (userId == getUserId()) {
+            if (DEBUG) {
+                Log.d(TAG, String.format("User %d already assigned to display", userId));
+            }
+            return;
+        }
         handleBeforeUserSwitching(userId);
         handleUserSwitching(userId);
         handleUserSwitchComplete(userId);
+    }
+
+    private void maybePerformInitialUserSwitch() {
+        if (mCarOccupantZoneManager == null) {
+            return;
+        }
+        int userId = mCarOccupantZoneManager.getUserForDisplayId(
+                Display.DEFAULT_DISPLAY);
+        if (userId != INVALID_USER_ID) {
+            mCarUserManagerCallbackExecutor.execute(() -> performUserSwitch(userId));
+        }
     }
 
     private final CarServiceProvider.CarServiceOnConnectedListener mCarServiceOnConnectedListener =
@@ -141,6 +161,12 @@ public class CarMUPANDUserTrackerImpl extends UserTrackerImpl {
                 @Override
                 public void onConnected(Car car) {
                     mCarOccupantZoneManager = car.getCarManager(CarOccupantZoneManager.class);
+                    if (mIsPostInit) {
+                        // Car connected after SystemUI initialization completed - check to see
+                        // if an initial user switch is necessary.
+                        maybePerformInitialUserSwitch();
+                    }
+
                     CarUserManager carUserManager = car.getCarManager(CarUserManager.class);
                     if (carUserManager != null) {
                         carUserManager.addListener(mCarUserManagerCallbackExecutor, mFilter,

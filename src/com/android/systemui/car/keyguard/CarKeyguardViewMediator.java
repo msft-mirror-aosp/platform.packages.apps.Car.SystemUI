@@ -37,12 +37,14 @@ import com.android.systemui.animation.ActivityLaunchAnimator;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
+import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dreams.DreamOverlayStateController;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
+import com.android.systemui.keyguard.ui.viewmodel.DreamingToLockscreenTransitionViewModel;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationModeController;
 import com.android.systemui.settings.UserTracker;
@@ -61,9 +63,11 @@ import com.android.systemui.util.settings.SystemSettings;
 import com.android.systemui.util.time.SystemClock;
 import com.android.wm.shell.keyguard.KeyguardTransitions;
 
+import dagger.Lazy;
+
 import java.util.concurrent.Executor;
 
-import dagger.Lazy;
+import kotlinx.coroutines.CoroutineDispatcher;
 
 /**
  * Car customizations on top of {@link KeyguardViewMediator}. Please refer to that class for
@@ -116,7 +120,9 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             FeatureFlags featureFlags,
             SecureSettings secureSettings,
             SystemSettings systemSettings,
-            SystemClock systemClock) {
+            SystemClock systemClock,
+            @Main CoroutineDispatcher mainDispatcher,
+            Lazy<DreamingToLockscreenTransitionViewModel> dreamingToLockscreenTransitionViewModel) {
         super(context, uiEventLogger, sessionTracker,
                 userTracker, falsingCollector, lockPatternUtils, broadcastDispatcher,
                 statusBarKeyguardViewManagerLazy, dismissCallbackRegistry, keyguardUpdateMonitor,
@@ -131,7 +137,9 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 activityLaunchAnimator,
                 scrimControllerLazy,
                 activityTaskManagerService,
-                featureFlags, secureSettings, systemSettings, systemClock);
+                featureFlags, secureSettings, systemSettings, systemClock,
+                mainDispatcher,
+                dreamingToLockscreenTransitionViewModel);
         mContext = context;
     }
 

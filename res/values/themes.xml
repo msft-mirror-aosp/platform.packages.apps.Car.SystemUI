@@ -32,8 +32,15 @@
     </style>
 
     <!-- Used by the ActivityBlockingActivity to hide the splash screen icon -->
-    <style name="Theme.NoTitleBar.NoSplash" parent="@android:style/Theme.NoTitleBar">
+    <style name="Theme.ActivityBlockingActivity" parent="@android:style/Theme.Translucent.NoTitleBar">
         <item name="android:windowSplashScreenAnimatedIcon">@android:color/transparent</item>
         <item name="android:windowSplashScreenAnimationDuration">0</item>
+        <!--
+            A translucent window is required to take a screenshot of the blocked app to create
+            a blurred effect. Translucency is disabled after creating the blurred surface in the
+            ActivityBlockingActivity.
+        -->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/activity_blocking_activity_background</item>
     </style>
 </resources>

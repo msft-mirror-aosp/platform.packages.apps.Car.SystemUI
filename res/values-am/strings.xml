@@ -56,7 +56,7 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"እሺ"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"የተሽከርካሪ ካሜራ ይብራ?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"ለመቀጠል የኢንፎቴይንመንት ስርዓት ካሜራን ያብሩ። ይህ ፈቃዱ ላላቸው ሁሉም መተግበሪያዎች ካሜራውን ያበራል።"</string>
-    <string name="system_bar_home_label" msgid="8413273833405495948">"መነሻ ማያ ገጽ"</string>
+    <string name="system_bar_home_label" msgid="8413273833405495948">"መነሻ ማያ ገፅ"</string>
     <string name="system_bar_phone_label" msgid="5664288201806823777">"ስልክ"</string>
     <string name="system_bar_applications_label" msgid="7081862804211786227">"መተግበሪያዎች"</string>
     <string name="system_bar_climate_control_label" msgid="4091187805919276017">"የአየር ንብረት መቆጣጠሪያ"</string>

@@ -242,7 +242,7 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
             return true;
         }
         return mOccupantZone != null && isCurrentSystemUIDisplay(mCarOccupantZoneManager,
-                mUserTracker.getUserHandle(), displayId);
+                mOccupantZone, displayId);
     }
 
     private final CarServiceProvider.CarServiceOnConnectedListener mCarServiceOnConnectedListener =

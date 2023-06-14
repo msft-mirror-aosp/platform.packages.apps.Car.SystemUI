@@ -37,6 +37,7 @@ import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.classifier.FalsingModule;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.systemui.dreams.DreamOverlayStateController;
 import com.android.systemui.dump.DumpManager;
@@ -47,6 +48,7 @@ import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.keyguard.dagger.KeyguardFaceAuthNotSupportedModule;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
 import com.android.systemui.keyguard.domain.quickaffordance.KeyguardQuickAffordanceModule;
+import com.android.systemui.keyguard.ui.viewmodel.DreamingToLockscreenTransitionViewModel;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationModeController;
 import com.android.systemui.settings.UserTracker;
@@ -66,8 +68,9 @@ import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 
-
 import java.util.concurrent.Executor;
+
+import kotlinx.coroutines.CoroutineDispatcher;
 
 /**
  * Dagger Module providing keyguard.
@@ -123,7 +126,9 @@ public class CarKeyguardModule {
             Lazy<NotificationShadeWindowController> notificationShadeWindowController,
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator,
             Lazy<ScrimController> scrimControllerLazy,
-            FeatureFlags featureFlags) {
+            FeatureFlags featureFlags,
+            @Main CoroutineDispatcher mainDispatcher,
+            Lazy<DreamingToLockscreenTransitionViewModel> dreamingToLockscreenTransitionViewModel) {
         return new CarKeyguardViewMediator(
                 context,
                 uiEventLogger,
@@ -157,7 +162,9 @@ public class CarKeyguardModule {
                 notificationShadeWindowController,
                 activityLaunchAnimator,
                 scrimControllerLazy,
-                featureFlags);
+                featureFlags,
+                mainDispatcher,
+                dreamingToLockscreenTransitionViewModel);
     }
 
     /** */

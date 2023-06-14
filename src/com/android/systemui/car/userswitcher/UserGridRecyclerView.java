@@ -430,7 +430,7 @@ public class UserGridRecyclerView extends RecyclerView {
             switch (userRecord.mType) {
                 case UserRecord.START_GUEST:
                     circleIcon = mUserIconProvider
-                            .getRoundedGuestDefaultIcon(mContext.getResources());
+                            .getRoundedGuestDefaultIcon(mContext);
                     break;
                 case UserRecord.ADD_USER:
                     circleIcon = getCircularAddUserIcon();

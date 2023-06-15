@@ -443,6 +443,11 @@ public class CarKeyguardViewController extends OverlayViewController implements
     }
 
     @Override
+    public boolean isBouncerShowingOverDream() {
+        return false;
+    }
+
+    @Override
     public boolean shouldSubtleWindowAnimationsForUnlock() {
         return false;
     }

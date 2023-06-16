@@ -41,6 +41,7 @@ import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dreams.DreamOverlayStateController;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.flags.FeatureFlags;
+import com.android.systemui.flags.SystemPropertiesHelper;
 import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
@@ -122,7 +123,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             SystemSettings systemSettings,
             SystemClock systemClock,
             @Main CoroutineDispatcher mainDispatcher,
-            Lazy<DreamingToLockscreenTransitionViewModel> dreamingToLockscreenTransitionViewModel) {
+            Lazy<DreamingToLockscreenTransitionViewModel> dreamingToLockscreenTransitionViewModel,
+            SystemPropertiesHelper systemPropertiesHelper) {
         super(context, uiEventLogger, sessionTracker,
                 userTracker, falsingCollector, lockPatternUtils, broadcastDispatcher,
                 statusBarKeyguardViewManagerLazy, dismissCallbackRegistry, keyguardUpdateMonitor,
@@ -139,7 +141,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 activityTaskManagerService,
                 featureFlags, secureSettings, systemSettings, systemClock,
                 mainDispatcher,
-                dreamingToLockscreenTransitionViewModel);
+                dreamingToLockscreenTransitionViewModel,
+                systemPropertiesHelper);
         mContext = context;
     }
 

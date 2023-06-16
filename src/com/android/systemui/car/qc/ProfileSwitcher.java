@@ -210,7 +210,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         };
 
         return createProfileRow(mContext.getString(com.android.internal.R.string.guest_name),
-                mUserIconProvider.getRoundedGuestDefaultIcon(mContext.getResources()),
+                mUserIconProvider.getRoundedGuestDefaultIcon(mContext),
                 actionHandler);
     }
 

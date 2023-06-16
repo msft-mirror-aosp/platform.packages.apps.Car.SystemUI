@@ -151,7 +151,7 @@ public class UserPickerRecyclerViewTest extends UserPickerTestCase {
         UserRecord mGuest = UserRecord.create(/* mInfo= */ null, /* mName= */ mGuestLabel,
                 /* mIsStartGuestSession= */ true, /* mIsAddUser= */ false,
                 /* mIsForeground= */ false,
-                mMockUserIconProvider.getRoundedGuestDefaultIcon(mContext.getResources()),
+                mMockUserIconProvider.getRoundedGuestDefaultIcon(mContext),
                 /* OnClickListenerMaker */ new OnClickListenerCreator(), false, INVALID_DISPLAY,
                 /* mSeatLocationName= */"", /* mIsStopping= */ false);
         UserRecord mAddUser = UserRecord.create(/* mInfo= */ null, /* mName= */ mAddLabel,
@@ -202,7 +202,7 @@ public class UserPickerRecyclerViewTest extends UserPickerTestCase {
         UserRecord mGuest = UserRecord.create(/* mInfo= */ null, /* mName= */ mGuestLabel,
                 /* mIsStartGuestSession= */ true, /* mIsAddUser= */ false,
                 /* mIsForeground= */ false,
-                mMockUserIconProvider.getRoundedGuestDefaultIcon(mContext.getResources()),
+                mMockUserIconProvider.getRoundedGuestDefaultIcon(mContext),
                 /* OnClickListenerMaker */ new OnClickListenerCreator(), false, INVALID_DISPLAY,
                 /* mSeatLocationName= */"", /* mIsStopping= */ false);
         UserRecord mAddUser = UserRecord.create(/* mInfo= */ null, /* mName= */ mAddLabel,

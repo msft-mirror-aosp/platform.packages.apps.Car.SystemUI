@@ -56,6 +56,7 @@ import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.hvac.HvacController;
+import com.android.systemui.settings.FakeDisplayTracker;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.phone.AutoHideController;
 import com.android.systemui.statusbar.phone.LightBarController;
@@ -169,9 +170,9 @@ public class CarSystemBarTest extends SysuiTestCase {
     private void initCarSystemBar() {
         mCarSystemBar = new CarSystemBar(mContext, mCarSystemBarController, mLightBarController,
                 mStatusBarIconController, mWindowManager, mDeviceProvisionedController,
-                new CommandQueue(mContext), mAutoHideController, mButtonSelectionStateListener,
-                mExecutor, mUiBgExecutor, mBarService, () -> mKeyguardStateController,
-                () -> mIconPolicy, mHvacController, mSignalPolicy,
+                new CommandQueue(mContext, new FakeDisplayTracker(mContext)), mAutoHideController,
+                mButtonSelectionStateListener, mExecutor, mUiBgExecutor, mBarService,
+                () -> mKeyguardStateController, () -> mIconPolicy, mHvacController, mSignalPolicy,
                 new SystemBarConfigs(mTestableResources.getResources()),
                 mock(ConfigurationController.class));
         mCarSystemBar.setSignalPolicy(mSignalPolicy);

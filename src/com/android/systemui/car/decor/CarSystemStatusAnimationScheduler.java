@@ -54,7 +54,7 @@ public class CarSystemStatusAnimationScheduler extends SystemStatusAnimationSche
             @NonNull SystemClock systemClock,
             @Application @NonNull CoroutineScope coroutineScope) {
         super(coordinator, chipAnimationController, statusBarWindowController, dumpManager,
-                systemClock, coroutineScope);
+                systemClock, coroutineScope, /*logger*/ null);
     }
 
     @Override

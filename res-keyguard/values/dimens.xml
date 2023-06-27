@@ -27,4 +27,11 @@
     <dimen name="keyguard_pattern_dimension">400dp</dimen>
     <dimen name="password_field_width">350dp</dimen>
     <dimen name="pin_pattern_pad_margin_vertical">0dp</dimen>
+
+    <!-- Max height for the Keyguard Pin View Container. Set to 0dp to match parent height-->
+    <dimen name="pin_view_container_maxHeight">0dp</dimen>
+    <!-- Max height for the Keyguard Pin View Container. Set to 0dp to match parent height-->
+    <dimen name="pattern_view_container_maxHeight">0dp</dimen>
+    <!-- Max height for the Keyguard Pin View Container. Set to 0dp to match parent height-->
+    <dimen name="password_view_container_maxHeight">0dp</dimen>
 </resources>

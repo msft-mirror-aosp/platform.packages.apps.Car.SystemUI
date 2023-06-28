@@ -28,6 +28,7 @@ import com.android.internal.logging.UiEventLogger;
 import com.android.keyguard.KeyguardViewController;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
+import com.android.systemui.car.decor.CarPrivacyChipViewController;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
 import com.android.systemui.car.statusbar.DozeServiceHost;
@@ -54,6 +55,8 @@ import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.NotificationLockscreenUserManager;
 import com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
+import com.android.systemui.statusbar.events.PrivacyDotViewController;
+import com.android.systemui.statusbar.events.StatusBarEventsModule;
 import com.android.systemui.statusbar.notification.collection.provider.VisualStabilityProvider;
 import com.android.systemui.statusbar.notification.collection.render.GroupMembershipManager;
 import com.android.systemui.statusbar.phone.HeadsUpManagerPhone;
@@ -84,7 +87,8 @@ import dagger.Provides;
                 GestureModule.class,
                 PowerModule.class,
                 QSModule.class,
-                ReferenceScreenshotModule.class
+                ReferenceScreenshotModule.class,
+                StatusBarEventsModule.class,
         }
         )
 abstract class CarSystemUIModule {
@@ -206,4 +210,8 @@ abstract class CarSystemUIModule {
 
     @Binds
     abstract DozeHost bindDozeHost(DozeServiceHost dozeServiceHost);
+
+    @Binds
+    abstract PrivacyDotViewController providePrivacyDotViewController(
+            CarPrivacyChipViewController carPrivacyChipViewController);
 }

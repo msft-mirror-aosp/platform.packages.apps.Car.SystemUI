@@ -77,6 +77,7 @@ import com.android.systemui.statusbar.policy.IndividualSensorPrivacyController;
 import com.android.systemui.statusbar.policy.IndividualSensorPrivacyControllerImpl;
 import com.android.systemui.statusbar.policy.SensorPrivacyController;
 import com.android.systemui.statusbar.policy.SensorPrivacyControllerImpl;
+import com.android.systemui.wallpapers.dagger.NoopWallpaperModule;
 
 import dagger.Binds;
 import dagger.Module;
@@ -92,6 +93,7 @@ import javax.inject.Named;
                 CarMultiUserUtilsModule.class,
                 CarVolumeModule.class,
                 GestureModule.class,
+                NoopWallpaperModule.class,
                 PowerModule.class,
                 QSModule.class,
                 ReferenceScreenshotModule.class,

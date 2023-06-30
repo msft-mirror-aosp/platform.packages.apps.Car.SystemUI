@@ -44,6 +44,8 @@ public class MediaVolumeStatusIconController extends StatusIconController {
 
     private final Context mContext;
     private final Resources mResources;
+    private final UserTracker mUserTracker;
+    private final CarServiceProvider mCarServiceProvider;
 
     private CarAudioManager mCarAudioManager;
     private Drawable mMediaVolumeStatusIconDrawable;
@@ -59,6 +61,30 @@ public class MediaVolumeStatusIconController extends StatusIconController {
         }
     };
 
+    private final CarServiceProvider.CarServiceOnConnectedListener mCarOnConnectedListener =
+            new CarServiceProvider.CarServiceOnConnectedListener() {
+                @Override
+                public void onConnected(Car car) {
+                    CarOccupantZoneManager.OccupantZoneInfo occupantZoneInfo = null;
+                    CarOccupantZoneManager carOccupantZoneManager =
+                            (CarOccupantZoneManager) car.getCarManager(
+                                    Car.CAR_OCCUPANT_ZONE_SERVICE);
+                    if (carOccupantZoneManager != null) {
+                        occupantZoneInfo = carOccupantZoneManager.getMyOccupantZone();
+                    }
+                    mZoneId =
+                            occupantZoneInfo != null ? occupantZoneInfo.zoneId : PRIMARY_AUDIO_ZONE;
+
+                    mCarAudioManager = (CarAudioManager) car.getCarManager(Car.AUDIO_SERVICE);
+
+                    mCarAudioManager.registerCarVolumeCallback(mVolumeChangeCallback);
+                    mGroupId = mCarAudioManager.getVolumeGroupIdForUsage(mZoneId, USAGE_MEDIA);
+                    mMaxMediaVolume = mCarAudioManager.getGroupMaxVolume(mZoneId, mGroupId);
+                    mMinMediaVolume = mCarAudioManager.getGroupMinVolume(mZoneId, mGroupId);
+                    updateStatus(mZoneId, mGroupId);
+                }
+            };
+
     @Inject
     MediaVolumeStatusIconController(Context context,
             UserTracker userTracker,
@@ -66,24 +92,17 @@ public class MediaVolumeStatusIconController extends StatusIconController {
             CarServiceProvider carServiceProvider) {
         mContext = context;
         mResources = resources;
-        userTracker.addCallback(mUserTrackerCallback, mContext.getMainExecutor());
-        carServiceProvider.addListener(car -> {
-            CarOccupantZoneManager.OccupantZoneInfo occupantZoneInfo = null;
-            CarOccupantZoneManager carOccupantZoneManager =
-                    (CarOccupantZoneManager) car.getCarManager(Car.CAR_OCCUPANT_ZONE_SERVICE);
-            if (carOccupantZoneManager != null) {
-                occupantZoneInfo = carOccupantZoneManager.getMyOccupantZone();
-            }
-            mZoneId = occupantZoneInfo != null ? occupantZoneInfo.zoneId : PRIMARY_AUDIO_ZONE;
+        mUserTracker = userTracker;
+        mCarServiceProvider = carServiceProvider;
+        mUserTracker.addCallback(mUserTrackerCallback, mContext.getMainExecutor());
+        mCarServiceProvider.addListener(mCarOnConnectedListener);
+    }
 
-            mCarAudioManager = (CarAudioManager) car.getCarManager(Car.AUDIO_SERVICE);
-
-            mCarAudioManager.registerCarVolumeCallback(mVolumeChangeCallback);
-            mGroupId = mCarAudioManager.getVolumeGroupIdForUsage(mZoneId, USAGE_MEDIA);
-            mMaxMediaVolume = mCarAudioManager.getGroupMaxVolume(mZoneId, mGroupId);
-            mMinMediaVolume = mCarAudioManager.getGroupMinVolume(mZoneId, mGroupId);
-            updateStatus(mZoneId, mGroupId);
-        });
+    @Override
+    protected void onDestroy() {
+        mCarServiceProvider.removeListener(mCarOnConnectedListener);
+        mUserTracker.removeCallback(mUserTrackerCallback);
+        mCarAudioManager.unregisterCarVolumeCallback(mVolumeChangeCallback);
     }
 
     @Override

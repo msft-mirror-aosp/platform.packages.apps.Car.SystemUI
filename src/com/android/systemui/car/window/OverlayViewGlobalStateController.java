@@ -71,6 +71,11 @@ public class OverlayViewGlobalStateController {
             SystemUIOverlayWindowController systemUIOverlayWindowController) {
         mSystemUIOverlayWindowController = systemUIOverlayWindowController;
         mSystemUIOverlayWindowController.attach();
+        mSystemUIOverlayWindowController.registerOutsideTouchListener((v, event) -> {
+            if (mHighestZOrder != null) {
+                mHighestZOrder.onTouchEvent(v, event);
+            }
+        });
         mWindowInsetsController =
                 mSystemUIOverlayWindowController.getBaseLayout().getWindowInsetsController();
         mZOrderMap = new HashMap<>();

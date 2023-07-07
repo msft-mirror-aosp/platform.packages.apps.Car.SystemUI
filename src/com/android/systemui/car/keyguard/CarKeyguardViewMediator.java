@@ -36,12 +36,15 @@ import com.android.systemui.animation.ActivityLaunchAnimator;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
+import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dreams.DreamOverlayStateController;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.flags.FeatureFlags;
+import com.android.systemui.flags.SystemPropertiesHelper;
 import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
+import com.android.systemui.keyguard.ui.viewmodel.DreamingToLockscreenTransitionViewModel;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationModeController;
 import com.android.systemui.settings.UserTracker;
@@ -55,10 +58,13 @@ import com.android.systemui.statusbar.phone.ScrimController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.util.DeviceConfigProxy;
+import com.android.wm.shell.keyguard.KeyguardTransitions;
+
+import dagger.Lazy;
 
 import java.util.concurrent.Executor;
 
-import dagger.Lazy;
+import kotlinx.coroutines.CoroutineDispatcher;
 
 /**
  * Car customizations on top of {@link KeyguardViewMediator}. Please refer to that class for
@@ -100,13 +106,17 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             ScreenOffAnimationController screenOffAnimationController,
             Lazy<NotificationShadeDepthController> notificationShadeDepthController,
             ScreenOnCoordinator screenOnCoordinator,
+            KeyguardTransitions keyguardTransitions,
             InteractionJankMonitor interactionJankMonitor,
             DreamOverlayStateController dreamOverlayStateController,
             Lazy<ShadeController> mShadeControllerLazy,
             Lazy<NotificationShadeWindowController> notificationShadeWindowControllerLazy,
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator,
             Lazy<ScrimController> scrimControllerLazy,
-            FeatureFlags featureFlags) {
+            FeatureFlags featureFlags,
+            @Main CoroutineDispatcher mainDispatcher,
+            Lazy<DreamingToLockscreenTransitionViewModel> dreamingToLockscreenTransitionViewModel,
+            SystemPropertiesHelper systemPropertiesHelper) {
         super(context, uiEventLogger, sessionTracker,
                 userTracker, falsingCollector, lockPatternUtils, broadcastDispatcher,
                 statusBarKeyguardViewManagerLazy, dismissCallbackRegistry, keyguardUpdateMonitor,
@@ -114,12 +124,15 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 deviceConfig, navigationModeController, keyguardDisplayManager, dozeParameters,
                 statusBarStateController, keyguardStateController,
                 keyguardUnlockAnimationControllerLazy, screenOffAnimationController,
-                notificationShadeDepthController, screenOnCoordinator, interactionJankMonitor,
-                dreamOverlayStateController,
+                notificationShadeDepthController, screenOnCoordinator, keyguardTransitions,
+                interactionJankMonitor, dreamOverlayStateController,
                 mShadeControllerLazy,
                 notificationShadeWindowControllerLazy,
                 activityLaunchAnimator,
-                scrimControllerLazy, featureFlags);
+                scrimControllerLazy, featureFlags,
+                mainDispatcher,
+                dreamingToLockscreenTransitionViewModel,
+                systemPropertiesHelper);
         mContext = context;
     }
 

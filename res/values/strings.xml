@@ -70,7 +70,7 @@
     <string name="privacy_chip_use_sensor_subtext">For apps that have permission</string>
 
     <!-- Microphone settings button text. [CHAR LIMIT=45]-->
-    <string name="mic_privacy_chip_microphone_settings">Microphone settings</string>
+    <string name="privacy_chip_settings">Privacy settings</string>
     <!-- App is using microphone suffix [CHAR LIMIT=32]-->
     <string name="privacy_chip_app_using_sensor_suffix"><xliff:g id="app" example="Assistant">%1$s</xliff:g> is using the <xliff:g id="sensor" example="microphone">%2$s</xliff:g></string>
     <!-- Apps are using microphone suffix [CHAR LIMIT=32]-->
@@ -90,8 +90,6 @@
     <!--- Content of dialog triggered if the microphone is disabled but an app tried to access it. [CHAR LIMIT=NONE] -->
     <string name="sensor_privacy_start_use_mic_dialog_content">To continue, turn on the infotainment system microphone. This will turn on the microphone for all apps that have permission.</string>
 
-    <!-- Camera settings button text. [CHAR LIMIT=45]-->
-    <string name="camera_privacy_chip_camera_settings">Camera settings</string>
     <!-- App is using camera suffix [CHAR LIMIT=32]-->
     <string name="camera_privacy_chip_app_using_camera_suffix"><xliff:g id="app" example="Assistant">%s</xliff:g> is using the camera</string>
     <!-- Apps are using camera suffix [CHAR LIMIT=32]-->
@@ -178,9 +176,9 @@
     <string name="lockpattern_does_not_support_rotary">Pattern does not support rotary; please use touch</string>
 
     <!-- Display Input Lock string -->
-    <string name="display_input_lock_text">Touch screen locked</string>
+    <string name="display_input_lock_text">Your screen is locked</string>
     <string name="display_input_lock_started_text">Your screen has been locked</string>
-    <string name="display_input_lock_stopped_text">Your screen has been unlocked</string>
+    <string name="display_input_lock_stopped_text">Your screen is now unlocked</string>
 
     <!-- Title of the alert dialog to ask user to confirm logout. -->
     <string name="user_logout_title">Are you sure you want to log out?</string>

@@ -212,12 +212,6 @@ public class UserPickerActivity extends Activity implements Dumpable {
         int numCols = getResources().getInteger(R.integer.user_fullscreen_switcher_num_col);
         mUserPickerView = mRootView.findViewById(R.id.user_picker);
         mUserPickerView.setLayoutManager(new GridLayoutManager(this, numCols));
-        mUserPickerView.addItemDecoration(new UserPickerItemSpacingDecoration(
-                getResources().getDimensionPixelSize(
-                        R.dimen.user_picker_vertical_space_between_users),
-                getResources().getDimensionPixelSize(
-                        R.dimen.user_picker_horizontal_space_between_users),
-                numCols));
         mAdapter = createUserPickerAdapter();
         mUserPickerView.setAdapter(mAdapter);
     }

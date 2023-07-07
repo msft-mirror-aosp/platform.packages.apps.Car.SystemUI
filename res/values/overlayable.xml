@@ -180,7 +180,8 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="color" name="user_picker_background_color"/>
       <item type="color" name="user_picker_background_pill_color"/>
       <item type="color" name="user_picker_bottom_bar_color"/>
-      <item type="color" name="user_picker_login_state_color"/>
+      <item type="color" name="user_picker_current_login_state_color"/>
+      <item type="color" name="user_picker_other_login_state_color"/>
       <item type="color" name="user_picker_snack_bar_background_color"/>
       <item type="color" name="user_picker_snack_bar_transparent_color"/>
       <item type="color" name="user_picker_user_name_color"/>
@@ -424,7 +425,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="dimen" name="user_picker_button_padding_size"/>
       <item type="dimen" name="user_picker_button_size"/>
       <item type="dimen" name="user_picker_clock_elevation_size"/>
-      <item type="dimen" name="user_picker_common_margin_size"/>
+      <item type="dimen" name="user_picker_header_left_margin"/>
       <item type="dimen" name="user_picker_header_margin"/>
       <item type="dimen" name="user_picker_horizontal_space_between_users"/>
       <item type="dimen" name="user_picker_login_state_text_size"/>
@@ -837,7 +838,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="camera_privacy_chip_app_using_camera_suffix"/>
       <item type="string" name="camera_privacy_chip_apps_recently_used_camera_suffix"/>
       <item type="string" name="camera_privacy_chip_apps_using_camera_suffix"/>
-      <item type="string" name="camera_privacy_chip_camera_settings"/>
       <item type="string" name="camera_privacy_chip_dialog_ok"/>
       <item type="string" name="camera_privacy_chip_off_toast"/>
       <item type="string" name="camera_privacy_chip_on_toast"/>
@@ -886,7 +886,6 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="max_user_limit_reached_title"/>
       <item type="string" name="mic_privacy_chip_apps_using_mic_suffix"/>
       <item type="string" name="mic_privacy_chip_dialog_ok"/>
-      <item type="string" name="mic_privacy_chip_microphone_settings"/>
       <item type="string" name="mic_privacy_chip_off_toast"/>
       <item type="string" name="mic_privacy_chip_on_toast"/>
       <item type="string" name="prefix_logged_in_info_for_other_seat"/>
@@ -894,6 +893,7 @@ REGENERATE USING packages/apps/Car/libs/tools/rro/generate-overlayable.py
       <item type="string" name="privacy_chip_app_using_sensor_suffix"/>
       <item type="string" name="privacy_chip_apps_recently_used_sensor_suffix"/>
       <item type="string" name="privacy_chip_off_content"/>
+      <item type="string" name="privacy_chip_settings"/>
       <item type="string" name="privacy_chip_use_sensor"/>
       <item type="string" name="privacy_chip_use_sensor_subtext"/>
       <item type="string" name="profile_limit_reached_message"/>

@@ -38,7 +38,9 @@ import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.android.car.ui.recyclerview.CarUiRecyclerView;
 import com.android.systemui.Dumpable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
@@ -82,7 +84,7 @@ public class UserPickerActivity extends Activity implements Dumpable {
     @VisibleForTesting
     UserPickerAdapter mAdapter;
     @VisibleForTesting
-    UserPickerView mUserPickerView;
+    CarUiRecyclerView mUserPickerView;
     @VisibleForTesting
     View mRootView;
     @VisibleForTesting
@@ -138,7 +140,8 @@ public class UserPickerActivity extends Activity implements Dumpable {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (!ActivityHelper.startUserPickerAsUserSystem(this)) {
+        if (shouldStartAsSystemUser()
+                && !ActivityHelper.startUserPickerAsUserSystem(this)) {
             super.onCreate(savedInstanceState);
             return;
         }
@@ -155,7 +158,7 @@ public class UserPickerActivity extends Activity implements Dumpable {
 
     @VisibleForTesting
     void init() {
-        mIsDriver = !isMUPANDSystemUI() && getDisplayId() == mDisplayTracker.getDefaultDisplayId();
+        mIsDriver = getIsDriver();
         LayoutInflater inflater = LayoutInflater.from(this);
         mRootView = inflater.inflate(R.layout.user_picker, null);
         if (getWindow() != null) {
@@ -195,9 +198,7 @@ public class UserPickerActivity extends Activity implements Dumpable {
             finishAndRemoveTask();
         });
 
-        mUserPickerView = (UserPickerView) mRootView.findViewById(R.id.user_picker);
-        mAdapter = createUserPickerAdapter();
-        mUserPickerView.setAdapter(mAdapter);
+        initRecyclerView();
 
         ViewGroup statusIconContainer = mRootView
                 .findViewById(R.id.user_picker_status_icon_container);
@@ -205,6 +206,14 @@ public class UserPickerActivity extends Activity implements Dumpable {
             mUserPickerReadOnlyIconsController.addIconViews(statusIconContainer,
                     /* shouldAttachPanel= */ false);
         }
+    }
+
+    private void initRecyclerView() {
+        int numCols = getResources().getInteger(R.integer.user_fullscreen_switcher_num_col);
+        mUserPickerView = mRootView.findViewById(R.id.user_picker);
+        mUserPickerView.setLayoutManager(new GridLayoutManager(this, numCols));
+        mAdapter = createUserPickerAdapter();
+        mUserPickerView.setAdapter(mAdapter);
     }
 
     private void initWindow() {
@@ -229,6 +238,16 @@ public class UserPickerActivity extends Activity implements Dumpable {
     @VisibleForTesting
     UserPickerAdapter createUserPickerAdapter() {
         return new UserPickerAdapter(this);
+    }
+
+    @VisibleForTesting
+    boolean shouldStartAsSystemUser() {
+        return true;
+    }
+
+    @VisibleForTesting
+    boolean getIsDriver() {
+        return !isMUPANDSystemUI() && getDisplayId() == mDisplayTracker.getDefaultDisplayId();
     }
 
     @Override

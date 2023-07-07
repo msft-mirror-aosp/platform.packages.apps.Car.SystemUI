@@ -165,6 +165,16 @@ public class HvacControllerTest extends SysuiTestCase {
     }
 
     @Test
+    public void registerHvacView_propertyNotImplemented() {
+        when(mTestHvacView1.getAreaId()).thenReturn(AREA_1);
+        when(mTestHvacView1.getHvacPropertyToView()).thenReturn(HVAC_TEMPERATURE_SET);
+        when(mCarPropertyManager.getCarPropertyConfig(anyInt())).thenReturn(null);
+
+        mHvacController.registerHvacViews(mTestHvacView1);
+        assertThat(mHvacController.getHvacPropertyViewMap()).isEmpty();
+    }
+
+    @Test
     public void unregisterHvacView_viewNotRegisteredInMap() {
         when(mTestHvacView1.getAreaId()).thenReturn(AREA_1);
         when(mTestHvacView1.getHvacPropertyToView()).thenReturn(HVAC_TEMPERATURE_SET);
@@ -285,6 +295,11 @@ public class HvacControllerTest extends SysuiTestCase {
 
         @Override
         public void setHvacPropertySetter(HvacPropertySetter hvacPropertySetter) {
+            // no-op.
+        }
+
+        @Override
+        public void setConfigInfo(CarPropertyConfig<?> carPropertyConfig) {
             // no-op.
         }
 

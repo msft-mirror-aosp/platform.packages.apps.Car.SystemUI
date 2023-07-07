@@ -29,6 +29,24 @@
         android:testOnly="true">
         <uses-library android:name="android.test.runner"/>
 
+        <activity android:name="com.android.systemui.car.userpicker.UserPickerDriverTestActivity"
+                  android:exported="false"
+                  android:theme="@style/Theme.UserPicker"
+                  android:finishOnCloseSystemDialogs="true"
+                  android:excludeFromRecents="true" />
+
+        <activity android:name="com.android.systemui.car.userpicker.UserPickerPassengerTestActivity"
+                  android:exported="false"
+                  android:theme="@style/Theme.UserPicker"
+                  android:finishOnCloseSystemDialogs="true"
+                  android:excludeFromRecents="true" />
+
+        <activity android:name="com.android.systemui.car.userpicker.UserPickerRecyclerViewTestActivity"
+                  android:exported="false"
+                  android:theme="@style/Theme.UserPicker"
+                  android:finishOnCloseSystemDialogs="true"
+                  android:excludeFromRecents="true" />
+
         <provider
             android:name="androidx.startup.InitializationProvider"
             tools:replace="android:authorities"

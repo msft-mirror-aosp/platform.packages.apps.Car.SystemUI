@@ -448,6 +448,15 @@ public class NotificationPanelViewController extends OverlayPanelViewController
         mNotificationDataManager.clearAll();
     }
 
+    /**
+     * Forwards the call to clear all Notification cache.
+     * Note: This is a blocking call so should not execute any long-running or time-consuming tasks
+     * like storing cache.
+     */
+    public void clearCache() {
+        mCarNotificationListener.clearCache();
+    }
+
     // OverlayPanelViewController
 
     @Override

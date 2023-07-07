@@ -17,17 +17,33 @@
 package com.android.systemui.car.userpicker;
 
 import static android.car.CarOccupantZoneManager.INVALID_USER_ID;
+import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_STOPPED;
+import static android.car.user.CarUserManager.lifecycleEventTypeToString;
 
 import android.annotation.UserIdInt;
+import android.car.Car;
+import android.car.user.CarUserManager;
+import android.car.user.CarUserManager.UserLifecycleListener;
+import android.car.user.UserLifecycleEventFilter;
 import android.util.ArraySet;
 import android.util.Log;
 import android.util.Slog;
 import android.util.SparseIntArray;
 
-import com.android.internal.annotations.GuardedBy;
-import com.android.systemui.dagger.SysUISingleton;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
+import com.android.internal.annotations.GuardedBy;
+import com.android.systemui.Dumpable;
+import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.CarServiceProvider.CarServiceOnConnectedListener;
+import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.dump.DumpManager;
+
+import java.io.PrintWriter;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -38,7 +54,7 @@ import javax.inject.Inject;
  * same actions at the same time (e.g. starting the same user)
  */
 @SysUISingleton
-public class UserPickerSharedState {
+public class UserPickerSharedState implements Dumpable {
 
     private static final String TAG = UserPickerSharedState.class.getSimpleName();
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
@@ -62,13 +78,55 @@ public class UserPickerSharedState {
     @GuardedBy("mLock")
     private final Set<Integer> mStoppingUsers = new ArraySet<>();
 
+    /**
+     * When changing user, previous user is stopped, and user picker activity is also destroyed. If
+     * user stopped event arrived after all user picker activities are destroyed, no one can remove
+     * the user from stopping user list. This listener removes completely stopped users from the
+     * list to handle that situation.
+     */
+    private final UserLifecycleListener mUserStoppedEventListener = event -> {
+        int eventType = event.getEventType();
+        int userId = event.getUserId();
+        if (DEBUG) {
+            Slog.d(TAG, "event=" + lifecycleEventTypeToString(eventType) + " userId=" + userId);
+        }
+        if (isStoppingUser(userId)) {
+            removeStoppingUserId(userId);
+        }
+    };
+
+    private final UserLifecycleEventFilter mFilter = new UserLifecycleEventFilter.Builder()
+            .addEventType(USER_LIFECYCLE_EVENT_TYPE_STOPPED).build();
+
+    private final CarServiceOnConnectedListener mServiceOnConnectedListener = car -> {
+        onConnected(car);
+    };
+
+    private final ExecutorService mUserStoppedEventReceiver;
 
     /**
      * Constructor for UserPickerSharedState
      */
     @Inject
+    public UserPickerSharedState(CarServiceProvider carServiceProvider, DumpManager dumpManager) {
+        mUsersLoginStarted = new SparseIntArray();
+        mUserStoppedEventReceiver = Executors.newSingleThreadExecutor();
+        carServiceProvider.addListener(mServiceOnConnectedListener);
+        dumpManager.registerNormalDumpable(TAG, this);
+    }
+
+    @VisibleForTesting
     public UserPickerSharedState() {
         mUsersLoginStarted = new SparseIntArray();
+        mUserStoppedEventReceiver = null;
+    }
+
+    private void onConnected(Car car) {
+        CarUserManager carUserManager = car.getCarManager(CarUserManager.class);
+        if (carUserManager != null) {
+            carUserManager.addListener(mUserStoppedEventReceiver, mFilter,
+                    mUserStoppedEventListener);
+        }
     }
 
     /**
@@ -156,4 +214,27 @@ public class UserPickerSharedState {
         }
     }
 
+    @Override
+    public void dump(@NonNull PrintWriter pw, @NonNull String[] args) {
+        synchronized (mLock) {
+            pw.println(TAG + " :");
+            pw.print("  mUsersLoginStarted [userId-displayId] : ");
+            for (int i = 0; i < mUsersLoginStarted.size(); i++) {
+                int displayId = mUsersLoginStarted.keyAt(i);
+                int userId = mUsersLoginStarted.valueAt(i);
+                pw.printf("[%d-%d] ", userId, displayId);
+            }
+            pw.println();
+            pw.print("  mStoppingUsers : ");
+            if (mStoppingUsers.isEmpty()) {
+                pw.print("None");
+            } else {
+                ArraySet<Integer> stoppingUsers = (ArraySet<Integer>) mStoppingUsers;
+                for (int i = 0; i < stoppingUsers.size(); i++) {
+                    pw.printf("%d ", stoppingUsers.valueAt(i));
+                }
+            }
+            pw.println();
+        }
+    }
 }

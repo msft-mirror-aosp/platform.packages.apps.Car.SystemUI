@@ -41,6 +41,7 @@
             android:layout_width="@dimen/user_picker_user_avatar_border_size"
             android:layout_height="@dimen/user_picker_user_avatar_border_size"
             android:src="@drawable/car_border_circle"
+            android:tint="@color/user_picker_current_login_state_color"
             android:layout_gravity="center"
             android:visibility="gone"/>
     </FrameLayout>
@@ -49,19 +50,20 @@
         android:id="@+id/user_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/user_picker_common_margin_size"
+        android:layout_marginTop="@*android:dimen/car_padding_2"
         android:textSize="@dimen/user_picker_user_name_text_size"
         android:textColor="@color/user_picker_user_name_color"
-        android:ellipsize="end"
+        android:textFontWeight="500"
         android:singleLine="true"
+        android:ellipsize="end"
         android:gravity="center"/>
     <TextView
         android:id="@+id/logged_in_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/user_picker_login_state_text_size"
-        android:textColor="@color/user_picker_login_state_text_color"
-        android:ellipsize="end"
+        android:layout_marginTop="@*android:dimen/car_padding_0"
         android:singleLine="true"
+        android:ellipsize="end"
         android:gravity="center"/>
 </LinearLayout>

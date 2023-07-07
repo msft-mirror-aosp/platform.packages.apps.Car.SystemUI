@@ -43,6 +43,24 @@ public abstract class StatusIconController {
     private final Map<ImageView, Observer<StatusIconData>> mObserverMap = new HashMap<>();
 
     /**
+     * Interface definition for a callback to be invoked when a status icon is updated.
+     */
+    public interface OnStatusUpdatedListener {
+        /**
+         * Reports that a status icon is updated.
+         *
+         * @param statusIconController controller to display a certain status icon.
+         */
+        void onStatusUpdated(StatusIconController statusIconController);
+    }
+
+    private OnStatusUpdatedListener mOnStatusUpdatedListener;
+
+    public void setOnStatusUpdatedListener(OnStatusUpdatedListener l) {
+        mOnStatusUpdatedListener = l;
+    }
+
+    /**
      * Registers an {@link ImageView} to contain the icon that this controller controls.
      */
     public final void registerIconView(ImageView view) {
@@ -99,6 +117,9 @@ public abstract class StatusIconController {
      */
     protected void onStatusUpdated() {
         mStatusIconLiveData.setValue(mStatusIconData);
+        if (mOnStatusUpdatedListener != null) {
+            mOnStatusUpdatedListener.onStatusUpdated(this);
+        }
     }
 
     /**

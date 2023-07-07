@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.UserHandle;
 import android.util.Log;
 import android.util.Slog;
@@ -44,9 +45,8 @@ final class ActivityHelper {
             Context context = activity.getApplicationContext();
             activity.finish();
 
-            Intent intent = new Intent().setClassName(UserPickerActivity.class.getPackageName(),
-                    UserPickerActivity.class.getName())
-                    .addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            Intent intent = new Intent(context, UserPickerActivity.class)
+                    .setData(Uri.parse("data://com.android.car/userpicker/display" + displayId));
             ActivityOptions options = ActivityOptions.makeBasic()
                     .setLaunchDisplayId(displayId);
             context.startActivityAsUser(intent, options.toBundle(), UserHandle.SYSTEM);

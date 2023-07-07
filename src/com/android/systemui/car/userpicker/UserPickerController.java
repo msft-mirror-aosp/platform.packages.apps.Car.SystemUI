@@ -23,13 +23,13 @@ import static android.view.Display.INVALID_DISPLAY;
 
 import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_ADDING_USER;
 import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_CONFIRM_ADD_USER;
+import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_CONFIRM_LOGOUT;
 import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_MAX_USER_COUNT_REACHED;
 import static com.android.systemui.car.userpicker.DialogManager.DIALOG_TYPE_SWITCHING;
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_CHANGE_USER;
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_LOGOUT;
 
 import android.annotation.IntDef;
-import android.annotation.NonNull;
 import android.annotation.UserIdInt;
 import android.app.ActivityManager;
 import android.car.user.UserCreationResult;
@@ -42,6 +42,9 @@ import android.util.Log;
 import android.util.Slog;
 import android.view.View.OnClickListener;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+
 import com.android.internal.widget.LockPatternUtils;
 import com.android.systemui.R;
 import com.android.systemui.car.userpicker.UserEventManager.OnUpdateUsersListener;
@@ -49,6 +52,7 @@ import com.android.systemui.car.userpicker.UserRecord.OnClickListenerCreatorBase
 import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.settings.DisplayTracker;
 
+import java.io.PrintWriter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -147,6 +151,7 @@ final class UserPickerController {
             mIsUserPickerClickable = false;
             handleUserSelected(userRecord);
         } else {
+            Slog.w(TAG, "Unsuccessful UserCreationResult:" + result.toString());
             // Show snack bar message for the failure of user creation.
             runOnMainHandler(REQ_SHOW_SNACKBAR,
                     mContext.getString(R.string.create_user_failed_message));
@@ -191,7 +196,22 @@ final class UserPickerController {
                 mUserPickerSharedState.resetUserLoginStarted(mDisplayId);
             }
         }
+        updateHeaderState();
         mCallbacks.onUpdateUsers(createUserRecords());
+    }
+
+    private void updateHeaderState() {
+        // If a valid user is assigned to a display, show the change user state. Otherwise, show
+        // the logged out state.
+        int desiredState = mCarServiceMediator.getUserForDisplay(mDisplayId) != INVALID_USER_ID
+                ? HEADER_STATE_CHANGE_USER : HEADER_STATE_LOGOUT;
+        if (mHeaderState.getState() != desiredState) {
+            if (DEBUG) {
+                Slog.d(TAG,
+                        "Change HeaderState to " + desiredState + " for displayId=" + mDisplayId);
+            }
+            mHeaderState.setState(desiredState);
+        }
     }
 
     private void updateTexts() {
@@ -262,17 +282,24 @@ final class UserPickerController {
         mIsUserPickerClickable = false;
         int userId = mCarServiceMediator.getUserForDisplay(mDisplayId);
         if (userId != INVALID_USER_ID) {
-            mUserPickerSharedState.resetUserLoginStarted(mDisplayId);
-            mUserEventManager.stopUserUnchecked(userId, mDisplayId);
-            mUserEventManager.runUpdateUsersOnMainThread(userId, 0);
-            mIsUserPickerClickable = true;
-            mHeaderState.setState(HEADER_STATE_LOGOUT);
+            mDialogManager.showDialog(
+                    DIALOG_TYPE_CONFIRM_LOGOUT,
+                    () -> logoutUserInternal(userId),
+                    () -> mIsUserPickerClickable = true);
         } else {
             mIsUserPickerClickable = true;
         }
     }
 
-    private List<UserRecord> createUserRecords() {
+    private void logoutUserInternal(int userId) {
+        mUserPickerSharedState.resetUserLoginStarted(mDisplayId);
+        mUserEventManager.stopUserUnchecked(userId, mDisplayId);
+        mUserEventManager.runUpdateUsersOnMainThread(userId, 0);
+        mIsUserPickerClickable = true;
+    }
+
+    @VisibleForTesting
+    List<UserRecord> createUserRecords() {
         if (DEBUG) {
             Slog.d(TAG, "createUserRecords. displayId=" + mDisplayId);
         }
@@ -376,10 +403,15 @@ final class UserPickerController {
             // Second, check user has been already logged-in in another display or is stopping.
             if (userRecord.mIsLoggedIn && userRecord.mLoggedInDisplay != mDisplayId
                     || mUserPickerSharedState.isStoppingUser(userId)) {
-                int messageResId = userRecord.mIsStopping ? R.string.wait_for_until_stopped_message
-                        : R.string.already_logged_in_message;
-                runOnMainHandler(REQ_SHOW_SNACKBAR,
-                        mContext.getString(messageResId));
+                String message;
+                if (userRecord.mIsStopping) {
+                    message = mContext.getString(R.string.wait_for_until_stopped_message,
+                            userRecord.mName);
+                } else {
+                    message = mContext.getString(R.string.already_logged_in_message,
+                            userRecord.mName, userRecord.mSeatLocationName);
+                }
+                runOnMainHandler(REQ_SHOW_SNACKBAR, message);
                 mIsUserPickerClickable = true;
                 return;
             }
@@ -391,6 +423,13 @@ final class UserPickerController {
                     runOnMainHandler(REQ_SHOW_SWITCHING_DIALOG);
                     UserCreationResult creationResult = mUserEventManager.createGuest();
                     if (creationResult == null || !creationResult.isSuccess()) {
+                        if (creationResult == null) {
+                            Slog.w(TAG, "Guest UserCreationResult is null");
+                        } else if (!creationResult.isSuccess()) {
+                            Slog.w(TAG, "Unsuccessful guest UserCreationResult: "
+                                    + creationResult.toString());
+                        }
+
                         runOnMainHandler(REQ_DISMISS_SWITCHING_DIALOG);
                         // Show snack bar message for the failure of guest creation.
                         runOnMainHandler(REQ_SHOW_SNACKBAR,
@@ -472,6 +511,17 @@ final class UserPickerController {
     void startAddNewUser() {
         runOnMainHandler(REQ_SHOW_ADDING_DIALOG);
         mWorker.execute(mAddUserRunnable);
+    }
+
+    void dump(@NonNull PrintWriter pw) {
+        pw.println("  " + getClass().getSimpleName() + ":");
+        if (mHeaderState.getState() == HEADER_STATE_CHANGE_USER) {
+            int loggedInUserId = mCarServiceMediator.getUserForDisplay(mDisplayId);
+            pw.println("    Logged-in user : " + loggedInUserId
+                    + (isGuestUser(loggedInUserId) ? "(guest)" : ""));
+        }
+        pw.println("    mHeaderState=" + mHeaderState.toString());
+        pw.println("    mIsUserPickerClickable=" + mIsUserPickerClickable);
     }
 
     class OnClickListenerCreator extends OnClickListenerCreatorBase {

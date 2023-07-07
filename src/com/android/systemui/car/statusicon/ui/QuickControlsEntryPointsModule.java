@@ -70,4 +70,19 @@ public abstract class QuickControlsEntryPointsModule {
     @ClassKey(DriveModeStatusIconController.class)
     public abstract StatusIconController bindDriveModeStatusIconController(
             DriveModeStatusIconController driveModeStatusIconController);
+
+    /** Injects MediaVolumeStatusIconController. */
+    @Binds
+    @IntoMap
+    @ClassKey(MediaVolumeStatusIconController.class)
+    public abstract StatusIconController bindMediaVolumeStatusIconController(
+            MediaVolumeStatusIconController mediaVolumeStatusIconController);
+
+    /** Injects QuickControlsStatusIconListController. */
+    @Binds
+    @IntoMap
+    @ClassKey(QuickControlsStatusIconListController.class)
+    public abstract StatusIconController bindQuickControlsStatusIconListController(
+            QuickControlsStatusIconListController quickControlsStatusIconListController);
+
 }

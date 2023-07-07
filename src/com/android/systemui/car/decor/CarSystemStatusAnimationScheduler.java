@@ -22,24 +22,27 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.dagger.qualifiers.Application;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.statusbar.events.PrivacyEvent;
 import com.android.systemui.statusbar.events.StatusEvent;
 import com.android.systemui.statusbar.events.SystemEventChipAnimationController;
 import com.android.systemui.statusbar.events.SystemEventCoordinator;
 import com.android.systemui.statusbar.events.SystemStatusAnimationScheduler;
+import com.android.systemui.statusbar.events.SystemStatusAnimationSchedulerImpl;
 import com.android.systemui.statusbar.window.StatusBarWindowController;
-import com.android.systemui.util.concurrency.DelayableExecutor;
 import com.android.systemui.util.time.SystemClock;
 
 import javax.inject.Inject;
+
+import kotlinx.coroutines.CoroutineScope;
 
 /**
  * Subclass of {@link SystemStatusAnimationScheduler}. This class will handle the privacy events on
  * its own.
  */
 @SysUISingleton
-public class CarSystemStatusAnimationScheduler extends SystemStatusAnimationScheduler {
+public class CarSystemStatusAnimationScheduler extends SystemStatusAnimationSchedulerImpl {
     private static final String TAG = "CarAnimationScheduler";
 
     @Inject
@@ -49,9 +52,9 @@ public class CarSystemStatusAnimationScheduler extends SystemStatusAnimationSche
             @NonNull StatusBarWindowController statusBarWindowController,
             @NonNull DumpManager dumpManager,
             @NonNull SystemClock systemClock,
-            @NonNull DelayableExecutor executor) {
+            @Application @NonNull CoroutineScope coroutineScope) {
         super(coordinator, chipAnimationController, statusBarWindowController, dumpManager,
-                systemClock, executor);
+                systemClock, coroutineScope);
     }
 
     @Override

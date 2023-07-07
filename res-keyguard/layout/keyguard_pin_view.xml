@@ -28,7 +28,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:paddingHorizontal="@dimen/keyguard_pin_view_padding_horizontal">
+    android:layout_gravity="center_vertical"
+    android:paddingHorizontal="@dimen/keyguard_pin_view_padding_horizontal"
+    app:layout_maxHeight="@dimen/pin_view_container_maxHeight">
 
     <FrameLayout
         android:layout_width="0dp"

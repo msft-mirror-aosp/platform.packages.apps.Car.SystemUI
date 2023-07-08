@@ -59,6 +59,11 @@ public class WifiSignalStatusIconController extends StatusIconController impleme
     }
 
     @Override
+    protected void onDestroy() {
+        mNetworkController.removeCallback(this);
+    }
+
+    @Override
     protected void updateStatus() {
         setIconDrawableToDisplay(mWifiSignalIconDrawable);
         setIconContentDescription(mWifiConnectedContentDescription);

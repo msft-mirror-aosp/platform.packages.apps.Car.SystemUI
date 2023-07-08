@@ -59,6 +59,11 @@ public class MobileSignalStatusIconController extends StatusIconController imple
     }
 
     @Override
+    protected void onDestroy() {
+        mNetworkController.removeCallback(this);
+    }
+
+    @Override
     protected void updateStatus() {
         setIconDrawableToDisplay(mMobileSignalIconDrawable);
         setIconContentDescription(mMobileSignalContentDescription);

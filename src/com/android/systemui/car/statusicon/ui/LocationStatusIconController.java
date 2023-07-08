@@ -41,6 +41,7 @@ public class LocationStatusIconController extends StatusIconController {
     private static final IntentFilter INTENT_FILTER_LOCATION_MODE_CHANGED = new IntentFilter(
             LocationManager.MODE_CHANGED_ACTION);
 
+    private final Context mContext;
     private final UserTracker mUserTracker;
     private final LocationManager mLocationManager;
     private boolean mIsLocationActive;
@@ -64,14 +65,21 @@ public class LocationStatusIconController extends StatusIconController {
             Context context,
             UserTracker userTracker,
             @Main Resources resources) {
+        mContext = context;
         mUserTracker = userTracker;
         mLocationManager = context.getSystemService(LocationManager.class);
 
-        context.registerReceiverForAllUsers(mLocationReceiver, INTENT_FILTER_LOCATION_MODE_CHANGED,
+        mContext.registerReceiverForAllUsers(mLocationReceiver, INTENT_FILTER_LOCATION_MODE_CHANGED,
                 /* broadcastPermission= */ null, /* scheduler= */ null);
         mUserTracker.addCallback(mUserChangedCallback, context.getMainExecutor());
         setIconDrawableToDisplay(resources.getDrawable(R.drawable.ic_location, context.getTheme()));
         updateIconVisibilityForCurrentUser();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mContext.unregisterReceiver(mLocationReceiver);
+        mUserTracker.removeCallback(mUserChangedCallback);
     }
 
     @Override

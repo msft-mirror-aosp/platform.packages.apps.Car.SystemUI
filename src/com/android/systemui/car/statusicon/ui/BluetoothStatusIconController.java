@@ -73,6 +73,11 @@ public class BluetoothStatusIconController extends StatusIconController implemen
     }
 
     @Override
+    protected void onDestroy() {
+        mBluetoothController.removeCallback(this);
+    }
+
+    @Override
     protected void updateStatus() {
         if (!mBluetoothEnabled) {
             setIconDrawableToDisplay(mBluetoothOffDrawable);

@@ -18,6 +18,8 @@ package com.android.systemui.car.statusicon.ui;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Resources;
@@ -60,6 +62,17 @@ public class BluetoothStatusIconControllerTest extends SysuiTestCase {
 
         mBluetoothStatusIconController = new BluetoothStatusIconController(mContext, mResources,
                 mBluetoothController);
+    }
+
+    @Test
+    public void onInit_registersBluetoothCallback() {
+        verify(mBluetoothController).addCallback(any());
+    }
+
+    @Test
+    public void onDestroy_removeBluetoothCallback() {
+        mBluetoothStatusIconController.onDestroy();
+        verify(mBluetoothController).removeCallback(any());
     }
 
     @Test

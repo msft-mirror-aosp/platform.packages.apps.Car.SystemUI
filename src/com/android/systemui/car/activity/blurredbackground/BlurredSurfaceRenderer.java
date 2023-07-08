@@ -23,15 +23,13 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.os.RemoteException;
-import android.util.Pair;
 import android.util.Slog;
 import android.view.Surface;
 import android.view.WindowManagerGlobal;
 import android.window.ScreenCapture;
 import android.window.ScreenCapture.CaptureArgs;
-import android.window.ScreenCapture.ScreenCaptureListener;
 import android.window.ScreenCapture.ScreenshotHardwareBuffer;
-import android.window.ScreenCapture.ScreenshotSync;
+import android.window.ScreenCapture.SynchronousScreenCaptureListener;
 
 import com.android.systemui.R;
 
@@ -147,17 +145,17 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
             final CaptureArgs captureArgs = new CaptureArgs.Builder<>()
                     .setSourceCrop(mWindowRect)
                     .build();
-            Pair<ScreenCaptureListener, ScreenshotSync> syncScreenCapture =
+            SynchronousScreenCaptureListener syncScreenCapture =
                     ScreenCapture.createSyncCaptureListener();
             try {
                 WindowManagerGlobal.getWindowManagerService().captureDisplay(mDisplayId,
-                        captureArgs, syncScreenCapture.first);
+                        captureArgs, syncScreenCapture);
             } catch (RemoteException e) {
                 Slog.e(TAG, "Failed to request screencapture for display");
                 e.rethrowAsRuntimeException();
             }
             final ScreenshotHardwareBuffer screenshotHardwareBuffer =
-                    syncScreenCapture.second.get();
+                    syncScreenCapture.getBuffer();
 
             mSurface.attachAndQueueBufferWithColorSpace(
                     screenshotHardwareBuffer.getHardwareBuffer(),

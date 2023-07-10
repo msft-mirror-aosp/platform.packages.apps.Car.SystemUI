@@ -48,7 +48,6 @@ import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.keyguard.dagger.KeyguardFaceAuthNotSupportedModule;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
-import com.android.systemui.keyguard.domain.quickaffordance.KeyguardQuickAffordanceModule;
 import com.android.systemui.keyguard.ui.viewmodel.DreamingToLockscreenTransitionViewModel;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationModeController;
@@ -86,7 +85,6 @@ import kotlinx.coroutines.CoroutineDispatcher;
         KeyguardUserSwitcherComponent.class},
         includes = {
                 FalsingModule.class,
-                KeyguardQuickAffordanceModule.class,
                 KeyguardFaceAuthNotSupportedModule.class,
                 KeyguardRepositoryModule.class,
         })

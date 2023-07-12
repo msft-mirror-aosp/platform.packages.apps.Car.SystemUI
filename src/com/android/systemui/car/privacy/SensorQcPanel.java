@@ -216,7 +216,12 @@ public abstract class SensorQcPanel extends BaseLocalQCProvider
     }
 
     @Override
-    public void onSensorInfoUpdate() {
+    public void onSensorPrivacyChanged() {
+        notifyChange();
+    }
+
+    @Override
+    public void onPrivacyItemsChanged() {
         notifyChange();
     }
 

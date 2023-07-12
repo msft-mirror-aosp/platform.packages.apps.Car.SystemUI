@@ -22,7 +22,12 @@ package com.android.systemui.car.privacy;
 public interface SensorInfoUpdateListener {
 
     /**
-     * Something about the sensor changes.
+     * Notify of sensor privacy state change
      */
-    void onSensorInfoUpdate();
+    void onSensorPrivacyChanged();
+
+    /**
+     * Notify that the privacy items have changed
+     */
+    void onPrivacyItemsChanged();
 }

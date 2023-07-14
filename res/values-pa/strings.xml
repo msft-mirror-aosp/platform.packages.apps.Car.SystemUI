@@ -64,6 +64,9 @@
     <string name="system_bar_media_label" msgid="6156112139796274847">"ਮੀਡੀਆ"</string>
     <string name="system_bar_control_center_label" msgid="5269256399167811590">"ਕੰਟਰੋਲ ਕੇਂਦਰ"</string>
     <string name="system_bar_assistant_label" msgid="7312821609046711200">"Assistant"</string>
+    <string name="system_bar_mic_privacy_chip" msgid="2494035034004728597">"ਮਾਈਕ ਪਰਦੇਦਾਰੀ ਚਿੱਪ"</string>
+    <string name="system_bar_user_avatar" msgid="4122817348016746322">"ਵਰਤੋਂਕਾਰ ਅਵਤਾਰ"</string>
+    <string name="system_bar_user_name_text" msgid="5859605302481171746">"ਵਰਤੋਂਕਾਰ ਨਾਮ ਦੀ ਲਿਖਤ"</string>
     <string name="hvac_decrease_button_label" msgid="5628481079099995286">"ਤਾਪਮਾਨ ਘਟਾਓ"</string>
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"ਤਾਪਮਾਨ ਵਧਾਓ"</string>
     <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"ਬਲੂਟੁੱਥ ਸੈਟਿੰਗ: ਡਿਸਕਨੈਕਟ ਕੀਤਾ ਗਿਆ"</string>

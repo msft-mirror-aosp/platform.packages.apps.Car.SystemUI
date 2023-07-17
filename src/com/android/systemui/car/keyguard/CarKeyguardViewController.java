@@ -278,8 +278,9 @@ public class CarKeyguardViewController extends OverlayViewController implements
             if (mShowing) {
                 if (!isSecure()) {
                     dismissAndCollapse();
+                } else {
+                    resetBouncer();
                 }
-                resetBouncer();
                 mKeyguardUpdateMonitor.sendKeyguardReset();
                 notifyKeyguardUpdateMonitor();
             } else {
@@ -338,6 +339,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         }
         if (!isSecure()) {
             hide(/* startTime= */ 0, /* fadeoutDuration= */ 0);
+            resetBouncer();
         }
     }
 

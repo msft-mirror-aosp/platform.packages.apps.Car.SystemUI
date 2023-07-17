@@ -54,10 +54,8 @@ import com.android.systemui.qs.tileimpl.QSFactoryImpl;
 import com.android.systemui.recents.Recents;
 import com.android.systemui.recents.RecentsImplementation;
 import com.android.systemui.screenshot.ReferenceScreenshotModule;
-import com.android.systemui.shade.ShadeController;
-import com.android.systemui.shade.ShadeControllerEmptyImpl;
+import com.android.systemui.shade.ShadeEmptyImplModule;
 import com.android.systemui.shade.ShadeExpansionStateManager;
-import com.android.systemui.shade.ShadeModule;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.NotificationLockscreenUserManager;
 import com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl;
@@ -98,7 +96,7 @@ import javax.inject.Named;
                 PowerModule.class,
                 QSModule.class,
                 ReferenceScreenshotModule.class,
-                ShadeModule.class,
+                ShadeEmptyImplModule.class,
                 ShutdownUiModule.class,
                 DriveModeModule.class
         }
@@ -193,9 +191,6 @@ abstract class CarSystemUIModule {
 
     @Binds
     abstract DockManager bindDockManager(DockManagerImpl dockManager);
-
-    @Binds
-    abstract ShadeController provideShadeController(ShadeControllerEmptyImpl shadeController);
 
     @Binds
     abstract GlobalRootComponent bindGlobalRootComponent(

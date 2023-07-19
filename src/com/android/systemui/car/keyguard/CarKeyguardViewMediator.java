@@ -58,9 +58,11 @@ import com.android.systemui.statusbar.phone.ScrimController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.util.DeviceConfigProxy;
+import com.android.systemui.util.kotlin.JavaAdapter;
 import com.android.systemui.util.settings.SecureSettings;
 import com.android.systemui.util.settings.SystemSettings;
 import com.android.systemui.util.time.SystemClock;
+import com.android.systemui.wallpapers.data.repository.WallpaperRepository;
 import com.android.wm.shell.keyguard.KeyguardTransitions;
 
 import dagger.Lazy;
@@ -112,6 +114,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             KeyguardTransitions keyguardTransitions,
             InteractionJankMonitor interactionJankMonitor,
             DreamOverlayStateController dreamOverlayStateController,
+            JavaAdapter javaAdapter,
+            WallpaperRepository wallpaperRepository,
             Lazy<ShadeController> mShadeControllerLazy,
             Lazy<NotificationShadeWindowController> notificationShadeWindowControllerLazy,
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator,
@@ -132,6 +136,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 keyguardUnlockAnimationControllerLazy, screenOffAnimationController,
                 notificationShadeDepthController, screenOnCoordinator, keyguardTransitions,
                 interactionJankMonitor, dreamOverlayStateController,
+                javaAdapter,
+                wallpaperRepository,
                 mShadeControllerLazy,
                 notificationShadeWindowControllerLazy,
                 activityLaunchAnimator,

@@ -55,6 +55,7 @@
             android:name=".car.activity.ActivityBlockingActivity"
             android:documentLaunchMode="always"
             android:excludeFromRecents="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <intent-filter>

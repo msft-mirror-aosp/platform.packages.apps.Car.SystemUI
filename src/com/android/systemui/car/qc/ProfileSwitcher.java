@@ -198,7 +198,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 mUserIconProvider.getDrawableWithBadge(mContext, userInfo), actionHandler);
     }
 
-    private QCRow createGuestProfileRow() {
+    protected QCRow createGuestProfileRow() {
         QCItem.ActionHandler actionHandler = (item, context, intent) -> {
             if (mPendingUserAdd) {
                 return;
@@ -351,7 +351,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
      * @return UserInfo representing the Guest user
      */
     @Nullable
-    private UserInfo createNewOrFindExistingGuest(Context context) {
+    protected UserInfo createNewOrFindExistingGuest(Context context) {
         AsyncFuture<UserCreationResult> future = mCarUserManager.createGuest(
                 context.getString(com.android.internal.R.string.guest_name));
         // CreateGuest will return null if a guest already exists.

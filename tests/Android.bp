@@ -48,8 +48,4 @@ android_test {
     ],
 
     certificate: "platform",
-
-    jacoco: {
-        include_filter: ["com.android.systemui.*", "com.android.keyguard.*"],
-    },
 }

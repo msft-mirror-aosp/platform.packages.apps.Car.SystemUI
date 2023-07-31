@@ -245,4 +245,8 @@
     <!-- Flag to enable/disable dock -->
     <!-- todo(b/304320644): remove flag -->
     <bool name="config_enableDock">false</bool>
+
+    <!-- set to false to use the default TaskDisplayArea -->
+    <!-- TODO(b/300930725): launcher doesn't show until it's restarted -->
+    <bool name="config_useRemoteLaunchTaskView">false</bool>
 </resources>

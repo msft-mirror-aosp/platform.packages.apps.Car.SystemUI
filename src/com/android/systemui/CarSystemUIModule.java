@@ -19,6 +19,7 @@ package com.android.systemui;
 import static com.android.systemui.Dependency.ALLOW_NOTIFICATION_LONG_PRESS_NAME;
 import static com.android.systemui.Dependency.LEAK_REPORT_EMAIL_NAME;
 
+import android.car.app.CarTaskViewControllerHostLifecycle;
 import android.content.Context;
 import android.hardware.SensorPrivacyManager;
 import android.window.DisplayAreaOrganizer;
@@ -185,4 +186,9 @@ abstract class CarSystemUIModule {
     @Binds
     abstract PrivacyDotDecorProviderFactory providePrivacyDotDecorProviderFactory(
             CarPrivacyChipDecorProviderFactory carPrivacyDotDecorProviderFactory);
+
+    @Provides
+    static CarTaskViewControllerHostLifecycle provideCarTaskViewControllerHostLifecycle() {
+        return new CarTaskViewControllerHostLifecycle();
+    }
 }

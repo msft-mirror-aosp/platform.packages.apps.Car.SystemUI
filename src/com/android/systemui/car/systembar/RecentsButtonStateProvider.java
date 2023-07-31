@@ -47,6 +47,7 @@ public class RecentsButtonStateProvider {
     private final InputManager mInputManager;
     private final ComponentName mRecentsComponentName;
     private final CarSystemBarButton mCarSystemBarButton;
+    private final boolean mIsRecentsEntryPointEnabled;
     private TaskStackChangeListener mTaskStackChangeListener;
     private boolean mIsRecentsActive;
 
@@ -55,6 +56,8 @@ public class RecentsButtonStateProvider {
         mInputManager = context.getSystemService(InputManager.class);
         mRecentsComponentName = ComponentName.unflattenFromString(context.getString(
                 com.android.internal.R.string.config_recentsComponentName));
+        mIsRecentsEntryPointEnabled = context.getResources()
+                .getBoolean(R.bool.config_enableRecentsEntryPoint);
         initialiseListener();
     }
 
@@ -93,8 +96,7 @@ public class RecentsButtonStateProvider {
             if (mIsRecentsActive) {
                 return false;
             }
-            toggleRecents();
-            return true;
+            return toggleRecents();
         });
     }
 
@@ -177,8 +179,8 @@ public class RecentsButtonStateProvider {
     /**
      * Opens/closes the Recents Activity.
      */
-    protected void toggleRecents() {
-        mInputManager.injectInputEvent(
+    protected boolean toggleRecents() {
+        return mIsRecentsEntryPointEnabled && mInputManager.injectInputEvent(
                 new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_APP_SWITCH),
                 InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
     }

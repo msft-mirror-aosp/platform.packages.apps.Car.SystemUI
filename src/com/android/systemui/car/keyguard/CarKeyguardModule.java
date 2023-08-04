@@ -47,6 +47,7 @@ import com.android.systemui.flags.SystemPropertiesHelper;
 import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
+import com.android.systemui.keyguard.WindowManagerLockscreenVisibilityManager;
 import com.android.systemui.keyguard.dagger.KeyguardFaceAuthNotSupportedModule;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
 import com.android.systemui.keyguard.ui.viewmodel.DreamingToLockscreenTransitionViewModel;
@@ -140,7 +141,8 @@ public class CarKeyguardModule {
             SystemClock systemClock,
             @Main CoroutineDispatcher mainDispatcher,
             Lazy<DreamingToLockscreenTransitionViewModel> dreamingToLockscreenTransitionViewModel,
-            SystemPropertiesHelper systemPropertiesHelper) {
+            SystemPropertiesHelper systemPropertiesHelper,
+            Lazy<WindowManagerLockscreenVisibilityManager> wmLockscreenVisibilityManager) {
         return new CarKeyguardViewMediator(
                 context,
                 uiEventLogger,
@@ -183,7 +185,8 @@ public class CarKeyguardModule {
                 systemClock,
                 mainDispatcher,
                 dreamingToLockscreenTransitionViewModel,
-                systemPropertiesHelper);
+                systemPropertiesHelper,
+                wmLockscreenVisibilityManager);
     }
 
     /** */

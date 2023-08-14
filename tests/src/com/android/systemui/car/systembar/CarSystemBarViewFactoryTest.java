@@ -31,6 +31,7 @@ import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.flags.FeatureFlags;
+import com.android.systemui.settings.UserTracker;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class CarSystemBarViewFactoryTest extends SysuiTestCase {
                 .thenReturn(mStatusIconView);
         mCarSystemBarViewFactory = new CarSystemBarViewFactory(mContext,
                 mock(FeatureFlags.class), mQuickControlsEntryPointsController,
-                mock(ReadOnlyIconsController.class));
+                mock(ReadOnlyIconsController.class), mock(UserTracker.class));
     }
 
     @Test

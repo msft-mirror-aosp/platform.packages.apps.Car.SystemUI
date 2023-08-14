@@ -19,8 +19,7 @@ package com.android.systemui.car.hvac;
 import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 import static android.car.VehiclePropertyIds.HVAC_TEMPERATURE_SET;
 
-import static com.android.systemui.car.hvac.HvacUtils.celsiusToFahrenheit;
-
+import android.car.hardware.CarPropertyConfig;
 import android.car.hardware.CarPropertyValue;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -36,8 +35,11 @@ import androidx.core.content.ContextCompat;
 
 import com.android.systemui.R;
 
+import java.util.List;
+
 public class TemperatureControlView extends LinearLayout implements HvacView {
     protected static final int BUTTON_REPEAT_INTERVAL_MS = 500;
+    protected TextView mTempTextView;
 
     private static final int INVALID_ID = -1;
 
@@ -45,24 +47,22 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     private final int mAvailableTextColor;
     private final int mUnavailableTextColor;
 
-    private boolean mPowerOn;
-    private boolean mTemperatureSetAvailable;
+    private boolean mPowerOn = false;
+    private boolean mTemperatureSetAvailable = false;
     private HvacPropertySetter mHvacPropertySetter;
-    private TextView mTempTextView;
     private String mTempInDisplay;
     private View mIncreaseButton;
     private View mDecreaseButton;
     private float mMinTempC;
+    private float mMinTempF;
     private float mMaxTempC;
     private String mTemperatureFormatCelsius;
     private String mTemperatureFormatFahrenheit;
 
-    private float mTemperatureRoundCelsius;
-    private float mTemperatureRoundFahrenheit;
     private float mTemperatureIncrementCelsius;
     private float mTemperatureIncrementFahrenheit;
-    private float mCurrentTempC;
-    private boolean mDisplayInFahrenheit;
+    private float mCurrentTempC = -1.0f;
+    private boolean mDisplayInFahrenheit = true;
 
     public TemperatureControlView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -76,12 +76,9 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
                 R.fraction.celsius_temperature_increment);
         mTemperatureIncrementFahrenheit = getResources().getFloat(
                 R.fraction.fahrenheit_temperature_increment);
-        mTemperatureRoundCelsius = getResources().getFloat(
-                R.fraction.celsius_temperature_round);
-        mTemperatureRoundFahrenheit = getResources().getFloat(
-                R.fraction.fahrenheit_temperature_round);
 
         mMinTempC = getResources().getFloat(R.dimen.hvac_min_value_celsius);
+        mMinTempF = getResources().getFloat(R.dimen.hvac_min_value_fahrenheit);
         mMaxTempC = getResources().getFloat(R.dimen.hvac_max_value_celsius);
         mAvailableTextColor = ContextCompat.getColor(getContext(), R.color.system_bar_text_color);
         mUnavailableTextColor = ContextCompat.getColor(getContext(),
@@ -95,6 +92,7 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
         mIncreaseButton = requireViewById(R.id.hvac_increase_button);
         mDecreaseButton = requireViewById(R.id.hvac_decrease_button);
         initButtons();
+        updateTemperatureView();
     }
 
     @Override
@@ -129,6 +127,19 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     @Override
     public void setHvacPropertySetter(HvacPropertySetter hvacPropertySetter) {
         mHvacPropertySetter = hvacPropertySetter;
+    }
+
+    @Override
+    public void setConfigInfo(CarPropertyConfig<?> carPropertyConfig) {
+        List<Integer> configArray = carPropertyConfig.getConfigArray();
+        // Need to divide by 10 because config array values are temperature values that have been
+        // multiplied by 10.
+        mMinTempC = configArray.get(0) / 10f;
+        mMaxTempC = configArray.get(1) / 10f;
+        mTemperatureIncrementCelsius = configArray.get(2) / 10f;
+
+        mMinTempF = configArray.get(3) / 10f;
+        mTemperatureIncrementFahrenheit = configArray.get(5) / 10f;
     }
 
     @Override
@@ -191,19 +202,15 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     private void incrementTemperature(boolean increment) {
         if (!mPowerOn) return;
 
-        float tempIncrement = mDisplayInFahrenheit
-                ? mTemperatureIncrementFahrenheit
-                : mTemperatureIncrementCelsius;
         float newTempC = increment
-                ? mCurrentTempC + tempIncrement
-                : mCurrentTempC - tempIncrement;
-
+                ? mCurrentTempC + mTemperatureIncrementCelsius
+                : mCurrentTempC - mTemperatureIncrementCelsius;
         setTemperature(newTempC);
     }
 
     private void updateTemperatureView() {
-        float tempToDisplayUnformatted = roundToClosestFraction(
-                mDisplayInFahrenheit ? celsiusToFahrenheit(mCurrentTempC) : mCurrentTempC);
+        float tempToDisplayUnformatted =
+                mDisplayInFahrenheit ? celsiusToFahrenheit(mCurrentTempC) : mCurrentTempC;
 
         mTempInDisplay = String.format(
                 mDisplayInFahrenheit ? mTemperatureFormatFahrenheit : mTemperatureFormatCelsius,
@@ -249,10 +256,8 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
         });
     }
 
-    private float roundToClosestFraction(float rawFloat) {
-        float incrementFraction = mDisplayInFahrenheit
-                ? mTemperatureRoundFahrenheit
-                : mTemperatureRoundCelsius;
-        return Math.round(rawFloat / incrementFraction) * incrementFraction;
+    private float celsiusToFahrenheit(float tempC) {
+        int numIncrements = Math.round((tempC - mMinTempC) / mTemperatureIncrementCelsius);
+        return mTemperatureIncrementFahrenheit * numIncrements + mMinTempF;
     }
 }

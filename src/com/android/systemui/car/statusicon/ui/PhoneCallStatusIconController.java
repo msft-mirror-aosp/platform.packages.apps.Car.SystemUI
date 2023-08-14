@@ -16,11 +16,6 @@
 
 package com.android.systemui.car.statusicon.ui;
 
-import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
-
-import android.car.Car;
-import android.car.user.CarUserManager;
-import android.car.user.UserLifecycleEventFilter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -28,12 +23,13 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
-import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.android.systemui.R;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.statusicon.StatusIconController;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.settings.UserTracker;
 
 import javax.inject.Inject;
 
@@ -44,11 +40,7 @@ public class PhoneCallStatusIconController extends StatusIconController {
 
     private static final String TAG = PhoneCallStatusIconController.class.getSimpleName();
 
-    private final Context mContext;
     private final TelecomManager mTelecomManager;
-    private final CarServiceProvider mCarServiceProvider;
-
-    private boolean mUserLifecycleListenerRegistered;
 
     final BroadcastReceiver mPhoneStateChangeReceiver = new BroadcastReceiver() {
         @Override
@@ -59,27 +51,24 @@ public class PhoneCallStatusIconController extends StatusIconController {
         }
     };
 
-    private final CarUserManager.UserLifecycleListener mUserLifecycleListener =
-            new CarUserManager.UserLifecycleListener() {
-                @Override
-                public void onEvent(CarUserManager.UserLifecycleEvent event) {
-                    mContext.getMainExecutor().execute(() -> updateStatus());
-                }
-            };
+    private final UserTracker.Callback mUserChangedCallback = new UserTracker.Callback() {
+        @Override
+        public void onUserChanged(int newUser, @NonNull Context userContext) {
+            updateStatus();
+        }
+    };
 
     @Inject
     PhoneCallStatusIconController(
             Context context,
             @Main Resources resources,
-            CarServiceProvider carServiceProvider) {
-        mContext = context;
+            UserTracker userTracker) {
         mTelecomManager = context.getSystemService(TelecomManager.class);
-        mCarServiceProvider = carServiceProvider;
         IntentFilter filter = new IntentFilter();
         filter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
         context.registerReceiverForAllUsers(mPhoneStateChangeReceiver,
                 filter,  /* broadcastPermission= */ null, /* scheduler= */ null);
-        registerForUserChangeEvents();
+        userTracker.addCallback(mUserChangedCallback, context.getMainExecutor());
         setIconDrawableToDisplay(resources.getDrawable(R.drawable.ic_phone, context.getTheme()));
         updateStatus();
     }
@@ -88,21 +77,6 @@ public class PhoneCallStatusIconController extends StatusIconController {
     protected void updateStatus() {
         setIconVisibility(mTelecomManager.isInCall());
         onStatusUpdated();
-    }
-
-    private void registerForUserChangeEvents() {
-        mCarServiceProvider.addListener(car -> {
-            CarUserManager carUserManager = (CarUserManager) car.getCarManager(
-                    Car.CAR_USER_SERVICE);
-            if (carUserManager != null && !mUserLifecycleListenerRegistered) {
-                UserLifecycleEventFilter filter = new UserLifecycleEventFilter.Builder()
-                        .addEventType(USER_LIFECYCLE_EVENT_TYPE_SWITCHING).build();
-                carUserManager.addListener(Runnable::run, filter, mUserLifecycleListener);
-                mUserLifecycleListenerRegistered = true;
-            } else {
-                Log.e(TAG, "CarUserManager could not be obtained.");
-            }
-        });
     }
 
     @Override

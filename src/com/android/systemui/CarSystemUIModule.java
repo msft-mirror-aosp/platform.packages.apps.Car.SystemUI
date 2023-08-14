@@ -30,7 +30,6 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
 import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
-import com.android.systemui.car.decor.CarSystemStatusAnimationScheduler;
 import com.android.systemui.car.drivemode.DriveModeModule;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
@@ -61,7 +60,7 @@ import com.android.systemui.statusbar.NotificationLockscreenUserManager;
 import com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
 import com.android.systemui.statusbar.events.PrivacyDotViewController;
-import com.android.systemui.statusbar.events.SystemStatusAnimationScheduler;
+import com.android.systemui.statusbar.events.StatusBarEventsModule;
 import com.android.systemui.statusbar.notification.collection.provider.VisualStabilityProvider;
 import com.android.systemui.statusbar.notification.collection.render.GroupMembershipManager;
 import com.android.systemui.statusbar.phone.HeadsUpManagerPhone;
@@ -98,6 +97,7 @@ import javax.inject.Named;
                 ReferenceScreenshotModule.class,
                 ShadeEmptyImplModule.class,
                 ShutdownUiModule.class,
+                StatusBarEventsModule.class,
                 DriveModeModule.class
         }
 )
@@ -225,8 +225,4 @@ abstract class CarSystemUIModule {
     @Binds
     abstract PrivacyDotDecorProviderFactory providePrivacyDotDecorProviderFactory(
             CarPrivacyChipDecorProviderFactory carPrivacyDotDecorProviderFactory);
-
-    @Binds
-    abstract SystemStatusAnimationScheduler provideSystemStatusAnimationScheduler(
-            CarSystemStatusAnimationScheduler carSystemStatusAnimationScheduler);
 }

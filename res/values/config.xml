@@ -211,10 +211,13 @@
     <!-- TODO(b/228598071): Enabled this to fix b/250675259. -->
     <bool name="config_registerShellTaskOrganizerOnInit">true</bool>
 
+    <!-- disable standard privacy chip animation (only show immersive) -->
+    <bool name="config_enablePrivacyChipAnimation">false</bool>
     <!-- show the privacy chip indicator in full screen mode. -->
     <bool name="config_enableImmersivePrivacyChip">true</bool>
     <!-- enable animation for the privacy chip indicator in full screen mode. -->
     <bool name="config_enableImmersivePrivacyChipAnimation">true</bool>
+
 
     <!-- Animation duration (in milliseconds) when dismissing display input lock icon. -->
     <integer name="config_displayInputLockIconAnimDuration">250</integer>

@@ -243,4 +243,11 @@
     <!-- Instructions telling the user to enter their text password to unlock the keyguard [CHAR LIMIT=30] -->
     <string name="car_keyguard_enter_your_password">Enter your password</string>
 
+    <!-- Intent action meant to invoke user TOS flow.
+        The intent URI has to be formatted according to Intent.URI_INTENT_SCHEME
+        URI, for example should contain the intent action and any extras if necessary:
+        "intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=true;end"
+   -->
+    <string name="user_tos_activity_intent">intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end</string>
+
 </resources>

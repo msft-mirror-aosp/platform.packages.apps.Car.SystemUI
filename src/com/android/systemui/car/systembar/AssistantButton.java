@@ -19,6 +19,7 @@ package com.android.systemui.car.systembar;
 import static android.service.voice.VoiceInteractionSession.SHOW_SOURCE_ASSIST_GESTURE;
 
 import android.app.role.RoleManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Bundle;
@@ -29,6 +30,8 @@ import android.util.Log;
 import com.android.internal.app.AssistUtils;
 import com.android.internal.app.IVoiceInteractionSessionListener;
 import com.android.internal.app.IVoiceInteractionSessionShowCallback;
+
+import java.util.Set;
 
 /**
  * AssistantButton is an UI component that will trigger the Voice Interaction Service.
@@ -77,9 +80,32 @@ public class AssistantButton extends CarSystemBarButton {
     }
 
     void showAssistant() {
+        if (canShowTosAcceptanceFlow()) {
+            SystemBarUtil.INSTANCE.showTosAcceptanceFlow(getContext(), getUserTracker());
+            return;
+        }
         final Bundle args = new Bundle();
         mAssistUtils.showSessionForActiveService(args,
                 SHOW_SOURCE_ASSIST_GESTURE, mShowCallback, /*activityToken=*/ null);
+    }
+
+    /**
+     * Helper method to check if tos acceptance flow can be launched. The tos flow can be launched
+     * when there is no active assistant selected by the system and the default assistant has been
+     * disabled because tos is unaccepted
+     *
+     * @return true if tos flow can be launched, false otherwise
+     */
+    private boolean canShowTosAcceptanceFlow() {
+        ComponentName activeAssistantComponent = mAssistUtils.getActiveServiceComponentName();
+        String defaultAssistantInConfig =
+                getContext().getString(com.android.internal.R.string.config_defaultAssistant);
+        Integer userId = getUserTracker() != null ? getUserTracker().getUserId() : null;
+        Set<String> tosDisabledApps = SystemBarUtil.INSTANCE
+                .getTosDisabledPackages(getContext(), userId);
+        boolean defaultAssistantDisabled = tosDisabledApps.contains(defaultAssistantInConfig);
+
+        return activeAssistantComponent == null && defaultAssistantDisabled;
     }
 
     @Override

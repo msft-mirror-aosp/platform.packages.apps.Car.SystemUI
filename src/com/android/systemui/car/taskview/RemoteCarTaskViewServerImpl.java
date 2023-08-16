@@ -23,6 +23,7 @@ import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.ActivityTaskManager;
 import android.app.PendingIntent;
+import android.car.app.CarActivityManager;
 import android.car.app.CarTaskViewClient;
 import android.car.app.CarTaskViewHost;
 import android.content.Context;
@@ -37,13 +38,14 @@ import android.view.InsetsSource;
 import android.view.SurfaceControl;
 import android.window.WindowContainerTransaction;
 
+import com.android.internal.annotations.Keep;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.taskview.TaskViewBase;
 import com.android.wm.shell.taskview.TaskViewTaskController;
 import com.android.wm.shell.taskview.TaskViewTransitions;
 
-/** Server side implementation for the {@code RemoteCarTaskView}. */
+/** Server side implementation for {@code RemoteCarTaskView}. */
 public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     private static final String TAG = RemoteCarTaskViewServerImpl.class.getSimpleName();
 
@@ -53,6 +55,10 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     private final CarSystemUIProxyImpl mCarSystemUIProxy;
     private final Binder mInsetsOwner = new Binder();
     private final SparseArray<Rect> mInsets = new SparseArray<>();
+    private final ShellTaskOrganizer mShellTaskOrganizer;
+    private final CarActivityManager mCarActivityManager;
+
+    private RootTaskMediator mRootTaskMediator;
     private boolean mReleased;
 
     private final CarTaskViewHost mHostImpl = new CarTaskViewHost() {
@@ -68,7 +74,10 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
                 taskIdToRemove = mTaskViewTaskController.getTaskInfo().taskId;
             }
             mTaskViewTaskController.release();
-            if (taskIdToRemove != INVALID_TASK_ID) {
+
+            if (mRootTaskMediator != null) {
+                mRootTaskMediator.release();
+            } else if (taskIdToRemove != INVALID_TASK_ID) {
                 Slog.w(TAG, "Removing embedded task: " + taskIdToRemove);
                 ActivityTaskManager.getInstance().removeTask(taskIdToRemove);
             }
@@ -102,6 +111,46 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
                     fillInIntent,
                     ActivityOptions.fromBundle(options),
                     launchBounds);
+        }
+
+        /**
+         * Creates the root task in this task view. Should be called only once for the lifetime of
+         * this task view.
+         */
+        @Override
+        // TODO(b/24087642): Remove @Keep once this method is promoted to SystemApi.
+        // @Keep is used to prevent the removal of this method by the compiler as it is a hidden api
+        // in the base class.
+        @Keep
+        public void createRootTask(int displayId) {
+            if (mRootTaskMediator != null) {
+                throw new IllegalStateException("Root task is already created for this task view.");
+            }
+            mRootTaskMediator = new RootTaskMediator(displayId, /* isLaunchRoot= */ false,
+                    false, false, false, mShellTaskOrganizer,
+                    mTaskViewTaskController, RemoteCarTaskViewServerImpl.this, mSyncQueue,
+                    mCarActivityManager);
+        }
+
+        /**
+         * Creates the launch root task in this task view. Should be called only once for the
+         * lifetime of this task view.
+         */
+        @Override
+        // TODO(b/24087642): Remove @Keep once this method is promoted to SystemApi.
+        // @Keep is used to prevent the removal of this method by the compiler as it is a hidden api
+        // in the base class.
+        @Keep
+        public void createLaunchRootTask(int displayId, boolean embedHomeTask,
+                boolean embedRecentsTask, boolean embedAssistantTask) {
+            if (mCarSystemUIProxy.isLaunchRootTaskPresent(displayId)) {
+                throw new IllegalArgumentException("Cannot create more than 1 root task on the"
+                        + " display=" + displayId);
+            }
+            mRootTaskMediator = new RootTaskMediator(displayId, /* isLaunchRoot= */ true,
+                    embedHomeTask, embedRecentsTask, embedAssistantTask, mShellTaskOrganizer,
+                    mTaskViewTaskController, RemoteCarTaskViewServerImpl.this, mSyncQueue,
+                    mCarActivityManager);
         }
 
         @Override
@@ -165,10 +214,13 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             SyncTransactionQueue syncQueue,
             CarTaskViewClient carTaskViewClient,
             CarSystemUIProxyImpl carSystemUIProxy,
-            TaskViewTransitions taskViewTransitions) {
+            TaskViewTransitions taskViewTransitions,
+            CarActivityManager carActivityManager) {
         mSyncQueue = syncQueue;
         mCarTaskViewClient = carTaskViewClient;
         mCarSystemUIProxy = carSystemUIProxy;
+        mShellTaskOrganizer = organizer;
+        mCarActivityManager = carActivityManager;
 
         mTaskViewTaskController =
                 new TaskViewTaskController(context, organizer, taskViewTransitions, syncQueue);
@@ -177,6 +229,11 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
 
     public CarTaskViewHost getHostImpl() {
         return mHostImpl;
+    }
+
+    boolean hasLaunchRootTaskOnDisplay(int display) {
+        return mRootTaskMediator != null && mRootTaskMediator.isLaunchRoot()
+                && mRootTaskMediator.getDisplayId() == display;
     }
 
     @Override

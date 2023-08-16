@@ -62,9 +62,11 @@ public final class CarSystemUIProxyImpl
     private final SyncTransactionQueue mSyncQueue;
     private final ShellTaskOrganizer mTaskOrganizer;
     private final TaskViewTransitions mTaskViewTransitions;
-    private boolean mConnected;
     private final Set<RemoteCarTaskViewServerImpl> mRemoteCarTaskViewServerSet = new HashSet<>();
     private final DisplayManager mDisplayManager;
+
+    private boolean mConnected;
+    private CarActivityManager mCarActivityManager;
 
     /**
      * Returns true if {@link CarSystemUIProxyImpl} should be registered, false otherwise.
@@ -108,8 +110,22 @@ public final class CarSystemUIProxyImpl
         carServiceProvider.addListener(this);
     }
 
+    boolean isLaunchRootTaskPresent(int displayId) {
+        for (RemoteCarTaskViewServerImpl remoteCarTaskViewServer : mRemoteCarTaskViewServerSet) {
+            if (remoteCarTaskViewServer.hasLaunchRootTaskOnDisplay(displayId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public CarTaskViewHost createControlledCarTaskView(CarTaskViewClient carTaskViewClient) {
+        return createCarTaskView(carTaskViewClient);
+    }
+
+    @Override
+    public CarTaskViewHost createCarTaskView(CarTaskViewClient carTaskViewClient) {
         RemoteCarTaskViewServerImpl remoteCarTaskViewServerImpl =
                 new RemoteCarTaskViewServerImpl(
                         mContext,
@@ -117,7 +133,7 @@ public final class CarSystemUIProxyImpl
                         mSyncQueue,
                         carTaskViewClient,
                         this,
-                        mTaskViewTransitions);
+                        mTaskViewTransitions, mCarActivityManager);
         mRemoteCarTaskViewServerSet.add(remoteCarTaskViewServerImpl);
         return remoteCarTaskViewServerImpl.getHostImpl();
     }
@@ -131,9 +147,9 @@ public final class CarSystemUIProxyImpl
         mConnected = true;
         removeExistingTaskViewTasks();
 
-        CarActivityManager carActivityManager = car.getCarManager(CarActivityManager.class);
-        carActivityManager.registerTaskMonitor();
-        carActivityManager.registerCarSystemUIProxy(this);
+        mCarActivityManager = car.getCarManager(CarActivityManager.class);
+        mCarActivityManager.registerTaskMonitor();
+        mCarActivityManager.registerCarSystemUIProxy(this);
     }
 
     @Override

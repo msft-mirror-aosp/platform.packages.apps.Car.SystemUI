@@ -440,4 +440,9 @@ public class CarSystemBarButton extends LinearLayout {
             icon.setAlpha(mHighlightWhenSelected && mSelected ? mSelectedAlpha : mUnselectedAlpha);
         }
     }
+
+    @Nullable
+    protected UserTracker getUserTracker() {
+        return mUserTracker;
+    }
 }

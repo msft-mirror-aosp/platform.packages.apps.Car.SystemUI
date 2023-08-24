@@ -123,4 +123,10 @@
     <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"പിൻ നൽകുക"</string>
     <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"നിങ്ങളുടെ പാറ്റേൺ നൽകുക"</string>
     <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"പാസ്‌വേഡ് നൽകുക"</string>
+    <!-- no translation found for backspace_key (5570862528655375412) -->
+    <skip />
+    <!-- no translation found for enter_key (747962923921283095) -->
+    <skip />
+    <!-- no translation found for user_tos_activity_intent (6076292178025090081) -->
+    <skip />
 </resources>

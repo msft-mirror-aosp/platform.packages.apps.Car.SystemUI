@@ -26,6 +26,7 @@ import android.car.app.CarSystemUIProxy;
 import android.car.app.CarTaskViewClient;
 import android.car.app.CarTaskViewHost;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.display.DisplayManager;
 import android.os.Process;
 import android.util.Slog;
@@ -126,6 +127,7 @@ public final class CarSystemUIProxyImpl
 
     @Override
     public CarTaskViewHost createCarTaskView(CarTaskViewClient carTaskViewClient) {
+        ensurePermission(Car.PERMISSION_MANAGE_CAR_SYSTEM_UI);
         RemoteCarTaskViewServerImpl remoteCarTaskViewServerImpl =
                 new RemoteCarTaskViewServerImpl(
                         mContext,
@@ -181,6 +183,12 @@ public final class CarSystemUIProxyImpl
                 Slog.d(TAG, "Found a dangling task, removing: " + taskInfo.taskId);
                 atm.removeTask(taskInfo.taskId);
             }
+        }
+    }
+
+    private void ensurePermission(String permission) {
+        if (mContext.checkCallingPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            throw new SecurityException("requires permission " + permission);
         }
     }
 }

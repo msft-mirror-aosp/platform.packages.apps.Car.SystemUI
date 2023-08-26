@@ -169,4 +169,8 @@
         <attr name="showAsDropDown" format="boolean"/>
         <attr name="panelGravity" format="integer"/>
     </declare-styleable>
+
+    <declare-styleable name="PinPadView">
+        <attr name="layout" format="reference"/>
+    </declare-styleable>
 </resources>

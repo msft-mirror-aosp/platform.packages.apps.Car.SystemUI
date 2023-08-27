@@ -170,6 +170,10 @@ android_app {
             "proguard.flags",
         ],
     },
+    // TODO(b/301283770): Compiling CarSystemUI should not require -J-Xmx8192M
+    javacflags: [
+        "-J-Xmx8192M",
+    ],
     dxflags: ["--multi-dex"],
 
     aaptflags: [

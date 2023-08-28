@@ -20,8 +20,10 @@ import android.app.UiModeManager;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Rect;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -160,6 +162,23 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
     @Override
     protected void onOpenScrollStart() {
         // no-op.
+    }
+
+    @Override
+    protected void onTouchEvent(View view, MotionEvent event) {
+        if (mHvacPanelView == null) {
+            return;
+        }
+        Rect outBounds = new Rect();
+        mHvacPanelView.getBoundsInWindow(outBounds, /* clipToParent= */ true);
+        if (isPanelExpanded() && (event.getAction() == MotionEvent.ACTION_UP)
+                && isTouchOutside(outBounds, event.getX(), event.getY())) {
+            toggle();
+        }
+    }
+
+    private boolean isTouchOutside(Rect bounds, float x, float y) {
+        return x < bounds.left || x > bounds.right || y < bounds.top || y > bounds.bottom;
     }
 
     @Override

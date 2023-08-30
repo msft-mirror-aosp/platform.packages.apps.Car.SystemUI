@@ -123,10 +123,7 @@
     <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"Unesite PIN"</string>
     <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"Unesite uzorak"</string>
     <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"Unesite lozinku"</string>
-    <!-- no translation found for backspace_key (5570862528655375412) -->
-    <skip />
-    <!-- no translation found for enter_key (747962923921283095) -->
-    <skip />
-    <!-- no translation found for user_tos_activity_intent (6076292178025090081) -->
-    <skip />
+    <string name="backspace_key" msgid="5570862528655375412">"Tipka Backspace"</string>
+    <string name="enter_key" msgid="747962923921283095">"Tipka Enter"</string>
+    <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
 </resources>

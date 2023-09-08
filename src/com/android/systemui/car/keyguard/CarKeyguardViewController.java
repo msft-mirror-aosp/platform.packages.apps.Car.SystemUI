@@ -228,7 +228,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     @Override
     @MainThread
     public void notifyKeyguardAuthenticated(boolean strongAuth) {
-        mPrimaryBouncerInteractor.notifyKeyguardAuthenticated(strongAuth);
+        mPrimaryBouncerInteractor.notifyKeyguardAuthenticatedBiometrics(strongAuth);
     }
 
     @Override

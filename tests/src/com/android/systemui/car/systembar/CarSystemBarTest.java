@@ -273,7 +273,7 @@ public class CarSystemBarTest extends SysuiTestCase {
 
         int randomDisplay = Display.DEFAULT_DISPLAY + 10;
         int insetTypes = 0;
-        mCarSystemBar.showTransient(randomDisplay, insetTypes);
+        mCarSystemBar.showTransient(randomDisplay, insetTypes, false);
 
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isFalse();
     }
@@ -286,7 +286,7 @@ public class CarSystemBarTest extends SysuiTestCase {
         mCarSystemBar.start();
 
         int insetTypes = 0;
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes);
+        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes, false);
 
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isFalse();
     }
@@ -299,7 +299,7 @@ public class CarSystemBarTest extends SysuiTestCase {
         mCarSystemBar.start();
 
         int insetTypes = WindowInsets.Type.statusBars();
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes);
+        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes, false);
 
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
     }
@@ -312,7 +312,7 @@ public class CarSystemBarTest extends SysuiTestCase {
         mCarSystemBar.start();
 
         int insetTypes = 0;
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes);
+        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes, false);
 
         assertThat(mCarSystemBar.isNavBarTransientShown()).isFalse();
     }
@@ -325,7 +325,7 @@ public class CarSystemBarTest extends SysuiTestCase {
         mCarSystemBar.start();
 
         int insetTypes = WindowInsets.Type.navigationBars();
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes);
+        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes, false);
 
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
     }
@@ -336,8 +336,10 @@ public class CarSystemBarTest extends SysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY,
-                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+        mCarSystemBar.showTransient(
+                Display.DEFAULT_DISPLAY,
+                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars(),
+                false);
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
 
@@ -356,8 +358,10 @@ public class CarSystemBarTest extends SysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY,
-                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+        mCarSystemBar.showTransient(
+                Display.DEFAULT_DISPLAY,
+                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars(),
+                false);
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
 
@@ -375,8 +379,10 @@ public class CarSystemBarTest extends SysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY,
-                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+        mCarSystemBar.showTransient(
+                Display.DEFAULT_DISPLAY,
+                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars(),
+                false);
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
 
@@ -394,8 +400,10 @@ public class CarSystemBarTest extends SysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY,
-                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+        mCarSystemBar.showTransient(
+                Display.DEFAULT_DISPLAY,
+                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars(),
+                false);
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
 

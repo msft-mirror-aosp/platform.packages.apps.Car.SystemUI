@@ -242,11 +242,15 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     }
 
     private void ensureManageSystemUIPermission() {
-        if (mContext.checkCallingPermission(Car.PERMISSION_MANAGE_CAR_SYSTEM_UI)
-                != PackageManager.PERMISSION_GRANTED) {
-            throw new SecurityException("requires permission "
-                    + Car.PERMISSION_MANAGE_CAR_SYSTEM_UI);
+        if (Binder.getCallingPid() == android.os.Process.myPid()) {
+            // If called from within CarSystemUI, allow.
+            return;
         }
+        if (mContext.checkCallingPermission(Car.PERMISSION_MANAGE_CAR_SYSTEM_UI)
+                == PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        throw new SecurityException("requires permission " + Car.PERMISSION_MANAGE_CAR_SYSTEM_UI);
     }
 
     public CarTaskViewHost getHostImpl() {

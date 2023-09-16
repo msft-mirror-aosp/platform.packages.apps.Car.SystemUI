@@ -48,6 +48,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.UserInfo;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.testing.AndroidTestingRunner;
@@ -132,7 +133,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         when(mCarUserManager.switchUser(anyInt())).thenReturn(switchResultFuture);
 
         mProfileSwitcher = new ProfileSwitcher(mContext, mUserTracker, mUserManager,
-                mDevicePolicyManager, mCarUserManager, mUserIconProvider);
+                mDevicePolicyManager, mCarUserManager, mUserIconProvider, new Handler());
     }
 
     @After

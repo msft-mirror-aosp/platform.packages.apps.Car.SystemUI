@@ -157,6 +157,11 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
                 throw new IllegalArgumentException("Cannot create more than 1 root task on the"
                         + " display=" + displayId);
             }
+
+            // TODO(b/299535374): Remove setHideTaskWithSurface once the taskviews with launch root
+            //  tasks are moved to an always visible window (surface) in SystemUI.
+            mTaskViewTaskController.setHideTaskWithSurface(false);
+
             mRootTaskMediator = new RootTaskMediator(displayId, /* isLaunchRoot= */ true,
                     embedHomeTask, embedRecentsTask, embedAssistantTask, mShellTaskOrganizer,
                     mTaskViewTaskController, RemoteCarTaskViewServerImpl.this, mSyncQueue,

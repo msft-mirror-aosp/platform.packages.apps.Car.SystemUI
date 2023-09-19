@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.SurfaceControl;
 import android.window.WindowContainerTransaction;
 
+import com.android.internal.annotations.VisibleForTesting;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.taskview.TaskViewBase;
@@ -80,7 +81,8 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
                 this, /* removeWithTaskOrganizer= */ true);
     }
 
-    private static int[] createActivityArray(boolean embedHomeTask, boolean embedRecentsTask,
+    @VisibleForTesting
+    static int[] createActivityArray(boolean embedHomeTask, boolean embedRecentsTask,
             boolean embedAssistantTask) {
         int size = 1; // 1 for ACTIVITY_TYPE_STANDARD
         if (embedHomeTask) {
@@ -238,5 +240,15 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
 
     public boolean isLaunchRoot() {
         return mIsLaunchRoot;
+    }
+
+    @VisibleForTesting
+    ActivityManager.RunningTaskInfo getRootTask() {
+        return mRootTask;
+    }
+
+    @VisibleForTesting
+    LinkedHashMap<Integer, ActivityManager.RunningTaskInfo> getTaskStack() {
+        return mTaskStack;
     }
 }

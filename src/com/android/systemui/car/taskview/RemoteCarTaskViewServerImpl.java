@@ -283,9 +283,11 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     public String toString() {
         ActivityManager.RunningTaskInfo taskInfo = mTaskViewTaskController.getTaskInfo();
         return "RemoteCarTaskViewServerImpl {"
-                + "mInsets=" + mInsets
+                + "insets=" + mInsets
                 + ", taskId=" + (taskInfo == null ? "null" : taskInfo.taskId)
                 + ", taskInfo=" + (taskInfo == null ? "null" : taskInfo)
+                + ", rootTaskMediator=" + (mRootTaskMediator == null ? "null"
+                : mRootTaskMediator.toString())
                 + "}";
     }
 

@@ -106,6 +106,7 @@ public final class DisplayInputSinkController implements CoreStartable {
         @Override
         @MainThread
         public void onDisplayAdded(int displayId) {
+            mayUpdatePassengerDisplayOnAdded(displayId);
             refreshDisplayInputSink(displayId, "onDisplayAdded");
         }
 
@@ -115,6 +116,7 @@ public final class DisplayInputSinkController implements CoreStartable {
             if (!mPassengerDisplays.contains(displayId)) return;
             mayStopDisplayInputLock(mDisplayManager.getDisplay(displayId));
             mayStopDisplayInputMonitor(displayId);
+            mPassengerDisplays.remove(displayId);
         }
 
         @Override
@@ -208,6 +210,28 @@ public final class DisplayInputSinkController implements CoreStartable {
             }
             mPassengerDisplays.put(display.getDisplayId(), display);
         }
+    }
+
+    private void mayUpdatePassengerDisplayOnAdded(int displayId) {
+        if (mPassengerDisplays.contains(displayId)) {
+            // Display is already added to the passenger display list.
+            return;
+        }
+        OccupantZoneInfo zone = mOccupantZoneManager.getOccupantZoneForDisplayId(displayId);
+        if (zone == null) {
+            Slog.w(TAG, "Can't find the zone info for display#" + displayId);
+            return;
+        }
+        if (zone.occupantType == OCCUPANT_TYPE_DRIVER) {
+            // Skip a driver display
+            return;
+        }
+        Display display = mOccupantZoneManager.getDisplayForOccupant(zone, DISPLAY_TYPE_MAIN);
+        if (display == null) {
+            Slog.w(TAG, "Can't access the display of zone=" + zone);
+            return;
+        }
+        mPassengerDisplays.put(displayId, display);
     }
 
     // Start/stop display input locks from the current global setting.

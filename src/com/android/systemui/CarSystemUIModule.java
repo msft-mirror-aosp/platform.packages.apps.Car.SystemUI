@@ -44,6 +44,7 @@ import com.android.systemui.dock.DockManager;
 import com.android.systemui.dock.DockManagerImpl;
 import com.android.systemui.doze.DozeHost;
 import com.android.systemui.globalactions.ShutdownUiModule;
+import com.android.systemui.navigationbar.NoopNavigationBarControllerModule;
 import com.android.systemui.navigationbar.gestural.GestureModule;
 import com.android.systemui.plugins.qs.QSFactory;
 import com.android.systemui.plugins.statusbar.StatusBarStateController;
@@ -91,6 +92,7 @@ import javax.inject.Named;
                 CarMultiUserUtilsModule.class,
                 CarVolumeModule.class,
                 GestureModule.class,
+                NoopNavigationBarControllerModule.class,
                 NoopWallpaperModule.class,
                 PowerModule.class,
                 QSModule.class,

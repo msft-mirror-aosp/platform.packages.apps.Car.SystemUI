@@ -23,11 +23,13 @@ import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.ActivityTaskManager;
 import android.app.PendingIntent;
+import android.car.Car;
 import android.car.app.CarActivityManager;
 import android.car.app.CarTaskViewClient;
 import android.car.app.CarTaskViewHost;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Binder;
 import android.os.Bundle;
@@ -49,6 +51,7 @@ import com.android.wm.shell.taskview.TaskViewTransitions;
 public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     private static final String TAG = RemoteCarTaskViewServerImpl.class.getSimpleName();
 
+    private final Context mContext;
     private final SyncTransactionQueue mSyncQueue;
     private final CarTaskViewClient mCarTaskViewClient;
     private final TaskViewTaskController mTaskViewTaskController;
@@ -64,6 +67,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     private final CarTaskViewHost mHostImpl = new CarTaskViewHost() {
         @Override
         public void release() {
+            ensureManageSystemUIPermission();
             if (mReleased) {
                 Slog.w(TAG, "TaskView server part already released");
                 return;
@@ -87,16 +91,19 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
 
         @Override
         public void notifySurfaceCreated(SurfaceControl control) {
+            ensureManageSystemUIPermission();
             mTaskViewTaskController.surfaceCreated(control);
         }
 
         @Override
         public void setWindowBounds(Rect bounds) {
+            ensureManageSystemUIPermission();
             mTaskViewTaskController.setWindowBounds(bounds);
         }
 
         @Override
         public void notifySurfaceDestroyed() {
+            ensureManageSystemUIPermission();
             mTaskViewTaskController.surfaceDestroyed();
         }
 
@@ -106,6 +113,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
                 Intent fillInIntent,
                 Bundle options,
                 Rect launchBounds) {
+            ensureManageSystemUIPermission();
             mTaskViewTaskController.startActivity(
                     pendingIntent,
                     fillInIntent,
@@ -123,6 +131,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         // in the base class.
         @Keep
         public void createRootTask(int displayId) {
+            ensureManageSystemUIPermission();
             if (mRootTaskMediator != null) {
                 throw new IllegalStateException("Root task is already created for this task view.");
             }
@@ -143,10 +152,16 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         @Keep
         public void createLaunchRootTask(int displayId, boolean embedHomeTask,
                 boolean embedRecentsTask, boolean embedAssistantTask) {
+            ensureManageSystemUIPermission();
             if (mCarSystemUIProxy.isLaunchRootTaskPresent(displayId)) {
                 throw new IllegalArgumentException("Cannot create more than 1 root task on the"
                         + " display=" + displayId);
             }
+
+            // TODO(b/299535374): Remove setHideTaskWithSurface once the taskviews with launch root
+            //  tasks are moved to an always visible window (surface) in SystemUI.
+            mTaskViewTaskController.setHideTaskWithSurface(false);
+
             mRootTaskMediator = new RootTaskMediator(displayId, /* isLaunchRoot= */ true,
                     embedHomeTask, embedRecentsTask, embedAssistantTask, mShellTaskOrganizer,
                     mTaskViewTaskController, RemoteCarTaskViewServerImpl.this, mSyncQueue,
@@ -155,6 +170,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
 
         @Override
         public void showEmbeddedTask() {
+            ensureManageSystemUIPermission();
             ActivityManager.RunningTaskInfo taskInfo =
                     mTaskViewTaskController.getTaskInfo();
             if (taskInfo == null) {
@@ -170,6 +186,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
 
         @Override
         public void addInsets(int index, int type, @NonNull Rect frame) {
+            ensureManageSystemUIPermission();
             mInsets.append(InsetsSource.createId(mInsetsOwner, index, type), frame);
 
             if (mTaskViewTaskController.getTaskInfo() == null) {
@@ -185,6 +202,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
 
         @Override
         public void removeInsets(int index, int type) {
+            ensureManageSystemUIPermission();
             if (mInsets.size() == 0) {
                 Slog.w(TAG, "No insets set.");
                 return;
@@ -216,6 +234,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             CarSystemUIProxyImpl carSystemUIProxy,
             TaskViewTransitions taskViewTransitions,
             CarActivityManager carActivityManager) {
+        mContext = context;
         mSyncQueue = syncQueue;
         mCarTaskViewClient = carTaskViewClient;
         mCarSystemUIProxy = carSystemUIProxy;
@@ -225,6 +244,18 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         mTaskViewTaskController =
                 new TaskViewTaskController(context, organizer, taskViewTransitions, syncQueue);
         mTaskViewTaskController.setTaskViewBase(this);
+    }
+
+    private void ensureManageSystemUIPermission() {
+        if (Binder.getCallingPid() == android.os.Process.myPid()) {
+            // If called from within CarSystemUI, allow.
+            return;
+        }
+        if (mContext.checkCallingPermission(Car.PERMISSION_MANAGE_CAR_SYSTEM_UI)
+                == PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        throw new SecurityException("requires permission " + Car.PERMISSION_MANAGE_CAR_SYSTEM_UI);
     }
 
     public CarTaskViewHost getHostImpl() {
@@ -252,9 +283,11 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     public String toString() {
         ActivityManager.RunningTaskInfo taskInfo = mTaskViewTaskController.getTaskInfo();
         return "RemoteCarTaskViewServerImpl {"
-                + "mInsets=" + mInsets
+                + "insets=" + mInsets
                 + ", taskId=" + (taskInfo == null ? "null" : taskInfo.taskId)
                 + ", taskInfo=" + (taskInfo == null ? "null" : taskInfo)
+                + ", rootTaskMediator=" + (mRootTaskMediator == null ? "null"
+                : mRootTaskMediator.toString())
                 + "}";
     }
 

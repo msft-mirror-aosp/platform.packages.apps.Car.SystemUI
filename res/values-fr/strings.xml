@@ -123,4 +123,7 @@
     <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"Saisissez votre code"</string>
     <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"Saisissez votre schéma"</string>
     <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"Saisissez votre mot de passe"</string>
+    <string name="backspace_key" msgid="5570862528655375412">"Touche Retour arrière"</string>
+    <string name="enter_key" msgid="747962923921283095">"Touche Entrée"</string>
+    <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
 </resources>

@@ -123,4 +123,7 @@
     <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"Մուտքագրեք PIN կոդը"</string>
     <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"Մուտքագրեք նախշը"</string>
     <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"Մուտքագրեք գաղտնաբառը"</string>
+    <string name="backspace_key" msgid="5570862528655375412">"Backspace ստեղն"</string>
+    <string name="enter_key" msgid="747962923921283095">"Enter ստեղն"</string>
+    <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
 </resources>

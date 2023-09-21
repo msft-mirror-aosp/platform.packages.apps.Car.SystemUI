@@ -107,10 +107,10 @@
     <string name="header_bar_text_in_logged_out_state" msgid="3903097856063608991">"Odaberite profil da biste započeli"</string>
     <string name="logged_in_text" msgid="742324514947999718">"Prijavljeni ste"</string>
     <string name="prefix_logged_in_info_for_other_seat" msgid="7438545665671460955">"Prijavljeni ste na zaslonu <xliff:g id="SEAT_LOCATION">%s</xliff:g>"</string>
-    <string name="create_user_failed_message" msgid="4539847475822170735">"Dodavanje novog profila nije uspjelo. Pokušajte ponovo poslije."</string>
-    <string name="guest_creation_failed_message" msgid="8198126434029601949">"Pokretanje profila gosta nije uspjelo. Pokušajte ponovo poslije."</string>
+    <string name="create_user_failed_message" msgid="4539847475822170735">"Dodavanje novog profila nije uspjelo. Pokušajte ponovo kasnije."</string>
+    <string name="guest_creation_failed_message" msgid="8198126434029601949">"Pokretanje profila gosta nije uspjelo. Pokušajte ponovo kasnije."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"Odjava…"</string>
-    <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> se odjavljuje. Pokušajte ponovo poslije."</string>
+    <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> se odjavljuje. Pokušajte ponovo kasnije."</string>
     <string name="seat_driver" msgid="4502591979520445677">"vozač"</string>
     <string name="seat_front" msgid="836133281052793377">"prednja"</string>
     <string name="seat_rear" msgid="403133444964528577">"stražnja"</string>
@@ -123,4 +123,7 @@
     <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"Unesite PIN"</string>
     <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"Unesite uzorak"</string>
     <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"Unesite zaporku"</string>
+    <string name="backspace_key" msgid="5570862528655375412">"Tipka Backspace"</string>
+    <string name="enter_key" msgid="747962923921283095">"Tipka Enter"</string>
+    <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
 </resources>

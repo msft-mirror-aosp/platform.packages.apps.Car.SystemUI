@@ -16,7 +16,7 @@
   -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- colors for user switcher -->
-    <color name="car_user_switcher_background_color">#000000</color>
+    <color name="car_user_switcher_background_color">@*android:color/car_background</color>
     <color name="car_user_switcher_name_text_color">@*android:color/car_body1_light</color>
     <color name="car_user_switcher_add_user_background_color">#202124</color>
     <color name="car_user_switcher_add_user_add_sign_color">#DADCE0</color>
@@ -154,4 +154,7 @@
 
     <!-- Color for button background in the quick controls panel. -->
     <color name="car_quick_controls_button_background_pill_color">#3C4043</color>
+
+    <!-- Color for PIN Pad icon.-->
+    <color name="pin_pad_icon_color">@color/car_ui_text_color_primary</color>
 </resources>

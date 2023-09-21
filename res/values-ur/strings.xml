@@ -123,4 +123,7 @@
     <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"اپنا PIN درج کریں"</string>
     <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"اپنا پیٹرن درج کریں"</string>
     <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"اپنا پاس ورڈ درج کریں"</string>
+    <string name="backspace_key" msgid="5570862528655375412">"Backspace کلید"</string>
+    <string name="enter_key" msgid="747962923921283095">"Enter کلید"</string>
+    <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
 </resources>

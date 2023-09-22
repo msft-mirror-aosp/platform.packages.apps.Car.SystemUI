@@ -22,7 +22,13 @@ import android.os.Handler;
 import android.os.UserManager;
 
 import com.android.systemui.dump.DumpManager;
+import com.android.systemui.flags.FeatureFlagsClassic;
 import com.android.systemui.settings.UserTrackerImpl;
+
+import javax.inject.Provider;
+
+import kotlinx.coroutines.CoroutineDispatcher;
+import kotlinx.coroutines.CoroutineScope;
 
 /**
  * Custom user tracking class extended from {@link UserTrackerImpl} which defines custom behavior
@@ -34,10 +40,12 @@ public class CarUserTrackerImpl extends UserTrackerImpl {
     // typically used for background users who should not be influenced by foreground user switches.
     private final boolean mShouldIgnoreUserSwitch;
 
-    public CarUserTrackerImpl(Context context, UserManager userManager,
-            IActivityManager iActivityManager, DumpManager dumpManager,
+    public CarUserTrackerImpl(Context context, Provider<FeatureFlagsClassic> featureFlagsClassic,
+            UserManager userManager, IActivityManager iActivityManager, DumpManager dumpManager,
+            CoroutineScope appScope, CoroutineDispatcher backgroundContext,
             Handler backgroundHandler, boolean ignoreUserSwitch) {
-        super(context, userManager, iActivityManager, dumpManager, backgroundHandler);
+        super(context, featureFlagsClassic, userManager, iActivityManager, dumpManager, appScope,
+                backgroundContext, backgroundHandler);
         mShouldIgnoreUserSwitch = ignoreUserSwitch;
     }
 

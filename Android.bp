@@ -137,6 +137,10 @@ android_library {
 
     plugins: ["dagger2-compiler"],
 
+    lint: {
+        test: true,
+    },
+
     // TODO(b/218518451) re-enable errorprone.
     errorprone: {enabled: false},
 }

@@ -217,6 +217,10 @@ public final class DisplayInputSinkController implements CoreStartable {
             // Display is already added to the passenger display list.
             return;
         }
+        if (mOccupantZoneManager == null) {
+            Slog.w(TAG, "CarService isn't connected yet");
+            return;
+        }
         OccupantZoneInfo zone = mOccupantZoneManager.getOccupantZoneForDisplayId(displayId);
         if (zone == null) {
             Slog.w(TAG, "Can't find the zone info for display#" + displayId);

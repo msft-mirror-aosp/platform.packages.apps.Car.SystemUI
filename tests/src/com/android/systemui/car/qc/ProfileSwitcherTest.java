@@ -334,10 +334,13 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         QCRow otherUserRow = rows.get(1);
         otherUserRow.getActionHandler().onAction(otherUserRow, mContext, new Intent());
 
-        ArgumentCaptor<UserSwitchRequest> requestCaptor =
-                ArgumentCaptor.forClass(UserSwitchRequest.class);
-        verify(mCarUserManager).switchUser(requestCaptor.capture(), any(), any());
-        assertThat(requestCaptor.getValue().getUserHandle().getIdentifier()).isEqualTo(otherUserId);
+        mProfileSwitcher.mHandler.post(() -> {
+            ArgumentCaptor<UserSwitchRequest> requestCaptor =
+                    ArgumentCaptor.forClass(UserSwitchRequest.class);
+            verify(mCarUserManager).switchUser(requestCaptor.capture(), any(), any());
+            assertThat(requestCaptor.getValue().getUserHandle().getIdentifier())
+                    .isEqualTo(otherUserId);
+        });
     }
 
     @Test
@@ -362,10 +365,13 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         guestRow.getActionHandler().onAction(guestRow, mContext, new Intent());
         verify(mCarUserManager).createGuest(any());
 
-        ArgumentCaptor<UserSwitchRequest> requestCaptor =
-                ArgumentCaptor.forClass(UserSwitchRequest.class);
-        verify(mCarUserManager).switchUser(requestCaptor.capture(), any(), any());
-        assertThat(requestCaptor.getValue().getUserHandle().getIdentifier()).isEqualTo(guestUserId);
+        mProfileSwitcher.mHandler.post(() -> {
+            ArgumentCaptor<UserSwitchRequest> requestCaptor =
+                    ArgumentCaptor.forClass(UserSwitchRequest.class);
+            verify(mCarUserManager).switchUser(requestCaptor.capture(), any(), any());
+            assertThat(requestCaptor.getValue().getUserHandle().getIdentifier())
+                    .isEqualTo(guestUserId);
+        });
     }
 
     @Test
@@ -383,10 +389,12 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         assertThat(rows).hasSize(4);
         QCRow otherUserRow = rows.get(1);
         otherUserRow.getActionHandler().onAction(otherUserRow, mContext, new Intent());
-        // Verify nothing happens
-        verify(mCarUserManager, never()).switchUser(secondaryUserId);
-        verify(mCarUserManager, never()).stopUser(any(), any(), any());
-        verify(mCarUserManager, never()).startUser(any(), any(), any());
+        mProfileSwitcher.mHandler.post(() -> {
+            // Verify nothing happens
+            verify(mCarUserManager, never()).switchUser(secondaryUserId);
+            verify(mCarUserManager, never()).stopUser(any(), any(), any());
+            verify(mCarUserManager, never()).startUser(any(), any(), any());
+        });
     }
 
     @Test
@@ -418,16 +426,18 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
         newUserRow.getActionHandler().onAction(newUserRow, mContext, new Intent());
 
-        ArgumentCaptor<UserStopRequest> stopRequestCaptor =
-                ArgumentCaptor.forClass(UserStopRequest.class);
-        verify(mCarUserManager).stopUser(stopRequestCaptor.capture(), any(), any());
-        assertThat(stopRequestCaptor.getValue().getUserHandle().getIdentifier())
-                .isEqualTo(secondaryUserId);
-        ArgumentCaptor<UserStartRequest> startRequestCaptor =
-                ArgumentCaptor.forClass(UserStartRequest.class);
-        verify(mCarUserManager).startUser(startRequestCaptor.capture(), any(), any());
-        assertThat(startRequestCaptor.getValue().getUserHandle().getIdentifier())
-                .isEqualTo(newUserId);
+        mProfileSwitcher.mHandler.post(() -> {
+            ArgumentCaptor<UserStopRequest> stopRequestCaptor =
+                    ArgumentCaptor.forClass(UserStopRequest.class);
+            verify(mCarUserManager).stopUser(stopRequestCaptor.capture(), any(), any());
+            assertThat(stopRequestCaptor.getValue().getUserHandle().getIdentifier())
+                    .isEqualTo(secondaryUserId);
+            ArgumentCaptor<UserStartRequest> startRequestCaptor =
+                    ArgumentCaptor.forClass(UserStartRequest.class);
+            verify(mCarUserManager).startUser(startRequestCaptor.capture(), any(), any());
+            assertThat(startRequestCaptor.getValue().getUserHandle().getIdentifier())
+                    .isEqualTo(newUserId);
+        });
     }
 
     private List<QCRow> getProfileRows() {

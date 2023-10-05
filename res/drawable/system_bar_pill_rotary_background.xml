@@ -15,12 +15,28 @@
   ~ limitations under the License.
   -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true" android:state_pressed="true" android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/car_ui_rotary_focus_pressed_fill_color"/>
+            <stroke android:width="@dimen/car_ui_rotary_focus_pressed_stroke_width"
+                    android:color="@color/car_ui_rotary_focus_pressed_stroke_color"/>
+            <corners android:radius="@dimen/system_bar_pill_selected_radius"/>
+        </shape>
+    </item>
     <item android:state_focused="true" android:state_pressed="true">
         <shape android:shape="rectangle">
             <solid android:color="@color/car_ui_rotary_focus_pressed_fill_color"/>
             <stroke android:width="@dimen/car_ui_rotary_focus_pressed_stroke_width"
                     android:color="@color/car_ui_rotary_focus_pressed_stroke_color"/>
             <corners android:radius="@dimen/system_bar_pill_radius"/>
+        </shape>
+    </item>
+    <item android:state_focused="true" android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/car_ui_rotary_focus_fill_color"/>
+            <stroke android:width="@dimen/car_ui_rotary_focus_stroke_width"
+                    android:color="@color/car_ui_rotary_focus_stroke_color"/>
+            <corners android:radius="@dimen/system_bar_pill_selected_radius"/>
         </shape>
     </item>
     <item android:state_focused="true">

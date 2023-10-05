@@ -55,7 +55,8 @@
     <!-- Padding of user icon and text -->
     <dimen name="system_bar_user_icon_padding">8dp</dimen>
     <!-- User icon size -->
-    <dimen name="system_bar_user_icon_drawing_size">36dp</dimen>
+    <dimen name="system_bar_user_icon_width">23dp</dimen>
+    <dimen name="system_bar_user_icon_height">22dp</dimen>
     <!-- Padding on either side of the group of all system bar buttons -->
     <dimen name="system_bar_button_group_padding">64dp</dimen>
     <dimen name="system_bar_icon_drawing_size">44dp</dimen>
@@ -65,7 +66,9 @@
     <!-- Padding between the system bar button and the icon within it -->
     <dimen name="system_bar_button_padding">16dp</dimen>
     <!-- Radius for system bar pill buttons -->
-    <dimen name="system_bar_pill_radius">30dp</dimen>
+    <dimen name="system_bar_pill_radius">100dp</dimen>
+    <!-- Radius for system bar pill buttons when selected -->
+    <dimen name="system_bar_pill_selected_radius">16dp</dimen>
 
     <!-- The amount by which to scale up the status bar icons. -->
     <item name="status_bar_icon_scale_factor" format="float" type="dimen">1.75</item>
@@ -111,17 +114,19 @@
     <!-- Height of icons in Privacy chip dialog. Both App Op icon and application icon -->
     <dimen name="privacy_chip_dialog_icon_height">48dp</dimen>
     <!-- Icon size for Privacy chip -->
-    <dimen name="privacy_chip_icon_size">32dp</dimen>
+    <dimen name="privacy_chip_icon_size">30dp</dimen>
     <!-- Background width for Privacy chip -->
-    <dimen name="privacy_chip_width">76dp</dimen>
+    <dimen name="privacy_chip_width">56dp</dimen>
     <!-- Margin between icons of Privacy chip -->
     <dimen name="privacy_chip_icon_margin">2dp</dimen>
     <!-- Diameter of indicator circle in privacy chip animation -->
-    <dimen name="privacy_chip_indicator_circle_diameter">21.5dp</dimen>
+    <dimen name="privacy_chip_indicator_circle_diameter">16dp</dimen>
     <!-- Width of privacy chip qc panel -->
     <dimen name="car_sensor_qc_panel_width">800dp</dimen>
     <!-- Privacy chip horizontal padding -->
     <dimen name="privacy_chip_horizontal_padding">@dimen/car_padding_3</dimen>
+    <!-- Privacy chip vertical padding -->
+    <dimen name="privacy_chip_vertical_padding">10dp</dimen>
     <!-- Outside stroke width for Privacy chip -->
     <dimen name="privacy_chip_indicator_outside_stroke_width">4dp</dimen>
 
@@ -222,6 +227,7 @@
     <dimen name="car_system_bar_button_width">64dp</dimen>
     <dimen name="car_system_bar_button_icon_height">44dp</dimen>
     <dimen name="car_system_bar_width">760dp</dimen>
+    <dimen name="car_system_bar_user_name_button_height">56dp</dimen>
     <dimen name="car_system_bar_user_name_max_width">176dp</dimen>
     <dimen name="car_left_system_bar_width">96dp</dimen>
     <dimen name="car_right_system_bar_width">96dp</dimen>
@@ -244,19 +250,19 @@
 
     <!-- dimensions for Quick Controls entry points   -->
 
-    <dimen name="car_quick_controls_entry_points_button_width">82dp</dimen>
-    <dimen name="car_quick_controls_entry_points_button_margin_top">8dp</dimen>
-    <dimen name="car_quick_controls_entry_points_button_margin_bottom">8dp</dimen>
+    <dimen name="car_quick_controls_entry_points_button_width">56dp</dimen>
+    <dimen name="car_quick_controls_entry_points_button_margin_top">10dp</dimen>
+    <dimen name="car_quick_controls_entry_points_button_margin_bottom">10dp</dimen>
     <dimen name="car_quick_controls_entry_points_button_margin_start">12dp</dimen>
     <dimen name="car_quick_controls_entry_points_button_margin_end">12dp</dimen>
-    <dimen name="car_quick_controls_entry_points_icon_width">36dp</dimen>
+    <dimen name="car_quick_controls_entry_points_icon_width">30dp</dimen>
     <dimen name="car_quick_controls_entry_points_icon_space">12dp</dimen>
 
     <dimen name="car_quick_controls_icon_drawable_width">24dp</dimen>
     <dimen name="car_quick_controls_icon_drawable_height">24dp</dimen>
 
-    <dimen name="car_read_only_status_icon_width">36dp</dimen>
-    <dimen name="car_read_only_status_icon_height">36dp</dimen>
+    <dimen name="car_read_only_status_icon_width">24dp</dimen>
+    <dimen name="car_read_only_status_icon_height">24dp</dimen>
 
     <dimen name="car_status_icon_panel_default_width">800dp</dimen>
     <dimen name="car_status_icon_panel_border_radius">12dp</dimen>

@@ -17,7 +17,7 @@
 package com.android.systemui.car.volume;
 
 import static android.car.media.CarAudioManager.AUDIO_FEATURE_VOLUME_GROUP_MUTING;
-import static android.car.media.CarAudioManager.PRIMARY_AUDIO_ZONE;
+import static android.car.media.CarAudioManager.INVALID_AUDIO_ZONE;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
@@ -28,13 +28,16 @@ import android.annotation.DrawableRes;
 import android.annotation.Nullable;
 import android.app.Dialog;
 import android.app.KeyguardManager;
+import android.app.UiModeManager;
 import android.car.Car;
+import android.car.CarOccupantZoneManager;
 import android.car.media.CarAudioManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
 import android.graphics.Color;
@@ -47,7 +50,6 @@ import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.os.UserHandle;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -67,6 +69,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.plugins.VolumeDialog;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.volume.Events;
 import com.android.systemui.volume.SystemUIInterpolators;
@@ -110,18 +113,23 @@ public class CarVolumeDialogImpl
     private final int mExpHoveringTimeout;
     private final CarServiceProvider mCarServiceProvider;
     private final ConfigurationController mConfigurationController;
+    private final UserTracker mUserTracker;
+    private final UiModeManager mUiModeManager;
 
     private Window mWindow;
     private CustomDialog mDialog;
     private RecyclerView mListView;
     private CarVolumeItemAdapter mVolumeItemsAdapter;
     private CarAudioManager mCarAudioManager;
+    private int mAudioZoneId = INVALID_AUDIO_ZONE;
     private boolean mHovering;
     private int mCurrentlyDisplayingGroupId;
     private int mPreviouslyDisplayingGroupId;
     private boolean mDismissing;
     private boolean mExpanded;
     private View mExpandIcon;
+    private boolean mHomeButtonPressedBroadcastReceiverRegistered;
+    private boolean mIsUiModeNight;
 
     private final CarAudioManager.CarVolumeCallback mVolumeChangeCallback =
             new CarAudioManager.CarVolumeCallback() {
@@ -141,10 +149,12 @@ public class CarVolumeDialogImpl
                 }
 
                 private void updateVolumeAndMute(int zoneId, int groupId, int flags) {
-                    // TODO: Include zoneId into consideration.
+                    if (zoneId != mAudioZoneId) {
+                        return;
+                    }
                     VolumeItem volumeItem = mAvailableVolumeItems.get(groupId);
-                    boolean muted = isGroupMuted(mCarAudioManager, groupId);
-                    int value = getSeekbarValue(mCarAudioManager, groupId);
+                    boolean muted = isGroupMuted(mCarAudioManager, zoneId, groupId);
+                    int value = getSeekbarValue(mCarAudioManager, zoneId, groupId);
 
                     boolean isShowing = mCarVolumeLineItems.stream().anyMatch(
                             item -> item.getGroupId() == groupId);
@@ -166,26 +176,43 @@ public class CarVolumeDialogImpl
             };
 
     private final CarServiceProvider.CarServiceOnConnectedListener mCarServiceOnConnectedListener =
-            car -> {
-                mExpanded = false;
-                mCarAudioManager = (CarAudioManager) car.getCarManager(Car.AUDIO_SERVICE);
-                int volumeGroupCount = mCarAudioManager.getVolumeGroupCount();
-                // Populates volume slider items from volume groups to UI.
-                for (int groupId = 0; groupId < volumeGroupCount; groupId++) {
-                    VolumeItem volumeItem = getVolumeItemForUsages(
-                            mCarAudioManager.getUsagesForVolumeGroupId(groupId));
-                    mAvailableVolumeItems.add(volumeItem);
-                    // The first one is the default item.
-                    if (groupId == 0) {
-                        clearAllAndSetupDefaultCarVolumeLineItem(0);
+            new CarServiceProvider.CarServiceOnConnectedListener() {
+                @Override
+                public void onConnected(Car car) {
+                    mExpanded = false;
+                    CarOccupantZoneManager carOccupantZoneManager =
+                            (CarOccupantZoneManager) car.getCarManager(
+                                    Car.CAR_OCCUPANT_ZONE_SERVICE);
+                    if (carOccupantZoneManager != null) {
+                        CarOccupantZoneManager.OccupantZoneInfo info =
+                                carOccupantZoneManager.getOccupantZoneForUser(
+                                        mUserTracker.getUserHandle());
+                        if (info != null) {
+                            mAudioZoneId = carOccupantZoneManager.getAudioZoneIdForOccupant(info);
+                        }
                     }
-                }
+                    if (mAudioZoneId == INVALID_AUDIO_ZONE) {
+                        return;
+                    }
+                    mCarAudioManager = (CarAudioManager) car.getCarManager(Car.AUDIO_SERVICE);
+                    int volumeGroupCount = mCarAudioManager.getVolumeGroupCount(mAudioZoneId);
+                    // Populates volume slider items from volume groups to UI.
+                    for (int groupId = 0; groupId < volumeGroupCount; groupId++) {
+                        VolumeItem volumeItem = getVolumeItemForUsages(
+                                mCarAudioManager.getUsagesForVolumeGroupId(mAudioZoneId, groupId));
+                        mAvailableVolumeItems.add(volumeItem);
+                        // The first one is the default item.
+                        if (groupId == 0) {
+                            clearAllAndSetupDefaultCarVolumeLineItem(0);
+                        }
+                    }
 
-                // If list is already initiated, update its content.
-                if (mVolumeItemsAdapter != null) {
-                    mVolumeItemsAdapter.notifyDataSetChanged();
+                    // If list is already initiated, update its content.
+                    if (mVolumeItemsAdapter != null) {
+                        mVolumeItemsAdapter.notifyDataSetChanged();
+                    }
+                    mCarAudioManager.registerCarVolumeCallback(mVolumeChangeCallback);
                 }
-                mCarAudioManager.registerCarVolumeCallback(mVolumeChangeCallback);
             };
 
     private final BroadcastReceiver mHomeButtonPressedBroadcastReceiver = new BroadcastReceiver() {
@@ -199,12 +226,28 @@ public class CarVolumeDialogImpl
         }
     };
 
+    private final UserTracker.Callback mUserTrackerCallback = new UserTracker.Callback() {
+        @Override
+        public void onUserChanged(int newUser, Context userContext) {
+            if (mHomeButtonPressedBroadcastReceiverRegistered) {
+                mContext.unregisterReceiver(mHomeButtonPressedBroadcastReceiver);
+                mContext.registerReceiverAsUser(mHomeButtonPressedBroadcastReceiver,
+                        mUserTracker.getUserHandle(),
+                        new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
+                        /* broadcastPermission= */ null, /* scheduler= */ null,
+                        Context.RECEIVER_EXPORTED);
+            }
+        }
+    };
+
     public CarVolumeDialogImpl(
             Context context,
             CarServiceProvider carServiceProvider,
-            ConfigurationController configurationController) {
+            ConfigurationController configurationController,
+            UserTracker userTracker) {
         mContext = context;
         mCarServiceProvider = carServiceProvider;
+        mUserTracker = userTracker;
         mKeyguard = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
         mNormalTimeout = mContext.getResources().getInteger(
                 R.integer.car_volume_dialog_display_normal_timeout);
@@ -215,21 +258,26 @@ public class CarVolumeDialogImpl
         mExpHoveringTimeout = mContext.getResources().getInteger(
                 R.integer.car_volume_dialog_display_expanded_hovering_timeout);
         mConfigurationController = configurationController;
+        mUiModeManager = mContext.getSystemService(UiModeManager.class);
+        mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
     }
 
-    private static int getSeekbarValue(CarAudioManager carAudioManager, int volumeGroupId) {
-        return carAudioManager.getGroupVolume(volumeGroupId);
+    private static int getSeekbarValue(CarAudioManager carAudioManager, int volumeZoneId,
+            int volumeGroupId) {
+        return carAudioManager.getGroupVolume(volumeZoneId, volumeGroupId);
     }
 
-    private static boolean isGroupMuted(CarAudioManager carAudioManager, int volumeGroupId) {
+    private static boolean isGroupMuted(CarAudioManager carAudioManager, int volumeZoneId,
+            int volumeGroupId) {
         if (!carAudioManager.isAudioFeatureEnabled(AUDIO_FEATURE_VOLUME_GROUP_MUTING)) {
             return false;
         }
-        return carAudioManager.isVolumeGroupMuted(PRIMARY_AUDIO_ZONE, volumeGroupId);
+        return carAudioManager.isVolumeGroupMuted(volumeZoneId, volumeGroupId);
     }
 
-    private static int getMaxSeekbarValue(CarAudioManager carAudioManager, int volumeGroupId) {
-        return carAudioManager.getGroupMaxVolume(volumeGroupId);
+    private static int getMaxSeekbarValue(CarAudioManager carAudioManager, int volumeZoneId,
+            int volumeGroupId) {
+        return carAudioManager.getGroupMaxVolume(volumeZoneId, volumeGroupId);
     }
 
     /**
@@ -239,11 +287,18 @@ public class CarVolumeDialogImpl
     @Override
     public void init(int windowType, Callback callback) {
         initDialog();
-        mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
 
-        mContext.registerReceiverAsUser(mHomeButtonPressedBroadcastReceiver, UserHandle.CURRENT,
-                new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* broadcastPermission= */
-                null, /* scheduler= */ null, Context.RECEIVER_EXPORTED);
+        // The VolumeDialog is not initialized until the first volume change for a particular zone
+        // (to improve boot time by deferring initialization). Therefore, the dialog should be shown
+        // on init to handle the first audio change.
+        mHandler.obtainMessage(H.SHOW, Events.SHOW_REASON_VOLUME_CHANGED).sendToTarget();
+
+        mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
+        mContext.registerReceiverAsUser(mHomeButtonPressedBroadcastReceiver,
+                mUserTracker.getUserHandle(), new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
+                /* broadcastPermission= */ null, /* scheduler= */ null, Context.RECEIVER_EXPORTED);
+        mHomeButtonPressedBroadcastReceiverRegistered = true;
+        mUserTracker.addCallback(mUserTrackerCallback, mContext.getMainExecutor());
         mConfigurationController.addCallback(this);
     }
 
@@ -251,7 +306,9 @@ public class CarVolumeDialogImpl
     public void destroy() {
         mHandler.removeCallbacksAndMessages(/* token= */ null);
 
+        mUserTracker.removeCallback(mUserTrackerCallback);
         mContext.unregisterReceiver(mHomeButtonPressedBroadcastReceiver);
+        mHomeButtonPressedBroadcastReceiverRegistered = false;
 
         cleanupAudioManager();
         mConfigurationController.removeCallback(this);
@@ -262,6 +319,20 @@ public class CarVolumeDialogImpl
         if (mListView != null) {
             mListView.setLayoutDirection(
                     isLayoutRtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
+        }
+    }
+
+    @Override
+    public void onConfigChanged(Configuration newConfig) {
+        ConfigurationController.ConfigurationListener.super.onConfigChanged(newConfig);
+        boolean isConfigNightMode = newConfig.isNightModeActive();
+
+        if (isConfigNightMode != mIsUiModeNight) {
+            mIsUiModeNight = isConfigNightMode;
+            mUiModeManager.setNightModeActivated(mIsUiModeNight);
+            // Call notifyDataSetChanged to force trigger the mVolumeItemsAdapter#onBindViewHolder
+            // and reset items background color. notify() or invalidate() don't work here.
+            mVolumeItemsAdapter.notifyDataSetChanged();
         }
     }
 
@@ -369,7 +440,7 @@ public class CarVolumeDialogImpl
         mCarVolumeLineItems.clear();
         VolumeItem volumeItem = mAvailableVolumeItems.get(groupId);
         volumeItem.mDefaultItem = true;
-        addCarVolumeListItem(volumeItem, /* volumeGroupId = */ groupId,
+        addCarVolumeListItem(volumeItem, mAudioZoneId, /* volumeGroupId = */ groupId,
                 R.drawable.car_ic_keyboard_arrow_down, new ExpandIconListener());
     }
 
@@ -484,15 +555,15 @@ public class CarVolumeDialogImpl
         return result;
     }
 
-    private CarVolumeItem createCarVolumeListItem(VolumeItem volumeItem, int volumeGroupId,
-            Drawable supplementalIcon, int seekbarProgressValue,
+    private CarVolumeItem createCarVolumeListItem(VolumeItem volumeItem, int volumeZoneId,
+            int volumeGroupId, Drawable supplementalIcon, int seekbarProgressValue,
             boolean isMuted, @Nullable View.OnClickListener supplementalIconOnClickListener) {
         CarVolumeItem carVolumeItem = new CarVolumeItem();
-        carVolumeItem.setMax(getMaxSeekbarValue(mCarAudioManager, volumeGroupId));
+        carVolumeItem.setMax(getMaxSeekbarValue(mCarAudioManager, volumeZoneId, volumeGroupId));
         carVolumeItem.setProgress(seekbarProgressValue);
         carVolumeItem.setIsMuted(isMuted);
         carVolumeItem.setOnSeekBarChangeListener(
-                new CarVolumeDialogImpl.VolumeSeekBarChangeListener(volumeGroupId,
+                new CarVolumeDialogImpl.VolumeSeekBarChangeListener(volumeZoneId, volumeGroupId,
                         mCarAudioManager));
         carVolumeItem.setGroupId(volumeGroupId);
 
@@ -521,23 +592,26 @@ public class CarVolumeDialogImpl
         return carVolumeItem;
     }
 
-    private CarVolumeItem addCarVolumeListItem(VolumeItem volumeItem, int volumeGroupId,
-            int supplementalIconId,
+    private CarVolumeItem addCarVolumeListItem(VolumeItem volumeItem, int volumeZoneId,
+            int volumeGroupId, int supplementalIconId,
             @Nullable View.OnClickListener supplementalIconOnClickListener) {
-        int seekbarProgressValue = getSeekbarValue(mCarAudioManager, volumeGroupId);
-        boolean isMuted = isGroupMuted(mCarAudioManager, volumeGroupId);
+        int seekbarProgressValue = getSeekbarValue(mCarAudioManager, volumeZoneId, volumeGroupId);
+        boolean isMuted = isGroupMuted(mCarAudioManager, volumeZoneId, volumeGroupId);
         Drawable supplementalIcon = supplementalIconId == 0 ? null : mContext.getDrawable(
                 supplementalIconId);
-        CarVolumeItem carVolumeItem = createCarVolumeListItem(volumeItem, volumeGroupId,
-                supplementalIcon, seekbarProgressValue, isMuted, supplementalIconOnClickListener);
+        CarVolumeItem carVolumeItem = createCarVolumeListItem(volumeItem, volumeZoneId,
+                volumeGroupId, supplementalIcon, seekbarProgressValue, isMuted,
+                supplementalIconOnClickListener);
         mCarVolumeLineItems.add(carVolumeItem);
         return carVolumeItem;
     }
 
     private void cleanupAudioManager() {
-        mCarAudioManager.unregisterCarVolumeCallback(mVolumeChangeCallback);
+        if (mCarAudioManager != null) {
+            mCarAudioManager.unregisterCarVolumeCallback(mVolumeChangeCallback);
+            mCarAudioManager = null;
+        }
         mCarVolumeLineItems.clear();
-        mCarAudioManager = null;
     }
 
     /**
@@ -668,7 +742,8 @@ public class CarVolumeDialogImpl
             for (int groupId = 0; groupId < mAvailableVolumeItems.size(); ++groupId) {
                 if (groupId != mCurrentlyDisplayingGroupId) {
                     VolumeItem volumeItem = mAvailableVolumeItems.get(groupId);
-                    addCarVolumeListItem(volumeItem, groupId, /* supplementalIconId= */ 0,
+                    addCarVolumeListItem(volumeItem, mAudioZoneId, groupId,
+                            /* supplementalIconId= */ 0,
                             /* supplementalIconOnClickListener= */ null);
                 }
             }
@@ -698,10 +773,13 @@ public class CarVolumeDialogImpl
 
     private final class VolumeSeekBarChangeListener implements OnSeekBarChangeListener {
 
+        private final int mVolumeZoneId;
         private final int mVolumeGroupId;
         private final CarAudioManager mCarAudioManager;
 
-        private VolumeSeekBarChangeListener(int volumeGroupId, CarAudioManager carAudioManager) {
+        private VolumeSeekBarChangeListener(int volumeZoneId, int volumeGroupId,
+                CarAudioManager carAudioManager) {
+            mVolumeZoneId = volumeZoneId;
             mVolumeGroupId = volumeGroupId;
             mCarAudioManager = carAudioManager;
         }
@@ -721,7 +799,7 @@ public class CarVolumeDialogImpl
             mAvailableVolumeItems.get(mVolumeGroupId).mProgress = progress;
             mAvailableVolumeItems.get(
                     mVolumeGroupId).mCarVolumeItem.setProgress(progress);
-            mCarAudioManager.setGroupVolume(mVolumeGroupId, progress, 0);
+            mCarAudioManager.setGroupVolume(mVolumeZoneId, mVolumeGroupId, progress, 0);
         }
 
         @Override

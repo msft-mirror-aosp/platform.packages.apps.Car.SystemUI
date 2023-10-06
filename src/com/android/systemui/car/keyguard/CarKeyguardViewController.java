@@ -317,7 +317,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
     @Override
     @MainThread
     public void onCancelClicked() {
-        getOverlayViewGlobalStateController().setWindowNeedsInput(/* needsInput= */ false);
         mPrimaryBouncerInteractor.hide();
         mKeyguardCancelClickedListener.onCancelClicked();
     }

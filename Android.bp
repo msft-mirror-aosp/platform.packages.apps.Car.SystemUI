@@ -116,10 +116,11 @@ android_library {
         "SystemUI-tags",
         "SystemUI-proto",
         "metrics-helper-lib",
-        "androidx.test.rules", "hamcrest-library",
+        "androidx.test.rules",
+        "hamcrest-library",
         "mockito-target-extended-minus-junit4",
         "testables",
-        "truth-prebuilt",
+        "truth",
         "testng",
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
@@ -142,7 +143,9 @@ android_library {
     },
 
     // TODO(b/218518451) re-enable errorprone.
-    errorprone: {enabled: false},
+    errorprone: {
+        enabled: false,
+    },
 }
 
 android_app {
@@ -160,7 +163,7 @@ android_app {
 
     resource_dirs: [],
 
-     overrides: [
+    overrides: [
         "SystemUI",
     ],
 
@@ -189,5 +192,8 @@ android_app {
 
     plugins: ["dagger2-compiler"],
 
-    required: ["privapp_whitelist_com.android.systemui", "allowed_privapp_com.android.carsystemui"],
+    required: [
+        "privapp_whitelist_com.android.systemui",
+        "allowed_privapp_com.android.carsystemui",
+    ],
 }

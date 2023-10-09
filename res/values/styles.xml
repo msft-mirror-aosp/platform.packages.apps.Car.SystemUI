@@ -63,8 +63,8 @@
         <item name="android:layout_marginEnd">@dimen/system_bar_button_margin</item>
         <item name="android:padding">@dimen/system_bar_button_padding</item>
         <item name="android:gravity">center</item>
-        <item name="android:background">@drawable/system_bar_button_background</item>
-        <item name="unselectedAlpha">0.56</item>
+        <item name="android:background">@drawable/nav_bar_button_background</item>
+        <item name="unselectedAlpha">1.0</item>
     </style>
 
     <!-- todo(b/304320644): update SystemBarButton -->

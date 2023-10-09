@@ -21,8 +21,6 @@
     <color name="car_user_switcher_add_user_background_color">#202124</color>
     <color name="car_user_switcher_add_user_add_sign_color">#DADCE0</color>
     <color name="car_managed_device_icon_color">@android:color/white</color>
-    <color name="car_nav_icon_fill_color">#8F8F8F</color>
-    <color name="car_nav_icon_fill_color_selected">#ffffff</color>
     <!-- colors for seekbar -->
     <color name="car_seekbar_track_background">#131315</color>
     <color name="car_seekbar_track_secondary_progress">@*android:color/car_accent</color>
@@ -45,13 +43,14 @@
     <color name="system_bar_text_unavailable_color">#B0B0B0</color>
     <drawable name="system_bar_background">#000000</drawable>
 
+    <!-- colors for nav bar -->
+    <color name="car_nav_icon_fill_color">@color/car_primary_100</color>
+    <color name="car_nav_icon_background_color">@color/car_surface</color>
+    <color name="car_nav_icon_background_color_selected">@color/car_primary</color>
+    <color name="car_nav_minimize_icon_fill_color">@android:color/black</color>
+
     <!-- colors for quick controls entry points icon   -->
     <color name="car_quick_controls_icon_drawable_color">#FFFFFF</color>
-
-    <!-- colors for hvac temperature view -->
-    <color name="hvac_temperature_adjust_button_color">#3C4043</color>
-    <color name="hvac_temperature_decrease_arrow_color">#8AB4F8</color>
-    <color name="hvac_temperature_increase_arrow_color">#F28B82</color>
 
     <!-- The background color of the notification shade -->
     <color name="notification_shade_background_color">#D6000000</color>

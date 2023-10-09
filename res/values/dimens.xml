@@ -77,11 +77,11 @@
 
     <dimen name="hvac_container_padding">16dp</dimen>
     <dimen name="hvac_temperature_bar_margin">32dp</dimen>
-    <dimen name="hvac_temperature_text_size">56sp</dimen>
-    <!--  todo(b/304320644): Update hvac_temperature_text_size value -->
-    <dimen name="hvac_temperature_text_size_dock">44sp</dimen>
-    <dimen name="hvac_temperature_text_padding">@*android:dimen/car_padding_1</dimen>
-    <dimen name="hvac_temperature_button_size">76dp</dimen>
+    <dimen name="hvac_temperature_text_size">44sp</dimen>
+    <dimen name="hvac_temperature_text_padding">10dp</dimen>
+    <dimen name="hvac_temperature_button_size">52dp</dimen>
+    <dimen name="hvac_temperature_icon_size">36dp</dimen>
+    <dimen name="hvac_temperature_button_padding">12dp</dimen>
     <!--These values represent MIN and MAX for hvac-->
     <item name="hvac_min_value_celsius" format="float" type="dimen">16</item>
     <item name="hvac_max_value_celsius" format="float" type="dimen">28</item>
@@ -280,6 +280,8 @@
     <dimen name="car_quick_controls_footer_button_horizontal_padding">24dp</dimen>
     <dimen name="car_quick_controls_footer_button_start_margin">8dp</dimen>
     <dimen name="car_quick_controls_footer_button_min_height">56dp</dimen>
+
+    <dimen name="car_nav_bar_button_selected_corner_radius">24dp</dimen>
 
     <!-- dimensions for HVAC   -->
 

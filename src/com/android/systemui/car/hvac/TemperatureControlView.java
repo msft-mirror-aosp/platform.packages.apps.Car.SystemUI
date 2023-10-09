@@ -166,8 +166,11 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
      */
     protected void updateTemperatureViewUiThread() {
         mTempTextView.setText(mTempInDisplay);
-        mTempTextView.setTextColor(mPowerOn && mTemperatureSetAvailable
+        boolean canChangeTemperature = mPowerOn && mTemperatureSetAvailable;
+        mTempTextView.setTextColor(canChangeTemperature
                 ? mAvailableTextColor : mUnavailableTextColor);
+        mIncreaseButton.setVisibility(canChangeTemperature ? View.VISIBLE : View.INVISIBLE);
+        mDecreaseButton.setVisibility(canChangeTemperature ? View.VISIBLE : View.INVISIBLE);
     }
 
     protected String getTempInDisplay() {

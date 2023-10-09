@@ -35,7 +35,6 @@ import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardSecurityContainerController;
 import com.android.keyguard.KeyguardSecurityModel;
 import com.android.keyguard.KeyguardUpdateMonitor;
@@ -97,8 +96,6 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
     @Mock
     private PrimaryBouncerToGoneTransitionViewModel mPrimaryBouncerToGoneTransitionViewModel;
     @Mock
-    private LockPatternUtils mLockPatternUtils;
-    @Mock
     private BouncerView mBouncerView;
 
     @Before
@@ -137,7 +134,6 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
                 mKeyguardBouncerViewModel,
                 mPrimaryBouncerToGoneTransitionViewModel,
                 mKeyguardBouncerComponentFactory,
-                mLockPatternUtils,
                 mBouncerView
         );
         mCarKeyguardViewController.inflate((ViewGroup) LayoutInflater.from(mContext).inflate(

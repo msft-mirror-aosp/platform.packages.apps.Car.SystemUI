@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.keyguard;
 
-import static com.android.internal.widget.LockPatternUtils.CREDENTIAL_TYPE_PATTERN;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -35,7 +34,6 @@ import android.view.WindowManager;
 import androidx.annotation.MainThread;
 
 import com.android.car.ui.FocusParkingView;
-import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.LockPatternView;
 import com.android.keyguard.KeyguardMessageAreaController;
 import com.android.keyguard.KeyguardSecurityModel;
@@ -102,7 +100,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private final KeyguardSecurityModel mKeyguardSecurityModel;
     private final KeyguardBouncerViewModel mKeyguardBouncerViewModel;
     private final KeyguardBouncerComponent.Factory mKeyguardBouncerComponentFactory;
-    private final LockPatternUtils mLockPatternUtils;
     private final BouncerView mBouncerView;
     private final PrimaryBouncerExpansionCallback mExpansionCallback =
             new PrimaryBouncerExpansionCallback() {
@@ -124,15 +121,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
                 @Override
                 public void onStartingToShow() {
-                    // TODO: Remove this code block when b/158386500 is addressed properly.
-                    int currentUser = mUserTracker.getUserId();
-                    if (mLockPatternUtils.getCredentialTypeForUser(currentUser)
-                            == CREDENTIAL_TYPE_PATTERN
-                            && !mLockPatternUtils.isVisiblePatternEnabled(currentUser)) {
-                        mLockPatternUtils.setVisiblePatternEnabled(true, currentUser);
-                        Log.w(TAG, "Pattern is invisible for the current user. "
-                                + "Setting it to be visible.");
-                    }
                 }
 
                 @Override
@@ -179,13 +167,11 @@ public class CarKeyguardViewController extends OverlayViewController implements
             KeyguardBouncerViewModel keyguardBouncerViewModel,
             PrimaryBouncerToGoneTransitionViewModel primaryBouncerToGoneTransitionViewModel,
             KeyguardBouncerComponent.Factory keyguardBouncerComponentFactory,
-            LockPatternUtils lockPatternUtils,
             BouncerView bouncerView,
             KeyguardMessageAreaController.Factory messageAreaControllerFactory,
             BouncerLogger bouncerLogger,
             FeatureFlags featureFlags,
             BouncerMessageInteractor bouncerMessageInteractor) {
-
         super(R.id.keyguard_stub, overlayViewGlobalStateController);
 
         mContext = context;
@@ -204,7 +190,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mKeyguardSecurityModel = keyguardSecurityModel;
         mKeyguardBouncerViewModel = keyguardBouncerViewModel;
         mKeyguardBouncerComponentFactory = keyguardBouncerComponentFactory;
-        mLockPatternUtils = lockPatternUtils;
         mPrimaryBouncerToGoneTransitionViewModel = primaryBouncerToGoneTransitionViewModel;
         mBouncerView = bouncerView;
 

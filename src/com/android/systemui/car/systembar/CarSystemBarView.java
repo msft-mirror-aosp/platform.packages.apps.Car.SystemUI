@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 
 import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
+import com.android.systemui.car.hvac.TemperatureControlView;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
@@ -60,12 +61,15 @@ public class CarSystemBarView extends LinearLayout {
 
     private final boolean mConsumeTouchWhenPanelOpen;
     private final boolean mButtonsDraggable;
+    private final boolean mIsDockEnabled;
 
     private CarSystemBarButton mHomeButton;
     private CarSystemBarButton mPassengerHomeButton;
     private View mNavButtons;
     private CarSystemBarButton mNotificationsButton;
     private HvacButton mHvacButton;
+    private TemperatureControlView mDriverHvacView;
+    private TemperatureControlView mPassengerHvacView;
     private NotificationsShadeController mNotificationsShadeController;
     private HvacPanelController mHvacPanelController;
     private View mLockScreenButtons;
@@ -82,6 +86,7 @@ public class CarSystemBarView extends LinearLayout {
         mConsumeTouchWhenPanelOpen = getResources().getBoolean(
                 R.bool.config_consumeSystemBarTouchWhenNotificationPanelOpen);
         mButtonsDraggable = getResources().getBoolean(R.bool.config_systemBarButtonsDraggable);
+        mIsDockEnabled = getResources().getBoolean(R.bool.config_enableDock);
     }
 
     @Override
@@ -93,15 +98,15 @@ public class CarSystemBarView extends LinearLayout {
         mOcclusionButtons = findViewById(R.id.occlusion_buttons);
         mNotificationsButton = findViewById(R.id.notifications);
         mHvacButton = findViewById(R.id.hvac);
+        mDriverHvacView = findViewById(R.id.driver_hvac);
+        mPassengerHvacView = findViewById(R.id.passenger_hvac);
         mQcEntryPointsContainer = findViewById(R.id.qc_entry_points_container);
         mReadOnlyIconsContainer = findViewById(R.id.read_only_icons_container);
         mControlCenterButton = findViewById(R.id.control_center_nav);
         if (mNotificationsButton != null) {
             mNotificationsButton.setOnClickListener(this::onNotificationsClick);
         }
-        if (mHvacButton != null) {
-            mHvacButton.setOnClickListener(this::onHvacClick);
-        }
+        setupHvacButton();
         // Needs to be clickable so that it will receive ACTION_MOVE events.
         setClickable(true);
         // Needs to not be focusable so rotary won't highlight the entire nav bar.
@@ -123,6 +128,15 @@ public class CarSystemBarView extends LinearLayout {
     void setupHvacButton() {
         if (mHvacButton != null) {
             mHvacButton.setOnClickListener(this::onHvacClick);
+        }
+
+        if (mIsDockEnabled) {
+            if (mDriverHvacView != null) {
+                mDriverHvacView.setTemperatureTextClickListener(this::onHvacClick);
+            }
+            if (mPassengerHvacView != null) {
+                mPassengerHvacView.setTemperatureTextClickListener(this::onHvacClick);
+            }
         }
     }
 

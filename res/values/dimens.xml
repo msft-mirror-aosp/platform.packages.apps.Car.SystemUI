@@ -75,7 +75,9 @@
     <dimen name="hvac_container_padding">16dp</dimen>
     <dimen name="hvac_temperature_bar_margin">32dp</dimen>
     <dimen name="hvac_temperature_text_size">56sp</dimen>
-    <dimen name="hvac_temperature_text_padding">8dp</dimen>
+    <!--  todo(b/304320644): Update hvac_temperature_text_size value -->
+    <dimen name="hvac_temperature_text_size_dock">44sp</dimen>
+    <dimen name="hvac_temperature_text_padding">@*android:dimen/car_padding_1</dimen>
     <dimen name="hvac_temperature_button_size">76dp</dimen>
     <!--These values represent MIN and MAX for hvac-->
     <item name="hvac_min_value_celsius" format="float" type="dimen">16</item>
@@ -231,6 +233,7 @@
     <!-- In order to change the height of the top nav bar, overlay status_bar_height in
          frameworks/base/core/res/res instead. -->
     <dimen name="car_top_system_bar_height">@*android:dimen/status_bar_height</dimen>
+    <dimen name="car_nav_buttons_margin">@*android:dimen/car_padding_3</dimen>
 
     <dimen name="car_user_switcher_container_height">420dp</dimen>
     <!-- This must be the negative of car_user_switcher_container_height for the animation. -->
@@ -440,4 +443,6 @@
     <dimen name="pin_pad_key_height">80dp</dimen>
     <dimen name="pin_pad_key_margin">12dp</dimen>
     <dimen name="pin_pad_icon_size">@*android:dimen/car_primary_icon_size</dimen>
+
+    <dimen name="dock_container_margin">@*android:dimen/car_padding_4</dimen>
 </resources>

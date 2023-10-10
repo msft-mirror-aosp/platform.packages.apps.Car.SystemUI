@@ -32,6 +32,7 @@ import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
 import com.android.systemui.car.systembar.CarSystemBarController.NotificationsShadeController;
+import com.android.systemui.settings.UserTracker;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
@@ -60,6 +61,8 @@ public class CarSystemBarView extends LinearLayout {
     private final boolean mConsumeTouchWhenPanelOpen;
     private final boolean mButtonsDraggable;
 
+    private CarSystemBarButton mHomeButton;
+    private CarSystemBarButton mPassengerHomeButton;
     private View mNavButtons;
     private CarSystemBarButton mNotificationsButton;
     private HvacButton mHvacButton;
@@ -72,6 +75,7 @@ public class CarSystemBarView extends LinearLayout {
     // used to wire in open/close gestures for overlay panels
     private Set<OnTouchListener> mStatusBarWindowTouchListeners;
     private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
+    private CarSystemBarButton mControlCenterButton;
 
     public CarSystemBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -82,6 +86,8 @@ public class CarSystemBarView extends LinearLayout {
 
     @Override
     public void onFinishInflate() {
+        mHomeButton = findViewById(R.id.home);
+        mPassengerHomeButton = findViewById(R.id.passenger_home);
         mNavButtons = findViewById(R.id.nav_buttons);
         mLockScreenButtons = findViewById(R.id.lock_screen_nav_buttons);
         mOcclusionButtons = findViewById(R.id.occlusion_buttons);
@@ -89,6 +95,7 @@ public class CarSystemBarView extends LinearLayout {
         mHvacButton = findViewById(R.id.hvac);
         mQcEntryPointsContainer = findViewById(R.id.qc_entry_points_container);
         mReadOnlyIconsContainer = findViewById(R.id.read_only_icons_container);
+        mControlCenterButton = findViewById(R.id.control_center_nav);
         if (mNotificationsButton != null) {
             mNotificationsButton.setOnClickListener(this::onNotificationsClick);
         }
@@ -99,6 +106,18 @@ public class CarSystemBarView extends LinearLayout {
         setClickable(true);
         // Needs to not be focusable so rotary won't highlight the entire nav bar.
         setFocusable(false);
+    }
+
+    void updateHomeButtonVisibility(boolean isPassenger) {
+        if (!isPassenger) {
+            return;
+        }
+        if (mPassengerHomeButton != null) {
+            if (mHomeButton != null) {
+                mHomeButton.setVisibility(GONE);
+            }
+            mPassengerHomeButton.setVisibility(VISIBLE);
+        }
     }
 
     void setupHvacButton() {
@@ -119,6 +138,27 @@ public class CarSystemBarView extends LinearLayout {
         if (mReadOnlyIconsContainer != null) {
             readOnlyIconsController.addIconViews(mReadOnlyIconsContainer,
                     /* shouldAttachPanel= */false);
+        }
+    }
+
+    void setupSystemBarButtons(UserTracker userTracker) {
+        setupSystemBarButtons(this, userTracker);
+    }
+
+    private void setupSystemBarButtons(View v, UserTracker userTracker) {
+        if (v instanceof CarSystemBarButton) {
+            ((CarSystemBarButton) v).setUserTracker(userTracker);
+        } else if (v instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) v;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                setupSystemBarButtons(viewGroup.getChildAt(i), userTracker);
+            }
+        }
+    }
+
+    void updateControlCenterButtonVisibility(boolean isMumd) {
+        if (mControlCenterButton != null) {
+            mControlCenterButton.setVisibility(isMumd ? VISIBLE : GONE);
         }
     }
 

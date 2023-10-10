@@ -18,6 +18,7 @@ package com.android.systemui.car.activity;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.car.Car;
+import android.car.CarOccupantZoneManager;
 import android.car.app.CarActivityManager;
 import android.car.content.pm.CarPackageManager;
 import android.car.drivingstate.CarUxRestrictions;
@@ -32,10 +33,11 @@ import android.hardware.display.DisplayManager;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Slog;
-import android.view.Display;
 import android.view.DisplayInfo;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -53,8 +55,9 @@ import java.util.List;
  * Additional information on blocked Activity should be passed as intent extras.
  */
 public class ActivityBlockingActivity extends Activity {
+    private static final int ACTIVITY_MONITORING_DELAY_MS = 1000;
     private static final String TAG = "BlockingActivity";
-    private static final int EGL_CONTEXT_VERSION = 3;
+    private static final int EGL_CONTEXT_VERSION = 2;
     private static final int EGL_CONFIG_SIZE = 8;
     private static final int INVALID_TASK_ID = -1;
     private final Object mLock = new Object();
@@ -67,11 +70,13 @@ public class ActivityBlockingActivity extends Activity {
     private CarUxRestrictionsManager mUxRManager;
     private CarPackageManager mCarPackageManager;
     private CarActivityManager mCarActivityManager;
+    private CarOccupantZoneManager mCarOccupantZoneManager;
 
     private Button mExitButton;
     private Button mToggleDebug;
 
     private int mBlockedTaskId;
+    private final Handler mHandler = new Handler();
 
     private final View.OnClickListener mOnExitButtonClickedListener =
             v -> {
@@ -113,6 +118,7 @@ public class ActivityBlockingActivity extends Activity {
                             Car.CAR_ACTIVITY_SERVICE);
                     mUxRManager = (CarUxRestrictionsManager) car.getCarManager(
                             Car.CAR_UX_RESTRICTION_SERVICE);
+                    mCarOccupantZoneManager = car.getCarManager(CarOccupantZoneManager.class);
                     // This activity would have been launched only in a restricted state.
                     // But ensuring when the service connection is established, that we are still
                     // in a restricted state.
@@ -145,9 +151,8 @@ public class ActivityBlockingActivity extends Activity {
         String blockedActivity = getIntent().getStringExtra(
                 CarPackageManager.BLOCKING_INTENT_EXTRA_BLOCKED_ACTIVITY_NAME);
         if (!TextUtils.isEmpty(blockedActivity)) {
-            if (areAllVisibleActivitiesDistractionOptimised()) {
-                Slog.e(TAG, "All visible activities are already DO, so finishing");
-                finish();
+            boolean finished = finishIfActivitiesAreDistractionOptimised();
+            if (finished) {
                 return;
             }
 
@@ -180,6 +185,17 @@ public class ActivityBlockingActivity extends Activity {
         finish();
     }
 
+    private boolean finishIfActivitiesAreDistractionOptimised() {
+        if (areAllVisibleActivitiesDistractionOptimised()) {
+            Slog.i(TAG, "All visible activities are already DO, so finishing");
+            finish();
+            return true;
+        }
+        mHandler.postDelayed(() -> finishIfActivitiesAreDistractionOptimised(),
+                ACTIVITY_MONITORING_DELAY_MS);
+        return false;
+    }
+
     private void setupGLSurface() {
         DisplayManager displayManager = (DisplayManager) getApplicationContext().getSystemService(
                 Context.DISPLAY_SERVICE);
@@ -190,12 +206,7 @@ public class ActivityBlockingActivity extends Activity {
 
         Rect windowRect = getAppWindowRect();
 
-        // We currently don't support blur for secondary display
-        // (because it is hard to take a screenshot of a secondary display)
-        // So for secondary displays, the GLSurfaceView will not appear blurred
-        boolean shouldRenderBlurred = getDisplayId() == Display.DEFAULT_DISPLAY;
-
-        mSurfaceRenderer = new BlurredSurfaceRenderer(this, windowRect, shouldRenderBlurred);
+        mSurfaceRenderer = new BlurredSurfaceRenderer(this, windowRect, getDisplayId());
 
         mGLSurfaceView = findViewById(R.id.blurred_surface_view);
         mGLSurfaceView.setEGLContextClientVersion(EGL_CONTEXT_VERSION);
@@ -366,6 +377,7 @@ public class ActivityBlockingActivity extends Activity {
             mToggleDebug.getViewTreeObserver().removeOnGlobalLayoutListener(
                     mOnGlobalLayoutListener);
         }
+        mHandler.removeCallbacksAndMessages(null);
         mCar.disconnect();
     }
 
@@ -385,10 +397,25 @@ public class ActivityBlockingActivity extends Activity {
             return;
         }
 
+        int displayId = getDisplayId();
+        int userOnDisplay = mCarOccupantZoneManager.getUserForDisplayId(displayId);
+        if (userOnDisplay == CarOccupantZoneManager.INVALID_USER_ID) {
+            Slog.e(TAG, "can not find user on display " + displayId
+                    + " to start Home");
+            finish();
+        }
+
         Intent startMain = new Intent(Intent.ACTION_MAIN);
+
+        int driverDisplayId = mCarOccupantZoneManager.getDisplayIdForDriver(
+                CarOccupantZoneManager.DISPLAY_TYPE_MAIN);
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Slog.d(TAG, String.format("display id: %d, driver display id: %d",
+                    displayId, driverDisplayId));
+        }
         startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startMain);
+        startActivityAsUser(startMain, UserHandle.of(userOnDisplay));
         finish();
     }
 

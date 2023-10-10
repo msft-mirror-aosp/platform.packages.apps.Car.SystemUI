@@ -19,6 +19,8 @@ package com.android.systemui.car.systembar;
 import static android.app.WindowConfiguration.ACTIVITY_TYPE_UNDEFINED;
 import static android.app.WindowConfiguration.WINDOWING_MODE_FULLSCREEN;
 
+import static com.android.systemui.car.users.CarSystemUIUserUtil.getCurrentUserHandle;
+
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.ActivityTaskManager;
@@ -29,7 +31,6 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.RemoteException;
-import android.os.UserHandle;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -41,6 +42,7 @@ import androidx.annotation.Nullable;
 
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
 
 import java.net.URISyntaxException;
@@ -64,6 +66,8 @@ public class CarSystemBarButton extends LinearLayout {
 
     private final Context mContext;
     private final ActivityManager mActivityManager;
+    @Nullable
+    private UserTracker mUserTracker;
     private AlphaOptimizedImageView mIcon;
     private AlphaOptimizedImageView mMoreIcon;
     private ImageView mUnseenIcon;
@@ -95,6 +99,10 @@ public class CarSystemBarButton extends LinearLayout {
 
     public CarSystemBarButton(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        // Do not move this init call. All logic should be carried out after this.
+        init();
+
         mContext = context;
         mActivityManager = mContext.getSystemService(ActivityManager.class);
         View.inflate(mContext, R.layout.car_system_bar_button, /* root= */ this);
@@ -105,6 +113,12 @@ public class CarSystemBarButton extends LinearLayout {
         setUpIntents(typedArray);
         setUpIcons(typedArray);
         typedArray.recycle();
+    }
+
+    /**
+     * Initializer for child classes.
+     */
+    protected void init() {
     }
 
     /**
@@ -119,12 +133,12 @@ public class CarSystemBarButton extends LinearLayout {
         super.setSelected(selected);
         mSelected = selected;
 
-        refreshIconAlpha();
+        refreshIconAlpha(mIcon);
 
         if (mShowMoreWhenSelected && mMoreIcon != null) {
             mMoreIcon.setVisibility(selected ? VISIBLE : GONE);
         }
-        updateImage();
+        updateImage(mIcon);
     }
 
     /** Gets whether the icon is in a selected state. */
@@ -137,7 +151,7 @@ public class CarSystemBarButton extends LinearLayout {
      */
     public void setUnseen(boolean hasUnseen) {
         mHasUnseen = hasUnseen;
-        updateImage();
+        updateImage(mIcon);
     }
 
     /**
@@ -147,8 +161,8 @@ public class CarSystemBarButton extends LinearLayout {
     public void setDisabled(boolean disabled, @Nullable Runnable runnable) {
         mDisabled = disabled;
         mOnClickWhileDisabledRunnable = runnable;
-        refreshIconAlpha();
-        updateImage();
+        refreshIconAlpha(mIcon);
+        updateImage(mIcon);
     }
 
     /** Gets whether the icon is disabled */
@@ -169,7 +183,7 @@ public class CarSystemBarButton extends LinearLayout {
      */
     public void setAppIcon(Drawable appIcon) {
         mAppIcon = appIcon;
-        updateImage();
+        updateImage(mIcon);
     }
 
     /** Gets the icon of the app currently associated to the role of this button. */
@@ -245,7 +259,6 @@ public class CarSystemBarButton extends LinearLayout {
         return mHighlightWhenSelected || mShowMoreWhenSelected;
     }
 
-    @VisibleForTesting
     protected float getSelectedAlpha() {
         return mSelectedAlpha;
     }
@@ -319,18 +332,19 @@ public class CarSystemBarButton extends LinearLayout {
             boolean startState = mSelected;
             Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
             intent.putExtra(EXTRA_DIALOG_CLOSE_REASON, DIALOG_CLOSE_REASON_CAR_SYSTEMBAR_BUTTON);
-            mContext.sendBroadcastAsUser(intent, UserHandle.CURRENT);
+            mContext.sendBroadcastAsUser(intent, getCurrentUserHandle(mContext, mUserTracker));
 
             boolean intentLaunched = false;
             try {
                 if (mBroadcastIntent) {
-                    mContext.sendBroadcastAsUser(toSend, UserHandle.CURRENT);
+                    mContext.sendBroadcastAsUser(toSend,
+                            getCurrentUserHandle(mContext, mUserTracker));
                     return;
                 }
                 ActivityOptions options = ActivityOptions.makeBasic();
                 options.setLaunchDisplayId(mContext.getDisplayId());
                 mContext.startActivityAsUser(toSend, options.toBundle(),
-                        UserHandle.CURRENT);
+                        getCurrentUserHandle(mContext, mUserTracker));
                 intentLaunched = true;
             } catch (Exception e) {
                 Log.e(TAG, "Failed to launch intent", e);
@@ -362,18 +376,22 @@ public class CarSystemBarButton extends LinearLayout {
         return v -> {
             Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
             intent.putExtra(EXTRA_DIALOG_CLOSE_REASON, DIALOG_CLOSE_REASON_CAR_SYSTEMBAR_BUTTON);
-            mContext.sendBroadcastAsUser(intent, UserHandle.CURRENT);
+            mContext.sendBroadcastAsUser(intent, getCurrentUserHandle(mContext, mUserTracker));
             try {
                 ActivityOptions options = ActivityOptions.makeBasic();
                 options.setLaunchDisplayId(mContext.getDisplayId());
                 mContext.startActivityAsUser(toSend, options.toBundle(),
-                        UserHandle.CURRENT);
+                        getCurrentUserHandle(mContext, mUserTracker));
             } catch (Exception e) {
                 Log.e(TAG, "Failed to launch intent", e);
             }
             // consume event either way
             return true;
         };
+    }
+
+    void setUserTracker(UserTracker userTracker) {
+        mUserTracker = userTracker;
     }
 
     /**
@@ -400,26 +418,26 @@ public class CarSystemBarButton extends LinearLayout {
         mToggleSelectedState = typedArray.getBoolean(
                 R.styleable.CarSystemBarButton_toggleSelected, false);
         mIcon = findViewById(R.id.car_nav_button_icon_image);
-        refreshIconAlpha();
+        refreshIconAlpha(mIcon);
         mMoreIcon = findViewById(R.id.car_nav_button_more_icon);
         mUnseenIcon = findViewById(R.id.car_nav_button_unseen_icon);
-        updateImage();
+        updateImage(mIcon);
     }
 
-    private void updateImage() {
+    protected void updateImage(AlphaOptimizedImageView icon) {
         if (mIsDefaultAppIconForRoleEnabled && mAppIcon != null) {
-            mIcon.setImageDrawable(mAppIcon);
+            icon.setImageDrawable(mAppIcon);
         } else {
-            mIcon.setImageResource(mSelected ? mSelectedIconResourceId : mIconResourceId);
+            icon.setImageResource(mSelected ? mSelectedIconResourceId : mIconResourceId);
         }
         mUnseenIcon.setVisibility(mHasUnseen ? VISIBLE : GONE);
     }
 
-    private void refreshIconAlpha() {
+    protected void refreshIconAlpha(AlphaOptimizedImageView icon) {
         if (mDisabled) {
-            mIcon.setAlpha(DISABLED_ALPHA);
+            icon.setAlpha(DISABLED_ALPHA);
         } else {
-            mIcon.setAlpha(mHighlightWhenSelected && mSelected ? mSelectedAlpha : mUnselectedAlpha);
+            icon.setAlpha(mHighlightWhenSelected && mSelected ? mSelectedAlpha : mUnselectedAlpha);
         }
     }
 }

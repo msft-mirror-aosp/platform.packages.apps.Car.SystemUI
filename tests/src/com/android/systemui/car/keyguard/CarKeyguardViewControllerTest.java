@@ -46,10 +46,12 @@ import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.CarSystemBarController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
+import com.android.systemui.keyguard.data.BouncerView;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerCallbackInteractor;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerInteractor;
 import com.android.systemui.keyguard.ui.viewmodel.KeyguardBouncerViewModel;
 import com.android.systemui.keyguard.ui.viewmodel.PrimaryBouncerToGoneTransitionViewModel;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.toast.ToastFactory;
@@ -74,6 +76,8 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
     private FakeExecutor mExecutor;
 
     @Mock
+    private UserTracker mUserTracker;
+    @Mock
     private OverlayViewGlobalStateController mOverlayViewGlobalStateController;
     @Mock
     private SystemUIOverlayWindowController mSystemUIOverlayWindowController;
@@ -91,6 +95,8 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
     private KeyguardBouncerComponent.Factory mKeyguardBouncerComponentFactory;
     @Mock
     private PrimaryBouncerToGoneTransitionViewModel mPrimaryBouncerToGoneTransitionViewModel;
+    @Mock
+    private BouncerView mBouncerView;
 
     @Before
     public void setUp() {
@@ -111,6 +117,7 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
 
         mCarKeyguardViewController = new CarKeyguardViewController(
                 mContext,
+                mUserTracker,
                 mExecutor,
                 mock(WindowManager.class),
                 mock(ToastFactory.class),
@@ -126,7 +133,8 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
                 mKeyguardSecurityModel,
                 mKeyguardBouncerViewModel,
                 mPrimaryBouncerToGoneTransitionViewModel,
-                mKeyguardBouncerComponentFactory
+                mKeyguardBouncerComponentFactory,
+                mBouncerView
         );
         mCarKeyguardViewController.inflate((ViewGroup) LayoutInflater.from(mContext).inflate(
                 R.layout.sysui_overlay_window, /* root= */ null));

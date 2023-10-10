@@ -28,14 +28,19 @@ import com.android.internal.logging.UiEventLogger;
 import com.android.keyguard.KeyguardViewController;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
+import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
+import com.android.systemui.car.decor.CarSystemStatusAnimationScheduler;
+import com.android.systemui.car.drivemode.DriveModeModule;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
 import com.android.systemui.car.statusbar.DozeServiceHost;
+import com.android.systemui.car.users.CarMultiUserUtilsModule;
 import com.android.systemui.car.volume.CarVolumeModule;
 import com.android.systemui.dagger.GlobalRootComponent;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.decor.PrivacyDotDecorProviderFactory;
 import com.android.systemui.dock.DockManager;
 import com.android.systemui.dock.DockManagerImpl;
 import com.android.systemui.doze.DozeHost;
@@ -56,7 +61,7 @@ import com.android.systemui.statusbar.NotificationLockscreenUserManager;
 import com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
 import com.android.systemui.statusbar.events.PrivacyDotViewController;
-import com.android.systemui.statusbar.events.StatusBarEventsModule;
+import com.android.systemui.statusbar.events.SystemStatusAnimationScheduler;
 import com.android.systemui.statusbar.notification.collection.provider.VisualStabilityProvider;
 import com.android.systemui.statusbar.notification.collection.render.GroupMembershipManager;
 import com.android.systemui.statusbar.phone.HeadsUpManagerPhone;
@@ -72,25 +77,26 @@ import com.android.systemui.statusbar.policy.IndividualSensorPrivacyControllerIm
 import com.android.systemui.statusbar.policy.SensorPrivacyController;
 import com.android.systemui.statusbar.policy.SensorPrivacyControllerImpl;
 
-import java.util.concurrent.Executor;
-
-import javax.inject.Named;
-
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 
+import java.util.concurrent.Executor;
+
+import javax.inject.Named;
+
 @Module(
         includes = {
                 AospPolicyModule.class,
+                CarMultiUserUtilsModule.class,
                 CarVolumeModule.class,
                 GestureModule.class,
                 PowerModule.class,
                 QSModule.class,
                 ReferenceScreenshotModule.class,
-                StatusBarEventsModule.class,
+                DriveModeModule.class
         }
-        )
+)
 abstract class CarSystemUIModule {
 
     @SysUISingleton
@@ -214,4 +220,12 @@ abstract class CarSystemUIModule {
     @Binds
     abstract PrivacyDotViewController providePrivacyDotViewController(
             CarPrivacyChipViewController carPrivacyChipViewController);
+
+    @Binds
+    abstract PrivacyDotDecorProviderFactory providePrivacyDotDecorProviderFactory(
+            CarPrivacyChipDecorProviderFactory carPrivacyDotDecorProviderFactory);
+
+    @Binds
+    abstract SystemStatusAnimationScheduler provideSystemStatusAnimationScheduler(
+            CarSystemStatusAnimationScheduler carSystemStatusAnimationScheduler);
 }

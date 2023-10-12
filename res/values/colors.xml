@@ -124,7 +124,7 @@
     <color name="ic_ux_restricted_color">@android:color/white</color>
 
     <!-- Color for status icon panel background. -->
-    <color name="status_icon_panel_bg_color">#282A2D</color>
+    <color name="status_icon_panel_bg_color">@color/car_background</color>
 
     <!-- Color for highlighting the status icon button that is currently selected. -->
     <color name="status_icon_selected_button_color">@color/car_primary</color>

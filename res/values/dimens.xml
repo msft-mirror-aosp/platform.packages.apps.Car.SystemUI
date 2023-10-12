@@ -352,7 +352,7 @@
     <dimen name="hvac_close_button_bottom_margin">0dp</dimen>
 
     <dimen name="hvac_turned_on_alpha">1</dimen>
-    <dimen name="hvac_turned_off_alpha">0.5</dimen>
+    <dimen name="hvac_turned_off_alpha">0.4</dimen>
 
     <dimen name="hvac_icon_drawable_width">108dp</dimen>
     <dimen name="hvac_icon_drawable_height">108dp</dimen>

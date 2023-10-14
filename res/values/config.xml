@@ -241,4 +241,8 @@
     <string name="system_bar_app_drawer_intent" translatable="false">intent:#Intent;action=com.android.car.carlauncher.ACTION_APP_GRID;package=com.android.car.carlauncher;launchFlags=0x24000000;end</string>
     <!-- Determines whether Recents entry point should be shown / should trigger to open Recents -->
     <bool name="config_enableRecentsEntryPoint">true</bool>
+
+    <!-- Flag to enable/disable dock -->
+    <!-- todo(b/304320644): remove flag -->
+    <bool name="config_enableDock">false</bool>
 </resources>

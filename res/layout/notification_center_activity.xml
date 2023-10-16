@@ -69,7 +69,12 @@
         android:text="@string/manage_text"
         android:visibility="gone"/>
 
-    <include
-        layout="@layout/notification_handle_bar"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+    <FrameLayout
+        android:id="@+id/handle_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/notification_shade_handle_bar_frame_padding">
+        <include
+            layout="@layout/notification_handle_bar" />
+    </FrameLayout>
 </com.android.car.notification.CarNotificationView>

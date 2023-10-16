@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.keyguard;
 
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -46,14 +47,16 @@ import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.keyguard.data.BouncerView;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerCallbackInteractor;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerCallbackInteractor.PrimaryBouncerExpansionCallback;
 import com.android.systemui.keyguard.domain.interactor.PrimaryBouncerInteractor;
 import com.android.systemui.keyguard.ui.binder.KeyguardBouncerViewBinder;
 import com.android.systemui.keyguard.ui.viewmodel.KeyguardBouncerViewModel;
 import com.android.systemui.keyguard.ui.viewmodel.PrimaryBouncerToGoneTransitionViewModel;
-import com.android.systemui.shade.NotificationPanelViewController;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.ShadeExpansionStateManager;
+import com.android.systemui.shade.ShadeViewController;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
 import com.android.systemui.statusbar.phone.CentralSurfaces;
 import com.android.systemui.statusbar.phone.KeyguardBypassController;
@@ -62,9 +65,9 @@ import com.android.systemui.toast.SystemUIToast;
 import com.android.systemui.toast.ToastFactory;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 
-import javax.inject.Inject;
-
 import dagger.Lazy;
+
+import javax.inject.Inject;
 
 /**
  * Automotive implementation of the {@link KeyguardViewController}. It controls the Keyguard View
@@ -79,6 +82,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private static final float TOAST_PARAMS_VERTICAL_WEIGHT = 1.0f;
 
     private final Context mContext;
+    private final UserTracker mUserTracker;
     private final DelayableExecutor mMainExecutor;
     private final WindowManager mWindowManager;
     private final ToastFactory mToastFactory;
@@ -92,18 +96,16 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private final KeyguardSecurityModel mKeyguardSecurityModel;
     private final KeyguardBouncerViewModel mKeyguardBouncerViewModel;
     private final KeyguardBouncerComponent.Factory mKeyguardBouncerComponentFactory;
+    private final BouncerView mBouncerView;
     private final PrimaryBouncerExpansionCallback mExpansionCallback =
             new PrimaryBouncerExpansionCallback() {
                 @Override
                 public void onFullyShown() {
                     LockPatternView patternView = getLayout().findViewById(R.id.lockPatternView);
                     if (patternView != null) {
-                        patternView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                            @Override
-                            public void onFocusChange(View v, boolean hasFocus) {
-                                if (hasFocus) {
-                                    makeOverlayToast(R.string.lockpattern_does_not_support_rotary);
-                                }
+                        patternView.setOnFocusChangeListener((v, hasFocus) -> {
+                            if (hasFocus) {
+                                makeOverlayToast(R.string.lockpattern_does_not_support_rotary);
                             }
                         });
                     }
@@ -132,7 +134,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
     private OnKeyguardCancelClickedListener mKeyguardCancelClickedListener;
     private boolean mShowing;
-    private boolean mIsOccluded;
     private boolean mIsSleeping;
     private int mToastShowDurationMillisecond;
     private ViewGroup mKeyguardContainer;
@@ -141,6 +142,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     @Inject
     public CarKeyguardViewController(
             Context context,
+            UserTracker userTracker,
             @Main DelayableExecutor mainExecutor,
             WindowManager windowManager,
             ToastFactory toastFactory,
@@ -156,11 +158,13 @@ public class CarKeyguardViewController extends OverlayViewController implements
             KeyguardSecurityModel keyguardSecurityModel,
             KeyguardBouncerViewModel keyguardBouncerViewModel,
             PrimaryBouncerToGoneTransitionViewModel primaryBouncerToGoneTransitionViewModel,
-            KeyguardBouncerComponent.Factory keyguardBouncerComponentFactory) {
+            KeyguardBouncerComponent.Factory keyguardBouncerComponentFactory,
+            BouncerView bouncerView) {
 
         super(R.id.keyguard_stub, overlayViewGlobalStateController);
 
         mContext = context;
+        mUserTracker = userTracker;
         mMainExecutor = mainExecutor;
         mWindowManager = windowManager;
         mToastFactory = toastFactory;
@@ -176,6 +180,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mKeyguardBouncerViewModel = keyguardBouncerViewModel;
         mKeyguardBouncerComponentFactory = keyguardBouncerComponentFactory;
         mPrimaryBouncerToGoneTransitionViewModel = primaryBouncerToGoneTransitionViewModel;
+        mBouncerView = bouncerView;
 
         mToastShowDurationMillisecond = mContext.getResources().getInteger(
                 R.integer.car_keyguard_toast_show_duration_millisecond);
@@ -221,7 +226,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
         if (mShowing) return;
 
         mShowing = true;
-        mKeyguardStateController.notifyKeyguardState(mShowing, /* occluded= */ false);
+        mKeyguardStateController.notifyKeyguardState(mShowing,
+                mKeyguardStateController.isOccluded());
         mCarSystemBarController.showAllKeyguardButtons(/* isSetUp= */ true);
         start();
         reset(/* hideBouncerWhenShowing= */ false);
@@ -235,7 +241,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
         mViewMediatorCallback.readyForKeyguardDone();
         mShowing = false;
-        mKeyguardStateController.notifyKeyguardState(mShowing, /* occluded= */ false);
+        mKeyguardStateController.notifyKeyguardState(mShowing,
+                mKeyguardStateController.isOccluded());
         mPrimaryBouncerInteractor.hide();
         mCarSystemBarController.showAllNavigationButtons(/* isSetUp= */ true);
         stop();
@@ -279,7 +286,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
     @Override
     @MainThread
     public void setOccluded(boolean occluded, boolean animate) {
-        mIsOccluded = occluded;
+        mKeyguardStateController.notifyKeyguardState(
+                mKeyguardStateController.isShowing(), occluded);
         getOverlayViewGlobalStateController().setOccluded(occluded);
         if (occluded) {
             mCarSystemBarController.showAllOcclusionButtons(/* isSetup= */ true);
@@ -306,7 +314,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         // If dismissing and collapsing Keyguard is requested (e.g. by a Keyguard-dismissing
         // Activity) while Keyguard is occluded, unocclude Keyguard so the user can authenticate to
         // dismiss Keyguard.
-        if (mIsOccluded) {
+        if (mKeyguardStateController.isOccluded()) {
             setOccluded(/* occluded= */ false, /* animate= */ false);
         }
         if (!isSecure()) {
@@ -358,6 +366,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
     @Override
     public ViewRootImpl getViewRootImpl() {
+        if (getLayout() == null) return null;
         return ((View) getLayout().getParent()).getViewRootImpl();
     }
 
@@ -386,9 +395,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
     @Override
     public boolean shouldDisableWindowAnimationsForUnlock() {
-        // TODO(b/205189147): revert the following change after the proper fix is landed.
-        // Disables the KeyGuard animation to resolve TaskView misalignment issue after display-on.
-        return true;
+        return false;
     }
 
     @Override
@@ -414,7 +421,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     @Override
     public void registerCentralSurfaces(
             CentralSurfaces centralSurfaces,
-            NotificationPanelViewController notificationPanelViewController,
+            ShadeViewController shadeViewController,
             ShadeExpansionStateManager shadeExpansionStateManager,
             BiometricUnlockController biometricUnlockController,
             View notificationContainer,
@@ -434,17 +441,9 @@ public class CarKeyguardViewController extends OverlayViewController implements
     @Override
     public boolean setAllowRotaryFocus(boolean allowRotaryFocus) {
         boolean changed = super.setAllowRotaryFocus(allowRotaryFocus);
-        // When focus on keyguard becomes allowed, focus needs to be restored back to the pin entry
-        // view. Depending on the timing of the calls, pinView may believe it is focused
-        // (isFocused()=true) but the root view does not believe anything is focused
-        // (findFocus()=null). To guarantee that the view is fully focused, it is necessary to
-        // clear and refocus the element.
-        if (changed && allowRotaryFocus && getLayout() != null) {
-            View pinView = getLayout().findViewById(R.id.pinEntry);
-            if (pinView != null) {
-                pinView.clearFocus();
-                pinView.requestFocus();
-            }
+        if (changed && allowRotaryFocus && mBouncerView.getDelegate() != null) {
+            // Resume the view so it can regain focus
+            mBouncerView.getDelegate().resume();
         }
         return changed;
     }

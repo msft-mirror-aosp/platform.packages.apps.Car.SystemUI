@@ -505,8 +505,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
      * WARNING: This method might cause Binder calls.
      */
     private boolean isSecure() {
-        return mKeyguardSecurityModel.getSecurityMode(
-                KeyguardUpdateMonitor.getCurrentUser()) != KeyguardSecurityModel.SecurityMode.None;
+        return mKeyguardSecurityModel.getSecurityMode(mSelectedUserInteractor.getSelectedUserId())
+                != KeyguardSecurityModel.SecurityMode.None;
     }
 
 

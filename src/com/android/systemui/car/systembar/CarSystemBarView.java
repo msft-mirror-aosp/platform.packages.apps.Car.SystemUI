@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 
 import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
+import com.android.systemui.car.hvac.HvacView;
 import com.android.systemui.car.hvac.TemperatureControlView;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
@@ -68,8 +69,8 @@ public class CarSystemBarView extends LinearLayout {
     private View mNavButtons;
     private CarSystemBarButton mNotificationsButton;
     private HvacButton mHvacButton;
-    private TemperatureControlView mDriverHvacView;
-    private TemperatureControlView mPassengerHvacView;
+    private HvacView mDriverHvacView;
+    private HvacView mPassengerHvacView;
     private NotificationsShadeController mNotificationsShadeController;
     private HvacPanelController mHvacPanelController;
     private View mLockScreenButtons;
@@ -131,11 +132,13 @@ public class CarSystemBarView extends LinearLayout {
         }
 
         if (mIsDockEnabled) {
-            if (mDriverHvacView != null) {
-                mDriverHvacView.setTemperatureTextClickListener(this::onHvacClick);
+            if (mDriverHvacView instanceof TemperatureControlView) {
+                ((TemperatureControlView) mDriverHvacView).setTemperatureTextClickListener(
+                        this::onHvacClick);
             }
-            if (mPassengerHvacView != null) {
-                mPassengerHvacView.setTemperatureTextClickListener(this::onHvacClick);
+            if (mPassengerHvacView instanceof TemperatureControlView) {
+                ((TemperatureControlView) mPassengerHvacView).setTemperatureTextClickListener(
+                        this::onHvacClick);
             }
         }
     }

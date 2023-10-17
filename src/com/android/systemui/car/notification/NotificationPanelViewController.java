@@ -103,6 +103,7 @@ public class NotificationPanelViewController extends OverlayPanelViewController
     private boolean mIsSwipingVerticallyToClose;
     private boolean mIsNotificationCardSwiping;
     private boolean mImeVisible = false;
+    private boolean mOnConnectListenerAdded;
 
     private OnUnseenCountUpdateListener mUnseenCountUpdateListener;
 
@@ -334,18 +335,23 @@ public class NotificationPanelViewController extends OverlayPanelViewController
                 mCarNotificationListener,
                 mCarUxRestrictionManagerWrapper);
 
-        mCarServiceProvider.addListener(car -> {
-            CarUxRestrictionsManager carUxRestrictionsManager =
-                    (CarUxRestrictionsManager)
-                            car.getCarManager(Car.CAR_UX_RESTRICTION_SERVICE);
-            mCarUxRestrictionManagerWrapper.setCarUxRestrictionsManager(
-                    carUxRestrictionsManager);
+        if (!mOnConnectListenerAdded) {
+            mCarServiceProvider.addListener(car -> {
+                CarUxRestrictionsManager carUxRestrictionsManager =
+                        (CarUxRestrictionsManager)
+                                car.getCarManager(Car.CAR_UX_RESTRICTION_SERVICE);
+                mCarUxRestrictionManagerWrapper.setCarUxRestrictionsManager(
+                        carUxRestrictionsManager);
 
-            PreprocessingManager preprocessingManager = PreprocessingManager.getInstance(mContext);
-            preprocessingManager.setCarUxRestrictionManagerWrapper(mCarUxRestrictionManagerWrapper);
+                PreprocessingManager preprocessingManager =
+                        PreprocessingManager.getInstance(mContext);
+                preprocessingManager.setCarUxRestrictionManagerWrapper(
+                        mCarUxRestrictionManagerWrapper);
 
-            mNotificationViewController.enable();
-        });
+                mNotificationViewController.enable();
+            });
+            mOnConnectListenerAdded = true;
+        }
     }
 
     private void setupNotificationPanel() {

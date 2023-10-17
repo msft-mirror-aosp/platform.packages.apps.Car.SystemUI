@@ -136,6 +136,7 @@ public abstract class StatusIconController {
         view.setVisibility(data.getIsIconVisible() ? View.VISIBLE : View.GONE);
         view.setContentDescription(data.getContentDescription());
     }
+
     /**
      * Returns the resource id of the layout to be drawn inside the panel associated with this
      * status icon.

@@ -268,6 +268,14 @@ public class OverlayViewController {
     }
 
     /**
+     * Returns the amount of dimming to apply to the overlay window when initially brought to front.
+     * Range is from 1.0 for completely opaque to 0.0 for no dim.
+     */
+    protected float getDefaultDimAmount() {
+        return 0f;
+    }
+
+    /**
      * Returns {@code true} if the window should use stable insets. Using stable insets means that
      * even when system bars are temporarily not visible, inset from the system bars will still be
      * applied.

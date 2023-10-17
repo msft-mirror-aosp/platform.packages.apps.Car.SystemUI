@@ -18,6 +18,9 @@ package com.android.systemui.car.statusicon.ui;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+
 import android.content.res.Resources;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
@@ -57,6 +60,17 @@ public class MobileSignalStatusIconControllerTest extends SysuiTestCase {
 
         mMobileSignalStatusIconController =
                 new MobileSignalStatusIconController(mContext, mResources, mNetworkController);
+    }
+
+    @Test
+    public void onInit_registersNetworkCallback() {
+        verify(mNetworkController).addCallback(any());
+    }
+
+    @Test
+    public void onDestroy_unregistersNetworkCallback() {
+        mMobileSignalStatusIconController.onDestroy();
+        verify(mNetworkController).removeCallback(any());
     }
 
     @Test

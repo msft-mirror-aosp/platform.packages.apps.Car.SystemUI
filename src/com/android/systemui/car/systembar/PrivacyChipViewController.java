@@ -60,7 +60,7 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
             mPrivacyChip.setSensorEnabled(/* enabled= */ !sensorPrivacyEnabled);
             mQsTileNotifyUpdateRunnable.run();
             if (mSensorInfoUpdateListener != null) {
-                mSensorInfoUpdateListener.onSensorInfoUpdate();
+                mSensorInfoUpdateListener.onSensorPrivacyChanged();
             }
         });
     };
@@ -86,6 +86,10 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
 
                     mIsPrivacyChipVisible = shouldShowPrivacyChip;
                     setChipVisibility(shouldShowPrivacyChip);
+
+                    if (mSensorInfoUpdateListener != null) {
+                        mSensorInfoUpdateListener.onPrivacyItemsChanged();
+                    }
                 }
 
                 @Override

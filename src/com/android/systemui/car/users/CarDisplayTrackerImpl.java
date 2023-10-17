@@ -155,6 +155,11 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
     }
 
     @Override
+    public Display getDisplay(int displayId) {
+        return mDisplayManager.getDisplay(displayId);
+    }
+
+    @Override
     public void addDisplayChangeCallback(Callback callback, Executor executor) {
         synchronized (mDisplayCallbacks) {
             if (mDisplayCallbacks.isEmpty()) {
@@ -242,7 +247,7 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
             return true;
         }
         return mOccupantZone != null && isCurrentSystemUIDisplay(mCarOccupantZoneManager,
-                mUserTracker.getUserHandle(), displayId);
+                mOccupantZone, displayId);
     }
 
     private final CarServiceProvider.CarServiceOnConnectedListener mCarServiceOnConnectedListener =

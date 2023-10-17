@@ -66,6 +66,7 @@ public abstract class StatusIconGroupContainerController {
     private final Map<Class<?>, Provider<StatusIconController>> mIconControllerCreators;
     private String mIconTag;
     private String[] mStatusIconControllerNames;
+    private final Set<StatusIconController> mStatusIconControllers;
     private final Set<StatusIconPanelController> mStatusIconPanelControllers;
     private Map<String, View> mStatusIconViewClassMap;
     @Nullable
@@ -107,6 +108,7 @@ public abstract class StatusIconGroupContainerController {
 
         initResources();
         mStatusIconViewClassMap = new HashMap<>();
+        mStatusIconControllers = new HashSet<>();
         mStatusIconPanelControllers = new HashSet<>();
     }
 
@@ -186,6 +188,7 @@ public abstract class StatusIconGroupContainerController {
                 mStatusIconPanelControllers.add(panelController);
             }
             containerViewGroup.addView(entryPointView);
+            mStatusIconControllers.add(statusIconController);
             mStatusIconViewClassMap.put(clsName, entryPointView);
         }
     }
@@ -211,6 +214,10 @@ public abstract class StatusIconGroupContainerController {
         for (StatusIconPanelController panelController : mStatusIconPanelControllers) {
             panelController.destroyPanel();
         }
+        for (StatusIconController controller : mStatusIconControllers) {
+            controller.onDestroy();
+        }
+        mStatusIconControllers.clear();
         mStatusIconPanelControllers.clear();
         mStatusIconViewClassMap.clear();
         initResources();

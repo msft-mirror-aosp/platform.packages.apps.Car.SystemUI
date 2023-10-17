@@ -30,7 +30,6 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
 import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
-import com.android.systemui.car.decor.CarSystemStatusAnimationScheduler;
 import com.android.systemui.car.drivemode.DriveModeModule;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
@@ -44,6 +43,7 @@ import com.android.systemui.decor.PrivacyDotDecorProviderFactory;
 import com.android.systemui.dock.DockManager;
 import com.android.systemui.dock.DockManagerImpl;
 import com.android.systemui.doze.DozeHost;
+import com.android.systemui.globalactions.ShutdownUiModule;
 import com.android.systemui.navigationbar.gestural.GestureModule;
 import com.android.systemui.plugins.qs.QSFactory;
 import com.android.systemui.plugins.statusbar.StatusBarStateController;
@@ -53,15 +53,14 @@ import com.android.systemui.qs.tileimpl.QSFactoryImpl;
 import com.android.systemui.recents.Recents;
 import com.android.systemui.recents.RecentsImplementation;
 import com.android.systemui.screenshot.ReferenceScreenshotModule;
-import com.android.systemui.shade.ShadeController;
-import com.android.systemui.shade.ShadeControllerImpl;
+import com.android.systemui.shade.ShadeEmptyImplModule;
 import com.android.systemui.shade.ShadeExpansionStateManager;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.NotificationLockscreenUserManager;
 import com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
 import com.android.systemui.statusbar.events.PrivacyDotViewController;
-import com.android.systemui.statusbar.events.SystemStatusAnimationScheduler;
+import com.android.systemui.statusbar.events.StatusBarEventsModule;
 import com.android.systemui.statusbar.notification.collection.provider.VisualStabilityProvider;
 import com.android.systemui.statusbar.notification.collection.render.GroupMembershipManager;
 import com.android.systemui.statusbar.phone.HeadsUpManagerPhone;
@@ -76,6 +75,7 @@ import com.android.systemui.statusbar.policy.IndividualSensorPrivacyController;
 import com.android.systemui.statusbar.policy.IndividualSensorPrivacyControllerImpl;
 import com.android.systemui.statusbar.policy.SensorPrivacyController;
 import com.android.systemui.statusbar.policy.SensorPrivacyControllerImpl;
+import com.android.systemui.wallpapers.dagger.NoopWallpaperModule;
 
 import dagger.Binds;
 import dagger.Module;
@@ -91,9 +91,13 @@ import javax.inject.Named;
                 CarMultiUserUtilsModule.class,
                 CarVolumeModule.class,
                 GestureModule.class,
+                NoopWallpaperModule.class,
                 PowerModule.class,
                 QSModule.class,
                 ReferenceScreenshotModule.class,
+                ShadeEmptyImplModule.class,
+                ShutdownUiModule.class,
+                StatusBarEventsModule.class,
                 DriveModeModule.class
         }
 )
@@ -189,9 +193,6 @@ abstract class CarSystemUIModule {
     abstract DockManager bindDockManager(DockManagerImpl dockManager);
 
     @Binds
-    abstract ShadeController provideShadeController(ShadeControllerImpl shadeController);
-
-    @Binds
     abstract GlobalRootComponent bindGlobalRootComponent(
             CarGlobalRootComponent globalRootComponent);
 
@@ -224,8 +225,4 @@ abstract class CarSystemUIModule {
     @Binds
     abstract PrivacyDotDecorProviderFactory providePrivacyDotDecorProviderFactory(
             CarPrivacyChipDecorProviderFactory carPrivacyDotDecorProviderFactory);
-
-    @Binds
-    abstract SystemStatusAnimationScheduler provideSystemStatusAnimationScheduler(
-            CarSystemStatusAnimationScheduler carSystemStatusAnimationScheduler);
 }

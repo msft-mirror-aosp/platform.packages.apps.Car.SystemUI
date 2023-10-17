@@ -36,10 +36,12 @@ import android.content.res.TypedArray;
 import android.hardware.input.InputManager;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
+import android.testing.TestableResources;
 import android.view.InputEvent;
 import android.view.KeyEvent;
 import android.view.View;
 
+import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.shared.system.TaskStackChangeListener;
@@ -67,6 +69,7 @@ public class RecentsButtonStateProviderTest extends SysuiTestCase {
 
     private RecentsButtonStateProvider mRecentsButtonStateProvider;
     private TaskStackChangeListener mTaskStackChangeListener;
+    private TestableResources mTestableResources;
 
     @Mock
     private CarSystemBarButton mCarSystemBarButton;
@@ -102,10 +105,12 @@ public class RecentsButtonStateProviderTest extends SysuiTestCase {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mTestableResources = mContext.getOrCreateTestableResources();
+        mTestableResources.addOverride(R.bool.config_enableRecentsEntryPoint, true);
         mContext = spy(mContext);
+        when(mInputManager.injectInputEvent(any(InputEvent.class), anyInt())).thenReturn(true);
         doReturn(mInputManager).when(mContext).getSystemService(InputManager.class);
-        mContext.getOrCreateTestableResources().addOverride(
-                com.android.internal.R.string.config_recentsComponentName,
+        mTestableResources.addOverride(com.android.internal.R.string.config_recentsComponentName,
                 /* value= */ RECENTS_ACTIVITY_NAME);
         mRecentsRunningTaskInfo.topActivity = ComponentName.unflattenFromString(
                 RECENTS_ACTIVITY_NAME);
@@ -163,7 +168,7 @@ public class RecentsButtonStateProviderTest extends SysuiTestCase {
     }
 
     @Test
-    public void setUpIntents_sets_longClickListener_recentsNotActive_returnsTrue() {
+    public void setUpIntents_sets_longClickListener() {
         mRecentsButtonStateProvider.setUpIntents(mTypedArray, mTypedArrayConsumer);
 
         verify(mCarSystemBarButton, times(1))
@@ -192,6 +197,36 @@ public class RecentsButtonStateProviderTest extends SysuiTestCase {
 
         verify(mInputManager, times(1))
                 .injectInputEvent(argThat(this::isRecentsKeyEvent), anyInt());
+    }
+
+    @Test
+    public void setUpIntents_onLongClick_configSetToFalse_recentsNotActive_returnsFalse() {
+        mTestableResources.addOverride(R.bool.config_enableRecentsEntryPoint, false);
+        mRecentsButtonStateProvider = new RecentsButtonStateProvider(mContext, mCarSystemBarButton);
+        mTaskStackChangeListener = mRecentsButtonStateProvider.getTaskStackChangeListener();
+        mRecentsButtonStateProvider.setIsRecentsActive(false);
+
+        mRecentsButtonStateProvider.setUpIntents(mTypedArray, mTypedArrayConsumer);
+        verify(mCarSystemBarButton, times(1))
+                .setOnLongClickListener(mOnLongClickListenerCaptor.capture());
+
+        assertThat(
+                mOnLongClickListenerCaptor.getValue().onLongClick(mCarSystemBarButton)).isFalse();
+    }
+
+    @Test
+    public void setUpIntents_onLongClick_configSetToFalse_recentsNotActive_noKeyEventSent() {
+        mTestableResources.addOverride(R.bool.config_enableRecentsEntryPoint, false);
+        mRecentsButtonStateProvider = new RecentsButtonStateProvider(mContext, mCarSystemBarButton);
+        mTaskStackChangeListener = mRecentsButtonStateProvider.getTaskStackChangeListener();
+        mRecentsButtonStateProvider.setIsRecentsActive(false);
+
+        mRecentsButtonStateProvider.setUpIntents(mTypedArray, mTypedArrayConsumer);
+        verify(mCarSystemBarButton, times(1))
+                .setOnLongClickListener(mOnLongClickListenerCaptor.capture());
+        mOnLongClickListenerCaptor.getValue().onLongClick(mCarSystemBarButton);
+
+        verify(mInputManager, never()).injectInputEvent(argThat(this::isRecentsKeyEvent), anyInt());
     }
 
     @Test

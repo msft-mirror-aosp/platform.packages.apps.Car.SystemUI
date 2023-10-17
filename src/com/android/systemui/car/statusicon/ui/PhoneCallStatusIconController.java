@@ -40,6 +40,8 @@ public class PhoneCallStatusIconController extends StatusIconController {
 
     private static final String TAG = PhoneCallStatusIconController.class.getSimpleName();
 
+    private final Context mContext;
+    private final UserTracker mUserTracker;
     private final TelecomManager mTelecomManager;
 
     final BroadcastReceiver mPhoneStateChangeReceiver = new BroadcastReceiver() {
@@ -63,14 +65,22 @@ public class PhoneCallStatusIconController extends StatusIconController {
             Context context,
             @Main Resources resources,
             UserTracker userTracker) {
+        mContext = context;
+        mUserTracker = userTracker;
         mTelecomManager = context.getSystemService(TelecomManager.class);
         IntentFilter filter = new IntentFilter();
         filter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
-        context.registerReceiverForAllUsers(mPhoneStateChangeReceiver,
+        mContext.registerReceiverForAllUsers(mPhoneStateChangeReceiver,
                 filter,  /* broadcastPermission= */ null, /* scheduler= */ null);
-        userTracker.addCallback(mUserChangedCallback, context.getMainExecutor());
+        mUserTracker.addCallback(mUserChangedCallback, context.getMainExecutor());
         setIconDrawableToDisplay(resources.getDrawable(R.drawable.ic_phone, context.getTheme()));
         updateStatus();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mContext.unregisterReceiver(mPhoneStateChangeReceiver);
+        mUserTracker.removeCallback(mUserChangedCallback);
     }
 
     @Override

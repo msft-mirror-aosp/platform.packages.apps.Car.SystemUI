@@ -26,6 +26,7 @@ import android.car.app.CarSystemUIProxy;
 import android.car.app.CarTaskViewClient;
 import android.car.app.CarTaskViewHost;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.display.DisplayManager;
 import android.os.Process;
 import android.util.Slog;
@@ -62,9 +63,11 @@ public final class CarSystemUIProxyImpl
     private final SyncTransactionQueue mSyncQueue;
     private final ShellTaskOrganizer mTaskOrganizer;
     private final TaskViewTransitions mTaskViewTransitions;
-    private boolean mConnected;
     private final Set<RemoteCarTaskViewServerImpl> mRemoteCarTaskViewServerSet = new HashSet<>();
     private final DisplayManager mDisplayManager;
+
+    private boolean mConnected;
+    private CarActivityManager mCarActivityManager;
 
     /**
      * Returns true if {@link CarSystemUIProxyImpl} should be registered, false otherwise.
@@ -108,8 +111,23 @@ public final class CarSystemUIProxyImpl
         carServiceProvider.addListener(this);
     }
 
+    boolean isLaunchRootTaskPresent(int displayId) {
+        for (RemoteCarTaskViewServerImpl remoteCarTaskViewServer : mRemoteCarTaskViewServerSet) {
+            if (remoteCarTaskViewServer.hasLaunchRootTaskOnDisplay(displayId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public CarTaskViewHost createControlledCarTaskView(CarTaskViewClient carTaskViewClient) {
+        return createCarTaskView(carTaskViewClient);
+    }
+
+    @Override
+    public CarTaskViewHost createCarTaskView(CarTaskViewClient carTaskViewClient) {
+        ensurePermission(Car.PERMISSION_MANAGE_CAR_SYSTEM_UI);
         RemoteCarTaskViewServerImpl remoteCarTaskViewServerImpl =
                 new RemoteCarTaskViewServerImpl(
                         mContext,
@@ -117,7 +135,7 @@ public final class CarSystemUIProxyImpl
                         mSyncQueue,
                         carTaskViewClient,
                         this,
-                        mTaskViewTransitions);
+                        mTaskViewTransitions, mCarActivityManager);
         mRemoteCarTaskViewServerSet.add(remoteCarTaskViewServerImpl);
         return remoteCarTaskViewServerImpl.getHostImpl();
     }
@@ -131,9 +149,9 @@ public final class CarSystemUIProxyImpl
         mConnected = true;
         removeExistingTaskViewTasks();
 
-        CarActivityManager carActivityManager = car.getCarManager(CarActivityManager.class);
-        carActivityManager.registerTaskMonitor();
-        carActivityManager.registerCarSystemUIProxy(this);
+        mCarActivityManager = car.getCarManager(CarActivityManager.class);
+        mCarActivityManager.registerTaskMonitor();
+        mCarActivityManager.registerCarSystemUIProxy(this);
     }
 
     @Override
@@ -165,6 +183,12 @@ public final class CarSystemUIProxyImpl
                 Slog.d(TAG, "Found a dangling task, removing: " + taskInfo.taskId);
                 atm.removeTask(taskInfo.taskId);
             }
+        }
+    }
+
+    private void ensurePermission(String permission) {
+        if (mContext.checkCallingPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            throw new SecurityException("requires permission " + permission);
         }
     }
 }

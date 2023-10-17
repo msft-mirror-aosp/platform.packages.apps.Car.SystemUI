@@ -144,10 +144,10 @@ final class UserPickerController {
         if (result.isSuccess()) {
             UserInfo newUserInfo = mUserEventManager.getUserInfo(result.getUser().getIdentifier());
             UserRecord userRecord = UserRecord.create(newUserInfo, newUserInfo.name,
-                    /* mIsStartGuestSession= */ false, /* mIsAddUser= */ false,
-                    /* mIsForeground= */ false,
-                    /* mIcon= */mUserIconProvider.getRoundedUserIcon(newUserInfo, mContext),
-                    /* OnClickListenerMaker */ new OnClickListenerCreator());
+                    /* isStartGuestSession= */ false, /* isAddUser= */ false,
+                    /* isForeground= */ false,
+                    /* icon= */ mUserIconProvider.getRoundedUserIcon(newUserInfo, mContext),
+                    /* listenerMaker */ new OnClickListenerCreator());
             mIsUserPickerClickable = false;
             handleUserSelected(userRecord);
         } else {
@@ -309,14 +309,14 @@ final class UserPickerController {
 
         if (mDisplayId == mDisplayTracker.getDefaultDisplayId()) {
             if (mUserEventManager.isForegroundUserNotSwitchable(foregroundUser.getUserHandle())) {
-                userRecords.add(UserRecord.create(foregroundUser, /* mName= */ foregroundUser.name,
-                        /* mIsStartGuestSession= */ false, /* mIsAddUser= */ false,
-                        /* mIsForeground= */ true,
-                        /* mIcon= */ mUserIconProvider.getRoundedUserIcon(foregroundUser, mContext),
-                        /* OnClickListenerMaker */ new OnClickListenerCreator(),
-                        /* mIsLoggedIn= */ true, /* mLoggedInDisplay= */ mDisplayId,
-                        /* mSeatLocationName= */ mCarServiceMediator.getSeatString(mDisplayId),
-                        /* mIsStopping= */ false));
+                userRecords.add(UserRecord.create(foregroundUser, /* name= */ foregroundUser.name,
+                        /* isStartGuestSession= */ false, /* isAddUser= */ false,
+                        /* isForeground= */ true,
+                        /* icon= */ mUserIconProvider.getRoundedUserIcon(foregroundUser, mContext),
+                        /* listenerMaker */ new OnClickListenerCreator(),
+                        /* isLoggedIn= */ true, /* loggedInDisplay= */ mDisplayId,
+                        /* seatLocationName= */ mCarServiceMediator.getSeatString(mDisplayId),
+                        /* isStopping= */ false));
                 return userRecords;
             }
         }
@@ -328,15 +328,15 @@ final class UserPickerController {
                 continue;
             }
             int loggedInDisplayId = mCarServiceMediator.getDisplayIdForUser(userInfo.id);
-            UserRecord record = UserRecord.create(userInfo, /* mName= */ userInfo.name,
-                    /* mIsStartGuestSession= */ false, /* mIsAddUser= */ false,
-                    /* mIsForeground= */ userInfo.id == foregroundUser.id,
-                    /* mIcon= */ mUserIconProvider.getRoundedUserIcon(userInfo, mContext),
-                    /* OnClickListenerMaker */ new OnClickListenerCreator(),
-                    /* mIsLoggedIn= */ loggedInDisplayId != INVALID_DISPLAY,
-                    /* mLoggedInDisplay= */ loggedInDisplayId,
-                    /* mSeatLocationName= */ mCarServiceMediator.getSeatString(loggedInDisplayId),
-                    /* mIsStopping= */ mUserPickerSharedState.isStoppingUser(userInfo.id));
+            UserRecord record = UserRecord.create(userInfo, /* name= */ userInfo.name,
+                    /* isStartGuestSession= */ false, /* isAddUser= */ false,
+                    /* isForeground= */ userInfo.id == foregroundUser.id,
+                    /* icon= */ mUserIconProvider.getRoundedUserIcon(userInfo, mContext),
+                    /* listenerMaker */ new OnClickListenerCreator(),
+                    /* isLoggedIn= */ loggedInDisplayId != INVALID_DISPLAY,
+                    /* loggedInDisplay= */ loggedInDisplayId,
+                    /* seatLocationName= */ mCarServiceMediator.getSeatString(loggedInDisplayId),
+                    /* isStopping= */ mUserPickerSharedState.isStoppingUser(userInfo.id));
             userRecords.add(record);
 
             if (DEBUG) {
@@ -364,14 +364,14 @@ final class UserPickerController {
     private UserRecord createStartGuestUserRecord() {
         boolean loggedIn = isGuestOnDisplay();
         int loggedInDisplay = loggedIn ? mDisplayId : INVALID_DISPLAY;
-        return UserRecord.create(/* mInfo= */ null, /* mName= */ mDefaultGuestName,
-                /* mIsStartGuestSession= */ true, /* mIsAddUser= */ false,
-                /* mIsForeground= */ false,
-                /* mIcon= */ mUserIconProvider.getRoundedGuestDefaultIcon(mContext.getResources()),
-                /* OnClickListenerMaker */ new OnClickListenerCreator(),
+        return UserRecord.create(/* info= */ null, /* name= */ mDefaultGuestName,
+                /* isStartGuestSession= */ true, /* isAddUser= */ false,
+                /* isForeground= */ false,
+                /* icon= */ mUserIconProvider.getRoundedGuestDefaultIcon(mContext),
+                /* listenerMaker */ new OnClickListenerCreator(),
                 loggedIn, loggedInDisplay,
-                /* mSeatLocationName= */mCarServiceMediator.getSeatString(loggedInDisplay),
-                /* mIsStopping= */ false);
+                /* seatLocationName= */mCarServiceMediator.getSeatString(loggedInDisplay),
+                /* isStopping= */ false);
     }
 
     /**

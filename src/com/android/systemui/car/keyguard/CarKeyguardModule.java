@@ -46,9 +46,9 @@ import com.android.systemui.flags.SystemPropertiesHelper;
 import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
+import com.android.systemui.keyguard.WindowManagerLockscreenVisibilityManager;
 import com.android.systemui.keyguard.dagger.KeyguardFaceAuthNotSupportedModule;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
-import com.android.systemui.keyguard.domain.quickaffordance.KeyguardQuickAffordanceModule;
 import com.android.systemui.keyguard.ui.viewmodel.DreamingToLockscreenTransitionViewModel;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationModeController;
@@ -63,6 +63,11 @@ import com.android.systemui.statusbar.phone.ScrimController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.util.DeviceConfigProxy;
+import com.android.systemui.util.kotlin.JavaAdapter;
+import com.android.systemui.util.settings.SecureSettings;
+import com.android.systemui.util.settings.SystemSettings;
+import com.android.systemui.util.time.SystemClock;
+import com.android.systemui.wallpapers.data.repository.WallpaperRepository;
 import com.android.wm.shell.keyguard.KeyguardTransitions;
 
 import dagger.Lazy;
@@ -83,7 +88,6 @@ import kotlinx.coroutines.CoroutineDispatcher;
         KeyguardUserSwitcherComponent.class},
         includes = {
                 FalsingModule.class,
-                KeyguardQuickAffordanceModule.class,
                 KeyguardFaceAuthNotSupportedModule.class,
                 KeyguardRepositoryModule.class,
         })
@@ -123,14 +127,20 @@ public class CarKeyguardModule {
             KeyguardTransitions keyguardTransitions,
             InteractionJankMonitor interactionJankMonitor,
             DreamOverlayStateController dreamOverlayStateController,
+            JavaAdapter javaAdapter,
+            WallpaperRepository wallpaperRepository,
             Lazy<ShadeController> shadeController,
             Lazy<NotificationShadeWindowController> notificationShadeWindowController,
             Lazy<ActivityLaunchAnimator> activityLaunchAnimator,
             Lazy<ScrimController> scrimControllerLazy,
             FeatureFlags featureFlags,
+            SecureSettings secureSettings,
+            SystemSettings systemSettings,
+            SystemClock systemClock,
             @Main CoroutineDispatcher mainDispatcher,
             Lazy<DreamingToLockscreenTransitionViewModel> dreamingToLockscreenTransitionViewModel,
-            SystemPropertiesHelper systemPropertiesHelper) {
+            SystemPropertiesHelper systemPropertiesHelper,
+            Lazy<WindowManagerLockscreenVisibilityManager> wmLockscreenVisibilityManager) {
         return new CarKeyguardViewMediator(
                 context,
                 uiEventLogger,
@@ -160,14 +170,20 @@ public class CarKeyguardModule {
                 keyguardTransitions,
                 interactionJankMonitor,
                 dreamOverlayStateController,
+                javaAdapter,
+                wallpaperRepository,
                 shadeController,
                 notificationShadeWindowController,
                 activityLaunchAnimator,
                 scrimControllerLazy,
                 featureFlags,
+                secureSettings,
+                systemSettings,
+                systemClock,
                 mainDispatcher,
                 dreamingToLockscreenTransitionViewModel,
-                systemPropertiesHelper);
+                systemPropertiesHelper,
+                wmLockscreenVisibilityManager);
     }
 
     /** */

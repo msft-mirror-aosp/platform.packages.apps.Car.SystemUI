@@ -84,6 +84,9 @@ public class HvacBooleanToggleButtonTest extends SysuiTestCase {
         mDefaultButton.setHvacPropertySetter(mHvacPropertySetterDefault);
         mTurnOnWhenPowerOffButton.setHvacPropertySetter(mHvacPropertySetterTurnOnWhenPowerOff);
         mTurnOffWhenAutoOnButton.setHvacPropertySetter(mHvacPropertySetterTurnOffWhenAutoOn);
+        mDefaultButton.setDisableViewIfPowerOff(true);
+        mTurnOnWhenPowerOffButton.setDisableViewIfPowerOff(false);
+        mTurnOffWhenAutoOnButton.setDisableViewIfPowerOff(true);
     }
 
     @Test
@@ -217,6 +220,37 @@ public class HvacBooleanToggleButtonTest extends SysuiTestCase {
 
     @Test
     public void onClickTurnOffWhenAutoOnButton_autoOn_currentValueFalse_doesNotSetNewValue() {
+        setPowerPropertyValue(false);
+        mTurnOffWhenAutoOnButton.onPropertyChanged(mHvacPowerProperty);
+        setAutoPropertyValue(true);
+        mTurnOffWhenAutoOnButton.onPropertyChanged(mHvacAutoProperty);
+        setCarPropertyValue(false);
+        mTurnOffWhenAutoOnButton.onPropertyChanged(mCarPropertyValue);
+
+        mTurnOffWhenAutoOnButton.performClick();
+
+        verify(mHvacPropertySetterTurnOffWhenAutoOn, never()).setHvacProperty(anyInt(), anyInt(),
+                anyBoolean());
+    }
+
+    @Test
+    public void onClickWhenNotHvacPowerDependent_autoOff_setsNewValue() {
+        mTurnOffWhenAutoOnButton.setDisableViewIfPowerOff(false);
+        setPowerPropertyValue(false);
+        mTurnOffWhenAutoOnButton.onPropertyChanged(mHvacPowerProperty);
+        setAutoPropertyValue(false);
+        mTurnOffWhenAutoOnButton.onPropertyChanged(mHvacAutoProperty);
+        setCarPropertyValue(true);
+        mTurnOffWhenAutoOnButton.onPropertyChanged(mCarPropertyValue);
+
+        mTurnOffWhenAutoOnButton.performClick();
+
+        verify(mHvacPropertySetterTurnOffWhenAutoOn).setHvacProperty(PROPERTY_ID, AREA_ID, false);
+    }
+
+    @Test
+    public void onClickWhenNotHvacPowerDependent_autoOn_doesNotSetNewValue() {
+        mTurnOffWhenAutoOnButton.setDisableViewIfPowerOff(false);
         setPowerPropertyValue(false);
         mTurnOffWhenAutoOnButton.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(true);

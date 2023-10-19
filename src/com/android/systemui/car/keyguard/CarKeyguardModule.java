@@ -63,6 +63,7 @@ import com.android.systemui.statusbar.phone.ScreenOffAnimationController;
 import com.android.systemui.statusbar.phone.ScrimController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
+import com.android.systemui.user.domain.interactor.SelectedUserInteractor;
 import com.android.systemui.util.DeviceConfigProxy;
 import com.android.systemui.util.kotlin.JavaAdapter;
 import com.android.systemui.util.settings.SecureSettings;
@@ -142,7 +143,8 @@ public class CarKeyguardModule {
             @Main CoroutineDispatcher mainDispatcher,
             Lazy<DreamingToLockscreenTransitionViewModel> dreamingToLockscreenTransitionViewModel,
             SystemPropertiesHelper systemPropertiesHelper,
-            Lazy<WindowManagerLockscreenVisibilityManager> wmLockscreenVisibilityManager) {
+            Lazy<WindowManagerLockscreenVisibilityManager> wmLockscreenVisibilityManager,
+            SelectedUserInteractor selectedUserInteractor) {
         return new CarKeyguardViewMediator(
                 context,
                 uiEventLogger,
@@ -186,7 +188,8 @@ public class CarKeyguardModule {
                 mainDispatcher,
                 dreamingToLockscreenTransitionViewModel,
                 systemPropertiesHelper,
-                wmLockscreenVisibilityManager);
+                wmLockscreenVisibilityManager,
+                selectedUserInteractor);
     }
 
     /** */

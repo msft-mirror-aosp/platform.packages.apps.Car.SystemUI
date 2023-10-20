@@ -17,9 +17,10 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
         android:width="@dimen/system_bar_icon_drawing_size"
         android:height="@dimen/system_bar_icon_drawing_size"
-        android:viewportWidth="24"
-        android:viewportHeight="24">
+        android:viewportWidth="40"
+        android:viewportHeight="40">
     <path
-        android:pathData="M10,20v-6h4v6h5v-8h3L12,3 2,12h3v8z"
+        android:pathData="M6.90918 15.0906L20.0001 5.27246L33.091 15.0906V34.727H6.90918V15.0906ZM24.9092 31.4543H29.8183V16.727L20.0001 9.36337L10.1819 16.727V31.4543H15.091V21.6361H24.9092V31.4543Z"
+        android:fillType="evenOdd"
         android:fillColor="@color/car_nav_icon_fill_color" />
 </vector>

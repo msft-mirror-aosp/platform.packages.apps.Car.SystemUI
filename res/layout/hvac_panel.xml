@@ -105,32 +105,36 @@
         systemui:hvacAreaId="68">
         <include layout="@layout/hvac_temperature_bar_overlay"/>
     </com.android.systemui.car.hvac.referenceui.BackgroundAdjustingTemperatureControlView>
+    <com.android.systemui.car.hvac.SeatTemperatureLevelButton
+        android:id="@+id/seat_heat_level_button_left"
+        android:background="@drawable/hvac_panel_button_bg"
+        style="@style/HvacButton"
+        app:layout_constraintLeft_toRightOf="@+id/driver_hvac"
+        app:layout_constraintRight_toLeftOf="@+id/fan_control"
+        app:layout_constraintBottom_toBottomOf="@+id/bottom_guideline"
+        systemui:hvacAreaId="1"
+        systemui:seatTemperatureType="heating"
+        systemui:seatTemperatureIconDrawableList="@array/hvac_heated_seat_default_icons"/>
     <com.android.systemui.car.hvac.toggle.HvacBooleanToggleButton
         android:id="@+id/ac_master_switch"
         android:background="@drawable/hvac_panel_button_bg"
         android:scaleType="center"
         style="@style/HvacButton"
-        app:layout_constraintLeft_toRightOf="@+id/driver_hvac"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toRightOf="@+id/seat_heat_level_button_left"
+        app:layout_constraintRight_toLeftOf="@+id/defroster_button"
         app:layout_constraintBottom_toBottomOf="@+id/bottom_guideline"
         systemui:hvacAreaId="117"
         systemui:hvacPropertyId="354419984"
         systemui:hvacTurnOffIfPowerOff="false"
         systemui:hvacToggleOnButtonDrawable="@drawable/ac_master_switch_on"
         systemui:hvacToggleOffButtonDrawable="@drawable/ac_master_switch_off"/>
-    <com.android.systemui.car.hvac.SeatTemperatureLevelButton
-        android:id="@+id/seat_heat_level_button_left"
-        android:background="@drawable/hvac_panel_button_bg"
-        style="@style/HvacButton"
-        app:layout_constraintLeft_toRightOf="@+id/ac_master_switch"
-        app:layout_constraintBottom_toBottomOf="@+id/bottom_guideline"
-        systemui:hvacAreaId="1"
-        systemui:seatTemperatureType="heating"
-        systemui:seatTemperatureIconDrawableList="@array/hvac_heated_seat_default_icons"/>
     <com.android.systemui.car.hvac.toggle.HvacBooleanToggleButton
         android:id="@+id/defroster_button"
         android:background="@drawable/hvac_panel_button_bg"
         style="@style/HvacButton"
-        app:layout_constraintLeft_toRightOf="@+id/seat_heat_level_button_left"
+        app:layout_constraintLeft_toRightOf="@+id/ac_master_switch"
+        app:layout_constraintRight_toLeftOf="@+id/auto_button"
         app:layout_constraintBottom_toBottomOf="@+id/bottom_guideline"
         systemui:hvacAreaId="1"
         systemui:hvacPropertyId="320865540"
@@ -143,7 +147,6 @@
         systemui:hvacPropertyId="354419978"
         android:scaleType="center"
         android:layout_gravity="center"
-        android:layout_width="0dp"
         style="@style/HvacButton"
         app:layout_constraintLeft_toRightOf="@+id/defroster_button"
         app:layout_constraintRight_toLeftOf="@+id/rear_defroster_button"
@@ -156,6 +159,7 @@
         style="@style/HvacButton"
         systemui:hvacAreaId="2"
         systemui:hvacPropertyId="320865540"
+        app:layout_constraintLeft_toRightOf="@+id/auto_button"
         app:layout_constraintRight_toLeftOf="@+id/seat_heat_level_button_right"
         app:layout_constraintBottom_toBottomOf="@+id/bottom_guideline"
         systemui:hvacToggleOnButtonDrawable="@drawable/ic_rear_defroster_on"
@@ -165,6 +169,7 @@
         android:background="@drawable/hvac_panel_button_bg"
         style="@style/HvacButton"
         app:layout_constraintRight_toLeftOf="@+id/passenger_hvac"
+        app:layout_constraintLeft_toRightOf="@+id/fan_control"
         app:layout_constraintBottom_toBottomOf="@+id/bottom_guideline"
         systemui:hvacAreaId="4"
         systemui:seatTemperatureType="heating"

@@ -40,6 +40,8 @@ import java.util.List;
 public class TemperatureControlView extends LinearLayout implements HvacView {
     protected static final int BUTTON_REPEAT_INTERVAL_MS = 500;
     protected TextView mTempTextView;
+    protected View mIncreaseButton;
+    protected View mDecreaseButton;
 
     private static final int INVALID_ID = -1;
 
@@ -51,8 +53,6 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     private boolean mTemperatureSetAvailable = false;
     private HvacPropertySetter mHvacPropertySetter;
     private String mTempInDisplay;
-    private View mIncreaseButton;
-    private View mDecreaseButton;
     private float mMinTempC;
     private float mMinTempF;
     private float mMaxTempC;
@@ -166,8 +166,11 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
      */
     protected void updateTemperatureViewUiThread() {
         mTempTextView.setText(mTempInDisplay);
-        mTempTextView.setTextColor(mPowerOn && mTemperatureSetAvailable
+        boolean canChangeTemperature = isTemperatureAvailableForChange();
+        mTempTextView.setTextColor(canChangeTemperature
                 ? mAvailableTextColor : mUnavailableTextColor);
+        mIncreaseButton.setVisibility(canChangeTemperature ? View.VISIBLE : View.INVISIBLE);
+        mDecreaseButton.setVisibility(canChangeTemperature ? View.VISIBLE : View.INVISIBLE);
     }
 
     protected String getTempInDisplay() {

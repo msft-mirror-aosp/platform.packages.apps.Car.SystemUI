@@ -21,8 +21,6 @@
     <color name="car_user_switcher_add_user_background_color">#202124</color>
     <color name="car_user_switcher_add_user_add_sign_color">#DADCE0</color>
     <color name="car_managed_device_icon_color">@android:color/white</color>
-    <color name="car_nav_icon_fill_color">#8F8F8F</color>
-    <color name="car_nav_icon_fill_color_selected">#ffffff</color>
     <!-- colors for seekbar -->
     <color name="car_seekbar_track_background">#131315</color>
     <color name="car_seekbar_track_secondary_progress">@*android:color/car_accent</color>
@@ -45,13 +43,14 @@
     <color name="system_bar_text_unavailable_color">#B0B0B0</color>
     <drawable name="system_bar_background">#000000</drawable>
 
+    <!-- colors for nav bar -->
+    <color name="car_nav_icon_fill_color">@color/car_primary_100</color>
+    <color name="car_nav_icon_background_color">@color/car_surface</color>
+    <color name="car_nav_icon_background_color_selected">@color/car_primary</color>
+    <color name="car_nav_minimize_icon_fill_color">@android:color/black</color>
+
     <!-- colors for quick controls entry points icon   -->
     <color name="car_quick_controls_icon_drawable_color">#FFFFFF</color>
-
-    <!-- colors for hvac temperature view -->
-    <color name="hvac_temperature_adjust_button_color">#3C4043</color>
-    <color name="hvac_temperature_decrease_arrow_color">#8AB4F8</color>
-    <color name="hvac_temperature_increase_arrow_color">#F28B82</color>
 
     <!-- The background color of the notification shade -->
     <color name="notification_shade_background_color">#D6000000</color>
@@ -84,35 +83,24 @@
 
     <color name="hvac_panel_handle_bar_color">#B8FFFFFF</color>
 
-    <!-- Different colors to indicate different temperature levels. The upper bound for each color
-    is defined in integers.xml (see hvac_temperature_control_levels). -->
-    <string-array name="hvac_temperature_level_backgrounds">
-        <item>#00AFFF</item>
-        <item>#7AA9F6</item>
-        <item>#F4F4F4</item>
-        <item>#FFD63F</item>
-        <item>#FF5151</item>
-    </string-array>
-
     <color name="hvac_module_background_color">#99222B31</color>
 
-    <color name="hvac_icon_color">#F5F5F5</color>
-    <color name="hvac_master_switch_color">#000000</color>
-    <color name="hvac_background_color">#FF172026</color>
-    <color name="hvac_temperature_floating_text_color">#9FA2A5</color>
-    <color name="hvac_temperature_off_text_bg_color">#9FA2A5</color>
-    <color name="hvac_fanspeed_bg_color">#141C21</color>
-    <color name="hvac_fanspeed_segment_color">#7FCAC3</color>
-    <color name="hvac_seat_heat_level_drawable_fill_color">#222B31</color>
-    <color name="hvac_temperature_control_icon_fill_color">#000000</color>
-    <color name="hvac_fanspeed_off_enabled_bg">#F5F6F5</color>
-    <color name="hvac_fanspeed_off_enabled_text_color">#13181C</color>
-    <color name="hvac_fanspeed_off_disabled_text_color">#89F5F5F5</color>
-    <color name="hvac_fan_drawable_fill_color">#F5F5F5</color>
-    <color name="hvac_fanspeed_off_active_bg">#F5F6F5</color>
-    <color name="hvac_fanspeed_off_active_text_color">#13181C</color>
-    <color name="hvac_fanspeed_off_inactive_text_color">#89F5F5F5</color>
-    <color name="hvac_scrim_color">#3F000000</color>
+    <color name="hvac_icon_color">@color/car_primary_100</color>
+    <color name="hvac_master_switch_color">@color/hvac_icon_color</color>
+    <color name="hvac_icon_off_foreground_color">@color/car_primary_100</color>
+    <color name="hvac_icon_on_foreground_color">@color/car_hvac_surface_color</color>
+    <color name="hvac_icon_on_background_color">@color/car_primary</color>
+    <color name="hvac_background_color">@color/car_neutral_variant_10</color>
+    <color name="hvac_temperature_default_bg_color">@color/car_error</color>
+    <color name="hvac_temperature_off_text_bg_color">@color/car_primary</color>
+    <color name="hvac_fanspeed_bg_color">@color/car_hvac_surface_color</color>
+    <color name="hvac_fanspeed_segment_color">@color/car_primary</color>
+    <color name="hvac_seat_heat_level_drawable_off_fill_color">@color/car_surface_2</color>
+    <color name="hvac_seat_heat_level_drawable_on_fill_color">@color/car_primary</color>
+    <color name="hvac_temperature_control_icon_fill_color">@color/car_primary_0</color>
+    <color name="hvac_fanspeed_off_active_bg">@color/car_primary</color>
+    <color name="hvac_fanspeed_off_active_text_color">@color/car_neutral_10</color>
+    <color name="hvac_fanspeed_off_inactive_text_color">@color/car_neutral_95</color>
 
     <!-- Semi-transparent background color of blocking activity. -->
     <color name="activity_blocking_activity_background">#c7000000</color>
@@ -125,7 +113,7 @@
     <color name="ic_ux_restricted_color">@android:color/white</color>
 
     <!-- Color for status icon panel background. -->
-    <color name="status_icon_panel_bg_color">#282A2D</color>
+    <color name="status_icon_panel_bg_color">@color/car_background</color>
 
     <!-- Color for highlighting the status icon button that is currently selected. -->
     <color name="status_icon_selected_button_color">@color/car_primary</color>

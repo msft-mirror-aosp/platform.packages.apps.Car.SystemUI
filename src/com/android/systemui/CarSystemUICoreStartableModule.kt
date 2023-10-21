@@ -19,6 +19,7 @@ package com.android.systemui
 import android.content.Context
 import com.android.keyguard.KeyguardBiometricLockoutLogger
 import com.android.systemui.biometrics.AuthController
+import com.android.systemui.car.activity.window.ActivityWindowManager
 import com.android.systemui.car.cluster.ClusterDisplayController
 import com.android.systemui.car.input.DisplayInputSinkController
 import com.android.systemui.car.systembar.CarSystemBar
@@ -192,4 +193,12 @@ abstract class CarSystemUICoreStartableModule {
     @IntoMap
     @ClassKey(Recents::class)
     abstract fun bindRecents(sysui: Recents): CoreStartable
+
+    /** Inject into ActivityWindowManager. */
+    @Binds
+    @IntoMap
+    @ClassKey(ActivityWindowManager::class)
+    abstract fun bindActivityWindowManager(
+        activityWindowManager: ActivityWindowManager
+    ): CoreStartable
 }

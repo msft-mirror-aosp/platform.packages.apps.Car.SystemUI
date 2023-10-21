@@ -133,6 +133,9 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
                     }
                 });
 
+        mCarSystemBarController.registerNotificationPanelViewController(
+                mNotificationPanelViewController);
+
         mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), null,
                 mUserTracker.getUserHandle());

@@ -42,7 +42,7 @@
         android:paddingEnd="@dimen/hvac_temperature_text_padding"
         android:paddingStart="@dimen/hvac_temperature_text_padding"
         android:textColor="@color/system_bar_text_color"
-        android:textSize="@dimen/hvac_temperature_text_size_dock"/>
+        android:textSize="@dimen/hvac_temperature_text_size"/>
 
     <ImageView
         android:id="@+id/hvac_increase_button"

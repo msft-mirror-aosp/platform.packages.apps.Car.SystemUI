@@ -80,7 +80,7 @@ C33.4622,34.1902 34.0672,35.2032 34.0672,37.0162 C34.0672,37.0442
                 </group>
             </group>
             <path
-                android:fillColor="#80CBC4"
+                android:fillColor="@color/hvac_seat_heat_level_drawable_on_fill_color"
                 android:strokeWidth="1"
                 android:pathData="M96.2360712,28.8658223 C95.25103,28.8658223 94.2833779,28.3876215
 93.6901028,27.5014524 C91.9767653,24.9400312 90.0097515,22.5335347

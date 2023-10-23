@@ -126,4 +126,8 @@
     <string name="backspace_key" msgid="5570862528655375412">"Tombol backspace"</string>
     <string name="enter_key" msgid="747962923921283095">"Tombol enter"</string>
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
+    <!-- no translation found for back_btn (7774349944465667391) -->
+    <skip />
+    <!-- no translation found for fullscreen (7648956467442135844) -->
+    <skip />
 </resources>

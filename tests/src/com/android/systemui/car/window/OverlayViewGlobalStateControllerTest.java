@@ -24,6 +24,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -361,6 +362,21 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
     }
 
     @Test
+    public void showView_newHighestZOrder_setDimAmount() {
+        float oldDim = 0.1f;
+        float newDim = 0.5f;
+        setupOverlayViewController1();
+        when(mOverlayViewController1.getDefaultDimAmount()).thenReturn(oldDim);
+        setOverlayViewControllerAsShowing(mOverlayViewController1);
+        setupOverlayViewController2();
+        when(mOverlayViewController2.getDefaultDimAmount()).thenReturn(newDim);
+
+        mOverlayViewGlobalStateController.showView(mOverlayViewController2, mRunnable);
+
+        verify(mSystemUIOverlayWindowController).setDimBehind(newDim);
+    }
+
+    @Test
     public void showView_oldHighestZOrder() {
         setupOverlayViewController2();
         setOverlayViewControllerAsShowing(mOverlayViewController2);
@@ -482,6 +498,23 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         verify(mOverlayViewController1, never()).refreshRotaryFocusIfNeeded();
         verify(mOverlayViewController2).refreshRotaryFocusIfNeeded();
+    }
+
+    @Test
+    public void showView_oldHighestZOrder_setDimAmount() {
+        float oldDim = 0.1f;
+        float newDim = 0.5f;
+        setupOverlayViewController1();
+        when(mOverlayViewController1.getDefaultDimAmount()).thenReturn(oldDim);
+        setupOverlayViewController2();
+        when(mOverlayViewController2.getDefaultDimAmount()).thenReturn(newDim);
+
+        mOverlayViewGlobalStateController.showView(mOverlayViewController2, mRunnable);
+        mOverlayViewGlobalStateController.showView(mOverlayViewController1, mRunnable);
+
+        verify(mSystemUIOverlayWindowController, never()).setDimBehind(oldDim);
+        // called twice - once for when each view is shown
+        verify(mSystemUIOverlayWindowController, times(2)).setDimBehind(newDim);
     }
 
     @Test
@@ -1013,6 +1046,32 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
         mOverlayViewGlobalStateController.showView(mOverlayViewController1, mRunnable);
 
         verify(mSystemUIOverlayWindowController, never()).setFitInsetsTypes(insetTypesToFit);
+    }
+
+    @Test
+    public void updateWindowDimBehind_highestZOrder_updatesDimAmount() {
+        float newDim = 0.5f;
+        setupOverlayViewController1();
+        setupOverlayViewController2();
+        setOverlayViewControllerAsShowing(mOverlayViewController1);
+        setOverlayViewControllerAsShowing(mOverlayViewController2);
+
+        mOverlayViewGlobalStateController.updateWindowDimBehind(mOverlayViewController2, newDim);
+
+        verify(mSystemUIOverlayWindowController).setDimBehind(newDim);
+    }
+
+    @Test
+    public void updateWindowDimBehind_notHighestZOrder_noDimAmountUpdate() {
+        float newDim = 0.5f;
+        setupOverlayViewController1();
+        setupOverlayViewController2();
+        setOverlayViewControllerAsShowing(mOverlayViewController1);
+        setOverlayViewControllerAsShowing(mOverlayViewController2);
+
+        mOverlayViewGlobalStateController.updateWindowDimBehind(mOverlayViewController1, newDim);
+
+        verify(mSystemUIOverlayWindowController, never()).setDimBehind(newDim);
     }
 
     private void setupOverlayViewController1() {

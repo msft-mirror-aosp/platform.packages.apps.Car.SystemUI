@@ -22,7 +22,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="@dimen/hvac_panel_full_expanded_height"
-    android:background="@color/hvac_background_color">
+    android:background="@drawable/hvac_background">
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/top_guideline"
         android:layout_width="wrap_content"

@@ -121,11 +121,13 @@ public class SystemUIOverlayWindowController implements
                         | WindowManager.LayoutParams.FLAG_TOUCHABLE_WHEN_WAKING
                         | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
                         | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
-                        | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS,
+                        | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+                        | WindowManager.LayoutParams.FLAG_DIM_BEHIND,
                 PixelFormat.TRANSLUCENT);
         mLp.token = new Binder();
         mLp.gravity = Gravity.TOP;
         mLp.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
+        mLp.dimAmount = 0f;
         mLp.setTitle("SystemUIOverlayWindow");
         mLp.packageName = mContext.getPackageName();
         mLp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
@@ -169,6 +171,12 @@ public class SystemUIOverlayWindowController implements
         } else {
             mLpChanged.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         }
+        updateWindow();
+    }
+
+    /** Sets the dim behind the window */
+    public void setDimBehind(float dimAmount) {
+        mLpChanged.dimAmount = dimAmount;
         updateWindow();
     }
 

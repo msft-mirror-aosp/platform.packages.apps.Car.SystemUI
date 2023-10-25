@@ -129,6 +129,7 @@ public class OverlayViewGlobalStateController {
         refreshUseStableInsets();
         refreshInsetsToFit();
         refreshWindowFocus();
+        refreshWindowDefaultDimBehind();
         refreshSystemBarVisibility();
         refreshStatusBarVisibility();
         refreshRotaryFocusIfNeeded();
@@ -204,6 +205,7 @@ public class OverlayViewGlobalStateController {
         refreshUseStableInsets();
         refreshInsetsToFit();
         refreshWindowFocus();
+        refreshWindowDefaultDimBehind();
         refreshSystemBarVisibility();
         refreshStatusBarVisibility();
         refreshRotaryFocusIfNeeded();
@@ -214,6 +216,20 @@ public class OverlayViewGlobalStateController {
 
         Log.d(TAG, "Content hidden: " + viewController.getClass().getName());
         debugLog();
+    }
+
+    /**
+     * After the default dim amount is set via {@link OverlayViewController#getDefaultDimAmount},
+     * this function can be called to make further updates to the dim amount when an overlay view
+     * is the top z-ordered window. Returns {@code true} if the dim amount of the window has been
+     * updated
+     */
+    public boolean updateWindowDimBehind(OverlayViewController viewController, float dimAmount) {
+        if (mHighestZOrder == null || viewController != mHighestZOrder) {
+            return false;
+        }
+        mSystemUIOverlayWindowController.setDimBehind(dimAmount);
+        return true;
     }
 
     private void refreshHighestZOrderWhenHidingView(OverlayViewController viewController) {
@@ -258,6 +274,11 @@ public class OverlayViewGlobalStateController {
 
     private void refreshWindowFocus() {
         setWindowFocusable(mHighestZOrder == null ? false : mHighestZOrder.shouldFocusWindow());
+    }
+
+    private void refreshWindowDefaultDimBehind() {
+        float dimAmount = mHighestZOrder == null ? 0f : mHighestZOrder.getDefaultDimAmount();
+        mSystemUIOverlayWindowController.setDimBehind(dimAmount);
     }
 
     private void refreshUseStableInsets() {

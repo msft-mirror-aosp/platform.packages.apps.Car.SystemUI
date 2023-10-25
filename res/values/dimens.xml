@@ -76,6 +76,7 @@
     <dimen name="car_primary_icon_size">@*android:dimen/car_primary_icon_size</dimen>
 
     <dimen name="hvac_container_padding">16dp</dimen>
+    <dimen name="hvac_panel_background_radius">48dp</dimen>
     <dimen name="hvac_temperature_bar_margin">32dp</dimen>
     <dimen name="hvac_temperature_text_size">44sp</dimen>
     <dimen name="hvac_temperature_text_padding">10dp</dimen>

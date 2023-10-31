@@ -20,7 +20,6 @@ import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
 import static android.car.VehiclePropertyIds.HVAC_FAN_SPEED;
 import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 
-import android.car.hardware.CarPropertyConfig;
 import android.car.hardware.CarPropertyValue;
 import android.content.Context;
 import android.content.res.Resources;
@@ -33,6 +32,7 @@ import android.widget.TextView;
 import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPropertySetter;
+import com.android.systemui.car.hvac.HvacUtils;
 import com.android.systemui.car.hvac.HvacView;
 
 import java.util.ArrayList;
@@ -65,6 +65,7 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
 
     private boolean mPowerOn = false;
     private boolean mAutoOn = false;
+    private boolean mDisableViewIfPowerOff = false;
 
     private float mOnAlpha;
     private float mOffAlpha;
@@ -110,8 +111,8 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
     }
 
     @Override
-    public void setConfigInfo(CarPropertyConfig<?> carPropertyConfig) {
-        // no-op.
+    public void setDisableViewIfPowerOff(boolean disableViewIfPowerOff) {
+        mDisableViewIfPowerOff = disableViewIfPowerOff;
     }
 
     @Override
@@ -211,11 +212,6 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
         updateViewPerAvailability();
     }
 
-    @Override
-    public void onHvacTemperatureUnitChanged(boolean usesFahrenheit) {
-        // no-op.
-    }
-
     protected void setOffAndMaxButtonsActiveState(int level) {
         setOffButtonActive(level == 1);
         setMaxButtonActive(level == 6);
@@ -256,6 +252,6 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
     }
 
     private boolean shouldAllowControl() {
-        return mPowerOn && !mAutoOn;
+        return HvacUtils.shouldAllowControl(mDisableViewIfPowerOff, mPowerOn, mAutoOn);
     }
 }

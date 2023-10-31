@@ -39,7 +39,6 @@
         style="@style/HvacButton"
         systemui:hvacAreaId="1"
         systemui:hvacPropertyId="354419973"
-        systemui:hvacTurnOffIfPowerOff="false"
         systemui:hvacToggleOnButtonDrawable="@drawable/ic_front_defroster_on"
         systemui:hvacToggleOffButtonDrawable="@drawable/ic_front_defroster_off"/>
 
@@ -49,7 +48,7 @@
         style="@style/HvacButton"
         systemui:hvacAreaId="1"
         systemui:hvacPropertyId="354419973"
-        systemui:hvacTurnOffIfAutoOn="true"
+        systemui:hvacDisableViewIfAutoOn="true"
         systemui:hvacToggleOnButtonDrawable="@drawable/ic_front_defroster_on"
         systemui:hvacToggleOffButtonDrawable="@drawable/ic_front_defroster_off"/>
 
@@ -70,7 +69,6 @@
         style="@style/HvacButton"
         systemui:hvacAreaId="1"
         systemui:hvacPropertyId="356517120"
-        systemui:hvacTurnOffIfPowerOff="false"
         systemui:hvacToggleOnButtonDrawable="@drawable/ic_front_defroster_on"
         systemui:hvacToggleOffButtonDrawable="@drawable/ic_front_defroster_off"
         systemui:onValue="1"
@@ -82,7 +80,7 @@
         style="@style/HvacButton"
         systemui:hvacAreaId="1"
         systemui:hvacPropertyId="356517120"
-        systemui:hvacTurnOffIfAutoOn="true"
+        systemui:hvacDisableViewIfAutoOn="true"
         systemui:hvacToggleOnButtonDrawable="@drawable/ic_front_defroster_on"
         systemui:hvacToggleOffButtonDrawable="@drawable/ic_front_defroster_off"
         systemui:onValue="1"

@@ -97,12 +97,9 @@
         <attr name="hvacTempFormat" format="string"/>
         <attr name="hvacToggleOnButtonDrawable" format="reference"/>
         <attr name="hvacToggleOffButtonDrawable" format="reference"/>
-        <!-- Whether the given HvacView must be turned off if the HVAC power is off.
-               Defaults to true. -->
-        <attr name="hvacTurnOffIfPowerOff" format="boolean" />
         <!-- Whether the given HvacView must be turned off if the HVAC Auto mode is on.
                Defaults to false. -->
-        <attr name="hvacTurnOffIfAutoOn" format="boolean" />
+        <attr name="hvacDisableViewIfAutoOn" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="HvacIntegerToggleButton">

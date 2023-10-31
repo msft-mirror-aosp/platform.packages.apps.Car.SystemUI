@@ -126,8 +126,6 @@
     <string name="backspace_key" msgid="5570862528655375412">"Backspace کلید"</string>
     <string name="enter_key" msgid="747962923921283095">"Enter کلید"</string>
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
-    <!-- no translation found for back_btn (7774349944465667391) -->
-    <skip />
-    <!-- no translation found for fullscreen (7648956467442135844) -->
-    <skip />
+    <string name="back_btn" msgid="7774349944465667391">"پیچھے جائیں"</string>
+    <string name="fullscreen" msgid="7648956467442135844">"فُل اسکرین"</string>
 </resources>

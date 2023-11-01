@@ -298,6 +298,7 @@ public class HvacController implements HvacPropertySetter,
 
                 hvacView.setHvacPropertySetter(this);
                 hvacView.setConfigInfo(carPropertyConfig);
+                hvacView.setDisableViewIfPowerOff(mHvacPowerDependentProperties.contains(propId));
 
                 ArrayList<Integer> supportedAreaIds = getAreaIdsFromTargetAreaId(propId.intValue(),
                         targetAreaId.intValue());

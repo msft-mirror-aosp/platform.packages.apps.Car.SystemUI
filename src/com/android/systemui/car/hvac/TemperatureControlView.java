@@ -50,6 +50,7 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     private final int mUnavailableTextColor;
 
     private boolean mPowerOn = false;
+    private boolean mDisableViewIfPowerOff = false;
     private boolean mTemperatureSetAvailable = false;
     private HvacPropertySetter mHvacPropertySetter;
     private String mTempInDisplay;
@@ -130,6 +131,11 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     }
 
     @Override
+    public void setDisableViewIfPowerOff(boolean disableViewIfPowerOff) {
+        mDisableViewIfPowerOff = disableViewIfPowerOff;
+    }
+
+    @Override
     public void setConfigInfo(CarPropertyConfig<?> carPropertyConfig) {
         List<Integer> configArray = carPropertyConfig.getConfigArray();
         // Need to divide by 10 because config array values are temperature values that have been
@@ -151,7 +157,8 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
      * Returns {@code true} if temperature should be available for change.
      */
     public boolean isTemperatureAvailableForChange() {
-        return mPowerOn && mTemperatureSetAvailable && mHvacPropertySetter != null;
+        return HvacUtils.shouldAllowControl(mDisableViewIfPowerOff, mPowerOn)
+                && mTemperatureSetAvailable && mHvacPropertySetter != null;
     }
 
     /**
@@ -210,12 +217,16 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     }
 
     private void incrementTemperature(boolean increment) {
-        if (!mPowerOn) return;
+        if (!isTemperatureAvailableForChange()) {
+            return;
+        }
 
         float newTempC = increment
                 ? mCurrentTempC + mTemperatureIncrementCelsius
                 : mCurrentTempC - mTemperatureIncrementCelsius;
-        setTemperature(newTempC);
+        newTempC = Math.min(newTempC, mMaxTempC);
+        newTempC = Math.max(newTempC, mMinTempC);
+        mHvacPropertySetter.setHvacProperty(HVAC_TEMPERATURE_SET, mAreaId, newTempC);
     }
 
     private void updateTemperatureView() {
@@ -226,14 +237,6 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
                 mDisplayInFahrenheit ? mTemperatureFormatFahrenheit : mTemperatureFormatCelsius,
                 tempToDisplayUnformatted);
         mContext.getMainExecutor().execute(this::updateTemperatureViewUiThread);
-    }
-
-    private void setTemperature(float tempC) {
-        tempC = Math.min(tempC, mMaxTempC);
-        tempC = Math.max(tempC, mMinTempC);
-        if (isTemperatureAvailableForChange()) {
-            mHvacPropertySetter.setHvacProperty(HVAC_TEMPERATURE_SET, mAreaId, tempC);
-        }
     }
 
     /**

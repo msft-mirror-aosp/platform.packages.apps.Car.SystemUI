@@ -57,7 +57,7 @@
         app:layout_constraintRight_toLeftOf="@+id/fan_control"
         systemui:hvacAreaId="117"
         systemui:hvacPropertyId="354419976"
-        systemui:hvacTurnOffIfAutoOn="true"
+        systemui:hvacDisableViewIfAutoOn="true"
         systemui:hvacToggleOnButtonDrawable="@drawable/ic_recycle_air_on"
         systemui:hvacToggleOffButtonDrawable="@drawable/ic_recycle_air_off"/>
     <LinearLayout
@@ -92,7 +92,7 @@
         app:layout_constraintRight_toLeftOf="@+id/passenger_hvac"
         systemui:hvacAreaId="117"
         systemui:hvacPropertyId="354419973"
-        systemui:hvacTurnOffIfAutoOn="true"
+        systemui:hvacDisableViewIfAutoOn="true"
         systemui:hvacToggleOnButtonDrawable="@drawable/ic_ac_on"
         systemui:hvacToggleOffButtonDrawable="@drawable/ic_ac_off"/>
     <com.android.systemui.car.hvac.referenceui.BackgroundAdjustingTemperatureControlView
@@ -126,7 +126,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/bottom_guideline"
         systemui:hvacAreaId="117"
         systemui:hvacPropertyId="354419984"
-        systemui:hvacTurnOffIfPowerOff="false"
         systemui:hvacToggleOnButtonDrawable="@drawable/ac_master_switch_on"
         systemui:hvacToggleOffButtonDrawable="@drawable/ac_master_switch_off"/>
     <com.android.systemui.car.hvac.toggle.HvacBooleanToggleButton

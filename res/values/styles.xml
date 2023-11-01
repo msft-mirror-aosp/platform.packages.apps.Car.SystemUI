@@ -66,6 +66,11 @@
         <item name="unselectedAlpha">0.56</item>
     </style>
 
+    <style name="SystemBarButton.Vertical">
+        <item name="android:layout_marginEnd">0dp</item>
+        <item name="android:layout_marginBottom">@dimen/system_bar_button_margin</item>
+    </style>
+
     <style name="QuickControlEntryPointButton">
         <item name="android:layout_marginTop">@dimen/car_quick_controls_entry_points_button_margin_top</item>
         <item name="android:layout_marginBottom">@dimen/car_quick_controls_entry_points_button_margin_bottom</item>

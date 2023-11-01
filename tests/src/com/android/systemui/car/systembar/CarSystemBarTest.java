@@ -20,6 +20,11 @@ import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
 import static android.view.WindowInsetsController.APPEARANCE_OPAQUE_STATUS_BARS;
 import static android.view.WindowInsetsController.BEHAVIOR_DEFAULT;
 
+import static com.android.systemui.car.systembar.SystemBarConfigs.BOTTOM;
+import static com.android.systemui.car.systembar.SystemBarConfigs.LEFT;
+import static com.android.systemui.car.systembar.SystemBarConfigs.RIGHT;
+import static com.android.systemui.car.systembar.SystemBarConfigs.TOP;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assume.assumeFalse;
@@ -129,6 +134,7 @@ public class CarSystemBarTest extends SysuiTestCase {
     private RegisterStatusBarResult mBarResult;
     private AppearanceRegion[] mAppearanceRegions;
     private FakeExecutor mUiBgExecutor;
+    private SystemBarConfigs mSystemBarConfigs;
 
     @Before
     public void setUp() {
@@ -171,12 +177,13 @@ public class CarSystemBarTest extends SysuiTestCase {
 
     private void initCarSystemBar() {
         FakeDisplayTracker displayTracker = new FakeDisplayTracker(mContext);
+        mSystemBarConfigs = new SystemBarConfigs(mTestableResources.getResources());
         mCarSystemBar = new CarSystemBar(mContext, mCarSystemBarController, mLightBarController,
                 mStatusBarIconController, mWindowManager, mDeviceProvisionedController,
                 new CommandQueue(mContext, displayTracker), mAutoHideController,
                 mButtonSelectionStateListener, mExecutor, mUiBgExecutor, mBarService,
                 () -> mKeyguardStateController, () -> mIconPolicy, mHvacController, mSignalPolicy,
-                new SystemBarConfigs(mTestableResources.getResources()),
+                mSystemBarConfigs,
                 mock(ConfigurationController.class), displayTracker, Optional.empty());
         mCarSystemBar.setSignalPolicy(mSignalPolicy);
     }
@@ -476,6 +483,43 @@ public class CarSystemBarTest extends SysuiTestCase {
 
         verify(mCarSystemBarController, times(2))
                 .callQuickControlsOnClickFromClassName(clsName);
+    }
+
+    @Test
+    public void restartSystemBars_newSystemBarConfig_recreatesSystemBars() {
+        mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);
+        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
+        mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, false);
+        mTestableResources.addOverride(R.bool.config_enableRightSystemBar, false);
+        when(mCarSystemBarController.getTopWindow()).thenReturn(mock(ViewGroup.class));
+        when(mCarSystemBarController.getBottomWindow()).thenReturn(mock(ViewGroup.class));
+        when(mCarSystemBarController.getLeftWindow()).thenReturn(null);
+        when(mCarSystemBarController.getRightWindow()).thenReturn(null);
+
+        initCarSystemBar();
+        mCarSystemBar.start();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(TOP)).isNotNull();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(BOTTOM)).isNotNull();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(LEFT)).isNull();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(RIGHT)).isNull();
+
+        mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);
+        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, false);
+        mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, true);
+        mTestableResources.addOverride(R.bool.config_enableRightSystemBar, true);
+        mSystemBarConfigs = new SystemBarConfigs(mTestableResources.getResources());
+        when(mCarSystemBarController.getTopWindow()).thenReturn(mock(ViewGroup.class));
+        when(mCarSystemBarController.getBottomWindow()).thenReturn(null);
+        when(mCarSystemBarController.getLeftWindow()).thenReturn(mock(ViewGroup.class));
+        when(mCarSystemBarController.getRightWindow()).thenReturn(mock(ViewGroup.class));
+        mCarSystemBar.restartSystemBars();
+
+        verify(mCarSystemBarController, times(1)).removeAll();
+        verify(mCarSystemBarController, times(1)).resetSystemBarConfigs();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(TOP)).isNotNull();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(BOTTOM)).isNull();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(LEFT)).isNotNull();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(RIGHT)).isNotNull();
     }
 
     private void waitForDelayableExecutor() {

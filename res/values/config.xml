@@ -250,4 +250,17 @@
 
     <!-- Media blocking activity component name -->
     <string name="config_mediaBlockingActivity" translatable="false">com.android.car.media/.MediaBlockingActivity</string>
+
+    <!-- Determines how to show navigation bar and status bar on app's immersive request, only
+        works if config_remoteInsetsControllerControlsSystemBars is set to true-->
+    <!-- 0 non_immersive show all system bars on immersive request. -->
+    <!-- 1 immersive, hide both bars -->
+    <!-- 2 immersive_with_nav, show nav bar and hide status bar -->
+    <!-- 3 immersive based on bar control policy  -->
+    <integer name="config_systemBarPersistency">1</integer>
+
+    <!-- Determines the orientation of the status icon. -->
+    <!-- 0 horizontal. -->
+    <!-- 1 vertical -->
+    <integer name="config_statusIconLayoutOrientation">0</integer>
 </resources>

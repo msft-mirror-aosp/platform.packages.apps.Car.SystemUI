@@ -43,7 +43,8 @@
     <color name="system_bar_text_color">#FFFFFF</color>
     <color name="system_bar_text_selected_color">#000000</color>
     <color name="system_bar_text_unavailable_color">#B0B0B0</color>
-    <drawable name="system_bar_background">#000000</drawable>
+    <drawable name="nav_bar_background">@android:color/black</drawable>
+    <drawable name="status_bar_background">@android:color/black</drawable>
 
     <!-- colors for quick controls entry points icon   -->
     <color name="car_quick_controls_icon_drawable_color">#FFFFFF</color>

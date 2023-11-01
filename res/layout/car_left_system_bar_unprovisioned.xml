@@ -23,7 +23,7 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/system_bar_background">
+    android:background="@drawable/nav_bar_background">
 
     <LinearLayout
         android:layout_height="match_parent"

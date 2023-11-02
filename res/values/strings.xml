@@ -267,9 +267,9 @@
    -->
     <string name="user_tos_activity_intent">intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end</string>
 
-    <!-- AutoEnhance back button [CHAR LIMIT=30] -->
+    <!-- DisplayCompat back button [CHAR LIMIT=30] -->
     <string name="back_btn">Back</string>
-    <!-- AutoEnhance fullscreen button [CHAR LIMIT=30] -->
+    <!-- DisplayCompat fullscreen button [CHAR LIMIT=30] -->
     <string name="fullscreen">Full Screen</string>
 
 </resources>

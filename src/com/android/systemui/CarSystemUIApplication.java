@@ -18,6 +18,8 @@ package com.android.systemui;
 
 import static android.car.CarOccupantZoneManager.DISPLAY_TYPE_MAIN;
 
+import static com.android.car.docklib.events.DockEventsReceiver.registerDockReceiver;
+
 import android.car.Car;
 import android.car.CarOccupantZoneManager;
 import android.view.Display;
@@ -53,6 +55,12 @@ public class CarSystemUIApplication extends SystemUIApplication {
                 }
             }
             car.disconnect();
+        }
+
+        boolean isDockEnabled = getResources().getBoolean(R.bool.config_enableDock);
+        if (isDockEnabled) {
+            // todo(b/308651703): create and register receiver when the dock view is created
+            registerDockReceiver(this);
         }
     }
 

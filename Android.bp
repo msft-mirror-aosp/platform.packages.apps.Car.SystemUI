@@ -60,6 +60,7 @@ android_library {
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
         "animationlib",
+        "CarDockLib",
     ],
 
     libs: [
@@ -126,6 +127,7 @@ android_library {
         "testng",
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
+        "CarDockLib",
     ],
     libs: [
         "android.test.runner",

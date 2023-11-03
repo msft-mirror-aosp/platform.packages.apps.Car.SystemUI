@@ -154,4 +154,7 @@
 
     <!-- Color for button background in the quick controls panel. -->
     <color name="car_quick_controls_button_background_pill_color">#3C4043</color>
+
+    <!-- Color for PIN Pad icon.-->
+    <color name="pin_pad_icon_color">@color/car_ui_text_color_primary</color>
 </resources>

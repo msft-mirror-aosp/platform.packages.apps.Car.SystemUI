@@ -25,6 +25,7 @@ import android.hardware.SensorPrivacyManager;
 import android.window.DisplayAreaOrganizer;
 
 import com.android.keyguard.KeyguardViewController;
+import com.android.keyguard.dagger.KeyguardDisplayModule;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
 import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
@@ -89,7 +90,8 @@ import javax.inject.Named;
                 ReferenceScreenshotModule.class,
                 ShadeEmptyImplModule.class,
                 ShutdownUiModule.class,
-                DriveModeModule.class
+                DriveModeModule.class,
+                KeyguardDisplayModule.class,
         }
 )
 abstract class CarSystemUIModule {

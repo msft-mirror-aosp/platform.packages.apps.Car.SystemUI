@@ -418,6 +418,7 @@ public class OverlayPanelViewControllerTest extends SysuiTestCase {
 
     @Test
     public void dragOpenTouchListener_isNotInflated_inflatesView() {
+        mOverlayPanelViewController.setShouldAnimateExpandPanel(true);
         when(mCarDeviceProvisionedController.isCurrentUserFullySetup()).thenReturn(true);
         assertThat(mOverlayPanelViewController.isInflated()).isFalse();
 
@@ -426,6 +427,19 @@ public class OverlayPanelViewControllerTest extends SysuiTestCase {
                         MotionEvent.ACTION_MOVE, /* x= */ 0, /* y= */ 0, /* metaState= */ 0));
 
         verify(mOverlayViewGlobalStateController).inflateView(mOverlayPanelViewController);
+    }
+
+    @Test
+    public void dragOpenTouchListener_shouldNotAnimate_notInflatesView() {
+        mOverlayPanelViewController.setShouldAnimateExpandPanel(false);
+        when(mCarDeviceProvisionedController.isCurrentUserFullySetup()).thenReturn(true);
+        assertThat(mOverlayPanelViewController.isInflated()).isFalse();
+
+        mOverlayPanelViewController.getDragOpenTouchListener().onTouch(/* v= */ null,
+                MotionEvent.obtain(/* downTime= */ 200, /* eventTime= */ 300,
+                        MotionEvent.ACTION_MOVE, /* x= */ 0, /* y= */ 0, /* metaState= */ 0));
+
+        verify(mOverlayViewGlobalStateController, never()).inflateView(mOverlayPanelViewController);
     }
 
     private void mockPanelWithSize(int size) {

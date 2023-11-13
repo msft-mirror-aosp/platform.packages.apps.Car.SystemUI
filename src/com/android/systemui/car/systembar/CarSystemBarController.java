@@ -55,7 +55,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 /** A single class which controls the navigation bar views. */
@@ -120,7 +119,6 @@ public class CarSystemBarController {
     private int mStatusBarState2;
     private int mLockTaskMode;
 
-    @Inject
     public CarSystemBarController(Context context,
             UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,

@@ -58,6 +58,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
+                        app:remoteQCProvider="content://com.android.car.settings.qc/theme_toggle"/>
+                    <com.android.systemui.car.qc.SystemUIQCView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
                         app:remoteQCProvider="content://com.android.car.carlauncher.calmmode/calm_mode"/>
                 </LinearLayout>
             </ScrollView>

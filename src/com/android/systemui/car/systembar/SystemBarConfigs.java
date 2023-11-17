@@ -235,7 +235,7 @@ public class SystemBarConfigs {
         mBottomNavBarEnabled = mResources.getBoolean(R.bool.config_enableBottomSystemBar);
         mLeftNavBarEnabled = mResources.getBoolean(R.bool.config_enableLeftSystemBar);
         mRightNavBarEnabled = mResources.getBoolean(R.bool.config_enableRightSystemBar);
-
+        mSystemBarConfigMap.clear();
         if (mTopNavBarEnabled) {
             SystemBarConfig topBarConfig =
                     new SystemBarConfigBuilder()

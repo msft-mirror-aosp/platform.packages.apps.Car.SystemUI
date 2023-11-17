@@ -42,8 +42,8 @@
     <!-- NOTE: If the z-order of a bar is 10 or above, it will also appear on top of HUN's.    -->
     <integer name="config_topSystemBarZOrder">0</integer>
     <integer name="config_leftSystemBarZOrder">10</integer>
-    <integer name="config_rightSystemBarZOrder">10</integer>
-    <integer name="config_bottomSystemBarZOrder">10</integer>
+    <integer name="config_rightSystemBarZOrder">0</integer>
+    <integer name="config_bottomSystemBarZOrder">0</integer>
 
     <!-- Whether heads-up notifications should be shown on the bottom. If false, heads-up
          notifications will be shown pushed to the top of their parent container. If true, they will

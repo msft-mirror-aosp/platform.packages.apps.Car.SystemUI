@@ -18,9 +18,11 @@ package com.android.systemui.car.volume;
 
 import static android.car.media.CarAudioManager.AUDIO_FEATURE_VOLUME_GROUP_EVENTS;
 import static android.car.media.CarAudioManager.INVALID_AUDIO_ZONE;
+import static android.car.media.CarAudioManager.PRIMARY_AUDIO_ZONE;
 import static android.car.media.CarVolumeGroupEvent.EXTRA_INFO_SHOW_UI;
 import static android.car.media.CarVolumeGroupEvent.EXTRA_INFO_VOLUME_INDEX_CHANGED_BY_AUDIO_SYSTEM;
 
+import android.app.ActivityManager;
 import android.car.Car;
 import android.car.CarOccupantZoneManager;
 import android.car.media.CarAudioManager;
@@ -152,11 +154,12 @@ public class VolumeUI implements CoreStartable {
 
         mCarServiceProvider.addListener(car -> {
             if (mCarAudioManager != null) {
+                // already initialized
                 return;
             }
 
-            CarOccupantZoneManager carOccupantZoneManager =
-                    (CarOccupantZoneManager) car.getCarManager(Car.CAR_OCCUPANT_ZONE_SERVICE);
+            CarOccupantZoneManager carOccupantZoneManager = car.getCarManager(
+                    CarOccupantZoneManager.class);
             if (carOccupantZoneManager != null) {
                 CarOccupantZoneManager.OccupantZoneInfo info =
                         carOccupantZoneManager.getOccupantZoneForUser(mUserTracker.getUserHandle());
@@ -166,7 +169,14 @@ public class VolumeUI implements CoreStartable {
             }
 
             if (mAudioZoneId == INVALID_AUDIO_ZONE) {
-                return;
+                if (mUserTracker.getUserId() == ActivityManager.getCurrentUser()) {
+                    // Certain devices may not have occupant zones configured. As a fallback for
+                    // this situation, if the user is the foreground user, assume driver and use the
+                    // primary audio zone.
+                    mAudioZoneId = PRIMARY_AUDIO_ZONE;
+                } else {
+                    return;
+                }
             }
 
             mCarAudioManager = (CarAudioManager) car.getCarManager(Car.AUDIO_SERVICE);

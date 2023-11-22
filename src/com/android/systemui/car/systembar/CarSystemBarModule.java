@@ -18,14 +18,25 @@ package com.android.systemui.car.systembar;
 
 import android.content.Context;
 
+import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
+import com.android.systemui.car.privacy.CameraPrivacyElementsProviderImpl;
+import com.android.systemui.car.privacy.MicPrivacyElementsProviderImpl;
+import com.android.systemui.car.qc.SystemUIQCViewController;
+import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.policy.ConfigurationController;
+
+import dagger.BindsOptionalOf;
+import dagger.Lazy;
+import dagger.Module;
+import dagger.Provides;
 
 import java.util.Optional;
 
-import dagger.BindsOptionalOf;
-import dagger.Module;
-import dagger.Provides;
+import javax.inject.Provider;
 
 /**
  * Dagger injection module for {@link CarSystemBar}.
@@ -64,5 +75,39 @@ public abstract class CarSystemBarModule {
             return controller.get();
         }
         return new ButtonSelectionStateController(context);
+    }
+
+    @BindsOptionalOf
+    @CarSysUIDynamicOverride
+    abstract CarSystemBarController optionalCarSystemBarController();
+
+    @SysUISingleton
+    @Provides
+    static CarSystemBarController provideCarSystemBarController(
+            @CarSysUIDynamicOverride Optional<CarSystemBarController> carSystemBarController,
+            Context context,
+            UserTracker userTracker,
+            CarSystemBarViewFactory carSystemBarViewFactory,
+            CarServiceProvider carServiceProvider,
+            BroadcastDispatcher broadcastDispatcher,
+            ConfigurationController configurationController,
+            ButtonSelectionStateController buttonSelectionStateController,
+            Lazy<UserNameViewController> userNameViewControllerLazy,
+            Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
+            Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
+            ButtonRoleHolderController buttonRoleHolderController,
+            SystemBarConfigs systemBarConfigs,
+            Provider<SystemUIQCViewController> qcViewControllerProvider,
+            Lazy<MicPrivacyElementsProviderImpl> micPrivacyElementsProvider,
+            Lazy<CameraPrivacyElementsProviderImpl> cameraPrivacyElementsProvider) {
+        if (carSystemBarController.isPresent()) {
+            return carSystemBarController.get();
+        }
+        return new CarSystemBarController(context, userTracker, carSystemBarViewFactory,
+                carServiceProvider, broadcastDispatcher, configurationController,
+                buttonSelectionStateController, userNameViewControllerLazy,
+                micPrivacyChipViewControllerLazy, cameraPrivacyChipViewControllerLazy,
+                buttonRoleHolderController, systemBarConfigs, qcViewControllerProvider,
+                micPrivacyElementsProvider, cameraPrivacyElementsProvider);
     }
 }

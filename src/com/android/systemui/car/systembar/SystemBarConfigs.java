@@ -136,7 +136,9 @@ public class SystemBarConfigs {
 
     protected WindowManager.LayoutParams getLayoutParamsBySide(@SystemBarSide int side) {
         return mSystemBarConfigMap.get(side) != null
-                ? mSystemBarConfigMap.get(side).getLayoutParams() : null;
+                ? mSystemBarConfigMap
+                .get(side).getLayoutParams(mResources.getBoolean(R.bool.config_enableDock))
+                : null;
     }
 
     protected boolean getEnabledStatusBySide(@SystemBarSide int side) {
@@ -473,7 +475,7 @@ public class SystemBarConfigs {
             return mPaddings;
         }
 
-        private WindowManager.LayoutParams getLayoutParams() {
+        private WindowManager.LayoutParams getLayoutParams(boolean isDockEnabled) {
             WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                     isHorizontalBar(mSide) ? ViewGroup.LayoutParams.MATCH_PARENT : mGirth,
                     isHorizontalBar(mSide) ? mGirth : ViewGroup.LayoutParams.MATCH_PARENT,
@@ -492,6 +494,10 @@ public class SystemBarConfigs {
             lp.windowAnimations = 0;
             lp.gravity = BAR_GRAVITY_MAP.get(mSide);
             lp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+            if (isDockEnabled) {
+                lp.privateFlags = lp.privateFlags
+                        | WindowManager.LayoutParams.PRIVATE_FLAG_INTERCEPT_GLOBAL_DRAG_AND_DROP;
+            }
             return lp;
         }
 

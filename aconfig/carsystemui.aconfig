@@ -1,0 +1,8 @@
+package: "com.android.systemui.car"
+
+flag {
+    name: "example_flag"
+    namespace: "systemui_car"
+    description: "An Example Flag"
+    bug: "304307370"
+}

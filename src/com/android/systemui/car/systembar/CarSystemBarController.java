@@ -477,9 +477,12 @@ public class CarSystemBarController {
             panelController = new StatusIconPanelController(mContext, mUserTracker,
                     mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
                     mQCViewControllerProvider);
-            panelController.attachPanel(mTopView.requireViewById(chipId), panelLayoutRes,
-                R.dimen.car_sensor_qc_panel_width, mPrivacyChipXOffset,
-                panelController.getDefaultYOffset(), Gravity.TOP | Gravity.END);
+            View privacyChip = mTopView.findViewById(chipId);
+            if (privacyChip != null) {
+                panelController.attachPanel(privacyChip, panelLayoutRes,
+                        R.dimen.car_sensor_qc_panel_width, mPrivacyChipXOffset,
+                        panelController.getDefaultYOffset(), Gravity.TOP | Gravity.END);
+            }
         }
 
         return panelController;

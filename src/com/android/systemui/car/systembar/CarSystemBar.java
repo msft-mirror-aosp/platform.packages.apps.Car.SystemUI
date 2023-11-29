@@ -26,6 +26,8 @@ import static com.android.systemui.car.systembar.SystemBarConfigs.TOP;
 import static com.android.systemui.statusbar.phone.BarTransitions.MODE_SEMI_TRANSPARENT;
 import static com.android.systemui.statusbar.phone.BarTransitions.MODE_TRANSPARENT;
 
+import android.annotation.Nullable;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.app.StatusBarManager.Disable2Flags;
 import android.app.StatusBarManager.DisableFlags;
 import android.app.UiModeManager;
@@ -57,6 +59,7 @@ import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
+import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -113,7 +116,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
 
     private final int mDisplayId;
     private final SystemBarConfigs mSystemBarConfigs;
-
+    @Nullable
+    private final ToolbarController mDisplayCompatToolbarController;
     private StatusBarSignalPolicy mSignalPolicy;
 
     // If the nav bar should be hidden when the soft keyboard is visible.
@@ -172,7 +176,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
             SystemBarConfigs systemBarConfigs,
             ConfigurationController configurationController,
             DisplayTracker displayTracker,
-            Optional<MDSystemBarsController> mdSystemBarsController
+            Optional<MDSystemBarsController> mdSystemBarsController,
+            @Nullable ToolbarController toolbarController
     ) {
         mContext = context;
         mCarSystemBarController = carSystemBarController;
@@ -196,6 +201,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
         mMDSystemBarsController = mdSystemBarsController.orElse(null);
         mConfigurationController = configurationController;
+        mDisplayCompatToolbarController = toolbarController;
     }
 
     private void registerOverlayChangeBroadcastReceiver() {
@@ -316,10 +322,17 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                 mButtonSelectionStateListener);
         TaskStackChangeListeners.getInstance().registerTaskStackListener(
                 new TaskStackChangeListener() {
-            @Override
-            public void onLockTaskModeChanged(int mode) {
-                mCarSystemBarController.refreshSystemBar();
-            }
+                @Override
+                public void onLockTaskModeChanged(int mode) {
+                    mCarSystemBarController.refreshSystemBar();
+                }
+
+                @Override
+                public void onTaskMovedToFront(RunningTaskInfo taskInfo) {
+                    if (mDisplayCompatToolbarController != null) {
+                        mDisplayCompatToolbarController.update(taskInfo);
+                    }
+                }
         });
 
         // Lastly, call to the icon policy to install/update all the icons.
@@ -388,6 +401,16 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mBottomSystemBarWindow = mCarSystemBarController.getBottomWindow();
         mLeftSystemBarWindow = mCarSystemBarController.getLeftWindow();
         mRightSystemBarWindow = mCarSystemBarController.getRightWindow();
+
+        if (mDisplayCompatToolbarController != null) {
+            if (mSystemBarConfigs
+                    .isLeftDisplayCompatToolbarEnabled()) {
+                mDisplayCompatToolbarController.init(mLeftSystemBarWindow);
+            } else if (mSystemBarConfigs
+                    .isRightDisplayCompatToolbarEnabled()) {
+                mDisplayCompatToolbarController.init(mRightSystemBarWindow);
+            }
+        }
     }
 
     private void buildNavBarContent() {

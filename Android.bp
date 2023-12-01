@@ -71,6 +71,8 @@ android_library {
         "--no-resource-deduping",
     ],
 
+    javacflags: ["-Adagger.fastInit=enabled"],
+
     manifest: "AndroidManifest.xml",
 
     plugins: ["dagger2-compiler"],

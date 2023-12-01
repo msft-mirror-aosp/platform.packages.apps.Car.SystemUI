@@ -19,7 +19,6 @@ package com.android.systemui;
 import static com.android.systemui.Dependency.ALLOW_NOTIFICATION_LONG_PRESS_NAME;
 import static com.android.systemui.Dependency.LEAK_REPORT_EMAIL_NAME;
 
-import android.car.app.CarTaskViewControllerHostLifecycle;
 import android.content.Context;
 import android.hardware.SensorPrivacyManager;
 import android.window.DisplayAreaOrganizer;
@@ -28,6 +27,7 @@ import com.android.keyguard.KeyguardViewController;
 import com.android.keyguard.dagger.KeyguardDisplayModule;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
+import com.android.systemui.car.activity.window.ActivityWindowModule;
 import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
 import com.android.systemui.car.drivemode.DriveModeModule;
@@ -92,6 +92,7 @@ import javax.inject.Named;
                 ShutdownUiModule.class,
                 DriveModeModule.class,
                 KeyguardDisplayModule.class,
+                ActivityWindowModule.class,
         }
 )
 abstract class CarSystemUIModule {
@@ -186,9 +187,4 @@ abstract class CarSystemUIModule {
     @Binds
     abstract PrivacyDotDecorProviderFactory providePrivacyDotDecorProviderFactory(
             CarPrivacyChipDecorProviderFactory carPrivacyDotDecorProviderFactory);
-
-    @Provides
-    static CarTaskViewControllerHostLifecycle provideCarTaskViewControllerHostLifecycle() {
-        return new CarTaskViewControllerHostLifecycle();
-    }
 }

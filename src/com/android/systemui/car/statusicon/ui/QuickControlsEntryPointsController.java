@@ -64,7 +64,8 @@ public class QuickControlsEntryPointsController extends StatusIconGroupContainer
 
     @Override
     @LayoutRes
-    public int getButtonViewLayout() {
-        return R.layout.car_qc_entry_points_button;
+    public int getButtonViewLayout(boolean isVertical) {
+        return isVertical ? R.layout.car_qc_entry_points_button_vertical
+                : R.layout.car_qc_entry_points_button_horizontal;
     }
 }

@@ -42,6 +42,7 @@ import android.os.IBinder;
 import android.os.PatternMatcher;
 import android.os.RemoteException;
 import android.os.UserHandle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -94,7 +95,10 @@ import javax.inject.Inject;
 public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         ConfigurationController.ConfigurationListener,
         MDSystemBarsController.Listener {
+    private static final String TAG = CarSystemBar.class.getSimpleName();
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
     private static final String OVERLAY_FILTER_DATA_SCHEME = "package";
+
     private final Context mContext;
     private final CarSystemBarController mCarSystemBarController;
     private final SysuiDarkIconDispatcher mStatusBarIconController;
@@ -111,13 +115,11 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     private final Lazy<PhoneStatusBarPolicy> mIconPolicyLazy;
     private final HvacController mHvacController;
     private final ConfigurationController mConfigurationController;
-
-    private UiModeManager mUiModeManager;
-
     private final int mDisplayId;
     private final SystemBarConfigs mSystemBarConfigs;
     @Nullable
     private final ToolbarController mDisplayCompatToolbarController;
+    private UiModeManager mUiModeManager;
     private StatusBarSignalPolicy mSignalPolicy;
 
     // If the nav bar should be hidden when the soft keyboard is visible.
@@ -212,7 +214,10 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                restartSystemBars();
+                if (mTopSystemBarAttached || mBottomSystemBarAttached || mLeftSystemBarAttached
+                        || mRightSystemBarAttached) {
+                    restartSystemBars();
+                }
             }
         };
         mContext.registerReceiverAsUser(receiver, UserHandle.ALL,
@@ -322,18 +327,18 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                 mButtonSelectionStateListener);
         TaskStackChangeListeners.getInstance().registerTaskStackListener(
                 new TaskStackChangeListener() {
-                @Override
-                public void onLockTaskModeChanged(int mode) {
-                    mCarSystemBarController.refreshSystemBar();
-                }
-
-                @Override
-                public void onTaskMovedToFront(RunningTaskInfo taskInfo) {
-                    if (mDisplayCompatToolbarController != null) {
-                        mDisplayCompatToolbarController.update(taskInfo);
+                    @Override
+                    public void onLockTaskModeChanged(int mode) {
+                        mCarSystemBarController.refreshSystemBar();
                     }
-                }
-        });
+
+                    @Override
+                    public void onTaskMovedToFront(RunningTaskInfo taskInfo) {
+                        if (mDisplayCompatToolbarController != null) {
+                            mDisplayCompatToolbarController.update(taskInfo);
+                        }
+                    }
+                });
 
         // Lastly, call to the icon policy to install/update all the icons.
         // Must be called on the main thread due to the use of observeForever() in
@@ -447,7 +452,6 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(this::attachNavBarBySide);
     }
 
-
     @VisibleForTesting
     ViewGroup getSystemBarWindowBySide(int side) {
         switch (side) {
@@ -459,35 +463,61 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                 return mLeftSystemBarWindow;
             case RIGHT:
                 return mRightSystemBarWindow;
-            default: return null;
+            default:
+                return null;
         }
     }
 
     private void attachNavBarBySide(int side) {
         switch (side) {
             case TOP:
-                if (mTopSystemBarWindow != null && !mTopSystemBarAttached) {
+                if (DEBUG) {
+                    Log.d(TAG, "mTopSystemBarWindow = " + mTopSystemBarWindow
+                            + ", mTopSystemBarAttached=" + mTopSystemBarAttached
+                            + ", enabled=" + mSystemBarConfigs.getEnabledStatusBySide(TOP));
+                }
+                if (mTopSystemBarWindow != null && !mTopSystemBarAttached
+                        && mSystemBarConfigs.getEnabledStatusBySide(TOP)) {
                     mWindowManager.addView(mTopSystemBarWindow,
                             mSystemBarConfigs.getLayoutParamsBySide(TOP));
                     mTopSystemBarAttached = true;
                 }
                 break;
             case BOTTOM:
-                if (mBottomSystemBarWindow != null && !mBottomSystemBarAttached) {
+                if (DEBUG) {
+                    Log.d(TAG, "mBottomSystemBarWindow = " + mBottomSystemBarWindow
+                            + ", mBottomSystemBarAttached=" + mBottomSystemBarAttached
+                            + ", enabled=" + mSystemBarConfigs.getEnabledStatusBySide(BOTTOM));
+                }
+                if (mBottomSystemBarWindow != null && !mBottomSystemBarAttached
+                        && mSystemBarConfigs.getEnabledStatusBySide(BOTTOM)) {
                     mWindowManager.addView(mBottomSystemBarWindow,
                             mSystemBarConfigs.getLayoutParamsBySide(BOTTOM));
                     mBottomSystemBarAttached = true;
                 }
                 break;
             case LEFT:
-                if (mLeftSystemBarWindow != null && !mLeftSystemBarAttached) {
+                if (DEBUG) {
+                    Log.d(TAG, "mLeftSystemBarWindow = " + mLeftSystemBarWindow
+                            + ", mLeftSystemBarAttached=" + mLeftSystemBarAttached
+                            + ", enabled=" + mSystemBarConfigs.getEnabledStatusBySide(LEFT));
+                }
+                if (mLeftSystemBarWindow != null && !mLeftSystemBarAttached
+                        && mSystemBarConfigs.getEnabledStatusBySide(LEFT)) {
                     mWindowManager.addView(mLeftSystemBarWindow,
                             mSystemBarConfigs.getLayoutParamsBySide(LEFT));
                     mLeftSystemBarAttached = true;
                 }
                 break;
             case RIGHT:
-                if (mRightSystemBarWindow != null && !mRightSystemBarAttached) {
+                if (DEBUG) {
+                    Log.d(TAG, "mRightSystemBarWindow = " + mRightSystemBarWindow
+                            + ", mRightSystemBarAttached=" + mRightSystemBarAttached
+                            + ", "
+                            + "enabled=" + mSystemBarConfigs.getEnabledStatusBySide(RIGHT));
+                }
+                if (mRightSystemBarWindow != null && !mRightSystemBarAttached
+                        && mSystemBarConfigs.getEnabledStatusBySide(RIGHT)) {
                     mWindowManager.addView(mRightSystemBarWindow,
                             mSystemBarConfigs.getLayoutParamsBySide(RIGHT));
                     mRightSystemBarAttached = true;
@@ -724,7 +754,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                         selectedQuickControlsClsName);
             }
 
-            mCarSystemBarController.resetCache();
+            mCarSystemBarController.resetViewCache();
             restartNavBars();
 
             // retrieve the previous state
@@ -756,7 +786,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         if (mTopSystemBarWindow != null) {
             mTopSystemBarWindow.removeAllViews();
             mHvacController.unregisterViews(mTopSystemBarView);
-            if (removeUnusedWindow && !mSystemBarConfigs.getEnabledStatusBySide(TOP)) {
+            if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mTopSystemBarWindow);
                 mTopSystemBarAttached = false;
             }
@@ -766,18 +796,17 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         if (mBottomSystemBarWindow != null) {
             mBottomSystemBarWindow.removeAllViews();
             mHvacController.unregisterViews(mBottomSystemBarView);
-            if (removeUnusedWindow && !mSystemBarConfigs.getEnabledStatusBySide(BOTTOM)) {
+            if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mBottomSystemBarWindow);
                 mBottomSystemBarAttached = false;
             }
             mBottomSystemBarView = null;
-
         }
 
         if (mLeftSystemBarWindow != null) {
             mLeftSystemBarWindow.removeAllViews();
             mHvacController.unregisterViews(mLeftSystemBarView);
-            if (removeUnusedWindow && !mSystemBarConfigs.getEnabledStatusBySide(LEFT)) {
+            if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mLeftSystemBarWindow);
                 mLeftSystemBarAttached = false;
             }
@@ -787,7 +816,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         if (mRightSystemBarWindow != null) {
             mRightSystemBarWindow.removeAllViews();
             mHvacController.unregisterViews(mRightSystemBarView);
-            if (removeUnusedWindow && !mSystemBarConfigs.getEnabledStatusBySide(RIGHT)) {
+            if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mRightSystemBarWindow);
                 mRightSystemBarAttached = false;
             }

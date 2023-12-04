@@ -48,7 +48,6 @@ public final class HvacUtils {
      */
     public static boolean shouldAllowControl(boolean disableViewIfPowerOff, boolean powerOn,
             boolean disableViewIfAutoOn, boolean autoOn) {
-        return (!disableViewIfPowerOff || (disableViewIfPowerOff && powerOn))
-                && (!disableViewIfAutoOn || (disableViewIfAutoOn && !autoOn));
+        return (!disableViewIfPowerOff || powerOn) && (!disableViewIfAutoOn || !autoOn);
     }
 }

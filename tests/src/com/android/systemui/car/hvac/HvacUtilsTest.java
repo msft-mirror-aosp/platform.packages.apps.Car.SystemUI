@@ -18,16 +18,41 @@ package com.android.systemui.car.hvac;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.Mockito.when;
+
+import android.car.hardware.CarPropertyConfig;
+import android.car.hardware.property.AreaIdConfig;
 import android.test.suitebuilder.annotation.SmallTest;
 
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.List;
 
 @CarSystemUiTest
 @SmallTest
 public class HvacUtilsTest extends SysuiTestCase {
+    @Mock
+    private CarPropertyConfig<Float> mFloatCarPropertyConfig;
+    @Mock
+    private CarPropertyConfig<Integer> mIntegerCarPropertyConfig;
+    @Mock
+    private AreaIdConfig<Integer> mAreaIdConfig1;
+    @Mock
+    private AreaIdConfig<Integer> mAreaIdConfig2;
+    @Mock
+    private AreaIdConfig<Integer> mAreaIdConfig3;
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+    }
+
     @Test
     public void shouldAllowControl_powerNotNeeded_powerOff_autoNotNeeded_autoOff() {
         assertThat(HvacUtils.shouldAllowControl(/* disableViewIfPowerOff= */ false,
@@ -138,5 +163,67 @@ public class HvacUtilsTest extends SysuiTestCase {
         assertThat(HvacUtils.shouldAllowControl(/* disableViewIfPowerOff= */ true,
                 /* powerOn=*/ false, /* disableViewIfAutoOn= */ true,
                 /* autoOn= */ false)).isFalse();
+    }
+
+    @Test
+    public void getHighestMinValueForAllAreaIds_nonInteger_returnsNull() {
+        when(mFloatCarPropertyConfig.getPropertyType()).thenReturn(Float.class);
+        assertThat(HvacUtils.getHighestMinValueForAllAreaIds(mFloatCarPropertyConfig))
+                .isEqualTo(null);
+    }
+
+    @Test
+    public void getHighestMinValueForAllAreaIds_integer_returnsHighest() {
+        when(mAreaIdConfig1.getMinValue()).thenReturn(1);
+        when(mAreaIdConfig2.getMinValue()).thenReturn(2);
+        when(mAreaIdConfig3.getMinValue()).thenReturn(3);
+        when(mIntegerCarPropertyConfig.getPropertyType()).thenReturn(Integer.class);
+        when(mIntegerCarPropertyConfig.getAreaIdConfigs())
+                .thenReturn(List.of(mAreaIdConfig1, mAreaIdConfig2, mAreaIdConfig3));
+        assertThat(HvacUtils.getHighestMinValueForAllAreaIds(mIntegerCarPropertyConfig))
+                .isEqualTo(3);
+    }
+
+    @Test
+    public void getHighestMinValueForAllAreaIds_integer_ignoresNullValues() {
+        when(mAreaIdConfig1.getMinValue()).thenReturn(1);
+        when(mAreaIdConfig2.getMinValue()).thenReturn(2);
+        when(mAreaIdConfig3.getMinValue()).thenReturn(null);
+        when(mIntegerCarPropertyConfig.getPropertyType()).thenReturn(Integer.class);
+        when(mIntegerCarPropertyConfig.getAreaIdConfigs())
+                .thenReturn(List.of(mAreaIdConfig1, mAreaIdConfig2, mAreaIdConfig3));
+        assertThat(HvacUtils.getHighestMinValueForAllAreaIds(mIntegerCarPropertyConfig))
+                .isEqualTo(2);
+    }
+
+    @Test
+    public void getLowestMaxValueForAllAreaIds_nonInteger_returnsNull() {
+        when(mFloatCarPropertyConfig.getPropertyType()).thenReturn(Float.class);
+        assertThat(HvacUtils.getLowestMaxValueForAllAreaIds(mFloatCarPropertyConfig))
+                .isEqualTo(null);
+    }
+
+    @Test
+    public void getLowestMaxValueForAllAreaIds_integer_returnsLowest() {
+        when(mAreaIdConfig1.getMaxValue()).thenReturn(1);
+        when(mAreaIdConfig2.getMaxValue()).thenReturn(2);
+        when(mAreaIdConfig3.getMaxValue()).thenReturn(3);
+        when(mIntegerCarPropertyConfig.getPropertyType()).thenReturn(Integer.class);
+        when(mIntegerCarPropertyConfig.getAreaIdConfigs())
+                .thenReturn(List.of(mAreaIdConfig1, mAreaIdConfig2, mAreaIdConfig3));
+        assertThat(HvacUtils.getLowestMaxValueForAllAreaIds(mIntegerCarPropertyConfig))
+                .isEqualTo(1);
+    }
+
+    @Test
+    public void getLowestMaxValueForAllAreaIds_integer_ignoresNullValues() {
+        when(mAreaIdConfig1.getMaxValue()).thenReturn(0);
+        when(mAreaIdConfig2.getMaxValue()).thenReturn(1);
+        when(mAreaIdConfig3.getMaxValue()).thenReturn(null);
+        when(mIntegerCarPropertyConfig.getPropertyType()).thenReturn(Integer.class);
+        when(mIntegerCarPropertyConfig.getAreaIdConfigs())
+                .thenReturn(List.of(mAreaIdConfig1, mAreaIdConfig2, mAreaIdConfig3));
+        assertThat(HvacUtils.getLowestMaxValueForAllAreaIds(mIntegerCarPropertyConfig))
+                .isEqualTo(0);
     }
 }

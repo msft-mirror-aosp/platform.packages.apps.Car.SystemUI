@@ -62,6 +62,17 @@ public class WifiSignalStatusIconControllerTest extends SysuiTestCase {
     }
 
     @Test
+    public void onInit_registersNetworkCallback() {
+        verify(mNetworkController).addCallback(any());
+    }
+
+    @Test
+    public void onDestroy_unregistersNetworkCallback() {
+        mWifiSignalStatusIconController.onDestroy();
+        verify(mNetworkController).removeCallback(any());
+    }
+
+    @Test
     public void onUpdateStatus_updatesWifiIcon() {
         mWifiSignalStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ true));
 

@@ -17,6 +17,7 @@
 package com.android.systemui.car.userpicker;
 
 import static android.view.WindowManager.LayoutParams.SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS;
+import static android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT;
 
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_CHANGE_USER;
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_LOGOUT;
@@ -35,6 +36,7 @@ import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
+import android.window.OnBackInvokedCallback;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -93,6 +95,11 @@ public class UserPickerActivity extends Activity implements Dumpable {
     View mLogoutButton;
     @VisibleForTesting
     View mBackButton;
+
+    private final OnBackInvokedCallback mIgnoreBackCallback = () -> {
+        // Ignore back press.
+        if (DEBUG) Log.d(TAG, "Skip Back");
+    };
 
     @Inject
     UserPickerActivity(
@@ -153,6 +160,8 @@ public class UserPickerActivity extends Activity implements Dumpable {
         super.onCreate(savedInstanceState);
         setShowWhenLocked(true);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getOnBackInvokedDispatcher()
+                .registerOnBackInvokedCallback(PRIORITY_DEFAULT, mIgnoreBackCallback);
         init();
     }
 
@@ -265,6 +274,7 @@ public class UserPickerActivity extends Activity implements Dumpable {
         if (DEBUG) {
             Slog.d(TAG, "onDestroy: displayId=" + getDisplayId());
         }
+        getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(mIgnoreBackCallback);
         if (mController != null) {
             mController.onDestroy();
         }

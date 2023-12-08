@@ -183,10 +183,7 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
     @Override
     public void onBackPressedOnTaskRoot(ActivityManager.RunningTaskInfo taskInfo) {
         ShellTaskOrganizer.TaskListener.super.onBackPressedOnTaskRoot(taskInfo);
-        if (mTaskStack.size() == 1) {
-            Log.i(TAG, "Cannot remove last task from root task, display=" + mDisplayId);
-            return;
-        }
+        // TODO(b/315010471): handle back pressed when stack size is 1.
         if (mTaskStack.size() == 0) {
             Log.i(TAG, "Root task is empty, do nothing, display=" + mDisplayId);
             return;

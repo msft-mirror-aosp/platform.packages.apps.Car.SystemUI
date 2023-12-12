@@ -16,6 +16,9 @@
 
 package com.android.systemui.car.hvac;
 
+import android.car.hardware.CarPropertyConfig;
+import android.car.hardware.property.AreaIdConfig;
+
 /**
  *  Utility class for HVAC-related use cases.
  */
@@ -49,5 +52,49 @@ public final class HvacUtils {
     public static boolean shouldAllowControl(boolean disableViewIfPowerOff, boolean powerOn,
             boolean disableViewIfAutoOn, boolean autoOn) {
         return (!disableViewIfPowerOff || powerOn) && (!disableViewIfAutoOn || !autoOn);
+    }
+
+    /**
+     * For an {@code Integer} property, return the highest minimum value specified for all area IDs.
+     * If there are no minimum values provided by all of the area IDs or if the property is not an
+     * {@code Integer} property, return {@code null}.
+     *
+     * @param carPropertyConfig {@code Integer} CarPropertyConfig
+     * @return highest min value or {@code null}
+     */
+    public static Integer getHighestMinValueForAllAreaIds(CarPropertyConfig<?> carPropertyConfig) {
+        if (!carPropertyConfig.getPropertyType().equals(Integer.class)) {
+            return null;
+        }
+        Integer highestMinValue = null;
+        for (AreaIdConfig<?> areaIdConfig: carPropertyConfig.getAreaIdConfigs()) {
+            if (highestMinValue == null || (areaIdConfig.getMinValue() != null
+                    && (Integer) areaIdConfig.getMinValue() > highestMinValue)) {
+                highestMinValue = (Integer) areaIdConfig.getMinValue();
+            }
+        }
+        return highestMinValue;
+    }
+
+    /**
+     * For an {@code Integer} property, return the lowest maximum value specified for all area IDs.
+     * If there are no maximum values provided by all of the area IDs or if the property is not an
+     * {@code Integer} property, return {@code null}.
+     *
+     * @param carPropertyConfig {@code Integer} CarPropertyConfig
+     * @return lowest max value or {@code null}
+     */
+    public static Integer getLowestMaxValueForAllAreaIds(CarPropertyConfig<?> carPropertyConfig) {
+        if (!carPropertyConfig.getPropertyType().equals(Integer.class)) {
+            return null;
+        }
+        Integer lowestMaxValue = null;
+        for (AreaIdConfig<?> areaIdConfig: carPropertyConfig.getAreaIdConfigs()) {
+            if (lowestMaxValue == null || (areaIdConfig.getMaxValue() != null
+                    && (Integer) areaIdConfig.getMaxValue() < lowestMaxValue)) {
+                lowestMaxValue = (Integer) areaIdConfig.getMaxValue();
+            }
+        }
+        return lowestMaxValue;
     }
 }

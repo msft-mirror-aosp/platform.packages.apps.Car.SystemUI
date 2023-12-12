@@ -79,6 +79,8 @@ public class SignalStatusIconControllerTest extends SysuiTestCase {
     @Test
     public void onUpdateStatus_wifiDisabled_hotspotDisabled_showsMobileDataIcon() {
         mSignalStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ false));
+        mSignalStatusIconController.setEthernetIndicators(
+                getEthernetIndicator(/* enabled= */  false));
         mSignalStatusIconController.onHotspotChanged(/* enabled= */ false, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
@@ -90,6 +92,8 @@ public class SignalStatusIconControllerTest extends SysuiTestCase {
     @Test
     public void onUpdateStatus_wifiEnabled_hotspotDisabled_showsWifiIcon() {
         mSignalStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ true));
+        mSignalStatusIconController.setEthernetIndicators(
+                getEthernetIndicator(/* enabled= */  false));
         mSignalStatusIconController.onHotspotChanged(/* enabled= */ false, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
@@ -102,6 +106,8 @@ public class SignalStatusIconControllerTest extends SysuiTestCase {
     public void onUpdateStatus_wifiDisabled_hotspotEnabled_showsHotspotIcon() {
         mSignalStatusIconController.setWifiIndicators(
                 getWifiIndicator(/* enabled= */ false));
+        mSignalStatusIconController.setEthernetIndicators(
+                getEthernetIndicator(/* enabled= */  false));
         mSignalStatusIconController.onHotspotChanged(/* enabled= */ true, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
@@ -114,6 +120,8 @@ public class SignalStatusIconControllerTest extends SysuiTestCase {
     public void onUpdateStatus_wifiEnabled_hotspotEnabled_showsHotspotIcon() {
         mSignalStatusIconController.setWifiIndicators(
                 getWifiIndicator(/* enabled= */ true));
+        mSignalStatusIconController.setEthernetIndicators(
+                getEthernetIndicator(/* enabled= */  false));
         mSignalStatusIconController.onHotspotChanged(/* enabled= */ true, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
@@ -122,8 +130,39 @@ public class SignalStatusIconControllerTest extends SysuiTestCase {
                 mSignalStatusIconController.getHotSpotIconDrawable());
     }
 
+    @Test
+    public void onUpdateStatus_wifiEnabled_hotspotEnabled_ethernetEnabled_showsHotspotIcon() {
+        mSignalStatusIconController.setWifiIndicators(
+                getWifiIndicator(/* enabled= */ true));
+        mSignalStatusIconController.setEthernetIndicators(
+                getEthernetIndicator(/* enabled= */ true));
+        mSignalStatusIconController.onHotspotChanged(/* enabled= */ true, /* numDevices= */  0);
+
+        // onUpdateStatus is called by the events above.
+
+        assertThat(mSignalStatusIconController.getIconDrawableToDisplay()).isEqualTo(
+                mSignalStatusIconController.getHotSpotIconDrawable());
+    }
+
+    @Test
+    public void onUpdateStatus_wifiEnabled_hotspotDisabled_ethernetEnabled_showsEthernetIcon() {
+        mSignalStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ true));
+        mSignalStatusIconController.setEthernetIndicators(
+                getEthernetIndicator(/* enabled= */ true));
+        mSignalStatusIconController.onHotspotChanged(/* enabled= */ false, /* numDevices= */  0);
+
+        // onUpdateStatus is called by the events above.
+
+        assertThat(mSignalStatusIconController.getIconDrawableToDisplay()).isEqualTo(
+                mSignalStatusIconController.getEthernetIconDrawable());
+    }
+
     private WifiIndicators getWifiIndicator(boolean enabled) {
         IconState iconState = new IconState(true, R.drawable.icon, "");
         return new WifiIndicators(enabled, iconState, null, false, false, "", false, "");
+    }
+
+    private IconState getEthernetIndicator(boolean enabled) {
+        return new IconState(enabled, R.drawable.stat_sys_ethernet_fully, "");
     }
 }

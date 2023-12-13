@@ -19,6 +19,7 @@ package com.android.systemui.car.window;
 import static android.view.WindowInsets.Type.statusBars;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_FOCUS;
 
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -89,6 +90,15 @@ public class OverlayViewController {
      */
     @MainThread
     protected void onFinishInflate() {
+        // no-op
+    }
+
+    /**
+     * Touches will be passed to ONLY the top most OverlayViewController which have the highest
+     * z-ordering. This method will not be called for controllers that are not at the top.
+     */
+    @MainThread
+    protected void onTouchEvent(View v, MotionEvent event) {
         // no-op
     }
 

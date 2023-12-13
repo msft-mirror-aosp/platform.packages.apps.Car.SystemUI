@@ -20,6 +20,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -90,6 +91,7 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
 
         mockGetUserInfo(TEST_USER_1);
         mockGetUserInfo(TEST_USER_2);
+        mockGlobalShowView();
         mViewGroup = (ViewGroup) LayoutInflater.from(mContext).inflate(
                 R.layout.sysui_overlay_window, /* root= */ null);
         mCarUserSwitchingDialogController.inflate(mViewGroup);
@@ -222,5 +224,20 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
     private void mockGetUserInfo(int userId) {
         when(mMockUserManager.getUserInfo(userId))
                 .thenReturn(new UserInfo(userId, "USER_" + userId, /* flags= */ 0));
+    }
+
+    private void mockGlobalShowView() {
+        // Because mOverlayViewGlobalStateController is a mock, calls to show view will not execute
+        // the runnable parameter. To simulate a more accurate real-world environment, any non-null
+        // runnable will be manually executed.
+        doAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            if (args[1] == null || !(args[1] instanceof Runnable)) {
+                return null;
+            }
+            Runnable runnable = (Runnable) args[1];
+            runnable.run();
+            return null;
+        }).when(mOverlayViewGlobalStateController).showView(any(), any());
     }
 }

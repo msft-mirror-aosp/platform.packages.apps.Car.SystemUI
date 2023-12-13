@@ -68,7 +68,13 @@ public class BluetoothStatusIconController extends StatusIconController implemen
         mBluetoothOnConnectedContentDescription = resources.getString(
                 R.string.status_icon_bluetooth_connected);
 
+        mBluetoothConnected = !mBluetoothController.getConnectedDevices().isEmpty();
         mBluetoothController.addCallback(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mBluetoothController.removeCallback(this);
     }
 
     @Override

@@ -112,6 +112,12 @@ public abstract class StatusIconController {
     }
 
     /**
+     * Lifecycle method executed when this controller is destroyed to clean up any references.
+     */
+    protected void onDestroy() {
+    }
+
+    /**
      * Provides observing views with the {@link StatusIconData} and causes them to update
      * themselves accordingly through {@link #updateIconView}.
      */

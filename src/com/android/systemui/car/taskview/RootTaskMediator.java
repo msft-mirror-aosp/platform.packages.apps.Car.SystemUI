@@ -20,7 +20,6 @@ import static android.app.WindowConfiguration.ACTIVITY_TYPE_ASSISTANT;
 import static android.app.WindowConfiguration.ACTIVITY_TYPE_HOME;
 import static android.app.WindowConfiguration.ACTIVITY_TYPE_RECENTS;
 import static android.app.WindowConfiguration.ACTIVITY_TYPE_STANDARD;
-import static android.app.WindowConfiguration.WINDOWING_MODE_FULLSCREEN;
 import static android.app.WindowConfiguration.WINDOWING_MODE_MULTI_WINDOW;
 import static android.app.WindowConfiguration.WINDOWING_MODE_UNDEFINED;
 
@@ -153,6 +152,9 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             mTaskViewTaskShellPart.onTaskInfoChanged(taskInfo);
             return;
         }
+        // For all the children tasks, just update the client part and no notification/update is
+        // sent to the shell part
+        mTaskViewClientPart.onTaskInfoChanged(taskInfo);
         if (mIsLaunchRoot) {
             mCarActivityManager.onTaskInfoChanged(taskInfo);
         }
@@ -172,6 +174,9 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             mTaskViewTaskShellPart.onTaskVanished(taskInfo);
             return;
         }
+        // For all the children tasks, just update the client part and no notification/update is
+        // sent to the shell part
+        mTaskViewClientPart.onTaskVanished(taskInfo);
         if (mIsLaunchRoot) {
             mCarActivityManager.onTaskVanished(taskInfo);
         }
@@ -203,7 +208,7 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
     private void setRootTaskAsLaunchRoot(ActivityManager.RunningTaskInfo taskInfo) {
         WindowContainerTransaction wct = new WindowContainerTransaction();
         wct.setLaunchRoot(taskInfo.token,
-                        new int[]{WINDOWING_MODE_FULLSCREEN, WINDOWING_MODE_UNDEFINED},
+                        new int[]{WINDOWING_MODE_MULTI_WINDOW, WINDOWING_MODE_UNDEFINED},
                         mActivityTypes)
                 .reorder(taskInfo.token, true);
         mSyncQueue.queue(wct);

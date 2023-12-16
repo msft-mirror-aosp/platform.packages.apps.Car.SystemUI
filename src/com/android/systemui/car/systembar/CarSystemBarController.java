@@ -16,6 +16,11 @@
 
 package com.android.systemui.car.systembar;
 
+import static com.android.systemui.car.systembar.SystemBarConfigs.BOTTOM;
+import static com.android.systemui.car.systembar.SystemBarConfigs.LEFT;
+import static com.android.systemui.car.systembar.SystemBarConfigs.RIGHT;
+import static com.android.systemui.car.systembar.SystemBarConfigs.TOP;
+
 import android.annotation.LayoutRes;
 import android.app.ActivityManager;
 import android.app.StatusBarManager;
@@ -156,21 +161,11 @@ public class CarSystemBarController {
                 .getDimensionPixelOffset(R.dimen.privacy_chip_horizontal_padding);
     }
 
-    /**
-     * Invalidate SystemBarConfigs and fetch again from Resources.
-     * TODO(): b/260206944, Can remove this after we have a fix for overlaid resources not applied.
-     */
-    void resetSystemBarConfigs() {
-        mSystemBarConfigs.resetSystemBarConfigs();
-        mCarSystemBarViewFactory.resetCache();
-        readConfigs();
-    }
-
     private void readConfigs() {
-        mShowTop = mSystemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.TOP);
-        mShowBottom = mSystemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.BOTTOM);
-        mShowLeft = mSystemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.LEFT);
-        mShowRight = mSystemBarConfigs.getEnabledStatusBySide(SystemBarConfigs.RIGHT);
+        mShowTop = mSystemBarConfigs.getEnabledStatusBySide(TOP);
+        mShowBottom = mSystemBarConfigs.getEnabledStatusBySide(BOTTOM);
+        mShowLeft = mSystemBarConfigs.getEnabledStatusBySide(LEFT);
+        mShowRight = mSystemBarConfigs.getEnabledStatusBySide(RIGHT);
     }
 
     /**
@@ -733,8 +728,18 @@ public class CarSystemBarController {
     }
 
     /** Resets the cached Views. */
-    protected void resetCache() {
-        mCarSystemBarViewFactory.resetCache();
+    protected void resetViewCache() {
+        mCarSystemBarViewFactory.resetSystemBarViewCache();
+    }
+
+    /**
+     * Invalidate SystemBarConfigs and fetch again from Resources.
+     * TODO(): b/260206944, Can remove this after we have a fix for overlaid resources not applied.
+     */
+    protected void resetSystemBarConfigs() {
+        mSystemBarConfigs.resetSystemBarConfigs();
+        mCarSystemBarViewFactory.resetSystemBarWindowCache();
+        readConfigs();
     }
 
     /** Stores the ID of the View that is currently focused and hides the focus. */

@@ -66,6 +66,10 @@
         <item name="android:background">@drawable/nav_bar_button_background</item>
         <item name="unselectedAlpha">1.0</item>
     </style>
+    <style name="SystemBarButton.Vertical">
+        <item name="android:layout_marginEnd">0dp</item>
+        <item name="android:layout_marginBottom">@dimen/system_bar_button_margin</item>
+    </style>
 
     <!-- todo(b/304320644): update SystemBarButton -->
     <style name="SystemBarButtonWithDock" parent="SystemBarButton">

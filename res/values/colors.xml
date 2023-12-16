@@ -37,7 +37,8 @@
     <color name="system_bar_icon_selected_color">@color/car_on_primary</color>
     <color name="system_bar_text_color">@color/car_on_background</color>
     <color name="system_bar_text_selected_color">@color/car_on_primary</color>
-    <drawable name="system_bar_background">@android:color/black</drawable>
+    <drawable name="nav_bar_background">@android:color/black</drawable>
+    <drawable name="status_bar_background">@android:color/black</drawable>
 
     <!-- colors for nav bar -->
     <color name="car_nav_icon_fill_color">@color/car_on_surface</color>

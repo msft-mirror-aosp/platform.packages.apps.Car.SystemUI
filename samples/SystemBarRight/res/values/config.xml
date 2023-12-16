@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (C) 2020 The Android Open Source Project
+  ~ Copyright (C) 2023 The Android Open Source Project
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -53,14 +53,25 @@
          CarHeadsUpNotificationBottomAnimationHelper. -->
     <bool name="config_showHeadsUpNotificationOnBottom">true</bool>
 
+    <!-- Determines which system bar to use for display compat toolbar. -->
+    <!-- 0 disabled -->
+    <!-- 1 left -->
+    <!-- 2 right -->
+    <integer name="config_showDisplayCompatToolbarOnSystemBar">0</integer>
+
+    <!-- Determines the orientation of the status icon. -->
+    <!-- 0 horizontal. -->
+    <!-- 1 vertical -->
+    <integer name="config_statusIconLayoutOrientation">1</integer>
+
     <string name="config_notificationPanelViewMediator" translatable="false">
         com.android.systemui.car.notification.NotificationPanelViewMediator</string>
 
     <string name="config_appGridComponentName" translatable="false">
         com.android.car.carlauncher/.AppGridActivity</string>
 
-     <string-array name="config_quickControlsEntryPointIconControllers" translatable="false">
+    <string-array name="config_quickControlsEntryPointIconControllers" translatable="false">
         <item>com.android.systemui.car.statusicon.ui.SignalStatusIconController</item>
         <item>com.android.systemui.car.statusicon.ui.DisplayStatusIconController</item>
-     </string-array>
+    </string-array>
 </resources>

@@ -171,7 +171,11 @@ public class CarSystemBarViewFactory {
             return mCachedViewMap.get(type);
         }
 
-        @LayoutRes int barLayout = sLayoutMap.get(type);
+        Integer barLayoutInteger = sLayoutMap.get(type);
+        if (barLayoutInteger == null) {
+            return null;
+        }
+        @LayoutRes int barLayout = barLayoutInteger;
         CarSystemBarView view = (CarSystemBarView) View.inflate(mContext, barLayout,
                 /* root= */ null);
 
@@ -201,10 +205,16 @@ public class CarSystemBarViewFactory {
         }
     }
 
-    /** Resets the cached Views. */
-    protected void resetCache() {
+    /** Resets the cached system bar views. */
+    protected void resetSystemBarViewCache() {
         mQuickControlsEntryPointsController.resetCache();
         mReadOnlyIconsController.resetCache();
         mCachedViewMap.clear();
+    }
+
+    /** Resets the cached system bar windows and system bar views. */
+    protected void resetSystemBarWindowCache() {
+        resetSystemBarViewCache();
+        mCachedContainerMap.clear();
     }
 }

@@ -58,7 +58,8 @@ public class UserPickerReadOnlyIconsController extends StatusIconGroupContainerC
     }
 
     @Override
-    public int getButtonViewLayout() {
-        return R.layout.user_picker_status_icon_layout;
+    public int getButtonViewLayout(boolean isVertical) {
+        return isVertical ? R.layout.user_picker_status_icon_layout_vertical
+                : R.layout.user_picker_status_icon_layout_horizontal;
     }
 }

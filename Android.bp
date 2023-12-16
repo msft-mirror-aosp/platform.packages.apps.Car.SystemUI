@@ -42,6 +42,7 @@ android_library {
         "car-ui-lib-no-overlayable",
         "car-qc-lib",
         "car-resource-common",
+        "com_android_systemui_car_flags_lib",
         "androidx.legacy_legacy-support-v4",
         "androidx.recyclerview_recyclerview",
         "androidx.preference_preference",
@@ -60,6 +61,7 @@ android_library {
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
         "animationlib",
+        "CarDockLib",
     ],
 
     libs: [
@@ -69,6 +71,8 @@ android_library {
     aaptflags: [
         "--no-resource-deduping",
     ],
+
+    javacflags: ["-Adagger.fastInit=enabled"],
 
     manifest: "AndroidManifest.xml",
 
@@ -115,6 +119,7 @@ android_library {
         "car-ui-lib-no-overlayable",
         "car-qc-lib",
         "car-resource-common",
+        "com_android_systemui_car_flags_lib",
         "SystemUI-tags",
         "SystemUI-proto",
         "metrics-helper-lib",
@@ -126,6 +131,7 @@ android_library {
         "testng",
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
+        "CarDockLib",
     ],
     libs: [
         "android.test.runner",

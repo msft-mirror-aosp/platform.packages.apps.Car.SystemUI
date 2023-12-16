@@ -23,7 +23,8 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
-        <include layout="@layout/autoenhance_toolbar"/>
+    <!--TODO: b/310990030 Remove if remote task view is not used for display compat toolbar-->
+        <include layout="@layout/displaycompat_toolbar"/>
 
         <FrameLayout
             android:id="@+id/activity_area"

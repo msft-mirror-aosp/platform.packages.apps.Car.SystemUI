@@ -184,7 +184,7 @@ public class CarSystemBarTest extends SysuiTestCase {
                 mButtonSelectionStateListener, mExecutor, mUiBgExecutor, mBarService,
                 () -> mKeyguardStateController, () -> mIconPolicy, mHvacController, mSignalPolicy,
                 mSystemBarConfigs,
-                mock(ConfigurationController.class), displayTracker, Optional.empty());
+                mock(ConfigurationController.class), displayTracker, Optional.empty(), null);
         mCarSystemBar.setSignalPolicy(mSignalPolicy);
     }
 
@@ -495,6 +495,7 @@ public class CarSystemBarTest extends SysuiTestCase {
 
     @Test
     public void restartSystemBars_newSystemBarConfig_recreatesSystemBars() {
+        mTestableResources.addOverride(R.integer.config_showDisplayCompatToolbarOnSystemBar, 0);
         mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, false);

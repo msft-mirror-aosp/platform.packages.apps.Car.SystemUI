@@ -257,6 +257,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     @Test
     public void testGetLeftWindow_leftDisabled_returnsNull() {
+        mTestableResources.addOverride(R.integer.config_showDisplayCompatToolbarOnSystemBar, 0);
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, false);
         mCarSystemBar = createSystemBarController();
         ViewGroup window = mCarSystemBar.getLeftWindow();
@@ -265,6 +266,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     @Test
     public void testGetLeftWindow_leftEnabled_returnsWindow() {
+        mTestableResources.addOverride(R.integer.config_showDisplayCompatToolbarOnSystemBar, 0);
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, true);
         mCarSystemBar = createSystemBarController();
 
@@ -275,6 +277,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     @Test
     public void testGetLeftWindow_leftEnabled_calledTwice_returnsSameWindow() {
+        mTestableResources.addOverride(R.integer.config_showDisplayCompatToolbarOnSystemBar, 0);
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, true);
         mCarSystemBar = createSystemBarController();
 
@@ -361,6 +364,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     @Test
     public void testSetLeftWindowVisibility_setTrue_isVisible() {
+        mTestableResources.addOverride(R.integer.config_showDisplayCompatToolbarOnSystemBar, 0);
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, true);
         mCarSystemBar = createSystemBarController();
 
@@ -372,6 +376,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     @Test
     public void testSetLeftWindowVisibility_setFalse_isGone() {
+        mTestableResources.addOverride(R.integer.config_showDisplayCompatToolbarOnSystemBar, 0);
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, true);
         mCarSystemBar = createSystemBarController();
 

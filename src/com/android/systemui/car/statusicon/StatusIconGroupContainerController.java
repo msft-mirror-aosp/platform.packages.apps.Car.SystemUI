@@ -64,13 +64,13 @@ public abstract class StatusIconGroupContainerController {
     private final ConfigurationController mConfigurationController;
     private final Provider<SystemUIQCViewController> mQCViewControllerProvider;
     private final Map<Class<?>, Provider<StatusIconController>> mIconControllerCreators;
-    private String mIconTag;
-    private String[] mStatusIconControllerNames;
     private final Set<StatusIconController> mStatusIconControllers;
     private final Set<StatusIconPanelController> mStatusIconPanelControllers;
-    private Map<String, View> mStatusIconViewClassMap;
     @Nullable
     private final QCPanelReadOnlyIconsController mQCPanelReadOnlyIconsController;
+    private String mIconTag;
+    private String[] mStatusIconControllerNames;
+    private Map<String, View> mStatusIconViewClassMap;
 
     public StatusIconGroupContainerController(
             Context context,
@@ -132,8 +132,9 @@ public abstract class StatusIconGroupContainerController {
      * Returns the layout res id to use as the button view that contains the StatusIcon.
      */
     @LayoutRes
-    public int getButtonViewLayout() {
-        return R.layout.default_status_icon;
+    public int getButtonViewLayout(boolean isVertical) {
+        return isVertical ? R.layout.default_status_icon_vertical
+                : R.layout.default_status_icon_horizontal;
     }
 
     /**
@@ -154,7 +155,10 @@ public abstract class StatusIconGroupContainerController {
 
         for (String clsName : mStatusIconControllerNames) {
             StatusIconController statusIconController = getStatusIconControllerByName(clsName);
-            View entryPointView = li.inflate(getButtonViewLayout(),
+            boolean isVertical = mContext.getResources().getInteger(
+                    R.integer.config_statusIconLayoutOrientation) == 1;
+
+            View entryPointView = li.inflate(getButtonViewLayout(isVertical),
                     containerViewGroup, /* attachToRoot= */ false);
             entryPointView.setId(statusIconController.getId());
 
@@ -236,10 +240,10 @@ public abstract class StatusIconGroupContainerController {
 
             return statusIconController;
         } catch (ClassNotFoundException
-                | NoSuchMethodException
-                | IllegalAccessException
-                | InstantiationException
-                | InvocationTargetException ex) {
+                 | NoSuchMethodException
+                 | IllegalAccessException
+                 | InstantiationException
+                 | InvocationTargetException ex) {
             throw new RuntimeException(ex);
         }
     }

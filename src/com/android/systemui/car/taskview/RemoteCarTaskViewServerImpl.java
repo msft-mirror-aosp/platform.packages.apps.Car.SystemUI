@@ -171,8 +171,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         @Override
         public void showEmbeddedTask() {
             ensureManageSystemUIPermission(mContext);
-            ActivityManager.RunningTaskInfo taskInfo =
-                    mTaskViewTaskController.getTaskInfo();
+            ActivityManager.RunningTaskInfo taskInfo = mTaskViewTaskController.getTaskInfo();
             if (taskInfo == null) {
                 return;
             }
@@ -181,6 +180,38 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             wct.setHidden(taskInfo.token, /* hidden= */ false);
             // Moves the embedded task to the top to make it resumed: b/225388469
             wct.reorder(taskInfo.token, /* onTop= */ true);
+            mSyncQueue.queue(wct);
+        }
+
+        @Override
+        // TODO(b/24087642): Remove @Keep once this method is promoted to SystemApi.
+        // @Keep is used to prevent the removal of this method by the compiler as it is a hidden api
+        // in the base class.
+        @Keep
+        public void setTaskVisibility(boolean visibility) {
+            ensureManageSystemUIPermission(mContext);
+            ActivityManager.RunningTaskInfo taskInfo = mTaskViewTaskController.getTaskInfo();
+            if (taskInfo == null) {
+                return;
+            }
+            WindowContainerTransaction wct = new WindowContainerTransaction();
+            wct.setHidden(taskInfo.token, !visibility);
+            mSyncQueue.queue(wct);
+        }
+
+        @Override
+        // TODO(b/24087642): Remove @Keep once this method is promoted to SystemApi.
+        // @Keep is used to prevent the removal of this method by the compiler as it is a hidden api
+        // in the base class.
+        @Keep
+        public void reorderTask(boolean onTop) {
+            ensureManageSystemUIPermission(mContext);
+            ActivityManager.RunningTaskInfo taskInfo = mTaskViewTaskController.getTaskInfo();
+            if (taskInfo == null) {
+                return;
+            }
+            WindowContainerTransaction wct = new WindowContainerTransaction();
+            wct.reorder(taskInfo.token, onTop);
             mSyncQueue.queue(wct);
         }
 

@@ -205,7 +205,7 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
     private void setRootTaskAsLaunchRoot(ActivityManager.RunningTaskInfo taskInfo) {
         WindowContainerTransaction wct = new WindowContainerTransaction();
         wct.setLaunchRoot(taskInfo.token,
-                        new int[]{WINDOWING_MODE_MULTI_WINDOW, WINDOWING_MODE_UNDEFINED},
+                        new int[]{WINDOWING_MODE_UNDEFINED},
                         mActivityTypes)
                 .reorder(taskInfo.token, true);
         mSyncQueue.queue(wct);

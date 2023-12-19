@@ -36,9 +36,10 @@ import android.car.user.UserCreationResult;
 import android.car.util.concurrent.AsyncFuture;
 import android.content.Intent;
 import android.os.UserManager;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
+
+import androidx.test.filters.SmallTest;
 
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.userpicker.UserEventManager.OnUpdateUsersListener;

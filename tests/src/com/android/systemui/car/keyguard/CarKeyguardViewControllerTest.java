@@ -95,6 +95,8 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
     @Mock
     private PrimaryBouncerInteractor mPrimaryBouncerInteractor;
     @Mock
+    private KeyguardStateController mKeyguardStateController;
+    @Mock
     private KeyguardSecurityModel mKeyguardSecurityModel;
     @Mock
     private KeyguardBouncerViewModel mKeyguardBouncerViewModel;
@@ -106,6 +108,8 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
     private LockPatternUtils mLockPatternUtils;
     @Mock
     private BouncerView mBouncerView;
+    @Mock
+    private CarSystemBarController mCarSystemBarController;
 
     @Before
     public void setUp() {
@@ -134,11 +138,11 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
                 mock(ToastFactory.class),
                 mSystemUIOverlayWindowController,
                 mOverlayViewGlobalStateController,
-                mock(KeyguardStateController.class),
+                mKeyguardStateController,
                 mock(KeyguardUpdateMonitor.class),
                 () -> mock(BiometricUnlockController.class),
                 mock(ViewMediatorCallback.class),
-                mock(CarSystemBarController.class),
+                mCarSystemBarController,
                 mPrimaryBouncerCallbackInteractor,
                 mPrimaryBouncerInteractor,
                 mKeyguardSecurityModel,
@@ -241,6 +245,20 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
         waitForDelayableExecutor();
 
         verify(mPrimaryBouncerInteractor).show(/* isScrimmed= */ true);
+    }
+
+    @Test
+    public void setOccludedTrue_currentlyIsLocked_showsNavigationButtons() {
+        setIsSecure(true);
+        mCarKeyguardViewController.show(/* options= */ null);
+
+        when(mKeyguardStateController.isUnlocked()).thenReturn(true);
+        mCarKeyguardViewController.setOccluded(/* occluded= */ true, /* animate= */ false);
+        verify(mCarSystemBarController, never()).showAllOcclusionButtons(true);
+
+        when(mKeyguardStateController.isUnlocked()).thenReturn(false);
+        mCarKeyguardViewController.setOccluded(/* occluded= */ true, /* animate= */ false);
+        verify(mCarSystemBarController).showAllOcclusionButtons(true);
     }
 
     @Test

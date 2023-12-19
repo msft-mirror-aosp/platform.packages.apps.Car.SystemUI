@@ -312,7 +312,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mKeyguardStateController.notifyKeyguardState(
                 mKeyguardStateController.isShowing(), occluded);
         getOverlayViewGlobalStateController().setOccluded(occluded);
-        if (occluded) {
+        if (occluded && !mKeyguardStateController.isUnlocked()) {
             mCarSystemBarController.showAllOcclusionButtons(/* isSetup= */ true);
         } else {
             if (mShowing && isSecure()) {

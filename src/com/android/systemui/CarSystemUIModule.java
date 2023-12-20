@@ -25,6 +25,7 @@ import android.window.DisplayAreaOrganizer;
 
 import com.android.keyguard.KeyguardViewController;
 import com.android.keyguard.dagger.KeyguardDisplayModule;
+import com.android.systemui.biometrics.dagger.BiometricsModule;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
 import com.android.systemui.car.activity.window.ActivityWindowModule;
@@ -52,6 +53,7 @@ import com.android.systemui.qs.dagger.QSModule;
 import com.android.systemui.qs.tileimpl.QSFactoryImpl;
 import com.android.systemui.recents.Recents;
 import com.android.systemui.recents.RecentsImplementation;
+import com.android.systemui.recents.RecentsModule;
 import com.android.systemui.screenshot.ReferenceScreenshotModule;
 import com.android.systemui.shade.ShadeEmptyImplModule;
 import com.android.systemui.statusbar.CommandQueue;
@@ -78,21 +80,24 @@ import javax.inject.Named;
 
 @Module(
         includes = {
+                ActivityWindowModule.class,
                 AospPolicyModule.class,
+                BiometricsModule.class,
                 CarMultiUserUtilsModule.class,
                 CarVolumeModule.class,
+                DriveModeModule.class,
                 GestureModule.class,
                 HeadsUpEmptyImplModule.class,
+                KeyguardDisplayModule.class,
                 NoopNavigationBarControllerModule.class,
                 NoopWallpaperModule.class,
                 PowerModule.class,
                 QSModule.class,
+                RecentsModule.class,
                 ReferenceScreenshotModule.class,
+                ScreenDecorationsModule.class,
                 ShadeEmptyImplModule.class,
                 ShutdownUiModule.class,
-                DriveModeModule.class,
-                KeyguardDisplayModule.class,
-                ActivityWindowModule.class,
         }
 )
 abstract class CarSystemUIModule {

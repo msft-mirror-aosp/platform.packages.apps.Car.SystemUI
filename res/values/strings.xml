@@ -260,4 +260,7 @@
     <string name="nine" translatable="false">9</string>
     <string name="zero" translatable="false">0</string>
 
+    <!-- Intent binding to long press action of user profile icon in car top system bar. -->
+    <string name="user_profile_long_press_intent" translatable="false"></string>
+
 </resources>

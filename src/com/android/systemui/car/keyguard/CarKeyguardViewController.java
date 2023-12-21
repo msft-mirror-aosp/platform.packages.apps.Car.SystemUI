@@ -55,7 +55,6 @@ import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
-import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.keyguard.ui.viewmodel.PrimaryBouncerToGoneTransitionViewModel;
 import com.android.systemui.log.BouncerLogger;
 import com.android.systemui.settings.UserTracker;
@@ -137,7 +136,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
             };
     private final KeyguardMessageAreaController.Factory mMessageAreaControllerFactory;
     private final BouncerLogger mBouncerLogger;
-    private final FeatureFlags mFeatureFlags;
     private final SelectedUserInteractor mSelectedUserInteractor;
     private final BouncerMessageInteractor mBouncerMessageInteractor;
 
@@ -171,7 +169,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
             BouncerView bouncerView,
             KeyguardMessageAreaController.Factory messageAreaControllerFactory,
             BouncerLogger bouncerLogger,
-            FeatureFlags featureFlags,
             BouncerMessageInteractor bouncerMessageInteractor,
             SelectedUserInteractor selectedUserInteractor) {
         super(R.id.keyguard_stub, overlayViewGlobalStateController);
@@ -199,7 +196,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
                 R.integer.car_keyguard_toast_show_duration_millisecond);
         mMessageAreaControllerFactory = messageAreaControllerFactory;
         mBouncerLogger = bouncerLogger;
-        mFeatureFlags = featureFlags;
         mBouncerMessageInteractor = bouncerMessageInteractor;
         primaryBouncerCallbackInteractor.addBouncerExpansionCallback(mExpansionCallback);
     }
@@ -223,7 +219,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
                 mMessageAreaControllerFactory,
                 mBouncerMessageInteractor,
                 mBouncerLogger,
-                mFeatureFlags,
                 mSelectedUserInteractor);
         mBiometricUnlockControllerLazy.get().setKeyguardViewController(this);
     }

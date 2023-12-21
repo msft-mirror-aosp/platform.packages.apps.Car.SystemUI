@@ -17,7 +17,10 @@
 package com.android.systemui.car.systembar;
 
 import android.content.Context;
+import android.content.res.Resources;
 
+import com.android.systemui.CoreStartable;
+import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
@@ -25,14 +28,20 @@ import com.android.systemui.car.privacy.CameraPrivacyElementsProviderImpl;
 import com.android.systemui.car.privacy.MicPrivacyElementsProviderImpl;
 import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.car.statusbar.UserNameViewController;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
+import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
 
 import dagger.BindsOptionalOf;
 import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.ClassKey;
+import dagger.multibindings.IntoMap;
+import dagger.multibindings.IntoSet;
 
 import java.util.Optional;
 
@@ -47,6 +56,39 @@ import javax.inject.Provider;
  */
 @Module
 public abstract class CarSystemBarModule {
+    /**
+     * TODO(): b/260206944,
+     * @return CarSystemBarMediator for SecondaryMUMDSystemUI which blocks CarSystemBar#start()
+     * util RROs are applied, otherwise return CarSystemBar
+     */
+    @Provides
+    @IntoMap
+    @ClassKey(CarSystemBar.class)
+    static CoreStartable bindCarSystemBarStartable(
+            Lazy<CarSystemBar> systemBarService,
+            Lazy<CarSystemBarMediator> applyRROService,
+            @Main Resources resources) {
+        if ((CarSystemUIUserUtil.isSecondaryMUMDSystemUI()
+                || CarSystemUIUserUtil.isMUPANDSystemUI())
+                && resources.getBoolean(R.bool.config_enableSecondaryUserRRO)) {
+            return applyRROService.get();
+        }
+        return systemBarService.get();
+    }
+
+    @Provides
+    @IntoSet
+    static ConfigurationListener provideCarSystemBarConfigListener(
+            Lazy<CarSystemBar> systemBarService,
+            Lazy<CarSystemBarMediator> applyRROService,
+            @Main Resources resources) {
+        if ((CarSystemUIUserUtil.isSecondaryMUMDSystemUI()
+                || CarSystemUIUserUtil.isMUPANDSystemUI())
+                && resources.getBoolean(R.bool.config_enableSecondaryUserRRO)) {
+            return applyRROService.get();
+        }
+        return systemBarService.get();
+    }
 
     @BindsOptionalOf
     @CarSysUIDynamicOverride

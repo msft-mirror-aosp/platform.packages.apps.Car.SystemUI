@@ -27,6 +27,7 @@ import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import javax.inject.Inject;
 
@@ -39,7 +40,8 @@ import javax.inject.Inject;
  *     with overlaid resources.
  * </p>
  */
-public class CarSystemBarMediator implements CoreStartable {
+public class CarSystemBarMediator implements CoreStartable,
+        ConfigurationController.ConfigurationListener {
     private static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;
 
     private final CarSystemBar mCarSystemBar;
@@ -86,7 +88,7 @@ public class CarSystemBarMediator implements CoreStartable {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigChanged(Configuration newConfig) {
         if (DEBUG) {
             Log.d(TAG, "onConfigurationChanged(), reset resources and start CarSystemBar");
         }

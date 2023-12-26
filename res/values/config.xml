@@ -257,7 +257,7 @@
     <!-- 0 non_immersive show all system bars on immersive request. -->
     <!-- 1 immersive, hide both bars -->
     <!-- 2 immersive_with_nav, show nav bar and hide status bar -->
-    <integer name="config_systemBarPersistency">0</integer>
+    <integer name="config_systemBarPersistency">1</integer>
 
     <!-- Determines the orientation of the status icon. -->
     <!-- 0 horizontal. -->

@@ -320,7 +320,8 @@ public class CarSystemBarButton extends LinearLayout implements
         }
 
         try {
-            if (mLongIntent != null && (Build.IS_ENG || Build.IS_USERDEBUG)) {
+            if (mLongIntent != null && !mLongIntent.isEmpty()
+                    && (Build.IS_ENG || Build.IS_USERDEBUG)) {
                 final Intent intent = Intent.parseUri(mLongIntent, Intent.URI_INTENT_SCHEME);
                 setOnLongClickListener(getButtonLongClickListener(intent));
             }

@@ -52,8 +52,6 @@ import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.CarSystemBarController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
-import com.android.systemui.flags.FakeFeatureFlags;
-import com.android.systemui.flags.Flags;
 import com.android.systemui.keyguard.ui.viewmodel.PrimaryBouncerToGoneTransitionViewModel;
 import com.android.systemui.log.BouncerLogger;
 import com.android.systemui.settings.UserTracker;
@@ -121,8 +119,6 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
         when(keyguardBouncerComponent.getSecurityContainerController()).thenReturn(
                 securityContainerController);
 
-        FakeFeatureFlags fakeFeatureFlags = new FakeFeatureFlags();
-        fakeFeatureFlags.set(Flags.REVAMPED_BOUNCER_MESSAGES, true);
         mCarKeyguardViewController = new CarKeyguardViewController(
                 mContext,
                 mUserTracker,
@@ -145,7 +141,6 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
                 mBouncerView,
                 mock(KeyguardMessageAreaController.Factory.class),
                 mock(BouncerLogger.class),
-                fakeFeatureFlags,
                 mock(BouncerMessageInteractor.class),
                 mock(SelectedUserInteractor.class)
         );

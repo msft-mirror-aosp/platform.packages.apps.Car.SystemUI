@@ -272,4 +272,7 @@
     <!-- DisplayCompat fullscreen button [CHAR LIMIT=30] -->
     <string name="fullscreen">Full Screen</string>
 
+    <!-- Intent binding to long press action of user profile icon in car top system bar. -->
+    <string name="user_profile_long_press_intent" translatable="false"></string>
+
 </resources>

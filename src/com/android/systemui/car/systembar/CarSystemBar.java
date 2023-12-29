@@ -96,8 +96,9 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         ConfigurationController.ConfigurationListener,
         MDSystemBarsController.Listener {
     private static final String TAG = CarSystemBar.class.getSimpleName();
-    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
     private static final String OVERLAY_FILTER_DATA_SCHEME = "package";
+
+    protected static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     private final Context mContext;
     private final CarSystemBarController mCarSystemBarController;

@@ -229,7 +229,6 @@
 
     <dimen name="car_system_bar_button_width">64dp</dimen>
     <dimen name="car_system_bar_button_icon_height">44dp</dimen>
-    <dimen name="car_system_bar_width">760dp</dimen>
     <dimen name="car_system_bar_user_name_button_height">56dp</dimen>
     <dimen name="car_system_bar_user_name_max_width">176dp</dimen>
     <dimen name="car_left_system_bar_width">96dp</dimen>
@@ -240,6 +239,24 @@
     <!-- In order to change the height of the top nav bar, overlay status_bar_height in
          frameworks/base/core/res/res instead. -->
     <dimen name="car_top_system_bar_height">@*android:dimen/status_bar_height</dimen>
+
+    <dimen name="car_top_system_bar_left_padding">0dp</dimen>
+    <dimen name="car_top_system_bar_right_padding">0dp</dimen>
+    <dimen name="car_top_system_bar_top_padding">0dp</dimen>
+    <dimen name="car_top_system_bar_bottom_padding">0dp</dimen>
+    <dimen name="car_bottom_system_bar_left_padding">0dp</dimen>
+    <dimen name="car_bottom_system_bar_right_padding">0dp</dimen>
+    <dimen name="car_bottom_system_bar_top_padding">0dp</dimen>
+    <dimen name="car_bottom_system_bar_bottom_padding">0dp</dimen>
+    <dimen name="car_left_system_bar_left_padding">0dp</dimen>
+    <dimen name="car_left_system_bar_right_padding">0dp</dimen>
+    <dimen name="car_left_system_bar_top_padding">0dp</dimen>
+    <dimen name="car_left_system_bar_bottom_padding">0dp</dimen>
+    <dimen name="car_right_system_bar_left_padding">0dp</dimen>
+    <dimen name="car_right_system_bar_right_padding">0dp</dimen>
+    <dimen name="car_right_system_bar_top_padding">0dp</dimen>
+    <dimen name="car_right_system_bar_bottom_padding">0dp</dimen>
+
     <dimen name="car_nav_buttons_margin">@*android:dimen/car_padding_3</dimen>
 
     <dimen name="car_user_switcher_container_height">420dp</dimen>

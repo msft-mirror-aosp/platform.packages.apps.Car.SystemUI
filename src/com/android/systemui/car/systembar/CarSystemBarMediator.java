@@ -26,6 +26,7 @@ import android.util.Log;
 import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
+import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
@@ -40,6 +41,7 @@ import javax.inject.Inject;
  *     with overlaid resources.
  * </p>
  */
+@SysUISingleton
 public class CarSystemBarMediator implements CoreStartable,
         ConfigurationController.ConfigurationListener {
     private static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;

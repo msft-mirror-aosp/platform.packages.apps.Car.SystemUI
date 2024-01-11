@@ -36,6 +36,8 @@ import android.widget.Toast;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 
+import com.android.car.docklib.DockViewController;
+import com.android.car.docklib.view.DockView;
 import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.ViewUtils;
 import com.android.internal.annotations.VisibleForTesting;
@@ -123,6 +125,9 @@ public class CarSystemBarController {
     // Saved StatusBarManager.Disable2Flags
     private int mStatusBarState2;
     private int mLockTaskMode;
+    private boolean mIsBootComplete;
+    private final boolean mIsDockEnabled;
+    private DockViewController mDockViewController;
 
     public CarSystemBarController(Context context,
             UserTracker userTracker,
@@ -159,6 +164,16 @@ public class CarSystemBarController {
         readConfigs();
         mPrivacyChipXOffset = -context.getResources()
                 .getDimensionPixelOffset(R.dimen.privacy_chip_horizontal_padding);
+
+        mIsDockEnabled = context.getResources().getBoolean(R.bool.config_enableDock);
+    }
+
+    /**
+     * Notify the controller the boot is completed.
+     */
+    public void bootCompleted(boolean isSetUp) {
+        mIsBootComplete = true;
+        setupDock(mBottomView, isSetUp);
     }
 
     private void readConfigs() {
@@ -208,6 +223,11 @@ public class CarSystemBarController {
         mMicPanelController = null;
         mCameraPanelController = null;
         mProfilePanelController = null;
+
+        if (mDockViewController != null) {
+            mDockViewController.destroy();
+            mDockViewController = null;
+        }
     }
 
     /** Gets the top window if configured to do so. */
@@ -415,7 +435,22 @@ public class CarSystemBarController {
         setupBar(mBottomView, mBottomBarTouchListeners, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController,
                 mNotificationPanelViewController);
+        setupDock(mBottomView, isSetUp);
+
         return mBottomView;
+    }
+
+    private void setupDock(CarSystemBarView carSystemBarView, boolean isSetUp) {
+        if (isSetUp && mIsBootComplete && mIsDockEnabled
+                && carSystemBarView != null && mDockViewController == null) {
+            // todo(b/317818339): init dock before boot complete
+            // We do not want the Dock to be available in a non provisioned state
+            DockView dockView = carSystemBarView.findViewById(R.id.dock);
+            if (dockView != null) {
+                mDockViewController = new DockViewController(dockView,
+                        mUserTracker.getUserContext());
+            }
+        }
     }
 
     /** Gets the left navigation bar with the appropriate listeners set. */
@@ -546,7 +581,7 @@ public class CarSystemBarController {
         }
     }
 
-    /** Sets the HVACPanelOverlayViewController for views to listen to the panel's state. */
+    /** Sets the NotificationPanelViewController for views to listen to the panel's state. */
     public void registerNotificationPanelViewController(
             NotificationPanelViewController notificationPanelViewController) {
         mNotificationPanelViewController = notificationPanelViewController;

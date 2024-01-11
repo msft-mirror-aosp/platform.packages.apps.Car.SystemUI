@@ -77,15 +77,11 @@
             systemui:intent="@string/system_bar_app_drawer_intent"
             systemui:clearBackStack="true"/>
 
-        <LinearLayout
+        <com.android.car.docklib.view.DockView
+            android:id="@+id/dock"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layoutDirection="ltr"
-            android:layout_marginHorizontal="@dimen/dock_container_margin">
-            <!-- todo: add dock here  -->
-        </LinearLayout>
+            android:layout_marginHorizontal="@dimen/dock_container_margin" />
 
         <com.android.systemui.car.systembar.AssistantButton
             android:id="@+id/assistant"

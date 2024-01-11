@@ -353,6 +353,13 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mExecutor.execute(() -> {
             mIconPolicyLazy.get().init();
         });
+
+        mContext.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                mCarSystemBarController.bootCompleted(isDeviceSetupForUser());
+            }
+        }, new IntentFilter(Intent.ACTION_BOOT_COMPLETED), Context.RECEIVER_EXPORTED);
     }
 
     private void restartNavBarsIfNecessary() {

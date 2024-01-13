@@ -77,6 +77,8 @@ android_library {
     manifest: "AndroidManifest.xml",
 
     plugins: ["dagger2-compiler"],
+    // TODO(b/319708040): re-enable use_resource_processor
+    use_resource_processor: false,
 
 }
 
@@ -154,6 +156,8 @@ android_library {
     errorprone: {
         enabled: false,
     },
+    // TODO(b/319708040): re-enable use_resource_processor
+    use_resource_processor: false,
 }
 
 android_app {

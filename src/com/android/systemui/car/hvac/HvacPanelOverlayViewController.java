@@ -47,8 +47,10 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
     private final Resources mResources;
     private final HvacController mHvacController;
     private final UiModeManager mUiModeManager;
+    private final float mFullyOpenDimAmount;
 
     private boolean mIsUiModeNight;
+    private float mCurrentDimAmount = 0f;
 
     private HvacPanelView mHvacPanelView;
 
@@ -68,6 +70,8 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
         mHvacController = hvacController;
         mUiModeManager = uiModeManager;
         configurationController.addCallback(this);
+        mFullyOpenDimAmount = mContext.getResources().getFloat(
+                R.fraction.hvac_overlay_window_dim_amount);
     }
 
     @Override
@@ -125,6 +129,11 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
     }
 
     @Override
+    protected float getDefaultDimAmount() {
+        return mCurrentDimAmount;
+    }
+
+    @Override
     protected Integer getHandleBarViewId() {
         return R.id.handle_bar;
     }
@@ -175,6 +184,17 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
                 && isTouchOutside(outBounds, event.getX(), event.getY())) {
             toggle();
         }
+    }
+
+    @Override
+    protected void onScroll(int y) {
+        super.onScroll(y);
+
+        float percentageOpen =
+                ((float) (mAnimateDirection > 0 ? y : getLayout().getHeight() - y))
+                        / getLayout().getHeight();
+        mCurrentDimAmount = mFullyOpenDimAmount * percentageOpen;
+        getOverlayViewGlobalStateController().updateWindowDimBehind(this, mCurrentDimAmount);
     }
 
     private boolean isTouchOutside(Rect bounds, float x, float y) {

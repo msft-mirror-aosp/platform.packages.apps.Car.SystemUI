@@ -251,4 +251,19 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
     LinkedHashMap<Integer, ActivityManager.RunningTaskInfo> getTaskStack() {
         return mTaskStack;
     }
+
+    @Override
+    public String toString() {
+        Iterator<ActivityManager.RunningTaskInfo> iterator = mTaskStack.values().iterator();
+        StringBuilder stringBuilder = new StringBuilder("{" + "displayId=" + mDisplayId + " ,");
+        stringBuilder.append("taskStack=[\n");
+        ActivityManager.RunningTaskInfo topTask;
+        while (iterator.hasNext()) {
+            topTask = iterator.next();
+            stringBuilder.append(" {" + " taskId=").append(topTask.taskId).append(",").append(
+                    " baseActivity=").append(topTask.baseActivity).append("}\n");
+        }
+        stringBuilder.append("]\n}\n");
+        return stringBuilder.toString();
+    }
 }

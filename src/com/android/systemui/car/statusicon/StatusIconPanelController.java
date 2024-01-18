@@ -29,10 +29,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Outline;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -61,6 +64,7 @@ import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Provider;
 
@@ -463,18 +467,24 @@ public class StatusIconPanelController {
             return false;
         }
 
+        // inflate content
         int panelWidth = mContext.getResources().getDimensionPixelSize(mPanelWidthRes);
-
+        Drawable panelBackgroundDrawable = mContext.getResources()
+                .getDrawable(R.drawable.status_icon_panel_bg, mContext.getTheme());
         mPanelContent = (ViewGroup) LayoutInflater.from(mContext).inflate(mPanelLayoutRes,
                 /* root= */ null);
-        mPanelContent.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
-        findQcHeaderViews(mPanelContent);
-        findQcViews(mPanelContent);
-        findQcFooterViews(mPanelContent);
+        // clip content to the panel background (to handle rounded corners)
+        mPanelContent.setOutlineProvider(new DrawableViewOutlineProvider(panelBackgroundDrawable));
+        mPanelContent.setClipToOutline(true);
+
+        // initialize special views
+        initializeQcHeaderViews(mPanelContent);
+        initializeQcViews(mPanelContent);
+        initializeQcFooterViews(mPanelContent);
+
+        // initialize panel
         mPanel = new PopupWindow(mPanelContent, panelWidth, WRAP_CONTENT);
-        mPanel.setBackgroundDrawable(
-                mContext.getResources().getDrawable(R.drawable.status_icon_panel_bg,
-                        mContext.getTheme()));
+        mPanel.setBackgroundDrawable(panelBackgroundDrawable);
         mPanel.setWindowLayoutType(TYPE_SYSTEM_DIALOG);
         mPanel.setFocusable(true);
         mPanel.setOutsideTouchable(false);
@@ -539,47 +549,48 @@ public class StatusIconPanelController {
         createPanel();
     }
 
-    private void findQcHeaderViews(ViewGroup rootView) {
-        for (int i = 0; i < rootView.getChildCount(); i++) {
-            View v = rootView.getChildAt(i);
-            if (v instanceof QCHeaderReadOnlyIconsContainer) {
-                if (mQCPanelReadOnlyIconsController != null) {
-                    mQCPanelReadOnlyIconsController.addIconViews(
-                            (QCHeaderReadOnlyIconsContainer) v, /* shouldAttachPanel= */ false);
-                }
-            } else if (v instanceof ViewGroup) {
-                this.findQcHeaderViews((ViewGroup) v);
-            }
+    private void initializeQcHeaderViews(ViewGroup rootView) {
+        if (mQCPanelReadOnlyIconsController == null) return;
+        List<QCHeaderReadOnlyIconsContainer> views = findViewsOfType(rootView,
+                QCHeaderReadOnlyIconsContainer.class);
+        for (QCHeaderReadOnlyIconsContainer view : views) {
+            mQCPanelReadOnlyIconsController.addIconViews(view, /* shouldAttachPanel= */ false);
         }
     }
 
-    private void findQcViews(ViewGroup rootView) {
-        for (int i = 0; i < rootView.getChildCount(); i++) {
-            View v = rootView.getChildAt(i);
-            if (v instanceof SystemUIQCView) {
-                SystemUIQCView qcv = (SystemUIQCView) v;
-                SystemUIQCViewController controller = mQCViewControllerProvider.get();
-                controller.attachView(qcv);
-                mQCViewControllers.add(controller);
-                qcv.setActionListener(mQCActionListener);
-            } else if (v instanceof ViewGroup) {
-                this.findQcViews((ViewGroup) v);
-            }
+    private void initializeQcViews(ViewGroup rootView) {
+        List<SystemUIQCView> views = findViewsOfType(rootView, SystemUIQCView.class);
+        for (SystemUIQCView view : views) {
+            SystemUIQCViewController controller = mQCViewControllerProvider.get();
+            controller.attachView(view);
+            mQCViewControllers.add(controller);
+            view.setActionListener(mQCActionListener);
         }
     }
 
-    private void findQcFooterViews(ViewGroup rootView) {
+    private void initializeQcFooterViews(ViewGroup rootView) {
+        List<QCFooterButton> buttons = findViewsOfType(rootView, QCFooterButton.class);
+        for (QCFooterButton button : buttons) {
+            button.setUserTracker(mUserTracker);
+        }
+        List<QCFooterButtonView> buttonViews = findViewsOfType(rootView, QCFooterButtonView.class);
+        for (QCFooterButtonView buttonView : buttonViews) {
+            buttonView.setUserTracker(mUserTracker);
+            buttonView.setBroadcastDispatcher(mBroadcastDispatcher);
+        }
+    }
+
+    private <T extends View> List<T> findViewsOfType(ViewGroup rootView, Class<T> clazz) {
+        List<T> views = new ArrayList<>();
         for (int i = 0; i < rootView.getChildCount(); i++) {
             View v = rootView.getChildAt(i);
-            if (v instanceof QCFooterButton) {
-                ((QCFooterButton) v).setUserTracker(mUserTracker);
-            } else if (v instanceof QCFooterButtonView) {
-                ((QCFooterButtonView) v).setUserTracker(mUserTracker);
-                ((QCFooterButtonView) v).setBroadcastDispatcher(mBroadcastDispatcher);
+            if (clazz.isInstance(v)) {
+                views.add(clazz.cast(v));
             } else if (v instanceof ViewGroup) {
-                this.findQcFooterViews((ViewGroup) v);
+                views.addAll(findViewsOfType((ViewGroup) v, clazz));
             }
         }
+        return views;
     }
 
     private void setAnimatedStatusIconHighlightedStatus(boolean isHighlighted) {
@@ -601,5 +612,23 @@ public class StatusIconPanelController {
 
     private boolean isPanelShowing() {
         return mPanel != null && mPanel.isShowing();
+    }
+
+    private static class DrawableViewOutlineProvider extends ViewOutlineProvider {
+        private final Drawable mDrawable;
+
+        private DrawableViewOutlineProvider(Drawable drawable) {
+            mDrawable = drawable;
+        }
+
+        @Override
+        public void getOutline(View view, Outline outline) {
+            if (mDrawable != null) {
+                mDrawable.getOutline(outline);
+            } else {
+                outline.setRect(0, 0, view.getWidth(), view.getHeight());
+                outline.setAlpha(0.0f);
+            }
+        }
     }
 }

@@ -30,13 +30,13 @@
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"新增設定檔後，帳戶持有人便可進行自訂。"</string>
     <string name="user_add_user_message_update" msgid="4507063398890966360">"任何設定檔均可安裝應用程式更新，隨後便可供所有設定檔使用。"</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"已達設定檔數量上限"</string>
-    <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{只可建立一個設定檔。}other{您可建立最多 # 個設定檔。}}"</string>
+    <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{只可建立一個設定檔。}other{你可建立最多 # 個設定檔。}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"正在載入"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"正在載入使用者 (由 <xliff:g id="FROM_USER">%1$d</xliff:g> 至 <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"閂咗<xliff:g id="SENSOR">%1$s</xliff:g>。"</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"使用<xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"擁有權限的應用程式"</string>
-    <string name="mic_privacy_chip_microphone_settings" msgid="4520886720588226450">"麥克風設定"</string>
+    <string name="privacy_chip_settings" msgid="8028897999244574288">"私隱權設定"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"「<xliff:g id="APP">%1$s</xliff:g>」正在使用<xliff:g id="SENSOR">%2$s</xliff:g>"</string>
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"「<xliff:g id="APP_LIST">%s</xliff:g>」正在使用麥克風"</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"「<xliff:g id="APP">%1$s</xliff:g>」最近曾使用<xliff:g id="SENSOR">%2$s</xliff:g>"</string>
@@ -46,7 +46,6 @@
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"確定"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"要開啟車輛麥克風嗎？"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"如要繼續，請開啟資訊娛樂系統麥克風。所有擁有權限的應用程式都會開啟麥克風。"</string>
-    <string name="camera_privacy_chip_camera_settings" msgid="96342672670928980">"相機設定"</string>
     <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"「<xliff:g id="APP">%s</xliff:g>」正在使用相機"</string>
     <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"<xliff:g id="APP_LIST">%s</xliff:g>正在使用相機"</string>
     <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"「<xliff:g id="APP">%s</xliff:g>」最近曾使用相機"</string>
@@ -64,6 +63,10 @@
     <string name="system_bar_maps_label" msgid="7883864993280235380">"地圖"</string>
     <string name="system_bar_media_label" msgid="6156112139796274847">"媒體"</string>
     <string name="system_bar_control_center_label" msgid="5269256399167811590">"控制中心"</string>
+    <string name="system_bar_assistant_label" msgid="7312821609046711200">"Google 助理"</string>
+    <string name="system_bar_mic_privacy_chip" msgid="2494035034004728597">"麥克風私隱方塊"</string>
+    <string name="system_bar_user_avatar" msgid="4122817348016746322">"使用者顯示圖片"</string>
+    <string name="system_bar_user_name_text" msgid="5859605302481171746">"使用者名稱文字"</string>
     <string name="hvac_decrease_button_label" msgid="5628481079099995286">"調低溫度"</string>
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"調高溫度"</string>
     <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"藍牙設定：已中斷連接"</string>
@@ -74,7 +77,7 @@
     <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"訊號設定：已開啟熱點"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"顯示設定"</string>
     <string name="status_icon_drive_mode" msgid="3938622431486261076">"駕駛模式"</string>
-    <string name="activity_blocked_text" msgid="5353157279548801554">"您無法在駕駛時使用此功能"</string>
+    <string name="activity_blocked_text" msgid="5353157279548801554">"你無法在駕駛時使用此功能"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"關閉應用程式"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"返回"</string>
     <string name="drive_mode_modes_comfort" msgid="628724737960743004">"舒適"</string>
@@ -88,16 +91,17 @@
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"音效設定"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"設定檔和帳戶設定"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"圖案不支援旋轉輸入；請使用輕觸輸入"</string>
-    <string name="display_input_lock_text" msgid="8524876126635885614">"觸控式屏幕已鎖定"</string>
-    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"您的螢幕已鎖定"</string>
-    <string name="user_logout_title" msgid="5534754139319586681">"您確定要登出嗎？"</string>
+    <string name="display_input_lock_text" msgid="1671197665816822205">"螢幕現已鎖定"</string>
+    <string name="display_input_lock_started_text" msgid="2434054522800802134">"您的螢幕已鎖定"</string>
+    <string name="display_input_lock_stopped_text" msgid="5944577827512246808">"螢幕現已解鎖"</string>
+    <string name="user_logout_title" msgid="5534754139319586681">"你確定要登出嗎？"</string>
     <string name="user_logout_message" msgid="7804089876692575056">"此操作會關閉所有已開啟的應用程式"</string>
     <string name="user_logout" msgid="2934184154258330491">"登出"</string>
     <string name="car_guest" msgid="768913000117469596">"訪客"</string>
     <string name="user_switching_message" msgid="5346172662613832946">"正在切換設定檔…"</string>
     <string name="user_adding_message" msgid="4700853604381151415">"正在新增設定檔…"</string>
     <string name="max_user_limit_reached_title" msgid="7319012467112549458"></string>
-    <string name="max_user_limit_reached_message" msgid="1445188223628919167">"您可建立最多 <xliff:g id="USER_LIMIT">%d</xliff:g> 個設定檔"</string>
+    <string name="max_user_limit_reached_message" msgid="1445188223628919167">"你可建立最多 <xliff:g id="USER_LIMIT">%d</xliff:g> 個設定檔"</string>
     <string name="confirm_add_user_title" msgid="75853419607883551">"要新增設定檔嗎？"</string>
     <string name="already_logged_in_message" msgid="3657131706472825219">"如要繼續，<xliff:g id="USER_NAME">%1$s</xliff:g> 必須登出<xliff:g id="SEAT_LOCATION">%2$s</xliff:g>螢幕"</string>
     <string name="header_bar_text_in_logged_out_state" msgid="3903097856063608991">"選取要啟動的設定檔"</string>
@@ -119,4 +123,9 @@
     <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"請輸入 PIN"</string>
     <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"請畫出圖案"</string>
     <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"請輸入密碼"</string>
+    <string name="backspace_key" msgid="5570862528655375412">"Backspace 鍵"</string>
+    <string name="enter_key" msgid="747962923921283095">"Enter 鍵"</string>
+    <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
+    <string name="back_btn" msgid="7774349944465667391">"返回"</string>
+    <string name="fullscreen" msgid="7648956467442135844">"全螢幕"</string>
 </resources>

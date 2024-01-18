@@ -83,11 +83,24 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
     private static final int TIMEOUT_MS = CarProperties.user_hal_timeout().orElse(5_000) + 500;
 
+    private final CarServiceProvider.CarServiceOnConnectedListener mCarServiceOnConnectedListener =
+            new CarServiceProvider.CarServiceOnConnectedListener() {
+                @Override
+                public void onConnected(Car car) {
+                    if (DEBUG) {
+                        Log.d(TAG, "car connected");
+                    }
+                    mCarUserManager = car.getCarManager(CarUserManager.class);
+                    notifyChange();
+                }
+            };
+
     protected final UserTracker mUserTracker;
     protected final UserIconProvider mUserIconProvider;
     private final UserManager mUserManager;
     private final DevicePolicyManager mDevicePolicyManager;
     public final Handler mHandler;
+    private final CarServiceProvider mCarServiceProvider;
     @Nullable
     private CarUserManager mCarUserManager;
     protected boolean mPendingUserAdd;
@@ -101,7 +114,8 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         mDevicePolicyManager = context.getSystemService(DevicePolicyManager.class);
         mUserIconProvider = new UserIconProvider();
         mHandler = handler;
-        carServiceProvider.addListener(this::onCarConnected);
+        mCarServiceProvider = carServiceProvider;
+        mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
     }
 
     @VisibleForTesting
@@ -114,6 +128,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         mDevicePolicyManager = devicePolicyManager;
         mUserIconProvider = userIconProvider;
         mCarUserManager = carUserManager;
+        mCarServiceProvider = null;
         mHandler = handler;
     }
 
@@ -157,6 +172,13 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             listBuilder.addRow(createLogOutRow());
         }
         return listBuilder.build();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mCarServiceProvider != null) {
+            mCarServiceProvider.removeListener(mCarServiceOnConnectedListener);
+        }
     }
 
     private List<UserInfo> getProfileList() {
@@ -463,14 +485,6 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         window.getAttributes().setFitInsetsTypes(
                 window.getAttributes().getFitInsetsTypes() & ~statusBars());
-    }
-
-    private void onCarConnected(Car car) {
-        if (DEBUG) {
-            Log.d(TAG, "car connected");
-        }
-        mCarUserManager = car.getCarManager(CarUserManager.class);
-        notifyChange();
     }
 
     private class AddNewUserTask extends AsyncTask<String, Void, UserInfo> {

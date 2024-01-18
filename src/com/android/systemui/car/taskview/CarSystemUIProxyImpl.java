@@ -28,6 +28,7 @@ import android.car.app.CarTaskViewHost;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.display.DisplayManager;
+import android.os.Binder;
 import android.os.Process;
 import android.util.Slog;
 import android.view.Display;
@@ -127,7 +128,7 @@ public final class CarSystemUIProxyImpl
 
     @Override
     public CarTaskViewHost createCarTaskView(CarTaskViewClient carTaskViewClient) {
-        ensurePermission(Car.PERMISSION_MANAGE_CAR_SYSTEM_UI);
+        ensureManageSystemUIPermission(mContext);
         RemoteCarTaskViewServerImpl remoteCarTaskViewServerImpl =
                 new RemoteCarTaskViewServerImpl(
                         mContext,
@@ -186,9 +187,15 @@ public final class CarSystemUIProxyImpl
         }
     }
 
-    private void ensurePermission(String permission) {
-        if (mContext.checkCallingPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-            throw new SecurityException("requires permission " + permission);
+    static void ensureManageSystemUIPermission(Context context) {
+        if (Binder.getCallingPid() == android.os.Process.myPid()) {
+            // If called from within CarSystemUI, allow.
+            return;
         }
+        if (context.checkCallingPermission(Car.PERMISSION_MANAGE_CAR_SYSTEM_UI)
+                == PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        throw new SecurityException("requires permission " + Car.PERMISSION_MANAGE_CAR_SYSTEM_UI);
     }
 }

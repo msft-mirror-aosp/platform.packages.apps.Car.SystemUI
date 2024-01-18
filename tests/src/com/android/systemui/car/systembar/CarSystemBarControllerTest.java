@@ -52,6 +52,7 @@ import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -66,7 +67,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoSession;
 import org.mockito.quality.Strictness;
 
+import java.util.Map;
 import java.util.Set;
+
+import javax.inject.Provider;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -110,6 +114,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     private StatusIconPanelViewController mPanelController;
     @Mock
     private CarServiceProvider mCarServiceProvider;
+    @Mock
+    private Map<Class<?>, Provider<CarSystemBarElementController.Factory>>
+            mElementControllerFactories;
 
     @Before
     public void setUp() throws Exception {
@@ -123,7 +130,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
         mCarSystemBarViewFactory = new CarSystemBarViewFactory(mSpiedContext, mFeatureFlags,
                 mQuickControlsEntryPointsController, mReadOnlyIconsController,
-                mock(UserTracker.class));
+                mock(UserTracker.class), mElementControllerFactories);
         setupPanelControllerBuilderMocks();
 
         // Needed to inflate top navigation bar.

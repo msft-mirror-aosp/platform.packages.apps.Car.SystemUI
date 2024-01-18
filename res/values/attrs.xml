@@ -93,6 +93,8 @@
     <!-- Custom attribute for the CarSystemBarElement interface - implementing classes must opt in
          to consuming these attributes within their constructor and applying appropriately. -->
     <declare-styleable name="CarSystemBarElement">
+        <!-- Class name of the CarSystemBarElementController that should be attached to this view -->
+        <attr name="controller" format="string"/>
         <!-- Attribute for specifying the system bar disable flag of a supporting element view.
              This corresponds to the StatusBarManager.DisableFlags. -->
         <attr name="systemBarDisableFlags" format="integer">

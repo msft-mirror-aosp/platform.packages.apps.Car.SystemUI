@@ -16,8 +16,15 @@
 
 package com.android.systemui.car.systembar.element;
 
+import android.annotation.NonNull;
+import android.annotation.Nullable;
+import android.content.Context;
+import android.content.res.TypedArray;
 import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.util.Log;
+
+import com.android.systemui.R;
 
 /** Helper class for resolving element controllers */
 public class CarSystemBarElementResolver {
@@ -36,5 +43,22 @@ public class CarSystemBarElementResolver {
             }
         }
         return null;
+    }
+
+    /** Get the element controller class from the specified view attributes */
+    @Nullable
+    public static Class<?> getElementControllerClassFromAttributes(@NonNull Context context,
+            @Nullable AttributeSet attrs) {
+        if (attrs == null) {
+            return null;
+        }
+        TypedArray typedArray = context.obtainStyledAttributes(attrs,
+                R.styleable.CarSystemBarElement);
+        String str = typedArray.getString(R.styleable.CarSystemBarElement_controller);
+        typedArray.recycle();
+        if (TextUtils.isEmpty(str)) {
+            return null;
+        }
+        return getElementControllerClassFromString(str);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 The Android Open Source Project
+ * Copyright (C) 2023 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,20 +62,18 @@ import com.android.systemui.car.statusicon.ui.QCPanelReadOnlyIconsController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
+import com.android.systemui.util.ViewController;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 
 /**
  * A controller for a panel view associated with a status icon.
- *
- * @deprecated Please use {@link StatusIconPanelViewController} class.
  */
-public class StatusIconPanelController {
-    private static final int DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY = Gravity.TOP | Gravity.START;
-
+public class StatusIconPanelViewController extends ViewController<View> {
     private final Context mContext;
     private final UserTracker mUserTracker;
     private final CarServiceProvider mCarServiceProvider;
@@ -86,24 +84,28 @@ public class StatusIconPanelController {
     private final QCPanelReadOnlyIconsController mQCPanelReadOnlyIconsController;
     private final String mIdentifier;
     private final String mIconTag;
-    private final @ColorInt int mIconHighlightedColor;
-    private final @ColorInt int mIconNotHighlightedColor;
+    @ColorInt
+    private final int mIconHighlightedColor;
+    @ColorInt
+    private final int mIconNotHighlightedColor;
+    @LayoutRes
+    private final int mPanelLayoutRes;
+    @DimenRes
+    private final int mPanelWidthRes;
+    private final int mXOffsetPixel;
     private final int mYOffsetPixel;
+    private final int mPanelGravity;
     private final boolean mIsDisabledWhileDriving;
+    private final boolean mShowAsDropDown;
     private final ArrayList<SystemUIQCViewController> mQCViewControllers = new ArrayList<>();
 
     private PopupWindow mPanel;
-    private @LayoutRes int mPanelLayoutRes;
-    private @DimenRes int mPanelWidthRes;
     private ViewGroup mPanelContent;
-    private OnQcViewsFoundListener mOnQcViewsFoundListener;
-    private View mAnchorView;
     private ImageView mStatusIconView;
     private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
     private CarActivityManager mCarActivityManager;
     private float mDimValue = -1.0f;
     private View.OnClickListener mOnClickListener;
-    private boolean mIsPanelDestroyed;
 
     private final ConfigurationController.ConfigurationListener mConfigurationListener =
             new ConfigurationController.ConfigurationListener() {
@@ -180,39 +182,17 @@ public class StatusIconPanelController {
         }
     };
 
-    public StatusIconPanelController(
-            Context context,
-            UserTracker userTracker,
-            CarServiceProvider carServiceProvider,
-            BroadcastDispatcher broadcastDispatcher,
-            ConfigurationController configurationController,
-            Provider<SystemUIQCViewController> qcViewControllerProvider) {
-        this(context, userTracker, carServiceProvider, broadcastDispatcher, configurationController,
-                qcViewControllerProvider, /* isDisabledWhileDriving= */ false);
-    }
-
-    public StatusIconPanelController(
-            Context context,
+    private StatusIconPanelViewController(Context context,
             UserTracker userTracker,
             CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             Provider<SystemUIQCViewController> qcViewControllerProvider,
-            boolean isDisabledWhileDriving) {
-        this(context, userTracker, carServiceProvider, broadcastDispatcher, configurationController,
-                qcViewControllerProvider, isDisabledWhileDriving,
-                /* qcPanelReadOnlyIconsController= */ null);
-    }
-
-    public StatusIconPanelController(
-            Context context,
-            UserTracker userTracker,
-            CarServiceProvider carServiceProvider,
-            BroadcastDispatcher broadcastDispatcher,
-            ConfigurationController configurationController,
-            Provider<SystemUIQCViewController> qcViewControllerProvider,
-            boolean isDisabledWhileDriving,
-            QCPanelReadOnlyIconsController qcPanelReadOnlyIconsController) {
+            QCPanelReadOnlyIconsController qcPanelReadOnlyIconsController,
+            View anchorView, @LayoutRes int layoutRes, @DimenRes int widthRes,
+            int xOffset, int yOffset, int gravity, boolean isDisabledWhileDriving,
+            boolean showAsDropDown) {
+        super(anchorView);
         mContext = context;
         mUserTracker = userTracker;
         mCarServiceProvider = carServiceProvider;
@@ -220,124 +200,21 @@ public class StatusIconPanelController {
         mConfigurationController = configurationController;
         mQCViewControllerProvider = qcViewControllerProvider;
         mQCPanelReadOnlyIconsController = qcPanelReadOnlyIconsController;
+        mIsDisabledWhileDriving = isDisabledWhileDriving;
+        mPanelLayoutRes = layoutRes;
+        mPanelWidthRes = widthRes;
+        mXOffsetPixel = xOffset;
+        mYOffsetPixel = yOffset;
+        mPanelGravity = gravity;
+        mShowAsDropDown = showAsDropDown;
         mIdentifier = Integer.toString(System.identityHashCode(this));
-
         mIconTag = mContext.getResources().getString(R.string.qc_icon_tag);
         mIconHighlightedColor = mContext.getColor(R.color.status_icon_highlighted_color);
         mIconNotHighlightedColor = mContext.getColor(R.color.status_icon_not_highlighted_color);
-
-        int panelMarginTop = mContext.getResources().getDimensionPixelSize(
-                R.dimen.car_status_icon_panel_margin_top);
-        int topSystemBarHeight = mContext.getResources().getDimensionPixelSize(
-                R.dimen.car_top_system_bar_height);
-        // TODO(b/202563671): remove mYOffsetPixel when the PopupWindow API is updated.
-        mYOffsetPixel = panelMarginTop - topSystemBarHeight;
-
-        mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
-                new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* executor= */ null,
-                mUserTracker.getUserHandle());
-        mUserTracker.addCallback(mUserTrackerCallback, mContext.getMainExecutor());
-        mConfigurationController.addCallback(mConfigurationListener);
-
-        mIsDisabledWhileDriving = isDisabledWhileDriving;
-        if (mIsDisabledWhileDriving) {
-            mCarUxRestrictionsUtil = CarUxRestrictionsUtil.getInstance(mContext);
-            mCarUxRestrictionsUtil.register(mUxRestrictionsChangedListener);
-        }
     }
 
-    /**
-     * @return default Y offset in pixels that cancels out the superfluous inset automatically
-     *         applied to the panel
-     */
-    public int getDefaultYOffset() {
-        return mYOffsetPixel;
-    }
-
-    public void setOnQcViewsFoundListener(OnQcViewsFoundListener onQcViewsFoundListener) {
-        mOnQcViewsFoundListener = onQcViewsFoundListener;
-    }
-
-    /**
-     * A listener that can be used to attach controllers quick control panels using
-     * {@link SystemUIQCView#getLocalQCProvider()}
-     */
-    public interface OnQcViewsFoundListener {
-        /**
-         * This method is call up when {@link SystemUIQCView}s are found
-         */
-        void qcViewsFound(ArrayList<SystemUIQCView> qcViews);
-    }
-
-    /**
-     * Attaches a panel to a root view that toggles the panel visibility when clicked.
-     *
-     * Variant of {@link #attachPanel(View, int, int, int, int, int, boolean)} with
-     * xOffset={@code 0}, yOffset={@link #mYOffsetPixel} &
-     * gravity={@link #DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY} &
-     * showAsDropDown={@code true}.
-     */
-    public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes) {
-        attachPanel(view, layoutRes, widthRes, DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY);
-    }
-
-    /**
-     * Attaches a panel to a root view that toggles the panel visibility when clicked.
-     *
-     * Variant of {@link #attachPanel(View, int, int, int, int, int, boolean)} with
-     * xOffset={@code 0} & yOffset={@link #mYOffsetPixel} &
-     * showAsDropDown={@code true}.
-     */
-    public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes,
-            int gravity) {
-        attachPanel(view, layoutRes, widthRes, /* xOffset= */ 0, mYOffsetPixel,
-                gravity);
-    }
-
-    /**
-     * Attaches a panel to a root view that toggles the panel visibility when clicked.
-     *
-     * Variant of {@link #attachPanel(View, int, int, int, int, int, boolean)} with
-     * gravity={@link #DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY} &
-     * showAsDropDown={@code true}.
-     */
-    public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes,
-            int xOffset, int yOffset) {
-        attachPanel(view, layoutRes, widthRes, xOffset, yOffset,
-                DEFAULT_POPUP_WINDOW_ANCHOR_GRAVITY);
-    }
-
-    /**
-     * Attaches a panel to a root view that toggles the panel visibility when clicked.
-     *
-     * Variant of {@link #attachPanel(View, int, int, int, int, int, boolean)} with
-     * showAsDropDown={@code true}.
-     */
-    public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes,
-            int xOffset, int yOffset, int gravity) {
-        attachPanel(view, layoutRes, widthRes, xOffset, yOffset, gravity,
-                /* showAsDropDown= */ true);
-    }
-
-    /**
-     * Attaches a panel to a root view that toggles the panel visibility when clicked.
-     */
-    public void attachPanel(View view, @LayoutRes int layoutRes, @DimenRes int widthRes,
-            int xOffset, int yOffset, int gravity, boolean showAsDropDown) {
-        if (mIsPanelDestroyed) {
-            throw new IllegalStateException("Attempting to attach destroyed panel");
-        }
-
-        mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
-
-        if (mAnchorView == null) {
-            mAnchorView = view;
-        }
-        mPanelLayoutRes = layoutRes;
-        mPanelWidthRes = widthRes;
-        // Pre-create panel to improve perceived UI performance
-        createPanel();
-
+    @Override
+    protected void onInit() {
         mOnClickListener = v -> {
             if (mIsDisabledWhileDriving && mCarUxRestrictionsUtil.getCurrentRestrictions()
                     .isRequiresDistractionOptimization()) {
@@ -370,32 +247,47 @@ public class StatusIconPanelController {
                     mCarActivityManager.startUserPickerOnDisplay(mContext.getDisplayId());
                 }
             } else {
-                if (showAsDropDown) {
+                if (mShowAsDropDown) {
                     // TODO(b/202563671): remove yOffsetPixel when the PopupWindow API is updated.
-                    mPanel.showAsDropDown(mAnchorView, xOffset, yOffset, gravity);
+                    mPanel.showAsDropDown(mView, mXOffsetPixel, mYOffsetPixel, mPanelGravity);
                 } else {
-                    int verticalGravity = gravity & Gravity.VERTICAL_GRAVITY_MASK;
+                    int verticalGravity = mPanelGravity & Gravity.VERTICAL_GRAVITY_MASK;
                     int animationStyle = verticalGravity == Gravity.BOTTOM
                             ? com.android.internal.R.style.Animation_DropDownUp
                             : com.android.internal.R.style.Animation_DropDownDown;
                     mPanel.setAnimationStyle(animationStyle);
-                    mPanel.showAtLocation(mAnchorView, gravity, xOffset, yOffset);
+                    mPanel.showAtLocation(mView, mPanelGravity, mXOffsetPixel, mYOffsetPixel);
                 }
-                mAnchorView.setSelected(true);
+                mView.setSelected(true);
                 highlightStatusIcon(true);
                 setAnimatedStatusIconHighlightedStatus(true);
                 dimBehind(mPanel);
             }
         };
 
-        mAnchorView.setOnClickListener(mOnClickListener);
+        mView.setOnClickListener(mOnClickListener);
     }
 
-    /**
-     * Cleanup listeners and reset panel. This controller instance should not be used after this
-     * method is called.
-     */
-    public void destroyPanel() {
+    @Override
+    protected void onViewAttached() {
+        if (mPanel == null) {
+            createPanel();
+        }
+        mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
+                new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* executor= */ null,
+                mUserTracker.getUserHandle());
+        mUserTracker.addCallback(mUserTrackerCallback, mContext.getMainExecutor());
+        mConfigurationController.addCallback(mConfigurationListener);
+
+        if (mIsDisabledWhileDriving) {
+            mCarUxRestrictionsUtil = CarUxRestrictionsUtil.getInstance(mContext);
+            mCarUxRestrictionsUtil.register(mUxRestrictionsChangedListener);
+        }
+        mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
+    }
+
+    @Override
+    protected void onViewDetached() {
         reset();
         if (mCarUxRestrictionsUtil != null) {
             mCarUxRestrictionsUtil.unregister(mUxRestrictionsChangedListener);
@@ -404,59 +296,57 @@ public class StatusIconPanelController {
         mConfigurationController.removeCallback(mConfigurationListener);
         mUserTracker.removeCallback(mUserTrackerCallback);
         mBroadcastDispatcher.unregisterReceiver(mBroadcastReceiver);
-        mPanelLayoutRes = 0;
-        mIsPanelDestroyed = true;
     }
 
     @VisibleForTesting
-    protected PopupWindow getPanel() {
+    PopupWindow getPanel() {
         return mPanel;
     }
 
     @VisibleForTesting
-    protected BroadcastReceiver getBroadcastReceiver() {
+    BroadcastReceiver getBroadcastReceiver() {
         return mBroadcastReceiver;
     }
 
     @VisibleForTesting
-    protected String getIdentifier() {
+    String getIdentifier() {
         return mIdentifier;
     }
 
     @VisibleForTesting
     @ColorInt
-    protected int getIconHighlightedColor() {
+    int getIconHighlightedColor() {
         return mIconHighlightedColor;
     }
 
     @VisibleForTesting
     @ColorInt
-    protected int getIconNotHighlightedColor() {
+    int getIconNotHighlightedColor() {
         return mIconNotHighlightedColor;
     }
 
     @VisibleForTesting
-    protected View.OnClickListener getOnClickListener() {
+    View.OnClickListener getOnClickListener() {
         return mOnClickListener;
     }
 
     @VisibleForTesting
-    protected ConfigurationController.ConfigurationListener getConfigurationListener() {
+    ConfigurationController.ConfigurationListener getConfigurationListener() {
         return mConfigurationListener;
     }
 
     @VisibleForTesting
-    protected UserTracker.Callback getUserTrackerCallback() {
+    UserTracker.Callback getUserTrackerCallback() {
         return mUserTrackerCallback;
     }
 
     @VisibleForTesting
-    protected ViewTreeObserver.OnGlobalFocusChangeListener getFocusChangeListener() {
+    ViewTreeObserver.OnGlobalFocusChangeListener getFocusChangeListener() {
         return mFocusChangeListener;
     }
 
     @VisibleForTesting
-    protected QCView.QCActionListener getQCActionListener() {
+    QCView.QCActionListener getQCActionListener() {
         return mQCActionListener;
     }
 
@@ -464,12 +354,11 @@ public class StatusIconPanelController {
      * Create the PopupWindow panel and assign to {@link mPanel}.
      * @return true if the panel was created, false otherwise
      */
-    boolean createPanel() {
+    private boolean createPanel() {
         if (mPanelWidthRes == 0 || mPanelLayoutRes == 0) {
             return false;
         }
 
-        // inflate content
         int panelWidth = mContext.getResources().getDimensionPixelSize(mPanelWidthRes);
         Drawable panelBackgroundDrawable = mContext.getResources()
                 .getDrawable(R.drawable.status_icon_panel_bg, mContext.getTheme());
@@ -492,7 +381,7 @@ public class StatusIconPanelController {
         mPanel.setOutsideTouchable(false);
         mPanel.setOnDismissListener(() -> {
             setAnimatedStatusIconHighlightedStatus(false);
-            mAnchorView.setSelected(false);
+            mView.setSelected(false);
             highlightStatusIcon(false);
             registerFocusListener(false);
             mQCViewControllers.forEach(controller -> controller.listen(false));
@@ -596,17 +485,19 @@ public class StatusIconPanelController {
     }
 
     private void setAnimatedStatusIconHighlightedStatus(boolean isHighlighted) {
-        if (mAnchorView instanceof AnimatedStatusIcon) {
-            ((AnimatedStatusIcon) mAnchorView).setIconHighlighted(isHighlighted);
+        if (mView instanceof AnimatedStatusIcon) {
+            ((AnimatedStatusIcon) mView).setIconHighlighted(isHighlighted);
         }
     }
 
     private void highlightStatusIcon(boolean isHighlighted) {
         if (mStatusIconView == null) {
-            mStatusIconView = mAnchorView.findViewWithTag(mIconTag);
+            mStatusIconView = mView.findViewWithTag(mIconTag);
         }
 
         if (mStatusIconView != null) {
+            // Icon color is set here since the status icon itself does not receive the selection
+            // state - only the outer button view does.
             mStatusIconView.setColorFilter(
                     isHighlighted ? mIconHighlightedColor : mIconNotHighlightedColor);
         }
@@ -631,6 +522,93 @@ public class StatusIconPanelController {
                 outline.setRect(0, 0, view.getWidth(), view.getHeight());
                 outline.setAlpha(0.0f);
             }
+        }
+    }
+
+    /** Daggerized builder for StatusIconPanelViewController */
+    public static class Builder {
+        private final Context mContext;
+        private final UserTracker mUserTracker;
+        private final CarServiceProvider mCarServiceProvider;
+        private final BroadcastDispatcher mBroadcastDispatcher;
+        private final ConfigurationController mConfigurationController;
+        private final Provider<SystemUIQCViewController> mQCViewControllerProvider;
+        private final QCPanelReadOnlyIconsController mQCPanelReadOnlyIconsController;
+
+        private int mXOffset = 0;
+        private int mYOffset;
+        private int mGravity = Gravity.TOP | Gravity.START;
+        private boolean mIsDisabledWhileDriving = false;
+        private boolean mShowAsDropDown = true;
+
+        @Inject
+        public Builder(
+                Context context,
+                UserTracker userTracker,
+                CarServiceProvider carServiceProvider,
+                BroadcastDispatcher broadcastDispatcher,
+                ConfigurationController configurationController,
+                Provider<SystemUIQCViewController> qcViewControllerProvider,
+                QCPanelReadOnlyIconsController qcPanelReadOnlyIconsController) {
+            mContext = context;
+            mUserTracker = userTracker;
+            mCarServiceProvider = carServiceProvider;
+            mBroadcastDispatcher = broadcastDispatcher;
+            mConfigurationController = configurationController;
+            mQCViewControllerProvider = qcViewControllerProvider;
+            mQCPanelReadOnlyIconsController = qcPanelReadOnlyIconsController;
+
+            int panelMarginTop = mContext.getResources().getDimensionPixelSize(
+                    R.dimen.car_status_icon_panel_margin_top);
+            int topSystemBarHeight = mContext.getResources().getDimensionPixelSize(
+                    R.dimen.car_top_system_bar_height);
+            // TODO(b/202563671): remove mYOffset when the PopupWindow API is updated.
+            mYOffset = panelMarginTop - topSystemBarHeight;
+        }
+
+        /** Set the panel offset in the x direction by a specified number of pixels. */
+        public Builder setXOffset(int offset) {
+            mXOffset = offset;
+            return this;
+        }
+
+        /** Set the panel offset in the y direction by a specified number of pixels. */
+        public Builder setYOffset(int offset) {
+            mYOffset = offset;
+            return this;
+        }
+
+        /** Set the panel's gravity - by default the gravity will be `Gravity.TOP | Gravity.START`*/
+        public Builder setGravity(int gravity) {
+            mGravity = gravity;
+            return this;
+        }
+
+        /** Set whether the panel should be shown while driving or not - defaults to true. */
+        public Builder setDisabledWhileDriving(boolean disabled) {
+            mIsDisabledWhileDriving = disabled;
+            return this;
+        }
+
+        /**
+         * Set whether the panel should be shown as a dropdown (vs. at a specific location)
+         * - defaults to true.
+         */
+        public Builder setShowAsDropDown(boolean dropDown) {
+            mShowAsDropDown = dropDown;
+            return this;
+        }
+
+        /**
+         * Builds the controller with the required parameters of anchor view, panel layout resource,
+         * and panel width resources.
+         */
+        public StatusIconPanelViewController build(View anchorView, @LayoutRes int layoutRes,
+                @DimenRes int widthRes) {
+            return new StatusIconPanelViewController(mContext, mUserTracker, mCarServiceProvider,
+                    mBroadcastDispatcher, mConfigurationController, mQCViewControllerProvider,
+                    mQCPanelReadOnlyIconsController, anchorView, layoutRes, widthRes, mXOffset,
+                    mYOffset, mGravity, mIsDisabledWhileDriving, mShowAsDropDown);
         }
     }
 }

@@ -22,14 +22,10 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import com.android.systemui.R;
-import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarServiceProvider;
-import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.car.statusicon.StatusIconController;
 import com.android.systemui.car.statusicon.StatusIconGroupContainerController;
+import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.dagger.qualifiers.Main;
-import com.android.systemui.settings.UserTracker;
-import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import java.util.Map;
 
@@ -43,17 +39,10 @@ public class QuickControlsEntryPointsController extends StatusIconGroupContainer
     @Inject
     QuickControlsEntryPointsController(
             Context context,
-            UserTracker userTracker,
             @Main Resources resources,
-            CarServiceProvider carServiceProvider,
-            BroadcastDispatcher broadcastDispatcher,
-            ConfigurationController configurationController,
-            Provider<SystemUIQCViewController> qcViewControllerProvider,
             Map<Class<?>, Provider<StatusIconController>> iconControllerCreators,
-            QCPanelReadOnlyIconsController qcPanelReadOnlyIconsController) {
-        super(context, userTracker, carServiceProvider, resources, broadcastDispatcher,
-                configurationController, qcViewControllerProvider, iconControllerCreators,
-                qcPanelReadOnlyIconsController);
+            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider) {
+        super(context, resources, iconControllerCreators, panelControllerBuilderProvider);
     }
 
     @Override

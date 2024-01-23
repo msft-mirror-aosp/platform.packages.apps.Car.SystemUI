@@ -123,9 +123,27 @@
         <!-- Attribute for specifying if this element should be disabled when in the
              LOCK_TASK_MODE_LOCKED state -->
         <attr name="disableForLockTaskModeLocked" format="boolean"/>
-</declare-styleable>
+    </declare-styleable>
 
-<!-- Custom attributes to configure HVAC values -->
+    <declare-styleable name="CarSystemBarPanelButtonView">
+        <!-- REQUIRED: Layout resource for the panel -->
+        <attr name="panelLayoutRes" format="reference"/>
+        <!--  Width of the panel. If not specified, will use default width value -->
+        <attr name="panelWidthRes" format="reference"/>
+        <!-- X Offset value for the panel location relative to the anchor view -->
+        <attr name="xOffset" format="integer"/>
+        <!-- Y Offset value for the panel location relative to the anchor view -->
+        <attr name="yOffset" format="integer"/>
+        <!-- Gravity of the panel relative to the anchor view -->
+        <attr name="gravity" format="integer"/>
+        <!-- Whether the panel should be disabled while driving - defaults to false -->
+        <attr name="disabledWhileDriving" format="boolean"/>
+        <!-- Whether the panel should be shown as a dropdown relative to the anchor view or not
+             (making it relative to the screen with offsets and gravity) - defaults to true -->
+        <attr name="showAsDropDown" format="boolean"/>
+    </declare-styleable>
+
+    <!-- Custom attributes to configure HVAC values -->
     <declare-styleable name="HvacView">
         <attr name="hvacAreaId" format="integer"/>
         <attr name="hvacPropertyId" format="integer"/>

@@ -115,11 +115,12 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
-                <com.android.systemui.car.qc.QCUserPickerButton
+                <com.android.systemui.car.qc.QCFooterView
                     android:id="@+id/user_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     style="@style/QCFooterButtonViewStyle"
+                    app:controller="com.android.systemui.car.qc.QCUserPickerButtonController"
                     app:layout_constraintHorizontal_weight="9"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/settings_button">
@@ -154,9 +155,9 @@
                         app:layout_constraintDimensionRatio="1:1"
                         app:layout_constraintStart_toEndOf="@id/user_name_text"
                         app:layout_constraintEnd_toEndOf="parent"/>
-                </com.android.systemui.car.qc.QCUserPickerButton>
+                </com.android.systemui.car.qc.QCFooterView>
 
-                <com.android.systemui.car.qc.QCFooterButtonView
+                <com.android.systemui.car.qc.QCFooterView
                     android:id="@+id/settings_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -170,12 +171,13 @@
                         android:layout_height="match_parent"
                         android:src="@drawable/car_ic_settings_icon"
                         android:scaleType="fitCenter"/>
-                </com.android.systemui.car.qc.QCFooterButtonView>
+                </com.android.systemui.car.qc.QCFooterView>
 
-                <com.android.systemui.car.qc.QCLogoutButton
+                <com.android.systemui.car.qc.QCFooterView
                     android:id="@+id/logout_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    app:controller="com.android.systemui.car.qc.QCLogoutButtonController"
                     app:layout_constraintHorizontal_weight="2"
                     app:layout_constraintStart_toEndOf="@id/settings_button"
                     app:layout_constraintEnd_toStartOf="@+id/screen_off_button"
@@ -185,12 +187,13 @@
                         android:layout_height="match_parent"
                         android:src="@drawable/car_ic_logout"
                         android:scaleType="fitCenter"/>
-                </com.android.systemui.car.qc.QCLogoutButton>
+                </com.android.systemui.car.qc.QCFooterView>
 
-                <com.android.systemui.car.qc.QCScreenOffButton
+                <com.android.systemui.car.qc.QCFooterView
                     android:id="@+id/screen_off_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    app:controller="com.android.systemui.car.qc.QCScreenOffButtonController"
                     app:layout_constraintHorizontal_weight="2"
                     app:layout_constraintStart_toEndOf="@id/logout_button"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -200,7 +203,7 @@
                         android:layout_height="match_parent"
                         android:src="@drawable/car_ic_power"
                         android:scaleType="fitCenter"/>
-                </com.android.systemui.car.qc.QCScreenOffButton>
+                </com.android.systemui.car.qc.QCFooterView>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.android.car.ui.FocusArea>

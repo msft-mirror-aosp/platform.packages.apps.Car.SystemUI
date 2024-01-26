@@ -28,6 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.android.car.dockutil.Flags;
 import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.hvac.HvacView;
@@ -64,8 +65,6 @@ public class CarSystemBarView extends LinearLayout {
 
     private final boolean mConsumeTouchWhenPanelOpen;
     private final boolean mButtonsDraggable;
-    private final boolean mIsDockEnabled;
-
     private CarSystemBarButton mHomeButton;
     private CarSystemBarButton mPassengerHomeButton;
     private View mNavButtons;
@@ -90,7 +89,6 @@ public class CarSystemBarView extends LinearLayout {
         mConsumeTouchWhenPanelOpen = getResources().getBoolean(
                 R.bool.config_consumeSystemBarTouchWhenNotificationPanelOpen);
         mButtonsDraggable = getResources().getBoolean(R.bool.config_systemBarButtonsDraggable);
-        mIsDockEnabled = getResources().getBoolean(R.bool.config_enableDock);
     }
 
     @Override
@@ -134,7 +132,7 @@ public class CarSystemBarView extends LinearLayout {
             mHvacButton.setOnClickListener(this::onHvacClick);
         }
 
-        if (mIsDockEnabled) {
+        if (Flags.dockFeature()) {
             if (mDriverHvacView instanceof TemperatureControlView) {
                 ((TemperatureControlView) mDriverHvacView).setTemperatureTextClickListener(
                         this::onHvacClick);

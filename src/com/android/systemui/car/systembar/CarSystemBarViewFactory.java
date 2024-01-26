@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
 
+import com.android.car.dockutil.Flags;
 import com.android.car.ui.FocusParkingView;
 import com.android.systemui.R;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
@@ -64,7 +65,6 @@ public class CarSystemBarViewFactory {
     private final QuickControlsEntryPointsController mQuickControlsEntryPointsController;
     private final ReadOnlyIconsController mReadOnlyIconsController;
     private final UserTracker mUserTracker;
-    private final boolean mIsDockEnabled;
 
     /** Type of navigation bar to be created. */
     private enum Type {
@@ -93,7 +93,6 @@ public class CarSystemBarViewFactory {
         mQuickControlsEntryPointsController = quickControlsEntryPointsController;
         mReadOnlyIconsController = readOnlyIconsController;
         mUserTracker = userTracker;
-        mIsDockEnabled = context.getResources().getBoolean(R.bool.config_enableDock);
     }
 
     /** Gets the top window. */
@@ -118,7 +117,7 @@ public class CarSystemBarViewFactory {
 
     /** Gets the top bar. */
     public CarSystemBarView getTopBar(boolean isSetUp) {
-        if (mIsDockEnabled) {
+        if (Flags.dockFeature()) {
             return getBar(isSetUp, Type.TOP_WITH_DOCK, Type.TOP_UNPROVISIONED);
         }
         return getBar(isSetUp, Type.TOP, Type.TOP_UNPROVISIONED);
@@ -126,7 +125,7 @@ public class CarSystemBarViewFactory {
 
     /** Gets the bottom bar. */
     public CarSystemBarView getBottomBar(boolean isSetUp) {
-        if (mIsDockEnabled) {
+        if (Flags.dockFeature()) {
             return getBar(isSetUp, Type.BOTTOM_WITH_DOCK, Type.BOTTOM_UNPROVISIONED);
         }
         return getBar(isSetUp, Type.BOTTOM, Type.BOTTOM_UNPROVISIONED);

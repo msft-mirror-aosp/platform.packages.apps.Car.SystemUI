@@ -46,6 +46,7 @@ import com.android.car.ui.FocusParkingView;
 import com.android.dx.mockito.inline.extended.ExtendedMockito;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
@@ -107,6 +108,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     private StatusIconPanelViewController.Builder mPanelControllerBuilder;
     @Mock
     private StatusIconPanelViewController mPanelController;
+    @Mock
+    private CarServiceProvider mCarServiceProvider;
 
     @Before
     public void setUp() throws Exception {
@@ -137,7 +140,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     private CarSystemBarController createSystemBarController() {
         return new CarSystemBarController(mSpiedContext, mUserTracker, mCarSystemBarViewFactory,
-                mButtonSelectionStateController, () -> mUserNameViewController,
+                mCarServiceProvider, mButtonSelectionStateController, () -> mUserNameViewController,
                 () -> mMicPrivacyChipViewController, () -> mCameraPrivacyChipViewController,
                 mButtonRoleHolderController,
                 new SystemBarConfigs(mTestableResources.getResources()),

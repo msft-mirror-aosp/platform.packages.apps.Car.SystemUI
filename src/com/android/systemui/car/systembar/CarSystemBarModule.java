@@ -21,6 +21,7 @@ import android.content.res.Resources;
 
 import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
@@ -125,6 +126,7 @@ public abstract class CarSystemBarModule {
             Context context,
             UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,
+            CarServiceProvider carServiceProvider,
             ButtonSelectionStateController buttonSelectionStateController,
             Lazy<UserNameViewController> userNameViewControllerLazy,
             Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
@@ -136,7 +138,7 @@ public abstract class CarSystemBarModule {
             return carSystemBarController.get();
         }
         return new CarSystemBarController(context, userTracker, carSystemBarViewFactory,
-                buttonSelectionStateController, userNameViewControllerLazy,
+                carServiceProvider, buttonSelectionStateController, userNameViewControllerLazy,
                 micPrivacyChipViewControllerLazy, cameraPrivacyChipViewControllerLazy,
                 buttonRoleHolderController, systemBarConfigs, panelControllerBuilderProvider);
     }

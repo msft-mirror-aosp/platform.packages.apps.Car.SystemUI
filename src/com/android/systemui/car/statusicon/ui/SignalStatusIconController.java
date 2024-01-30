@@ -22,8 +22,10 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.android.car.datasubscription.Flags;
 import com.android.settingslib.graph.SignalDrawable;
 import com.android.systemui.R;
+import com.android.systemui.car.qc.DataSubscriptionController;
 import com.android.systemui.car.statusicon.StatusIconView;
 import com.android.systemui.car.statusicon.StatusIconViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
@@ -50,7 +52,7 @@ public class SignalStatusIconController extends StatusIconViewController impleme
     private final Resources mResources;
     private final HotspotController mHotspotController;
     private final NetworkController mNetworkController;
-
+    private final DataSubscriptionController mDataSubscriptionController;
     private SignalDrawable mMobileSignalIconDrawable;
     private Drawable mWifiSignalIconDrawable;
     private Drawable mHotSpotIconDrawable;
@@ -71,12 +73,14 @@ public class SignalStatusIconController extends StatusIconViewController impleme
             Context context,
             @Main Resources resources,
             NetworkController networkController,
-            HotspotController hotspotController) {
+            HotspotController hotspotController,
+            DataSubscriptionController dataSubscriptionController) {
         super(view, disableController, stateController);
         mContext = context;
         mResources = resources;
         mHotspotController = hotspotController;
         mNetworkController = networkController;
+        mDataSubscriptionController = dataSubscriptionController;
 
         mMobileSignalIconDrawable = new SignalDrawable(mContext);
         mHotSpotIconDrawable = mResources.getDrawable(R.drawable.ic_hotspot, mContext.getTheme());
@@ -96,6 +100,9 @@ public class SignalStatusIconController extends StatusIconViewController impleme
         super.onViewAttached();
         mNetworkController.addCallback(this);
         mHotspotController.addCallback(this);
+        if (Flags.dataSubscriptionPopUp()) {
+            mDataSubscriptionController.setAnchorView(mView);
+        }
     }
 
     @Override
@@ -103,6 +110,9 @@ public class SignalStatusIconController extends StatusIconViewController impleme
         super.onViewDetached();
         mNetworkController.removeCallback(this);
         mHotspotController.removeCallback(this);
+        if (Flags.dataSubscriptionPopUp()) {
+            mDataSubscriptionController.setAnchorView(null);
+        }
     }
 
     @Override

@@ -43,6 +43,7 @@ import androidx.annotation.Nullable;
 
 import com.android.car.docklib.DockViewController;
 import com.android.car.docklib.view.DockView;
+import com.android.car.dockutil.Flags;
 import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.ViewUtils;
 import com.android.internal.annotations.VisibleForTesting;
@@ -121,7 +122,6 @@ public class CarSystemBarController {
     // Saved StatusBarManager.Disable2Flags
     private int mStatusBarState2;
     private int mLockTaskMode;
-    private final boolean mIsDockEnabled;
     private DockViewController mDockViewController;
     private int mActiveUnlockedUserId;
 
@@ -151,8 +151,6 @@ public class CarSystemBarController {
         readConfigs();
         mPrivacyChipXOffset = -context.getResources()
                 .getDimensionPixelOffset(R.dimen.privacy_chip_horizontal_padding);
-
-        mIsDockEnabled = context.getResources().getBoolean(R.bool.config_enableDock);
         mUserManager = context.getSystemService(UserManager.class);
 
         carServiceProvider.addListener(car -> {
@@ -793,7 +791,7 @@ public class CarSystemBarController {
     }
 
     private void setupDock(CarSystemBarView carSystemBarView) {
-        if (!mIsDockEnabled) {
+        if (!Flags.dockFeature()) {
             return;
         }
 

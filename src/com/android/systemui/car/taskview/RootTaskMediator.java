@@ -205,6 +205,27 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         mSyncQueue.queue(wct);
     }
 
+    @Override
+    public void attachChildSurfaceToTask(int taskId, SurfaceControl.Builder b) {
+        if (mRootTask != null
+                && mRootTask.taskId == taskId) {
+            mTaskViewTaskShellPart.attachChildSurfaceToTask(taskId, b);
+            return;
+        }
+        ShellTaskOrganizer.TaskListener.super.attachChildSurfaceToTask(taskId, b);
+    }
+
+    @Override
+    public void reparentChildSurfaceToTask(int taskId, SurfaceControl sc,
+                                           SurfaceControl.Transaction t) {
+        if (mRootTask != null
+                && mRootTask.taskId == taskId) {
+            mTaskViewTaskShellPart.reparentChildSurfaceToTask(taskId, sc, t);
+            return;
+        }
+        ShellTaskOrganizer.TaskListener.super.reparentChildSurfaceToTask(taskId, sc, t);
+    }
+
     private void setRootTaskAsLaunchRoot(ActivityManager.RunningTaskInfo taskInfo) {
         WindowContainerTransaction wct = new WindowContainerTransaction();
         wct.setLaunchRoot(taskInfo.token,

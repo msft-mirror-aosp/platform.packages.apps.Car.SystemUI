@@ -27,6 +27,7 @@ import com.android.internal.statusbar.NotificationVisibility;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
@@ -57,8 +58,10 @@ public class NotificationVisibilityLogger {
         @Override
         public void run() {
             if (mIsVisible) {
-                int count = mNotificationDataManager.getVisibleNotifications().size();
-                for (AlertEntry alertEntry : mNotificationDataManager.getVisibleNotifications()) {
+                List<AlertEntry> notifications =
+                        mNotificationDataManager.getVisibleNotifications();
+                int count = notifications.size();
+                for (AlertEntry alertEntry : notifications) {
                     NotificationVisibility visObj = NotificationVisibility.obtain(
                             alertEntry.getKey(),
                             /* rank= */ -1,

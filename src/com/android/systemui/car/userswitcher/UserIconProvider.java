@@ -30,7 +30,6 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
 import com.android.car.admin.ui.UserAvatarView;
 import com.android.car.internal.user.UserHelper;
-import com.android.internal.util.UserIcons;
 import com.android.systemui.R;
 
 /**
@@ -114,13 +113,8 @@ public class UserIconProvider {
     }
 
     /** Returns a scaled, rounded, default icon for the Guest user */
-    public Drawable getRoundedGuestDefaultIcon(Resources resources) {
-        Bitmap icon = getGuestUserDefaultIcon(resources);
-        return new BitmapDrawable(resources, icon);
-    }
-
-    private Bitmap getGuestUserDefaultIcon(Resources resources) {
-        return UserIcons.convertToBitmap(UserIcons.getDefaultUserIcon(
-                resources, /*userId=*/ UserHandle.USER_NULL, /*light=*/ false));
+    public Drawable getRoundedGuestDefaultIcon(Context context) {
+        Bitmap icon = UserHelper.getGuestDefaultIcon(context);
+        return new BitmapDrawable(context.getResources(), icon);
     }
 }

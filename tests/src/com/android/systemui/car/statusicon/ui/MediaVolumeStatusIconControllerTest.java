@@ -23,6 +23,7 @@ import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSess
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import android.car.Car;
@@ -114,6 +115,14 @@ public class MediaVolumeStatusIconControllerTest extends SysuiTestCase {
         if (mMockingSession != null) {
             mMockingSession.finishMocking();
         }
+    }
+
+    @Test
+    public void onDestroy_unregistersListeners() {
+        mMediaVolumeStatusIconController.onDestroy();
+        verify(mCarServiceProvider).removeListener(any());
+        verify(mCarAudioManager).unregisterCarVolumeCallback(any());
+        verify(mUserTracker).removeCallback(any());
     }
 
     @Test

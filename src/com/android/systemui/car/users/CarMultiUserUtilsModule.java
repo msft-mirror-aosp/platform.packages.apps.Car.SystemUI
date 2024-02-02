@@ -25,6 +25,7 @@ import android.os.UserHandle;
 import android.os.UserManager;
 
 import com.android.systemui.CoreStartable;
+import com.android.systemui.InitController;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Background;
@@ -64,11 +65,13 @@ public abstract class CarMultiUserUtilsModule {
             IActivityManager iActivityManager,
             DumpManager dumpManager,
             @Background Handler handler,
-            CarServiceProvider carServiceProvider
+            CarServiceProvider carServiceProvider,
+            InitController initController
     ) {
         if (CarSystemUIUserUtil.isMUPANDSystemUI()) {
             CarMUPANDUserTrackerImpl mupandTracker = new CarMUPANDUserTrackerImpl(context,
-                    userManager, iActivityManager, dumpManager, handler, carServiceProvider);
+                    userManager, iActivityManager, dumpManager, handler, carServiceProvider,
+                    initController);
             mupandTracker.initialize(ActivityManager.getCurrentUser());
             return mupandTracker;
         }

@@ -24,6 +24,7 @@ import android.graphics.PixelFormat;
 import android.os.Binder;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -44,6 +45,17 @@ import javax.inject.Inject;
 public class SystemUIOverlayWindowController implements
         ConfigurationController.ConfigurationListener {
 
+    /**
+     * Touch listener to get touches on the view.
+     */
+    public interface OnTouchListener {
+
+        /**
+         * Called when a touch happens on the view.
+         */
+        void onTouch(View v, MotionEvent event);
+    }
+
     private final Context mContext;
     private final WindowManager mWindowManager;
 
@@ -59,16 +71,27 @@ public class SystemUIOverlayWindowController implements
     public SystemUIOverlayWindowController(
             Context context,
             WindowManager windowManager,
-            ConfigurationController configurationController
-    ) {
+            ConfigurationController configurationController) {
         mContext = context;
         mWindowManager = windowManager;
 
         mLpChanged = new WindowManager.LayoutParams();
         mBaseLayout = (ViewGroup) LayoutInflater.from(context)
                 .inflate(R.layout.sysui_overlay_window, /* root= */ null, false);
-
         configurationController.addCallback(this);
+    }
+
+    /**
+     * Register to {@link OnTouchListener}
+     */
+    public void registerOutsideTouchListener(OnTouchListener listener) {
+        mBaseLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                listener.onTouch(v, event);
+                return false;
+            }
+        });
     }
 
     /** Returns the base view of the primary window. */

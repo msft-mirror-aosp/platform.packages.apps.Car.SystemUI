@@ -36,7 +36,7 @@
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> desativado(a)."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"Usar <xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Para as apps que têm autorização"</string>
-    <string name="privacy_chip_settings" msgid="8028897999244574288">"Definições de privacidade"</string>
+    <string name="mic_privacy_chip_microphone_settings" msgid="4520886720588226450">"Definições do microfone"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"A app <xliff:g id="APP">%1$s</xliff:g> está a usar: <xliff:g id="SENSOR">%2$s</xliff:g>"</string>
     <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> estão a utilizar o microfone"</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"Recentemente, a app <xliff:g id="APP">%1$s</xliff:g> usou: <xliff:g id="SENSOR">%2$s</xliff:g>"</string>
@@ -46,6 +46,7 @@
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"OK"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Ativar o microfone do veículo?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Para continuar, ative o microfone do sistema de infoentretenimento. Esta ação irá ativar o microfone para todas as apps que têm autorização."</string>
+    <string name="camera_privacy_chip_camera_settings" msgid="96342672670928980">"Definições da câmara"</string>
     <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"A app <xliff:g id="APP">%s</xliff:g> está a usar a câmara"</string>
     <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"As apps <xliff:g id="APP_LIST">%s</xliff:g> estão a usar a câmara"</string>
     <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"A app <xliff:g id="APP">%s</xliff:g> usou a câmara recentemente"</string>
@@ -87,9 +88,8 @@
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"Definições de som"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"Definições de perfis e contas"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"O padrão não sup. control. rotativo; use o toque"</string>
-    <string name="display_input_lock_text" msgid="1671197665816822205">"O ecrã está bloqueado"</string>
-    <string name="display_input_lock_started_text" msgid="2434054522800802134">"O ecrã foi bloqueado"</string>
-    <string name="display_input_lock_stopped_text" msgid="5944577827512246808">"O ecrã está agora desbloqueado"</string>
+    <string name="display_input_lock_text" msgid="8524876126635885614">"Ecrã tátil bloqueado"</string>
+    <string name="display_input_lock_initial_text" msgid="7497552507312397576">"O ecrã foi bloqueado"</string>
     <string name="user_logout_title" msgid="5534754139319586681">"Quer mesmo terminar sessão?"</string>
     <string name="user_logout_message" msgid="7804089876692575056">"Esta ação fecha todas as aplicações abertas"</string>
     <string name="user_logout" msgid="2934184154258330491">"Terminar sessão"</string>

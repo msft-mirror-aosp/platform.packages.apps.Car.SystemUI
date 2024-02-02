@@ -16,15 +16,22 @@
 
 package com.android.systemui.car.volume;
 
+import static android.car.media.CarAudioManager.AUDIO_FEATURE_VOLUME_GROUP_EVENTS;
 import static android.car.media.CarAudioManager.INVALID_AUDIO_ZONE;
+import static android.car.media.CarVolumeGroupEvent.EXTRA_INFO_SHOW_UI;
+import static android.car.media.CarVolumeGroupEvent.EXTRA_INFO_VOLUME_INDEX_CHANGED_BY_AUDIO_SYSTEM;
 
 import android.car.Car;
 import android.car.CarOccupantZoneManager;
 import android.car.media.CarAudioManager;
+import android.car.media.CarVolumeGroupEvent;
+import android.car.media.CarVolumeGroupEventCallback;
+import android.car.media.CarVolumeGroupInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.os.Handler;
+import android.os.HandlerExecutor;
 import android.util.Log;
 
 import com.android.systemui.CoreStartable;
@@ -38,6 +45,8 @@ import com.android.systemui.volume.VolumeDialogComponent;
 import dagger.Lazy;
 
 import java.io.PrintWriter;
+import java.util.List;
+import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
 
@@ -57,32 +66,67 @@ public class VolumeUI implements CoreStartable {
             new CarAudioManager.CarVolumeCallback() {
                 @Override
                 public void onGroupVolumeChanged(int zoneId, int groupId, int flags) {
-                    initVolumeDialogComponent(zoneId, flags);
+                    handleVolumeCallback(zoneId, flags);
                 }
 
                 @Override
                 public void onMasterMuteChanged(int zoneId, int flags) {
-                    initVolumeDialogComponent(zoneId, flags);
+                    handleVolumeCallback(zoneId, flags);
                 }
 
-                private void initVolumeDialogComponent(int zoneId, int flags) {
+                private void handleVolumeCallback(int zoneId, int flags) {
                     if (mAudioZoneId != zoneId || (flags & AudioManager.FLAG_SHOW_UI) == 0) {
                         // only initialize for current audio zone when show requested
                         return;
                     }
-                    if (mVolumeDialogComponent == null) {
-                        mMainHandler.post(() -> {
-                            mVolumeDialogComponent = mVolumeDialogComponentLazy.get();
-                            mVolumeDialogComponent.register();
-                        });
-                        mCarAudioManager.unregisterCarVolumeCallback(mVolumeChangeCallback);
+                    initVolumeDialogComponent();
+                    unregistarCarAudioManagerCallbacks();
+                }
+
+            };
+
+    private final CarVolumeGroupEventCallback mCarVolumeGroupEventCallback =
+            new CarVolumeGroupEventCallback() {
+                @Override
+                public void onVolumeGroupEvent(List<CarVolumeGroupEvent> volumeGroupEvents) {
+                    if (!hasEventsForZone(volumeGroupEvents)) {
+                        return;
                     }
+                    initVolumeDialogComponent();
+                    unregistarCarAudioManagerCallbacks();
+                }
+
+                private boolean hasEventsForZone(List<CarVolumeGroupEvent> events) {
+                    for (int index = 0; index < events.size(); index++) {
+                        List<CarVolumeGroupInfo> infos = events.get(index).getCarVolumeGroupInfos();
+                        if (!shouldShowUi(events.get(index).getExtraInfos())) {
+                            continue;
+                        }
+
+                        for (int infoIndex = 0; infoIndex < infos.size(); infoIndex++) {
+                            if (infos.get(infoIndex).getZoneId() == mAudioZoneId) {
+                                // at least one event for this zone exists that needs to show UI
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+
+                private boolean shouldShowUi(List<Integer> extraInfos) {
+                    if (extraInfos.contains(EXTRA_INFO_SHOW_UI)
+                            || extraInfos.contains(
+                            EXTRA_INFO_VOLUME_INDEX_CHANGED_BY_AUDIO_SYSTEM)) {
+                        return true;
+                    }
+                    return false;
                 }
             };
 
     private boolean mEnabled;
     private CarAudioManager mCarAudioManager;
     private VolumeDialogComponent mVolumeDialogComponent;
+    private final Executor mExecutor;
 
     @Inject
     public VolumeUI(
@@ -97,6 +141,7 @@ public class VolumeUI implements CoreStartable {
         mCarServiceProvider = carServiceProvider;
         mVolumeDialogComponentLazy = volumeDialogComponentLazy;
         mUserTracker = userTracker;
+        mExecutor = new HandlerExecutor(mainHandler);
     }
 
     @Override
@@ -125,10 +170,16 @@ public class VolumeUI implements CoreStartable {
             }
 
             mCarAudioManager = (CarAudioManager) car.getCarManager(Car.AUDIO_SERVICE);
-            Log.d(TAG, "Registering mVolumeChangeCallback.");
-            // This volume call back is never unregistered because CarStatusBar is
-            // never destroyed.
-            mCarAudioManager.registerCarVolumeCallback(mVolumeChangeCallback);
+            if (mCarAudioManager.isAudioFeatureEnabled(AUDIO_FEATURE_VOLUME_GROUP_EVENTS)) {
+                Log.d(TAG, "Registering mCarVolumeGroupEventCallback.");
+                mCarAudioManager.registerCarVolumeGroupEventCallback(mExecutor,
+                        mCarVolumeGroupEventCallback);
+            } else {
+                Log.d(TAG, "Registering mVolumeChangeCallback.");
+                // This volume call back is never unregistered because CarStatusBar is
+                // never destroyed.
+                mCarAudioManager.registerCarVolumeCallback(mVolumeChangeCallback);
+            }
         });
     }
 
@@ -146,6 +197,22 @@ public class VolumeUI implements CoreStartable {
         if (!mEnabled) return;
         if (mVolumeDialogComponent != null) {
             mVolumeDialogComponent.dump(pw, args);
+        }
+    }
+
+    private void initVolumeDialogComponent() {
+        if (mVolumeDialogComponent == null) {
+            mMainHandler.post(() -> {
+                mVolumeDialogComponent = mVolumeDialogComponentLazy.get();
+                mVolumeDialogComponent.register();
+            });
+        }
+    }
+
+    private void unregistarCarAudioManagerCallbacks() {
+        mCarAudioManager.unregisterCarVolumeCallback(mVolumeChangeCallback);
+        if (mCarAudioManager.isAudioFeatureEnabled(AUDIO_FEATURE_VOLUME_GROUP_EVENTS)) {
+            mCarAudioManager.unregisterCarVolumeGroupEventCallback(mCarVolumeGroupEventCallback);
         }
     }
 }

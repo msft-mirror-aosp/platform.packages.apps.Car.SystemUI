@@ -31,15 +31,33 @@ import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
 public class StatusIconView extends ImageView implements CarSystemBarElement {
     private static final String TAG = StatusIconView.class.getSimpleName();
 
-    private final Class<?> mElementControllerClassAttr;
-    private final int mSystemBarDisableFlags;
-    private final int mSystemBarDisable2Flags;
-    private final boolean mDisableForLockTaskModeLocked;
+    private Class<?> mElementControllerClassAttr;
+    private int mSystemBarDisableFlags;
+    private int mSystemBarDisable2Flags;
+    private boolean mDisableForLockTaskModeLocked;
+
+    public StatusIconView(Context context) {
+        super(context);
+        init(context, /* attrs= */ null);
+    }
+
+    public StatusIconView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        init(context, attrs);
+    }
+
+    public StatusIconView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init(context, attrs);
+    }
 
     public StatusIconView(Context context, @Nullable AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        init(context, attrs);
+    }
 
+    private void init(Context context, @Nullable AttributeSet attrs) {
         mElementControllerClassAttr =
                 CarSystemBarElementResolver.getElementControllerClassFromAttributes(context, attrs);
         mSystemBarDisableFlags =

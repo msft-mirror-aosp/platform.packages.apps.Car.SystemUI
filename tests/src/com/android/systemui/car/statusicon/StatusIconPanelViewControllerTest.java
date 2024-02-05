@@ -95,7 +95,7 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
         mAnchorView.setColorFilter(mContext.getColor(R.color.car_status_icon_color));
         mViewController = new StatusIconPanelViewController.Builder(mContext, mUserTracker,
                 mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
-                mElementFactories, null).build(mAnchorView,
+                mElementFactories).build(mAnchorView,
                 R.layout.qc_display_panel, R.dimen.car_status_icon_panel_default_width);
         spyOn(mViewController);
         reset(mAnchorView);

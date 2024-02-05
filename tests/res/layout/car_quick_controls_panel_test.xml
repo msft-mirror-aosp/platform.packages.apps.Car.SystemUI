@@ -34,8 +34,4 @@
         style="@style/QCFooterButtonViewStyle"
         app:intent="intent:#Intent;action=android.settings.SETTINGS;launchFlags=0x24000000;end"
         systemui:disableWhileDriving="false"/>
-    <com.android.systemui.car.qc.QCHeaderReadOnlyIconsContainer
-        android:id="@+id/qc_header_read_only_icons_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
 </FrameLayout>

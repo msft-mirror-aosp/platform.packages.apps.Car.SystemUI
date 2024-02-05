@@ -19,6 +19,7 @@ package com.android.systemui.car.statusicon;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
@@ -78,6 +79,14 @@ public abstract class StatusIconViewController extends
      */
     protected final void setIconDrawableToDisplay(Drawable drawable) {
         mStatusIconData.setIconDrawable(drawable);
+    }
+
+    /**
+     * Returns the {@link Drawable} set to be displayed as the icon.
+     */
+    @VisibleForTesting
+    public Drawable getIconDrawableToDisplay() {
+        return mStatusIconData.getIconDrawable();
     }
 
     /**

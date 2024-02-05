@@ -28,7 +28,6 @@ import com.android.car.dockutil.Flags;
 import com.android.car.ui.FocusParkingView;
 import com.android.systemui.R;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
-import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.dagger.SysUISingleton;
@@ -70,7 +69,6 @@ public class CarSystemBarViewFactory {
     private final ArrayMap<Type, ViewGroup> mCachedContainerMap = new ArrayMap<>();
     private final FeatureFlags mFeatureFlags;
     private final QuickControlsEntryPointsController mQuickControlsEntryPointsController;
-    private final ReadOnlyIconsController mReadOnlyIconsController;
     private final UserTracker mUserTracker;
     private final Map<Class<?>, Provider<CarSystemBarElementController.Factory>>
             mElementControllerFactories;
@@ -96,14 +94,12 @@ public class CarSystemBarViewFactory {
             Context context,
             FeatureFlags featureFlags,
             QuickControlsEntryPointsController quickControlsEntryPointsController,
-            ReadOnlyIconsController readOnlyIconsController,
             UserTracker userTracker,
             Map<Class<?>, Provider<CarSystemBarElementController.Factory>> elementControllerFactory
     ) {
         mContext = context;
         mFeatureFlags = featureFlags;
         mQuickControlsEntryPointsController = quickControlsEntryPointsController;
-        mReadOnlyIconsController = readOnlyIconsController;
         mUserTracker = userTracker;
         mElementControllerFactories = elementControllerFactory;
     }
@@ -193,7 +189,6 @@ public class CarSystemBarViewFactory {
 
         view.setupHvacButton();
         view.setupQuickControlsEntryPoints(mQuickControlsEntryPointsController, isSetUp);
-        view.setupReadOnlyIcons(mReadOnlyIconsController);
         view.setupSystemBarButtons(mUserTracker);
         mCarSystemBarElementControllers.addAll(
                 CarSystemBarElementInitializer.initializeCarSystemBarElements(view,
@@ -223,7 +218,6 @@ public class CarSystemBarViewFactory {
     /** Resets the cached system bar views. */
     protected void resetSystemBarViewCache() {
         mQuickControlsEntryPointsController.resetCache();
-        mReadOnlyIconsController.resetCache();
         mCachedViewMap.clear();
     }
 

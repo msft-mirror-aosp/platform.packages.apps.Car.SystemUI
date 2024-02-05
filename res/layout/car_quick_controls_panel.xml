@@ -58,7 +58,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/read_only_status_icons_container"
                     systemui:datePattern="EEEMMMd" />
-                <com.android.systemui.car.qc.QCHeaderReadOnlyIconsContainer
+                <LinearLayout
                     android:id="@+id/read_only_status_icons_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -70,7 +70,26 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/date"/>
+                    app:layout_constraintStart_toEndOf="@+id/date">
+                    <com.android.systemui.car.statusicon.StatusIconView
+                        android:layout_width="@dimen/car_quick_controls_entry_points_icon_width"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="@dimen/car_padding_1"
+                        android:layout_gravity="center"
+                        systemui:controller="com.android.systemui.car.statusicon.ui.LocationStatusIconController"/>
+                    <com.android.systemui.car.statusicon.StatusIconView
+                        android:layout_width="@dimen/car_quick_controls_entry_points_icon_width"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="@dimen/car_padding_1"
+                        android:layout_gravity="center"
+                        systemui:controller="com.android.systemui.car.statusicon.ui.MobileSignalStatusIconController"/>
+                    <com.android.systemui.car.statusicon.StatusIconView
+                        android:layout_width="@dimen/car_quick_controls_entry_points_icon_width"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="@dimen/car_padding_1"
+                        android:layout_gravity="center"
+                        systemui:controller="com.android.systemui.car.statusicon.ui.WifiSignalStatusIconController"/>
+                </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ScrollView

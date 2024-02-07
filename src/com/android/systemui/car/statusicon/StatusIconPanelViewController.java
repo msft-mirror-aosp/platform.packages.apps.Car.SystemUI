@@ -19,7 +19,6 @@ package com.android.systemui.car.statusicon;
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
 
-import android.annotation.ColorInt;
 import android.annotation.DimenRes;
 import android.annotation.LayoutRes;
 import android.app.PendingIntent;
@@ -38,7 +37,6 @@ import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -83,11 +81,6 @@ public class StatusIconPanelViewController extends ViewController<View> {
     @Nullable
     private final QCPanelReadOnlyIconsController mQCPanelReadOnlyIconsController;
     private final String mIdentifier;
-    private final String mIconTag;
-    @ColorInt
-    private final int mIconHighlightedColor;
-    @ColorInt
-    private final int mIconNotHighlightedColor;
     @LayoutRes
     private final int mPanelLayoutRes;
     @DimenRes
@@ -101,7 +94,6 @@ public class StatusIconPanelViewController extends ViewController<View> {
 
     private PopupWindow mPanel;
     private ViewGroup mPanelContent;
-    private ImageView mStatusIconView;
     private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
     private CarActivityManager mCarActivityManager;
     private float mDimValue = -1.0f;
@@ -208,9 +200,6 @@ public class StatusIconPanelViewController extends ViewController<View> {
         mPanelGravity = gravity;
         mShowAsDropDown = showAsDropDown;
         mIdentifier = Integer.toString(System.identityHashCode(this));
-        mIconTag = mContext.getResources().getString(R.string.qc_icon_tag);
-        mIconHighlightedColor = mContext.getColor(R.color.status_icon_highlighted_color);
-        mIconNotHighlightedColor = mContext.getColor(R.color.status_icon_not_highlighted_color);
     }
 
     @Override
@@ -259,7 +248,6 @@ public class StatusIconPanelViewController extends ViewController<View> {
                     mPanel.showAtLocation(mView, mPanelGravity, mXOffsetPixel, mYOffsetPixel);
                 }
                 mView.setSelected(true);
-                highlightStatusIcon(true);
                 setAnimatedStatusIconHighlightedStatus(true);
                 dimBehind(mPanel);
             }
@@ -311,18 +299,6 @@ public class StatusIconPanelViewController extends ViewController<View> {
     @VisibleForTesting
     String getIdentifier() {
         return mIdentifier;
-    }
-
-    @VisibleForTesting
-    @ColorInt
-    int getIconHighlightedColor() {
-        return mIconHighlightedColor;
-    }
-
-    @VisibleForTesting
-    @ColorInt
-    int getIconNotHighlightedColor() {
-        return mIconNotHighlightedColor;
     }
 
     @VisibleForTesting
@@ -382,7 +358,6 @@ public class StatusIconPanelViewController extends ViewController<View> {
         mPanel.setOnDismissListener(() -> {
             setAnimatedStatusIconHighlightedStatus(false);
             mView.setSelected(false);
-            highlightStatusIcon(false);
             registerFocusListener(false);
             mQCViewControllers.forEach(controller -> controller.listen(false));
         });
@@ -487,19 +462,6 @@ public class StatusIconPanelViewController extends ViewController<View> {
     private void setAnimatedStatusIconHighlightedStatus(boolean isHighlighted) {
         if (mView instanceof AnimatedStatusIcon) {
             ((AnimatedStatusIcon) mView).setIconHighlighted(isHighlighted);
-        }
-    }
-
-    private void highlightStatusIcon(boolean isHighlighted) {
-        if (mStatusIconView == null) {
-            mStatusIconView = mView.findViewWithTag(mIconTag);
-        }
-
-        if (mStatusIconView != null) {
-            // Icon color is set here since the status icon itself does not receive the selection
-            // state - only the outer button view does.
-            mStatusIconView.setColorFilter(
-                    isHighlighted ? mIconHighlightedColor : mIconNotHighlightedColor);
         }
     }
 

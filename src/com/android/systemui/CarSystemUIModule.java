@@ -41,10 +41,13 @@ import com.android.systemui.dagger.GlobalRootComponent;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.decor.PrivacyDotDecorProviderFactory;
+import com.android.systemui.display.ui.viewmodel.ConnectingDisplayViewModel;
 import com.android.systemui.dock.DockManager;
 import com.android.systemui.dock.DockManagerImpl;
 import com.android.systemui.doze.DozeHost;
 import com.android.systemui.globalactions.ShutdownUiModule;
+import com.android.systemui.media.muteawait.MediaMuteAwaitConnectionCli;
+import com.android.systemui.media.nearby.NearbyMediaDevicesManager;
 import com.android.systemui.navigationbar.NoopNavigationBarControllerModule;
 import com.android.systemui.navigationbar.gestural.GestureModule;
 import com.android.systemui.plugins.qs.QSFactory;
@@ -68,6 +71,7 @@ import com.android.systemui.statusbar.policy.IndividualSensorPrivacyController;
 import com.android.systemui.statusbar.policy.IndividualSensorPrivacyControllerImpl;
 import com.android.systemui.statusbar.policy.SensorPrivacyController;
 import com.android.systemui.statusbar.policy.SensorPrivacyControllerImpl;
+import com.android.systemui.unfold.SysUIUnfoldStartableModule;
 import com.android.systemui.wallpapers.dagger.NoopWallpaperModule;
 
 import dagger.Binds;
@@ -85,10 +89,13 @@ import javax.inject.Named;
                 BiometricsModule.class,
                 CarMultiUserUtilsModule.class,
                 CarVolumeModule.class,
+                ConnectingDisplayViewModel.StartableModule.class,
                 DriveModeModule.class,
                 GestureModule.class,
                 HeadsUpEmptyImplModule.class,
                 KeyguardDisplayModule.class,
+                MediaMuteAwaitConnectionCli.StartableModule.class,
+                NearbyMediaDevicesManager.StartableModule.class,
                 NoopNavigationBarControllerModule.class,
                 NoopWallpaperModule.class,
                 PowerModule.class,
@@ -97,6 +104,7 @@ import javax.inject.Named;
                 ReferenceScreenshotModule.class,
                 ScreenDecorationsModule.class,
                 ShadeEmptyImplModule.class,
+                SysUIUnfoldStartableModule.class,
                 ShutdownUiModule.class,
         }
 )

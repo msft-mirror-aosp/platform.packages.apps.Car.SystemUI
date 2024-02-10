@@ -65,7 +65,7 @@
     <string name="system_bar_control_center_label" msgid="5269256399167811590">"مرکز کنترل"</string>
     <string name="system_bar_assistant_label" msgid="7312821609046711200">"دستیار"</string>
     <string name="system_bar_mic_privacy_chip" msgid="2494035034004728597">"تراشه حریم خصوصی میکروفون"</string>
-    <string name="system_bar_user_avatar" msgid="4122817348016746322">"چهره‌نمای کاربر"</string>
+    <string name="system_bar_user_avatar" msgid="4122817348016746322">"چهرک کاربر"</string>
     <string name="system_bar_user_name_text" msgid="5859605302481171746">"نوشتار نام کاربری"</string>
     <string name="hvac_decrease_button_label" msgid="5628481079099995286">"کاهش دما"</string>
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"افزایش دما"</string>

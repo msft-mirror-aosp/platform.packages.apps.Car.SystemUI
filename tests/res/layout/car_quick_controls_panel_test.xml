@@ -25,14 +25,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/QCFooterButtonViewStyle"
-        app:intent="intent:#Intent;component=com.android.car.settings/.common.CarSettingActivities$HomepageActivity;launchFlags=0x24000000;end"
+        app:intent="intent:#Intent;action=android.settings.SETTINGS;launchFlags=0x24000000;end"
         systemui:disableWhileDriving="true"/>
     <com.android.systemui.car.qc.QCFooterButtonView
         android:id="@+id/settings_button_enableWhileDriving"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/QCFooterButtonViewStyle"
-        app:intent="intent:#Intent;component=com.android.car.settings/.common.CarSettingActivities$HomepageActivity;launchFlags=0x24000000;end"
+        app:intent="intent:#Intent;action=android.settings.SETTINGS;launchFlags=0x24000000;end"
         systemui:disableWhileDriving="false"/>
     <com.android.systemui.car.qc.QCLogoutButton
         android:id="@+id/logout_button"

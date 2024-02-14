@@ -164,7 +164,7 @@
                     app:layout_constraintStart_toEndOf="@id/user_button"
                     app:layout_constraintEnd_toStartOf="@+id/logout_button"
                     style="@style/QCFooterButtonViewStyle"
-                    app:intent="intent:#Intent;component=com.android.car.settings/.common.CarSettingActivities$HomepageActivity;launchFlags=0x24000000;end">
+                    app:intent="intent:#Intent;action=android.settings.SETTINGS;launchFlags=0x24000000;end">
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"

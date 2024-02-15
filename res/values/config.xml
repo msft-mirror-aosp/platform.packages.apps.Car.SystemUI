@@ -241,4 +241,19 @@
 
     <!-- Media blocking activity component name -->
     <string name="config_mediaBlockingActivity" translatable="false">com.android.car.media/.MediaBlockingActivity</string>
+
+    <!--
+        The list to define which activities the data subscription pop-up should not display
+        a message when they are launched
+    -->
+    <string-array translatable="false" name="config_dataSubscriptionBlockedActivitiesList">
+    </string-array>
+
+    <!--
+    The list to define which packages the data subscription pop-up should not display
+    a message when they are launched
+    -->
+    <string-array translatable="false" name="config_dataSubscriptionBlockedPackagesList">
+        <item>com.android.car.settings</item>
+    </string-array>
 </resources>

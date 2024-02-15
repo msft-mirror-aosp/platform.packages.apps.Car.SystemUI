@@ -46,7 +46,7 @@ import com.android.car.ui.recyclerview.CarUiRecyclerView;
 import com.android.systemui.Dumpable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
-import com.android.systemui.car.statusicon.ui.UserPickerReadOnlyIconsController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.userpicker.UserPickerController.Callbacks;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.settings.DisplayTracker;
@@ -71,7 +71,7 @@ public class UserPickerActivity extends Activity implements Dumpable {
     private boolean mIsDriver;
 
     @Inject
-    UserPickerReadOnlyIconsController mUserPickerReadOnlyIconsController;
+    CarSystemBarElementInitializer mCarSystemBarElementInitializer;
     @Inject
     DisplayTracker mDisplayTracker;
     @Inject
@@ -209,11 +209,10 @@ public class UserPickerActivity extends Activity implements Dumpable {
 
         initRecyclerView();
 
-        ViewGroup statusIconContainer = mRootView
-                .findViewById(R.id.user_picker_status_icon_container);
-        if (statusIconContainer != null && mUserPickerReadOnlyIconsController != null) {
-            mUserPickerReadOnlyIconsController.addIconViews(statusIconContainer,
-                    /* shouldAttachPanel= */ false);
+        // Initialize bar element within the user picker's bottom bar
+        View bottomBar = mRootView.findViewById(R.id.user_picker_bottom_bar);
+        if (bottomBar instanceof ViewGroup) {
+            mCarSystemBarElementInitializer.initializeCarSystemBarElements((ViewGroup) bottomBar);
         }
     }
 

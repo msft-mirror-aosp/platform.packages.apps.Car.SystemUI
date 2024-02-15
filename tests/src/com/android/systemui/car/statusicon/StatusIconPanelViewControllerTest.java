@@ -50,6 +50,7 @@ import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -96,6 +97,14 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
         spyOn(mViewController);
         reset(mAnchorView);
         mViewController.init();
+    }
+
+    @After
+    public void tearDown() {
+        // The view controller must be detached before we move on since it creates a real
+        // PopupWindow instance. Otherwise, the window will continue to be present and cause
+        // instability in future tests.
+        mViewController.onViewDetached();
     }
 
     @Test

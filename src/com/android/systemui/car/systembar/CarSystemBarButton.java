@@ -42,6 +42,7 @@ import androidx.annotation.Nullable;
 
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
+import com.android.systemui.car.window.OverlayViewController;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
 
@@ -52,7 +53,8 @@ import java.net.URISyntaxException;
  * xml file level. This allows for more control via overlays instead of having to update
  * code.
  */
-public class CarSystemBarButton extends LinearLayout {
+public class CarSystemBarButton extends LinearLayout implements
+        OverlayViewController.OverlayViewStateListener {
 
     private static final String TAG = "CarSystemBarButton";
     private static final String BUTTON_FILTER_DELIMITER = ";";
@@ -227,6 +229,11 @@ public class CarSystemBarButton extends LinearLayout {
         return mComponentNames;
     }
 
+    @Override
+    public void onVisibilityChanged(boolean isVisible) {
+        setSelected(isVisible);
+    }
+
     /**
      * Subclasses should override this method to return the {@link RoleManager} role associated
      * with this button.
@@ -313,7 +320,8 @@ public class CarSystemBarButton extends LinearLayout {
         }
 
         try {
-            if (mLongIntent != null && (Build.IS_ENG || Build.IS_USERDEBUG)) {
+            if (mLongIntent != null && !mLongIntent.isEmpty()
+                    && (Build.IS_ENG || Build.IS_USERDEBUG)) {
                 final Intent intent = Intent.parseUri(mLongIntent, Intent.URI_INTENT_SCHEME);
                 setOnLongClickListener(getButtonLongClickListener(intent));
             }
@@ -439,5 +447,10 @@ public class CarSystemBarButton extends LinearLayout {
         } else {
             icon.setAlpha(mHighlightWhenSelected && mSelected ? mSelectedAlpha : mUnselectedAlpha);
         }
+    }
+
+    @Nullable
+    protected UserTracker getUserTracker() {
+        return mUserTracker;
     }
 }

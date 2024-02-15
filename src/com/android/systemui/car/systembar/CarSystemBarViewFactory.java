@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
 
+import com.android.car.dockutil.Flags;
 import com.android.car.ui.FocusParkingView;
 import com.android.systemui.R;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
@@ -44,8 +45,10 @@ public class CarSystemBarViewFactory {
     private static ArrayMap<Type, Integer> setupLayoutMapping() {
         ArrayMap<Type, Integer> map = new ArrayMap<>();
         map.put(Type.TOP, R.layout.car_top_system_bar);
+        map.put(Type.TOP_WITH_DOCK, R.layout.car_top_system_bar_dock);
         map.put(Type.TOP_UNPROVISIONED, R.layout.car_top_system_bar_unprovisioned);
         map.put(Type.BOTTOM, R.layout.car_bottom_system_bar);
+        map.put(Type.BOTTOM_WITH_DOCK, R.layout.car_bottom_system_bar_dock);
         map.put(Type.BOTTOM_UNPROVISIONED, R.layout.car_bottom_system_bar_unprovisioned);
         map.put(Type.LEFT, R.layout.car_left_system_bar);
         map.put(Type.LEFT_UNPROVISIONED, R.layout.car_left_system_bar_unprovisioned);
@@ -66,8 +69,10 @@ public class CarSystemBarViewFactory {
     /** Type of navigation bar to be created. */
     private enum Type {
         TOP,
+        TOP_WITH_DOCK,
         TOP_UNPROVISIONED,
         BOTTOM,
+        BOTTOM_WITH_DOCK,
         BOTTOM_UNPROVISIONED,
         LEFT,
         LEFT_UNPROVISIONED,
@@ -112,11 +117,17 @@ public class CarSystemBarViewFactory {
 
     /** Gets the top bar. */
     public CarSystemBarView getTopBar(boolean isSetUp) {
+        if (Flags.dockFeature()) {
+            return getBar(isSetUp, Type.TOP_WITH_DOCK, Type.TOP_UNPROVISIONED);
+        }
         return getBar(isSetUp, Type.TOP, Type.TOP_UNPROVISIONED);
     }
 
     /** Gets the bottom bar. */
     public CarSystemBarView getBottomBar(boolean isSetUp) {
+        if (Flags.dockFeature()) {
+            return getBar(isSetUp, Type.BOTTOM_WITH_DOCK, Type.BOTTOM_UNPROVISIONED);
+        }
         return getBar(isSetUp, Type.BOTTOM, Type.BOTTOM_UNPROVISIONED);
     }
 
@@ -159,7 +170,11 @@ public class CarSystemBarViewFactory {
             return mCachedViewMap.get(type);
         }
 
-        @LayoutRes int barLayout = sLayoutMap.get(type);
+        Integer barLayoutInteger = sLayoutMap.get(type);
+        if (barLayoutInteger == null) {
+            return null;
+        }
+        @LayoutRes int barLayout = barLayoutInteger;
         CarSystemBarView view = (CarSystemBarView) View.inflate(mContext, barLayout,
                 /* root= */ null);
 
@@ -189,10 +204,16 @@ public class CarSystemBarViewFactory {
         }
     }
 
-    /** Resets the cached Views. */
-    protected void resetCache() {
+    /** Resets the cached system bar views. */
+    protected void resetSystemBarViewCache() {
         mQuickControlsEntryPointsController.resetCache();
         mReadOnlyIconsController.resetCache();
         mCachedViewMap.clear();
+    }
+
+    /** Resets the cached system bar windows and system bar views. */
+    protected void resetSystemBarWindowCache() {
+        resetSystemBarViewCache();
+        mCachedContainerMap.clear();
     }
 }

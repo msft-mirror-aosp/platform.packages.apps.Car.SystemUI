@@ -45,7 +45,7 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Το μικρόφωνο απενεργοποιήθηκε"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ΟΚ"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Ενεργοποίηση μικροφώνου οχήματος;"</string>
-    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Για να συνεχίσετε, ενεργοποιήστε το μικρόφωνο του συστήματος ενημέρωσης και ψυχαγωγίας. Με αυτήν την ενέργεια θα ενεργοποιηθεί το μικρόφωνο για όλες τις εφαρμογές που έχουν άδεια."</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Για να συνεχίσετε, ενεργοποιήστε το μικρόφωνο του συστήματος ενημέρωσης και ψυχαγωγίας. Με αυτή την ενέργεια θα ενεργοποιηθεί το μικρόφωνο για όλες τις εφαρμογές που έχουν άδεια."</string>
     <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"Η εφαρ. <xliff:g id="APP">%s</xliff:g> χρησιμοποιεί την κάμερα"</string>
     <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"Οι εφαρ. <xliff:g id="APP_LIST">%s</xliff:g> χρησιμοπ. την κάμερα"</string>
     <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"Η εφαρμογή <xliff:g id="APP">%s</xliff:g> χρησιμοποίησε πρόσφατα την κάμερα"</string>
@@ -54,7 +54,7 @@
     <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"Η κάμερα απενεργοποιήθηκε"</string>
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"OK"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Ενεργοποίηση κάμερας οχήματος;"</string>
-    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Για να συνεχίσετε, ενεργοποιήστε την κάμερα του συστήματος ενημέρωσης και ψυχαγωγίας. Με αυτήν την ενέργεια θα ενεργοποιηθεί η κάμερα για όλες τις εφαρμογές που έχουν άδεια."</string>
+    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Για να συνεχίσετε, ενεργοποιήστε την κάμερα του συστήματος ενημέρωσης και ψυχαγωγίας. Με αυτή την ενέργεια θα ενεργοποιηθεί η κάμερα για όλες τις εφαρμογές που έχουν άδεια."</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"Αρχική οθόνη"</string>
     <string name="system_bar_phone_label" msgid="5664288201806823777">"Τηλέφωνο"</string>
     <string name="system_bar_applications_label" msgid="7081862804211786227">"Εφαρμογές"</string>
@@ -63,6 +63,10 @@
     <string name="system_bar_maps_label" msgid="7883864993280235380">"Χάρτες"</string>
     <string name="system_bar_media_label" msgid="6156112139796274847">"Μέσα"</string>
     <string name="system_bar_control_center_label" msgid="5269256399167811590">"Κέντρο ελέγχου"</string>
+    <string name="system_bar_assistant_label" msgid="7312821609046711200">"Βοηθός"</string>
+    <string name="system_bar_mic_privacy_chip" msgid="2494035034004728597">"Τσιπ απορρήτου μικροφώνου"</string>
+    <string name="system_bar_user_avatar" msgid="4122817348016746322">"Αvatar χρήστη"</string>
+    <string name="system_bar_user_name_text" msgid="5859605302481171746">"Κείμενο ονόματος χρήστη"</string>
     <string name="hvac_decrease_button_label" msgid="5628481079099995286">"Μείωση θερμοκρασίας"</string>
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"Αύξηση θερμοκρασίας"</string>
     <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"Ρύθμιση Bluetooth: Αποσυνδεδεμένο"</string>
@@ -119,4 +123,9 @@
     <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"Εισαγάγετε το PIN σας"</string>
     <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"Εισαγάγετε το μοτίβο σας"</string>
     <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"Εισαγάγετε κωδικό πρόσβασης"</string>
+    <string name="backspace_key" msgid="5570862528655375412">"Πλήκτρο Backspace"</string>
+    <string name="enter_key" msgid="747962923921283095">"Πλήκτρο Enter"</string>
+    <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
+    <string name="back_btn" msgid="7774349944465667391">"Πίσω"</string>
+    <string name="fullscreen" msgid="7648956467442135844">"Πλήρης οθόνη"</string>
 </resources>

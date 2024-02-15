@@ -63,6 +63,10 @@
     <string name="system_bar_maps_label" msgid="7883864993280235380">"नक्सा"</string>
     <string name="system_bar_media_label" msgid="6156112139796274847">"मिडिया"</string>
     <string name="system_bar_control_center_label" msgid="5269256399167811590">"कन्ट्रोल सेन्टर"</string>
+    <string name="system_bar_assistant_label" msgid="7312821609046711200">"सहायक"</string>
+    <string name="system_bar_mic_privacy_chip" msgid="2494035034004728597">"माइकको गोपनीयतासम्बन्धी चिप"</string>
+    <string name="system_bar_user_avatar" msgid="4122817348016746322">"प्रयोगकर्ताको अवतार"</string>
+    <string name="system_bar_user_name_text" msgid="5859605302481171746">"युजरनेम टेक्स्ट"</string>
     <string name="hvac_decrease_button_label" msgid="5628481079099995286">"तापक्रम घटाउनुहोस्"</string>
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"तापक्रम बढाउनुहोस्"</string>
     <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"ब्लुटुथसम्बन्धी सेटिङ: डिस्कनेक्ट गरिएको"</string>
@@ -119,4 +123,9 @@
     <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"आफ्नो PIN हाल्नुहोस्"</string>
     <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"आफ्नो प्याटर्न कोर्नुहोस्"</string>
     <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"आफ्नो पासवर्ड हाल्नुहोस्"</string>
+    <string name="backspace_key" msgid="5570862528655375412">"ब्याकस्पेस की"</string>
+    <string name="enter_key" msgid="747962923921283095">"इन्टर की"</string>
+    <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
+    <string name="back_btn" msgid="7774349944465667391">"पछाडि"</string>
+    <string name="fullscreen" msgid="7648956467442135844">"फुल स्क्रिन"</string>
 </resources>

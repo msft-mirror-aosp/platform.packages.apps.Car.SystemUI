@@ -63,6 +63,10 @@
     <string name="system_bar_maps_label" msgid="7883864993280235380">"Karte"</string>
     <string name="system_bar_media_label" msgid="6156112139796274847">"Mediji"</string>
     <string name="system_bar_control_center_label" msgid="5269256399167811590">"Centar za upravljanje"</string>
+    <string name="system_bar_assistant_label" msgid="7312821609046711200">"Asistent"</string>
+    <string name="system_bar_mic_privacy_chip" msgid="2494035034004728597">"Čip za privatnost mikrofona"</string>
+    <string name="system_bar_user_avatar" msgid="4122817348016746322">"Avatar korisnika"</string>
+    <string name="system_bar_user_name_text" msgid="5859605302481171746">"Tekst korisničkog imena"</string>
     <string name="hvac_decrease_button_label" msgid="5628481079099995286">"Snizi temperaturu"</string>
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"Povisi temperaturu"</string>
     <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"Postavka Bluetootha: nije povezano"</string>
@@ -103,10 +107,10 @@
     <string name="header_bar_text_in_logged_out_state" msgid="3903097856063608991">"Odaberite profil da biste započeli"</string>
     <string name="logged_in_text" msgid="742324514947999718">"Prijavljeni ste"</string>
     <string name="prefix_logged_in_info_for_other_seat" msgid="7438545665671460955">"Prijavljeni ste na zaslonu <xliff:g id="SEAT_LOCATION">%s</xliff:g>"</string>
-    <string name="create_user_failed_message" msgid="4539847475822170735">"Dodavanje novog profila nije uspjelo. Pokušajte ponovo poslije."</string>
-    <string name="guest_creation_failed_message" msgid="8198126434029601949">"Pokretanje profila gosta nije uspjelo. Pokušajte ponovo poslije."</string>
+    <string name="create_user_failed_message" msgid="4539847475822170735">"Dodavanje novog profila nije uspjelo. Pokušajte ponovo kasnije."</string>
+    <string name="guest_creation_failed_message" msgid="8198126434029601949">"Pokretanje profila gosta nije uspjelo. Pokušajte ponovo kasnije."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"Odjava…"</string>
-    <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> se odjavljuje. Pokušajte ponovo poslije."</string>
+    <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> se odjavljuje. Pokušajte ponovo kasnije."</string>
     <string name="seat_driver" msgid="4502591979520445677">"vozač"</string>
     <string name="seat_front" msgid="836133281052793377">"prednja"</string>
     <string name="seat_rear" msgid="403133444964528577">"stražnja"</string>
@@ -119,4 +123,9 @@
     <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"Unesite PIN"</string>
     <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"Unesite uzorak"</string>
     <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"Unesite zaporku"</string>
+    <string name="backspace_key" msgid="5570862528655375412">"Tipka Backspace"</string>
+    <string name="enter_key" msgid="747962923921283095">"Tipka Enter"</string>
+    <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
+    <string name="back_btn" msgid="7774349944465667391">"Natrag"</string>
+    <string name="fullscreen" msgid="7648956467442135844">"Cijeli zaslon"</string>
 </resources>

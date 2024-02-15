@@ -18,6 +18,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layoutDirection="locale"
     android:background="@color/status_icon_panel_bg_color">
     <com.android.car.ui.FocusParkingView
         android:layout_width="wrap_content"
@@ -33,7 +34,7 @@
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:paddingTop="16dp"
+                android:layout_marginBottom="@dimen/car_quick_controls_footer_button_margin_top"
                 app:layout_constraintHeight_default="wrap"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -52,7 +53,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 style="@style/QCFooterButtonStyle"
                 android:text="@string/privacy_chip_settings"
-                app:intent="intent:#Intent;component=com.android.car.settings/.common.CarSettingActivities$PrivacySettingsActivity;launchFlags=0x14008000;end"
+                app:intent="intent:#Intent;action=android.settings.PRIVACY_SETTINGS;launchFlags=0x14008000;end"
                 app:disableWhileDriving="true"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.android.car.ui.FocusArea>

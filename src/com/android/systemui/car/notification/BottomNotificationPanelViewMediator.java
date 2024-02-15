@@ -60,4 +60,10 @@ public class BottomNotificationPanelViewMediator extends NotificationPanelViewMe
         notificationPanelViewController.setOverlayDirection(
                 OverlayPanelViewController.OVERLAY_FROM_BOTTOM_BAR);
     }
+
+    @Override
+    protected void registerBottomBarTouchListener() {
+        getCarSystemBarController().registerBottomBarTouchListener(
+                getNotificationPanelViewController().getDragOpenTouchListener());
+    }
 }

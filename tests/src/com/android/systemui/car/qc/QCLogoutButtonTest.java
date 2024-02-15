@@ -129,11 +129,11 @@ public class QCLogoutButtonTest extends SysuiTestCase {
         AlertDialog alertDialog = mQCLogoutButton.createDialog();
         doReturn(alertDialog).when(mQCLogoutButton).createDialog();
         spyOn(alertDialog);
+        doNothing().when(alertDialog).show();
 
         mQCLogoutButton.getOnClickListener().onClick(mView);
 
         verify(alertDialog).show();
-        alertDialog.dismiss();
     }
 
     @Test

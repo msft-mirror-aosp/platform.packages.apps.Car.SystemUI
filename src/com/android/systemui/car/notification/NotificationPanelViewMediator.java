@@ -26,6 +26,7 @@ import android.content.res.Configuration;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarDeviceProvisionedController;
@@ -79,6 +80,11 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
                     new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* executor= */ null,
                     mUserTracker.getUserHandle());
         }
+
+        @Override
+        public void onUserChanging(int newUser, @NonNull Context userContext) {
+            mNotificationPanelViewController.clearCache();
+        }
     };
 
     private boolean mIsUiModeNight;
@@ -126,6 +132,9 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
                         return mNotificationPanelViewController.isPanelExpanded();
                     }
                 });
+
+        mCarSystemBarController.registerNotificationPanelViewController(
+                mNotificationPanelViewController);
 
         mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), null,

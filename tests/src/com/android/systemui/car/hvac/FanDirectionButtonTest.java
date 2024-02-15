@@ -89,6 +89,7 @@ public class FanDirectionButtonTest extends SysuiTestCase {
         mDirectionDefrostButton = mFanDirectionButtons.findViewById(R.id.direction_defrost);
 
         mFanDirectionButtons.setHvacPropertySetter(mHvacPropertySetter);
+        mFanDirectionButtons.setDisableViewIfPowerOff(true);
     }
 
     @Test
@@ -335,6 +336,35 @@ public class FanDirectionButtonTest extends SysuiTestCase {
         verify(mHvacPropertySetter, never()).setHvacProperty(anyInt(), anyInt(), anyInt());
     }
 
+    @Test
+    public void onClickWhenNotHvacPowerDependent_autoOff_setsNewValue() {
+        mFanDirectionButtons.setDisableViewIfPowerOff(false);
+        setPowerPropertyValue(false);
+        mFanDirectionButtons.onPropertyChanged(mHvacPowerProperty);
+        setAutoPropertyValue(false);
+        mFanDirectionButtons.onPropertyChanged(mHvacAutoProperty);
+        waitForIdleSync();
+
+        mDirectionFaceButton.performClick();
+
+        verify(mHvacPropertySetter).setHvacProperty(PROPERTY_ID, GLOBAL_AREA_ID,
+                FAN_DIRECTION_FACE);
+    }
+
+    @Test
+    public void onClickWhenNotHvacPowerDependent_autoOn_doesNotSetNewValue() {
+        mFanDirectionButtons.setDisableViewIfPowerOff(false);
+        setPowerPropertyValue(false);
+        mFanDirectionButtons.onPropertyChanged(mHvacPowerProperty);
+        setAutoPropertyValue(true);
+        mFanDirectionButtons.onPropertyChanged(mHvacAutoProperty);
+        waitForIdleSync();
+
+        mDirectionFaceButton.performClick();
+
+        verify(mHvacPropertySetter, never()).setHvacProperty(anyInt(), anyInt(), anyInt());
+    }
+
     private void setCarPropertyValue(@Nullable Integer value) {
         when(mCarPropertyValue.getAreaId()).thenReturn(GLOBAL_AREA_ID);
         when(mCarPropertyValue.getPropertyId()).thenReturn(PROPERTY_ID);
@@ -348,8 +378,8 @@ public class FanDirectionButtonTest extends SysuiTestCase {
     }
 
     private void setAutoPropertyValue(boolean value) {
-        when(mCarPropertyValue.getAreaId()).thenReturn(GLOBAL_AREA_ID);
-        when(mCarPropertyValue.getPropertyId()).thenReturn(HVAC_AUTO_ON);
-        when(mCarPropertyValue.getValue()).thenReturn(value);
+        when(mHvacAutoProperty.getAreaId()).thenReturn(GLOBAL_AREA_ID);
+        when(mHvacAutoProperty.getPropertyId()).thenReturn(HVAC_AUTO_ON);
+        when(mHvacAutoProperty.getValue()).thenReturn(value);
     }
 }

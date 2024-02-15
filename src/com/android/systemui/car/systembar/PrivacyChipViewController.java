@@ -33,6 +33,7 @@ import com.android.systemui.privacy.OngoingPrivacyChip;
 import com.android.systemui.privacy.PrivacyItem;
 import com.android.systemui.privacy.PrivacyItemController;
 import com.android.systemui.privacy.PrivacyType;
+import com.android.systemui.settings.UserTracker;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +43,7 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
 
     private final PrivacyItemController mPrivacyItemController;
     private final SensorPrivacyManager mSensorPrivacyManager;
+    private final UserTracker mUserTracker;
 
     private Context mContext;
     private PrivacyChip mPrivacyChip;
@@ -60,10 +62,18 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
             mPrivacyChip.setSensorEnabled(/* enabled= */ !sensorPrivacyEnabled);
             mQsTileNotifyUpdateRunnable.run();
             if (mSensorInfoUpdateListener != null) {
-                mSensorInfoUpdateListener.onSensorInfoUpdate();
+                mSensorInfoUpdateListener.onSensorPrivacyChanged();
             }
         });
     };
+
+    private final UserTracker.Callback mUserSwitchCallback = new UserTracker.Callback() {
+        @Override
+        public void onUserChanged(int newUser, Context userContext) {
+            mPrivacyChip.setSensorEnabled(isSensorEnabled());
+        }
+    };
+
     private boolean mAllIndicatorsEnabled;
     private boolean mMicCameraIndicatorsEnabled;
     private boolean mIsPrivacyChipVisible;
@@ -86,6 +96,10 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
 
                     mIsPrivacyChipVisible = shouldShowPrivacyChip;
                     setChipVisibility(shouldShowPrivacyChip);
+
+                    if (mSensorInfoUpdateListener != null) {
+                        mSensorInfoUpdateListener.onPrivacyItemsChanged();
+                    }
                 }
 
                 @Override
@@ -112,10 +126,11 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
             };
 
     public PrivacyChipViewController(Context context, PrivacyItemController privacyItemController,
-            SensorPrivacyManager sensorPrivacyManager) {
+            SensorPrivacyManager sensorPrivacyManager, UserTracker userTracker) {
         mContext = context;
         mPrivacyItemController = privacyItemController;
         mSensorPrivacyManager = sensorPrivacyManager;
+        mUserTracker = userTracker;
 
         mQsTileNotifyUpdateRunnable = () -> {
         };
@@ -185,7 +200,8 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
         mContext.getMainExecutor().execute(() -> {
             mPrivacyChip.setSensorEnabled(isSensorEnabled());
         });
-
+        mUserTracker.removeCallback(mUserSwitchCallback);
+        mUserTracker.addCallback(mUserSwitchCallback, mContext.getMainExecutor());
     }
 
     /**
@@ -200,6 +216,7 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
         mPrivacyItemController.removeCallback(mPicCallback);
         mSensorPrivacyManager.removeSensorPrivacyListener(getChipSensor(),
                 mOnSensorPrivacyChangedListener);
+        mUserTracker.removeCallback(mUserSwitchCallback);
         mPrivacyChip = null;
         mSensorInfoUpdateListener = null;
     }

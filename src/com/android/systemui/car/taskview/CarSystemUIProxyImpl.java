@@ -26,7 +26,9 @@ import android.car.app.CarSystemUIProxy;
 import android.car.app.CarTaskViewClient;
 import android.car.app.CarTaskViewHost;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.display.DisplayManager;
+import android.os.Binder;
 import android.os.Process;
 import android.util.Slog;
 import android.view.Display;
@@ -62,9 +64,11 @@ public final class CarSystemUIProxyImpl
     private final SyncTransactionQueue mSyncQueue;
     private final ShellTaskOrganizer mTaskOrganizer;
     private final TaskViewTransitions mTaskViewTransitions;
-    private boolean mConnected;
     private final Set<RemoteCarTaskViewServerImpl> mRemoteCarTaskViewServerSet = new HashSet<>();
     private final DisplayManager mDisplayManager;
+
+    private boolean mConnected;
+    private CarActivityManager mCarActivityManager;
 
     /**
      * Returns true if {@link CarSystemUIProxyImpl} should be registered, false otherwise.
@@ -108,8 +112,23 @@ public final class CarSystemUIProxyImpl
         carServiceProvider.addListener(this);
     }
 
+    boolean isLaunchRootTaskPresent(int displayId) {
+        for (RemoteCarTaskViewServerImpl remoteCarTaskViewServer : mRemoteCarTaskViewServerSet) {
+            if (remoteCarTaskViewServer.hasLaunchRootTaskOnDisplay(displayId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public CarTaskViewHost createControlledCarTaskView(CarTaskViewClient carTaskViewClient) {
+        return createCarTaskView(carTaskViewClient);
+    }
+
+    @Override
+    public CarTaskViewHost createCarTaskView(CarTaskViewClient carTaskViewClient) {
+        ensureManageSystemUIPermission(mContext);
         RemoteCarTaskViewServerImpl remoteCarTaskViewServerImpl =
                 new RemoteCarTaskViewServerImpl(
                         mContext,
@@ -117,7 +136,7 @@ public final class CarSystemUIProxyImpl
                         mSyncQueue,
                         carTaskViewClient,
                         this,
-                        mTaskViewTransitions);
+                        mTaskViewTransitions, mCarActivityManager);
         mRemoteCarTaskViewServerSet.add(remoteCarTaskViewServerImpl);
         return remoteCarTaskViewServerImpl.getHostImpl();
     }
@@ -131,9 +150,9 @@ public final class CarSystemUIProxyImpl
         mConnected = true;
         removeExistingTaskViewTasks();
 
-        CarActivityManager carActivityManager = car.getCarManager(CarActivityManager.class);
-        carActivityManager.registerTaskMonitor();
-        carActivityManager.registerCarSystemUIProxy(this);
+        mCarActivityManager = car.getCarManager(CarActivityManager.class);
+        mCarActivityManager.registerTaskMonitor();
+        mCarActivityManager.registerCarSystemUIProxy(this);
     }
 
     @Override
@@ -166,5 +185,17 @@ public final class CarSystemUIProxyImpl
                 atm.removeTask(taskInfo.taskId);
             }
         }
+    }
+
+    static void ensureManageSystemUIPermission(Context context) {
+        if (Binder.getCallingPid() == android.os.Process.myPid()) {
+            // If called from within CarSystemUI, allow.
+            return;
+        }
+        if (context.checkCallingPermission(Car.PERMISSION_MANAGE_CAR_SYSTEM_UI)
+                == PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        throw new SecurityException("requires permission " + Car.PERMISSION_MANAGE_CAR_SYSTEM_UI);
     }
 }

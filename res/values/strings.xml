@@ -125,6 +125,11 @@
     <string name="system_bar_media_label">Media</string>
     <!-- System bar contentDescription for Control Center-->
     <string name="system_bar_control_center_label">Control Center</string>
+    <!-- System bar contentDescription for Assistant-->
+    <string name="system_bar_assistant_label">Assistant</string>
+    <string name="system_bar_mic_privacy_chip">Mic Privacy Chip</string>
+    <string name="system_bar_user_avatar">User Avatar</string>
+    <string name="system_bar_user_name_text">User Name Text</string>
 
     <!-- Adjust temperature view lower temperature label-->
     <string name="hvac_decrease_button_label">Lower temperature</string>
@@ -237,5 +242,37 @@
     <string name="car_keyguard_enter_your_pattern">Enter your pattern</string>
     <!-- Instructions telling the user to enter their text password to unlock the keyguard [CHAR LIMIT=30] -->
     <string name="car_keyguard_enter_your_password">Enter your password</string>
+
+    <!-- Accessibility description for the backspace key in the PIN pad [CHAR LIMIT=NONE] -->
+    <string name="backspace_key">Backspace key</string>
+    <!-- Accessibility description for the enter key in the PIN pad [CHAR LIMIT=NONE] -->
+    <string name="enter_key">Enter key</string>
+
+    <!-- These are the digits on the PIN pad -->
+    <string name="one" translatable="false">1</string>
+    <string name="two" translatable="false">2</string>
+    <string name="three" translatable="false">3</string>
+    <string name="four" translatable="false">4</string>
+    <string name="five" translatable="false">5</string>
+    <string name="six" translatable="false">6</string>
+    <string name="seven" translatable="false">7</string>
+    <string name="eight" translatable="false">8</string>
+    <string name="nine" translatable="false">9</string>
+    <string name="zero" translatable="false">0</string>
+
+    <!-- Intent action meant to invoke user TOS flow.
+        The intent URI has to be formatted according to Intent.URI_INTENT_SCHEME
+        URI, for example should contain the intent action and any extras if necessary:
+        "intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=true;end"
+   -->
+    <string name="user_tos_activity_intent">intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end</string>
+
+    <!-- DisplayCompat back button [CHAR LIMIT=30] -->
+    <string name="back_btn">Back</string>
+    <!-- DisplayCompat fullscreen button [CHAR LIMIT=30] -->
+    <string name="fullscreen">Full Screen</string>
+
+    <!-- Intent binding to long press action of user profile icon in car top system bar. -->
+    <string name="user_profile_long_press_intent" translatable="false"></string>
 
 </resources>

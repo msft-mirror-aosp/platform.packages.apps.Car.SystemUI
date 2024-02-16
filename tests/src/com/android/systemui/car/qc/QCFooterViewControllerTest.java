@@ -18,27 +18,28 @@ package com.android.systemui.car.qc;
 
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;
-import static com.android.dx.mockito.inline.extended.ExtendedMockito.spyOn;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.car.drivingstate.CarUxRestrictions;
+import android.content.Intent;
+import android.os.UserHandle;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.tests.R;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.settings.UserTracker;
 
 import org.junit.After;
 import org.junit.Before;
@@ -53,15 +54,18 @@ import org.mockito.quality.Strictness;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class QCFooterButtonViewTest extends SysuiTestCase {
-    @Mock
-    private View mView;
+public class QCFooterViewControllerTest extends SysuiTestCase {
     @Mock
     private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
+    @Mock
+    private UserTracker mUserTracker;
+    @Mock
+    private CarSystemBarElementStatusBarDisableController mDisableController;
 
-    private ViewGroup mQcButtonView;
     private MockitoSession mMockingSession;
-    private QCFooterButtonView mQCFooterButtonView;
+    private QCFooterView mView;
+    private QCFooterViewController mController;
+    private Intent mIntent;
 
     @Before
     public void setUp() {
@@ -72,8 +76,12 @@ public class QCFooterButtonViewTest extends SysuiTestCase {
                 .startMocking();
 
         mContext = spy(mContext);
-        mQcButtonView = (ViewGroup) LayoutInflater.from(mContext)
-                .inflate(R.layout.car_quick_controls_panel_test, /* root= */ null, false);
+        mView = spy(new QCFooterView(mContext));
+        when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(1000));
+        mIntent = new Intent();
+        when(mView.getOnClickIntent()).thenReturn(mIntent);
+        mController = new QCFooterViewController(mView, mDisableController, mContext, mUserTracker);
+        mController.init();
         doReturn(mCarUxRestrictionsUtil).when(() -> CarUxRestrictionsUtil.getInstance(any()));
     }
 
@@ -85,63 +93,60 @@ public class QCFooterButtonViewTest extends SysuiTestCase {
     }
 
     @Test
-    public void onButtonClicked_showLogoutDialog() {
-        mQCFooterButtonView = mQcButtonView.findViewById(R.id.settings_button_enableWhileDriving);
+    public void onButtonClicked_launchesIntent() {
+        mView.callOnClick();
 
-        mQCFooterButtonView.getOnClickListener().onClick(mView);
-
-        verify(mContext).startActivityAsUser(any(), any(), any());
+        verify(mContext).startActivityAsUser(eq(mIntent), any(), any());
     }
 
     @Test
     public void onAttachedToWindow_enableWhileDriving_doNotRegisterListener() {
-        mQCFooterButtonView = mQcButtonView.findViewById(R.id.settings_button_enableWhileDriving);
-
-        mQCFooterButtonView.onAttachedToWindow();
+        when(mView.isDisableWhileDriving()).thenReturn(false);
+        mController.onViewAttached();
 
         verify(mCarUxRestrictionsUtil, never()).register(any());
     }
 
     @Test
     public void onAttachedToWindow_disableWhileDriving_registerListener() {
-        mQCFooterButtonView = mQcButtonView.findViewById(R.id.settings_button_disableWhileDriving);
-
-        mQCFooterButtonView.onAttachedToWindow();
+        when(mView.isDisableWhileDriving()).thenReturn(true);
+        mController.onViewAttached();
 
         verify(mCarUxRestrictionsUtil).register(any());
     }
 
     @Test
     public void onRestrictionsChanged_registeredListener_setQCFooterViewEnabled() {
-        mQCFooterButtonView = mQcButtonView.findViewById(R.id.settings_button_disableWhileDriving);
-        spyOn(mQCFooterButtonView);
+        when(mView.isDisableWhileDriving()).thenReturn(true);
         ArgumentCaptor<CarUxRestrictionsUtil.OnUxRestrictionsChangedListener> captor =
                 ArgumentCaptor.forClass(
                 CarUxRestrictionsUtil.OnUxRestrictionsChangedListener.class);
-        mQCFooterButtonView.onAttachedToWindow();
+        mController.onViewAttached();
         verify(mCarUxRestrictionsUtil).register(captor.capture());
         CarUxRestrictionsUtil.OnUxRestrictionsChangedListener listener = captor.getValue();
         CarUxRestrictions carUxRestrictions = mock(CarUxRestrictions.class);
 
         listener.onRestrictionsChanged(carUxRestrictions);
 
-        verify(mQCFooterButtonView).setEnabled(anyBoolean());
+        verify(mView).setEnabled(anyBoolean());
     }
 
     @Test
     public void onDetachedFromWindow_enableWhileDriving_doNotUnregisterListener() {
-        mQCFooterButtonView = mQcButtonView.findViewById(R.id.settings_button_enableWhileDriving);
+        when(mView.isDisableWhileDriving()).thenReturn(false);
+        mController.onViewAttached();
 
-        mQCFooterButtonView.onDetachedFromWindow();
+        mController.onViewDetached();
 
         verify(mCarUxRestrictionsUtil, never()).unregister(any());
     }
 
     @Test
     public void onDetachedFromWindow_disableWhileDriving_unregisterListener() {
-        mQCFooterButtonView = mQcButtonView.findViewById(R.id.settings_button_disableWhileDriving);
+        when(mView.isDisableWhileDriving()).thenReturn(true);
+        mController.onViewAttached();
 
-        mQCFooterButtonView.onDetachedFromWindow();
+        mController.onViewDetached();
 
         verify(mCarUxRestrictionsUtil).unregister(any());
     }

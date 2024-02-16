@@ -20,5 +20,7 @@
     android:layout_height="@dimen/car_quick_controls_entry_points_icon_width"
     android:layout_marginBottom="@dimen/car_padding_1"
     android:layout_gravity="center"
+    android:tint="@color/car_status_icon_color"
+    android:duplicateParentState="true"
     android:tag="@string/qc_icon_tag"
     android:importantForAccessibility="no"/>

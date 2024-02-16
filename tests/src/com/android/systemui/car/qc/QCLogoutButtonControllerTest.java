@@ -23,6 +23,8 @@ import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.spyOn;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -43,19 +45,18 @@ import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.Display;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.android.systemui.SysuiTestCase;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.settings.UserTracker;
-import com.android.systemui.tests.R;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoSession;
 import org.mockito.quality.Strictness;
@@ -68,13 +69,15 @@ import java.util.List;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class QCLogoutButtonTest extends SysuiTestCase {
+public class QCLogoutButtonControllerTest extends SysuiTestCase {
     @Mock
     private AlertDialog mDialog;
     @Mock
     private IActivityManager mIAm;
     @Mock
     private Car mCar;
+    @Mock
+    private CarServiceProvider mCarServiceProvider;
     @Mock
     private CarActivityManager mCarActivityManager;
     @Mock
@@ -84,11 +87,10 @@ public class QCLogoutButtonTest extends SysuiTestCase {
     @Mock
     private UserTracker mUserTracker;
     @Mock
-    private View mView;
+    private CarSystemBarElementStatusBarDisableController mDisableController;
 
-    private ViewGroup mLayout;
-    private QCLogoutButton mQCLogoutButton;
-    private UserHandle mUserHandle;
+    private QCFooterView mView;
+    private QCLogoutButtonController mController;
     private MockitoSession mMockingSession;
 
     @Before
@@ -101,23 +103,21 @@ public class QCLogoutButtonTest extends SysuiTestCase {
 
         doReturn(mIAm).when(ActivityManager::getService);
         mContext = spy(mContext);
-        mUserHandle = UserHandle.of(1000);
-        when(mUserTracker.getUserHandle()).thenReturn(mUserHandle);
-        mLayout = (ViewGroup) LayoutInflater.from(mContext)
-                .inflate(R.layout.car_quick_controls_panel_test, /* root= */ null, false);
-        mQCLogoutButton = mLayout.findViewById(R.id.logout_button);
-
-        spyOn(mQCLogoutButton);
-        mQCLogoutButton.setUserTracker(mUserTracker);
-
+        UserHandle userHandle = UserHandle.of(1000);
+        when(mUserTracker.getUserHandle()).thenReturn(userHandle);
         when(mCar.getCarManager(CarOccupantZoneManager.class)).thenReturn(mCarOccupantZoneManager);
-        when(mCar.getCarManager(Car.CAR_ACTIVITY_SERVICE)).thenReturn(mCarActivityManager);
+        when(mCar.getCarManager(CarActivityManager.class)).thenReturn(mCarActivityManager);
 
-        mQCLogoutButton.getCarServiceLifecycleListener().onLifecycleChanged(mCar, true);
+        mView = spy(new QCFooterView(mContext));
+        mController = spy(new QCLogoutButtonController(mView, mDisableController, mContext,
+                mUserTracker, mCarServiceProvider));
+        mController.init();
+        attachCarService();
     }
 
     @After
     public void tearDown() {
+        mController.onViewDetached();
         if (mMockingSession != null) {
             mMockingSession.finishMocking();
             mMockingSession = null;
@@ -126,23 +126,21 @@ public class QCLogoutButtonTest extends SysuiTestCase {
 
     @Test
     public void onLogoutButtonClicked_showLogoutDialog() {
-        AlertDialog alertDialog = mQCLogoutButton.createDialog();
-        doReturn(alertDialog).when(mQCLogoutButton).createDialog();
+        AlertDialog alertDialog = mController.createDialog();
+        doReturn(alertDialog).when(mController).createDialog();
         spyOn(alertDialog);
         doNothing().when(alertDialog).show();
 
-        mQCLogoutButton.getOnClickListener().onClick(mView);
+        mView.callOnClick();
 
         verify(alertDialog).show();
     }
 
     @Test
     public void onLogout_userIsNull_doesNotGetOccupantZone() {
-        int userId = USER_NULL;
+        when(mUserTracker.getUserId()).thenReturn(USER_NULL);
 
-        when(mUserTracker.getUserId()).thenReturn(userId);
-
-        mQCLogoutButton.getOnDialogClickListener()
+        mController.getOnDialogClickListener()
                 .onClick(mDialog, DialogInterface.BUTTON_POSITIVE);
 
         verify(mCarOccupantZoneManager, never()).getAllOccupantZones();
@@ -158,7 +156,7 @@ public class QCLogoutButtonTest extends SysuiTestCase {
         when(mContext.getDisplayId()).thenReturn(displayId);
         setOccupantZoneForDisplay(otherdisplayId);
 
-        mQCLogoutButton.getOnDialogClickListener()
+        mController.getOnDialogClickListener()
                 .onClick(mDialog, DialogInterface.BUTTON_POSITIVE);
 
         verify(mCarOccupantZoneManager, never()).unassignOccupantZone(any());
@@ -176,7 +174,7 @@ public class QCLogoutButtonTest extends SysuiTestCase {
                 .thenReturn(CarOccupantZoneManager.USER_ASSIGNMENT_RESULT_OK);
         doNothing().when(mDialog).dismiss();
 
-        mQCLogoutButton.getOnDialogClickListener()
+        mController.getOnDialogClickListener()
                 .onClick(mDialog, DialogInterface.BUTTON_POSITIVE);
 
         verify(mIAm).stopUserWithDelayedLocking(
@@ -195,11 +193,20 @@ public class QCLogoutButtonTest extends SysuiTestCase {
                 .thenReturn(CarOccupantZoneManager.USER_ASSIGNMENT_RESULT_FAIL_ALREADY_ASSIGNED);
         doNothing().when(mDialog).dismiss();
 
-        mQCLogoutButton.getOnDialogClickListener()
+        mController.getOnDialogClickListener()
                 .onClick(mDialog, DialogInterface.BUTTON_POSITIVE);
 
         verify(mIAm, never()).stopUserWithDelayedLocking(
                 userId, /* force= */ false, /* callback= */ null);
+    }
+
+    private void attachCarService() {
+        ArgumentCaptor<CarServiceProvider.CarServiceOnConnectedListener> captor =
+                ArgumentCaptor.forClass(CarServiceProvider.CarServiceOnConnectedListener.class);
+        mController.onViewAttached();
+        verify(mCarServiceProvider).addListener(captor.capture());
+        assertThat(captor.getValue()).isNotNull();
+        captor.getValue().onConnected(mCar);
     }
 
     private void setOccupantZoneForDisplay(int displayId) {

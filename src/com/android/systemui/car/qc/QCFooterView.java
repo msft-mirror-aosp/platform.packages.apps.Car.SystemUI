@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 The Android Open Source Project
+ * Copyright (C) 2023 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.widget.Button;
 
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.android.systemui.R;
 import com.android.systemui.car.systembar.element.CarSystemBarElement;
@@ -32,13 +32,16 @@ import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
 import java.net.URISyntaxException;
 
 /**
- * Footer button for quick control panels.
+ * Footer layout which contains one or multiple views for quick control panels.
  *
- * Allows for an intent action to be specified via the {@link R.styleable.QCFooterButton_intent}
- * attribute and for enabled state to be set according to driving mode via the
- * {@link R.styleable.QCFooterButton_disableWhileDriving} attribute.
+ * Allows for an intent action to be specified via the
+ * {@link R.styleable.QCFooterView_intent} attribute and for enabled state to be set
+ * according to driving mode via the {@link R.styleable.QCFooterView_disableWhileDriving}
+ * attribute.
  */
-public class QCFooterButton extends Button implements CarSystemBarElement {
+public class QCFooterView extends ConstraintLayout implements CarSystemBarElement {
+    private static final String TAG = QCFooterView.class.getSimpleName();
+
     private final Class<?> mElementControllerClassAttr;
     private final int mSystemBarDisableFlags;
     private final int mSystemBarDisable2Flags;
@@ -46,19 +49,20 @@ public class QCFooterButton extends Button implements CarSystemBarElement {
     private final Intent mIntent;
     private final boolean mDisableWhileDriving;
 
-    public QCFooterButton(Context context) {
-        this(context, /* attrs= */ null);
+    public QCFooterView(Context context) {
+        this(context, null);
     }
 
-    public QCFooterButton(Context context, AttributeSet attrs) {
-        this(context, attrs, /* defStyleAttr= */ 0);
+    public QCFooterView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
     }
 
-    public QCFooterButton(Context context, AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, /* defStyleRes= */ 0);
+    public QCFooterView(Context context, AttributeSet attrs, int defStyleAttr) {
+        this(context, attrs, defStyleAttr, 0);
     }
 
-    public QCFooterButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public QCFooterView(Context context, AttributeSet attrs, int defStyleAttr,
+            int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         mElementControllerClassAttr =
                 CarSystemBarElementResolver.getElementControllerClassFromAttributes(context, attrs);
@@ -71,6 +75,7 @@ public class QCFooterButton extends Button implements CarSystemBarElement {
         mDisableForLockTaskModeLocked =
                 CarSystemBarElementFlags.getDisableForLockTaskModeLockedFromAttributes(context,
                         attrs);
+
         if (attrs == null) {
             mIntent = null;
             mDisableWhileDriving = false;
@@ -78,8 +83,8 @@ public class QCFooterButton extends Button implements CarSystemBarElement {
         }
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs,
-                R.styleable.QCFooterButton);
-        String intentString = typedArray.getString(R.styleable.QCFooterButton_intent);
+                R.styleable.QCFooterView);
+        String intentString = typedArray.getString(R.styleable.QCFooterView_intent);
         if (intentString != null) {
             try {
                 mIntent = Intent.parseUri(intentString, Intent.URI_INTENT_SCHEME);
@@ -89,9 +94,9 @@ public class QCFooterButton extends Button implements CarSystemBarElement {
         } else {
             mIntent = null;
         }
-
         mDisableWhileDriving = typedArray.getBoolean(
-                R.styleable.QCFooterButton_disableWhileDriving, /* defValue= */ false);
+                R.styleable.QCFooterView_disableWhileDriving, /* defValue= */ false);
+        typedArray.recycle();
     }
 
     @Nullable
@@ -108,7 +113,7 @@ public class QCFooterButton extends Button implements CarSystemBarElement {
         if (mElementControllerClassAttr != null) {
             return mElementControllerClassAttr;
         }
-        return QCFooterButtonController.class;
+        return QCFooterViewController.class;
     }
 
     @Override

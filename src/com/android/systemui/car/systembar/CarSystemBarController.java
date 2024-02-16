@@ -349,8 +349,6 @@ public class CarSystemBarController {
                 "qc_entry_points_container");
         setDisabledSystemBarContainer(R.id.user_name_container, qcDisabled,
                 "user_name_container");
-        setDisabledSystemBarContainer(R.id.read_only_icons_container, systemIconsDisabled,
-                "read_only_icons_container");
 
         if (DEBUG) {
             Log.d(TAG, "refreshSystemBar: locked?: " + locked

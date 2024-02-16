@@ -19,7 +19,6 @@ package com.android.systemui.car.statusicon;
 import static com.android.systemui.car.statusicon.StatusIconController.PANEL_CONTENT_LAYOUT_NONE;
 
 import android.annotation.ArrayRes;
-import android.annotation.ColorInt;
 import android.annotation.LayoutRes;
 import android.content.Context;
 import android.content.res.Resources;
@@ -115,8 +114,6 @@ public abstract class StatusIconGroupContainerController {
      */
     public void addIconViews(ViewGroup containerViewGroup, boolean shouldAttachPanel) {
         LayoutInflater li = LayoutInflater.from(mContext);
-        @ColorInt int iconNotHighlightedColor = mContext.getColor(
-                R.color.status_icon_not_highlighted_color);
 
         for (String clsName : mStatusIconControllerNames) {
             StatusIconController statusIconController = getStatusIconControllerByName(clsName);
@@ -129,7 +126,6 @@ public abstract class StatusIconGroupContainerController {
 
             ImageView statusIconView = entryPointView.findViewWithTag(mIconTag);
             statusIconController.registerIconView(statusIconView);
-            statusIconView.setColorFilter(iconNotHighlightedColor);
 
             if (shouldAttachPanel
                     && statusIconController.getPanelContentLayout() != PANEL_CONTENT_LAYOUT_NONE

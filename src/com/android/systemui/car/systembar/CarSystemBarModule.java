@@ -25,6 +25,7 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -38,7 +39,9 @@ import dagger.Provides;
 import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.IntoSet;
+import dagger.multibindings.Multibinds;
 
+import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Provider;
@@ -142,4 +145,10 @@ public abstract class CarSystemBarModule {
                 micPrivacyChipViewControllerLazy, cameraPrivacyChipViewControllerLazy,
                 buttonRoleHolderController, systemBarConfigs, panelControllerBuilderProvider);
     }
+
+    // CarSystemBarElements
+
+    /** Empty set for CarSystemBarElements. */
+    @Multibinds
+    abstract Map<Class<?>, CarSystemBarElementController.Factory> bindEmptyElementFactoryMap();
 }

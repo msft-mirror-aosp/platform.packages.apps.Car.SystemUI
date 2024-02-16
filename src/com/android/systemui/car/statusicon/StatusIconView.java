@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 The Android Open Source Project
+ * Copyright (C) 2024 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,59 +14,50 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.qc;
+package com.android.systemui.car.statusicon;
+
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
-import com.android.car.qc.view.QCView;
-import com.android.systemui.R;
 import com.android.systemui.car.systembar.element.CarSystemBarElement;
 import com.android.systemui.car.systembar.element.CarSystemBarElementFlags;
 import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
 
-/**
- * Quick Control View Element for CarSystemUI.
- *
- * This extended class allows for specifying a local or remote quick controls provider via xml
- * attributes. This is then retrieved by a {@link SystemUIQCViewController} to be bound and
- * controlled.
- *
- * @attr ref R.styleable#SystemUIQCView_remoteQCProvider
- * @attr ref R.styleable#SystemUIQCView_localQCProvider
- */
-public class SystemUIQCView extends QCView implements CarSystemBarElement {
+public class StatusIconView extends ImageView implements CarSystemBarElement {
+    private static final String TAG = StatusIconView.class.getSimpleName();
+
     private Class<?> mElementControllerClassAttr;
     private int mSystemBarDisableFlags;
     private int mSystemBarDisable2Flags;
     private boolean mDisableForLockTaskModeLocked;
-    private String mRemoteUri;
-    private String mLocalClass;
 
-    public SystemUIQCView(Context context) {
+    public StatusIconView(Context context) {
         super(context);
         init(context, /* attrs= */ null);
     }
 
-    public SystemUIQCView(Context context, AttributeSet attrs) {
+    public StatusIconView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public SystemUIQCView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public StatusIconView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
 
-    public SystemUIQCView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public StatusIconView(Context context, @Nullable AttributeSet attrs, int defStyleAttr,
+            int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context, attrs);
     }
 
-    private void init(Context context, AttributeSet attrs) {
+    private void init(Context context, @Nullable AttributeSet attrs) {
         mElementControllerClassAttr =
                 CarSystemBarElementResolver.getElementControllerClassFromAttributes(context, attrs);
         mSystemBarDisableFlags =
@@ -78,28 +69,19 @@ public class SystemUIQCView extends QCView implements CarSystemBarElement {
         mDisableForLockTaskModeLocked =
                 CarSystemBarElementFlags.getDisableForLockTaskModeLockedFromAttributes(context,
                         attrs);
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SystemUIQCView);
-        mRemoteUri = a.getString(R.styleable.SystemUIQCView_remoteQCProvider);
-        mLocalClass = a.getString(R.styleable.SystemUIQCView_localQCProvider);
-        a.recycle();
-    }
-
-    @Nullable
-    public String getRemoteUriString() {
-        return mRemoteUri;
-    }
-
-    @Nullable
-    public String getLocalClassString() {
-        return mLocalClass;
     }
 
     @Override
     public Class<?> getElementControllerClass() {
         if (mElementControllerClassAttr != null) {
-            return mElementControllerClassAttr;
+            if (StatusIconViewController.class.isAssignableFrom(mElementControllerClassAttr)) {
+                return mElementControllerClassAttr;
+            } else {
+                Log.w(TAG, "Class " + mElementControllerClassAttr
+                        + " is not of type StatusIconViewController - returning null");
+            }
         }
-        return SystemUIQCViewController.class;
+        return null;
     }
 
     @Override

@@ -19,19 +19,15 @@ package com.android.systemui.car.qc;
 import static android.os.UserHandle.USER_NULL;
 import static android.view.WindowInsets.Type.statusBars;
 
-import static com.android.systemui.car.users.CarSystemUIUserUtil.getCurrentUserHandle;
-
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.IActivityManager;
-import android.car.Car;
 import android.car.CarOccupantZoneManager;
 import android.car.app.CarActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.RemoteException;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
 import android.view.Window;
@@ -41,20 +37,38 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.systemui.R;
+import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.systembar.element.CarSystemBarElementController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.settings.UserTracker;
+
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 import java.util.List;
 
 /**
- * One of {@link QCFooterButtonView} for quick control panels, which logs out the user.
+ * One of {@link QCFooterView} for quick control panels, which logs out the user.
  */
 
-public class QCLogoutButton extends QCFooterButtonView {
-    private static final String TAG = QCUserPickerButton.class.getSimpleName();
+public class QCLogoutButtonController extends QCFooterViewController {
+    private static final String TAG = QCUserPickerButtonController.class.getSimpleName();
+
+    private final Context mContext;
+    private final UserTracker mUserTracker;
+    private final CarServiceProvider mCarServiceProvider;
 
     private CarActivityManager mCarActivityManager;
     private CarOccupantZoneManager mCarOccupantZoneManager;
 
     private float mConfirmLogoutDialogDimValue = -1.0f;
+
+    private final CarServiceProvider.CarServiceOnConnectedListener mCarServiceLifecycleListener =
+            car -> {
+                mCarActivityManager = car.getCarManager(CarActivityManager.class);
+                mCarOccupantZoneManager = car.getCarManager(CarOccupantZoneManager.class);
+            };
 
     private final DialogInterface.OnClickListener mOnDialogClickListener = (dialog, which) -> {
         if (which == DialogInterface.BUTTON_POSITIVE) {
@@ -65,41 +79,42 @@ public class QCLogoutButton extends QCFooterButtonView {
         }
     };
 
-    public QCLogoutButton(Context context) {
-        this(context, null);
+    @AssistedInject
+    protected QCLogoutButtonController(@Assisted QCFooterView view,
+            CarSystemBarElementStatusBarDisableController disableController, Context context,
+            UserTracker userTracker, CarServiceProvider carServiceProvider) {
+        super(view, disableController, context, userTracker);
+        mContext = context;
+        mUserTracker = userTracker;
+        mCarServiceProvider = carServiceProvider;
     }
 
-    public QCLogoutButton(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    @AssistedFactory
+    public interface Factory extends
+            CarSystemBarElementController.Factory<QCFooterView, QCLogoutButtonController> {}
+
+    @Override
+    protected void onInit() {
+        super.onInit();
+        mView.setOnClickListener(v -> showDialog());
     }
 
-    public QCLogoutButton(Context context, AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
+    @Override
+    protected void onViewAttached() {
+        super.onViewAttached();
+        mCarServiceProvider.addListener(mCarServiceLifecycleListener);
     }
 
-    public QCLogoutButton(Context context, AttributeSet attrs, int defStyleAttr,
-            int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-
-        mCarServiceLifecycleListener = (car, ready) -> {
-            if (!ready) {
-                return;
-            }
-            mCarActivityManager = (CarActivityManager) car.getCarManager(
-                    Car.CAR_ACTIVITY_SERVICE);
-            mCarOccupantZoneManager = car.getCarManager(CarOccupantZoneManager.class);
-        };
-
-        Car.createCar(getContext(), /* handler= */ null, Car.CAR_WAIT_TIMEOUT_WAIT_FOREVER,
-                mCarServiceLifecycleListener);
-
-        mOnClickListener = v -> showDialog();
-        setOnClickListener(mOnClickListener);
+    @Override
+    protected void onViewDetached() {
+        super.onViewDetached();
+        mCarServiceProvider.removeListener(mCarServiceLifecycleListener);
     }
+
 
     private void showDialog() {
         Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        getContext().sendBroadcastAsUser(intent, getCurrentUserHandle(getContext(), mUserTracker));
+        mContext.sendBroadcastAsUser(intent, mUserTracker.getUserHandle());
         AlertDialog dialog = createDialog();
 
         // Sets window flags for the SysUI dialog
@@ -135,7 +150,7 @@ public class QCLogoutButton extends QCFooterButtonView {
 
     private void logoutUser() {
         Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        getContext().sendBroadcastAsUser(intent, getCurrentUserHandle(getContext(), mUserTracker));
+        mContext.sendBroadcastAsUser(intent, mUserTracker.getUserHandle());
 
         if (mUserTracker != null) {
             int userId = mUserTracker.getUserId();

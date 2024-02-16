@@ -25,7 +25,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -130,45 +129,6 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
 
         verify((QuickControlsEntryPointContainer) qcEntryPointContainer, times(3)).showAsDropDown();
         verify(qcEntryPointContainer, times(3)).addView(any());
-    }
-
-    @Test
-    public void addIconViews_notQcEntryPointContainerAdded_addView() {
-        doReturn(mStatusIconController).when(mProvider).get();
-        doReturn(mProvider).when(mIconControllerCreators).get(any());
-        ViewGroup baseLayout = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                R.layout.car_quick_controls_panel_test, /* root= */ null);
-        ViewGroup qcHeaderReadOnlyIconsContainer =
-                baseLayout.findViewById(R.id.qc_header_read_only_icons_container);
-        spyOn(qcHeaderReadOnlyIconsContainer);
-
-        mQuickControlsEntryPointsController.addIconViews(qcHeaderReadOnlyIconsContainer,
-                /* shouldAttachPanel= */ true);
-
-        verify(qcHeaderReadOnlyIconsContainer, times(3)).addView(any());
-    }
-
-    @Test
-    public void addIconViews_qcControlsStatusIconListContoller_registerIconViewAndGetPanelInfo() {
-        doReturn(mProvider).when(mIconControllerCreators).get(any());
-        doReturn(mStatusIconController).when(mProvider).get();
-        QuickControlsStatusIconListController controller =
-                new QuickControlsStatusIconListController(mContext,
-                mContext.getOrCreateTestableResources().getResources(), mIconControllerCreators);
-        spyOn(controller);
-        reset(mProvider);
-        doReturn(controller).when(mProvider).get();
-        ViewGroup baseLayout = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                R.layout.car_quick_controls_panel_test, /* root= */ null);
-        ViewGroup qcHeaderReadOnlyIconsContainer =
-                baseLayout.findViewById(R.id.qc_header_read_only_icons_container);
-
-        mQuickControlsEntryPointsController.addIconViews(qcHeaderReadOnlyIconsContainer,
-                /* shouldAttachPanel= */ true);
-
-        verify(controller, times(3)).registerIconView(any());
-        verify(controller, times(6)).getPanelContentLayout();
-        verify(controller, times(3)).getPanelWidth();
     }
 
     private void setupBuilderMocks() {

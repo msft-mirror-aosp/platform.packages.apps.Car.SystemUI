@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.qc;
 
-import static com.android.dx.mockito.inline.extended.ExtendedMockito.spyOn;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.verify;
 
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -26,20 +25,21 @@ import static org.mockito.Mockito.when;
 
 import android.car.Car;
 import android.car.hardware.power.CarPowerManager;
+import android.os.UserHandle;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.android.systemui.SysuiTestCase;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.tests.R;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.settings.UserTracker;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -47,38 +47,48 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class QCScreenOffButtonTest extends SysuiTestCase {
-    private QCScreenOffButton mQCScreenOffButton;
+public class QCScreenOffButtonControllerTest extends SysuiTestCase {
+    private QCFooterView mView;
+    private QCScreenOffButtonController mController;
 
     @Mock
     private Car mCar;
     @Mock
     private CarPowerManager mCarPowerManager;
     @Mock
-    private View mView;
-
-    private ViewGroup mLayout;
+    private UserTracker mUserTracker;
+    @Mock
+    private CarServiceProvider mCarServiceProvider;
+    @Mock
+    private CarSystemBarElementStatusBarDisableController mDisableController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         mContext = spy(mContext);
-        mLayout = (ViewGroup) LayoutInflater.from(mContext)
-                .inflate(R.layout.car_quick_controls_panel_test, /* root= */ null, false);
-        mQCScreenOffButton = mLayout.findViewById(R.id.screen_off_button);
+        mView = spy(new QCFooterView(mContext));
+        when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(1000));
+        mController = new QCScreenOffButtonController(mView, mDisableController, mContext,
+                mUserTracker, mCarServiceProvider);
+        mController.init();
 
-        mQCScreenOffButton = new QCScreenOffButton(mContext);
-        spyOn(mQCScreenOffButton);
-
-        when(mCar.getCarManager(Car.POWER_SERVICE)).thenReturn(mCarPowerManager);
-        mQCScreenOffButton.getCarServiceLifecycleListener().onLifecycleChanged(mCar, true);
+        when(mCar.getCarManager(CarPowerManager.class)).thenReturn(mCarPowerManager);
+        attachCarPowerManager();
     }
 
     @Test
     public void onPowerButtonClicked_setDisplayPowerState() {
-        mQCScreenOffButton.getOnClickListener().onClick(mView);
+        mView.callOnClick();
 
         verify(mCarPowerManager).setDisplayPowerState(anyInt(), eq(false));
+    }
+
+    private void attachCarPowerManager() {
+        ArgumentCaptor<CarServiceProvider.CarServiceOnConnectedListener> captor =
+                ArgumentCaptor.forClass(CarServiceProvider.CarServiceOnConnectedListener.class);
+        mController.onViewAttached();
+        verify(mCarServiceProvider).addListener(captor.capture());
+        captor.getValue().onConnected(mCar);
     }
 }

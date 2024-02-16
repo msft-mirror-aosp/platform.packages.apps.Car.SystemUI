@@ -31,6 +31,8 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.statusbar.connectivity.IconState;
 import com.android.systemui.statusbar.connectivity.NetworkController;
 import com.android.systemui.statusbar.connectivity.WifiIndicators;
@@ -50,25 +52,33 @@ public class WifiSignalStatusIconControllerTest extends SysuiTestCase {
     Resources mResources;
     @Mock
     NetworkController mNetworkController;
+    @Mock
+    CarSystemBarElementStatusBarDisableController mDisableController;
 
+    private StatusIconView mView;
     private WifiSignalStatusIconController mWifiSignalStatusIconController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mWifiSignalStatusIconController = new WifiSignalStatusIconController(mContext, mResources,
-                mNetworkController);
+        mView = new StatusIconView(mContext);
+        mWifiSignalStatusIconController = new WifiSignalStatusIconController(mView,
+                mDisableController, mResources, mContext, mNetworkController);
     }
 
     @Test
-    public void onInit_registersNetworkCallback() {
+    public void onAttached_registersNetworkCallback() {
+        mWifiSignalStatusIconController.onViewAttached();
         verify(mNetworkController).addCallback(any());
     }
 
     @Test
-    public void onDestroy_unregistersNetworkCallback() {
-        mWifiSignalStatusIconController.onDestroy();
+    public void onDetached_unregistersNetworkCallback() {
+        mWifiSignalStatusIconController.onViewAttached();
+
+        mWifiSignalStatusIconController.onViewDetached();
+
         verify(mNetworkController).removeCallback(any());
     }
 

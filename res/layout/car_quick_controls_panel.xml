@@ -58,7 +58,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/read_only_status_icons_container"
                     systemui:datePattern="EEEMMMd" />
-                <com.android.systemui.car.qc.QCHeaderReadOnlyIconsContainer
+                <LinearLayout
                     android:id="@+id/read_only_status_icons_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -70,7 +70,26 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/date"/>
+                    app:layout_constraintStart_toEndOf="@+id/date">
+                    <com.android.systemui.car.statusicon.StatusIconView
+                        android:layout_width="@dimen/car_quick_controls_entry_points_icon_width"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="@dimen/car_padding_1"
+                        android:layout_gravity="center"
+                        systemui:controller="com.android.systemui.car.statusicon.ui.LocationStatusIconController"/>
+                    <com.android.systemui.car.statusicon.StatusIconView
+                        android:layout_width="@dimen/car_quick_controls_entry_points_icon_width"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="@dimen/car_padding_1"
+                        android:layout_gravity="center"
+                        systemui:controller="com.android.systemui.car.statusicon.ui.MobileSignalStatusIconController"/>
+                    <com.android.systemui.car.statusicon.StatusIconView
+                        android:layout_width="@dimen/car_quick_controls_entry_points_icon_width"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="@dimen/car_padding_1"
+                        android:layout_gravity="center"
+                        systemui:controller="com.android.systemui.car.statusicon.ui.WifiSignalStatusIconController"/>
+                </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ScrollView
@@ -115,11 +134,12 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
-                <com.android.systemui.car.qc.QCUserPickerButton
+                <com.android.systemui.car.qc.QCFooterView
                     android:id="@+id/user_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     style="@style/QCFooterButtonViewStyle"
+                    app:controller="com.android.systemui.car.qc.QCUserPickerButtonController"
                     app:layout_constraintHorizontal_weight="9"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/settings_button">
@@ -154,9 +174,9 @@
                         app:layout_constraintDimensionRatio="1:1"
                         app:layout_constraintStart_toEndOf="@id/user_name_text"
                         app:layout_constraintEnd_toEndOf="parent"/>
-                </com.android.systemui.car.qc.QCUserPickerButton>
+                </com.android.systemui.car.qc.QCFooterView>
 
-                <com.android.systemui.car.qc.QCFooterButtonView
+                <com.android.systemui.car.qc.QCFooterView
                     android:id="@+id/settings_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -170,12 +190,13 @@
                         android:layout_height="match_parent"
                         android:src="@drawable/car_ic_settings_icon"
                         android:scaleType="fitCenter"/>
-                </com.android.systemui.car.qc.QCFooterButtonView>
+                </com.android.systemui.car.qc.QCFooterView>
 
-                <com.android.systemui.car.qc.QCLogoutButton
+                <com.android.systemui.car.qc.QCFooterView
                     android:id="@+id/logout_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    app:controller="com.android.systemui.car.qc.QCLogoutButtonController"
                     app:layout_constraintHorizontal_weight="2"
                     app:layout_constraintStart_toEndOf="@id/settings_button"
                     app:layout_constraintEnd_toStartOf="@+id/screen_off_button"
@@ -185,12 +206,13 @@
                         android:layout_height="match_parent"
                         android:src="@drawable/car_ic_logout"
                         android:scaleType="fitCenter"/>
-                </com.android.systemui.car.qc.QCLogoutButton>
+                </com.android.systemui.car.qc.QCFooterView>
 
-                <com.android.systemui.car.qc.QCScreenOffButton
+                <com.android.systemui.car.qc.QCFooterView
                     android:id="@+id/screen_off_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    app:controller="com.android.systemui.car.qc.QCScreenOffButtonController"
                     app:layout_constraintHorizontal_weight="2"
                     app:layout_constraintStart_toEndOf="@id/logout_button"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -200,7 +222,7 @@
                         android:layout_height="match_parent"
                         android:src="@drawable/car_ic_power"
                         android:scaleType="fitCenter"/>
-                </com.android.systemui.car.qc.QCScreenOffButton>
+                </com.android.systemui.car.qc.QCFooterView>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.android.car.ui.FocusArea>

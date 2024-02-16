@@ -90,6 +90,59 @@
         <attr name="toggleSelected" format="boolean" />
     </declare-styleable>
 
+    <!-- Custom attribute for the CarSystemBarElement interface - implementing classes must opt in
+         to consuming these attributes within their constructor and applying appropriately. -->
+    <declare-styleable name="CarSystemBarElement">
+        <!-- Class name of the CarSystemBarElementController that should be attached to this view -->
+        <attr name="controller" format="string"/>
+        <!-- Attribute for specifying the system bar disable flag of a supporting element view.
+             This corresponds to the StatusBarManager.DisableFlags. -->
+        <attr name="systemBarDisableFlags" format="integer">
+            <flag name="none" value="0"/>
+            <flag name="expand" value="1"/>
+            <flag name="notificationIcons" value="2"/>
+            <flag name="notificationAlerts" value="4"/>
+            <flag name="systemInfo" value="8"/>
+            <flag name="home" value="16"/>
+            <flag name="recent" value="32"/>
+            <flag name="back" value="64"/>
+            <flag name="clock" value="128"/>
+            <flag name="search" value="256"/>
+            <flag name="ongoingCallChip" value="512"/>
+        </attr>
+        <!-- Attribute for specifying the system bar disable flag of a supporting element view.
+             This corresponds to the StatusBarManager.Disable2Flags. -->
+        <attr name="systemBarDisable2Flags" format="integer">
+            <flag name="none" value="0"/>
+            <flag name="quickSettings" value="1"/>
+            <flag name="systemIcons" value="2"/>
+            <flag name="notificationShade" value="4"/>
+            <flag name="globalActions" value="8"/>
+            <flag name="rotateSuggestions" value="16"/>
+        </attr>
+        <!-- Attribute for specifying if this element should be disabled when in the
+             LOCK_TASK_MODE_LOCKED state -->
+        <attr name="disableForLockTaskModeLocked" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="CarSystemBarPanelButtonView">
+        <!-- REQUIRED: Layout resource for the panel -->
+        <attr name="panelLayoutRes" format="reference"/>
+        <!--  Width of the panel. If not specified, will use default width value -->
+        <attr name="panelWidthRes" format="reference"/>
+        <!-- X Offset value for the panel location relative to the anchor view -->
+        <attr name="xOffset" format="integer"/>
+        <!-- Y Offset value for the panel location relative to the anchor view -->
+        <attr name="yOffset" format="integer"/>
+        <!-- Gravity of the panel relative to the anchor view -->
+        <attr name="gravity" format="integer"/>
+        <!-- Whether the panel should be disabled while driving - defaults to false -->
+        <attr name="disabledWhileDriving" format="boolean"/>
+        <!-- Whether the panel should be shown as a dropdown relative to the anchor view or not
+             (making it relative to the screen with offsets and gravity) - defaults to true -->
+        <attr name="showAsDropDown" format="boolean"/>
+    </declare-styleable>
+
     <!-- Custom attributes to configure HVAC values -->
     <declare-styleable name="HvacView">
         <attr name="hvacAreaId" format="integer"/>
@@ -157,7 +210,7 @@
         <attr name="disableWhileDriving" format="boolean"/>
     </declare-styleable>
 
-    <declare-styleable name="QCFooterButtonView">
+    <declare-styleable name="QCFooterView">
         <attr name="intent" format="string"/>
         <attr name="disableWhileDriving" format="boolean"/>
     </declare-styleable>

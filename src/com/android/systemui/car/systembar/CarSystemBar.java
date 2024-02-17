@@ -19,6 +19,7 @@ package com.android.systemui.car.systembar;
 import static android.content.Intent.ACTION_OVERLAY_CHANGED;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
 
+import static com.android.systemui.car.Flags.configAwareSystemui;
 import static com.android.systemui.car.systembar.SystemBarConfigs.BOTTOM;
 import static com.android.systemui.car.systembar.SystemBarConfigs.LEFT;
 import static com.android.systemui.car.systembar.SystemBarConfigs.RIGHT;
@@ -214,6 +215,12 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     }
 
     private void registerOverlayChangeBroadcastReceiver() {
+        if (!configAwareSystemui()) {
+            if (DEBUG) {
+                Log.d(TAG, "Ignore overlay change for car systemui");
+            }
+            return;
+        }
         IntentFilter overlayFilter = new IntentFilter(ACTION_OVERLAY_CHANGED);
         overlayFilter.addDataScheme(OVERLAY_FILTER_DATA_SCHEME);
         overlayFilter.addDataSchemeSpecificPart(mContext.getPackageName(),

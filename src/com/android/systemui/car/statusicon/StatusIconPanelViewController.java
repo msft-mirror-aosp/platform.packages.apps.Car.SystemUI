@@ -60,10 +60,8 @@ import com.android.systemui.util.ViewController;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 /**
  * A controller for a panel view associated with a status icon.
@@ -74,8 +72,7 @@ public class StatusIconPanelViewController extends ViewController<View> {
     private final CarServiceProvider mCarServiceProvider;
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final ConfigurationController mConfigurationController;
-    private final Map<Class<?>, Provider<CarSystemBarElementController.Factory>>
-            mElementControllerFactories;
+    private final CarSystemBarElementInitializer mCarSystemBarElementInitializer;
     private final String mIdentifier;
     @LayoutRes
     private final int mPanelLayoutRes;
@@ -175,7 +172,7 @@ public class StatusIconPanelViewController extends ViewController<View> {
             CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
-            Map<Class<?>, Provider<CarSystemBarElementController.Factory>> elementControllerFactory,
+            CarSystemBarElementInitializer elementInitializer,
             View anchorView, @LayoutRes int layoutRes, @DimenRes int widthRes,
             int xOffset, int yOffset, int gravity, boolean isDisabledWhileDriving,
             boolean showAsDropDown) {
@@ -185,7 +182,7 @@ public class StatusIconPanelViewController extends ViewController<View> {
         mCarServiceProvider = carServiceProvider;
         mBroadcastDispatcher = broadcastDispatcher;
         mConfigurationController = configurationController;
-        mElementControllerFactories = elementControllerFactory;
+        mCarSystemBarElementInitializer = elementInitializer;
         mIsDisabledWhileDriving = isDisabledWhileDriving;
         mPanelLayoutRes = layoutRes;
         mPanelWidthRes = widthRes;
@@ -406,8 +403,7 @@ public class StatusIconPanelViewController extends ViewController<View> {
 
     private void initQCElementViews(ViewGroup rootView) {
         List<CarSystemBarElementController> controllers =
-                CarSystemBarElementInitializer.initializeCarSystemBarElements(rootView,
-                        mElementControllerFactories);
+                mCarSystemBarElementInitializer.initializeCarSystemBarElements(rootView);
         for (CarSystemBarElementController controller : controllers) {
             if (controller instanceof SystemUIQCViewController) {
                 SystemUIQCViewController qcController = (SystemUIQCViewController) controller;
@@ -465,8 +461,7 @@ public class StatusIconPanelViewController extends ViewController<View> {
         private final CarServiceProvider mCarServiceProvider;
         private final BroadcastDispatcher mBroadcastDispatcher;
         private final ConfigurationController mConfigurationController;
-        private final Map<Class<?>, Provider<CarSystemBarElementController.Factory>>
-                mElementControllerFactories;
+        private final CarSystemBarElementInitializer mCarSystemBarElementInitializer;
 
         private int mXOffset = 0;
         private int mYOffset;
@@ -481,13 +476,13 @@ public class StatusIconPanelViewController extends ViewController<View> {
                 CarServiceProvider carServiceProvider,
                 BroadcastDispatcher broadcastDispatcher,
                 ConfigurationController configurationController,
-                Map<Class<?>, Provider<CarSystemBarElementController.Factory>> elementFactory) {
+                CarSystemBarElementInitializer elementInitializer) {
             mContext = context;
             mUserTracker = userTracker;
             mCarServiceProvider = carServiceProvider;
             mBroadcastDispatcher = broadcastDispatcher;
             mConfigurationController = configurationController;
-            mElementControllerFactories = elementFactory;
+            mCarSystemBarElementInitializer = elementInitializer;
 
             int panelMarginTop = mContext.getResources().getDimensionPixelSize(
                     R.dimen.car_status_icon_panel_margin_top);
@@ -537,7 +532,7 @@ public class StatusIconPanelViewController extends ViewController<View> {
         public StatusIconPanelViewController build(View anchorView, @LayoutRes int layoutRes,
                 @DimenRes int widthRes) {
             return new StatusIconPanelViewController(mContext, mUserTracker, mCarServiceProvider,
-                    mBroadcastDispatcher, mConfigurationController, mElementControllerFactories,
+                    mBroadcastDispatcher, mConfigurationController, mCarSystemBarElementInitializer,
                     anchorView, layoutRes, widthRes, mXOffset, mYOffset, mGravity,
                     mIsDisabledWhileDriving, mShowAsDropDown);
         }

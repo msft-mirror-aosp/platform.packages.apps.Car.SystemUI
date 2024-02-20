@@ -46,7 +46,7 @@ import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.systembar.element.CarSystemBarElementController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
@@ -57,10 +57,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.Map;
-
-import javax.inject.Provider;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -80,7 +76,7 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
     @Mock
     private ConfigurationController mConfigurationController;
     @Mock
-    private Map<Class<?>, Provider<CarSystemBarElementController.Factory>> mElementFactories;
+    private CarSystemBarElementInitializer mCarSystemBarElementInitializer;
 
     @Before
     public void setUp() {
@@ -96,7 +92,7 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
         mAnchorView.setColorFilter(mContext.getColor(R.color.car_status_icon_color));
         mViewController = new StatusIconPanelViewController.Builder(mContext, mUserTracker,
                 mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
-                mElementFactories).build(mAnchorView,
+                mCarSystemBarElementInitializer).build(mAnchorView,
                 R.layout.qc_display_panel, R.dimen.car_status_icon_panel_default_width);
         spyOn(mViewController);
         reset(mAnchorView);

@@ -111,7 +111,8 @@ public class NotificationPanelViewController extends OverlayPanelViewController
     private OnNotificationClickListener mOnNotificationClickListener =
             (launchResult, alertEntry) -> {
                 if (launchResult == ActivityManager.START_TASK_TO_FRONT
-                        || launchResult == ActivityManager.START_SUCCESS) {
+                        || launchResult == ActivityManager.START_SUCCESS
+                        || launchResult == ActivityManager.START_DELIVERED_TO_TOP) {
                     animateCollapsePanel();
                 }
             };

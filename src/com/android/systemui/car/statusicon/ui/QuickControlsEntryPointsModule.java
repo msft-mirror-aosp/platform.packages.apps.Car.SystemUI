@@ -17,6 +17,7 @@
 package com.android.systemui.car.statusicon.ui;
 
 import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 
 import dagger.Binds;
 import dagger.Module;
@@ -54,15 +55,15 @@ public abstract class QuickControlsEntryPointsModule {
     @Binds
     @IntoMap
     @ClassKey(LocationStatusIconController.class)
-    public abstract StatusIconController bindLocationStatusIconController(
-            LocationStatusIconController locationStatusIconController);
+    public abstract CarSystemBarElementController.Factory bindLocationStatusIconController(
+            LocationStatusIconController.Factory locationStatusIconController);
 
     /** Injects PhoneCallStatusIconController. */
     @Binds
     @IntoMap
     @ClassKey(PhoneCallStatusIconController.class)
-    public abstract StatusIconController bindPhoneCallStatusIconController(
-            PhoneCallStatusIconController phoneCallStatusIconController);
+    public abstract CarSystemBarElementController.Factory bindPhoneCallStatusIconController(
+            PhoneCallStatusIconController.Factory phoneCallStatusIconController);
 
     /** Injects ThemeSwitchStatusIconController. */
     @Binds

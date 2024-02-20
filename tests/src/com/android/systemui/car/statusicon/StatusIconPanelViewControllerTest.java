@@ -46,16 +46,21 @@ import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.qc.SystemUIQCViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Map;
+
+import javax.inject.Provider;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -75,7 +80,7 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
     @Mock
     private ConfigurationController mConfigurationController;
     @Mock
-    private SystemUIQCViewController mSystemUIQCViewController;
+    private Map<Class<?>, Provider<CarSystemBarElementController.Factory>> mElementFactories;
 
     @Before
     public void setUp() {
@@ -88,14 +93,22 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
         mAnchorView = spy(new ImageView(mContext));
         mAnchorView.setTag(mContext.getResources().getString(R.string.qc_icon_tag));
         mAnchorView.setImageDrawable(mContext.getDrawable(R.drawable.ic_bluetooth_status_off));
+        mAnchorView.setColorFilter(mContext.getColor(R.color.car_status_icon_color));
         mViewController = new StatusIconPanelViewController.Builder(mContext, mUserTracker,
                 mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
-                () -> mSystemUIQCViewController, null).build(mAnchorView,
+                mElementFactories).build(mAnchorView,
                 R.layout.qc_display_panel, R.dimen.car_status_icon_panel_default_width);
         spyOn(mViewController);
-        mAnchorView.setColorFilter(mViewController.getIconHighlightedColor());
         reset(mAnchorView);
         mViewController.init();
+    }
+
+    @After
+    public void tearDown() {
+        // The view controller must be detached before we move on since it creates a real
+        // PopupWindow instance. Otherwise, the window will continue to be present and cause
+        // instability in future tests.
+        mViewController.onViewDetached();
     }
 
     @Test
@@ -126,14 +139,6 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void onPanelAnchorViewClicked_statusIconHighlighted() {
-        clickAnchorView();
-        waitForIdleSync();
-
-        verify(mAnchorView).setColorFilter(mViewController.getIconHighlightedColor());
-    }
-
-    @Test
     public void onPanelAnchorViewClicked_panelShowing_panelDismissed() {
         clickAnchorView();
 
@@ -141,16 +146,6 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
         waitForIdleSync();
 
         assertThat(mViewController.getPanel().isShowing()).isFalse();
-    }
-
-    @Test
-    public void onPanelAnchorViewClicked_panelShowing_statusIconNotHighlighted() {
-        clickAnchorView();
-
-        clickAnchorView();
-        waitForIdleSync();
-
-        verify(mAnchorView).setColorFilter(mViewController.getIconNotHighlightedColor());
     }
 
     @Test
@@ -181,19 +176,6 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void onDismissSystemDialogReceived_fromSelf_panelOpen_statusIconHighlighted() {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        intent.setIdentifier(mViewController.getIdentifier());
-        clickAnchorView();
-        waitForIdleSync();
-
-        mViewController.getBroadcastReceiver().onReceive(mContext, intent);
-
-        verify(mAnchorView).setColorFilter(mViewController.getIconHighlightedColor());
-    }
-
-    @Test
     public void onDismissSystemDialogReceived_notFromSelf_panelOpen_dismissesPanel() {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
@@ -203,18 +185,6 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
         mViewController.getBroadcastReceiver().onReceive(mContext, intent);
 
         assertThat(mViewController.getPanel().isShowing()).isFalse();
-    }
-
-    @Test
-    public void onDismissSystemDialogReceived_notFromSelf_panelOpen_statusIconNotHighlighted() {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        clickAnchorView();
-        waitForIdleSync();
-
-        mViewController.getBroadcastReceiver().onReceive(mContext, intent);
-
-        verify(mAnchorView).setColorFilter(mViewController.getIconNotHighlightedColor());
     }
 
     @Test

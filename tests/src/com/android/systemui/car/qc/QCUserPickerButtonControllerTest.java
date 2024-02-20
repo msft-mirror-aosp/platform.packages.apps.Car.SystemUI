@@ -18,6 +18,8 @@ package com.android.systemui.car.qc;
 
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.spyOn;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.spy;
@@ -33,20 +35,21 @@ import android.os.UserManager;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.statusbar.UserNameViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.tests.R;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -54,7 +57,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class QCUserPickerButtonTest extends SysuiTestCase {
+public class QCUserPickerButtonControllerTest extends SysuiTestCase {
     private final UserInfo mUserInfo =
             new UserInfo(/* id= */ 0, /* name= */ "Test User", /* flags= */ 0);
     @Mock
@@ -68,13 +71,15 @@ public class QCUserPickerButtonTest extends SysuiTestCase {
     @Mock
     private UserManager mUserManager;
     @Mock
-    private View mView;
-    @Mock
     private ImageView mUserIconView;
+    @Mock
+    private CarServiceProvider mCarServiceProvider;
+    @Mock
+    private CarSystemBarElementStatusBarDisableController mDisableController;
 
     private UserHandle mUserHandle;
-    private ViewGroup mLayout;
-    private QCUserPickerButton mQCUserPickerButton;
+    private QCFooterView mView;
+    private QCUserPickerButtonController mController;
 
     @Before
     public void setUp() {
@@ -85,13 +90,15 @@ public class QCUserPickerButtonTest extends SysuiTestCase {
         when(mContext.getSystemService(UserManager.class)).thenReturn(mUserManager);
         when(mUserTracker.getUserHandle()).thenReturn(mUserHandle);
         when(mUserTracker.getUserInfo()).thenReturn(mUserInfo);
-        mLayout = (ViewGroup) LayoutInflater.from(mContext)
-                .inflate(R.layout.car_quick_controls_panel_test, /* root= */ null, false);
-        mQCUserPickerButton = mLayout.findViewById(R.id.user_button);
-        mQCUserPickerButton.setUserTracker(mUserTracker);
-        mQCUserPickerButton.setBroadcastDispatcher(mBroadcastDispatcher);
-        when(mCar.getCarManager(Car.CAR_ACTIVITY_SERVICE)).thenReturn(mCarActivityManager);
-        mQCUserPickerButton.getCarServiceLifecycleListener().onLifecycleChanged(mCar, true);
+        when(mCar.getCarManager(CarActivityManager.class)).thenReturn(mCarActivityManager);
+
+        mView = spy(new QCFooterView(mContext));
+        when(mView.findViewById(R.id.user_icon)).thenReturn(mUserIconView);
+        mController = new QCUserPickerButtonController(mView, mDisableController, mContext,
+                mUserTracker, mCarServiceProvider, mBroadcastDispatcher);
+        mController.init();
+
+        attachCarService();
     }
 
     @Test
@@ -99,29 +106,32 @@ public class QCUserPickerButtonTest extends SysuiTestCase {
         int displayId = 100;
         when(mContext.getDisplayId()).thenReturn(displayId);
 
-        mQCUserPickerButton.getOnClickListener().onClick(mView);
+        mView.callOnClick();
 
         verify(mCarActivityManager).startUserPickerOnDisplay(eq(displayId));
     }
 
     @Test
-    public void onAttachedToWindow_setUserIconView() {
-        spyOn(mQCUserPickerButton);
-        when(mQCUserPickerButton.findViewById(R.id.user_icon)).thenReturn(mUserIconView);
-
-        mQCUserPickerButton.onAttachedToWindow();
-
+    public void onInit_setUserIconView() {
         verify(mUserIconView).setImageDrawable(any(Drawable.class));
     }
 
     @Test
     public void onDetachedFromWindow_removeUserNameView() {
-        mQCUserPickerButton.onAttachedToWindow();
-        spyOn(mQCUserPickerButton.mUserNameViewController);
+        spyOn(mController.mUserNameViewController);
+        UserNameViewController controllerSpy = mController.mUserNameViewController;
 
-        mQCUserPickerButton.onDetachedFromWindow();
+        mController.onViewDetached();
 
-        verify(mQCUserPickerButton.mUserNameViewController)
-                .removeUserNameView(eq(mQCUserPickerButton));
+        verify(controllerSpy).removeUserNameView(eq(mView));
+    }
+
+    private void attachCarService() {
+        ArgumentCaptor<CarServiceProvider.CarServiceOnConnectedListener> captor =
+                ArgumentCaptor.forClass(CarServiceProvider.CarServiceOnConnectedListener.class);
+        mController.onViewAttached();
+        verify(mCarServiceProvider).addListener(captor.capture());
+        assertThat(captor.getValue()).isNotNull();
+        captor.getValue().onConnected(mCar);
     }
 }

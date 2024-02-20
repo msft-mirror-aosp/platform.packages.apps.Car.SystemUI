@@ -25,6 +25,7 @@ import androidx.annotation.CallSuper;
 
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.settings.UserTracker;
 
@@ -43,9 +44,10 @@ public class QCFooterViewController extends CarSystemBarElementController<QCFoot
 
     @AssistedInject
     protected QCFooterViewController(@Assisted QCFooterView view,
-            CarSystemBarElementStatusBarDisableController disableController, Context context,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController, Context context,
             UserTracker userTracker) {
-        super(view, disableController);
+        super(view, disableController, stateController);
         mContext = context;
         mUserTracker = userTracker;
     }

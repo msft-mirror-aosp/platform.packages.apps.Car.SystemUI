@@ -39,6 +39,7 @@ import androidx.annotation.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.settings.UserTracker;
 
@@ -81,9 +82,10 @@ public class QCLogoutButtonController extends QCFooterViewController {
 
     @AssistedInject
     protected QCLogoutButtonController(@Assisted QCFooterView view,
-            CarSystemBarElementStatusBarDisableController disableController, Context context,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController, Context context,
             UserTracker userTracker, CarServiceProvider carServiceProvider) {
-        super(view, disableController, context, userTracker);
+        super(view, disableController, stateController, context, userTracker);
         mContext = context;
         mUserTracker = userTracker;
         mCarServiceProvider = carServiceProvider;

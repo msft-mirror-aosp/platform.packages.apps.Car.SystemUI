@@ -119,6 +119,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     private final Lazy<PhoneStatusBarPolicy> mIconPolicyLazy;
     private final HvacController mHvacController;
     private final ConfigurationController mConfigurationController;
+    private final CarSystemBarRestartTracker mCarSystemBarRestartTracker;
     private final int mDisplayId;
     private final SystemBarConfigs mSystemBarConfigs;
     @Nullable
@@ -183,6 +184,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
             StatusBarSignalPolicy signalPolicy,
             SystemBarConfigs systemBarConfigs,
             ConfigurationController configurationController,
+            CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
             Optional<MDSystemBarsController> mdSystemBarsController,
             @Nullable ToolbarController toolbarController
@@ -210,6 +212,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mMDSystemBarsController = mdSystemBarsController.orElse(null);
         mCurrentLocale = mContext.getResources().getConfiguration().getLocales().get(0);
         mConfigurationController = configurationController;
+        mCarSystemBarRestartTracker = restartTracker;
         mDisplayCompatToolbarController = toolbarController;
     }
 
@@ -311,17 +314,17 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                 new CarDeviceProvisionedListener() {
                     @Override
                     public void onUserSetupInProgressChanged() {
-                        mExecutor.execute(() -> restartNavBarsIfNecessary());
+                        mExecutor.execute(() -> resetSystemBarContentIfNecessary());
                     }
 
                     @Override
                     public void onUserSetupChanged() {
-                        mExecutor.execute(() -> restartNavBarsIfNecessary());
+                        mExecutor.execute(() -> resetSystemBarContentIfNecessary());
                     }
 
                     @Override
                     public void onUserSwitched() {
-                        mExecutor.execute(() -> restartNavBarsIfNecessary());
+                        mExecutor.execute(() -> resetSystemBarContentIfNecessary());
                     }
                 });
 
@@ -355,7 +358,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         });
     }
 
-    private void restartNavBarsIfNecessary() {
+    private void resetSystemBarContentIfNecessary() {
         boolean currentUserSetup = mCarDeviceProvisionedController.isCurrentUserSetup();
         boolean currentUserSetupInProgress = mCarDeviceProvisionedController
                 .isCurrentUserSetupInProgress();
@@ -363,7 +366,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                 || mDeviceIsSetUpForUser != currentUserSetup) {
             mDeviceIsSetUpForUser = currentUserSetup;
             mIsUserSetupInProgress = currentUserSetupInProgress;
-            restartNavBars();
+            resetSystemBarContent(/* isProvisionedStateChange= */ true);
         }
     }
 
@@ -371,7 +374,13 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
      * Remove all content from navbars and rebuild them. Used to allow for different nav bars
      * before and after the device is provisioned. . Also for change of density and font size.
      */
-    private void restartNavBars() {
+    private void resetSystemBarContent(boolean isProvisionedStateChange) {
+        mCarSystemBarRestartTracker.notifyPendingRestart(/* recreateWindows= */ false,
+                isProvisionedStateChange);
+
+        if (!isProvisionedStateChange) {
+            mCarSystemBarController.resetViewCache();
+        }
         // remove and reattach all components such that we don't keep a reference to unused ui
         // elements
         mCarSystemBarController.removeAll();
@@ -389,6 +398,9 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         // Upon restarting the Navigation Bar, CarFacetButtonController should immediately apply the
         // selection state that reflects the current task stack.
         mButtonSelectionStateListener.onTaskStackChanged();
+
+        mCarSystemBarRestartTracker.notifyRestartComplete(/* recreateWindows= */ false,
+                isProvisionedStateChange);
     }
 
     private boolean isDeviceSetupForUser() {
@@ -770,8 +782,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                     selectedQuickControlsClsName);
         }
 
-        mCarSystemBarController.resetViewCache();
-        restartNavBars();
+        resetSystemBarContent(/* isProvisionedStateChange= */ false);
 
         // retrieve the previous state
         if (isProfilePickerOpen) {
@@ -788,12 +799,18 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
 
     @VisibleForTesting
     void restartSystemBars() {
+        mCarSystemBarRestartTracker.notifyPendingRestart(/* recreateWindows= */ true,
+                /* provisionedStateChanged= */ false);
+
         mCarSystemBarController.removeAll();
         mCarSystemBarController.resetSystemBarConfigs();
         clearSystemBarWindow(/* removeUnusedWindow= */ true);
         buildNavBarWindows();
         buildNavBarContent();
         attachNavBarWindows();
+
+        mCarSystemBarRestartTracker.notifyRestartComplete(/* recreateWindows= */ true,
+                /* provisionedStateChanged= */ false);
     }
 
     private void clearSystemBarWindow(boolean removeUnusedWindow) {

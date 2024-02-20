@@ -17,6 +17,7 @@
 package com.android.systemui.car.systembar.element;
 
 import android.app.StatusBarManager;
+import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
 
@@ -27,8 +28,10 @@ import com.android.systemui.util.ViewController;
 public abstract class CarSystemBarElementController<V extends View & CarSystemBarElement>
         extends ViewController<V> {
     private final CarSystemBarElementStatusBarDisableController mElementDisableController;
+    private final CarSystemBarElementStateController mElementStateController;
     private boolean mIsDisabledBySystemBarState;
     private boolean mDisableListenerRegistered = false;
+    private boolean mStateControllerRegistered = false;
     private final CarSystemBarElementStatusBarDisableController.Listener mDisableListener =
             disabled -> {
                 mIsDisabledBySystemBarState = disabled;
@@ -36,9 +39,11 @@ public abstract class CarSystemBarElementController<V extends View & CarSystemBa
             };
 
     protected CarSystemBarElementController(V view,
-            CarSystemBarElementStatusBarDisableController disableController) {
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController) {
         super(view);
         mElementDisableController = disableController;
+        mElementStateController = stateController;
     }
 
     /**
@@ -65,6 +70,11 @@ public abstract class CarSystemBarElementController<V extends View & CarSystemBa
                     mView.getSystemBarDisable2Flags(), mView.disableForLockTaskModeLocked());
             mDisableListenerRegistered = true;
         }
+
+        if (shouldRestoreState() && !mStateControllerRegistered) {
+            mElementStateController.registerController(/* CarSystemBarElementController= */ this);
+            mStateControllerRegistered = true;
+        }
     }
 
     @Override
@@ -72,6 +82,12 @@ public abstract class CarSystemBarElementController<V extends View & CarSystemBa
     protected void onViewDetached() {
         if (mDisableListenerRegistered) {
             mElementDisableController.removeListener(mDisableListener);
+            mDisableListenerRegistered = false;
+        }
+
+        if (mStateControllerRegistered) {
+            mElementStateController.unregisterController(/* CarSystemBarElementController= */ this);
+            mStateControllerRegistered = false;
         }
     }
 
@@ -90,6 +106,41 @@ public abstract class CarSystemBarElementController<V extends View & CarSystemBa
      */
     protected boolean shouldBeVisible() {
         return true;
+    }
+
+    /**
+     * Return true if the element should be restore its state in the event that the hosting system
+     * bar is restarted.
+     */
+    protected boolean shouldRestoreState() {
+        return false;
+    }
+
+    /** Get state to save on system bar restart - values should be added to the provided bundle. */
+    protected Bundle getState(Bundle bundle) {
+        return bundle;
+    }
+
+    /** Restore controller state from the provided saved bundle. */
+    protected void restoreState(Bundle bundle) {
+    }
+
+    /**
+     * Attempts to return a unique id for this view instance by concatenating the root view id with
+     * the current view id - per core android recommendations, is assumed that a view within a
+     * single view hierarchy has a unique id. This logic may be overridden to provide a different
+     * mechanism of providing unique ids should this not meet the needs of a specific configuration.
+     */
+    protected long getUniqueViewId() {
+        if (mView.getId() <= 0) {
+            return View.NO_ID;
+        }
+        if (mView.getRootView() == null || mView.getRootView().getId() <= 0) {
+            return mView.getId();
+        }
+        // create unique id by concatenating the root id with the view id
+        int length = (int) Math.floor(Math.log10(mView.getId())) + 1;
+        return (long) Math.pow(10, length) * mView.getRootView().getId() + mView.getId();
     }
 
     private boolean shouldRegisterDisableListener() {

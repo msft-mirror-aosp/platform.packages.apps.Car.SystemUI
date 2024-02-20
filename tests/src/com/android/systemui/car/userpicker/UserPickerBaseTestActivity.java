@@ -23,6 +23,7 @@ import android.view.Display;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.settings.DisplayTracker;
 
@@ -40,6 +41,7 @@ public class UserPickerBaseTestActivity extends UserPickerActivity {
         mController = mock(UserPickerController.class);
         mDialogManager = mock(DialogManager.class);
         mSnackbarManager = mock(SnackbarManager.class);
+        mCarSystemBarElementInitializer = mock(CarSystemBarElementInitializer.class);
         mDisplayTracker = mock(DisplayTracker.class);
         mDumpManager = mock(DumpManager.class);
         mTestIsDriver = isDriver;

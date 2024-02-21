@@ -36,10 +36,8 @@ import com.android.systemui.settings.UserTracker;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 /** A factory that creates and caches views for navigation bars. */
 @SysUISingleton
@@ -70,8 +68,7 @@ public class CarSystemBarViewFactory {
     private final FeatureFlags mFeatureFlags;
     private final QuickControlsEntryPointsController mQuickControlsEntryPointsController;
     private final UserTracker mUserTracker;
-    private final Map<Class<?>, Provider<CarSystemBarElementController.Factory>>
-            mElementControllerFactories;
+    private final CarSystemBarElementInitializer mCarSystemBarElementInitializer;
     private final List<CarSystemBarElementController> mCarSystemBarElementControllers =
             new ArrayList<>();
 
@@ -95,13 +92,13 @@ public class CarSystemBarViewFactory {
             FeatureFlags featureFlags,
             QuickControlsEntryPointsController quickControlsEntryPointsController,
             UserTracker userTracker,
-            Map<Class<?>, Provider<CarSystemBarElementController.Factory>> elementControllerFactory
+            CarSystemBarElementInitializer elementInitializer
     ) {
         mContext = context;
         mFeatureFlags = featureFlags;
         mQuickControlsEntryPointsController = quickControlsEntryPointsController;
         mUserTracker = userTracker;
-        mElementControllerFactories = elementControllerFactory;
+        mCarSystemBarElementInitializer = elementInitializer;
     }
 
     /** Gets the top window. */
@@ -191,8 +188,7 @@ public class CarSystemBarViewFactory {
         view.setupQuickControlsEntryPoints(mQuickControlsEntryPointsController, isSetUp);
         view.setupSystemBarButtons(mUserTracker);
         mCarSystemBarElementControllers.addAll(
-                CarSystemBarElementInitializer.initializeCarSystemBarElements(view,
-                        mElementControllerFactories));
+                mCarSystemBarElementInitializer.initializeCarSystemBarElements(view));
 
         // Include a FocusParkingView at the beginning. The rotary controller "parks" the focus here
         // when the user navigates to another window. This is also used to prevent wrap-around.

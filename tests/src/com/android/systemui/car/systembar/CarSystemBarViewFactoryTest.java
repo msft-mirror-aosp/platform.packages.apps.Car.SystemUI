@@ -29,7 +29,7 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.settings.UserTracker;
 
@@ -38,10 +38,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.Map;
-
-import javax.inject.Provider;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -54,7 +50,7 @@ public class CarSystemBarViewFactoryTest extends SysuiTestCase {
     @Mock
     View mStatusIconView;
     @Mock
-    Map<Class<?>, Provider<CarSystemBarElementController.Factory>> mElementControllerFactories;
+    private CarSystemBarElementInitializer mCarSystemBarElementInitializer;
 
     @Before
     public void setUp() {
@@ -63,7 +59,7 @@ public class CarSystemBarViewFactoryTest extends SysuiTestCase {
                 .thenReturn(mStatusIconView);
         mCarSystemBarViewFactory = new CarSystemBarViewFactory(mContext,
                 mock(FeatureFlags.class), mQuickControlsEntryPointsController,
-                mock(UserTracker.class), mElementControllerFactories);
+                mock(UserTracker.class), mCarSystemBarElementInitializer);
     }
 
     @Test

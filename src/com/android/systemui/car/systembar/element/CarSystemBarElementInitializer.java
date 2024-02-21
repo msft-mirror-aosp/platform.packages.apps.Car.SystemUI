@@ -21,15 +21,22 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.systemui.dagger.SysUISingleton;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 
 /** Helper class for retrieving and initializing CarSystemBarElements and their controllers. */
+@SysUISingleton
 public class CarSystemBarElementInitializer {
     private static final String TAG = CarSystemBarElementInitializer.class.getSimpleName();
+
+    private final Map<Class<?>, Provider<CarSystemBarElementController.Factory>>
+            mElementControllerFactories;
 
     /** Convert a class string to a class instance of CarSystemBarElementController */
     public static Class<?> getElementControllerClassFromString(String str) {
@@ -46,16 +53,21 @@ public class CarSystemBarElementInitializer {
         return null;
     }
 
+    @Inject
+    public CarSystemBarElementInitializer(
+            Map<Class<?>, Provider<CarSystemBarElementController.Factory>> factories) {
+        mElementControllerFactories = factories;
+    }
+
     /** Instantiate all CarSystemBarElements found within the provided rootView */
-    public static List<CarSystemBarElementController> initializeCarSystemBarElements(
-            ViewGroup rootView,
-            Map<Class<?>, Provider<CarSystemBarElementController.Factory>> controllerFactories) {
+    public List<CarSystemBarElementController> initializeCarSystemBarElements(
+            ViewGroup rootView) {
         List<ElementViewControllerData> elementData = findSystemBarElements(rootView);
         List<CarSystemBarElementController> controllers = new ArrayList<>();
         for (ElementViewControllerData element : elementData) {
             if (element.getControllerClass() != null) {
                 Provider<CarSystemBarElementController.Factory> factoryProvider =
-                        controllerFactories.get(element.getControllerClass());
+                        mElementControllerFactories.get(element.getControllerClass());
                 if (factoryProvider == null) {
                     Log.d(TAG, "cannot find factory provider for class "
                             + element.getControllerClass());

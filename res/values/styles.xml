@@ -210,10 +210,9 @@
 
 
     <!-- Biometrics -->
-    <style name="PinPadKey">
+    <style name="PinPadKey" parent="TextAppearance.Car.Headline.Medium">
         <item name="android:gravity">center</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textSize">@*android:dimen/car_body1_size</item>
         <item name="android:textColor">@*android:color/car_body3</item>
         <item name="android:tint">@*android:color/car_body3</item>
         <item name="android:clickable">true</item>

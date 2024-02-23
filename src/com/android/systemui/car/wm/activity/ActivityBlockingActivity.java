@@ -489,8 +489,9 @@ public class ActivityBlockingActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mCar.disconnect();
-        mUxRManager.unregisterListener();
+        if (mUxRManager != null) {
+            mUxRManager.unregisterListener();
+        }
         mCarPackageManager.unregisterBlockingUiCommandListener(mBlockingUiCommandListener);
         if (mToggleDebug != null) {
             mToggleDebug.getViewTreeObserver().removeOnGlobalLayoutListener(

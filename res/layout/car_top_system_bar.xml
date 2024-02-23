@@ -36,7 +36,7 @@
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_alignParentStart="true"
-        />
+            />
 
         <FrameLayout
             android:id="@+id/clock_container"

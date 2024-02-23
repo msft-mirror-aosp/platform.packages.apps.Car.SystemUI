@@ -28,6 +28,7 @@ import androidx.annotation.NonNull;
 import com.android.systemui.R;
 import com.android.systemui.car.statusicon.StatusIconView;
 import com.android.systemui.car.statusicon.StatusIconViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
@@ -66,8 +67,9 @@ public class LocationStatusIconController extends StatusIconViewController {
     @AssistedInject
     protected LocationStatusIconController(@Assisted StatusIconView view,
             CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
             Context context, @Main Resources resources, UserTracker userTracker) {
-        super(view, disableController);
+        super(view, disableController, stateController);
         mContext = context;
         mUserTracker = userTracker;
         mLocationManager = context.getSystemService(LocationManager.class);

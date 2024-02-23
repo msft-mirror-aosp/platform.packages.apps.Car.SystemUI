@@ -38,6 +38,7 @@ import android.testing.TestableLooper;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.settings.UserTracker;
 
@@ -61,6 +62,8 @@ public class QCFooterViewControllerTest extends SysuiTestCase {
     private UserTracker mUserTracker;
     @Mock
     private CarSystemBarElementStatusBarDisableController mDisableController;
+    @Mock
+    private CarSystemBarElementStateController mStateController;
 
     private MockitoSession mMockingSession;
     private QCFooterView mView;
@@ -80,7 +83,8 @@ public class QCFooterViewControllerTest extends SysuiTestCase {
         when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(1000));
         mIntent = new Intent();
         when(mView.getOnClickIntent()).thenReturn(mIntent);
-        mController = new QCFooterViewController(mView, mDisableController, mContext, mUserTracker);
+        mController = new QCFooterViewController(mView, mDisableController, mStateController,
+                mContext, mUserTracker);
         mController.init();
         doReturn(mCarUxRestrictionsUtil).when(() -> CarUxRestrictionsUtil.getInstance(any()));
     }

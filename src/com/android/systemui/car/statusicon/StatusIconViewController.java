@@ -24,6 +24,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 
 public abstract class StatusIconViewController extends
@@ -35,8 +36,9 @@ public abstract class StatusIconViewController extends
     private final Observer<StatusIconData> mObserver;
 
     protected StatusIconViewController(StatusIconView view,
-            CarSystemBarElementStatusBarDisableController disableController) {
-        super(view, disableController);
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController) {
+        super(view, disableController, stateController);
         mObserver = this::updateIconView;
     }
 

@@ -25,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.car.statusicon.StatusIconView;
 import com.android.systemui.car.statusicon.StatusIconViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.statusbar.connectivity.NetworkController;
@@ -51,8 +52,9 @@ public class WifiSignalStatusIconController extends StatusIconViewController imp
     @AssistedInject
     protected WifiSignalStatusIconController(@Assisted StatusIconView view,
             CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
             @Main Resources resources, Context context, NetworkController networkController) {
-        super(view, disableController);
+        super(view, disableController, stateController);
         mResources = resources;
         mContext = context;
         mNetworkController = networkController;

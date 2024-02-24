@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.systembar;
 
+import android.annotation.IdRes;
 import android.content.Context;
 import android.util.ArrayMap;
 import android.util.Log;
@@ -154,8 +155,20 @@ public class CarSystemBarViewFactory {
 
         ViewGroup window = (ViewGroup) View.inflate(mContext,
                 R.layout.navigation_bar_window, /* root= */ null);
+        window.setId(getWindowId(type));
         mCachedContainerMap.put(type, window);
         return mCachedContainerMap.get(type);
+    }
+
+    @IdRes
+    private int getWindowId(Type type) {
+        return switch (type) {
+            case TOP -> R.id.car_top_bar_window;
+            case BOTTOM -> R.id.car_bottom_bar_window;
+            case LEFT -> R.id.car_left_bar_window;
+            case RIGHT -> R.id.car_right_bar_window;
+            default -> throw new IllegalArgumentException("unknown system bar window type " + type);
+        };
     }
 
     private CarSystemBarView getBar(boolean isSetUp, Type provisioned, Type unprovisioned) {

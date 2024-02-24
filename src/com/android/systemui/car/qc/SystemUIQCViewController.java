@@ -29,6 +29,7 @@ import com.android.car.qc.controller.RemoteQCController;
 import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.car.qc.view.QCView;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.settings.UserTracker;
 
@@ -63,10 +64,11 @@ public final class SystemUIQCViewController extends CarSystemBarElementControlle
 
     @AssistedInject
     public SystemUIQCViewController(@Assisted SystemUIQCView view,
-            CarSystemBarElementStatusBarDisableController disableController, Context context,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController, Context context,
             UserTracker userTracker,
             Map<Class<?>, Provider<BaseLocalQCProvider>> localQCProviderCreators) {
-        super(view, disableController);
+        super(view, disableController, stateController);
         mContext = context;
         mUserTracker = userTracker;
         mLocalQCProviderCreators = localQCProviderCreators;

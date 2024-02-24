@@ -42,6 +42,7 @@ import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.statusbar.UserNameViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.tests.R;
@@ -76,6 +77,8 @@ public class QCUserPickerButtonControllerTest extends SysuiTestCase {
     private CarServiceProvider mCarServiceProvider;
     @Mock
     private CarSystemBarElementStatusBarDisableController mDisableController;
+    @Mock
+    private CarSystemBarElementStateController mStateController;
 
     private UserHandle mUserHandle;
     private QCFooterView mView;
@@ -94,8 +97,9 @@ public class QCUserPickerButtonControllerTest extends SysuiTestCase {
 
         mView = spy(new QCFooterView(mContext));
         when(mView.findViewById(R.id.user_icon)).thenReturn(mUserIconView);
-        mController = new QCUserPickerButtonController(mView, mDisableController, mContext,
-                mUserTracker, mCarServiceProvider, mBroadcastDispatcher);
+        mController = new QCUserPickerButtonController(mView, mDisableController,
+                mStateController, mContext, mUserTracker, mCarServiceProvider,
+                mBroadcastDispatcher);
         mController.init();
 
         attachCarService();

@@ -30,6 +30,7 @@ import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.statusbar.connectivity.IconState;
 import com.android.systemui.statusbar.connectivity.MobileDataIndicators;
@@ -50,6 +51,8 @@ public class MobileSignalStatusIconControllerTest extends SysuiTestCase {
     NetworkController mNetworkController;
     @Mock
     CarSystemBarElementStatusBarDisableController mDisableController;
+    @Mock
+    CarSystemBarElementStateController mStateController;
 
     private StatusIconView mView;
     private MobileSignalStatusIconController mMobileSignalStatusIconController;
@@ -60,7 +63,7 @@ public class MobileSignalStatusIconControllerTest extends SysuiTestCase {
 
         mView = new StatusIconView(mContext);
         mMobileSignalStatusIconController = new MobileSignalStatusIconController(mView,
-                mDisableController, mContext, mNetworkController);
+                mDisableController, mStateController, mContext, mNetworkController);
     }
 
     @Test

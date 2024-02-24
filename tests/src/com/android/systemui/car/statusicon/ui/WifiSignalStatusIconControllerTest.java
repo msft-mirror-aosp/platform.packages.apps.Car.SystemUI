@@ -32,6 +32,7 @@ import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.statusbar.connectivity.IconState;
 import com.android.systemui.statusbar.connectivity.NetworkController;
@@ -54,6 +55,8 @@ public class WifiSignalStatusIconControllerTest extends SysuiTestCase {
     NetworkController mNetworkController;
     @Mock
     CarSystemBarElementStatusBarDisableController mDisableController;
+    @Mock
+    CarSystemBarElementStateController mStateController;
 
     private StatusIconView mView;
     private WifiSignalStatusIconController mWifiSignalStatusIconController;
@@ -64,7 +67,7 @@ public class WifiSignalStatusIconControllerTest extends SysuiTestCase {
 
         mView = new StatusIconView(mContext);
         mWifiSignalStatusIconController = new WifiSignalStatusIconController(mView,
-                mDisableController, mResources, mContext, mNetworkController);
+                mDisableController, mStateController, mResources, mContext, mNetworkController);
     }
 
     @Test

@@ -32,6 +32,7 @@ import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
 
+import dagger.Binds;
 import dagger.BindsOptionalOf;
 import dagger.Lazy;
 import dagger.Module;
@@ -151,4 +152,11 @@ public abstract class CarSystemBarModule {
     /** Empty set for CarSystemBarElements. */
     @Multibinds
     abstract Map<Class<?>, CarSystemBarElementController.Factory> bindEmptyElementFactoryMap();
+
+    /** Injects CarSystemBarPanelButtonViewController */
+    @Binds
+    @IntoMap
+    @ClassKey(CarSystemBarPanelButtonViewController.class)
+    public abstract CarSystemBarElementController.Factory bindSystemBarPanelButtonController(
+            CarSystemBarPanelButtonViewController.Factory factory);
 }

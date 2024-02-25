@@ -24,6 +24,7 @@ import com.android.settingslib.graph.SignalDrawable;
 import com.android.systemui.R;
 import com.android.systemui.car.statusicon.StatusIconView;
 import com.android.systemui.car.statusicon.StatusIconViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.statusbar.connectivity.MobileDataIndicators;
 import com.android.systemui.statusbar.connectivity.NetworkController;
@@ -46,8 +47,9 @@ public class MobileSignalStatusIconController extends StatusIconViewController i
     @AssistedInject
     protected MobileSignalStatusIconController(@Assisted StatusIconView view,
             CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
             Context context, NetworkController networkController) {
-        super(view, disableController);
+        super(view, disableController, stateController);
         mNetworkController = networkController;
 
         mMobileSignalIconDrawable = new SignalDrawable(context);

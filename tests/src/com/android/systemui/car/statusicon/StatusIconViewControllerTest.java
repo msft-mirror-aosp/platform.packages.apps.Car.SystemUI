@@ -29,6 +29,7 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 
 import org.junit.Before;
@@ -49,12 +50,15 @@ public class StatusIconViewControllerTest extends SysuiTestCase {
     private StatusIconView mStatusIconView;
     @Mock
     private CarSystemBarElementStatusBarDisableController mDisableController;
+    @Mock
+    private CarSystemBarElementStateController mStateController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mController = new TestStatusIconViewController(mStatusIconView, mDisableController);
+        mController = new TestStatusIconViewController(mStatusIconView, mDisableController,
+                mStateController);
     }
 
     @Test
@@ -83,8 +87,9 @@ public class StatusIconViewControllerTest extends SysuiTestCase {
     private static class TestStatusIconViewController extends StatusIconViewController {
 
         protected TestStatusIconViewController(StatusIconView view,
-                CarSystemBarElementStatusBarDisableController disableController) {
-            super(view, disableController);
+                CarSystemBarElementStatusBarDisableController disableController,
+                CarSystemBarElementStateController selectionRestorer) {
+            super(view, disableController, selectionRestorer);
         }
 
         @Override

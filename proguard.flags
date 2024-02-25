@@ -1,6 +1,7 @@
 -include ../../../../frameworks/base/packages/SystemUI/proguard_common.flags
 
 -keep class com.android.systemui.CarSystemUIInitializer
+-keep class com.android.systemui.car.biometrics.PinPadView { *; }
 -keep class com.android.car.notification.headsup.animationhelper.**
 
 -keep class com.android.systemui.DaggerCarGlobalRootComponent { *; }

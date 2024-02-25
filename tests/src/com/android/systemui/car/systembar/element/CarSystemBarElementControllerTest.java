@@ -54,6 +54,8 @@ public class CarSystemBarElementControllerTest extends SysuiTestCase {
 
     @Mock
     CarSystemBarElementStatusBarDisableController mDisableController;
+    @Mock
+    CarSystemBarElementStateController mStateController;
 
     @Before
     public void setUp() {
@@ -93,11 +95,33 @@ public class CarSystemBarElementControllerTest extends SysuiTestCase {
     }
 
     @Test
+    public void onViewAttached_shouldNotRestoreState_doesNotSetStateController() {
+        mController.setShouldRestoreState(false);
+        mController.onViewAttached();
+        verify(mStateController, never()).registerController(any());
+    }
+
+    @Test
+    public void onViewAttached_shouldRestoreState_setsStateController() {
+        mController.setShouldRestoreState(true);
+        mController.onViewAttached();
+        verify(mStateController).registerController(any());
+    }
+
+    @Test
     public void onViewDetached_unsetsDisableListener() {
         mElement.setDisableFlag(StatusBarManager.DISABLE_HOME);
         mController.onViewAttached();
         mController.onViewDetached();
         verify(mDisableController).removeListener(any());
+    }
+
+    @Test
+    public void onViewDetached_unsetsStateController() {
+        mController.setShouldRestoreState(true);
+        mController.onViewAttached();
+        mController.onViewDetached();
+        verify(mStateController).unregisterController(any());
     }
 
     private static class TestCarSystemBarElement extends View implements CarSystemBarElement {
@@ -150,9 +174,19 @@ public class CarSystemBarElementControllerTest extends SysuiTestCase {
 
     private class TestCarSystemBarElementController extends
             CarSystemBarElementController<TestCarSystemBarElement> {
+        private boolean mShouldRestoreState;
 
         TestCarSystemBarElementController(TestCarSystemBarElement view) {
-            super(view, mDisableController);
+            super(view, mDisableController, mStateController);
+        }
+
+        @Override
+        protected boolean shouldRestoreState() {
+            return mShouldRestoreState;
+        }
+
+        void setShouldRestoreState(boolean restore) {
+            mShouldRestoreState = restore;
         }
     }
 }

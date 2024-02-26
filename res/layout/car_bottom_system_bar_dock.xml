@@ -59,7 +59,7 @@
             android:id="@+id/driver_hvac"
             style="@style/TemperatureControlView"
             systemui:hvacAreaId="49">
-            <include layout="@layout/adjustable_temperature_view_dock"/>
+            <include layout="@layout/adjustable_temperature_view"/>
         </com.android.systemui.car.hvac.TemperatureControlView>
 
         <Space
@@ -99,7 +99,7 @@
             android:id="@+id/passenger_hvac"
             style="@style/TemperatureControlView"
             systemui:hvacAreaId="68">
-            <include layout="@layout/adjustable_temperature_view_dock"/>
+            <include layout="@layout/adjustable_temperature_view"/>
         </com.android.systemui.car.hvac.TemperatureControlView>
 
         <Space

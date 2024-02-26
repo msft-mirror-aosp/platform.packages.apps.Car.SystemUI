@@ -86,13 +86,13 @@
             </LinearLayout>
         </com.android.systemui.car.systembar.CarSystemBarButton>
 
-        <include layout="@layout/camera_privacy_chip_dock"
+        <include layout="@layout/camera_privacy_chip"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/mic_privacy_chip" />
 
-        <include layout="@layout/mic_privacy_chip_dock"
+        <include layout="@layout/mic_privacy_chip"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"

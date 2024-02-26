@@ -60,7 +60,7 @@
     <!-- Padding on either side of the group of all system bar buttons -->
     <dimen name="system_bar_button_group_padding">64dp</dimen>
     <dimen name="system_bar_icon_drawing_size">44dp</dimen>
-    <dimen name="system_bar_button_size">76dp</dimen>
+    <dimen name="system_bar_button_size">64dp</dimen>
     <!-- Margin between the system bar buttons -->
     <dimen name="system_bar_button_margin">32dp</dimen>
     <!-- Padding between the system bar button and the icon within it -->
@@ -80,7 +80,7 @@
     <dimen name="hvac_temperature_bar_margin">32dp</dimen>
     <dimen name="hvac_temperature_text_size">44sp</dimen>
     <dimen name="hvac_temperature_text_padding">10dp</dimen>
-    <dimen name="hvac_temperature_button_size">52dp</dimen>
+    <dimen name="hvac_temperature_button_size">64dp</dimen>
     <dimen name="hvac_temperature_icon_size">36dp</dimen>
     <dimen name="hvac_temperature_button_padding">12dp</dimen>
     <!--These values represent MIN and MAX for hvac-->
@@ -470,5 +470,5 @@
     <dimen name="pin_pad_key_margin">12dp</dimen>
     <dimen name="pin_pad_icon_size">@*android:dimen/car_primary_icon_size</dimen>
 
-    <dimen name="dock_container_margin">@*android:dimen/car_padding_4</dimen>
+    <dimen name="dock_container_margin">10dp</dimen>
 </resources>

@@ -24,6 +24,7 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityTaskManager;
 import android.app.TaskStackListener;
+import android.car.drivingstate.CarUxRestrictions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -49,6 +50,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.car.datasubscription.DataSubscription;
 import com.android.car.datasubscription.DataSubscriptionStatus;
+import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.R;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Background;
@@ -79,7 +81,7 @@ public class DataSubscriptionController {
     private final UserTracker mUserTracker;
     private PopupWindow mPopupWindow;
     private final View mPopupView;
-    private final Button mExplorationButton;
+    private Button mExplorationButton;
     private final Intent mIntent;
     private ConnectivityManager mConnectivityManager;
     private DataSubscriptionNetworkCallback mNetworkCallback;
@@ -158,11 +160,38 @@ public class DataSubscriptionController {
             }
         }
     };
+
+    private final CarUxRestrictionsUtil.OnUxRestrictionsChangedListener
+            mUxRestrictionsChangedListener =
+            new CarUxRestrictionsUtil.OnUxRestrictionsChangedListener() {
+                @Override
+                public void onRestrictionsChanged(@NonNull CarUxRestrictions carUxRestrictions) {
+                    mIsDistractionOptimizationRequired =
+                            carUxRestrictions.isRequiresDistractionOptimization();
+                    if (mIsProactiveMsg) {
+                        if (mIsDistractionOptimizationRequired
+                                && mPopupWindow != null
+                                && mPopupWindow.isShowing()) {
+                            mPopupWindow.dismiss();
+                        }
+                    } else {
+                        if (mIsDistractionOptimizationRequired && mPopupWindow != null) {
+                            mExplorationButton.setVisibility(View.GONE);
+
+                        } else {
+                            mExplorationButton.setVisibility(View.VISIBLE);
+                        }
+                        mPopupWindow.update();
+                    }
+                }
+            };
+
     private int mSubscriptionStatus;
     // Determines whether a proactive message was already displayed
     private boolean mWasProactiveMsgDisplayed;
     // Determines whether the current message being displayed is proactive or reactive
     private boolean mIsProactiveMsg;
+    private boolean mIsDistractionOptimizationRequired;
     private View mAnchorView;
     private boolean mShouldDisplayProactiveMsg;
 
@@ -176,6 +205,7 @@ public class DataSubscriptionController {
     private String mTopActivity;
     private String mTopPackage;
     private NetworkCapabilities mNetworkCapabilities;
+    private boolean mIsUxRestrictionsListenerRegistered;
 
     @SuppressLint("MissingPermission")
     @Inject
@@ -223,6 +253,7 @@ public class DataSubscriptionController {
         mNetworkCallback = new DataSubscriptionNetworkCallback();
         mActivitiesBlocklist = new HashSet<>();
         mPackagesBlocklist = new HashSet<>();
+
         Resources res = mContext.getResources();
         String[] blockActivities = res.getStringArray(
                 R.array.config_dataSubscriptionBlockedActivitiesList);
@@ -238,13 +269,42 @@ public class DataSubscriptionController {
     }
 
     private void updateShouldDisplayProactiveMsg() {
-        // Determines whether a proactive message should be displayed
-        mShouldDisplayProactiveMsg = !mWasProactiveMsgDisplayed
-                && mSubscriptionStatus != DataSubscriptionStatus.PAID;
-        if (mShouldDisplayProactiveMsg && mPopupWindow != null
-                && !mPopupWindow.isShowing()) {
-            mIsProactiveMsg = true;
-            showPopUpWindow();
+        if (mIsDistractionOptimizationRequired) {
+            if (mPopupWindow != null && mPopupWindow.isShowing()) {
+                mPopupWindow.dismiss();
+            }
+        } else {
+            // Determines whether a proactive message should be displayed
+            mShouldDisplayProactiveMsg = !mWasProactiveMsgDisplayed
+                    && mSubscriptionStatus != DataSubscriptionStatus.PAID;
+            if (mShouldDisplayProactiveMsg && mPopupWindow != null
+                    && !mPopupWindow.isShowing()) {
+                mIsProactiveMsg = true;
+                showPopUpWindow();
+            }
+        }
+    }
+
+    private void updateShouldDisplayReactiveMsg() {
+        if (mIsDistractionOptimizationRequired) {
+            mExplorationButton.setVisibility(View.GONE);
+
+        } else {
+            mExplorationButton.setVisibility(View.VISIBLE);
+        }
+        if (!mPopupWindow.isShowing()) {
+            mShouldDisplayReactiveMsg = (mNetworkCapabilities == null
+                    || (!isSuspendedNetwork()
+                    && !isValidNetwork()));
+            if (mShouldDisplayReactiveMsg) {
+                mIsProactiveMsg = false;
+                showPopUpWindow();
+                mActivitiesBlocklist.add(mTopActivity);
+            } else {
+                if (mPopupWindow != null && mPopupWindow.isShowing()) {
+                    mPopupWindow.dismiss();
+                }
+            }
         }
     }
 
@@ -271,38 +331,36 @@ public class DataSubscriptionController {
 
                         public void run() {
                             mPopupWindow.dismiss();
+                            mWasProactiveMsgDisplayed = true;
+                            // after the proactive msg dismisses, it won't get displayed again hence
+                            // the msg from now on will just be reactive
+                            mIsProactiveMsg = false;
                         }
                     }, mPopUpTimeOut);
-                    mWasProactiveMsgDisplayed = true;
                 }
             });
-        }
-    }
-
-    void updateShouldDisplayReactiveMsg() {
-        mShouldDisplayReactiveMsg = ((mNetworkCapabilities == null
-                || (!isSuspendedNetwork() && !isValidNetwork()))
-                && mSubscriptionStatus != DataSubscriptionStatus.PAID);
-        if (mShouldDisplayReactiveMsg) {
-            mIsProactiveMsg = false;
-            showPopUpWindow();
-            mActivitiesBlocklist.add(mTopActivity);
-        } else {
-            if (mPopupWindow != null && mPopupWindow.isShowing()) {
-                mPopupWindow.dismiss();
-            }
         }
     }
 
     /** Set the anchor view. If null, unregisters active data subscription listeners */
     public void setAnchorView(@Nullable View view) {
         mAnchorView = view;
-        if (mAnchorView == null) {
+        if (mAnchorView != null) {
+            mSubscription.addDataSubscriptionListener(mDataSubscriptionChangeListener);
+            updateShouldDisplayProactiveMsg();
+            if (!mIsUxRestrictionsListenerRegistered) {
+                CarUxRestrictionsUtil.getInstance(mContext).register(
+                        mUxRestrictionsChangedListener);
+                mIsUxRestrictionsListenerRegistered = true;
+            }
+        } else {
             mSubscription.removeDataSubscriptionListener();
-            return;
+            if (mIsUxRestrictionsListenerRegistered) {
+                CarUxRestrictionsUtil.getInstance(mContext).unregister(
+                        mUxRestrictionsChangedListener);
+                mIsUxRestrictionsListenerRegistered = false;
+            }
         }
-        mSubscription.addDataSubscriptionListener(mDataSubscriptionChangeListener);
-        updateShouldDisplayProactiveMsg();
     }
 
     boolean isValidNetwork() {
@@ -385,6 +443,7 @@ public class DataSubscriptionController {
     TaskStackListener getTaskStackListener() {
         return mTaskStackListener;
     }
+
     @VisibleForTesting
     boolean getShouldDisplayReactiveMsg() {
         return mShouldDisplayReactiveMsg;
@@ -398,5 +457,20 @@ public class DataSubscriptionController {
     @VisibleForTesting
     void setIsCallbackRegistered(boolean value) {
         mIsNetworkCallbackRegistered = value;
+    }
+
+    @VisibleForTesting
+    void setIsProactiveMsg(boolean value) {
+        mIsProactiveMsg = value;
+    }
+
+    @VisibleForTesting
+    void setExplorationButton(Button button) {
+        mExplorationButton = button;
+    }
+
+    @VisibleForTesting
+    void setIsUxRestrictionsListenerRegistered(boolean value) {
+        mIsUxRestrictionsListenerRegistered = value;
     }
 }

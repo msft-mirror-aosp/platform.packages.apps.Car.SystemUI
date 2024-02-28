@@ -465,10 +465,11 @@
     <!-- Dimensions for Pin pad -->
     <dimen name="confirm_lock_message_vertical_spacing">@*android:dimen/car_padding_2</dimen>
     <dimen name="pin_password_entry_padding_horizontal">@*android:dimen/car_padding_2</dimen>
-    <dimen name="pin_pad_key_width">120dp</dimen>
-    <dimen name="pin_pad_key_height">80dp</dimen>
-    <dimen name="pin_pad_key_margin">12dp</dimen>
+    <dimen name="pin_pad_key_width">96dp</dimen>
+    <dimen name="pin_pad_key_height">96dp</dimen>
+    <dimen name="pin_pad_key_margin">10dp</dimen>
     <dimen name="pin_pad_icon_size">@*android:dimen/car_primary_icon_size</dimen>
+    <dimen name="pin_pad_key_radius">100dp</dimen>
 
     <dimen name="dock_container_margin">@*android:dimen/car_padding_4</dimen>
 </resources>

@@ -99,6 +99,7 @@
         android:layout_height="@dimen/pin_pad_key_height"
         android:layout_margin="@dimen/pin_pad_key_margin"
         android:contentDescription="@string/backspace_key"
+        android:background="@color/pin_pad_icon_background_color"
         android:src="@drawable/ic_backspace"/>
     <Button
         android:id="@+id/key0"
@@ -115,5 +116,6 @@
         android:layout_height="@dimen/pin_pad_key_height"
         android:layout_margin="@dimen/pin_pad_key_margin"
         android:contentDescription="@string/enter_key"
+        android:background="@color/pin_pad_icon_background_color"
         android:src="@drawable/ic_check"/>
 </merge>

@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.systembar;
 
+import android.annotation.IdRes;
 import android.content.Context;
 import android.util.ArrayMap;
 import android.util.Log;
@@ -36,10 +37,8 @@ import com.android.systemui.settings.UserTracker;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 /** A factory that creates and caches views for navigation bars. */
 @SysUISingleton
@@ -70,8 +69,7 @@ public class CarSystemBarViewFactory {
     private final FeatureFlags mFeatureFlags;
     private final QuickControlsEntryPointsController mQuickControlsEntryPointsController;
     private final UserTracker mUserTracker;
-    private final Map<Class<?>, Provider<CarSystemBarElementController.Factory>>
-            mElementControllerFactories;
+    private final CarSystemBarElementInitializer mCarSystemBarElementInitializer;
     private final List<CarSystemBarElementController> mCarSystemBarElementControllers =
             new ArrayList<>();
 
@@ -95,13 +93,13 @@ public class CarSystemBarViewFactory {
             FeatureFlags featureFlags,
             QuickControlsEntryPointsController quickControlsEntryPointsController,
             UserTracker userTracker,
-            Map<Class<?>, Provider<CarSystemBarElementController.Factory>> elementControllerFactory
+            CarSystemBarElementInitializer elementInitializer
     ) {
         mContext = context;
         mFeatureFlags = featureFlags;
         mQuickControlsEntryPointsController = quickControlsEntryPointsController;
         mUserTracker = userTracker;
-        mElementControllerFactories = elementControllerFactory;
+        mCarSystemBarElementInitializer = elementInitializer;
     }
 
     /** Gets the top window. */
@@ -157,8 +155,20 @@ public class CarSystemBarViewFactory {
 
         ViewGroup window = (ViewGroup) View.inflate(mContext,
                 R.layout.navigation_bar_window, /* root= */ null);
+        window.setId(getWindowId(type));
         mCachedContainerMap.put(type, window);
         return mCachedContainerMap.get(type);
+    }
+
+    @IdRes
+    private int getWindowId(Type type) {
+        return switch (type) {
+            case TOP -> R.id.car_top_bar_window;
+            case BOTTOM -> R.id.car_bottom_bar_window;
+            case LEFT -> R.id.car_left_bar_window;
+            case RIGHT -> R.id.car_right_bar_window;
+            default -> throw new IllegalArgumentException("unknown system bar window type " + type);
+        };
     }
 
     private CarSystemBarView getBar(boolean isSetUp, Type provisioned, Type unprovisioned) {
@@ -191,8 +201,7 @@ public class CarSystemBarViewFactory {
         view.setupQuickControlsEntryPoints(mQuickControlsEntryPointsController, isSetUp);
         view.setupSystemBarButtons(mUserTracker);
         mCarSystemBarElementControllers.addAll(
-                CarSystemBarElementInitializer.initializeCarSystemBarElements(view,
-                        mElementControllerFactories));
+                mCarSystemBarElementInitializer.initializeCarSystemBarElements(view));
 
         // Include a FocusParkingView at the beginning. The rotary controller "parks" the focus here
         // when the user navigates to another window. This is also used to prevent wrap-around.

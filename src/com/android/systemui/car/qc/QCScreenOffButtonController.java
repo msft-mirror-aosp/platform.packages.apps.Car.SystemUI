@@ -22,6 +22,7 @@ import android.content.Intent;
 
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.settings.UserTracker;
 
@@ -46,9 +47,10 @@ public class QCScreenOffButtonController extends QCFooterViewController {
 
     @AssistedInject
     protected QCScreenOffButtonController(@Assisted QCFooterView view,
-            CarSystemBarElementStatusBarDisableController disableController, Context context,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController, Context context,
             UserTracker userTracker, CarServiceProvider carServiceProvider) {
-        super(view, disableController, context, userTracker);
+        super(view, disableController, stateController, context, userTracker);
         mContext = context;
         mUserTracker = userTracker;
         mCarServiceProvider = carServiceProvider;

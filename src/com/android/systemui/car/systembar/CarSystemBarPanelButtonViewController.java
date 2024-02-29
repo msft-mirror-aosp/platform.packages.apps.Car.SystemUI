@@ -18,8 +18,11 @@ package com.android.systemui.car.systembar;
 
 import static com.android.systemui.car.systembar.CarSystemBarPanelButtonView.INVALID_RESOURCE_ID;
 
+import android.os.Bundle;
+
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 
 import dagger.assisted.Assisted;
@@ -31,13 +34,15 @@ import javax.inject.Provider;
 /** Controller for the button view that anchors system bar panels. */
 public class CarSystemBarPanelButtonViewController extends
         CarSystemBarElementController<CarSystemBarPanelButtonView> {
+    private static final String KEY_IS_SELECTED = "key_is_selected";
     private final Provider<StatusIconPanelViewController.Builder> mStatusIconPanelBuilder;
 
     @AssistedInject
     protected CarSystemBarPanelButtonViewController(@Assisted CarSystemBarPanelButtonView view,
             CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
             Provider<StatusIconPanelViewController.Builder> statusIconPanelBuilder) {
-        super(view, disableController);
+        super(view, disableController, stateController);
         mStatusIconPanelBuilder = statusIconPanelBuilder;
     }
 
@@ -78,6 +83,27 @@ public class CarSystemBarPanelButtonViewController extends
                     panelLayoutRes,
                     panelLayoutWidthRes);
             panelController.init();
+        }
+    }
+
+    @Override
+    protected boolean shouldRestoreState() {
+        return true;
+    }
+
+    @Override
+    protected Bundle getState(Bundle bundle) {
+        bundle.putBoolean(KEY_IS_SELECTED, mView.isSelected());
+        return bundle;
+    }
+
+    @Override
+    protected void restoreState(Bundle bundle) {
+        if (bundle.containsKey(KEY_IS_SELECTED)) {
+            boolean selected = bundle.getBoolean(KEY_IS_SELECTED);
+            if (selected != mView.isSelected()) {
+                mView.callOnClick();
+            }
         }
     }
 }

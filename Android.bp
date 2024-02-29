@@ -215,3 +215,23 @@ android_app {
         "allowed_privapp_com.android.carsystemui",
     ],
 }
+
+// Resource lib
+// To be used ONLY for RROs of CarSystemUI
+android_library {
+    name: "CarSystemUI-res",
+    sdk_version: "system_current",
+    resource_dirs: [
+        "res-keyguard",
+        "res",
+    ],
+    manifest: "AndroidManifest-res.xml",
+    use_resource_processor: true,
+    static_libs: [
+        "SystemUI-res",
+        "CarNotification-res",
+        "car-resource-common",
+        "car-ui-lib-no-overlayable"
+    ],
+    lint: { disabled_checks: ["MissingClass"] }
+}

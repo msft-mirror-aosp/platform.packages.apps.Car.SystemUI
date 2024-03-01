@@ -34,12 +34,13 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.hardware.input.InputManager;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableResources;
 import android.view.InputEvent;
 import android.view.KeyEvent;
 import android.view.View;
+
+import androidx.test.filters.SmallTest;
 
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;

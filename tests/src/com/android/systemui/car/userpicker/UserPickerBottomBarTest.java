@@ -17,13 +17,13 @@ package com.android.systemui.car.userpicker;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.filters.SmallTest;
 
 import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;

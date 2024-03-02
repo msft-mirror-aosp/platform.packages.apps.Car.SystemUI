@@ -42,12 +42,13 @@ import android.car.CarOccupantZoneManager.OccupantZoneInfo;
 import android.car.hardware.power.CarPowerManager;
 import android.car.user.CarUserManager;
 import android.content.pm.UserInfo;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.Display;
 import android.view.DisplayAdjustments;
 import android.view.DisplayInfo;
+
+import androidx.test.filters.SmallTest;
 
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;

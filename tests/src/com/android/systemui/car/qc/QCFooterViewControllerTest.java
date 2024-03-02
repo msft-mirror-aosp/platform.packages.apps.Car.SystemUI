@@ -31,9 +31,10 @@ import static org.mockito.Mockito.when;
 import android.car.drivingstate.CarUxRestrictions;
 import android.content.Intent;
 import android.os.UserHandle;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
+
+import androidx.test.filters.SmallTest;
 
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.SysuiTestCase;

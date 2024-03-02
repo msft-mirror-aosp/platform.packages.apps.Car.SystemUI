@@ -41,10 +41,11 @@ import android.car.app.CarActivityManager;
 import android.content.DialogInterface;
 import android.os.RemoteException;
 import android.os.UserHandle;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.Display;
+
+import androidx.test.filters.SmallTest;
 
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;

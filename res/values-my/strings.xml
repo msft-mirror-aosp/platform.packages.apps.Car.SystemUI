@@ -65,7 +65,7 @@
     <string name="system_bar_control_center_label" msgid="5269256399167811590">"ထိန်းချုပ်ဋ္ဌာန"</string>
     <string name="system_bar_assistant_label" msgid="7312821609046711200">"Assistant"</string>
     <string name="system_bar_mic_privacy_chip" msgid="2494035034004728597">"MIC ကိုယ်ရေးအချက်အလက်လုံခြုံမှု ချစ်ပ်"</string>
-    <string name="system_bar_user_avatar" msgid="4122817348016746322">"အသုံးပြုသူ ချန်နယ်ပုံ"</string>
+    <string name="system_bar_user_avatar" msgid="4122817348016746322">"အသုံးပြုသူ အယ်ဗတာ"</string>
     <string name="system_bar_user_name_text" msgid="5859605302481171746">"အသုံးပြုသူအမည် စာသား"</string>
     <string name="hvac_decrease_button_label" msgid="5628481079099995286">"အပူလျှော့ရန်"</string>
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"အပူတိုးရန်"</string>

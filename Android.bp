@@ -62,6 +62,7 @@ android_library {
         "//external/kotlinc:kotlin-annotations",
         "animationlib",
         "CarDockLib",
+        "androidx.test.rules",
     ],
 
     libs: [

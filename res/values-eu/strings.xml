@@ -55,7 +55,7 @@
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"Ados"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Ibilgailuaren kamera aktibatu nahi duzu?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Aurrera egiteko, aktibatu informazio- eta aisia-sistemaren kamera. Horrela, kamera aktibatuta izango dute hura erabiltzeko baimena daukaten aplikazio guztiek."</string>
-    <string name="system_bar_home_label" msgid="8413273833405495948">"Hasierako pantaila"</string>
+    <string name="system_bar_home_label" msgid="8413273833405495948">"Orri nagusia"</string>
     <string name="system_bar_phone_label" msgid="5664288201806823777">"Telefonoa"</string>
     <string name="system_bar_applications_label" msgid="7081862804211786227">"Aplikazioak"</string>
     <string name="system_bar_climate_control_label" msgid="4091187805919276017">"Klimaren kontrola"</string>

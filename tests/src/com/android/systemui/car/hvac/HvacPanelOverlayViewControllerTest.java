@@ -16,11 +16,14 @@
 
 package com.android.systemui.car.hvac;
 
+import static com.android.systemui.car.window.OverlayPanelViewController.OVERLAY_FROM_BOTTOM_BAR;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.UiModeManager;
@@ -87,6 +90,20 @@ public class HvacPanelOverlayViewControllerTest extends SysuiTestCase {
                 mContext, getContext().getOrCreateTestableResources().getResources(),
                 mHvacController, mOverlayViewGlobalStateController, mFlingAnimationUtilsBuilder,
                 mCarDeviceProvisionedController, mConfigurationController, mUiModeManager);
+    }
+
+    @Test
+    public void onScroll_updateDim() {
+        int height = 100;
+        View mockLayout = mock(View.class);
+        when(mockLayout.getHeight()).thenReturn(height);
+        mHvacPanelOverlayViewController.setLayout(mockLayout);
+        mHvacPanelOverlayViewController.setOverlayDirection(OVERLAY_FROM_BOTTOM_BAR);
+
+        mHvacPanelOverlayViewController.onScroll(50);
+
+        verify(mOverlayViewGlobalStateController).updateWindowDimBehind(
+                eq(mHvacPanelOverlayViewController), anyFloat());
     }
 
     @Test

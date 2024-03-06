@@ -41,6 +41,7 @@ import com.android.car.notification.CarNotificationListener;
 import com.android.car.notification.CarNotificationView;
 import com.android.car.notification.CarUxRestrictionManagerWrapper;
 import com.android.car.notification.NotificationClickHandlerFactory;
+import com.android.car.notification.NotificationClickHandlerFactory.OnNotificationClickListener;
 import com.android.car.notification.NotificationDataManager;
 import com.android.car.notification.NotificationViewController;
 import com.android.car.notification.PreprocessingManager;
@@ -48,6 +49,7 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.CarServiceProvider.CarServiceOnConnectedListener;
 import com.android.systemui.car.window.OverlayPanelViewController;
 import com.android.systemui.car.window.OverlayViewController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
@@ -103,8 +105,35 @@ public class NotificationPanelViewController extends OverlayPanelViewController
     private boolean mIsSwipingVerticallyToClose;
     private boolean mIsNotificationCardSwiping;
     private boolean mImeVisible = false;
+    private boolean mOnConnectListenerAdded;
 
     private OnUnseenCountUpdateListener mUnseenCountUpdateListener;
+    private OnNotificationClickListener mOnNotificationClickListener =
+            (launchResult, alertEntry) -> {
+                if (launchResult == ActivityManager.START_TASK_TO_FRONT
+                        || launchResult == ActivityManager.START_SUCCESS) {
+                    animateCollapsePanel();
+                }
+            };
+
+    private CarServiceOnConnectedListener mCarConnectedListener =
+            new CarServiceOnConnectedListener() {
+                @Override
+                public void onConnected(Car car) {
+                    CarUxRestrictionsManager carUxRestrictionsManager =
+                            (CarUxRestrictionsManager)
+                                    car.getCarManager(Car.CAR_UX_RESTRICTION_SERVICE);
+                    mCarUxRestrictionManagerWrapper.setCarUxRestrictionsManager(
+                            carUxRestrictionsManager);
+
+                    PreprocessingManager preprocessingManager =
+                            PreprocessingManager.getInstance(mContext);
+                    preprocessingManager.setCarUxRestrictionManagerWrapper(
+                            mCarUxRestrictionManagerWrapper);
+
+                    mNotificationViewController.enable();
+                }
+            };
 
     @Inject
     public NotificationPanelViewController(
@@ -276,6 +305,13 @@ public class NotificationPanelViewController extends OverlayPanelViewController
         // Do not reinflate the view if it has not been inflated at all.
         if (!isInflated()) return;
 
+        mNotificationClickHandlerFactory.unregisterClickListener(mOnNotificationClickListener);
+
+        if (mOnConnectListenerAdded) {
+            mCarServiceProvider.removeListener(mCarConnectedListener);
+            mOnConnectListenerAdded = false;
+        }
+
         ViewGroup container = (ViewGroup) getLayout();
         container.removeView(mNotificationView);
 
@@ -304,12 +340,7 @@ public class NotificationPanelViewController extends OverlayPanelViewController
         setUpHandleBar();
         setupNotificationPanel();
 
-        mNotificationClickHandlerFactory.registerClickListener((launchResult, alertEntry) -> {
-            if (launchResult == ActivityManager.START_TASK_TO_FRONT
-                    || launchResult == ActivityManager.START_SUCCESS) {
-                animateCollapsePanel();
-            }
-        });
+        mNotificationClickHandlerFactory.registerClickListener(mOnNotificationClickListener);
 
         mNotificationDataManager.setOnUnseenCountUpdateListener(() -> {
             if (mUnseenCountUpdateListener != null) {
@@ -334,18 +365,10 @@ public class NotificationPanelViewController extends OverlayPanelViewController
                 mCarNotificationListener,
                 mCarUxRestrictionManagerWrapper);
 
-        mCarServiceProvider.addListener(car -> {
-            CarUxRestrictionsManager carUxRestrictionsManager =
-                    (CarUxRestrictionsManager)
-                            car.getCarManager(Car.CAR_UX_RESTRICTION_SERVICE);
-            mCarUxRestrictionManagerWrapper.setCarUxRestrictionsManager(
-                    carUxRestrictionsManager);
-
-            PreprocessingManager preprocessingManager = PreprocessingManager.getInstance(mContext);
-            preprocessingManager.setCarUxRestrictionManagerWrapper(mCarUxRestrictionManagerWrapper);
-
-            mNotificationViewController.enable();
-        });
+        if (!mOnConnectListenerAdded) {
+            mCarServiceProvider.addListener(mCarConnectedListener);
+            mOnConnectListenerAdded = true;
+        }
     }
 
     private void setupNotificationPanel() {
@@ -446,6 +469,15 @@ public class NotificationPanelViewController extends OverlayPanelViewController
             mNotificationClickHandlerFactory.clearAllNotifications(mContext);
         }
         mNotificationDataManager.clearAll();
+    }
+
+    /**
+     * Forwards the call to clear all Notification cache.
+     * Note: This is a blocking call so should not execute any long-running or time-consuming tasks
+     * like storing cache.
+     */
+    public void clearCache() {
+        mCarNotificationListener.clearCache();
     }
 
     // OverlayPanelViewController

@@ -37,11 +37,17 @@ import android.view.Display;
 import com.android.systemui.InitController;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dump.DumpManager;
+import com.android.systemui.flags.FeatureFlagsClassic;
 import com.android.systemui.settings.UserTrackerImpl;
 
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import javax.inject.Provider;
+
+import kotlinx.coroutines.CoroutineDispatcher;
+import kotlinx.coroutines.CoroutineScope;
 
 /**
  * Custom user tracking class extended from {@link UserTrackerImpl} specifically for
@@ -91,11 +97,14 @@ public class CarMUPANDUserTrackerImpl extends UserTrackerImpl {
         }
     };
 
-    public CarMUPANDUserTrackerImpl(Context context, UserManager userManager,
+    public CarMUPANDUserTrackerImpl(Context context,
+            Provider<FeatureFlagsClassic> featureFlagsClassic, UserManager userManager,
             IActivityManager iActivityManager, DumpManager dumpManager,
+            CoroutineScope appScope, CoroutineDispatcher backgroundContext,
             Handler backgroundHandler, CarServiceProvider carServiceProvider,
             InitController initController) {
-        super(context, userManager, iActivityManager, dumpManager, backgroundHandler);
+        super(context, featureFlagsClassic, userManager, iActivityManager, dumpManager, appScope,
+                backgroundContext, backgroundHandler);
         mCarUserManagerCallbackExecutor = Executors.newSingleThreadExecutor();
         mCarServiceProvider = carServiceProvider;
 

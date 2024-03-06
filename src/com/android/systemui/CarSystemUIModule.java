@@ -21,13 +21,13 @@ import static com.android.systemui.Dependency.LEAK_REPORT_EMAIL_NAME;
 
 import android.content.Context;
 import android.hardware.SensorPrivacyManager;
-import android.os.Handler;
 import android.window.DisplayAreaOrganizer;
 
-import com.android.internal.logging.UiEventLogger;
 import com.android.keyguard.KeyguardViewController;
+import com.android.keyguard.dagger.KeyguardDisplayModule;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
+import com.android.systemui.car.activity.window.ActivityWindowModule;
 import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
 import com.android.systemui.car.drivemode.DriveModeModule;
@@ -44,9 +44,9 @@ import com.android.systemui.dock.DockManager;
 import com.android.systemui.dock.DockManagerImpl;
 import com.android.systemui.doze.DozeHost;
 import com.android.systemui.globalactions.ShutdownUiModule;
+import com.android.systemui.navigationbar.NoopNavigationBarControllerModule;
 import com.android.systemui.navigationbar.gestural.GestureModule;
 import com.android.systemui.plugins.qs.QSFactory;
-import com.android.systemui.plugins.statusbar.StatusBarStateController;
 import com.android.systemui.power.dagger.PowerModule;
 import com.android.systemui.qs.dagger.QSModule;
 import com.android.systemui.qs.tileimpl.QSFactoryImpl;
@@ -54,23 +54,14 @@ import com.android.systemui.recents.Recents;
 import com.android.systemui.recents.RecentsImplementation;
 import com.android.systemui.screenshot.ReferenceScreenshotModule;
 import com.android.systemui.shade.ShadeEmptyImplModule;
-import com.android.systemui.shade.ShadeExpansionStateManager;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.NotificationLockscreenUserManager;
 import com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
 import com.android.systemui.statusbar.events.PrivacyDotViewController;
-import com.android.systemui.statusbar.events.StatusBarEventsModule;
-import com.android.systemui.statusbar.notification.collection.provider.VisualStabilityProvider;
-import com.android.systemui.statusbar.notification.collection.render.GroupMembershipManager;
-import com.android.systemui.statusbar.phone.HeadsUpManagerPhone;
-import com.android.systemui.statusbar.phone.KeyguardBypassController;
-import com.android.systemui.statusbar.policy.AccessibilityManagerWrapper;
 import com.android.systemui.statusbar.policy.AospPolicyModule;
-import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.DeviceProvisionedController;
-import com.android.systemui.statusbar.policy.HeadsUpManager;
-import com.android.systemui.statusbar.policy.HeadsUpManagerLogger;
+import com.android.systemui.statusbar.policy.HeadsUpEmptyImplModule;
 import com.android.systemui.statusbar.policy.IndividualSensorPrivacyController;
 import com.android.systemui.statusbar.policy.IndividualSensorPrivacyControllerImpl;
 import com.android.systemui.statusbar.policy.SensorPrivacyController;
@@ -91,14 +82,17 @@ import javax.inject.Named;
                 CarMultiUserUtilsModule.class,
                 CarVolumeModule.class,
                 GestureModule.class,
+                HeadsUpEmptyImplModule.class,
+                NoopNavigationBarControllerModule.class,
                 NoopWallpaperModule.class,
                 PowerModule.class,
                 QSModule.class,
                 ReferenceScreenshotModule.class,
                 ShadeEmptyImplModule.class,
                 ShutdownUiModule.class,
-                StatusBarEventsModule.class,
-                DriveModeModule.class
+                DriveModeModule.class,
+                KeyguardDisplayModule.class,
+                ActivityWindowModule.class,
         }
 )
 abstract class CarSystemUIModule {
@@ -108,35 +102,6 @@ abstract class CarSystemUIModule {
     @Named(ALLOW_NOTIFICATION_LONG_PRESS_NAME)
     static boolean provideAllowNotificationLongPress() {
         return false;
-    }
-
-    @SysUISingleton
-    @Provides
-    static HeadsUpManagerPhone provideHeadsUpManagerPhone(
-            Context context,
-            HeadsUpManagerLogger headsUpManagerLogger,
-            StatusBarStateController statusBarStateController,
-            KeyguardBypassController bypassController,
-            GroupMembershipManager groupManager,
-            VisualStabilityProvider visualStabilityProvider,
-            ConfigurationController configurationController,
-            @Main Handler handler,
-            AccessibilityManagerWrapper accessibilityManagerWrapper,
-            UiEventLogger uiEventLogger,
-            ShadeExpansionStateManager shadeExpansionStateManager) {
-        return new HeadsUpManagerPhone(
-                context,
-                headsUpManagerLogger,
-                statusBarStateController,
-                bypassController,
-                groupManager,
-                visualStabilityProvider,
-                configurationController,
-                handler,
-                accessibilityManagerWrapper,
-                uiEventLogger,
-                shadeExpansionStateManager
-        );
     }
 
     @SysUISingleton
@@ -158,9 +123,6 @@ abstract class CarSystemUIModule {
     static DisplayAreaOrganizer provideDisplayAreaOrganizer(@Main Executor executor) {
         return new DisplayAreaOrganizer(executor);
     }
-
-    @Binds
-    abstract HeadsUpManager bindHeadsUpManagerPhone(HeadsUpManagerPhone headsUpManagerPhone);
 
     @Binds
     abstract NotificationLockscreenUserManager bindNotificationLockscreenUserManager(

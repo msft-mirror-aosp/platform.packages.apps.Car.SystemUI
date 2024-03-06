@@ -29,10 +29,10 @@ import com.android.internal.view.AppearanceRegion;
 import com.android.systemui.R;
 import com.android.systemui.car.systembar.SystemBarConfigs;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.dagger.qualifiers.Application;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.plugins.statusbar.StatusBarStateController;
 import com.android.systemui.privacy.PrivacyType;
-import com.android.systemui.shade.ShadeExpansionStateManager;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.events.PrivacyDotViewController;
 import com.android.systemui.statusbar.events.SystemStatusAnimationScheduler;
@@ -46,6 +46,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
+
+import kotlinx.coroutines.CoroutineScope;
 
 /**
  * Subclass of {@link PrivacyDotViewController}.
@@ -62,15 +64,15 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
     @Inject
     public CarPrivacyChipViewController(
             @NotNull @Main Executor mainExecutor,
+            @Application CoroutineScope scope,
             @NotNull Context context,
             @NotNull StatusBarStateController stateController,
             @NotNull ConfigurationController configurationController,
             @NotNull StatusBarContentInsetsProvider contentInsetsProvider,
             @NotNull SystemStatusAnimationScheduler animationScheduler,
-            ShadeExpansionStateManager shadeExpansionStateManager,
             CommandQueue commandQueue) {
-        super(mainExecutor, stateController, configurationController, contentInsetsProvider,
-                animationScheduler, shadeExpansionStateManager);
+        super(mainExecutor, scope, stateController, configurationController, contentInsetsProvider,
+                animationScheduler, null);
         commandQueue.addCallback(this);
         mAnimationHelper = new CarPrivacyChipAnimationHelper(context);
         mBarType = SystemBarConfigs.BAR_PROVIDER_MAP[context.getResources().getInteger(

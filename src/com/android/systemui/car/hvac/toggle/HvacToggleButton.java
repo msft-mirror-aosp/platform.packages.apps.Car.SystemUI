@@ -20,7 +20,6 @@ import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
 import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 
 import android.car.VehiclePropertyIds;
-import android.car.hardware.CarPropertyConfig;
 import android.car.hardware.CarPropertyValue;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -35,6 +34,7 @@ import androidx.annotation.CallSuper;
 import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPropertySetter;
+import com.android.systemui.car.hvac.HvacUtils;
 import com.android.systemui.car.hvac.HvacView;
 
 /**
@@ -54,8 +54,8 @@ public abstract class HvacToggleButton<PropertyType> extends ImageButton impleme
     private boolean mIsOn;
     private boolean mPowerOn = false;
     private boolean mAutoOn = false;
-    private boolean mTurnOffIfPowerOff;
-    private boolean mTurnOffIfAutoOn;
+    private boolean mDisableViewIfPowerOff = false;
+    private boolean mDisableViewIfAutoOn;
     private Drawable mOnDrawable;
     private Drawable mOffDrawable;
     private float mOnAlpha;
@@ -87,10 +87,7 @@ public abstract class HvacToggleButton<PropertyType> extends ImageButton impleme
         super.onFinishInflate();
         setOnClickListener(v -> {
             if (!shouldAllowControl()) return;
-
-            if (mHvacPropertySetter != null) {
-                handleClick(mHvacPropertySetter);
-            }
+            handleClick(mHvacPropertySetter);
         });
         updateUIState();
     }
@@ -102,9 +99,8 @@ public abstract class HvacToggleButton<PropertyType> extends ImageButton impleme
         mAreaId = typedArray.getInt(R.styleable.HvacView_hvacAreaId, INVALID_ID);
         mOnDrawable = typedArray.getDrawable(R.styleable.HvacView_hvacToggleOnButtonDrawable);
         mOffDrawable = typedArray.getDrawable(R.styleable.HvacView_hvacToggleOffButtonDrawable);
-        mTurnOffIfPowerOff =
-                typedArray.getBoolean(R.styleable.HvacView_hvacTurnOffIfPowerOff, true);
-        mTurnOffIfAutoOn = typedArray.getBoolean(R.styleable.HvacView_hvacTurnOffIfAutoOn, false);
+        mDisableViewIfAutoOn =
+                typedArray.getBoolean(R.styleable.HvacView_hvacDisableViewIfAutoOn, false);
         mOnAlpha = mContext.getResources().getFloat(R.dimen.hvac_turned_on_alpha);
         mOffAlpha = mContext.getResources().getFloat(R.dimen.hvac_turned_off_alpha);
         typedArray.recycle();
@@ -132,14 +128,13 @@ public abstract class HvacToggleButton<PropertyType> extends ImageButton impleme
     protected abstract boolean isToggleOn();
 
     protected boolean shouldAllowControl() {
-        if ((mPropertyId & VEHICLE_AREA_MASK) == VEHICLE_AREA_SEAT) {
-            if (mTurnOffIfPowerOff && !mPowerOn) {
-                return false;
-            }
+        if (mHvacPropertySetter == null) {
+            return false;
+        }
 
-            if (mTurnOffIfAutoOn && mAutoOn) {
-                return false;
-            }
+        if ((mPropertyId & VEHICLE_AREA_MASK) == VEHICLE_AREA_SEAT) {
+            return HvacUtils.shouldAllowControl(mDisableViewIfPowerOff, mPowerOn,
+                    mDisableViewIfAutoOn, mAutoOn);
         }
 
         return true;
@@ -192,17 +187,7 @@ public abstract class HvacToggleButton<PropertyType> extends ImageButton impleme
     }
 
     @Override
-    public void onHvacTemperatureUnitChanged(boolean usesFahrenheit) {
-        // no-op.
-    }
-
-    @Override
-    public void setConfigInfo(CarPropertyConfig<?> carPropertyConfig) {
-        // no-op.
-    }
-
-    @Override
-    public void onLocaleListChanged() {
-        // no-op.
+    public void setDisableViewIfPowerOff(boolean disableViewIfPowerOff) {
+        mDisableViewIfPowerOff = disableViewIfPowerOff;
     }
 }

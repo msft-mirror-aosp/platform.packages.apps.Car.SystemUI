@@ -63,7 +63,6 @@ android_library {
         "animationlib",
         "CarDockLib",
         "androidx.test.rules",
-        "displaycompat-service",
     ],
 
     libs: [

@@ -26,9 +26,10 @@ import static org.mockito.Mockito.when;
 import android.car.Car;
 import android.car.hardware.power.CarPowerManager;
 import android.os.UserHandle;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
+
+import androidx.test.filters.SmallTest;
 
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;

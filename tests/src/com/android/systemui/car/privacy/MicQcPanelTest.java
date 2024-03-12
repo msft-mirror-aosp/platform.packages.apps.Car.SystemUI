@@ -25,9 +25,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.os.UserHandle;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 
@@ -67,6 +69,8 @@ public class MicQcPanelTest extends SysuiTestCase {
     private Drawable mTestDrawable;
 
     @Mock
+    private Context mUserContext;
+    @Mock
     private MicPrivacyElementsProviderImpl mMicPrivacyElementsProvider;
     @Mock
     private MicPrivacyChipViewController mMicSensorInfoProvider;
@@ -82,6 +86,8 @@ public class MicQcPanelTest extends SysuiTestCase {
         when(mPackageManager.getApplicationInfoAsUser(eq(PACKAGE_NAME), anyInt(), eq(0)))
                 .thenReturn(mApplicationInfo);
         mContext.setMockPackageManager(mPackageManager);
+        mContext.prepareCreateContextAsUser(UserHandle.SYSTEM, mUserContext);
+        when(mUserContext.getPackageManager()).thenReturn(mPackageManager);
 
         mMicQcPanel = new MicQcPanel(mContext, mMicSensorInfoProvider,
                 mMicPrivacyElementsProvider);
@@ -265,8 +271,8 @@ public class MicQcPanelTest extends SysuiTestCase {
         PrivacyDialog.PrivacyElement element = mock(PrivacyDialog.PrivacyElement.class);
         when(mApplicationInfo.loadSafeLabel(any(), anyFloat(), anyInt()))
                 .thenReturn(active ? APP_LABEL_ACTIVE : APP_LABEL_INACTIVE);
-        when(mApplicationInfo.loadUnbadgedIcon(eq(mPackageManager)))
-                .thenReturn(mTestDrawable);
+        when(mPackageManager.getApplicationIcon(mApplicationInfo)).thenReturn(mTestDrawable);
+        when(mPackageManager.getUserBadgedIcon(eq(mTestDrawable), any())).thenReturn(mTestDrawable);
         when(element.getPackageName()).thenReturn(PACKAGE_NAME);
         when(element.getUserId()).thenReturn(0);
         when(element.getPhoneCall()).thenReturn(phoneCall);

@@ -46,8 +46,6 @@ public class CarSystemUIInitializer extends SystemUIInitializer {
         CarWMComponent carWm = (CarWMComponent) wm;
         initWmComponents(carWm);
         boolean isSystemUser = UserHandle.myUserId() == UserHandle.USER_SYSTEM;
-        //Note: The WMComponents are only initialized for user-0/system-user.
-
         return ((CarSysUIComponent.Builder) sysUIBuilder).setRootTaskDisplayAreaOrganizer(
                         isSystemUser ? Optional.of(carWm.getRootTaskDisplayAreaOrganizer())
                                 : Optional.empty())

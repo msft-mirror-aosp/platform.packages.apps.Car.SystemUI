@@ -19,7 +19,7 @@ package com.android.systemui.car.hvac.referenceui;
 import android.annotation.ColorInt;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
+import android.content.res.TypedArray;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -57,11 +57,14 @@ public class BackgroundAdjustingTemperatureControlView extends TemperatureContro
         Resources res = getResources();
         mUpperLimits = res.getIntArray(R.array.hvac_temperature_control_levels);
 
-        String[] colorStrings = res.getStringArray(R.array.hvac_temperature_level_backgrounds);
-        mTempColors = new int[colorStrings.length];
-        for (int i = 0; i < colorStrings.length; i++) {
-            mTempColors[i] = Color.parseColor(colorStrings[i]);
+        TypedArray colorRes = res.obtainTypedArray(R.array.hvac_temperature_level_backgrounds);
+        mTempColors = new int[colorRes.length()];
+        for (int i = 0; i < colorRes.length(); i++) {
+            mTempColors[i] = colorRes.getColor(i,
+                    res.getColor(R.color.hvac_temperature_default_bg_color,
+                            getContext().getTheme()));
         }
+        colorRes.recycle();
         mOffColor = res.getColor(R.color.hvac_temperature_off_text_bg_color, /* theme= */ null);
     }
 
@@ -72,6 +75,9 @@ public class BackgroundAdjustingTemperatureControlView extends TemperatureContro
                 isTemperatureAvailableForChange()
                         ? getTemperatureColor(getCurrentTempC())
                         : mOffColor);
+        boolean canChangeTemperature = isTemperatureAvailableForChange();
+        mIncreaseButton.setVisibility(canChangeTemperature ? View.VISIBLE : View.INVISIBLE);
+        mDecreaseButton.setVisibility(canChangeTemperature ? View.VISIBLE : View.INVISIBLE);
     }
 
     @VisibleForTesting

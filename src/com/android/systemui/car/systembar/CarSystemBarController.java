@@ -38,6 +38,7 @@ import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
+import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.privacy.CameraPrivacyElementsProviderImpl;
 import com.android.systemui.car.privacy.MicPrivacyElementsProviderImpl;
 import com.android.systemui.car.qc.SystemUIQCViewController;
@@ -54,7 +55,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 /** A single class which controls the navigation bar views. */
@@ -106,6 +106,7 @@ public class CarSystemBarController {
     private StatusIconPanelController mCameraPanelController;
     private StatusIconPanelController mProfilePanelController;
     private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
+    private NotificationPanelViewController mNotificationPanelViewController;
 
     private CarSystemBarView mTopView;
     private CarSystemBarView mBottomView;
@@ -118,7 +119,6 @@ public class CarSystemBarController {
     private int mStatusBarState2;
     private int mLockTaskMode;
 
-    @Inject
     public CarSystemBarController(Context context,
             UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,
@@ -393,7 +393,8 @@ public class CarSystemBarController {
 
         mTopView = mCarSystemBarViewFactory.getTopBar(isSetUp);
         setupBar(mTopView, mTopBarTouchListeners, mNotificationsShadeController,
-                mHvacPanelController, mHvacPanelOverlayViewController);
+                mHvacPanelController, mHvacPanelOverlayViewController,
+                mNotificationPanelViewController);
 
         if (isSetUp) {
             // We do not want the privacy chips or the profile picker to be clickable in
@@ -417,7 +418,8 @@ public class CarSystemBarController {
 
         mBottomView = mCarSystemBarViewFactory.getBottomBar(isSetUp);
         setupBar(mBottomView, mBottomBarTouchListeners, mNotificationsShadeController,
-                mHvacPanelController, mHvacPanelOverlayViewController);
+                mHvacPanelController, mHvacPanelOverlayViewController,
+                mNotificationPanelViewController);
         return mBottomView;
     }
 
@@ -430,7 +432,8 @@ public class CarSystemBarController {
 
         mLeftView = mCarSystemBarViewFactory.getLeftBar(isSetUp);
         setupBar(mLeftView, mLeftBarTouchListeners, mNotificationsShadeController,
-                mHvacPanelController, mHvacPanelOverlayViewController);
+                mHvacPanelController, mHvacPanelOverlayViewController,
+                mNotificationPanelViewController);
         return mLeftView;
     }
 
@@ -443,17 +446,20 @@ public class CarSystemBarController {
 
         mRightView = mCarSystemBarViewFactory.getRightBar(isSetUp);
         setupBar(mRightView, mRightBarTouchListeners, mNotificationsShadeController,
-                mHvacPanelController, mHvacPanelOverlayViewController);
+                mHvacPanelController, mHvacPanelOverlayViewController,
+                mNotificationPanelViewController);
         return mRightView;
     }
 
     private void setupBar(CarSystemBarView view, Set<View.OnTouchListener> statusBarTouchListeners,
             NotificationsShadeController notifShadeController,
             HvacPanelController hvacPanelController,
-            HvacPanelOverlayViewController hvacPanelOverlayViewController) {
+            HvacPanelOverlayViewController hvacPanelOverlayViewController,
+            NotificationPanelViewController notificationPanelViewController) {
         view.updateHomeButtonVisibility(CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
         view.setStatusBarWindowTouchListeners(statusBarTouchListeners);
         view.setNotificationsPanelController(notifShadeController);
+        view.registerNotificationPanelViewController(notificationPanelViewController);
         view.setHvacPanelController(hvacPanelController);
         view.registerHvacPanelOverlayViewController(hvacPanelOverlayViewController);
         view.updateControlCenterButtonVisibility(CarSystemUIUserUtil.isMUMDSystemUI());
@@ -471,9 +477,12 @@ public class CarSystemBarController {
             panelController = new StatusIconPanelController(mContext, mUserTracker,
                     mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
                     mQCViewControllerProvider);
-            panelController.attachPanel(mTopView.requireViewById(chipId), panelLayoutRes,
-                R.dimen.car_sensor_qc_panel_width, mPrivacyChipXOffset,
-                panelController.getDefaultYOffset(), Gravity.TOP | Gravity.END);
+            View privacyChip = mTopView.findViewById(chipId);
+            if (privacyChip != null) {
+                panelController.attachPanel(privacyChip, panelLayoutRes,
+                        R.dimen.car_sensor_qc_panel_width, mPrivacyChipXOffset,
+                        panelController.getDefaultYOffset(), Gravity.TOP | Gravity.END);
+            }
         }
 
         return panelController;
@@ -539,6 +548,24 @@ public class CarSystemBarController {
         }
         if (mRightView != null) {
             mRightView.setNotificationsPanelController(mNotificationsShadeController);
+        }
+    }
+
+    /** Sets the HVACPanelOverlayViewController for views to listen to the panel's state. */
+    public void registerNotificationPanelViewController(
+            NotificationPanelViewController notificationPanelViewController) {
+        mNotificationPanelViewController = notificationPanelViewController;
+        if (mTopView != null) {
+            mTopView.registerNotificationPanelViewController(mNotificationPanelViewController);
+        }
+        if (mBottomView != null) {
+            mBottomView.registerNotificationPanelViewController(mNotificationPanelViewController);
+        }
+        if (mLeftView != null) {
+            mLeftView.registerNotificationPanelViewController(mNotificationPanelViewController);
+        }
+        if (mRightView != null) {
+            mRightView.registerNotificationPanelViewController(mNotificationPanelViewController);
         }
     }
 

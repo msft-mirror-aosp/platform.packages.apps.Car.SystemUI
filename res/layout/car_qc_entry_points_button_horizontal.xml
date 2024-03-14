@@ -19,7 +19,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="@dimen/car_quick_controls_entry_points_button_width"
     android:layout_height="match_parent"
-    style="@style/QuickControlEntryPointButton">
+    style="@style/TopBarButton">
     <ImageView
         android:layout_width="@dimen/car_quick_controls_entry_points_icon_width"
         android:layout_height="match_parent"

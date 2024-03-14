@@ -85,9 +85,4 @@
             <item android:drawable="@drawable/nav_bar_button_background_selected" />
         </ripple>
     </item>
-    <item>
-        <ripple android:color="@color/car_ui_ripple_color">
-            <item android:drawable="@drawable/nav_bar_button_background_unselected" />
-        </ripple>
-    </item>
 </selector>

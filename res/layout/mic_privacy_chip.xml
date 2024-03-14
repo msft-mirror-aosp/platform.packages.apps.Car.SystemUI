@@ -22,9 +22,8 @@
     android:layout_width="@dimen/privacy_chip_width"
     android:layout_height="match_parent"
     android:visibility="gone"
-    android:paddingVertical="@dimen/privacy_chip_vertical_padding"
-    android:paddingEnd="@dimen/privacy_chip_horizontal_padding"
     android:focusable="false"
+    style="@style/PrivacyChipPadding"
     app:layoutDescription="@xml/mic_privacy_chip_scene">
 
     <include layout="@layout/privacy_chip_content"/>

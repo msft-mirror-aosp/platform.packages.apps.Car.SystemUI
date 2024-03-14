@@ -16,10 +16,10 @@
   -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- Format for HVAC temperature in fahrenheit (No decimal place and the degree symbol) -->
-    <string name="hvac_temperature_format_fahrenheit" translatable="false">%.0f\u00B0</string>
-    <!-- Format for HVAC temperature in celsius (One decimal place and the degree symbol) -->
-    <string name="hvac_temperature_format_celsius" translatable="false">%.1f\u00B0</string>
+    <!-- Format for HVAC temperature in fahrenheit (No decimal place) -->
+    <string name="hvac_temperature_format_fahrenheit" translatable="false">%.0f</string>
+    <!-- Format for HVAC temperature in celsius (One decimal place) -->
+    <string name="hvac_temperature_format_celsius" translatable="false">%.1f</string>
     <!-- Tag to use to identify the icon view within the quick controls entry point button -->
     <string name="qc_icon_tag" translatable="false">TAG_QC_ICON</string>
     <!-- String to represent lowest setting of an HVAC system [CHAR LIMIT=10]-->

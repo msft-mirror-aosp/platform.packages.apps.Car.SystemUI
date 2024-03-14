@@ -23,11 +23,11 @@
         <aapt:attr name="android:drawable">
             <vector android:width="@dimen/hvac_temperature_icon_size"
                     android:height="@dimen/hvac_temperature_icon_size"
-                    android:viewportWidth="36"
-                    android:viewportHeight="36">
+                    android:viewportWidth="960"
+                    android:viewportHeight="960">
                 <path
-                    android:fillColor="@color/car_on_surface"
-                    android:pathData="M30 19.5H19.5V30H16.5V19.5H6V16.5H16.5V6H19.5V16.5H30V19.5Z"/>
+                    android:fillColor="@color/car_outline"
+                    android:pathData="M440,520L200,520L200,440L440,440L440,200L520,200L520,440L760,440L760,520L520,520L520,760L440,760L440,520Z"/>
             </vector>
         </aapt:attr>
     </item>

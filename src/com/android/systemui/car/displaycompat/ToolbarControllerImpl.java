@@ -15,7 +15,7 @@
  */
 package com.android.systemui.car.displaycompat;
 
-import static android.car.Car.PERMISSION_QUERY_DISPLAY_COMPATIBILITY;
+import static android.car.Car.PERMISSION_MANAGE_DISPLAY_COMPATIBILITY;
 import static android.view.Display.DEFAULT_DISPLAY;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -125,7 +125,7 @@ public class ToolbarControllerImpl implements ToolbarController {
         }
     }
 
-    @RequiresPermission(allOf = {PERMISSION_QUERY_DISPLAY_COMPATIBILITY,
+    @RequiresPermission(allOf = {PERMISSION_MANAGE_DISPLAY_COMPATIBILITY,
             android.Manifest.permission.QUERY_ALL_PACKAGES})
     @Override
     public void update(@NonNull RunningTaskInfo taskInfo) {
@@ -148,7 +148,7 @@ public class ToolbarControllerImpl implements ToolbarController {
         return taskInfo.baseIntent.getComponent().getPackageName();
     }
 
-    @RequiresPermission(allOf = {PERMISSION_QUERY_DISPLAY_COMPATIBILITY,
+    @RequiresPermission(allOf = {PERMISSION_MANAGE_DISPLAY_COMPATIBILITY,
             android.Manifest.permission.QUERY_ALL_PACKAGES})
     private boolean requiresDisplayCompat(String packageName) {
         boolean result = false;

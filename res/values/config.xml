@@ -245,4 +245,10 @@
     <!-- 0 horizontal. -->
     <!-- 1 vertical -->
     <integer name="config_statusIconLayoutOrientation">0</integer>
+
+    <!-- Blocking activity feature flag -->
+    <bool name="config_enableAppBlockingActivities">true</bool>
+
+    <!-- Dialer blocking activity component name -->
+    <string name="config_dialerBlockingActivity" translatable="false">com.android.car.dialer/.ui.activecall.InCallActivity</string>
 </resources>

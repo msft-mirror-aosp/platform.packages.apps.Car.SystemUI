@@ -15,7 +15,8 @@
  */
 package com.android.systemui.car.activity;
 
-import android.app.Activity;
+import static com.android.systemui.car.Flags.configAppBlockingActivities;
+
 import android.app.ActivityManager;
 import android.car.Car;
 import android.car.CarOccupantZoneManager;
@@ -23,6 +24,7 @@ import android.car.app.CarActivityManager;
 import android.car.content.pm.CarPackageManager;
 import android.car.drivingstate.CarUxRestrictions;
 import android.car.drivingstate.CarUxRestrictionsManager;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -45,16 +47,23 @@ import android.view.WindowInsets;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.android.systemui.R;
 import com.android.systemui.car.activity.blurredbackground.BlurredSurfaceRenderer;
+import com.android.systemui.car.ndo.BlockerViewModel;
+import com.android.systemui.car.ndo.NdoViewModelFactory;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * Default activity that will be launched when the current foreground activity is not allowed.
  * Additional information on blocked Activity should be passed as intent extras.
  */
-public class ActivityBlockingActivity extends Activity {
+public class ActivityBlockingActivity extends FragmentActivity {
     private static final int ACTIVITY_MONITORING_DELAY_MS = 1000;
     private static final String TAG = "BlockingActivity";
     private static final int EGL_CONTEXT_VERSION = 2;
@@ -77,6 +86,7 @@ public class ActivityBlockingActivity extends Activity {
 
     private int mBlockedTaskId;
     private final Handler mHandler = new Handler();
+    private final NdoViewModelFactory mViewModelFactory;
 
     private final View.OnClickListener mOnExitButtonClickedListener =
             v -> {
@@ -96,13 +106,16 @@ public class ActivityBlockingActivity extends Activity {
                 }
             };
 
+    @Inject
+    public ActivityBlockingActivity(NdoViewModelFactory viewModelFactory) {
+        mViewModelFactory = viewModelFactory;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blocking);
-
         mExitButton = findViewById(R.id.exit_button);
-
         // Listen to the CarUxRestrictions so this blocking activity can be dismissed when the
         // restrictions are lifted.
         // This Activity should be launched only after car service is initialized. Currently this
@@ -127,6 +140,21 @@ public class ActivityBlockingActivity extends Activity {
                 });
 
         setupGLSurface();
+
+        if (!configAppBlockingActivities()) {
+            Slog.d(TAG, "Ignoring app blocking activity feature");
+        } else if (getResources().getBoolean(R.bool.config_enableAppBlockingActivities)) {
+            String blockedActivity = getIntent().getStringExtra(
+                    CarPackageManager.BLOCKING_INTENT_EXTRA_BLOCKED_ACTIVITY_NAME);
+            BlockerViewModel blockerViewModel = new ViewModelProvider(this, mViewModelFactory)
+                    .get(BlockerViewModel.class);
+            blockerViewModel.initialize(blockedActivity);
+            blockerViewModel.getInCallLiveData().observe(this, call -> {
+                if (call != null) {
+                    startDialerBlockingActivity();
+                }
+            });
+        }
     }
 
     @Override
@@ -431,6 +459,29 @@ public class ActivityBlockingActivity extends Activity {
             }
             mCarPackageManager.restartTask(mBlockedTaskId);
             finish();
+        }
+    }
+
+    private void startDialerBlockingActivity() {
+        String activity = getString(R.string.config_dialerBlockingActivity);
+        Intent intent = new Intent();
+        intent.setComponent(ComponentName.unflattenFromString(activity));
+        intent.setAction(Intent.ACTION_VIEW);
+
+        // Dialer must be launched in current user(u10+) for it to start.
+        int displayId = getDisplayId();
+        int userOnDisplay = mCarOccupantZoneManager.getUserForDisplayId(displayId);
+        if (userOnDisplay == CarOccupantZoneManager.INVALID_USER_ID) {
+            Slog.w(TAG, "Can't launch dialer. Can't find user on display " + displayId);
+            return;
+        }
+
+        try {
+            startActivityAsUser(intent, UserHandle.of(userOnDisplay));
+        } catch (ActivityNotFoundException ex) {
+            Slog.w(TAG, "Dialer blocking activity was not found: " + activity, ex);
+        } catch (RuntimeException ex) {
+            Slog.w(TAG, "Failed to launch dialer blocking activity", ex);
         }
     }
 }

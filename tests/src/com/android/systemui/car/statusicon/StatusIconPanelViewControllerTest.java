@@ -44,6 +44,7 @@ import com.android.car.ui.FocusParkingView;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
@@ -76,6 +77,8 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
     @Mock
     private ConfigurationController mConfigurationController;
     @Mock
+    private CarDeviceProvisionedController mDeviceProvisionedController;
+    @Mock
     private CarSystemBarElementInitializer mCarSystemBarElementInitializer;
 
     @Before
@@ -92,7 +95,7 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
         mAnchorView.setColorFilter(mContext.getColor(R.color.car_status_icon_color));
         mViewController = new StatusIconPanelViewController.Builder(mContext, mUserTracker,
                 mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
-                mCarSystemBarElementInitializer).build(mAnchorView,
+                mDeviceProvisionedController, mCarSystemBarElementInitializer).build(mAnchorView,
                 R.layout.qc_display_panel, R.dimen.car_status_icon_panel_default_width);
         spyOn(mViewController);
         reset(mAnchorView);

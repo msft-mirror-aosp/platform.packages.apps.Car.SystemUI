@@ -28,7 +28,6 @@ import androidx.annotation.LayoutRes;
 import com.android.car.dockutil.Flags;
 import com.android.car.ui.FocusParkingView;
 import com.android.systemui.R;
-import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.dagger.SysUISingleton;
@@ -67,7 +66,6 @@ public class CarSystemBarViewFactory {
             Type.values().length);
     private final ArrayMap<Type, ViewGroup> mCachedContainerMap = new ArrayMap<>();
     private final FeatureFlags mFeatureFlags;
-    private final QuickControlsEntryPointsController mQuickControlsEntryPointsController;
     private final UserTracker mUserTracker;
     private final CarSystemBarElementInitializer mCarSystemBarElementInitializer;
     private final List<CarSystemBarElementController> mCarSystemBarElementControllers =
@@ -91,13 +89,11 @@ public class CarSystemBarViewFactory {
     public CarSystemBarViewFactory(
             Context context,
             FeatureFlags featureFlags,
-            QuickControlsEntryPointsController quickControlsEntryPointsController,
             UserTracker userTracker,
             CarSystemBarElementInitializer elementInitializer
     ) {
         mContext = context;
         mFeatureFlags = featureFlags;
-        mQuickControlsEntryPointsController = quickControlsEntryPointsController;
         mUserTracker = userTracker;
         mCarSystemBarElementInitializer = elementInitializer;
     }
@@ -198,7 +194,6 @@ public class CarSystemBarViewFactory {
                 /* root= */ null);
 
         view.setupHvacButton();
-        view.setupQuickControlsEntryPoints(mQuickControlsEntryPointsController, isSetUp);
         view.setupSystemBarButtons(mUserTracker);
         mCarSystemBarElementControllers.addAll(
                 mCarSystemBarElementInitializer.initializeCarSystemBarElements(view));
@@ -211,22 +206,8 @@ public class CarSystemBarViewFactory {
         return mCachedViewMap.get(type);
     }
 
-    /** Gets the selected Quick Controls class name. */
-    protected String getSelectedQuickControlsClassName() {
-        return mQuickControlsEntryPointsController.getClassNameOfSelectedView();
-    }
-
-    /** Calls onClick for the given Quick Controls class name. */
-    protected void callQuickControlsOnClickFromClassName(String clsName) {
-        View statusIconView = mQuickControlsEntryPointsController.getViewFromClassName(clsName);
-        if (statusIconView != null) {
-            statusIconView.callOnClick();
-        }
-    }
-
     /** Resets the cached system bar views. */
     protected void resetSystemBarViewCache() {
-        mQuickControlsEntryPointsController.resetCache();
         mCachedViewMap.clear();
     }
 

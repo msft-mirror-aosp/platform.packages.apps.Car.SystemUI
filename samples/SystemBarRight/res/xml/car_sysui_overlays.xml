@@ -17,9 +17,6 @@
     <item
         target="string/config_appGridComponentName"
         value="@string/config_appGridComponentName" />
-    <item
-        target="array/config_quickControlsEntryPointIconControllers"
-        value="@array/config_quickControlsEntryPointIconControllers" />
 
     <item
         target="bool/config_enableTopSystemBar"

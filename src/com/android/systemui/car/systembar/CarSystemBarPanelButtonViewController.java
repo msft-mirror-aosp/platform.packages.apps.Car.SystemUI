@@ -73,6 +73,10 @@ public class CarSystemBarPanelButtonViewController extends
         if (disabledWhileDriving != null) {
             builder.setDisabledWhileDriving(disabledWhileDriving);
         }
+        Boolean disabledWhileUnprovisioned = mView.getDisabledWhileUnprovisioned();
+        if (disabledWhileUnprovisioned != null) {
+            builder.setDisabledWhileUnprovisioned(disabledWhileUnprovisioned);
+        }
         Boolean showAsDropDown = mView.getShowAsDropDown();
         if (showAsDropDown != null) {
             builder.setShowAsDropDown(showAsDropDown);

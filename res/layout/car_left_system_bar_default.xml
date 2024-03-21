@@ -44,12 +44,9 @@
                 android:singleLine="true"
                 />
         </FrameLayout>
-        <LinearLayout
-            android:id="@+id/qc_entry_points_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            />
+        <include layout="@layout/qc_status_icons_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
     </LinearLayout>
 
     <LinearLayout

@@ -31,7 +31,6 @@ import androidx.annotation.Nullable;
 
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
-import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointContainer;
 import com.android.systemui.dagger.qualifiers.Main;
 
 import java.lang.reflect.Constructor;
@@ -131,23 +130,9 @@ public abstract class StatusIconGroupContainerController {
                     && statusIconController.getPanelContentLayout() != PANEL_CONTENT_LAYOUT_NONE
                     && mPanelControllerBuilderProvider != null) {
                 StatusIconPanelViewController panelViewController;
-                if (containerViewGroup instanceof QuickControlsEntryPointContainer) {
-                    QuickControlsEntryPointContainer qcEntryPointContainer =
-                            (QuickControlsEntryPointContainer) containerViewGroup;
-                    int gravity = qcEntryPointContainer.getPanelGravity();
-                    boolean showAsDropDown = qcEntryPointContainer.showAsDropDown();
-                    int offset = mContext.getResources().getDimensionPixelSize(
-                            R.dimen.car_quick_controls_panel_margin);
-                    panelViewController = mPanelControllerBuilderProvider.get().setXOffset(offset)
-                            .setYOffset(offset).setGravity(gravity)
-                            .setShowAsDropDown(showAsDropDown).build(entryPointView,
-                                    statusIconController.getPanelContentLayout(),
-                                    statusIconController.getPanelWidth());
-                } else {
-                    panelViewController = mPanelControllerBuilderProvider.get()
-                            .build(entryPointView, statusIconController.getPanelContentLayout(),
-                            statusIconController.getPanelWidth());
-                }
+                panelViewController = mPanelControllerBuilderProvider.get()
+                        .build(entryPointView, statusIconController.getPanelContentLayout(),
+                                statusIconController.getPanelWidth());
                 panelViewController.init();
 
                 mStatusIconPanelViewControllers.add(panelViewController);

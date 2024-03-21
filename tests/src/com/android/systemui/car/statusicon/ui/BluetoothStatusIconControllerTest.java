@@ -31,6 +31,9 @@ import androidx.test.filters.SmallTest;
 import com.android.settingslib.bluetooth.CachedBluetoothDevice;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.statusbar.policy.BluetoothController;
 
 import org.junit.Before;
@@ -54,24 +57,33 @@ public class BluetoothStatusIconControllerTest extends SysuiTestCase {
     BluetoothController mBluetoothController;
     @Mock
     CachedBluetoothDevice mDevice;
+    @Mock
+    CarSystemBarElementStatusBarDisableController mDisableController;
+    @Mock
+    CarSystemBarElementStateController mStateController;
+
+    private StatusIconView mView;
     private BluetoothStatusIconController mBluetoothStatusIconController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mBluetoothStatusIconController = new BluetoothStatusIconController(mContext, mResources,
-                mBluetoothController);
+        mView = new StatusIconView(mContext);
+        mBluetoothStatusIconController = new BluetoothStatusIconController(mView,
+                mDisableController, mStateController, mResources, mBluetoothController);
     }
 
     @Test
-    public void onInit_registersBluetoothCallback() {
+    public void onViewAttached_registersBluetoothCallback() {
+        mBluetoothStatusIconController.onViewAttached();
         verify(mBluetoothController).addCallback(any());
     }
 
     @Test
-    public void onDestroy_removeBluetoothCallback() {
-        mBluetoothStatusIconController.onDestroy();
+    public void onViewDetached_removeBluetoothCallback() {
+        mBluetoothStatusIconController.onViewAttached();
+        mBluetoothStatusIconController.onViewDetached();
         verify(mBluetoothController).removeCallback(any());
     }
 

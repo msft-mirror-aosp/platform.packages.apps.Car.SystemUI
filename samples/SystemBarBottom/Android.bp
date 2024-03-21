@@ -30,4 +30,5 @@ android_app {
         "--no-resource-removal",
     ],
     product_specific: true,
+    static_libs: ["CarSystemUI-res"],
 }

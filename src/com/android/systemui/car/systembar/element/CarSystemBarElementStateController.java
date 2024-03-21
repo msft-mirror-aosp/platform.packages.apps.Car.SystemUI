@@ -24,6 +24,8 @@ import com.android.systemui.dagger.SysUISingleton;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -87,13 +89,16 @@ public class CarSystemBarElementStateController {
     private void notifyPendingRestart() {
         synchronized (mControllers) {
             mStates.clear();
-            for (long id : mControllers.keySet()) {
-                CarSystemBarElementController controller = mControllers.get(id).get();
+            for (Iterator<Map.Entry<Long, WeakReference<CarSystemBarElementController>>> iterator =
+                    mControllers.entrySet().iterator(); iterator.hasNext(); ) {
+                Map.Entry<Long, WeakReference<CarSystemBarElementController>> entry =
+                        iterator.next();
+                CarSystemBarElementController controller = entry.getValue().get();
                 if (controller != null) {
                     Bundle outBundle = new Bundle();
-                    mStates.put(id, controller.getState(outBundle));
+                    mStates.put(entry.getKey(), controller.getState(outBundle));
                 } else {
-                    mControllers.remove(id);
+                    iterator.remove();
                 }
             }
         }
@@ -101,14 +106,17 @@ public class CarSystemBarElementStateController {
 
     private void notifyRestartComplete() {
         synchronized (mControllers) {
-            for (long id : mControllers.keySet()) {
-                Bundle bundle = mStates.remove(id);
+            for (Iterator<Map.Entry<Long, WeakReference<CarSystemBarElementController>>> iterator =
+                    mControllers.entrySet().iterator(); iterator.hasNext(); ) {
+                Map.Entry<Long, WeakReference<CarSystemBarElementController>> entry =
+                        iterator.next();
+                Bundle bundle = mStates.remove(entry.getKey());
                 if (bundle != null) {
-                    CarSystemBarElementController controller = mControllers.get(id).get();
+                    CarSystemBarElementController controller = entry.getValue().get();
                     if (controller != null) {
                         controller.restoreState(bundle);
                     } else {
-                        mControllers.remove(id);
+                        iterator.remove();
                     }
                 }
             }

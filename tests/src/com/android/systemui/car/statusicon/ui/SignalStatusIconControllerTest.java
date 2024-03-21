@@ -30,6 +30,9 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.statusbar.connectivity.IconState;
 import com.android.systemui.statusbar.connectivity.NetworkController;
 import com.android.systemui.statusbar.connectivity.WifiIndicators;
@@ -53,25 +56,34 @@ public class SignalStatusIconControllerTest extends SysuiTestCase {
     NetworkController mNetworkController;
     @Mock
     HotspotController mHotspotController;
+    @Mock
+    CarSystemBarElementStatusBarDisableController mDisableController;
+    @Mock
+    CarSystemBarElementStateController mStateController;
+
+    private StatusIconView mView;
     private SignalStatusIconController mSignalStatusIconController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mSignalStatusIconController = new SignalStatusIconController(mContext, mResources,
-                mNetworkController, mHotspotController);
+        mView = new StatusIconView(mContext);
+        mSignalStatusIconController = new SignalStatusIconController(mView, mDisableController,
+                mStateController, mContext, mResources, mNetworkController, mHotspotController);
     }
 
     @Test
-    public void onInit_registersNetworkCallbacks() {
+    public void onViewAttached_registersNetworkCallbacks() {
+        mSignalStatusIconController.onViewAttached();
         verify(mNetworkController).addCallback(any());
         verify(mHotspotController).addCallback(any());
     }
 
     @Test
-    public void onDestroy_unregistersNetworkCallbacks() {
-        mSignalStatusIconController.onDestroy();
+    public void onViewDetached_unregistersNetworkCallbacks() {
+        mSignalStatusIconController.onViewAttached();
+        mSignalStatusIconController.onViewDetached();
         verify(mNetworkController).removeCallback(any());
         verify(mHotspotController).removeCallback(any());
     }

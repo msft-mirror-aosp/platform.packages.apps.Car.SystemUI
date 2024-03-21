@@ -773,7 +773,6 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         // destroyed during re-layout and has no focus highlight (the FocusParkingView), then
         // move focus back to the previously focused view after re-layout.
         mCarSystemBarController.cacheAndHideFocus();
-        String selectedQuickControlsClsName = null;
         View profilePickerView = null;
         boolean isProfilePickerOpen = false;
         if (mTopSystemBarView != null) {
@@ -782,11 +781,6 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         if (profilePickerView != null) isProfilePickerOpen = profilePickerView.isSelected();
         if (isProfilePickerOpen) {
             profilePickerView.callOnClick();
-        } else {
-            selectedQuickControlsClsName =
-                    mCarSystemBarController.getSelectedQuickControlsClassName();
-            mCarSystemBarController.callQuickControlsOnClickFromClassName(
-                    selectedQuickControlsClsName);
         }
 
         resetSystemBarContent(/* isProvisionedStateChange= */ false);
@@ -797,10 +791,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                 profilePickerView = mTopSystemBarView.findViewById(R.id.user_name);
             }
             if (profilePickerView != null) profilePickerView.callOnClick();
-        } else {
-            mCarSystemBarController.callQuickControlsOnClickFromClassName(
-                    selectedQuickControlsClsName);
         }
+
         mCarSystemBarController.restoreFocus();
     }
 

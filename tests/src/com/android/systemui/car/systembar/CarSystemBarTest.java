@@ -479,22 +479,6 @@ public class CarSystemBarTest extends SysuiTestCase {
     }
 
     @Test
-    public void onConfigChanged_callQuickControlsOnClickFromClassName_forSelectedQuickControl() {
-        String clsName = "testClsName";
-        Configuration config = new Configuration();
-        config.uiMode = mContext.getResources().getConfiguration().isNightModeActive()
-                ? Configuration.UI_MODE_NIGHT_NO : Configuration.UI_MODE_NIGHT_YES;
-        when(mCarSystemBarController.getSelectedQuickControlsClassName()).thenReturn(clsName);
-        initCarSystemBar();
-
-        mCarSystemBar.start();
-        mCarSystemBar.onConfigChanged(config);
-
-        verify(mCarSystemBarController, times(2))
-                .callQuickControlsOnClickFromClassName(clsName);
-    }
-
-    @Test
     public void restartSystemBars_newSystemBarConfig_recreatesSystemBars() {
         mTestableResources.addOverride(R.integer.config_showDisplayCompatToolbarOnSystemBar, 0);
         mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);

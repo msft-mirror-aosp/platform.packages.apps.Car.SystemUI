@@ -77,8 +77,4 @@
     <string name="config_appGridComponentName" translatable="false">
         com.android.car.carlauncher/.AppGridActivity</string>
 
-    <string-array name="config_quickControlsEntryPointIconControllers" translatable="false">
-        <item>com.android.systemui.car.statusicon.ui.SignalStatusIconController</item>
-        <item>com.android.systemui.car.statusicon.ui.DisplayStatusIconController</item>
-    </string-array>
 </resources>

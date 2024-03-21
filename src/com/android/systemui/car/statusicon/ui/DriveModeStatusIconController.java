@@ -22,24 +22,33 @@ import android.graphics.drawable.Drawable;
 
 import com.android.systemui.R;
 import com.android.systemui.car.drivemode.DriveModeThemeSwitcher;
-import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.statusicon.StatusIconViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.dagger.qualifiers.Main;
 
-import javax.inject.Inject;
-
 import dagger.Lazy;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * A controller for the Drive Mode status icon.
  */
-public class DriveModeStatusIconController extends StatusIconController {
+public class DriveModeStatusIconController extends StatusIconViewController {
 
     private final Drawable mDriveModeDrawable;
     private String mDriveModeContentDescription;
 
-    @Inject
-    DriveModeStatusIconController(Context context, @Main Resources resources,
+    @AssistedInject
+    DriveModeStatusIconController(
+            @Assisted StatusIconView view,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
+            Context context, @Main Resources resources,
             Lazy<DriveModeThemeSwitcher> driveModeThemeSwitcherLazy) {
+        super(view, disableController, stateController);
         mDriveModeDrawable = resources.getDrawable(R.drawable.car_ic_drive_mode,
                 context.getTheme());
         mDriveModeContentDescription = resources.getString(
@@ -51,20 +60,15 @@ public class DriveModeStatusIconController extends StatusIconController {
         updateStatus();
     }
 
+    @AssistedFactory
+    public interface Factory extends
+            StatusIconViewController.Factory<DriveModeStatusIconController> {
+    }
+
     @Override
     protected void updateStatus() {
         setIconDrawableToDisplay(mDriveModeDrawable);
         setIconContentDescription(mDriveModeContentDescription);
         onStatusUpdated();
-    }
-
-    @Override
-    protected int getPanelContentLayout() {
-        return R.layout.qc_drive_mode_panel;
-    }
-
-    @Override
-    protected int getId() {
-        return R.id.qc_drive_mode_status_icon;
     }
 }

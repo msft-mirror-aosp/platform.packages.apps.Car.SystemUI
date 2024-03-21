@@ -24,7 +24,10 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.settingslib.graph.SignalDrawable;
 import com.android.systemui.R;
-import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.statusicon.StatusIconViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.statusbar.connectivity.IconState;
 import com.android.systemui.statusbar.connectivity.MobileDataIndicators;
@@ -33,12 +36,14 @@ import com.android.systemui.statusbar.connectivity.SignalCallback;
 import com.android.systemui.statusbar.connectivity.WifiIndicators;
 import com.android.systemui.statusbar.policy.HotspotController;
 
-import javax.inject.Inject;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * A controller for status icon about mobile data, Wi-Fi, and hotspot.
  */
-public class SignalStatusIconController extends StatusIconController implements
+public class SignalStatusIconController extends StatusIconViewController implements
         SignalCallback, HotspotController.Callback {
 
     private final Context mContext;
@@ -58,12 +63,16 @@ public class SignalStatusIconController extends StatusIconController implements
     private String mHotspotOnContentDescription;
     private String mEthernetContentDescription;
 
-    @Inject
+    @AssistedInject
     SignalStatusIconController(
+            @Assisted StatusIconView view,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
             Context context,
             @Main Resources resources,
             NetworkController networkController,
             HotspotController hotspotController) {
+        super(view, disableController, stateController);
         mContext = context;
         mResources = resources;
         mHotspotController = hotspotController;
@@ -75,13 +84,23 @@ public class SignalStatusIconController extends StatusIconController implements
         mMobileSignalContentDescription = resources.getString(R.string.status_icon_signal_mobile);
         mWifiConnectedContentDescription = resources.getString(R.string.status_icon_signal_wifi);
         mHotspotOnContentDescription = resources.getString(R.string.status_icon_signal_hotspot);
+    }
 
+    @AssistedFactory
+    public interface Factory extends
+            StatusIconViewController.Factory<SignalStatusIconController> {
+    }
+
+    @Override
+    protected void onViewAttached() {
+        super.onViewAttached();
         mNetworkController.addCallback(this);
         mHotspotController.addCallback(this);
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onViewDetached() {
+        super.onViewDetached();
         mNetworkController.removeCallback(this);
         mHotspotController.removeCallback(this);
     }
@@ -134,11 +153,6 @@ public class SignalStatusIconController extends StatusIconController implements
         updateStatus();
     }
 
-    @Override
-    protected int getPanelContentLayout() {
-        return R.layout.qc_connectivity_panel;
-    }
-
     @VisibleForTesting
     SignalDrawable getMobileSignalIconDrawable() {
         return mMobileSignalIconDrawable;
@@ -157,10 +171,5 @@ public class SignalStatusIconController extends StatusIconController implements
     @VisibleForTesting
     Drawable getEthernetIconDrawable() {
         return mEthernetIconDrawable;
-    }
-
-    @Override
-    protected int getId() {
-        return R.id.qc_signal_status_icon;
     }
 }

@@ -22,11 +22,13 @@ package {
 android_app {
     name: "CarSystemUIBottomRRO",
     resource_dirs: ["res"],
+    sdk_version: "system_current",
     certificate: "platform",
-    platform_apis: true,
     manifest: "AndroidManifest.xml",
     aaptflags: [
         "--no-resource-deduping",
         "--no-resource-removal",
-     ]
+    ],
+    product_specific: true,
+    static_libs: ["CarSystemUI-res"],
 }

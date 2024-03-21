@@ -124,19 +124,6 @@
         <item>com.android.systemui.car.userswitcher.UserSwitchTransitionViewMediator</item>
     </string-array>
 
-    <!-- List of StatusIconControllers associated with icons to display for QC entry points.
-         The icons will be added to the view in the order their controllers appear on this list. -->
-    <string-array name="config_quickControlsEntryPointIconControllers" translatable="false">
-        <item>com.android.systemui.car.statusicon.ui.BluetoothStatusIconController</item>
-        <item>com.android.systemui.car.statusicon.ui.SignalStatusIconController</item>
-        <item>com.android.systemui.car.statusicon.ui.DisplayStatusIconController</item>
-    </string-array>
-
-    <string-array name="config_quickControlsSubIconControllers" translatable="false">
-        <item>com.android.systemui.car.statusicon.ui.MediaVolumeStatusIconController</item>
-        <item>com.android.systemui.car.statusicon.ui.SignalStatusIconController</item>
-    </string-array>
-
     <!-- List of package names that are allowed sources of app installation. -->
     <string-array name="config_allowedAppInstallSources" translatable="false">
         <item>com.android.vending</item>
@@ -245,4 +232,10 @@
     <!-- 0 horizontal. -->
     <!-- 1 vertical -->
     <integer name="config_statusIconLayoutOrientation">0</integer>
+
+    <!-- Blocking activity feature flag -->
+    <bool name="config_enableAppBlockingActivities">true</bool>
+
+    <!-- Dialer blocking activity component name -->
+    <string name="config_dialerBlockingActivity" translatable="false">com.android.car.dialer/.ui.activecall.InCallActivity</string>
 </resources>

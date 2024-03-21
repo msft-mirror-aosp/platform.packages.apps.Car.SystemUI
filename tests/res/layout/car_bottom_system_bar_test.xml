@@ -29,11 +29,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layoutDirection="ltr">
-    <com.android.systemui.car.statusicon.ui.QuickControlsEntryPointContainer
-        android:id="@+id/qc_entry_points_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:showAsDropDown="false"
-        app:panelGravity="0x00800055"/>
     </RelativeLayout>
 </com.android.systemui.car.systembar.CarSystemBarView>

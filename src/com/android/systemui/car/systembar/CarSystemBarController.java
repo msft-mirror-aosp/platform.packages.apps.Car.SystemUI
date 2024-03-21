@@ -345,8 +345,6 @@ public class CarSystemBarController {
         setDisabledSystemBarButton(R.id.grid_nav, homeDisabled, "grid_nav");
         setDisabledSystemBarButton(R.id.notifications, notificationDisabled, "notifications");
 
-        setDisabledSystemBarContainer(R.id.qc_entry_points_container, qcDisabled,
-                "qc_entry_points_container");
         setDisabledSystemBarContainer(R.id.user_name_container, qcDisabled,
                 "user_name_container");
 
@@ -724,16 +722,6 @@ public class CarSystemBarController {
             barViews.add(mRightView);
         }
         return barViews;
-    }
-
-    /** Gets the selected Quick Controls class name. */
-    protected String getSelectedQuickControlsClassName() {
-        return mCarSystemBarViewFactory.getSelectedQuickControlsClassName();
-    }
-
-    /** Calls onClick for the given Quick Controls class name. */
-    protected void callQuickControlsOnClickFromClassName(String clsName) {
-        mCarSystemBarViewFactory.callQuickControlsOnClickFromClassName(clsName);
     }
 
     /** Resets the cached Views. */

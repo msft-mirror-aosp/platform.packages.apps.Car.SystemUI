@@ -39,7 +39,7 @@ android_library {
         "SettingsLib",
         "car-admin-ui-lib",
         "car-helper-lib",
-        "car-telephony-common",
+        "car-telephony-common-no-overlayable",
         "car-ui-lib-no-overlayable",
         "car-qc-lib",
         "car-resource-common",
@@ -123,7 +123,7 @@ android_library {
         "androidx.lifecycle_lifecycle-extensions",
         "car-admin-ui-lib",
         "car-helper-lib",
-        "car-telephony-common",
+        "car-telephony-common-no-overlayable",
         "car-ui-lib-no-overlayable",
         "car-qc-lib",
         "car-resource-common",
@@ -231,7 +231,9 @@ android_library {
         "SystemUI-res",
         "CarNotification-res",
         "car-resource-common",
-        "car-ui-lib-no-overlayable"
+        "car-ui-lib-no-overlayable",
     ],
-    lint: { disabled_checks: ["MissingClass"] }
+    lint: {
+        disabled_checks: ["MissingClass"],
+    },
 }

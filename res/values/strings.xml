@@ -20,8 +20,6 @@
     <string name="hvac_temperature_format_fahrenheit" translatable="false">%.0f</string>
     <!-- Format for HVAC temperature in celsius (One decimal place) -->
     <string name="hvac_temperature_format_celsius" translatable="false">%.1f</string>
-    <!-- Tag to use to identify the icon view within the quick controls entry point button -->
-    <string name="qc_icon_tag" translatable="false">TAG_QC_ICON</string>
     <!-- String to represent lowest setting of an HVAC system [CHAR LIMIT=10]-->
     <string name="hvac_min_text">Min</string>
     <!-- String to represent the highest setting of an HVAC system [CHAR LIMIT=10]-->

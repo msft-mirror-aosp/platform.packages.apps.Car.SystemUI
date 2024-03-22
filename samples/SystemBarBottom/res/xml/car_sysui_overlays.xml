@@ -17,10 +17,9 @@
 
 <overlay>
     <item target="layout/car_bottom_system_bar" value="@layout/car_bottom_system_bar"/>
+    <item target="layout/qc_status_icons_horizontal" value="@layout/qc_status_icons_horizontal"/>
     <item target="layout/system_icons" value="@layout/system_icons"/>
     <item target="string/config_appGridComponentName" value="@string/config_appGridComponentName"/>
-
-    <item target="array/config_quickControlsEntryPointIconControllers" value="@array/config_quickControlsEntryPointIconControllers"/>
 
     <item target="attr/icon" value="@attr/icon"/>
     <item target="attr/selectedIcon" value="@attr/selectedIcon"/>
@@ -40,6 +39,36 @@
     <item target="attr/hvacMaxText" value="@attr/hvacMaxText"/>
     <!-- start the intent as a broad cast instead of an activity if true-->
     <item target="attr/broadcast" value="@attr/broadcast"/>
+
+    <item target="attr/controller" value="@attr/controller"/>
+    <item target="attr/systemBarDisableFlags" value="@attr/systemBarDisableFlags"/>
+    <item target="attr/systemBarDisable2Flags" value="@attr/systemBarDisable2Flags"/>
+    <item target="attr/disableForLockTaskModeLocked" value="@attr/disableForLockTaskModeLocked"/>
+    <item target="attr/panelLayoutRes" value="@attr/panelLayoutRes"/>
+    <item target="attr/panelWidthRes" value="@attr/panelWidthRes"/>
+    <item target="attr/xOffset" value="@attr/xOffset"/>
+    <item target="attr/yOffset" value="@attr/yOffset"/>
+    <item target="attr/gravity" value="@attr/gravity"/>
+    <item target="attr/disabledWhileDriving" value="@attr/disabledWhileDriving"/>
+    <item target="attr/disabledWhileUnprovisioned" value="@attr/disabledWhileUnprovisioned"/>
+    <item target="attr/showAsDropDown" value="@attr/showAsDropDown"/>
+    <item target="attr/remoteQCProvider" value="@attr/remoteQCProvider"/>
+    <item target="attr/localQCProvider" value="@attr/localQCProvider"/>
+
+    <item target="attr/layout_constraintHorizontal_chainStyle" value="@attr/layout_constraintHorizontal_chainStyle"/>
+    <item target="attr/layout_constraintHorizontal_bias" value="@attr/layout_constraintHorizontal_bias"/>
+    <item target="attr/layout_constraintHorizontal_weight" value="@attr/layout_constraintHorizontal_weight"/>
+    <item target="attr/layout_constraintDimensionRatio" value="@attr/layout_constraintDimensionRatio"/>
+    <item target="attr/layout_constraintGuide_end" value="@attr/layout_constraintGuide_end"/>
+    <item target="attr/layout_constraintBottom_toBottomOf" value="@attr/layout_constraintBottom_toBottomOf"/>
+    <item target="attr/layout_constraintBottom_toTopOf" value="@attr/layout_constraintBottom_toTopOf"/>
+    <item target="attr/layout_constraintEnd_toStartOf" value="@attr/layout_constraintEnd_toStartOf"/>
+    <item target="attr/layout_constraintEnd_toEndOf" value="@attr/layout_constraintEnd_toEndOf"/>
+    <item target="attr/layout_constraintStart_toStartOf" value="@attr/layout_constraintStart_toStartOf"/>
+    <item target="attr/layout_constraintStart_toEndOf" value="@attr/layout_constraintStart_toEndOf"/>
+    <item target="attr/layout_constraintTop_toTopOf" value="@attr/layout_constraintTop_toTopOf"/>
+    <item target="attr/layout_constraintTop_toBottomOf" value="@attr/layout_constraintTop_toBottomOf"/>
+    <item target="attr/layout_constraintHeight_default" value="@attr/layout_constraintHeight_default"/>
 
     <item target="drawable/car_ic_overview" value="@drawable/car_ic_overview" />
     <item target="drawable/car_ic_overview_selected" value="@drawable/car_ic_overview_selected" />
@@ -75,5 +104,11 @@
     <item target="integer/config_bottomSystemBarZOrder" value="@integer/config_bottomSystemBarZOrder"/>
 
     <item target="string/config_notificationPanelViewMediator" value="@string/config_notificationPanelViewMediator"/>
-    <item target="id/qc_entry_points_container" value="@id/qc_entry_points_container"/>
+    <item target="id/connectivity_panel_button" value="@id/connectivity_panel_button"/>
+    <item target="id/connectivity_status_icon" value="@id/connectivity_status_icon"/>
+    <item target="id/display_panel_button" value="@id/display_panel_button"/>
+    <item target="id/display_status_icon" value="@id/display_status_icon"/>
+    <item target="id/qc_connectivity_footer_button" value="@id/qc_connectivity_footer_button"/>
+    <item target="id/qc_display_footer_button" value="@id/qc_display_footer_button"/>
+
 </overlay>

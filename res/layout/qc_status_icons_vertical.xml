@@ -33,8 +33,8 @@
         systemui:systemBarDisable2Flags="quickSettings">
         <com.android.systemui.car.statusicon.StatusIconView
             android:id="@+id/bluetooth_status_icon"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/car_quick_controls_icon_drawable_width"
+            android:layout_height="@dimen/car_quick_controls_icon_drawable_height"
             android:layout_gravity="center"
             android:tint="@color/car_status_icon_color"
             android:duplicateParentState="true"
@@ -53,8 +53,8 @@
         systemui:systemBarDisable2Flags="quickSettings">
         <com.android.systemui.car.statusicon.StatusIconView
             android:id="@+id/connectivity_status_icon"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/car_quick_controls_icon_drawable_width"
+            android:layout_height="@dimen/car_quick_controls_icon_drawable_height"
             android:layout_gravity="center"
             android:tint="@color/car_status_icon_color"
             android:duplicateParentState="true"
@@ -73,8 +73,8 @@
         systemui:systemBarDisable2Flags="quickSettings">
         <com.android.systemui.car.statusicon.StatusIconView
             android:id="@+id/display_status_icon"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/car_quick_controls_icon_drawable_width"
+            android:layout_height="@dimen/car_quick_controls_icon_drawable_height"
             android:layout_gravity="center"
             android:tint="@color/car_status_icon_color"
             android:duplicateParentState="true"

@@ -90,7 +90,6 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
         when(mUserTracker.getUserHandle()).thenReturn(mUserHandle);
 
         mAnchorView = spy(new ImageView(mContext));
-        mAnchorView.setTag(mContext.getResources().getString(R.string.qc_icon_tag));
         mAnchorView.setImageDrawable(mContext.getDrawable(R.drawable.ic_bluetooth_status_off));
         mAnchorView.setColorFilter(mContext.getColor(R.color.car_status_icon_color));
         mViewController = new StatusIconPanelViewController.Builder(mContext, mUserTracker,

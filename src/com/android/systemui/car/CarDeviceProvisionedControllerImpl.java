@@ -31,14 +31,13 @@ import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.DeviceProvisionedControllerImpl;
 import com.android.systemui.util.settings.GlobalSettings;
 import com.android.systemui.util.settings.SecureSettings;
-import com.android.systemui.util.wrapper.BuildInfo;
+
+import kotlin.Unit;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
-
-import kotlin.Unit;
 
 /**
  * A controller that monitors the status of SUW progress for each user in addition to the
@@ -60,11 +59,10 @@ public class CarDeviceProvisionedControllerImpl extends DeviceProvisionedControl
             GlobalSettings globalSettings,
             UserTracker userTracker,
             DumpManager dumpManager,
-            BuildInfo buildInfo,
             @Background Handler backgroundHandler,
             @Main Handler mainHandler,
             @Main Executor mainExecutor) {
-        super(secureSettings, globalSettings, userTracker, dumpManager, buildInfo,
+        super(secureSettings, globalSettings, userTracker, dumpManager,
                 backgroundHandler, mainExecutor);
 
         mUserTracker = userTracker;

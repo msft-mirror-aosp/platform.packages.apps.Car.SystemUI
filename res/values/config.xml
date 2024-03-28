@@ -238,4 +238,7 @@
 
     <!-- Dialer blocking activity component name -->
     <string name="config_dialerBlockingActivity" translatable="false">com.android.car.dialer/.ui.activecall.InCallActivity</string>
+
+    <!-- Media blocking activity component name -->
+    <string name="config_mediaBlockingActivity" translatable="false">com.android.car.media/.MediaBlockingActivity</string>
 </resources>

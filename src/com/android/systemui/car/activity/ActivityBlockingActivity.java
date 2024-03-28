@@ -86,6 +86,7 @@ public class ActivityBlockingActivity extends FragmentActivity {
 
     private int mBlockedTaskId;
     private final Handler mHandler = new Handler();
+    private String mBlockedActivityName;
     private final NdoViewModelFactory mViewModelFactory;
 
     private final View.OnClickListener mOnExitButtonClickedListener =
@@ -144,14 +145,18 @@ public class ActivityBlockingActivity extends FragmentActivity {
         if (!configAppBlockingActivities()) {
             Slog.d(TAG, "Ignoring app blocking activity feature");
         } else if (getResources().getBoolean(R.bool.config_enableAppBlockingActivities)) {
-            String blockedActivity = getIntent().getStringExtra(
+            mBlockedActivityName = getIntent().getStringExtra(
                     CarPackageManager.BLOCKING_INTENT_EXTRA_BLOCKED_ACTIVITY_NAME);
             BlockerViewModel blockerViewModel = new ViewModelProvider(this, mViewModelFactory)
                     .get(BlockerViewModel.class);
-            blockerViewModel.initialize(blockedActivity);
-            blockerViewModel.getInCallLiveData().observe(this, call -> {
-                if (call != null) {
-                    startDialerBlockingActivity();
+            blockerViewModel.initialize(mBlockedActivityName);
+            blockerViewModel.getBlockingTypeLiveData().observe(this, blockingType -> {
+                switch (blockingType) {
+                    case DIALER -> startBlockingActivity(
+                            getString(R.string.config_dialerBlockingActivity));
+                    case MEDIA -> startBlockingActivity(
+                            getString(R.string.config_mediaBlockingActivity));
+                    case NONE -> { /* no-op */ }
                 }
             });
         }
@@ -462,26 +467,25 @@ public class ActivityBlockingActivity extends FragmentActivity {
         }
     }
 
-    private void startDialerBlockingActivity() {
-        String activity = getString(R.string.config_dialerBlockingActivity);
-        Intent intent = new Intent();
-        intent.setComponent(ComponentName.unflattenFromString(activity));
-        intent.setAction(Intent.ACTION_VIEW);
-
-        // Dialer must be launched in current user(u10+) for it to start.
+    private void startBlockingActivity(String blockingActivity) {
         int displayId = getDisplayId();
         int userOnDisplay = mCarOccupantZoneManager.getUserForDisplayId(displayId);
         if (userOnDisplay == CarOccupantZoneManager.INVALID_USER_ID) {
-            Slog.w(TAG, "Can't launch dialer. Can't find user on display " + displayId);
+            Slog.w(TAG, "Can't launch blocking activity " + blockingActivity
+                    + ". Can't find user on display " + displayId);
             return;
         }
 
+        ComponentName componentName = ComponentName.unflattenFromString(blockingActivity);
+        Intent intent = new Intent();
+        intent.setComponent(componentName);
+        intent.putExtra(Intent.EXTRA_COMPONENT_NAME, mBlockedActivityName);
         try {
             startActivityAsUser(intent, UserHandle.of(userOnDisplay));
         } catch (ActivityNotFoundException ex) {
-            Slog.w(TAG, "Dialer blocking activity was not found: " + activity, ex);
+            Slog.e(TAG, "Unable to resolve blocking activity " + blockingActivity, ex);
         } catch (RuntimeException ex) {
-            Slog.w(TAG, "Failed to launch dialer blocking activity", ex);
+            Slog.w(TAG, "Failed to launch blocking activity " + blockingActivity, ex);
         }
     }
 }

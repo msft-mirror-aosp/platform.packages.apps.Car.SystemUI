@@ -15,6 +15,8 @@
  */
 package com.android.systemui.car.ndo;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
@@ -30,10 +32,12 @@ import javax.inject.Inject;
 @SysUISingleton
 public class NdoViewModelFactory implements ViewModelProvider.Factory {
 
+    private final Context mContext;
     private final InCallServiceManager mServiceManager;
 
     @Inject
-    public NdoViewModelFactory(InCallServiceManager serviceManager) {
+    public NdoViewModelFactory(Context context, InCallServiceManager serviceManager) {
+        mContext = context;
         mServiceManager = serviceManager;
     }
 
@@ -45,7 +49,7 @@ public class NdoViewModelFactory implements ViewModelProvider.Factory {
     @SuppressWarnings("unchecked")
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(BlockerViewModel.class)) {
-            return (T) new BlockerViewModel(mServiceManager);
+            return (T) new BlockerViewModel(mContext, mServiceManager);
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

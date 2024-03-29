@@ -35,8 +35,10 @@ import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.taskview.TaskViewBase;
 import com.android.wm.shell.taskview.TaskViewTaskController;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * A mediator to {@link RemoteCarTaskViewServerImpl} that encapsulates the root task related logic.
@@ -52,8 +54,16 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
     private final TaskViewTaskController mTaskViewTaskShellPart;
     private final TaskViewBase mTaskViewClientPart;
     private final CarActivityManager mCarActivityManager;
-    private final LinkedHashMap<Integer, ActivityManager.RunningTaskInfo> mTaskStack =
-            new LinkedHashMap<>();
+    private final LinkedHashMap<Integer, TaskRecord> mTaskStack = new LinkedHashMap<>();
+
+    private static class TaskRecord {
+        private ActivityManager.RunningTaskInfo mTaskInfo;
+        private SurfaceControl mLeash;
+        private TaskRecord(ActivityManager.RunningTaskInfo taskInfo, SurfaceControl leash) {
+            mTaskInfo = taskInfo;
+            mLeash = leash;
+        }
+    };
 
     private ActivityManager.RunningTaskInfo mRootTask;
 
@@ -137,7 +147,7 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         // For all the children tasks, just update the client part and no notification/update is
         // sent to the shell part
         mTaskViewClientPart.onTaskAppeared(taskInfo, leash);
-        mTaskStack.put(taskInfo.taskId, taskInfo);
+        mTaskStack.put(taskInfo.taskId, new TaskRecord(taskInfo, leash));
 
         if (mIsLaunchRoot) {
             mCarActivityManager.onTaskAppeared(taskInfo, leash);
@@ -161,8 +171,9 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         if (taskInfo.isVisible && mTaskStack.containsKey(taskInfo.taskId)) {
             // Remove the task and insert again so that it jumps to the end of
             // the queue.
-            mTaskStack.remove(taskInfo.taskId);
-            mTaskStack.put(taskInfo.taskId, taskInfo);
+            TaskRecord task = mTaskStack.remove(taskInfo.taskId);
+            task.mTaskInfo = taskInfo;
+            mTaskStack.put(taskInfo.taskId, task);
         }
     }
 
@@ -180,9 +191,7 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         if (mIsLaunchRoot) {
             mCarActivityManager.onTaskVanished(taskInfo);
         }
-        if (mTaskStack.containsKey(taskInfo.taskId)) {
-            mTaskStack.remove(taskInfo.taskId);
-        }
+        mTaskStack.remove(taskInfo.taskId);
     }
 
     @Override
@@ -209,7 +218,10 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             mTaskViewTaskShellPart.attachChildSurfaceToTask(taskId, b);
             return;
         }
-        ShellTaskOrganizer.TaskListener.super.attachChildSurfaceToTask(taskId, b);
+        SurfaceControl taskSurface = findTaskSurface(taskId);
+        if (taskSurface != null) {
+            b.setParent(taskSurface);
+        }
     }
 
     @Override
@@ -220,7 +232,19 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             mTaskViewTaskShellPart.reparentChildSurfaceToTask(taskId, sc, t);
             return;
         }
-        ShellTaskOrganizer.TaskListener.super.reparentChildSurfaceToTask(taskId, sc, t);
+        SurfaceControl taskSurface = findTaskSurface(taskId);
+        if (taskSurface != null) {
+            t.reparent(sc, taskSurface);
+        }
+    }
+
+    private SurfaceControl findTaskSurface(int taskId) {
+        TaskRecord task = mTaskStack.get(taskId);
+        if (task == null) {
+            Log.e(TAG, "There is no surface for taskId=" + taskId);
+            return null;
+        }
+        return task.mLeash;
     }
 
     private void setRootTaskAsLaunchRoot(ActivityManager.RunningTaskInfo taskInfo) {
@@ -254,9 +278,9 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             return null;
         }
         ActivityManager.RunningTaskInfo topTask = null;
-        Iterator<ActivityManager.RunningTaskInfo> iterator = mTaskStack.values().iterator();
+        Iterator<TaskRecord> iterator = mTaskStack.values().iterator();
         while (iterator.hasNext()) {
-            topTask = iterator.next();
+            topTask = iterator.next().mTaskInfo;
         }
         return topTask;
     }
@@ -271,7 +295,12 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
     }
 
     @VisibleForTesting
-    LinkedHashMap<Integer, ActivityManager.RunningTaskInfo> getTaskStack() {
-        return mTaskStack;
+    List<ActivityManager.RunningTaskInfo> getTaskStack() {
+        List<ActivityManager.RunningTaskInfo> tasks = new ArrayList<>(mTaskStack.size());
+        Iterator<TaskRecord> iterator = mTaskStack.values().iterator();
+        while (iterator.hasNext()) {
+            tasks.add(iterator.next().mTaskInfo);
+        }
+        return tasks;
     }
 }

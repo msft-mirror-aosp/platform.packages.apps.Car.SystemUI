@@ -136,7 +136,7 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
         taskInfo.taskId = 2;
         mMediator.onTaskAppeared(taskInfo, null);
 
-        assertThat(mMediator.getTaskStack()).containsKey(taskInfo.taskId);
+        assertThat(mMediator.getTaskStack()).contains(taskInfo);
     }
 
     @Test
@@ -179,7 +179,7 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
 
         mMediator.onTaskInfoChanged(task1);
 
-        assertThat(mMediator.getTaskStack().values()).containsExactly(task1, task2);
+        assertThat(mMediator.getTaskStack()).containsExactly(task1, task2);
         verify(mTaskViewClientPart).onTaskInfoChanged(task1);
     }
 
@@ -224,8 +224,7 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
 
         mMediator.onTaskVanished(task1);
 
-        assertThat(mMediator.getTaskStack().values()).containsExactly(task2);
-        assertThat(mMediator.getTaskStack().values()).containsExactly(task2);
+        assertThat(mMediator.getTaskStack()).containsExactly(task2);
         verify(mTaskViewClientPart).onTaskVanished(task1);
     }
 

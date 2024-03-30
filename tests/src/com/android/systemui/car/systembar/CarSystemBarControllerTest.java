@@ -54,6 +54,7 @@ import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.plugins.DarkIconDispatcher;
+import com.android.systemui.settings.UserFileManager;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.phone.StatusBarIconController;
 
@@ -107,6 +108,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     private CarServiceProvider mCarServiceProvider;
     @Mock
     private CarSystemBarElementInitializer mCarSystemBarElementInitializer;
+    @Mock
+    private UserFileManager mUserFileManager;
 
     @Before
     public void setUp() throws Exception {
@@ -140,7 +143,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 () -> mMicPrivacyChipViewController, () -> mCameraPrivacyChipViewController,
                 mButtonRoleHolderController,
                 new SystemBarConfigs(mTestableResources.getResources()),
-                () -> mPanelControllerBuilder);
+                () -> mPanelControllerBuilder,
+                mUserFileManager);
     }
 
     @Test

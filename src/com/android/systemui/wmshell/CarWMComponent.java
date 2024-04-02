@@ -16,7 +16,7 @@
 
 package com.android.systemui.wmshell;
 
-import com.android.systemui.car.taskview.CarSystemUIProxyImpl;
+import com.android.systemui.car.wm.CarSystemUIProxyImpl;
 import com.android.systemui.dagger.WMComponent;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.systemui.wm.MDSystemBarsController;

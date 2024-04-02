@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The Android Open Source Project
+ * Copyright (C) 2023 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.taskview;
+package com.android.systemui.car.wm.taskview;
 
 import static android.app.ActivityTaskManager.INVALID_TASK_ID;
 
-import static com.android.systemui.car.taskview.CarSystemUIProxyImpl.ensureManageSystemUIPermission;
+import static com.android.systemui.car.wm.CarSystemUIProxyImpl.ensureManageSystemUIPermission;
 
 import android.annotation.NonNull;
 import android.app.ActivityManager;
@@ -41,6 +41,7 @@ import android.view.SurfaceControl;
 import android.window.WindowContainerTransaction;
 
 import com.android.internal.annotations.Keep;
+import com.android.systemui.car.wm.CarSystemUIProxyImpl;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.taskview.TaskViewBase;
@@ -281,7 +282,8 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         return mHostImpl;
     }
 
-    boolean hasLaunchRootTaskOnDisplay(int display) {
+    /** Returns true if a taskview with a launch root task exists on given {@code display}. */
+    public boolean hasLaunchRootTaskOnDisplay(int display) {
         return mRootTaskMediator != null && mRootTaskMediator.isLaunchRoot()
                 && mRootTaskMediator.getDisplayId() == display;
     }

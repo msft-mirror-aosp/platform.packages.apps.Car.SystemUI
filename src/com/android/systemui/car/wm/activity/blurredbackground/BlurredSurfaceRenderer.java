@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.activity.blurredbackground;
+package com.android.systemui.car.wm.activity.blurredbackground;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -32,6 +32,7 @@ import android.window.ScreenCapture.ScreenshotHardwareBuffer;
 import android.window.ScreenCapture.SynchronousScreenCaptureListener;
 
 import com.android.systemui.R;
+import com.android.systemui.car.wm.activity.ActivityBlockingActivity;
 
 import java.nio.IntBuffer;
 
@@ -40,7 +41,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 /**
  * The renderer class for the {@link GLSurfaceView} of the
- * {@link com.android.systemui.car.activity.ActivityBlockingActivity}
+ * {@link ActivityBlockingActivity}
  */
 public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
 

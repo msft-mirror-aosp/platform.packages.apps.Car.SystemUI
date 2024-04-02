@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.taskview;
+package com.android.systemui.car.wm.taskview;
 
 import static android.app.WindowConfiguration.ACTIVITY_TYPE_ASSISTANT;
 import static android.app.WindowConfiguration.ACTIVITY_TYPE_HOME;

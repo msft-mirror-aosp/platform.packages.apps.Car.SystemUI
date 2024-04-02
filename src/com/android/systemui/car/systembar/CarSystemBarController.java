@@ -61,6 +61,7 @@ import com.android.systemui.settings.UserTracker;
 
 import dagger.Lazy;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -812,12 +813,22 @@ public class CarSystemBarController {
             }
             return;
         }
-        mDockViewController = new DockViewController(
+        mDockViewController = createDockViewController(
                 dockView,
                 mUserTracker.getUserContext(),
                 mUserFileManager.getFile(
                         DockProtoDataController.FILE_NAME,
-                        mUserTracker.getUserId()));
+                        mUserTracker.getUserId()
+                )
+        );
+    }
+
+    protected DockViewController createDockViewController(
+            DockView dockView,
+            Context userContext,
+            File dataFile
+    ) {
+        return new DockViewController(dockView, userContext, dataFile);
     }
 
     private void destroyDock() {

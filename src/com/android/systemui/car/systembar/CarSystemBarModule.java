@@ -29,6 +29,7 @@ import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.settings.UserFileManager;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
 
@@ -137,14 +138,16 @@ public abstract class CarSystemBarModule {
             Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
             ButtonRoleHolderController buttonRoleHolderController,
             SystemBarConfigs systemBarConfigs,
-            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider) {
+            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider,
+            UserFileManager userFileManager) {
         if (carSystemBarController.isPresent()) {
             return carSystemBarController.get();
         }
         return new CarSystemBarController(context, userTracker, carSystemBarViewFactory,
                 carServiceProvider, buttonSelectionStateController, userNameViewControllerLazy,
                 micPrivacyChipViewControllerLazy, cameraPrivacyChipViewControllerLazy,
-                buttonRoleHolderController, systemBarConfigs, panelControllerBuilderProvider);
+                buttonRoleHolderController, systemBarConfigs, panelControllerBuilderProvider,
+                userFileManager);
     }
 
     // CarSystemBarElements

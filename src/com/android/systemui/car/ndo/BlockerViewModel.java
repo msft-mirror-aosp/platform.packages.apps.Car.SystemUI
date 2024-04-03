@@ -17,6 +17,8 @@ package com.android.systemui.car.ndo;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.media.session.MediaController;
+import android.os.UserHandle;
 import android.telecom.Call;
 import android.util.Slog;
 
@@ -25,8 +27,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.android.car.media.common.source.MediaSessionHelper;
-import com.android.car.media.common.source.MediaSource;
 import com.android.car.telephony.calling.InCallServiceManager;
 import com.android.systemui.car.telecom.InCallServiceImpl;
 
@@ -52,7 +52,6 @@ public class BlockerViewModel extends ViewModel implements PropertyChangeListene
     MediaSessionHelper mMediaSessionHelper;
     private final MediatorLiveData<BlockingType> mBlockingTypeLiveData = new MediatorLiveData<>();
 
-
     @Inject
     public BlockerViewModel(Context context, InCallServiceManager serviceManager) {
         mContext = context;
@@ -60,7 +59,7 @@ public class BlockerViewModel extends ViewModel implements PropertyChangeListene
     }
 
     /** Initialize data sources **/
-    public void initialize(String blockedActivity) {
+    public void initialize(String blockedActivity, UserHandle userHandle) {
         mBlockedActivity = blockedActivity;
         mInCallLiveData = new InCallLiveData(mServiceManager, blockedActivity);
 
@@ -70,13 +69,13 @@ public class BlockerViewModel extends ViewModel implements PropertyChangeListene
             onInCallServiceConnected();
         }
 
-        mMediaSessionHelper = MediaSessionHelper.getInstance(mContext);
+        mMediaSessionHelper = new MediaSessionHelper(mContext, userHandle);
 
         // Set initial liveData value
         onUpdate();
 
         mBlockingTypeLiveData.addSource(mInCallLiveData, call -> onUpdate());
-        mBlockingTypeLiveData.addSource(mMediaSessionHelper.getActiveMediaSources(),
+        mBlockingTypeLiveData.addSource(mMediaSessionHelper.getActiveMediaSessions(),
                 mediaSources -> onUpdate());
     }
 
@@ -106,8 +105,9 @@ public class BlockerViewModel extends ViewModel implements PropertyChangeListene
             inCallService.removeListener(mInCallLiveData);
         }
         mServiceManager.removeObserver(this);
+        mMediaSessionHelper.cleanup();
         mBlockingTypeLiveData.removeSource(mInCallLiveData);
-        mBlockingTypeLiveData.removeSource(mMediaSessionHelper.getActiveMediaSources());
+        mBlockingTypeLiveData.removeSource(mMediaSessionHelper.getActiveMediaSessions());
     }
 
     @VisibleForTesting
@@ -117,7 +117,7 @@ public class BlockerViewModel extends ViewModel implements PropertyChangeListene
         if (call != null) {
             mBlockingTypeLiveData.setValue(BlockingType.DIALER);
         } else if (isBlockingActiveMediaSession(
-                mMediaSessionHelper.getPlayableMediaSources().getValue())) {
+                mMediaSessionHelper.getActiveMediaSessions().getValue())) {
             mBlockingTypeLiveData.setValue(BlockingType.MEDIA);
         } else {
             mBlockingTypeLiveData.setValue(BlockingType.NONE);
@@ -131,15 +131,14 @@ public class BlockerViewModel extends ViewModel implements PropertyChangeListene
     }
 
     /** @return whether the ABA is blocking an app with an active media session or not */
-    private boolean isBlockingActiveMediaSession(List<MediaSource> mediaSources) {
+    private boolean isBlockingActiveMediaSession(List<MediaController> mediaControllers) {
         ComponentName componentName = ComponentName.unflattenFromString(mBlockedActivity);
-
-        if (componentName == null || mediaSources == null) {
+        if (componentName == null || mediaControllers == null) {
             return false;
         }
 
-        for (MediaSource mediaSource : mediaSources) {
-            if (mediaSource.getPackageName().equals(componentName.getPackageName())) {
+        for (MediaController mediaController : mediaControllers) {
+            if (mediaController.getPackageName().equals(componentName.getPackageName())) {
                 return true;
             }
         }

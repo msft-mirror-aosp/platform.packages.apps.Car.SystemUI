@@ -149,7 +149,13 @@ public class ActivityBlockingActivity extends FragmentActivity {
                     CarPackageManager.BLOCKING_INTENT_EXTRA_BLOCKED_ACTIVITY_NAME);
             BlockerViewModel blockerViewModel = new ViewModelProvider(this, mViewModelFactory)
                     .get(BlockerViewModel.class);
-            blockerViewModel.initialize(mBlockedActivityName);
+            int userOnDisplay = getUserForCurrentDisplay();
+            if (userOnDisplay == CarOccupantZoneManager.INVALID_USER_ID) {
+                Slog.w(TAG, "Can't find user on display " + getDisplayId()
+                        + " defaulting to current user");
+                userOnDisplay = UserHandle.USER_CURRENT;
+            }
+            blockerViewModel.initialize(mBlockedActivityName, UserHandle.of(userOnDisplay));
             blockerViewModel.getBlockingTypeLiveData().observe(this, blockingType -> {
                 switch (blockingType) {
                     case DIALER -> startBlockingActivity(
@@ -430,10 +436,9 @@ public class ActivityBlockingActivity extends FragmentActivity {
             return;
         }
 
-        int displayId = getDisplayId();
-        int userOnDisplay = mCarOccupantZoneManager.getUserForDisplayId(displayId);
+        int userOnDisplay = getUserForCurrentDisplay();
         if (userOnDisplay == CarOccupantZoneManager.INVALID_USER_ID) {
-            Slog.e(TAG, "can not find user on display " + displayId
+            Slog.e(TAG, "can not find user on display " + getDisplay()
                     + " to start Home");
             finish();
         }
@@ -444,7 +449,7 @@ public class ActivityBlockingActivity extends FragmentActivity {
                 CarOccupantZoneManager.DISPLAY_TYPE_MAIN);
         if (Log.isLoggable(TAG, Log.DEBUG)) {
             Slog.d(TAG, String.format("display id: %d, driver display id: %d",
-                    displayId, driverDisplayId));
+                    getDisplay(), driverDisplayId));
         }
         startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -468,11 +473,10 @@ public class ActivityBlockingActivity extends FragmentActivity {
     }
 
     private void startBlockingActivity(String blockingActivity) {
-        int displayId = getDisplayId();
-        int userOnDisplay = mCarOccupantZoneManager.getUserForDisplayId(displayId);
+        int userOnDisplay = getUserForCurrentDisplay();
         if (userOnDisplay == CarOccupantZoneManager.INVALID_USER_ID) {
             Slog.w(TAG, "Can't launch blocking activity " + blockingActivity
-                    + ". Can't find user on display " + displayId);
+                    + ". Can't find user on display " + getDisplayId());
             return;
         }
 
@@ -487,5 +491,10 @@ public class ActivityBlockingActivity extends FragmentActivity {
         } catch (RuntimeException ex) {
             Slog.w(TAG, "Failed to launch blocking activity " + blockingActivity, ex);
         }
+    }
+
+    private int getUserForCurrentDisplay() {
+        int displayId = getDisplayId();
+        return mCarOccupantZoneManager.getUserForDisplayId(displayId);
     }
 }

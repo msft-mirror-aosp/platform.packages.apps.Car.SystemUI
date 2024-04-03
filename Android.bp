@@ -63,7 +63,7 @@ android_library {
         "SystemUI-proto",
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
-        "animationlib",
+        "//frameworks/libs/systemui:animationlib",
         "CarDockLib",
         "androidx.test.rules",
     ],

@@ -24,6 +24,8 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.media.session.MediaController;
+import android.os.UserHandle;
 import android.telecom.Call;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
@@ -31,8 +33,6 @@ import android.testing.TestableLooper;
 import androidx.lifecycle.LiveData;
 import androidx.test.filters.SmallTest;
 
-import com.android.car.media.common.source.MediaSessionHelper;
-import com.android.car.media.common.source.MediaSource;
 import com.android.car.telephony.calling.InCallServiceManager;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
@@ -72,7 +72,7 @@ public class BlockerViewModelTest extends SysuiTestCase {
     @Mock
     private MediaSessionHelper mMediaSessionHelper;
     @Mock
-    private LiveData<List<MediaSource>> mMediaLiveData;
+    private LiveData<List<MediaController>> mMediaLiveData;
 
     @Before
     public void setup() {
@@ -127,8 +127,8 @@ public class BlockerViewModelTest extends SysuiTestCase {
 
     @Test
     public void testNoMedia_emitsNone() {
-        List<MediaSource> mediaSources = new ArrayList<>();
-        when(mMediaLiveData.getValue()).thenReturn(mediaSources);
+        List<MediaController> mediaControllers = new ArrayList<>();
+        when(mMediaLiveData.getValue()).thenReturn(mediaControllers);
         initializeViewModel();
 
         mBlockerViewModel.onUpdate();
@@ -138,11 +138,11 @@ public class BlockerViewModelTest extends SysuiTestCase {
 
     @Test
     public void testNotBlockedMedia_emitsNone() {
-        List<MediaSource> mediaSources = new ArrayList<>();
-        MediaSource mediaSource = mock(MediaSource.class);
-        when(mediaSource.getPackageName()).thenReturn(NOT_BLOCKED_ACTIVITY_PKG_NAME);
-        mediaSources.add(mediaSource);
-        when(mMediaLiveData.getValue()).thenReturn(mediaSources);
+        List<MediaController> mediaControllers = new ArrayList<>();
+        MediaController mediaController = mock(MediaController.class);
+        when(mediaController.getPackageName()).thenReturn(NOT_BLOCKED_ACTIVITY_PKG_NAME);
+        mediaControllers.add(mediaController);
+        when(mMediaLiveData.getValue()).thenReturn(mediaControllers);
         initializeViewModel();
 
         mBlockerViewModel.onUpdate();
@@ -152,11 +152,11 @@ public class BlockerViewModelTest extends SysuiTestCase {
 
     @Test
     public void testBlockedMedia_emitsMedia() {
-        List<MediaSource> mediaSources = new ArrayList<>();
-        MediaSource mediaSource = mock(MediaSource.class);
-        when(mediaSource.getPackageName()).thenReturn(BLOCKED_ACTIVITY_PKG_NAME);
-        mediaSources.add(mediaSource);
-        when(mMediaLiveData.getValue()).thenReturn(mediaSources);
+        List<MediaController> mediaControllers = new ArrayList<>();
+        MediaController mediaController = mock(MediaController.class);
+        when(mediaController.getPackageName()).thenReturn(BLOCKED_ACTIVITY_PKG_NAME);
+        mediaControllers.add(mediaController);
+        when(mMediaLiveData.getValue()).thenReturn(mediaControllers);
         initializeViewModel();
 
         mBlockerViewModel.onUpdate();
@@ -165,9 +165,9 @@ public class BlockerViewModelTest extends SysuiTestCase {
     }
 
     private void initializeViewModel() {
-        mBlockerViewModel.initialize(BLOCKED_ACTIVITY);
+        mBlockerViewModel.initialize(BLOCKED_ACTIVITY, UserHandle.CURRENT);
         mBlockerViewModel.mInCallLiveData = mInCallLiveData;
         mBlockerViewModel.mMediaSessionHelper = mMediaSessionHelper;
-        when(mMediaSessionHelper.getPlayableMediaSources()).thenReturn(mMediaLiveData);
+        when(mMediaSessionHelper.getActiveMediaSessions()).thenReturn(mMediaLiveData);
     }
 }

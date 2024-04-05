@@ -75,7 +75,7 @@ import org.mockito.quality.Strictness;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
-@TestableLooper.RunWithLooper
+@TestableLooper.RunWithLooper(setAsMainLooper = true)
 @SmallTest
 public class DisplayInputSinkControllerTest extends SysuiTestCase {
     private static final String TAG = DisplayInputSinkControllerTest.class.getSimpleName();
@@ -120,11 +120,10 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
                 .spyStatic(UserManager.class)
                 .strictness(Strictness.WARN)
                 .startMocking();
-        spyOn(mContext);
         mContentResolver = mContext.getContentResolver();
         spyOn(mContentResolver);
         mHandler = new Handler(Looper.getMainLooper());
-        doReturn(mDisplayManager).when(mContext).getSystemService(DisplayManager.class);
+        mContext.addMockSystemService(DisplayManager.class, mDisplayManager);
         mDisplayInputSinkController =
                 new DisplayInputSinkController(mContext, mHandler, mCarServiceProvider,
                         mDisplayInputSinks, mDisplayInputLockWindows, mDisplayInputLockSetting,

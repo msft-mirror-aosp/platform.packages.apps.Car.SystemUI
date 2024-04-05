@@ -30,6 +30,7 @@ import android.content.pm.PackageManager;
 import android.hardware.display.DisplayManager;
 import android.os.Binder;
 import android.os.Process;
+import android.util.ArraySet;
 import android.util.Slog;
 import android.view.Display;
 
@@ -46,9 +47,7 @@ import com.android.wm.shell.dagger.WMSingleton;
 import com.android.wm.shell.taskview.TaskViewTransitions;
 
 import java.io.PrintWriter;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -65,7 +64,8 @@ public final class CarSystemUIProxyImpl
     private final SyncTransactionQueue mSyncQueue;
     private final ShellTaskOrganizer mTaskOrganizer;
     private final TaskViewTransitions mTaskViewTransitions;
-    private final Set<RemoteCarTaskViewServerImpl> mRemoteCarTaskViewServerSet = new HashSet<>();
+    private final ArraySet<RemoteCarTaskViewServerImpl> mRemoteCarTaskViewServerSet =
+            new ArraySet<>();
     private final DisplayManager mDisplayManager;
 
     private boolean mConnected;
@@ -121,6 +121,11 @@ public final class CarSystemUIProxyImpl
             }
         }
         return false;
+    }
+
+    /** Returns the list of all the task views. */
+    public ArraySet<RemoteCarTaskViewServerImpl> getAllTaskViews() {
+        return mRemoteCarTaskViewServerSet;
     }
 
     @Override

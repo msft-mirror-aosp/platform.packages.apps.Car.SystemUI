@@ -39,9 +39,9 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.wm.shell.ShellTaskOrganizer;
-import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.taskview.TaskViewBase;
 import com.android.wm.shell.taskview.TaskViewTaskController;
+import com.android.wm.shell.taskview.TaskViewTransitions;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,8 +56,8 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
     private final TaskViewTaskController mTaskViewTaskController = mock(
             TaskViewTaskController.class);
     private final TaskViewBase mTaskViewClientPart = mock(TaskViewBase.class);
-    private final SyncTransactionQueue mSyncQueue = mock(SyncTransactionQueue.class);
     private final CarActivityManager mCarActivityManager = mock(CarActivityManager.class);
+    private final TaskViewTransitions mTaskViewTransitions = mock(TaskViewTransitions.class);
 
     private ActivityManager.RunningTaskInfo createTask(int taskId) {
         ActivityManager.RunningTaskInfo taskInfo =
@@ -90,7 +90,8 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
     public void onTaskAppeared_setsRootTask() {
         mMediator = new RootTaskMediator(1, /* isLaunchRoot= */ true, /* embedHomeTask= */ false,
                 /* embedRecentsTask= */ false, /* embedAssistantTask= */true, mShellTaskOrganizer,
-                mTaskViewTaskController, mTaskViewClientPart, mSyncQueue, mCarActivityManager);
+                mTaskViewTaskController, mTaskViewClientPart, mCarActivityManager,
+                mTaskViewTransitions);
         ActivityManager.RunningTaskInfo taskInfo = createTask(/* taskId= */ 1);
         mMediator.onTaskAppeared(taskInfo, null);
 
@@ -101,7 +102,8 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
     public void onTaskAppeared_withIsLaunchRoot_setsLaunchRootTask() {
         mMediator = new RootTaskMediator(1, /* isLaunchRoot= */ true, /* embedHomeTask= */ false,
                 /* embedRecentsTask= */ false, /* embedAssistantTask= */true, mShellTaskOrganizer,
-                mTaskViewTaskController, mTaskViewClientPart, mSyncQueue, mCarActivityManager);
+                mTaskViewTaskController, mTaskViewClientPart, mCarActivityManager,
+                mTaskViewTransitions);
         ActivityManager.RunningTaskInfo rootTaskInfo = createTask(/* taskId= */ 1);
 
         mMediator.onTaskAppeared(rootTaskInfo, null);
@@ -113,7 +115,8 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
     public void onTaskAppeared_withIsLaunchRoot_callsCarActivityManager() {
         mMediator = new RootTaskMediator(1, /* isLaunchRoot= */ true, /* embedHomeTask= */ false,
                 /* embedRecentsTask= */ false, /* embedAssistantTask= */true, mShellTaskOrganizer,
-                mTaskViewTaskController, mTaskViewClientPart, mSyncQueue, mCarActivityManager);
+                mTaskViewTaskController, mTaskViewClientPart, mCarActivityManager,
+                mTaskViewTransitions);
         ActivityManager.RunningTaskInfo launchRootTask = createTask(/* taskId= */ 1);
         mMediator.onTaskAppeared(launchRootTask, null);
 
@@ -127,7 +130,8 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
     public void onTaskAppeared_rootTaskExists_updatesTaskStack() {
         mMediator = new RootTaskMediator(1, /* isLaunchRoot= */ false, /* embedHomeTask= */ false,
                 /* embedRecentsTask= */ false, /* embedAssistantTask= */true, mShellTaskOrganizer,
-                mTaskViewTaskController, mTaskViewClientPart, mSyncQueue, mCarActivityManager);
+                mTaskViewTaskController, mTaskViewClientPart, mCarActivityManager,
+                mTaskViewTransitions);
         ActivityManager.RunningTaskInfo rootTask = new ActivityManager.RunningTaskInfo();
         rootTask.taskId = 1;
         mMediator.onTaskAppeared(rootTask, null);
@@ -143,7 +147,8 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
     public void onTaskInfoChanged_forRootTask_updatesShellPart() {
         mMediator = new RootTaskMediator(1, /* isLaunchRoot= */ false, /* embedHomeTask= */ false,
                 /* embedRecentsTask= */ false, /* embedAssistantTask= */true, mShellTaskOrganizer,
-                mTaskViewTaskController, mTaskViewClientPart, mSyncQueue, mCarActivityManager);
+                mTaskViewTaskController, mTaskViewClientPart, mCarActivityManager,
+                mTaskViewTransitions);
         ActivityManager.RunningTaskInfo taskInfo = createTask(/* taskId= */ 1);
         mMediator.onTaskAppeared(taskInfo, null);
 
@@ -156,7 +161,8 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
     public void onTaskInfoChanged_withIsLaunchRoot_callsCarActivityManager() {
         mMediator = new RootTaskMediator(1, /* isLaunchRoot= */ true, /* embedHomeTask= */ false,
                 /* embedRecentsTask= */ false, /* embedAssistantTask= */true, mShellTaskOrganizer,
-                mTaskViewTaskController, mTaskViewClientPart, mSyncQueue, mCarActivityManager);
+                mTaskViewTaskController, mTaskViewClientPart, mCarActivityManager,
+                mTaskViewTransitions);
         ActivityManager.RunningTaskInfo taskInfo = new ActivityManager.RunningTaskInfo();
         taskInfo.taskId = 1;
 
@@ -169,7 +175,8 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
     public void onTaskInfoChanged_multipleExisting_taskVisible_movesToFrontOfStack() {
         mMediator = new RootTaskMediator(1, /* isLaunchRoot= */ true, /* embedHomeTask= */ false,
                 /* embedRecentsTask= */ false, /* embedAssistantTask= */true, mShellTaskOrganizer,
-                mTaskViewTaskController, mTaskViewClientPart, mSyncQueue, mCarActivityManager);
+                mTaskViewTaskController, mTaskViewClientPart, mCarActivityManager,
+                mTaskViewTransitions);
         ActivityManager.RunningTaskInfo rootTask = createTask(/* taskId= */ 99);
         mMediator.onTaskAppeared(rootTask, null);
         ActivityManager.RunningTaskInfo task1 = createTask(/* taskId= */ 1);
@@ -187,7 +194,8 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
     public void onTaskVanished_forRootTask_updatesShellPart() {
         mMediator = new RootTaskMediator(1, /* isLaunchRoot= */ false, /* embedHomeTask= */ false,
                 /* embedRecentsTask= */ false, /* embedAssistantTask= */true, mShellTaskOrganizer,
-                mTaskViewTaskController, mTaskViewClientPart, mSyncQueue, mCarActivityManager);
+                mTaskViewTaskController, mTaskViewClientPart, mCarActivityManager,
+                mTaskViewTransitions);
         ActivityManager.RunningTaskInfo taskInfo = createTask(/* taskId= */ 1);
         mMediator.onTaskAppeared(taskInfo, null);
 
@@ -200,7 +208,8 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
     public void onTaskVanished_withIsLaunchRoot_callsCarActivityManager() {
         mMediator = new RootTaskMediator(1, /* isLaunchRoot= */ true, /* embedHomeTask= */ false,
                 /* embedRecentsTask= */ false, /* embedAssistantTask= */ true, mShellTaskOrganizer,
-                mTaskViewTaskController, mTaskViewClientPart, mSyncQueue, mCarActivityManager);
+                mTaskViewTaskController, mTaskViewClientPart, mCarActivityManager,
+                mTaskViewTransitions);
         ActivityManager.RunningTaskInfo taskInfo = new ActivityManager.RunningTaskInfo();
         taskInfo.taskId = 1;
         mMediator.onTaskAppeared(taskInfo, null);
@@ -213,8 +222,8 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
     @Test
     public void onTaskVanished_multipleExistingTasks_removesFromTaskStack() {
         mMediator = new RootTaskMediator(1, /* isLaunchRoot= */true, false, false,
-                true, mShellTaskOrganizer, mTaskViewTaskController, mTaskViewClientPart, mSyncQueue,
-                mCarActivityManager);
+                true, mShellTaskOrganizer, mTaskViewTaskController, mTaskViewClientPart,
+                mCarActivityManager, mTaskViewTransitions);
         ActivityManager.RunningTaskInfo rootTask = createTask(/* taskId= */ 99);
         mMediator.onTaskAppeared(rootTask, null);
         ActivityManager.RunningTaskInfo task1 = createTask(/* taskId= */ 1);
@@ -232,7 +241,8 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
     public void release_clearsRootTask() {
         mMediator = new RootTaskMediator(1, /* isLaunchRoot= */ false, /* embedHomeTask= */ false,
                 /* embedRecentsTask= */ false, /* embedAssistantTask= */ true, mShellTaskOrganizer,
-                mTaskViewTaskController, mTaskViewClientPart, mSyncQueue, mCarActivityManager);
+                mTaskViewTaskController, mTaskViewClientPart, mCarActivityManager,
+                mTaskViewTransitions);
         ActivityManager.RunningTaskInfo rootTask = new ActivityManager.RunningTaskInfo();
         rootTask.taskId = 1;
         mMediator.onTaskAppeared(rootTask, null);
@@ -246,7 +256,8 @@ public final class RootTaskMediatorTest extends SysuiTestCase {
     public void release_withIsLaunchRoot_clearsLaunchRootTask() {
         mMediator = new RootTaskMediator(1, /* isLaunchRoot= */ false, /* embedHomeTask= */ false,
                 /* embedRecentsTask= */ false, /* embedAssistantTask= */ true, mShellTaskOrganizer,
-                mTaskViewTaskController, mTaskViewClientPart, mSyncQueue, mCarActivityManager);
+                mTaskViewTaskController, mTaskViewClientPart, mCarActivityManager,
+                mTaskViewTransitions);
         ActivityManager.RunningTaskInfo rootTask = createTask(/* taskId= */ 1);
         mMediator.onTaskAppeared(rootTask, null);
         ActivityManager.RunningTaskInfo task = createTask(/* taskId= */ 2);

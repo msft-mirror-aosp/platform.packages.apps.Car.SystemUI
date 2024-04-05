@@ -485,9 +485,9 @@ public class ActivityBlockingActivity extends FragmentActivity {
     private void startBlockingActivity(String blockingActivity) {
         int userOnDisplay = getUserForCurrentDisplay();
         if (userOnDisplay == CarOccupantZoneManager.INVALID_USER_ID) {
-            Slog.w(TAG, "Can't launch blocking activity " + blockingActivity
-                    + ". Can't find user on display " + getDisplayId());
-            return;
+            Slog.w(TAG, "Can't find user on display " + getDisplayId()
+                    + " defaulting to USER_CURRENT");
+            userOnDisplay = UserHandle.USER_CURRENT;
         }
 
         ComponentName componentName = ComponentName.unflattenFromString(blockingActivity);

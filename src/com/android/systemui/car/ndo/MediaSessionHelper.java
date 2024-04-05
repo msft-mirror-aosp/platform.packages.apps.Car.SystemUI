@@ -30,8 +30,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Executor;
 
 /**
  * Class that handles listening to and returning active media sessions.
@@ -43,7 +42,7 @@ public class MediaSessionHelper extends MediaController.Callback {
     private final UserHandle mUserHandle;
     @VisibleForTesting
     final List<MediaController> mMediaControllersList = new ArrayList<>();
-    private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+    private final Executor mExecutor;
 
     private final MediaSessionManager.OnActiveSessionsChangedListener mChangedListener =
             this::onMediaSessionChange;
@@ -51,7 +50,7 @@ public class MediaSessionHelper extends MediaController.Callback {
     public MediaSessionHelper(Context context, UserHandle userHandle) {
         mMediaSessionManager = context.getSystemService(MediaSessionManager.class);
         mUserHandle = userHandle;
-
+        mExecutor = context.getMainExecutor();
         init();
     }
 
@@ -71,7 +70,6 @@ public class MediaSessionHelper extends MediaController.Callback {
 
     /** Performs cleanup when MediaSessionHelper should no longer be used. */
     public void cleanup() {
-        mExecutor.shutdown();
         mMediaSessionManager.removeOnActiveSessionsChangedListener(mChangedListener);
         unregisterPlaybackChanges();
     }
@@ -101,7 +99,6 @@ public class MediaSessionHelper extends MediaController.Callback {
                 registerForPlaybackChanges(mediaController);
             }
         }
-
         mLiveData.setValue(activeMediaControllers);
     }
 

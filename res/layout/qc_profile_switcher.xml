@@ -53,7 +53,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 style="@style/QCFooterButtonStyle"
                 android:text="@string/qc_footer_profiles_accounts_settings"
-                app:intent="intent:#Intent;action=android.settings.USER_SETTINGS;launchFlags=0x14008000;end"/>
+                app:intent="intent:#Intent;action=android.settings.USER_SETTINGS;launchFlags=0x14000000;end"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.android.car.ui.FocusArea>
 </FrameLayout>

@@ -19,6 +19,7 @@ package com.android.systemui.car.volume;
 import static android.car.media.CarAudioManager.AUDIO_FEATURE_VOLUME_GROUP_EVENTS;
 import static android.car.media.CarAudioManager.AUDIO_FEATURE_VOLUME_GROUP_MUTING;
 import static android.car.media.CarAudioManager.INVALID_AUDIO_ZONE;
+import static android.car.media.CarAudioManager.PRIMARY_AUDIO_ZONE;
 import static android.car.media.CarVolumeGroupEvent.EVENT_TYPE_MUTE_CHANGED;
 import static android.car.media.CarVolumeGroupEvent.EVENT_TYPE_VOLUME_GAIN_INDEX_CHANGED;
 import static android.car.media.CarVolumeGroupEvent.EVENT_TYPE_VOLUME_MAX_INDEX_CHANGED;
@@ -106,6 +107,7 @@ public class CarVolumeDialogImpl
     private static final int LISTVIEW_ANIMATION_DURATION_IN_MILLIS = 250;
     private static final int DISMISS_DELAY_IN_MILLIS = 50;
     private static final int ARROW_FADE_IN_START_DELAY_IN_MILLIS = 100;
+    private static final int INVALID_INDEX = -1;
 
     private final Context mContext;
     private final H mHandler = new H();
@@ -167,8 +169,21 @@ public class CarVolumeDialogImpl
                     List<Integer> extraInfos = CarVolumeGroupEvent.convertFlagsToExtraInfo(flags,
                             eventTypes);
                     if (mCarAudioManager != null) {
-                        updateVolumePreference(mCarAudioManager.getVolumeGroupInfo(zoneId, groupId),
-                                eventTypes, extraInfos);
+                        CarVolumeGroupInfo carVolumeGroupInfo =
+                                mCarAudioManager.getVolumeGroupInfo(zoneId, groupId);
+                        boolean isMuted;
+                        int currentIndex;
+                        int maxIndex = INVALID_INDEX;
+                        if (carVolumeGroupInfo != null) {
+                            isMuted = carVolumeGroupInfo.isMuted();
+                            maxIndex = carVolumeGroupInfo.getMaxVolumeGainIndex();
+                            currentIndex = carVolumeGroupInfo.getVolumeGainIndex();
+                        } else {
+                            isMuted = isGroupMuted(mCarAudioManager, zoneId, groupId);
+                            currentIndex = getSeekbarValue(mCarAudioManager, zoneId, groupId);
+                        }
+                        updateVolumePreference(groupId, maxIndex, currentIndex, isMuted, eventTypes,
+                                extraInfos);
                     }
                 }
             };
@@ -198,7 +213,8 @@ public class CarVolumeDialogImpl
                         }
                     }
                     if (mAudioZoneId == INVALID_AUDIO_ZONE) {
-                        return;
+                        // No audio zone found in occupant zone mapping - default to primary zone
+                        mAudioZoneId = PRIMARY_AUDIO_ZONE;
                     }
                     mCarAudioManager = (CarAudioManager) car.getCarManager(Car.AUDIO_SERVICE);
                     if (mCarAudioManager != null) {
@@ -428,6 +444,11 @@ public class CarVolumeDialogImpl
 
 
     private void showH(int reason) {
+        if (mCarAudioManager == null) {
+            Log.w(TAG, "cannot show dialog - car audio manager is null");
+            return;
+        }
+
         if (DEBUG) {
             Log.d(TAG, "showH r=" + Events.DISMISS_REASONS[reason]);
         }
@@ -457,6 +478,10 @@ public class CarVolumeDialogImpl
 
     private void clearAllAndSetupDefaultCarVolumeLineItem(int groupId) {
         mCarVolumeLineItems.clear();
+        if (groupId >= mAvailableVolumeItems.size()) {
+            Log.w(TAG, "group id not in available volume items");
+            return;
+        }
         VolumeItem volumeItem = mAvailableVolumeItems.get(groupId);
         volumeItem.mDefaultItem = true;
         addCarVolumeListItem(volumeItem, mAudioZoneId, /* volumeGroupId = */ groupId,
@@ -844,7 +869,11 @@ public class CarVolumeDialogImpl
             List<Integer> extraInfos = event.getExtraInfos();
             List<CarVolumeGroupInfo> infos = event.getCarVolumeGroupInfos();
             for (int infoIndex = 0; infoIndex < infos.size(); infoIndex++) {
-                updateVolumePreference(infos.get(infoIndex), eventTypes, extraInfos);
+                CarVolumeGroupInfo carVolumeGroupInfo = infos.get(infoIndex);
+                updateVolumePreference(carVolumeGroupInfo.getId(),
+                        carVolumeGroupInfo.getMaxVolumeGainIndex(),
+                        carVolumeGroupInfo.getVolumeGainIndex(), carVolumeGroupInfo.isMuted(),
+                        eventTypes, extraInfos);
             }
         }
     }
@@ -865,27 +894,23 @@ public class CarVolumeDialogImpl
         return filteredEvents;
     }
 
-    private void updateVolumePreference(CarVolumeGroupInfo groupInfo, int eventTypes,
-            List<Integer> extraInfos) {
-        boolean isMuted = groupInfo.isMuted();
-        int groupId = groupInfo.getId();
-        int maxIndex = groupInfo.getMaxVolumeGainIndex();
-        int value = groupInfo.getVolumeGainIndex();
-
+    private void updateVolumePreference(int groupId, int maxIndex, int currentIndex,
+            boolean isMuted, int eventTypes, List<Integer> extraInfos) {
         VolumeItem volumeItem = mAvailableVolumeItems.get(groupId);
         boolean isShowing = mCarVolumeLineItems.stream().anyMatch(
                 item -> item.getGroupId() == groupId);
 
         if (isShowing) {
             if ((eventTypes & EVENT_TYPE_VOLUME_GAIN_INDEX_CHANGED) != 0) {
-                volumeItem.mCarVolumeItem.setProgress(value);
-                volumeItem.mProgress = value;
+                volumeItem.mCarVolumeItem.setProgress(currentIndex);
+                volumeItem.mProgress = currentIndex;
             }
             if ((eventTypes & EVENT_TYPE_MUTE_CHANGED) != 0) {
                 volumeItem.mCarVolumeItem.setIsMuted(isMuted);
                 volumeItem.mIsMuted = isMuted;
             }
-            if ((eventTypes & EVENT_TYPE_VOLUME_MAX_INDEX_CHANGED) != 0) {
+            if ((eventTypes & EVENT_TYPE_VOLUME_MAX_INDEX_CHANGED) != 0
+                    && maxIndex != INVALID_INDEX) {
                 volumeItem.mCarVolumeItem.setMax(maxIndex);
             }
         }

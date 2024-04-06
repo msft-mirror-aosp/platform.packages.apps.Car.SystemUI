@@ -181,8 +181,7 @@ public class QCLogoutButtonControllerTest extends SysuiTestCase {
         mController.getOnDialogClickListener()
                 .onClick(mDialog, DialogInterface.BUTTON_POSITIVE);
 
-        verify(mIAm).stopUserWithDelayedLocking(
-                userId, /* force= */ false, /* callback= */ null);
+        verify(mIAm).stopUserWithDelayedLocking(userId, /* callback= */ null);
     }
 
     @Test
@@ -200,8 +199,7 @@ public class QCLogoutButtonControllerTest extends SysuiTestCase {
         mController.getOnDialogClickListener()
                 .onClick(mDialog, DialogInterface.BUTTON_POSITIVE);
 
-        verify(mIAm, never()).stopUserWithDelayedLocking(
-                userId, /* force= */ false, /* callback= */ null);
+        verify(mIAm, never()).stopUserWithDelayedLocking(userId, /* callback= */ null);
     }
 
     private void attachCarService() {

@@ -462,7 +462,7 @@ public class ActivityBlockingActivity extends FragmentActivity {
                 CarOccupantZoneManager.DISPLAY_TYPE_MAIN);
         if (Log.isLoggable(TAG, Log.DEBUG)) {
             Slog.d(TAG, String.format("display id: %d, driver display id: %d",
-                    getDisplay(), driverDisplayId));
+                    getDisplayId(), driverDisplayId));
         }
         startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

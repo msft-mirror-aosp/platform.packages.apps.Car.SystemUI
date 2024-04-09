@@ -51,7 +51,6 @@ public class BackgroundAdjustingTemperatureControlView extends TemperatureContro
 
     @Override
     public void onFinishInflate() {
-        super.onFinishInflate();
         mTemperatureBarView = findViewById(R.id.hvac_temperature_bar);
 
         Resources res = getResources();
@@ -66,6 +65,9 @@ public class BackgroundAdjustingTemperatureControlView extends TemperatureContro
         }
         colorRes.recycle();
         mOffColor = res.getColor(R.color.hvac_temperature_off_text_bg_color, /* theme= */ null);
+        // call super.onFinishInflate() last since it may trigger other methods like
+        // updateTemperatureViewUiThread() which can't execute prior to these fixtures being set
+        super.onFinishInflate();
     }
 
     @Override

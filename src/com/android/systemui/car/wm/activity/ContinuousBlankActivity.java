@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.activity;
+package com.android.systemui.car.wm.activity;
 
 import android.app.Activity;
 import android.os.Bundle;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.systemui.car.activity;
+package com.android.systemui.car.wm.activity;
 
 import static com.android.systemui.car.Flags.configAppBlockingActivities;
 
@@ -51,9 +51,9 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.android.systemui.R;
-import com.android.systemui.car.activity.blurredbackground.BlurredSurfaceRenderer;
 import com.android.systemui.car.ndo.BlockerViewModel;
 import com.android.systemui.car.ndo.NdoViewModelFactory;
+import com.android.systemui.car.wm.activity.blurredbackground.BlurredSurfaceRenderer;
 
 import java.util.List;
 import java.util.concurrent.Executor;

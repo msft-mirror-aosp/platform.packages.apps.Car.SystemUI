@@ -18,8 +18,8 @@ package com.android.systemui;
 
 import android.app.Activity;
 
-import com.android.systemui.car.activity.ActivityBlockingActivity;
 import com.android.systemui.car.userpicker.UserPickerActivity;
+import com.android.systemui.car.wm.activity.ActivityBlockingActivity;
 import com.android.systemui.dagger.DefaultActivityBinder;
 
 import dagger.Binds;

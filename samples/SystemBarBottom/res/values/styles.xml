@@ -15,8 +15,8 @@
   ~ limitations under the License.
   -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="TextAppearance.StatusBar.Clock"
-           parent="@*android:style/TextAppearance.StatusBar.Icon">
+    <style name="TextAppearance.Clock">
+        <item name="textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textSize">40sp</item>
         <item name="android:fontFamily">sans-serif-regular</item>
         <item name="android:textColor">#FFFFFF</item>

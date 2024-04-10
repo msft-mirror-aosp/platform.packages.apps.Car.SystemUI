@@ -17,12 +17,12 @@
 package com.android.systemui
 
 import com.android.keyguard.KeyguardBiometricLockoutLogger
-import com.android.systemui.car.activity.window.ActivityWindowManager
-import com.android.systemui.car.cluster.ClusterDisplayController
 import com.android.systemui.car.input.DisplayInputSinkController
 import com.android.systemui.car.toast.CarToastUI
 import com.android.systemui.car.voicerecognition.ConnectedDeviceVoiceRecognitionNotifier
 import com.android.systemui.car.window.SystemUIOverlayWindowManager
+import com.android.systemui.car.wm.activity.window.ActivityWindowManager
+import com.android.systemui.car.wm.cluster.ClusterDisplayController
 import com.android.systemui.dagger.qualifiers.PerUser
 import com.android.systemui.keyguard.KeyguardViewMediator
 import com.android.systemui.log.SessionTracker

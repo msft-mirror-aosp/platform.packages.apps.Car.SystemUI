@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.cluster;
+package com.android.systemui.car.wm.cluster;
 
 import static android.car.cluster.ClusterHomeManager.CONFIG_DISPLAY_BOUNDS;
 import static android.car.cluster.ClusterHomeManager.CONFIG_DISPLAY_ID;
@@ -46,7 +46,8 @@ import javax.inject.Inject;
  */
 @SysUISingleton
 public class ClusterDisplayController implements CoreStartable {
-    private static final String TAG = ClusterDisplayController.class.getSimpleName();
+    private static final String TAG =
+            com.android.systemui.car.wm.cluster.ClusterDisplayController.class.getSimpleName();
     private static final boolean DBG = false;
 
     private final RootTaskDisplayAreaOrganizer mRootTDAOrganizer;
@@ -78,69 +79,75 @@ public class ClusterDisplayController implements CoreStartable {
 
     private final CarServiceProvider.CarServiceOnConnectedListener mCarServiceOnConnectedListener =
             new CarServiceProvider.CarServiceOnConnectedListener() {
-        @Override
-        public void onConnected(Car car) {
-            mClusterHomeManager = (ClusterHomeManager) car.getCarManager(Car.CLUSTER_HOME_SERVICE);
-            if (mClusterHomeManager == null) {
-                Slog.w(TAG, "ClusterHomeManager is disabled");
-                return;
-            }
-            mClusterHomeManager.registerClusterStateListener(mMainExecutor, mClusterStateListener);
+                @Override
+                public void onConnected(Car car) {
+                    mClusterHomeManager = (ClusterHomeManager) car.getCarManager(
+                            Car.CLUSTER_HOME_SERVICE);
+                    if (mClusterHomeManager == null) {
+                        Slog.w(TAG, "ClusterHomeManager is disabled");
+                        return;
+                    }
+                    mClusterHomeManager.registerClusterStateListener(mMainExecutor,
+                            mClusterStateListener);
 
-            mClusterState = mClusterHomeManager.getClusterState();
-            if (mClusterState.displayId != Display.INVALID_DISPLAY) {
-                mRootTDAOrganizer.registerListener(mClusterState.displayId, mRootTDAListener);
-            }
-        }
-    };
+                    mClusterState = mClusterHomeManager.getClusterState();
+                    if (mClusterState.displayId != Display.INVALID_DISPLAY) {
+                        mRootTDAOrganizer.registerListener(mClusterState.displayId,
+                                mRootTDAListener);
+                    }
+                }
+            };
 
     private final ClusterHomeManager.ClusterStateListener mClusterStateListener =
             new ClusterHomeManager.ClusterStateListener() {
-        @Override
-        public void onClusterStateChanged(ClusterState state, int changes) {
-            // Need to update mClusterState first, since mClusterState will be referenced during
-            // registerListener() -> onDisplayAreaAppeared() -> resizeTDA().
-            mClusterState = state;
-            if (DBG) {
-                Slog.d(TAG, "onClusterStateChanged: changes=" + changes
-                        + ", displayId=" + state.displayId);
-            }
-            if ((changes & CONFIG_DISPLAY_ID) != 0) {
-                if (state.displayId != Display.INVALID_DISPLAY) {
-                    mRootTDAOrganizer.registerListener(state.displayId, mRootTDAListener);
-                } else {
-                    mRootTDAOrganizer.unregisterListener(mRootTDAListener);
+                @Override
+                public void onClusterStateChanged(ClusterState state, int changes) {
+                    // Need to update mClusterState first, since mClusterState will be referenced
+                    // during
+                    // registerListener() -> onDisplayAreaAppeared() -> resizeTDA().
+                    mClusterState = state;
+                    if (DBG) {
+                        Slog.d(TAG, "onClusterStateChanged: changes=" + changes
+                                + ", displayId=" + state.displayId);
+                    }
+                    if ((changes & CONFIG_DISPLAY_ID) != 0) {
+                        if (state.displayId != Display.INVALID_DISPLAY) {
+                            mRootTDAOrganizer.registerListener(state.displayId, mRootTDAListener);
+                        } else {
+                            mRootTDAOrganizer.unregisterListener(mRootTDAListener);
+                        }
+                    }
+                    if ((changes & CONFIG_DISPLAY_BOUNDS) != 0 && mRootTDAToken != null) {
+                        resizeTDA(mRootTDAToken, state.bounds, state.displayId);
+                    }
                 }
-            }
-            if ((changes & CONFIG_DISPLAY_BOUNDS) != 0 && mRootTDAToken != null) {
-                resizeTDA(mRootTDAToken, state.bounds, state.displayId);
-            }
-        }
-    };
+            };
 
     private final RootTaskDisplayAreaOrganizer.RootTaskDisplayAreaListener mRootTDAListener =
             new RootTaskDisplayAreaOrganizer.RootTaskDisplayAreaListener() {
-        @Override
-        public void onDisplayAreaAppeared(DisplayAreaInfo displayAreaInfo) {
-            if (DBG) Slog.d(TAG, "onDisplayAreaAppeared: " + displayAreaInfo);
-            if (mClusterState != null && mClusterState.displayId != Display.INVALID_DISPLAY) {
-                resizeTDA(displayAreaInfo.token, mClusterState.bounds, mClusterState.displayId);
-            }
-            mRootTDAToken = displayAreaInfo.token;
-        }
+                @Override
+                public void onDisplayAreaAppeared(DisplayAreaInfo displayAreaInfo) {
+                    if (DBG) Slog.d(TAG, "onDisplayAreaAppeared: " + displayAreaInfo);
+                    if (mClusterState != null
+                            && mClusterState.displayId != Display.INVALID_DISPLAY) {
+                        resizeTDA(displayAreaInfo.token, mClusterState.bounds,
+                                mClusterState.displayId);
+                    }
+                    mRootTDAToken = displayAreaInfo.token;
+                }
 
-        @Override
-        public void onDisplayAreaVanished(DisplayAreaInfo displayAreaInfo) {
-            if (DBG) Slog.d(TAG, "onDisplayAreaVanished: " + displayAreaInfo);
-            mRootTDAToken = null;
-        }
+                @Override
+                public void onDisplayAreaVanished(DisplayAreaInfo displayAreaInfo) {
+                    if (DBG) Slog.d(TAG, "onDisplayAreaVanished: " + displayAreaInfo);
+                    mRootTDAToken = null;
+                }
 
-        @Override
-        public void onDisplayAreaInfoChanged(DisplayAreaInfo displayAreaInfo) {
-            if (DBG) Slog.d(TAG, "onDisplayAreaInfoChanged: " + displayAreaInfo);
-            mRootTDAToken = displayAreaInfo.token;
-        }
-    };
+                @Override
+                public void onDisplayAreaInfoChanged(DisplayAreaInfo displayAreaInfo) {
+                    if (DBG) Slog.d(TAG, "onDisplayAreaInfoChanged: " + displayAreaInfo);
+                    mRootTDAToken = displayAreaInfo.token;
+                }
+            };
 
     private void resizeTDA(WindowContainerToken token, Rect bounds, int displayId) {
         if (DBG) {

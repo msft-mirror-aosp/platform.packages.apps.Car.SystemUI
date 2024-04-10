@@ -28,7 +28,6 @@ import com.android.keyguard.dagger.KeyguardDisplayModule;
 import com.android.systemui.biometrics.dagger.BiometricsModule;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
-import com.android.systemui.car.activity.window.ActivityWindowModule;
 import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
 import com.android.systemui.car.drivemode.DriveModeModule;
@@ -37,6 +36,7 @@ import com.android.systemui.car.notification.NotificationShadeWindowControllerIm
 import com.android.systemui.car.statusbar.DozeServiceHost;
 import com.android.systemui.car.users.CarMultiUserUtilsModule;
 import com.android.systemui.car.volume.CarVolumeModule;
+import com.android.systemui.car.wm.activity.window.ActivityWindowModule;
 import com.android.systemui.dagger.GlobalRootComponent;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;

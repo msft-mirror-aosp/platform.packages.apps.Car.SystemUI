@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.taskview;
+package com.android.systemui.car.wm;
 
 import static android.app.WindowConfiguration.WINDOWING_MODE_FULLSCREEN;
 

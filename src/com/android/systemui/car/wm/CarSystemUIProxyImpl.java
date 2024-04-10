@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.taskview;
+package com.android.systemui.car.wm;
 
 import static android.app.WindowConfiguration.WINDOWING_MODE_MULTI_WINDOW;
 
@@ -38,6 +38,7 @@ import androidx.annotation.NonNull;
 import com.android.systemui.Dumpable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.wm.taskview.RemoteCarTaskViewServerImpl;
 import com.android.systemui.dump.DumpManager;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.common.SyncTransactionQueue;
@@ -112,7 +113,8 @@ public final class CarSystemUIProxyImpl
         carServiceProvider.addListener(this);
     }
 
-    boolean isLaunchRootTaskPresent(int displayId) {
+    /** Returns true if a taskview with a launch root task exists on {@code displayId}. */
+    public boolean isLaunchRootTaskPresent(int displayId) {
         for (RemoteCarTaskViewServerImpl remoteCarTaskViewServer : mRemoteCarTaskViewServerSet) {
             if (remoteCarTaskViewServer.hasLaunchRootTaskOnDisplay(displayId)) {
                 return true;
@@ -141,7 +143,8 @@ public final class CarSystemUIProxyImpl
         return remoteCarTaskViewServerImpl.getHostImpl();
     }
 
-    void onCarTaskViewReleased(RemoteCarTaskViewServerImpl remoteCarTaskViewServer) {
+    /** Clears the taskview from the internal state. */
+    public void onCarTaskViewReleased(RemoteCarTaskViewServerImpl remoteCarTaskViewServer) {
         mRemoteCarTaskViewServerSet.remove(remoteCarTaskViewServer);
     }
 
@@ -187,7 +190,11 @@ public final class CarSystemUIProxyImpl
         }
     }
 
-    static void ensureManageSystemUIPermission(Context context) {
+    /**
+     * Checks the permission of the calling process. Throws {@link SecurityException} if
+     * {@link Car#PERMISSION_MANAGE_CAR_SYSTEM_UI} is not granted.
+     */
+    public static void ensureManageSystemUIPermission(Context context) {
         if (Binder.getCallingPid() == android.os.Process.myPid()) {
             // If called from within CarSystemUI, allow.
             return;

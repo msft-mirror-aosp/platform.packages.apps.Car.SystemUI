@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.activity.blurredbackground;
+package com.android.systemui.car.wm.activity.blurredbackground;
 
 import android.annotation.Nullable;
 import android.content.Context;

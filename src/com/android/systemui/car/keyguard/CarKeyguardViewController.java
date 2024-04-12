@@ -62,7 +62,6 @@ import com.android.systemui.shade.ShadeExpansionStateManager;
 import com.android.systemui.shade.domain.interactor.ShadeLockscreenInteractor;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
 import com.android.systemui.statusbar.phone.CentralSurfaces;
-import com.android.systemui.statusbar.phone.KeyguardBypassController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.toast.SystemUIToast;
 import com.android.systemui.toast.ToastFactory;
@@ -447,8 +446,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
             ShadeLockscreenInteractor shadeLockscreenInteractor,
             ShadeExpansionStateManager shadeExpansionStateManager,
             BiometricUnlockController biometricUnlockController,
-            View notificationContainer,
-            KeyguardBypassController bypassController) {
+            View notificationContainer) {
         // no-op
     }
 

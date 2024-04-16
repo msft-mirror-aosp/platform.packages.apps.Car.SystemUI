@@ -21,7 +21,6 @@ import android.content.res.Resources;
 
 import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
@@ -29,7 +28,6 @@ import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
-import com.android.systemui.settings.UserFileManager;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
 
@@ -124,6 +122,12 @@ public abstract class CarSystemBarModule {
     @CarSysUIDynamicOverride
     abstract CarSystemBarController optionalCarSystemBarController();
 
+    /**
+     * Allows for the replacement of {@link CarSystemBarController} class with a custom subclass.
+     * Note that this is not ideal and should be used as a last resort since there are no guarantees
+     * that there will not be changes upstream that break the dependencies here (creating additional
+     * maintenance burden).
+     */
     @SysUISingleton
     @Provides
     static CarSystemBarController provideCarSystemBarController(
@@ -131,23 +135,20 @@ public abstract class CarSystemBarModule {
             Context context,
             UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,
-            CarServiceProvider carServiceProvider,
             ButtonSelectionStateController buttonSelectionStateController,
             Lazy<UserNameViewController> userNameViewControllerLazy,
             Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
             Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
             ButtonRoleHolderController buttonRoleHolderController,
             SystemBarConfigs systemBarConfigs,
-            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider,
-            UserFileManager userFileManager) {
+            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider) {
         if (carSystemBarController.isPresent()) {
             return carSystemBarController.get();
         }
         return new CarSystemBarController(context, userTracker, carSystemBarViewFactory,
-                carServiceProvider, buttonSelectionStateController, userNameViewControllerLazy,
+                buttonSelectionStateController, userNameViewControllerLazy,
                 micPrivacyChipViewControllerLazy, cameraPrivacyChipViewControllerLazy,
-                buttonRoleHolderController, systemBarConfigs, panelControllerBuilderProvider,
-                userFileManager);
+                buttonRoleHolderController, systemBarConfigs, panelControllerBuilderProvider);
     }
 
     // CarSystemBarElements
@@ -162,4 +163,11 @@ public abstract class CarSystemBarModule {
     @ClassKey(CarSystemBarPanelButtonViewController.class)
     public abstract CarSystemBarElementController.Factory bindSystemBarPanelButtonController(
             CarSystemBarPanelButtonViewController.Factory factory);
+
+    /** Injects DockViewControllerWrapper */
+    @Binds
+    @IntoMap
+    @ClassKey(DockViewControllerWrapper.class)
+    public abstract CarSystemBarElementController.Factory bindDockViewControllerWrapper(
+            DockViewControllerWrapper.Factory factory);
 }

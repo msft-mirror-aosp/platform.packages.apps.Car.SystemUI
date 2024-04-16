@@ -77,11 +77,16 @@
             systemui:intent="@string/system_bar_app_drawer_intent"
             systemui:clearBackStack="true"/>
 
-        <com.android.car.docklib.view.DockView
-            android:id="@+id/dock"
+        <com.android.systemui.car.systembar.element.layout.CarSystemBarFrameLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginHorizontal="@dimen/dock_container_margin" />
+            android:layout_marginHorizontal="@dimen/dock_container_margin"
+            systemui:controller="com.android.systemui.car.systembar.DockViewControllerWrapper">
+            <com.android.car.docklib.view.DockView
+                android:id="@+id/dock"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+        </com.android.systemui.car.systembar.element.layout.CarSystemBarFrameLayout>
 
         <com.android.systemui.car.systembar.AssistantButton
             android:id="@+id/assistant"

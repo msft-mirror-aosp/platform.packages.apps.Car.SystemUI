@@ -28,7 +28,6 @@ import static org.junit.Assume.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -49,29 +48,24 @@ import com.android.car.ui.FocusParkingView;
 import com.android.dx.mockito.inline.extended.ExtendedMockito;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.flags.FeatureFlags;
-import com.android.systemui.lifecycle.InstantTaskExecutorRule;
 import com.android.systemui.plugins.DarkIconDispatcher;
-import com.android.systemui.settings.UserFileManager;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.phone.StatusBarIconController;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoSession;
 import org.mockito.quality.Strictness;
 
-import java.io.File;
 import java.util.Set;
 
 @CarSystemUiTest
@@ -79,15 +73,6 @@ import java.util.Set;
 @TestableLooper.RunWithLooper
 @SmallTest
 public class CarSystemBarControllerTest extends SysuiTestCase {
-    /**
-     * This rule is needed for the CarSystemBarController to be able to initialize
-     * DockViewController which has a LiveData in the same thread.
-     * todo(b/332381217): Create Factory for DockViewController to be able to send a mock instead
-     */
-    @Rule
-    public InstantTaskExecutorRule instantTaskExecutorRule =
-            new InstantTaskExecutorRule();
-
     private static final String TOP_NOTIFICATION_PANEL =
             "com.android.systemui.car.notification.TopNotificationPanelViewMediator";
     private static final String BOTTOM_NOTIFICATION_PANEL =
@@ -119,13 +104,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Mock
     private StatusIconPanelViewController mPanelController;
     @Mock
-    private CarServiceProvider mCarServiceProvider;
-    @Mock
     private CarSystemBarElementInitializer mCarSystemBarElementInitializer;
-    @Mock
-    private UserFileManager mUserFileManager;
-    @Mock
-    private File mFile;
 
     @Before
     public void setUp() throws Exception {
@@ -140,9 +119,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBarViewFactory = new CarSystemBarViewFactory(mSpiedContext, mFeatureFlags,
                 mock(UserTracker.class), mCarSystemBarElementInitializer);
         setupPanelControllerBuilderMocks();
-        when(mUserTracker.getUserContext()).thenReturn(mContext);
-        when(mFile.getAbsolutePath()).thenReturn("testpath");
-        when(mUserFileManager.getFile(anyString(), anyInt())).thenReturn(mFile);
 
         // Needed to inflate top navigation bar.
         mDependency.injectMockDependency(DarkIconDispatcher.class);
@@ -158,12 +134,11 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     private CarSystemBarController createSystemBarController() {
         return new CarSystemBarController(mSpiedContext, mUserTracker, mCarSystemBarViewFactory,
-                mCarServiceProvider, mButtonSelectionStateController, () -> mUserNameViewController,
+                mButtonSelectionStateController, () -> mUserNameViewController,
                 () -> mMicPrivacyChipViewController, () -> mCameraPrivacyChipViewController,
                 mButtonRoleHolderController,
                 new SystemBarConfigs(mTestableResources.getResources()),
-                () -> mPanelControllerBuilder,
-                mUserFileManager);
+                () -> mPanelControllerBuilder);
     }
 
     @Test

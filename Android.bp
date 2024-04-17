@@ -134,6 +134,7 @@ android_library {
         "androidx.test.rules",
         "hamcrest-library",
         "mockito-target-extended-minus-junit4",
+        "flag-junit",
         "testables",
         "truth",
         "testng",

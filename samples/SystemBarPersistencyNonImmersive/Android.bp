@@ -19,15 +19,8 @@ package {
 }
 
 // Sets the CarSystemUI systemBar persistcy to non immersive.
-android_app {
+runtime_resource_overlay {
     name: "CarSystemUISystemBarPersistcyNonImmersive",
     resource_dirs: ["res"],
-    sdk_version: "system_current",
-    certificate: "platform",
     manifest: "AndroidManifest.xml",
-    aaptflags: [
-        "--no-resource-deduping",
-        "--no-resource-removal",
-    ],
-    product_specific: true,
 }

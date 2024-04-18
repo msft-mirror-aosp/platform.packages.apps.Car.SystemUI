@@ -19,16 +19,8 @@ package {
 }
 
 // Sets the CarSystemUI system bar position to bottom only.
-android_app {
+runtime_resource_overlay {
     name: "CarSystemUIBottomRRO",
     resource_dirs: ["res"],
-    sdk_version: "system_current",
-    certificate: "platform",
     manifest: "AndroidManifest.xml",
-    aaptflags: [
-        "--no-resource-deduping",
-        "--no-resource-removal",
-    ],
-    product_specific: true,
-    static_libs: ["CarSystemUI-res"],
 }

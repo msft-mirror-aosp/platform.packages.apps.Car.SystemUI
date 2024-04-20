@@ -19,15 +19,9 @@ package {
 }
 
 // Sets the CarSystemUI system bar persistcy to immersive w/ nav bar.
-android_app {
+runtime_resource_overlay {
     name: "CarSystemUISystemBarPersistcyImmersiveWithNav",
     resource_dirs: ["res"],
-    sdk_version: "system_current",
     certificate: "platform",
     manifest: "AndroidManifest.xml",
-    aaptflags: [
-        "--no-resource-deduping",
-        "--no-resource-removal",
-    ],
-    product_specific: true,
 }

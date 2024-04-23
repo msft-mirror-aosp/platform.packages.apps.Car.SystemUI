@@ -71,19 +71,19 @@
         android:name=".CarSystemUIApplication"
         android:appComponentFactory="com.android.systemui.CarSystemUIAppComponentFactory">
         <activity
-            android:name=".car.activity.ActivityBlockingActivity"
+            android:name=".car.wm.activity.ActivityBlockingActivity"
             android:documentLaunchMode="always"
             android:excludeFromRecents="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"
             android:showForAllUsers="true"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
         <activity
-            android:name=".car.activity.ContinuousBlankActivity"
+            android:name=".car.wm.activity.ContinuousBlankActivity"
             android:excludeFromRecents="true"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:exported="false"

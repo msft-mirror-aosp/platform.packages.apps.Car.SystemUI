@@ -29,13 +29,13 @@ import com.android.systemui.car.users.CarSystemUIUserUtil;
  */
 public class CarSystemUIApplication extends SystemUIApplication {
 
-    private boolean mIsSecondaryUserSystemUI;
+    private boolean mIsVisibleBackgroundUserSysUI;
 
     @Override
     public void onCreate() {
-        mIsSecondaryUserSystemUI = CarSystemUIUserUtil.isSecondaryMUMDSystemUI();
+        mIsVisibleBackgroundUserSysUI = CarSystemUIUserUtil.isSecondaryMUMDSystemUI();
         super.onCreate();
-        if (mIsSecondaryUserSystemUI) {
+        if (mIsVisibleBackgroundUserSysUI) {
             Car car = Car.createCar(this);
             if (car == null) {
                 return;
@@ -57,11 +57,23 @@ public class CarSystemUIApplication extends SystemUIApplication {
     }
 
     @Override
-    void startSecondaryUserServicesIfNeeded() {
-        if (mIsSecondaryUserSystemUI) {
-            // Per-user services are not needed since this sysui process is running as the real user
-            return;
+    protected boolean shouldStartSystemUserServices() {
+        if (mIsVisibleBackgroundUserSysUI) {
+            // visible background user SystemUI instances should start the same services as the
+            // normal system user SystemUI instance.
+            return true;
         }
-        super.startSecondaryUserServicesIfNeeded();
+        return super.shouldStartSystemUserServices();
+    }
+
+    @Override
+    protected boolean shouldStartSecondaryUserServices() {
+        if (mIsVisibleBackgroundUserSysUI) {
+            // visible background user SystemUI instances should start the same services as the
+            // normal system user SystemUI instance - this already includes the secondary user
+            // services.
+            return false;
+        }
+        return super.shouldStartSecondaryUserServices();
     }
 }

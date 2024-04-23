@@ -16,9 +16,6 @@
 
 package com.android.systemui.car.systembar;
 
-import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
-import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKED;
-
 import static com.android.systemui.car.systembar.SystemBarConfigs.BOTTOM;
 import static com.android.systemui.car.systembar.SystemBarConfigs.LEFT;
 import static com.android.systemui.car.systembar.SystemBarConfigs.RIGHT;
@@ -27,10 +24,8 @@ import static com.android.systemui.car.systembar.SystemBarConfigs.TOP;
 import android.annotation.LayoutRes;
 import android.app.ActivityManager;
 import android.app.StatusBarManager;
-import android.car.user.CarUserManager;
 import android.content.Context;
 import android.os.Build;
-import android.os.UserManager;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.Gravity;
@@ -41,22 +36,16 @@ import android.widget.Toast;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 
-import com.android.car.docklib.DockViewController;
-import com.android.car.docklib.data.DockProtoDataController;
-import com.android.car.docklib.view.DockView;
-import com.android.car.dockutil.Flags;
 import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.ViewUtils;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
-import com.android.systemui.settings.UserFileManager;
 import com.android.systemui.settings.UserTracker;
 
 import dagger.Lazy;
@@ -76,7 +65,6 @@ public class CarSystemBarController {
 
     private final Context mContext;
     private final UserTracker mUserTracker;
-    private final UserManager mUserManager;
     private final CarSystemBarViewFactory mCarSystemBarViewFactory;
     private final ButtonSelectionStateController mButtonSelectionStateController;
     private final ButtonRoleHolderController mButtonRoleHolderController;
@@ -124,22 +112,17 @@ public class CarSystemBarController {
     // Saved StatusBarManager.Disable2Flags
     private int mStatusBarState2;
     private int mLockTaskMode;
-    private final UserFileManager mUserFileManager;
-    private DockViewController mDockViewController;
-    private int mActiveUnlockedUserId;
 
     public CarSystemBarController(Context context,
             UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,
-            CarServiceProvider carServiceProvider,
             ButtonSelectionStateController buttonSelectionStateController,
             Lazy<UserNameViewController> userNameViewControllerLazy,
             Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
             Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
             ButtonRoleHolderController buttonRoleHolderController,
             SystemBarConfigs systemBarConfigs,
-            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider,
-            UserFileManager userFileManager) {
+            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider) {
         mContext = context;
         mUserTracker = userTracker;
         mCarSystemBarViewFactory = carSystemBarViewFactory;
@@ -155,32 +138,6 @@ public class CarSystemBarController {
         readConfigs();
         mPrivacyChipXOffset = -context.getResources()
                 .getDimensionPixelOffset(R.dimen.privacy_chip_horizontal_padding);
-        mUserManager = context.getSystemService(UserManager.class);
-        mUserFileManager = userFileManager;
-
-        carServiceProvider.addListener(car -> {
-            CarUserManager carUserManager = car.getCarManager(CarUserManager.class);
-            carUserManager.addListener(mContext.getMainExecutor(),
-                    event -> {
-                        if (event.getUserHandle().isSystem()) {
-                            return;
-                        }
-
-                        switch (event.getEventType()) {
-                            case USER_LIFECYCLE_EVENT_TYPE_UNLOCKED -> {
-                                if (event.getUserId() == mUserTracker.getUserId()) {
-                                    mActiveUnlockedUserId = event.getUserId();
-                                    setupDock(mBottomView);
-                                }
-                            }
-                            case USER_LIFECYCLE_EVENT_TYPE_SWITCHING -> {
-                                if (event.getPreviousUserId() == mActiveUnlockedUserId) {
-                                    destroyDock();
-                                }
-                            }
-                        }
-                    });
-        });
     }
 
     private void readConfigs() {
@@ -221,8 +178,6 @@ public class CarSystemBarController {
         mMicPanelController = null;
         mCameraPanelController = null;
         mProfilePanelController = null;
-
-        destroyDock();
     }
 
     /** Gets the top window if configured to do so. */
@@ -426,7 +381,6 @@ public class CarSystemBarController {
         setupBar(mBottomView, mBottomBarTouchListeners, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController,
                 mNotificationPanelViewController);
-        setupDock(mBottomView);
 
         return mBottomView;
     }
@@ -779,51 +733,5 @@ public class CarSystemBarController {
         if (focusedView == null) return false;
         focusedView.requestFocus();
         return true;
-    }
-
-    private void setupDock(CarSystemBarView carSystemBarView) {
-        if (!Flags.dockFeature()) {
-            return;
-        }
-
-        if (carSystemBarView == null) {
-            if (DEBUG) {
-                Log.d(TAG, "Dock cannot be initialised: CarSystemBarView is null");
-            }
-            return;
-        }
-
-        if (mDockViewController != null) {
-            if (DEBUG) {
-                Log.d(TAG, "Dock already initialized");
-            }
-            return;
-        }
-        DockView dockView = carSystemBarView.findViewById(R.id.dock);
-        if (dockView == null) {
-            if (DEBUG) {
-                Log.d(TAG, "Dock cannot be initialised: Cannot find dock view");
-            }
-            return;
-        }
-        if (!mUserManager.isUserUnlocked(mUserTracker.getUserId())) {
-            if (DEBUG) {
-                Log.d(TAG, "Dock cannot be initialised: User not unlocked");
-            }
-            return;
-        }
-        mDockViewController = new DockViewController(
-                dockView,
-                mUserTracker.getUserContext(),
-                mUserFileManager.getFile(
-                        DockProtoDataController.FILE_NAME,
-                        mUserTracker.getUserId()));
-    }
-
-    private void destroyDock() {
-        if (mDockViewController != null) {
-            mDockViewController.destroy();
-            mDockViewController = null;
-        }
     }
 }

@@ -22,6 +22,8 @@ import static android.app.WindowConfiguration.ACTIVITY_TYPE_RECENTS;
 import static android.app.WindowConfiguration.ACTIVITY_TYPE_STANDARD;
 import static android.app.WindowConfiguration.WINDOWING_MODE_MULTI_WINDOW;
 import static android.app.WindowConfiguration.WINDOWING_MODE_UNDEFINED;
+import static android.view.WindowManager.TRANSIT_CHANGE;
+import static android.view.WindowManager.TRANSIT_CLOSE;
 
 import android.app.ActivityManager;
 import android.car.app.CarActivityManager;
@@ -31,9 +33,9 @@ import android.window.WindowContainerTransaction;
 
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.wm.shell.ShellTaskOrganizer;
-import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.taskview.TaskViewBase;
 import com.android.wm.shell.taskview.TaskViewTaskController;
+import com.android.wm.shell.taskview.TaskViewTransitions;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,20 +52,21 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
     private final boolean mIsLaunchRoot;
     private final int[] mActivityTypes;
     private final ShellTaskOrganizer mShellTaskOrganizer;
-    private final SyncTransactionQueue mSyncQueue;
     private final TaskViewTaskController mTaskViewTaskShellPart;
     private final TaskViewBase mTaskViewClientPart;
     private final CarActivityManager mCarActivityManager;
     private final LinkedHashMap<Integer, TaskRecord> mTaskStack = new LinkedHashMap<>();
+    private final TaskViewTransitions mTransitions;
 
     private static class TaskRecord {
         private ActivityManager.RunningTaskInfo mTaskInfo;
         private SurfaceControl mLeash;
+
         private TaskRecord(ActivityManager.RunningTaskInfo taskInfo, SurfaceControl leash) {
             mTaskInfo = taskInfo;
             mLeash = leash;
         }
-    };
+    }
 
     private ActivityManager.RunningTaskInfo mRootTask;
 
@@ -74,16 +77,16 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             ShellTaskOrganizer shellTaskOrganizer,
             TaskViewTaskController taskViewTaskShellPart,
             TaskViewBase taskViewClientPart,
-            SyncTransactionQueue syncQueue,
-            CarActivityManager carActivityManager) {
+            CarActivityManager carActivityManager,
+            TaskViewTransitions transitions) {
         mDisplayId = displayId;
         mIsLaunchRoot = isLaunchRoot;
         mActivityTypes = createActivityArray(embedHomeTask, embedRecentsTask, embedAssistantTask);
         mShellTaskOrganizer = shellTaskOrganizer;
         mTaskViewTaskShellPart = taskViewTaskShellPart;
         mTaskViewClientPart = taskViewClientPart;
-        mSyncQueue = syncQueue;
         mCarActivityManager = carActivityManager;
+        mTransitions = transitions;
 
         mShellTaskOrganizer.createRootTask(displayId,
                 WINDOWING_MODE_MULTI_WINDOW,
@@ -136,11 +139,29 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         // The first call to onTaskAppeared() is always for the root-task.
         if (mRootTask == null && !taskInfo.hasParentTask()) {
             mRootTask = taskInfo;
+            WindowContainerTransaction wct = null;
             if (mIsLaunchRoot) {
-                setRootTaskAsLaunchRoot(taskInfo);
+                // Prepare the wct for the launch root task
+                wct = new WindowContainerTransaction();
+                wct.setLaunchRoot(taskInfo.token,
+                                new int[]{WINDOWING_MODE_UNDEFINED},
+                                mActivityTypes)
+                        .reorder(taskInfo.token, true);
             }
-            // Shell part will eventually trigger onTaskAppeared on the client as well.
-            mTaskViewTaskShellPart.onTaskAppeared(taskInfo, leash);
+
+            // Attach the root task with the taskview shell part.
+            if (mTaskViewTaskShellPart.isUsingShellTransitions()) {
+                // Do not trigger onTaskAppeared on shell part directly as it is no longer the
+                // correct entry point for a new task in the task view.
+                // Shell part will eventually trigger onTaskAppeared on the client as well.
+                mTaskViewTaskShellPart.startRootTask(taskInfo, leash, wct);
+            } else {
+                if (wct != null) {
+                    mShellTaskOrganizer.applyTransaction(wct);
+                }
+                // Shell part will eventually trigger onTaskAppeared on the client as well.
+                mTaskViewTaskShellPart.onTaskAppeared(taskInfo, leash);
+            }
             return;
         }
 
@@ -162,6 +183,7 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             mTaskViewTaskShellPart.onTaskInfoChanged(taskInfo);
             return;
         }
+
         // For all the children tasks, just update the client part and no notification/update is
         // sent to the shell part
         mTaskViewClientPart.onTaskInfoChanged(taskInfo);
@@ -185,6 +207,7 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             mTaskViewTaskShellPart.onTaskVanished(taskInfo);
             return;
         }
+
         // For all the children tasks, just update the client part and no notification/update is
         // sent to the shell part
         mTaskViewClientPart.onTaskVanished(taskInfo);
@@ -211,7 +234,13 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         // removeTask() will trigger onTaskVanished which will remove the task locally
         // from mLaunchRootStack
         wct.removeTask(topTask.token);
-        mSyncQueue.queue(wct);
+
+        if (mTaskViewTaskShellPart.isUsingShellTransitions()) {
+            mTransitions.startInstantTransition(TRANSIT_CLOSE, wct);
+        } else {
+            mShellTaskOrganizer.applyTransaction(wct);
+        }
+
     }
 
     @Override
@@ -229,7 +258,7 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
 
     @Override
     public void reparentChildSurfaceToTask(int taskId, SurfaceControl sc,
-                                           SurfaceControl.Transaction t) {
+            SurfaceControl.Transaction t) {
         if (mRootTask != null
                 && mRootTask.taskId == taskId) {
             mTaskViewTaskShellPart.reparentChildSurfaceToTask(taskId, sc, t);
@@ -250,15 +279,6 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         return task.mLeash;
     }
 
-    private void setRootTaskAsLaunchRoot(ActivityManager.RunningTaskInfo taskInfo) {
-        WindowContainerTransaction wct = new WindowContainerTransaction();
-        wct.setLaunchRoot(taskInfo.token,
-                        new int[]{WINDOWING_MODE_UNDEFINED},
-                        mActivityTypes)
-                .reorder(taskInfo.token, true);
-        mSyncQueue.queue(wct);
-    }
-
     private void clearRootTask() {
         if (mRootTask == null) {
             Log.w(TAG, "Unable to clear launch root task because it is not created.");
@@ -267,7 +287,11 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         if (mIsLaunchRoot) {
             WindowContainerTransaction wct = new WindowContainerTransaction();
             wct.setLaunchRoot(mRootTask.token, null, null);
-            mSyncQueue.queue(wct);
+            if (mTaskViewTaskShellPart.isUsingShellTransitions()) {
+                mTransitions.startInstantTransition(TRANSIT_CHANGE, wct);
+            } else {
+                mShellTaskOrganizer.applyTransaction(wct);
+            }
         }
         // Should run on shell's executor
         mShellTaskOrganizer.deleteRootTask(mRootTask.token);

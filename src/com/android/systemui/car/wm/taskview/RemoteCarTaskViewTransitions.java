@@ -87,6 +87,7 @@ public final class RemoteCarTaskViewTransitions implements Transitions.Transitio
                 ActivityManager.RunningTaskInfo task =
                         mCarSystemUIProxy.get().getAllTaskViews().valueAt(i).getTaskInfo();
                 if (task == null) continue;
+                if (task.displayId != request.getTriggerTask().displayId) continue;
                 if (Log.isLoggable(TAG, Log.DEBUG)) {
                     Slog.d(TAG, "Adding transition work to bring the embedded "
                             + task.topActivity + " to top");

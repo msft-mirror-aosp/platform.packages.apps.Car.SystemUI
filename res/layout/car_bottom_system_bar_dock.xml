@@ -79,13 +79,13 @@
 
         <com.android.systemui.car.systembar.element.layout.CarSystemBarFrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/dock_container_margin"
             systemui:controller="com.android.systemui.car.systembar.DockViewControllerWrapper">
             <com.android.car.docklib.view.DockView
                 android:id="@+id/dock"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
+                android:layout_height="wrap_content" />
         </com.android.systemui.car.systembar.element.layout.CarSystemBarFrameLayout>
 
         <com.android.systemui.car.systembar.AssistantButton

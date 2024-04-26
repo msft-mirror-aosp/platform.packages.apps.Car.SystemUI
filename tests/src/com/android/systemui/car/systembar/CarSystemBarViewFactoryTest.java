@@ -57,7 +57,8 @@ public class CarSystemBarViewFactoryTest extends SysuiTestCase {
                 .thenReturn(mStatusIconView);
         mCarSystemBarViewFactory = new CarSystemBarViewFactory(mContext,
                 mock(FeatureFlags.class), mQuickControlsEntryPointsController,
-                mock(ReadOnlyIconsController.class), mock(UserTracker.class));
+                mock(ReadOnlyIconsController.class), mock(UserTracker.class),
+                mock(DataSubscriptionUnseenIconController.class));
     }
 
     @Test

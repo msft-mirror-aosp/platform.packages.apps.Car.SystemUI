@@ -130,7 +130,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
         mCarSystemBarViewFactory = new CarSystemBarViewFactory(mSpiedContext, mFeatureFlags,
                 mQuickControlsEntryPointsController, mReadOnlyIconsController,
-                mock(UserTracker.class));
+                mock(UserTracker.class), mock(DataSubscriptionUnseenIconController.class));
 
         // Needed to inflate top navigation bar.
         mDependency.injectMockDependency(DarkIconDispatcher.class);

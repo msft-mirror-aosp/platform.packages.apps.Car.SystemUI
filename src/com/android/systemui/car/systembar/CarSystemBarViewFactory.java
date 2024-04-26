@@ -61,6 +61,7 @@ public class CarSystemBarViewFactory {
     private final FeatureFlags mFeatureFlags;
     private final QuickControlsEntryPointsController mQuickControlsEntryPointsController;
     private final ReadOnlyIconsController mReadOnlyIconsController;
+    private final DataSubscriptionUnseenIconController mDataSubscriptionUnseenIconController;
     private final UserTracker mUserTracker;
 
     /** Type of navigation bar to be created. */
@@ -81,13 +82,15 @@ public class CarSystemBarViewFactory {
             FeatureFlags featureFlags,
             QuickControlsEntryPointsController quickControlsEntryPointsController,
             ReadOnlyIconsController readOnlyIconsController,
-            UserTracker userTracker
+            UserTracker userTracker,
+            DataSubscriptionUnseenIconController dataSubscriptionUnseenIconController
     ) {
         mContext = context;
         mFeatureFlags = featureFlags;
         mQuickControlsEntryPointsController = quickControlsEntryPointsController;
         mReadOnlyIconsController = readOnlyIconsController;
         mUserTracker = userTracker;
+        mDataSubscriptionUnseenIconController = dataSubscriptionUnseenIconController;
     }
 
     /** Gets the top window. */
@@ -169,6 +172,7 @@ public class CarSystemBarViewFactory {
 
         view.setupHvacButton();
         view.setupQuickControlsEntryPoints(mQuickControlsEntryPointsController, isSetUp);
+        view.setupUnseenIconController(mDataSubscriptionUnseenIconController);
         view.setupReadOnlyIcons(mReadOnlyIconsController);
         view.setupSystemBarButtons(mUserTracker);
 
@@ -197,6 +201,7 @@ public class CarSystemBarViewFactory {
     protected void resetSystemBarViewCache() {
         mQuickControlsEntryPointsController.resetCache();
         mReadOnlyIconsController.resetCache();
+        mDataSubscriptionUnseenIconController.unregisterListener();
         mCachedViewMap.clear();
     }
 

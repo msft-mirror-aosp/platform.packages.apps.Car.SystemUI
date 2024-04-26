@@ -71,6 +71,7 @@ public class CarSystemBarView extends LinearLayout {
     private HvacPanelController mHvacPanelController;
     private View mLockScreenButtons;
     private View mOcclusionButtons;
+    private View mSignalStatusIcon;
     private ViewGroup mQcEntryPointsContainer;
     private ViewGroup mReadOnlyIconsContainer;
     // used to wire in open/close gestures for overlay panels
@@ -156,6 +157,16 @@ public class CarSystemBarView extends LinearLayout {
             }
         }
     }
+
+    void setupUnseenIconController(
+            DataSubscriptionUnseenIconController dataSubscriptionUnseenIconController) {
+        mSignalStatusIcon = findViewById(R.id.qc_signal_status_icon);
+        if (mSignalStatusIcon != null) {
+            View unseenIcon = mSignalStatusIcon.findViewById(R.id.qc_icon_button_unseen_icon);
+            dataSubscriptionUnseenIconController.setUnseenIcon(unseenIcon);
+        }
+    }
+
 
     void updateControlCenterButtonVisibility(boolean isMumd) {
         if (mControlCenterButton != null) {

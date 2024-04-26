@@ -63,6 +63,7 @@ android_library {
         "//external/kotlinc:kotlin-annotations",
         "animationlib",
         "car-resource-common",
+        "car-data-subscription-lib",
     ],
 
     libs: [
@@ -130,6 +131,7 @@ android_library {
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
         "car-resource-common",
+        "car-data-subscription-lib",
     ],
     libs: [
         "android.test.runner",

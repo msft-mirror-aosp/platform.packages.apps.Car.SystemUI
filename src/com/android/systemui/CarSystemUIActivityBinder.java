@@ -18,6 +18,7 @@ package com.android.systemui;
 
 import android.app.Activity;
 
+import com.android.systemui.car.activity.ActivityBlockingActivity;
 import com.android.systemui.car.userpicker.UserPickerActivity;
 import com.android.systemui.dagger.DefaultActivityBinder;
 
@@ -36,4 +37,10 @@ public abstract class CarSystemUIActivityBinder extends DefaultActivityBinder {
     @IntoMap
     @ClassKey(UserPickerActivity.class)
     public abstract Activity bindUserPickerActivity(UserPickerActivity activity);
+
+    /** Inject into ActivityBlockingActivity. */
+    @Binds
+    @IntoMap
+    @ClassKey(ActivityBlockingActivity.class)
+    public abstract Activity bindActivityBlockingActivity(ActivityBlockingActivity activity);
 }

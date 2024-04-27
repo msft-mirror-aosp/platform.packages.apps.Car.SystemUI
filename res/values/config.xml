@@ -241,4 +241,13 @@
     <string name="system_bar_app_drawer_intent" translatable="false">intent:#Intent;action=com.android.car.carlauncher.ACTION_APP_GRID;package=com.android.car.carlauncher;launchFlags=0x24000000;end</string>
     <!-- Determines whether Recents entry point should be shown / should trigger to open Recents -->
     <bool name="config_enableRecentsEntryPoint">true</bool>
+
+    <!-- Blocking activity feature flag -->
+    <bool name="config_enableAppBlockingActivities">true</bool>
+
+    <!-- Dialer blocking activity component name -->
+    <string name="config_dialerBlockingActivity" translatable="false">com.android.car.dialer/.ui.activecall.InCallActivity</string>
+
+    <!-- Media blocking activity component name -->
+    <string name="config_mediaBlockingActivity" translatable="false">com.android.car.media/.MediaBlockingActivity</string>
 </resources>

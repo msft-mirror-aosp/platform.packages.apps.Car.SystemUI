@@ -53,6 +53,11 @@
     <uses-permission android:name="android.car.permission.REGISTER_CAR_SYSTEM_UI_PROXY"/>
     <!-- use for ActivityBlockingActivity to tell whether it's on driver or passenger display -->
     <uses-permission android:name="android.car.permission.ACCESS_PRIVATE_DISPLAY_ID"/>
+    <!-- Permissions for the InCallController to bind the InCallService as non-ui -->
+    <uses-permission android:name="android.permission.CONTROL_INCALL_EXPERIENCE"/>
+    <uses-permission android:name="android.permission.MANAGE_ONGOING_CALLS"/>
+    <!-- System permission to control media playback of the active session -->
+    <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/>
 
     <application
         tools:replace="android:name,android:appComponentFactory"
@@ -65,7 +70,7 @@
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"
             android:showForAllUsers="true"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
@@ -95,5 +100,24 @@
             </intent-filter>
             <meta-data android:name="distractionOptimized" android:value="true"/>
         </activity>
+        <!-- The service needs to be directBootAware so that it can reflect the correct call state
+         when the system boots up. -->
+        <service android:name=".car.telecom.InCallServiceImpl"
+            android:directBootAware="true"
+            android:permission="android.permission.BIND_INCALL_SERVICE"
+            android:exported="true"
+            android:singleUser="true"
+            android:enabled="@bool/config_enableAppBlockingActivities">
+            <!-- ABA does not display the in-call UI. This is handled by the
+            Dialer application.-->
+            <meta-data android:name="android.telecom.IN_CALL_SERVICE_UI" android:value="false"/>
+            <meta-data android:name="android.telecom.IN_CALL_SERVICE_CAR_MODE_UI"
+                android:value="false"/>
+            <meta-data android:name="android.telecom.INCLUDE_SELF_MANAGED_CALLS"
+                android:value="true"/>
+            <intent-filter>
+                <action android:name="android.telecom.InCallService"/>
+            </intent-filter>
+        </service>
     </application>
 </manifest>

@@ -21,6 +21,7 @@ package {
 aconfig_declarations {
     name: "com_android_systemui_car_flags",
     package: "com.android.systemui.car",
+    container: "system",
     srcs: [
         "*.aconfig",
     ],

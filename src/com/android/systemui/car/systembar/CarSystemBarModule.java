@@ -170,4 +170,11 @@ public abstract class CarSystemBarModule {
     @ClassKey(DockViewControllerWrapper.class)
     public abstract CarSystemBarElementController.Factory bindDockViewControllerWrapper(
             DockViewControllerWrapper.Factory factory);
+
+    /** Injects DataSubscriptionUnseenIconController */
+    @Binds
+    @IntoMap
+    @ClassKey(DataSubscriptionUnseenIconController.class)
+    public abstract CarSystemBarElementController.Factory bindDataSubscriptionUnseenIconController(
+            DataSubscriptionUnseenIconController.Factory factory);
 }

@@ -66,6 +66,7 @@ android_library {
         "//frameworks/libs/systemui:animationlib",
         "CarDockLib",
         "androidx.test.rules",
+        "car-data-subscription-lib",
     ],
 
     libs: [
@@ -140,6 +141,8 @@ android_library {
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
         "CarDockLib",
+        "car-data-subscription-lib",
+
     ],
     libs: [
         "android.test.runner",

@@ -16,20 +16,17 @@
 
 package com.android.systemui.car.userswitcher;
 
-import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_STARTING;
-import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
-
-import android.car.Car;
 import android.car.user.CarUserManager;
-import android.car.user.UserLifecycleEventFilter;
 import android.content.Context;
 import android.util.Log;
 
-import com.android.internal.annotations.VisibleForTesting;
-import com.android.systemui.car.CarDeviceProvisionedController;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.window.OverlayViewMediator;
+import com.android.systemui.settings.UserTracker;
 
 import javax.inject.Inject;
 
@@ -43,42 +40,55 @@ public class UserSwitchTransitionViewMediator implements OverlayViewMediator,
 
     private final Context mContext;
     private final CarServiceProvider mCarServiceProvider;
-    private final CarDeviceProvisionedController mCarDeviceProvisionedController;
+    private final UserTracker mUserTracker;
     private final UserSwitchTransitionViewController mUserSwitchTransitionViewController;
+
+    @VisibleForTesting
+    final UserTracker.Callback mUserChangedCallback = new UserTracker.Callback() {
+        @Override
+        public void onBeforeUserSwitching(int newUser) {
+            mUserSwitchTransitionViewController.handleShow(newUser);
+        }
+
+        @Override
+        public void onUserChanging(int newUser, @NonNull Context userContext) {
+            mUserSwitchTransitionViewController.handleSwitching(newUser);
+        }
+
+        @Override
+        public void onUserChanged(int newUser, @NonNull Context userContext) {
+            mUserSwitchTransitionViewController.handleHide();
+        }
+    };
 
     @Inject
     public UserSwitchTransitionViewMediator(
             Context context,
             CarServiceProvider carServiceProvider,
-            CarDeviceProvisionedController carDeviceProvisionedController,
+            UserTracker userTracker,
             UserSwitchTransitionViewController userSwitchTransitionViewController) {
         mContext = context;
         mCarServiceProvider = carServiceProvider;
-        mCarDeviceProvisionedController = carDeviceProvisionedController;
+        mUserTracker = userTracker;
         mUserSwitchTransitionViewController = userSwitchTransitionViewController;
     }
 
     @Override
     public void registerListeners() {
-        mCarServiceProvider.addListener(car -> {
-            CarUserManager carUserManager =
-                    (CarUserManager) car.getCarManager(Car.CAR_USER_SERVICE);
+        if (!CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
+            // TODO(b/335664913): allow for callback from non-system user (and per user).
+            mCarServiceProvider.addListener(car -> {
+                CarUserManager carUserManager = car.getCarManager(CarUserManager.class);
 
-            if (carUserManager != null) {
-                if (!CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
-                    // TODO_MD: allow for callback from non-system user (and per user).
+                if (carUserManager != null) {
                     carUserManager.setUserSwitchUiCallback(this);
+                } else {
+                    Log.e(TAG, "registerListeners: CarUserManager could not be obtained.");
                 }
-                // Register the listener with a filter to only listen to user STARTING or SWITCHING
-                // events.
-                UserLifecycleEventFilter filter = new UserLifecycleEventFilter.Builder()
-                        .addEventType(USER_LIFECYCLE_EVENT_TYPE_STARTING)
-                        .addEventType(USER_LIFECYCLE_EVENT_TYPE_SWITCHING).build();
-                carUserManager.addListener(Runnable::run, filter, this::handleUserLifecycleEvent);
-            } else {
-                Log.e(TAG, "registerListeners: CarUserManager could not be obtained.");
-            }
-        });
+            });
+        }
+
+        mUserTracker.addCallback(mUserChangedCallback, mContext.getMainExecutor());
     }
 
     @Override
@@ -89,17 +99,5 @@ public class UserSwitchTransitionViewMediator implements OverlayViewMediator,
     @Override
     public void showUserSwitchDialog(int userId) {
         mUserSwitchTransitionViewController.handleShow(userId);
-    }
-
-    @VisibleForTesting
-    void handleUserLifecycleEvent(CarUserManager.UserLifecycleEvent event) {
-        if (event.getEventType() == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_STARTING
-                && mCarDeviceProvisionedController.getCurrentUser() == event.getUserId()) {
-            mUserSwitchTransitionViewController.handleShow(event.getUserId());
-        }
-
-        if (event.getEventType() == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING) {
-            mUserSwitchTransitionViewController.handleHide();
-        }
     }
 }

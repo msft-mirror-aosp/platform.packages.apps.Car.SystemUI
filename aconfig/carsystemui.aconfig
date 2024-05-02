@@ -21,3 +21,10 @@ flag {
     description: "Flag controlling the launch of app specific driving optimized blocking activities"
     bug: "329532895"
 }
+
+flag {
+    name: "user_switch_keyguard_shown_timeout"
+    namespace: "car_sys_exp"
+    description: "Flag that sets a keyguard showing timeout to ensure keyguard is shown on user switch"
+    bug: "335455314"
+}

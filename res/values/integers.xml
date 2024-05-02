@@ -60,4 +60,7 @@
     <integer-array name="hvac_temperature_control_levels">
         <item>9999</item>
     </integer-array>
+
+    <!-- Timeout value for data subscription pop up in ms -->
+    <integer name="data_subscription_pop_up_timeout">30000</integer>
 </resources>

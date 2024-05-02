@@ -16,9 +16,13 @@
 
 package com.android.systemui.car.userswitcher;
 
+import static com.android.systemui.Flags.FLAG_REFACTOR_GET_CURRENT_USER;
+import static com.android.systemui.car.Flags.FLAG_USER_SWITCH_KEYGUARD_SHOWN_TIMEOUT;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
@@ -27,8 +31,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
+import android.app.KeyguardManager;
 import android.content.pm.UserInfo;
+import android.os.RemoteException;
 import android.os.UserManager;
+import android.platform.test.flag.junit.SetFlagsRule;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.testing.TestableResources;
@@ -47,8 +54,10 @@ import com.android.systemui.util.concurrency.FakeExecutor;
 import com.android.systemui.util.time.FakeSystemClock;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -59,6 +68,9 @@ import org.mockito.MockitoAnnotations;
 public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
     private static final int TEST_USER_1 = 100;
     private static final int TEST_USER_2 = 110;
+
+    @Rule
+    public final SetFlagsRule mSetFlagsRule = new SetFlagsRule();
 
     private UserSwitchTransitionViewController mCarUserSwitchingDialogController;
     private TestableResources mTestableResources;
@@ -73,6 +85,8 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
     private IWindowManager mWindowManagerService;
     @Mock
     private UserManager mMockUserManager;
+    @Mock
+    private KeyguardManager mKeyguardManager;
 
     @Before
     public void setUp() {
@@ -80,6 +94,8 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
         mTestableResources = mContext.getOrCreateTestableResources();
         mClock = new FakeSystemClock();
         mExecutor = new FakeExecutor(mClock);
+        when(mKeyguardManager.isDeviceSecure(anyInt())).thenReturn(false);
+        mContext.addMockSystemService(KeyguardManager.class, mKeyguardManager);
         mCarUserSwitchingDialogController = new UserSwitchTransitionViewController(
                 mContext,
                 mTestableResources.getResources(),
@@ -164,6 +180,64 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
     }
 
     @Test
+    public void onHandleShow_noUserRefactor_setsWMState() throws RemoteException {
+        mSetFlagsRule.disableFlags(FLAG_REFACTOR_GET_CURRENT_USER);
+
+        mCarUserSwitchingDialogController.handleShow(/* newUserId= */ TEST_USER_1);
+        mExecutor.advanceClockToLast();
+        mExecutor.runAllReady();
+
+        verify(mWindowManagerService).setSwitchingUser(true);
+        verify(mWindowManagerService).lockNow(null);
+    }
+
+    @Test
+    public void onHandleShow_userRefactor_setsWMState() throws RemoteException {
+        mSetFlagsRule.enableFlags(FLAG_REFACTOR_GET_CURRENT_USER);
+
+        mCarUserSwitchingDialogController.handleShow(/* newUserId= */ TEST_USER_1);
+        mExecutor.advanceClockToLast();
+        mExecutor.runAllReady();
+
+        verify(mWindowManagerService).setSwitchingUser(true);
+        verify(mWindowManagerService, never()).lockNow(null);
+    }
+
+    @Test
+    public void handleSwitching_noUserRefactor_doNothing() throws RemoteException {
+        mSetFlagsRule.disableFlags(FLAG_REFACTOR_GET_CURRENT_USER);
+
+        mCarUserSwitchingDialogController.handleSwitching(/* newUserId= */ TEST_USER_1);
+        mExecutor.advanceClockToLast();
+        mExecutor.runAllReady();
+
+        verify(mWindowManagerService, never()).lockNow(null);
+    }
+
+    @Test
+    public void handleSwitching_userRefactor_userNotSecure_doNothing() throws RemoteException {
+        mSetFlagsRule.enableFlags(FLAG_REFACTOR_GET_CURRENT_USER);
+
+        mCarUserSwitchingDialogController.handleSwitching(/* newUserId= */ TEST_USER_1);
+        mExecutor.advanceClockToLast();
+        mExecutor.runAllReady();
+
+        verify(mWindowManagerService, never()).lockNow(null);
+    }
+
+    @Test
+    public void handleSwitching_userRefactor_userSecure_setsWMState() throws RemoteException {
+        mSetFlagsRule.enableFlags(FLAG_REFACTOR_GET_CURRENT_USER);
+        when(mKeyguardManager.isDeviceSecure(anyInt())).thenReturn(true);
+
+        mCarUserSwitchingDialogController.handleSwitching(/* newUserId= */ TEST_USER_1);
+        mExecutor.advanceClockToLast();
+        mExecutor.runAllReady();
+
+        verify(mWindowManagerService).lockNow(null);
+    }
+
+    @Test
     public void onHide_currentlyShowing_hidesDialog() {
         mCarUserSwitchingDialogController.handleShow(/* newUserId= */ TEST_USER_1);
         mExecutor.advanceClockToLast();
@@ -220,6 +294,32 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
 
         verify(mOverlayViewGlobalStateController, never()).hideView(
                 eq(mCarUserSwitchingDialogController), any());
+    }
+
+    @Test
+    public void setupKeyguardShownTimeout_keyguardLocked_doNothing() throws RemoteException {
+        mSetFlagsRule.enableFlags(FLAG_USER_SWITCH_KEYGUARD_SHOWN_TIMEOUT);
+        when(mWindowManagerService.isKeyguardLocked()).thenReturn(true);
+
+        mCarUserSwitchingDialogController.setupKeyguardShownTimeout();
+
+        verify(mKeyguardManager, never()).addKeyguardLockedStateListener(any(), any());
+    }
+
+    @Test
+    public void setupKeyguardShownTimeout_keyguardNotLocked_addTimeout() throws RemoteException {
+        mSetFlagsRule.enableFlags(FLAG_USER_SWITCH_KEYGUARD_SHOWN_TIMEOUT);
+        when(mWindowManagerService.isKeyguardLocked()).thenReturn(false);
+        ArgumentCaptor<KeyguardManager.KeyguardLockedStateListener> lockedStateListenerCaptor =
+                ArgumentCaptor.forClass(KeyguardManager.KeyguardLockedStateListener.class);
+
+        mCarUserSwitchingDialogController.setupKeyguardShownTimeout();
+
+        verify(mKeyguardManager).addKeyguardLockedStateListener(any(),
+                lockedStateListenerCaptor.capture());
+        assertThat(mExecutor.numPending()).isGreaterThan(0);
+        lockedStateListenerCaptor.getValue().onKeyguardLockedStateChanged(true);
+        verify(mKeyguardManager).removeKeyguardLockedStateListener(any());
     }
 
     private void mockGetUserInfo(int userId) {

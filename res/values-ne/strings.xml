@@ -128,4 +128,8 @@
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
     <string name="back_btn" msgid="7774349944465667391">"पछाडि"</string>
     <string name="fullscreen" msgid="7648956467442135844">"फुल स्क्रिन"</string>
+    <!-- no translation found for data_subscription_button_text (6595983827855035949) -->
+    <skip />
+    <!-- no translation found for data_subscription_proactive_msg_prompt (3130110568883863205) -->
+    <skip />
 </resources>

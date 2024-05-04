@@ -20,17 +20,20 @@ import static android.Manifest.permission.ACCESS_NETWORK_STATE;
 import static android.Manifest.permission.INTERNET;
 
 import static com.android.car.datasubscription.Flags.FLAG_DATA_SUBSCRIPTION_POP_UP;
+import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
+import android.car.drivingstate.CarUxRestrictions;
 import android.content.ComponentName;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -46,6 +49,7 @@ import android.platform.test.flag.junit.DeviceFlagsValueProvider;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
+import android.widget.Button;
 import android.widget.PopupWindow;
 
 import androidx.test.filters.SmallTest;
@@ -63,6 +67,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoSession;
 import org.mockito.quality.Strictness;
@@ -95,6 +100,8 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
     private Handler mHandler;
     @Mock
     private Executor mExecutor;
+    @Mock
+    private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
     private MockitoSession mMockingSession;
     private ActivityManager.RunningTaskInfo mRunningTaskInfoMock;
     private DataSubscriptionController mController;
@@ -119,6 +126,7 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
         mRunningTaskInfoMock.topActivity = new ComponentName("testPkgName", "testClassName");
         mRunningTaskInfoMock.taskId = 1;
         mNetworkCallback.mNetwork = mTestNetwork;
+        doReturn(mCarUxRestrictionsUtil).when(() -> CarUxRestrictionsUtil.getInstance(any()));
     }
 
     @After
@@ -137,6 +145,7 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
         mController.setAnchorView(mAnchorView);
 
         verify(mDataSubscription).addDataSubscriptionListener(any());
+        verify(mCarUxRestrictionsUtil).register(any());
         verify(mAnchorView).post(any());
     }
 
@@ -145,10 +154,12 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
     public void setAnchorView_viewNull_popUpNotDisplay() {
         when(mPopupWindow.isShowing()).thenReturn(false);
         mController.setSubscriptionStatus(DataSubscriptionStatus.INACTIVE);
+        mController.setIsUxRestrictionsListenerRegistered(true);
 
         mController.setAnchorView(null);
 
         verify(mDataSubscription).removeDataSubscriptionListener();
+        verify(mCarUxRestrictionsUtil).unregister(any());
         verify(mAnchorView, never()).post(any());
     }
 
@@ -167,6 +178,7 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
     @Test
     public void dataSubscriptionChange_statusPaid_popUpNotDisplay() {
+
         DataSubscription.DataSubscriptionChangeListener listener =
                 mController.getDataSubscriptionChangeListener();
 
@@ -244,7 +256,6 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
         appInfo.uid = 1000;
         packageInfo.requestedPermissions = new String[] {ACCESS_NETWORK_STATE, INTERNET};
         mController.setNetworkCallback(mNetworkCallback);
-
         when(mUserTracker.getUserId()).thenReturn(1000);
         when(mContext.getPackageManager()).thenReturn(mPackageManager);
         when(mPackageManager.getPackageInfoAsUser(
@@ -278,5 +289,50 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
         verify(mConnectivityManager).unregisterNetworkCallback(
                 (ConnectivityManager.NetworkCallback) any());
         verify(mConnectivityManager).registerDefaultNetworkCallbackForUid(anyInt(), any(), any());
+    }
+
+    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
+    @Test
+    public void onRestrictionsChanged_optimizationRequired_proactiveMsgDismissed() {
+        doReturn(mCarUxRestrictionsUtil).when(() -> CarUxRestrictionsUtil.getInstance(any()));
+
+        when(mPopupWindow.isShowing()).thenReturn(true);
+        ArgumentCaptor<CarUxRestrictionsUtil.OnUxRestrictionsChangedListener> captor =
+                ArgumentCaptor.forClass(
+                        CarUxRestrictionsUtil.OnUxRestrictionsChangedListener.class);
+        mController.setAnchorView(mAnchorView);
+        verify(mCarUxRestrictionsUtil).register(captor.capture());
+        CarUxRestrictionsUtil.OnUxRestrictionsChangedListener listener = captor.getValue();
+        CarUxRestrictions carUxRestrictions = mock(CarUxRestrictions.class);
+        when(carUxRestrictions.isRequiresDistractionOptimization()).thenReturn(true);
+        mController.setIsProactiveMsg(true);
+
+        listener.onRestrictionsChanged(carUxRestrictions);
+
+        verify(mPopupWindow).dismiss();
+    }
+
+    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
+    @Test
+    public void onRestrictionsChanged_optimizationRequired_buttonDismissedInReactiveMsg() {
+        doReturn(mCarUxRestrictionsUtil).when(() -> CarUxRestrictionsUtil.getInstance(any()));
+
+        when(mPopupWindow.isShowing()).thenReturn(true);
+        ArgumentCaptor<CarUxRestrictionsUtil.OnUxRestrictionsChangedListener> captor =
+                ArgumentCaptor.forClass(
+                        CarUxRestrictionsUtil.OnUxRestrictionsChangedListener.class);
+        mController.setAnchorView(mAnchorView);
+        verify(mCarUxRestrictionsUtil).register(captor.capture());
+        CarUxRestrictionsUtil.OnUxRestrictionsChangedListener listener = captor.getValue();
+        CarUxRestrictions carUxRestrictions = mock(CarUxRestrictions.class);
+        when(carUxRestrictions.isRequiresDistractionOptimization()).thenReturn(true);
+
+        Button button = mock(Button.class);
+        mController.setExplorationButton(button);
+        mController.setIsProactiveMsg(false);
+
+        listener.onRestrictionsChanged(carUxRestrictions);
+
+        verify(button).setVisibility(anyInt());
     }
 }

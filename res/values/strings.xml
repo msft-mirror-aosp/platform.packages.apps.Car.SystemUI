@@ -277,5 +277,6 @@
     <string name="data_subscription_button_text">See plans</string>
     <!-- Data subscription proactive message prompt-->
     <string name="data_subscription_proactive_msg_prompt">Your internet plan expired</string>
+    <string name="data_subscription_reactive_msg_prompt">This app needs an internet connection</string>
 
 </resources>

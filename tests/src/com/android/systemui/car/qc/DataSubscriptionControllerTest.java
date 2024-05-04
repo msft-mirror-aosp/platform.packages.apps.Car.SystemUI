@@ -16,15 +16,29 @@
 
 package com.android.systemui.car.qc;
 
+import static android.Manifest.permission.ACCESS_NETWORK_STATE;
+import static android.Manifest.permission.INTERNET;
+
 import static com.android.car.datasubscription.Flags.FLAG_DATA_SUBSCRIPTION_POP_UP;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.os.Handler;
+import android.os.RemoteException;
 import android.os.UserHandle;
 import android.platform.test.annotations.RequiresFlagsEnabled;
 import android.platform.test.flag.junit.CheckFlagsRule;
@@ -53,6 +67,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoSession;
 import org.mockito.quality.Strictness;
 
+import java.util.HashSet;
+import java.util.concurrent.Executor;
+
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
@@ -66,7 +83,20 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
     private PopupWindow mPopupWindow;
     @Mock
     private View mAnchorView;
+    @Mock
+    private ConnectivityManager mConnectivityManager;
+    @Mock
+    private PackageManager mPackageManager;
+    @Mock
+    private DataSubscriptionController.DataSubscriptionNetworkCallback mNetworkCallback;
+    @Mock
+    private Network mTestNetwork;
+    @Mock
+    private Handler mHandler;
+    @Mock
+    private Executor mExecutor;
     private MockitoSession mMockingSession;
+    private ActivityManager.RunningTaskInfo mRunningTaskInfoMock;
     private DataSubscriptionController mController;
     @Rule
     public final CheckFlagsRule mCheckFlagsRule = DeviceFlagsValueProvider.createCheckFlagsRule();
@@ -81,9 +111,14 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
 
         mContext = spy(mContext);
         when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(1000));
-        mController = new DataSubscriptionController(mContext, mUserTracker);
+        mController = new DataSubscriptionController(mContext, mUserTracker, mHandler, mExecutor);
         mController.setSubscription(mDataSubscription);
         mController.setPopupWindow(mPopupWindow);
+        mController.setConnectivityManager(mConnectivityManager);
+        mRunningTaskInfoMock = new ActivityManager.RunningTaskInfo();
+        mRunningTaskInfoMock.topActivity = new ComponentName("testPkgName", "testClassName");
+        mRunningTaskInfoMock.taskId = 1;
+        mNetworkCallback.mNetwork = mTestNetwork;
     }
 
     @After
@@ -127,7 +162,6 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
         listener.onChange(DataSubscriptionStatus.INACTIVE);
 
         Assert.assertTrue(mController.getShouldDisplayProactiveMsg());
-
     }
 
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
@@ -140,5 +174,109 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
         listener.onChange(DataSubscriptionStatus.PAID);
 
         Assert.assertFalse(mController.getShouldDisplayProactiveMsg());
+    }
+
+    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
+    @Test
+    public void onTaskMovedToFront_TopPackageBlocked_popUpNotDisplay() throws RemoteException {
+        HashSet<String> packagesBlocklist = new HashSet<>();
+        packagesBlocklist.add(mRunningTaskInfoMock.topActivity.getPackageName());
+        mController.setPackagesBlocklist(packagesBlocklist);
+
+        mController.getTaskStackListener().onTaskMovedToFront(mRunningTaskInfoMock);
+
+        Assert.assertFalse(mController.getShouldDisplayReactiveMsg());
+    }
+
+    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
+    @Test
+    public void onTaskMovedToFront_TopActivityBlocked_popUpNotDisplay() throws RemoteException {
+        HashSet<String> activitiesBlocklist = new HashSet<>();
+        activitiesBlocklist.add(mRunningTaskInfoMock.topActivity.flattenToString());
+        mController.setActivitiesBlocklist(activitiesBlocklist);
+
+        mController.getTaskStackListener().onTaskMovedToFront(mRunningTaskInfoMock);
+
+        Assert.assertFalse(mController.getShouldDisplayReactiveMsg());
+    }
+
+    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
+    @Test
+    public void onTaskMovedToFront_AppNotRequireInternet_popUpNotDisplay()
+            throws RemoteException, PackageManager.NameNotFoundException {
+        PackageInfo packageInfo = new PackageInfo();
+        when(mUserTracker.getUserId()).thenReturn(1000);
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mPackageManager.getPackageInfoAsUser(
+                anyString(), anyInt(), anyInt())).thenReturn(packageInfo);
+
+        mController.getTaskStackListener().onTaskMovedToFront(mRunningTaskInfoMock);
+
+        Assert.assertFalse(mController.getShouldDisplayReactiveMsg());
+    }
+
+    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
+    @Test
+    public void onTaskMovedToFront_AppRequiresInternetAndNotBlocked_registerCallback()
+            throws RemoteException, PackageManager.NameNotFoundException {
+        PackageInfo packageInfo = new PackageInfo();
+        ApplicationInfo appInfo = new ApplicationInfo();
+        appInfo.uid = 1000;
+        packageInfo.requestedPermissions = new String[] {ACCESS_NETWORK_STATE, INTERNET};
+        when(mUserTracker.getUserId()).thenReturn(1000);
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mPackageManager.getPackageInfoAsUser(
+                anyString(), anyInt(), anyInt())).thenReturn(packageInfo);
+        when(mPackageManager.getApplicationInfoAsUser(
+                anyString(), anyInt(), anyInt())).thenReturn(appInfo);
+
+        mController.getTaskStackListener().onTaskMovedToFront(mRunningTaskInfoMock);
+
+        verify(mConnectivityManager).registerDefaultNetworkCallbackForUid(anyInt(), any(), any());
+    }
+
+    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
+    @Test
+    public void onTaskMovedToFront_invalidNetCap_popUpDisplay()
+            throws RemoteException, PackageManager.NameNotFoundException {
+        PackageInfo packageInfo = new PackageInfo();
+        ApplicationInfo appInfo = new ApplicationInfo();
+        appInfo.uid = 1000;
+        packageInfo.requestedPermissions = new String[] {ACCESS_NETWORK_STATE, INTERNET};
+        mController.setNetworkCallback(mNetworkCallback);
+
+        when(mUserTracker.getUserId()).thenReturn(1000);
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mPackageManager.getPackageInfoAsUser(
+                anyString(), anyInt(), anyInt())).thenReturn(packageInfo);
+        when(mPackageManager.getApplicationInfoAsUser(
+                anyString(), anyInt(), anyInt())).thenReturn(appInfo);
+
+        mController.getTaskStackListener().onTaskMovedToFront(mRunningTaskInfoMock);
+
+        Assert.assertFalse(mController.getShouldDisplayReactiveMsg());
+    }
+
+    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
+    @Test
+    public void onTaskMovedToFront_callbackRegistered_unregisterAndRegisterCallback()
+            throws RemoteException, PackageManager.NameNotFoundException {
+        PackageInfo packageInfo = new PackageInfo();
+        ApplicationInfo appInfo = new ApplicationInfo();
+        appInfo.uid = 1000;
+        packageInfo.requestedPermissions = new String[] {ACCESS_NETWORK_STATE, INTERNET};
+        mController.setIsCallbackRegistered(true);
+        when(mUserTracker.getUserId()).thenReturn(1000);
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mPackageManager.getPackageInfoAsUser(
+                anyString(), anyInt(), anyInt())).thenReturn(packageInfo);
+        when(mPackageManager.getApplicationInfoAsUser(
+                anyString(), anyInt(), anyInt())).thenReturn(appInfo);
+
+        mController.getTaskStackListener().onTaskMovedToFront(mRunningTaskInfoMock);
+
+        verify(mConnectivityManager).unregisterNetworkCallback(
+                (ConnectivityManager.NetworkCallback) any());
+        verify(mConnectivityManager).registerDefaultNetworkCallbackForUid(anyInt(), any(), any());
     }
 }

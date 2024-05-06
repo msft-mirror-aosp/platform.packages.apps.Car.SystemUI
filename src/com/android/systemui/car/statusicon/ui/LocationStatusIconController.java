@@ -26,18 +26,22 @@ import android.location.LocationManager;
 import androidx.annotation.NonNull;
 
 import com.android.systemui.R;
-import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.statusicon.StatusIconViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
 
-import javax.inject.Inject;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * A controller for the read-only icon that shows location active status.
  */
-public class LocationStatusIconController extends StatusIconController {
+public class LocationStatusIconController extends StatusIconViewController {
 
-    private static final String TAG = LocationStatusIconController.class.getSimpleName();
     private static final IntentFilter INTENT_FILTER_LOCATION_MODE_CHANGED = new IntentFilter(
             LocationManager.MODE_CHANGED_ACTION);
 
@@ -60,24 +64,35 @@ public class LocationStatusIconController extends StatusIconController {
         }
     };
 
-    @Inject
-    LocationStatusIconController(
-            Context context,
-            UserTracker userTracker,
-            @Main Resources resources) {
+    @AssistedInject
+    protected LocationStatusIconController(@Assisted StatusIconView view,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
+            Context context, @Main Resources resources, UserTracker userTracker) {
+        super(view, disableController, stateController);
         mContext = context;
         mUserTracker = userTracker;
         mLocationManager = context.getSystemService(LocationManager.class);
+        setIconDrawableToDisplay(resources.getDrawable(R.drawable.ic_location, context.getTheme()));
+    }
 
+    @AssistedFactory
+    public interface Factory extends
+            StatusIconViewController.Factory<LocationStatusIconController> {
+    }
+
+    @Override
+    protected void onViewAttached() {
+        super.onViewAttached();
         mContext.registerReceiverForAllUsers(mLocationReceiver, INTENT_FILTER_LOCATION_MODE_CHANGED,
                 /* broadcastPermission= */ null, /* scheduler= */ null);
-        mUserTracker.addCallback(mUserChangedCallback, context.getMainExecutor());
-        setIconDrawableToDisplay(resources.getDrawable(R.drawable.ic_location, context.getTheme()));
+        mUserTracker.addCallback(mUserChangedCallback, mContext.getMainExecutor());
         updateIconVisibilityForCurrentUser();
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onViewDetached() {
+        super.onViewDetached();
         mContext.unregisterReceiver(mLocationReceiver);
         mUserTracker.removeCallback(mUserChangedCallback);
     }
@@ -91,10 +106,5 @@ public class LocationStatusIconController extends StatusIconController {
     private void updateIconVisibilityForCurrentUser() {
         mIsLocationActive = mLocationManager.isLocationEnabledForUser(mUserTracker.getUserHandle());
         updateStatus();
-    }
-
-    @Override
-    protected int getId() {
-        return R.id.qc_location_status_icon;
     }
 }

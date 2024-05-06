@@ -29,7 +29,6 @@ import static org.mockito.Mockito.when;
 import android.app.ActivityManager;
 import android.content.pm.UserInfo;
 import android.os.UserManager;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.testing.TestableResources;
@@ -37,6 +36,8 @@ import android.view.IWindowManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.test.filters.SmallTest;
 
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;

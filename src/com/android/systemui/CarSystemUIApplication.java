@@ -48,7 +48,7 @@ public class CarSystemUIApplication extends SystemUIApplication {
                     Display display = manager.getDisplayForOccupant(info, DISPLAY_TYPE_MAIN);
                     if (display != null) {
                         updateDisplay(display.getDisplayId());
-                        startServicesIfNeeded();
+                        startSystemUserServicesIfNeeded();
                     }
                 }
             }

@@ -19,9 +19,9 @@ package com.android.systemui.car.qc;
 import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.systemui.car.privacy.CameraQcPanel;
 import com.android.systemui.car.privacy.MicQcPanel;
-import com.android.systemui.car.statusicon.StatusIconController;
 import com.android.systemui.car.statusicon.ui.MobileSignalStatusIconController;
 import com.android.systemui.car.statusicon.ui.WifiSignalStatusIconController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 
 import dagger.Binds;
 import dagger.Module;
@@ -65,13 +65,55 @@ public abstract class QuickControlsModule {
     @Binds
     @IntoMap
     @ClassKey(MobileSignalStatusIconController.class)
-    public abstract StatusIconController bindMobileSignalStatusIconController(
-            MobileSignalStatusIconController mobileSignalStatusIconController);
+    public abstract CarSystemBarElementController.Factory bindMobileSignalStatusIconController(
+            MobileSignalStatusIconController.Factory mobileSignalStatusIconController);
 
     /** Injects WifiSignalStatusIconController. */
     @Binds
     @IntoMap
     @ClassKey(WifiSignalStatusIconController.class)
-    public abstract StatusIconController bindWifiSignalStatusIconController(
-            WifiSignalStatusIconController wifiSignalStatusIconController);
+    public abstract CarSystemBarElementController.Factory bindWifiSignalStatusIconController(
+            WifiSignalStatusIconController.Factory wifiSignalStatusIconController);
+
+    /** Injects SystemUIQCViewController. */
+    @Binds
+    @IntoMap
+    @ClassKey(SystemUIQCViewController.class)
+    public abstract CarSystemBarElementController.Factory bindQCViewControllerFactory(
+            SystemUIQCViewController.Factory factory);
+
+    /** Injects QCFooterButtonController. */
+    @Binds
+    @IntoMap
+    @ClassKey(QCFooterButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindQCFooterButtonControllerFactory(
+            QCFooterButtonController.Factory factory);
+
+    /** Injects QCFooterViewController. */
+    @Binds
+    @IntoMap
+    @ClassKey(QCFooterViewController.class)
+    public abstract CarSystemBarElementController.Factory bindQCFooterViewControllerFactory(
+            QCFooterViewController.Factory factory);
+
+    /** Injects QCLogoutButtonController. */
+    @Binds
+    @IntoMap
+    @ClassKey(QCLogoutButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindQCLogoutButtonControllerFactory(
+            QCLogoutButtonController.Factory factory);
+
+    /** Injects QCScreenOffButtonController. */
+    @Binds
+    @IntoMap
+    @ClassKey(QCScreenOffButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindQCScreenOffButtonControllerFactory(
+            QCScreenOffButtonController.Factory factory);
+
+    /** Injects QCUserPickerButtonController. */
+    @Binds
+    @IntoMap
+    @ClassKey(QCUserPickerButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindQCUserPickerButtonControllerFactory(
+            QCUserPickerButtonController.Factory factory);
 }

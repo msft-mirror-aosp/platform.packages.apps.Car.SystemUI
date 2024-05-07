@@ -26,8 +26,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
+import com.android.systemui.animation.Expandable;
 import com.android.systemui.statusbar.policy.BatteryController;
 
 import java.io.PrintWriter;
@@ -71,7 +71,7 @@ public class CarBatteryController extends BroadcastReceiver implements BatteryCo
     }
 
     @Override
-    public void setPowerSaveMode(boolean powerSave, View view) {
+    public void setPowerSaveMode(boolean powerSave, Expandable expandable) {
         // No-op. No power save mode for the car.
     }
 

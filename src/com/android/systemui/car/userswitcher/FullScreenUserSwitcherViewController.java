@@ -21,18 +21,25 @@ import android.animation.AnimatorListenerAdapter;
 import android.car.Car;
 import android.car.user.CarUserManager;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.android.settingslib.applications.InterestingConfigChanges;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.window.OverlayViewController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import javax.inject.Inject;
 
@@ -40,23 +47,31 @@ import javax.inject.Inject;
  * Controller for {@link R.layout#car_fullscreen_user_switcher}.
  */
 @SysUISingleton
-public class FullScreenUserSwitcherViewController extends OverlayViewController {
+public class FullScreenUserSwitcherViewController extends OverlayViewController
+        implements ConfigurationController.ConfigurationListener {
     private final Context mContext;
+    private final UserTracker mUserTracker;
     private final Resources mResources;
     private final CarServiceProvider mCarServiceProvider;
     private final int mShortAnimationDuration;
     private CarUserManager mCarUserManager;
     private UserGridRecyclerView mUserGridView;
     private UserGridRecyclerView.UserSelectionListener mUserSelectionListener;
+    private final InterestingConfigChanges mConfigChanges = new InterestingConfigChanges(
+            ActivityInfo.CONFIG_UI_MODE);
+
 
     @Inject
     public FullScreenUserSwitcherViewController(
             Context context,
+            UserTracker userTracker,
             @Main Resources resources,
+            ConfigurationController configurationController,
             CarServiceProvider carServiceProvider,
             OverlayViewGlobalStateController overlayViewGlobalStateController) {
         super(R.id.fullscreen_user_switcher_stub, overlayViewGlobalStateController);
         mContext = context;
+        mUserTracker = userTracker;
         mResources = resources;
         mCarServiceProvider = carServiceProvider;
         mCarServiceProvider.addListener(car -> {
@@ -64,31 +79,36 @@ public class FullScreenUserSwitcherViewController extends OverlayViewController 
             registerCarUserManagerIfPossible();
         });
         mShortAnimationDuration = mResources.getInteger(android.R.integer.config_shortAnimTime);
+        mConfigChanges.applyNewConfig(mContext.getResources());
+        configurationController.addCallback(this);
     }
 
     @Override
     protected void onFinishInflate() {
-        // Intercept back button.
-        UserSwitcherContainer container = getLayout().findViewById(R.id.user_switcher_container);
-        container.setKeyEventHandler(event -> {
-            if (event.getKeyCode() != KeyEvent.KEYCODE_BACK) {
-                return false;
-            }
+        initializeViews();
+    }
 
-            if (event.getAction() == KeyEvent.ACTION_UP && getLayout().isVisibleToUser()) {
-                stop();
-            }
-            return true;
-        });
+    @Override
+    public void onConfigChanged(Configuration configuration) {
+        if (mConfigChanges.applyNewConfig(mContext.getResources())) {
+            // prerequisites
+            if (getLayout() == null) return;
+            UserSwitcherContainer container = getLayout().findViewById(
+                    R.id.user_switcher_container);
+            if (container == null) return;
+            ViewGroup viewGroupParent = (ViewGroup) container.getParent();
 
-        // Initialize user grid.
-        mUserGridView = getLayout().findViewById(R.id.user_grid);
-        GridLayoutManager layoutManager = new GridLayoutManager(mContext,
-                mResources.getInteger(R.integer.user_fullscreen_switcher_num_col));
-        mUserGridView.setLayoutManager(layoutManager);
-        mUserGridView.buildAdapter();
-        mUserGridView.setUserSelectionListener(mUserSelectionListener);
-        registerCarUserManagerIfPossible();
+            // store index
+            int viewIndex = viewGroupParent.indexOfChild(container);
+
+            // reinflate
+            viewGroupParent.removeView(container);
+            UserSwitcherContainer newContainer = (UserSwitcherContainer) LayoutInflater.from(
+                    mContext).inflate(R.layout.car_fullscreen_user_switcher,
+                    viewGroupParent, /* attachToRoot= */ false);
+            viewGroupParent.addView(newContainer, viewIndex);
+            initializeViews();
+        }
     }
 
     @Override
@@ -110,6 +130,30 @@ public class FullScreenUserSwitcherViewController extends OverlayViewController 
     protected void hideInternal() {
         // Switching is about to happen, since it takes time, fade out the switcher gradually.
         fadeOut();
+    }
+
+    private void initializeViews() {
+        // Intercept back button.
+        UserSwitcherContainer container = getLayout().findViewById(R.id.user_switcher_container);
+        container.setKeyEventHandler(event -> {
+            if (event.getKeyCode() != KeyEvent.KEYCODE_BACK) {
+                return false;
+            }
+
+            if (event.getAction() == KeyEvent.ACTION_UP && getLayout().isVisibleToUser()) {
+                stop();
+            }
+            return true;
+        });
+
+        mUserGridView = getLayout().findViewById(R.id.user_grid);
+        GridLayoutManager layoutManager = new GridLayoutManager(mContext,
+                mResources.getInteger(R.integer.user_fullscreen_switcher_num_col));
+        mUserGridView.setLayoutManager(layoutManager);
+        mUserGridView.setUserTracker(mUserTracker);
+        mUserGridView.buildAdapter();
+        mUserGridView.setUserSelectionListener(mUserSelectionListener);
+        registerCarUserManagerIfPossible();
     }
 
     private void fadeOut() {

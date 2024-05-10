@@ -16,11 +16,14 @@
 
 package com.android.systemui.car.hvac;
 
+import static com.android.systemui.car.window.OverlayPanelViewController.OVERLAY_FROM_BOTTOM_BAR;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.UiModeManager;
@@ -29,6 +32,7 @@ import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
@@ -89,6 +93,20 @@ public class HvacPanelOverlayViewControllerTest extends SysuiTestCase {
     }
 
     @Test
+    public void onScroll_updateDim() {
+        int height = 100;
+        View mockLayout = mock(View.class);
+        when(mockLayout.getHeight()).thenReturn(height);
+        mHvacPanelOverlayViewController.setLayout(mockLayout);
+        mHvacPanelOverlayViewController.setOverlayDirection(OVERLAY_FROM_BOTTOM_BAR);
+
+        mHvacPanelOverlayViewController.onScroll(50);
+
+        verify(mOverlayViewGlobalStateController).updateWindowDimBehind(
+                eq(mHvacPanelOverlayViewController), anyFloat());
+    }
+
+    @Test
     public void onConfigChanged_oldHVACViewRemoved_newHVACViewAdded() {
         Configuration config = new Configuration();
         config.uiMode = Configuration.UI_MODE_NIGHT_YES;
@@ -101,6 +119,8 @@ public class HvacPanelOverlayViewControllerTest extends SysuiTestCase {
                 mock(ViewGroup.LayoutParams.class));
         when(mockHvacPanelView.getParent()).thenReturn(mockHvacPanelParentView);
         when(mockHvacPanelView.getLayoutParams()).thenReturn(mock(ViewGroup.LayoutParams.class));
+        when(mockHvacPanelView.findViewById(R.id.hvac_temperature_text)).thenReturn(
+                mock(TextView.class));
         when(mockLayout.findViewById(R.id.hvac_panel)).thenReturn(mockHvacPanelView);
         mHvacPanelOverlayViewController.setLayout(mockLayout);
 

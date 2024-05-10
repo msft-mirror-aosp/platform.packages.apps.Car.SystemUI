@@ -31,9 +31,20 @@ public interface HvacView {
     void setHvacPropertySetter(HvacPropertySetter hvacPropertySetter);
 
     /**
+     * Set config information using the CarPropertyConfig for this property. This can be min/max
+     * values, config array values, etc.
+     */
+    default void setConfigInfo(CarPropertyConfig<?> carPropertyConfig) {}
+
+    /**
+     * Set whether the HvacView is dependent on the HVAC being powered on.
+     */
+    default void setDisableViewIfPowerOff(boolean disableViewIfPowerOff) {}
+
+    /**
      * Called when the temperature display unit (Celsius or Fahrenheit) is changed.
      */
-    void onHvacTemperatureUnitChanged(boolean usesFahrenheit);
+    default void onHvacTemperatureUnitChanged(boolean usesFahrenheit) {}
 
     /**
      * Called when the subscribed CarPropertyValue is changed.

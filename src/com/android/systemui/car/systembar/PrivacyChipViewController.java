@@ -27,6 +27,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
 import com.android.systemui.car.privacy.PrivacyChip;
+import com.android.systemui.car.privacy.SensorInfoUpdateListener;
 import com.android.systemui.car.privacy.SensorQcPanel;
 import com.android.systemui.privacy.OngoingPrivacyChip;
 import com.android.systemui.privacy.PrivacyItem;
@@ -45,6 +46,7 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
     private Context mContext;
     private PrivacyChip mPrivacyChip;
     private Runnable mQsTileNotifyUpdateRunnable;
+    private SensorInfoUpdateListener mSensorInfoUpdateListener;
     private final SensorPrivacyManager.OnSensorPrivacyChangedListener
             mOnSensorPrivacyChangedListener = (sensor, sensorPrivacyEnabled) -> {
         if (mContext == null) {
@@ -57,6 +59,9 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
             // the sensor (such as microphone or camera) has been toggled off.
             mPrivacyChip.setSensorEnabled(/* enabled= */ !sensorPrivacyEnabled);
             mQsTileNotifyUpdateRunnable.run();
+            if (mSensorInfoUpdateListener != null) {
+                mSensorInfoUpdateListener.onSensorPrivacyChanged();
+            }
         });
     };
     private boolean mAllIndicatorsEnabled;
@@ -81,6 +86,10 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
 
                     mIsPrivacyChipVisible = shouldShowPrivacyChip;
                     setChipVisibility(shouldShowPrivacyChip);
+
+                    if (mSensorInfoUpdateListener != null) {
+                        mSensorInfoUpdateListener.onPrivacyItemsChanged();
+                    }
                 }
 
                 @Override
@@ -134,6 +143,11 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
     @Override
     public void setNotifyUpdateRunnable(Runnable runnable) {
         mQsTileNotifyUpdateRunnable = runnable;
+    }
+
+    @Override
+    public void setSensorInfoUpdateListener(SensorInfoUpdateListener listener) {
+        mSensorInfoUpdateListener = listener;
     }
 
     protected abstract @SensorPrivacyManager.Sensors.Sensor int getChipSensor();
@@ -191,6 +205,7 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
         mSensorPrivacyManager.removeSensorPrivacyListener(getChipSensor(),
                 mOnSensorPrivacyChangedListener);
         mPrivacyChip = null;
+        mSensorInfoUpdateListener = null;
     }
 
     private void setChipVisibility(boolean chipVisible) {

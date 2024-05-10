@@ -141,6 +141,9 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
                 });
 
         mDragOpenTouchListener = (v, event) -> {
+            if (!shouldAnimateExpandPanel()) {
+                return true;
+            }
             if (!mCarDeviceProvisionedController.isCurrentUserFullySetup()) {
                 return true;
             }
@@ -209,11 +212,11 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
      * @return true only if opening action.
      */
     protected boolean isOpeningAction(MotionEvent e) {
-        if (mAnimateDirection == POSITIVE_DIRECTION) {
+        if (isOverlayFromTopBar()) {
             return e.getActionMasked() == MotionEvent.ACTION_DOWN;
         }
 
-        if (mAnimateDirection == NEGATIVE_DIRECTION) {
+        if (isOverlayFromBottomBar()) {
             return e.getActionMasked() == MotionEvent.ACTION_UP;
         }
 
@@ -225,11 +228,11 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
      * @return true only if closing action.
      */
     protected boolean isClosingAction(MotionEvent e) {
-        if (mAnimateDirection == POSITIVE_DIRECTION) {
+        if (isOverlayFromTopBar()) {
             return e.getActionMasked() == MotionEvent.ACTION_UP;
         }
 
-        if (mAnimateDirection == NEGATIVE_DIRECTION) {
+        if (isOverlayFromBottomBar()) {
             return e.getActionMasked() == MotionEvent.ACTION_DOWN;
         }
 
@@ -246,7 +249,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
             return;
         }
 
-        if (!isPanelExpanded() || !isPanelVisible()) {
+        if (!isPanelExpanded() && !isPanelVisible()) {
             return;
         }
 
@@ -295,7 +298,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
                 mSettleClosePercentage = getSettleClosePercentage();
             }
 
-            boolean closePanel = mAnimateDirection == POSITIVE_DIRECTION
+            boolean closePanel = isOverlayFromTopBar()
                     ? mSettleClosePercentage > mPercentageCursorPositionOnScreen
                     : mSettleClosePercentage < mPercentageCursorPositionOnScreen;
             animatePanel(DEFAULT_FLING_VELOCITY, closePanel);
@@ -352,16 +355,16 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
 
     /* Returns the start position if the user has not started swiping. */
     private int getDefaultStartPosition() {
-        return mAnimateDirection > 0 ? 0 : getLayout().getHeight();
+        return isOverlayFromTopBar() ? 0 : getLayout().getHeight();
     }
 
     /** Returns the start position if we are in the middle of swiping. */
     protected int getCurrentStartPosition(Rect clipBounds) {
-        return mAnimateDirection > 0 ? clipBounds.bottom : clipBounds.top;
+        return isOverlayFromTopBar() ? clipBounds.bottom : clipBounds.top;
     }
 
     private int getEndPosition(boolean isClosing) {
-        return (mAnimateDirection > 0 && !isClosing) || (mAnimateDirection == -1 && isClosing)
+        return (isOverlayFromTopBar() && !isClosing) || (isOverlayFromBottomBar() && isClosing)
                 ? getLayout().getHeight()
                 : 0;
     }
@@ -503,7 +506,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
     }
 
     private float getVisiblePanelHeight(float y) {
-        return mAnimateDirection > 0 ? y : getLayout().getHeight() - y;
+        return isOverlayFromTopBar() ? y : getLayout().getHeight() - y;
     }
 
     /** Sets the boundaries of the overlay panel that can be seen based on pointer position. */
@@ -512,7 +515,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
         y = Math.max(0, Math.min(y, getLayout().getHeight()));
         Rect clipBounds = new Rect();
         int top, bottom;
-        if (mAnimateDirection > 0) {
+        if (isOverlayFromTopBar()) {
             top = 0;
             bottom = y;
         } else {
@@ -533,7 +536,13 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
         View handleBar = getLayout().findViewById(getHandleBarViewId());
         if (handleBar == null) return;
 
-        handleBar.setTranslationY(y);
+        int handleBarPos = y;
+        if (isOverlayFromTopBar()) {
+            // For top-down panels, shift the handle bar up by its height to make space such that
+            // it is aligned to the bottom of the visible overlay area.
+            handleBarPos = Math.max(0, y - handleBar.getHeight());
+        }
+        handleBar.setTranslationY(handleBarPos);
     }
 
     /* ***************************************************************************************** *
@@ -573,6 +582,14 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
     /** Returns the percentage of the panel that is open from the bottom. */
     protected final int getPercentageFromEndingEdge() {
         return mPercentageFromEndingEdge;
+    }
+
+    private boolean isOverlayFromTopBar() {
+        return mAnimateDirection == POSITIVE_DIRECTION;
+    }
+
+    private boolean isOverlayFromBottomBar() {
+        return mAnimateDirection == NEGATIVE_DIRECTION;
     }
 
     /* ***************************************************************************************** *
@@ -682,7 +699,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
          */
         private float getYPositionOfPanelEndingEdge(MotionEvent event1, MotionEvent event2) {
             float diff = mAnimateDirection * (event1.getRawY() - event2.getRawY());
-            float y = mAnimateDirection > 0 ? getLayout().getHeight() - diff : diff;
+            float y = isOverlayFromTopBar() ? getLayout().getHeight() - diff : diff;
             y = Math.max(0, Math.min(y, getLayout().getHeight()));
             return y;
         }
@@ -777,7 +794,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
             // This will help the notification shade to clip smoothly as the event2 value changes
             // as event1 value will be fixed.
             float diff = mAnimateDirection * (event1.getRawY() - event2.getRawY());
-            float y = mAnimateDirection > 0
+            float y = isOverlayFromTopBar()
                     ? getLayout().getHeight() - diff
                     : diff;
             // Ensure the position is within the overlay panel.

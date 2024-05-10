@@ -22,10 +22,11 @@ import static android.os.UserManager.DISALLOW_ADD_USER;
 import static android.os.UserManager.SWITCHABILITY_STATUS_OK;
 import static android.view.WindowInsets.Type.statusBars;
 
+import static com.android.systemui.car.users.CarSystemUIUserUtil.getCurrentUserHandle;
+
 import android.annotation.IntDef;
 import android.annotation.Nullable;
 import android.annotation.UserIdInt;
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
@@ -65,11 +66,14 @@ import com.android.car.internal.user.UserHelper;
 import com.android.internal.util.UserIcons;
 import com.android.settingslib.utils.StringUtil;
 import com.android.systemui.R;
+import com.android.systemui.settings.UserTracker;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -81,6 +85,10 @@ public class UserGridRecyclerView extends RecyclerView {
     private static final String TAG = UserGridRecyclerView.class.getSimpleName();
     private static final int TIMEOUT_MS = CarProperties.user_hal_timeout().orElse(5_000) + 500;
 
+    private final ExecutorService mWorker;
+
+    @Nullable
+    private UserTracker mUserTracker;
     private UserSelectionListener mUserSelectionListener;
     private UserAdapter mAdapter;
     private CarUserManager mCarUserManager;
@@ -100,6 +108,7 @@ public class UserGridRecyclerView extends RecyclerView {
         mContext = context;
         mUserManager = UserManager.get(mContext);
         mUserIconProvider = new UserIconProvider();
+        mWorker = Executors.newSingleThreadExecutor();
 
         addItemDecoration(new ItemSpacingDecoration(mContext.getResources().getDimensionPixelSize(
                 R.dimen.car_user_switcher_vertical_spacing_between_users)));
@@ -135,12 +144,13 @@ public class UserGridRecyclerView extends RecyclerView {
     private List<UserInfo> getUsersForUserGrid() {
         return mUserManager.getAliveUsers()
                 .stream()
-                .filter(UserInfo::supportsSwitchToByUser)
+                .filter(userInfo -> userInfo.supportsSwitchTo() && userInfo.isFull())
+                .sorted((u1, u2) -> Long.signum(u1.creationTime - u2.creationTime))
                 .collect(Collectors.toList());
     }
 
     private List<UserRecord> createUserRecords(List<UserInfo> userInfoList) {
-        int fgUserId = ActivityManager.getCurrentUser();
+        int fgUserId = getCurrentUserId();
         UserHandle fgUserHandle = UserHandle.of(fgUserId);
         List<UserRecord> userRecords = new ArrayList<>();
 
@@ -174,7 +184,7 @@ public class UserGridRecyclerView extends RecyclerView {
     }
 
     private UserRecord createForegroundUserRecord() {
-        return new UserRecord(mUserManager.getUserInfo(ActivityManager.getCurrentUser()),
+        return new UserRecord(mUserManager.getUserInfo(getCurrentUserId()),
                 UserRecord.FOREGROUND_USER);
     }
 
@@ -192,6 +202,10 @@ public class UserGridRecyclerView extends RecyclerView {
         return new UserRecord(null /* userInfo */, UserRecord.ADD_USER);
     }
 
+    public void setUserTracker(UserTracker userTracker) {
+        mUserTracker = userTracker;
+    }
+
     public void setUserSelectionListener(UserSelectionListener userSelectionListener) {
         mUserSelectionListener = userSelectionListener;
     }
@@ -201,7 +215,14 @@ public class UserGridRecyclerView extends RecyclerView {
         mCarUserManager = carUserManager;
     }
 
+    private int getCurrentUserId() {
+        return getCurrentUserHandle(mContext, mUserTracker).getIdentifier();
+    }
+
     private void onUsersUpdate() {
+        if (mAdapter == null) {
+            return;
+        }
         mAdapter.clearUsers();
         mAdapter.updateUsers(createUserRecords(getUsersForUserGrid()));
         mAdapter.notifyDataSetChanged();
@@ -298,9 +319,7 @@ public class UserGridRecyclerView extends RecyclerView {
                         notifyUserSelected(userRecord);
                         UserInfo guest = createNewOrFindExistingGuest(mContext);
                         if (guest != null) {
-                            if (!switchUser(guest.id)) {
-                                Log.e(TAG, "Failed to switch to guest user: " + guest.id);
-                            }
+                            switchUser(guest.id);
                         }
                         break;
                     case UserRecord.ADD_USER:
@@ -316,9 +335,7 @@ public class UserGridRecyclerView extends RecyclerView {
                         // If the user doesn't want to be a guest or add a user, switch to the user
                         // selected
                         notifyUserSelected(userRecord);
-                        if (!switchUser(userRecord.mInfo.id)) {
-                            Log.e(TAG, "Failed to switch users: " + userRecord.mInfo.id);
-                        }
+                        switchUser(userRecord.mInfo.id);
                 }
             });
 
@@ -414,7 +431,7 @@ public class UserGridRecyclerView extends RecyclerView {
             switch (userRecord.mType) {
                 case UserRecord.START_GUEST:
                     circleIcon = mUserIconProvider
-                            .getRoundedGuestDefaultIcon(mContext.getResources());
+                            .getRoundedGuestDefaultIcon(mContext);
                     break;
                 case UserRecord.ADD_USER:
                     circleIcon = getCircularAddUserIcon();
@@ -461,8 +478,7 @@ public class UserGridRecyclerView extends RecyclerView {
             // CreateGuest will return null if a guest already exists.
             UserInfo newGuest = getUserInfo(future);
             if (newGuest != null) {
-                new UserIconProvider().assignDefaultIcon(
-                        mUserManager, context.getResources(), newGuest);
+                UserHelper.assignDefaultIcon(context, newGuest.getUserHandle());
                 return newGuest;
             }
 
@@ -511,27 +527,29 @@ public class UserGridRecyclerView extends RecyclerView {
             return mUserManager.getUserInfo(userCreationResult.getUser().getIdentifier());
         }
 
-        private boolean switchUser(@UserIdInt int userId) {
-            AsyncFuture<UserSwitchResult> userSwitchResultFuture =
-                    mCarUserManager.switchUser(userId);
-            UserSwitchResult userSwitchResult;
-            try {
-                userSwitchResult = userSwitchResultFuture.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            } catch (Exception e) {
-                Log.w(TAG, "Could not switch user.", e);
-                return false;
-            }
+        private void switchUser(@UserIdInt int userId) {
+            mWorker.execute(() -> {
+                AsyncFuture<UserSwitchResult> userSwitchResultFuture =
+                        mCarUserManager.switchUser(userId);
+                UserSwitchResult userSwitchResult;
+                try {
+                    userSwitchResult = userSwitchResultFuture.get(TIMEOUT_MS,
+                            TimeUnit.MILLISECONDS);
+                } catch (Exception e) {
+                    Log.e(TAG, "Could not switch user.", e);
+                    return;
+                }
 
-            if (userSwitchResult == null) {
-                Log.w(TAG, "Timed out while switching user: " + TIMEOUT_MS + "ms");
-                return false;
-            }
-            if (!userSwitchResult.isSuccess()) {
-                Log.w(TAG, "Could not switch user: " + userSwitchResult);
-                return false;
-            }
-
-            return true;
+                if (userSwitchResult == null) {
+                    Log.e(TAG, "Timed out while switching user: " + TIMEOUT_MS + "ms");
+                    return;
+                }
+                if (!userSwitchResult.isSuccess()) {
+                    Log.e(TAG, "Could not switch user: " + userSwitchResult);
+                    return;
+                }
+                Log.v(TAG, "Switched to user " + userId + " successfully");
+            });
         }
 
         // TODO(b/161539497): Replace AsyncTask with standard {@link java.util.concurrent} code.
@@ -571,9 +589,7 @@ public class UserGridRecyclerView extends RecyclerView {
                 if (user != null) {
                     notifyUserSelected(mAddUserRecord);
                     mAddUserView.setEnabled(true);
-                    if (!switchUser(user.id)) {
-                        Log.e(TAG, "Failed to switch to new user: " + user.id);
-                    }
+                    switchUser(user.id);
                 }
                 if (mAddUserView != null) {
                     mAddUserView.setEnabled(true);

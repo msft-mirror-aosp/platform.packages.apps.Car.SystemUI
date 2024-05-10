@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPropertySetter;
+import com.android.systemui.car.hvac.HvacUtils;
 import com.android.systemui.car.hvac.HvacView;
 
 import java.util.ArrayList;
@@ -77,8 +78,9 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
     private final Map<Integer, Integer> mButtonIndicesByDirection = new HashMap<>();
 
     private HvacPropertySetter mHvacPropertySetter;
-    private boolean mPowerOn;
-    private boolean mAutoOn;
+    private boolean mPowerOn = false;
+    private boolean mAutoOn = false;
+    private boolean mDisableViewIfPowerOff = false;
     private float mOnAlpha;
     private float mOffAlpha;
     private int mCurrentDirection = INVALID_ID;
@@ -118,6 +120,7 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
             });
             mButtons.add(button);
         }
+        updateViewPerAvailability();
     }
 
     @Override
@@ -126,12 +129,20 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
     }
 
     @Override
+    public void setDisableViewIfPowerOff(boolean disableViewIfPowerOff) {
+        mDisableViewIfPowerOff = disableViewIfPowerOff;
+    }
+
+    @Override
     public void onPropertyChanged(CarPropertyValue value) {
         if (value.getPropertyId() == HVAC_FAN_DIRECTION) {
-            int newDirection = (Integer) value.getValue();
+            int newDirection = INVALID_ID;
+            if (value.getValue() instanceof Integer) {
+                newDirection = (Integer) value.getValue();
+            }
             if (!mButtonDirections.contains(newDirection)) {
                 if (DEBUG) {
-                    Log.w(TAG, "Button is not defined for direction: " + newDirection);
+                    Log.d(TAG, "Button is not defined for direction: " + newDirection);
                 }
                 return;
             }
@@ -174,16 +185,6 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
         return mHvacGlobalAreaId;
     }
 
-    @Override
-    public void onLocaleListChanged() {
-        // no-op.
-    }
-
-    @Override
-    public void onHvacTemperatureUnitChanged(boolean usesFahrenheit) {
-        // no-op.
-    }
-
     private void init() {
         inflate(getContext(), R.layout.fan_direction, this);
         mHvacGlobalAreaId = getContext().getResources().getInteger(R.integer.hvac_global_area_id);
@@ -203,6 +204,6 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
     }
 
     private boolean shouldAllowControl() {
-        return mPowerOn && !mAutoOn;
+        return HvacUtils.shouldAllowControl(mDisableViewIfPowerOff, mPowerOn, mAutoOn);
     }
 }

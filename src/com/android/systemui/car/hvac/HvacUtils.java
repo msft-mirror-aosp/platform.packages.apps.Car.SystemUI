@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 The Android Open Source Project
+ * Copyright (C) 2023 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,85 @@
 
 package com.android.systemui.car.hvac;
 
+import android.car.hardware.CarPropertyConfig;
+import android.car.hardware.property.AreaIdConfig;
+
 /**
  *  Utility class for HVAC-related use cases.
  */
 public final class HvacUtils {
     /**
-     * Converts temperature in Celsius to temperature in Fahrenheit.
-     *
-     * @param tempC temeprature in Celsius
-     * @return temeprature in Fahrenheit
+     * @see #shouldAllowControl(boolean, boolean, boolean, boolean)
      */
-    public static float celsiusToFahrenheit(float tempC) {
-        return (tempC * 9f / 5f) + 32;
+    public static boolean shouldAllowControl(boolean disableViewIfPowerOff, boolean powerOn) {
+        return shouldAllowControl(disableViewIfPowerOff, powerOn, /* disableViewIfAutoOn= */false,
+                /* autoOn= */false);
     }
 
     /**
-     * Converts temperature in Fahrenheit to temperature in Celsius.
-     *
-     * @param tempF temperature in Fahrenheit
-     * @return temperature in Celsius
+     * @see #shouldAllowControl(boolean, boolean, boolean, boolean)
      */
-    public static float fahrenheitToCelsius(float tempF) {
-        return (tempF - 32) * 5f / 9f;
+    public static boolean shouldAllowControl(boolean disableViewIfPowerOff, boolean powerOn,
+            boolean autoOn) {
+        return shouldAllowControl(disableViewIfPowerOff, powerOn, /* disableViewIfAutoOn= */true,
+                autoOn);
+    }
+
+    /**
+     * Returns whether the view can be controlled.
+     *
+     * @param disableViewIfPowerOff whether the view can be controlled when hvac power is off
+     * @param powerOn is hvac power on
+     * @param disableViewIfAutoOn whether the view can be controlled when hvac auto mode is on
+     * @param autoOn is auto mode on
+     * @return is the view controllable
+     */
+    public static boolean shouldAllowControl(boolean disableViewIfPowerOff, boolean powerOn,
+            boolean disableViewIfAutoOn, boolean autoOn) {
+        return (!disableViewIfPowerOff || powerOn) && (!disableViewIfAutoOn || !autoOn);
+    }
+
+    /**
+     * For an {@code Integer} property, return the highest minimum value specified for all area IDs.
+     * If there are no minimum values provided by all of the area IDs or if the property is not an
+     * {@code Integer} property, return {@code null}.
+     *
+     * @param carPropertyConfig {@code Integer} CarPropertyConfig
+     * @return highest min value or {@code null}
+     */
+    public static Integer getHighestMinValueForAllAreaIds(CarPropertyConfig<?> carPropertyConfig) {
+        if (!carPropertyConfig.getPropertyType().equals(Integer.class)) {
+            return null;
+        }
+        Integer highestMinValue = null;
+        for (AreaIdConfig<?> areaIdConfig: carPropertyConfig.getAreaIdConfigs()) {
+            if (highestMinValue == null || (areaIdConfig.getMinValue() != null
+                    && (Integer) areaIdConfig.getMinValue() > highestMinValue)) {
+                highestMinValue = (Integer) areaIdConfig.getMinValue();
+            }
+        }
+        return highestMinValue;
+    }
+
+    /**
+     * For an {@code Integer} property, return the lowest maximum value specified for all area IDs.
+     * If there are no maximum values provided by all of the area IDs or if the property is not an
+     * {@code Integer} property, return {@code null}.
+     *
+     * @param carPropertyConfig {@code Integer} CarPropertyConfig
+     * @return lowest max value or {@code null}
+     */
+    public static Integer getLowestMaxValueForAllAreaIds(CarPropertyConfig<?> carPropertyConfig) {
+        if (!carPropertyConfig.getPropertyType().equals(Integer.class)) {
+            return null;
+        }
+        Integer lowestMaxValue = null;
+        for (AreaIdConfig<?> areaIdConfig: carPropertyConfig.getAreaIdConfigs()) {
+            if (lowestMaxValue == null || (areaIdConfig.getMaxValue() != null
+                    && (Integer) areaIdConfig.getMaxValue() < lowestMaxValue)) {
+                lowestMaxValue = (Integer) areaIdConfig.getMaxValue();
+            }
+        }
+        return lowestMaxValue;
     }
 }

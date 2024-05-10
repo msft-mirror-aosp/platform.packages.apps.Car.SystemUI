@@ -20,18 +20,21 @@ import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
 import static android.car.VehiclePropertyIds.HVAC_FAN_SPEED;
 import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 
+import android.car.hardware.CarPropertyConfig;
 import android.car.hardware.CarPropertyValue;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPropertySetter;
+import com.android.systemui.car.hvac.HvacUtils;
 import com.android.systemui.car.hvac.HvacView;
 
 import java.util.ArrayList;
@@ -57,18 +60,22 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
     private TextView mMaxButton;
     private TextView mOffButton;
 
-    private FanSpeedBarSegment mFanSpeed1;
-    private FanSpeedBarSegment mFanSpeed2;
-    private FanSpeedBarSegment mFanSpeed3;
-    private FanSpeedBarSegment mFanSpeed4;
-
-    private boolean mPowerOn;
-    private boolean mAutoOn;
+    private boolean mPowerOn = false;
+    private boolean mAutoOn = false;
+    private boolean mDisableViewIfPowerOff = false;
 
     private float mOnAlpha;
     private float mOffAlpha;
+    private int mMinFanSpeedSupportedByUi;
+    private int mMaxFanSpeedSupportedByUi;
+    private int mCurrentFanSpeed;
 
-    private final List<FanSpeedBarSegment> mFanSpeedButtons = new ArrayList<>();
+    /**
+     * List of all fan buttons in the order they are displayed in the UI left to right. In other
+     * words, first the off button, then the {@link FanSpeedBarSegment} buttons, and lastly the max
+     * button.
+     */
+    private final List<View> mFanSpeedButtons = new ArrayList<>();
 
     public FanSpeedBar(Context context) {
         super(context);
@@ -93,7 +100,7 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
         // inset by fan speed inset to make it appear thinner.
         int barHeight = res.getDimensionPixelSize(R.dimen.hvac_fan_speed_bar_height);
         int insetHeight = res.getDimensionPixelSize(R.dimen.hvac_fan_speed_bar_vertical_inset);
-        mCornerRadius = (barHeight - 2 * insetHeight) / 2;
+        mCornerRadius = (float) (barHeight - 2 * insetHeight) / 2;
 
         mFanOffActiveBgColor = res.getColor(R.color.hvac_fanspeed_off_active_bg);
 
@@ -101,6 +108,8 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
         mButtonInactiveTextColor = res.getColor(R.color.hvac_fanspeed_off_inactive_text_color);
         mFanMaxActiveBgColor = res.getColor(R.color.hvac_fanspeed_segment_color);
         mHvacGlobalAreaId = res.getInteger(R.integer.hvac_global_area_id);
+        mMinFanSpeedSupportedByUi = res.getInteger(R.integer.hvac_min_fan_speed);
+        mMaxFanSpeedSupportedByUi = res.getInteger(R.integer.hvac_max_fan_speed);
     }
 
     @Override
@@ -109,35 +118,49 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
     }
 
     @Override
+    public void setDisableViewIfPowerOff(boolean disableViewIfPowerOff) {
+        mDisableViewIfPowerOff = disableViewIfPowerOff;
+    }
+
+    @Override
     public void onPropertyChanged(CarPropertyValue value) {
         if (value.getPropertyId() == HVAC_FAN_SPEED) {
-            int level = (Integer) value.getValue();
-
-            setOffAndMaxButtonsActiveState(level);
-
-            int fanSpeedCount = mFanSpeedButtons.size();
-            int fanSpeedIndex = Math.min(level - 1, 4);
-
+            int fanSpeed = (Integer) value.getValue();
+            // Sanitize the fan speed value to not exceed the number of
+            // fan buttons.
+            if (fanSpeed > mMaxFanSpeedSupportedByUi) {
+                fanSpeed = mMaxFanSpeedSupportedByUi;
+            }
+            if (mCurrentFanSpeed == fanSpeed) {
+                return;
+            }
+            mCurrentFanSpeed = fanSpeed;
+            int fanSpeedIndex = fanSpeed - mMinFanSpeedSupportedByUi;
             int delay = 0;
             // Animate segments turning on when the fan speed is increased.
-            for (int i = 0; i < fanSpeedIndex; i++) {
-                FanSpeedBarSegment fanSpeedButton = mFanSpeedButtons.get(i);
+            // Start from index 1 to ignore off button.
+            for (int i = 1; i < fanSpeedIndex + 1; i++) {
+                if (!(mFanSpeedButtons.get(i) instanceof FanSpeedBarSegment fanSpeedButton)) {
+                    continue;
+                }
                 if (!fanSpeedButton.isTurnedOn()) {
                     fanSpeedButton.playTurnOnAnimation(delay, BAR_SEGMENT_ANIMATION_PERIOD_MS);
                     delay += BAR_SEGMENT_ANIMATION_DELAY_MS;
                 }
             }
-
             delay = 0;
             // Animate segments turning off when the fan speed is decreased.
-            for (int i = fanSpeedCount - 1; i >= fanSpeedIndex; i--) {
-                FanSpeedBarSegment fanSpeedButton = mFanSpeedButtons.get(i);
+            // Start from 2nd to last index to ignore max button.
+            for (int i = mFanSpeedButtons.size() - 2; i > fanSpeedIndex; i--) {
+                if (!(mFanSpeedButtons.get(i) instanceof FanSpeedBarSegment fanSpeedButton)) {
+                    continue;
+                }
                 if (fanSpeedButton.isTurnedOn()) {
                     fanSpeedButton.playTurnOffAnimation(delay, BAR_SEGMENT_ANIMATION_PERIOD_MS);
                     delay += BAR_SEGMENT_ANIMATION_DELAY_MS;
                 }
             }
-
+            setOffAndMaxButtonsActiveState(fanSpeed);
             return;
         }
 
@@ -169,25 +192,17 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
         mOnAlpha = mContext.getResources().getFloat(R.dimen.hvac_turned_on_alpha);
         mOffAlpha = mContext.getResources().getFloat(R.dimen.hvac_turned_off_alpha);
 
-        mOffButton = (TextView) findViewById(R.id.fan_off);
-        mFanSpeed1 = (FanSpeedBarSegment) findViewById(R.id.fan_speed_1);
-        mFanSpeed2 = (FanSpeedBarSegment) findViewById(R.id.fan_speed_2);
-        mFanSpeed3 = (FanSpeedBarSegment) findViewById(R.id.fan_speed_3);
-        mFanSpeed4 = (FanSpeedBarSegment) findViewById(R.id.fan_speed_4);
-        mMaxButton = (TextView) findViewById(R.id.fan_max);
-
-        mFanSpeedButtons.add(mFanSpeed1);
-        mFanSpeedButtons.add(mFanSpeed2);
-        mFanSpeedButtons.add(mFanSpeed3);
-        mFanSpeedButtons.add(mFanSpeed4);
-
-        for (int i = 0; i < mFanSpeedButtons.size(); i++) {
-            mFanSpeedButtons.get(i).setOnClickListener(
-                    getOnClickListener(/* fanSpeedLevel =*/ i + 2));
-        }
-
-        mMaxButton.setOnClickListener(getOnClickListener(6));
-        mOffButton.setOnClickListener(getOnClickListener(1));
+        // Buttons are added to list in the order that they are displayed
+        // in the UI from left to right.
+        mOffButton = findViewById(R.id.fan_off);
+        mFanSpeedButtons.add(mOffButton);
+        mFanSpeedButtons.add(findViewById(R.id.fan_speed_1));
+        mFanSpeedButtons.add(findViewById(R.id.fan_speed_2));
+        mFanSpeedButtons.add(findViewById(R.id.fan_speed_3));
+        mFanSpeedButtons.add(findViewById(R.id.fan_speed_4));
+        mMaxButton = findViewById(R.id.fan_max);
+        mFanSpeedButtons.add(mMaxButton);
+        setFanSpeedButtonListeners();
 
         // Set the corner radius of the off/max button based on the height of the bar to get a
         // pill-shaped border.
@@ -202,16 +217,31 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
                 mCornerRadius, mCornerRadius, 0, 0});
         mMaxButton.setBackground(maxButtonBg);
         mMaxButton.setTextColor(mButtonInactiveTextColor);
+        updateViewPerAvailability();
     }
 
     @Override
-    public void onHvacTemperatureUnitChanged(boolean usesFahrenheit) {
-        // no-op.
+    public void setConfigInfo(CarPropertyConfig<?> carPropertyConfig) {
+        // If there are different min/max values between area IDs,
+        // use the highest min value and lowest max value so the
+        // value can be set across all area IDs.
+        Integer highestMinValue = HvacUtils.getHighestMinValueForAllAreaIds(carPropertyConfig);
+        Integer lowestMaxValue = HvacUtils.getLowestMaxValueForAllAreaIds(carPropertyConfig);
+        if (highestMinValue != null) {
+            mMinFanSpeedSupportedByUi = highestMinValue;
+        }
+        if (lowestMaxValue != null) {
+            // The number of fan speeds cannot exceed the number of icons that represent
+            // the levels.
+            mMaxFanSpeedSupportedByUi = Math.min(lowestMaxValue,
+                    mMinFanSpeedSupportedByUi + mFanSpeedButtons.size() - 1);
+        }
+        setFanSpeedButtonListeners();
     }
 
-    protected void setOffAndMaxButtonsActiveState(int level) {
-        setOffButtonActive(level == 1);
-        setMaxButtonActive(level == 6);
+    private void setOffAndMaxButtonsActiveState(int fanSpeed) {
+        setOffButtonActive(fanSpeed == mMinFanSpeedSupportedByUi);
+        setMaxButtonActive(fanSpeed == mMaxFanSpeedSupportedByUi);
     }
 
     private void setMaxButtonActive(boolean active) {
@@ -236,10 +266,10 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
         }
     }
 
-    private OnClickListener getOnClickListener(int fanSpeedLevel) {
+    private OnClickListener getOnClickListener(int fanSpeed) {
         return v -> {
             if (shouldAllowControl()) {
-                mHvacPropertySetter.setHvacProperty(HVAC_FAN_SPEED, getAreaId(), fanSpeedLevel);
+                mHvacPropertySetter.setHvacProperty(HVAC_FAN_SPEED, getAreaId(), fanSpeed);
             }
         };
     }
@@ -249,6 +279,13 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
     }
 
     private boolean shouldAllowControl() {
-        return mPowerOn && !mAutoOn;
+        return HvacUtils.shouldAllowControl(mDisableViewIfPowerOff, mPowerOn, mAutoOn);
+    }
+
+    private void setFanSpeedButtonListeners() {
+        for (int i = 0; i < mFanSpeedButtons.size(); i++) {
+            mFanSpeedButtons.get(i).setOnClickListener(
+                    getOnClickListener(/* fanSpeed =*/ mMinFanSpeedSupportedByUi + i));
+        }
     }
 }

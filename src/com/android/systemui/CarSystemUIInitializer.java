@@ -17,6 +17,7 @@
 package com.android.systemui;
 
 import android.content.Context;
+import android.os.Process;
 import android.os.UserHandle;
 
 import com.android.systemui.dagger.GlobalRootComponent;
@@ -46,11 +47,15 @@ public class CarSystemUIInitializer extends SystemUIInitializer {
         initWmComponents(carWm);
         boolean isSystemUser = UserHandle.myUserId() == UserHandle.USER_SYSTEM;
         return ((CarSysUIComponent.Builder) sysUIBuilder).setRootTaskDisplayAreaOrganizer(
-                isSystemUser ? Optional.of(carWm.getRootTaskDisplayAreaOrganizer())
-                        : Optional.empty());
+                        isSystemUser ? Optional.of(carWm.getRootTaskDisplayAreaOrganizer())
+                                : Optional.empty())
+                .setMDSystemBarsController(carWm.getMDSystemBarController());
     }
 
     private void initWmComponents(CarWMComponent carWm) {
         carWm.getDisplaySystemBarsController();
+        if (Process.myUserHandle().isSystem()) {
+            carWm.getCarSystemUIProxy();
+        }
     }
 }

@@ -21,8 +21,13 @@
         Specified in degrees celsius - 0.5555555°C ~= 1°F
      -->
     <item name="fahrenheit_temperature_increment" format="float" type="fraction">0.5555555</item>
-    <!-- Rounding factor float for degrees celsius (i.e. round to the nearest X) -->
-    <item name="celsius_temperature_round" format="float" type="fraction">0.5</item>
-    <!-- Rounding factor float for degrees fahrenheit (i.e. round to the nearest X) -->
-    <item name="fahrenheit_temperature_round" format="float" type="fraction">1.0</item>
+
+    <!-- Disabled alpha for userpicker -->
+    <item name="user_picker_disabled_alpha" format="float" type="fraction">0.72</item>
+
+    <!--
+        The amount of dimming to apply to the hvac overlay window when fully opened.
+        Range is from 1.0 for completely opaque to 0.0 for no dim.
+    -->
+    <item name="hvac_overlay_window_dim_amount" format="float" type="fraction">0.72</item>
 </resources>

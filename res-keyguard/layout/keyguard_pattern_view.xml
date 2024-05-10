@@ -28,9 +28,11 @@
     android:id="@+id/keyguard_pattern_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    app:layout_maxWidth="@dimen/keyguard_security_width">
+    app:layout_maxWidth="@dimen/keyguard_security_width"
+    app:layout_maxHeight="@dimen/pattern_view_container_maxHeight">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/pattern_container"
         android:layout_height="match_parent"
@@ -46,13 +48,20 @@
             android:gravity="center"
             android:textColor="@android:color/white"
             android:textSize="@*android:dimen/car_body1_size"
-            android:text="@string/keyguard_enter_your_pattern"
+            android:text="@string/car_keyguard_enter_your_pattern"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/lockPatternView"/>
+            app:layout_constraintBottom_toTopOf="@id/bouncer_message_area"/>
 
-        <include layout="@layout/keyguard_message_area" />
+        <include
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            layout="@layout/keyguard_message_area"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pattern_prompt"
+            app:layout_constraintBottom_toTopOf="@id/lockPatternView"/>
 
         <com.android.internal.widget.LockPatternView
             android:id="@+id/lockPatternView"
@@ -62,8 +71,8 @@
             android:layout_gravity="center_horizontal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bouncer_message_area"
+            app:layout_constraintBottom_toTopOf="@id/cancel_button"
             android:gravity="center" />
 
         <Button

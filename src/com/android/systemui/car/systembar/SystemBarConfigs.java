@@ -21,13 +21,14 @@ import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_M
 import android.annotation.IntDef;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
+import android.os.Binder;
 import android.util.ArrayMap;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.InsetsFrameProvider;
-import android.view.InsetsState;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import com.android.internal.annotations.VisibleForTesting;
@@ -68,20 +69,27 @@ public class SystemBarConfigs {
     public static final int LEFT = 2;
     public static final int RIGHT = 3;
 
+    private static final Binder INSETS_OWNER = new Binder();
+
     /*
         NOTE: The elements' order in the map below must be preserved as-is since the correct
         corresponding values are obtained by the index.
      */
-    private static final int[] BAR_TYPE_MAP = {
-            InsetsState.ITYPE_STATUS_BAR,
-            InsetsState.ITYPE_NAVIGATION_BAR,
-            InsetsState.ITYPE_CLIMATE_BAR,
-            InsetsState.ITYPE_EXTRA_NAVIGATION_BAR
+    public static final InsetsFrameProvider[] BAR_PROVIDER_MAP = {
+            new InsetsFrameProvider(
+                    INSETS_OWNER, 0 /* index */, WindowInsets.Type.statusBars()),
+            new InsetsFrameProvider(
+                    INSETS_OWNER, 0 /* index */, WindowInsets.Type.navigationBars()),
+            new InsetsFrameProvider(
+                    INSETS_OWNER, 1 /* index */, WindowInsets.Type.statusBars()),
+            new InsetsFrameProvider(
+                    INSETS_OWNER, 1 /* index */, WindowInsets.Type.navigationBars()),
     };
 
     private static final Map<@SystemBarSide Integer, Integer> BAR_GRAVITY_MAP = new ArrayMap<>();
     private static final Map<@SystemBarSide Integer, String> BAR_TITLE_MAP = new ArrayMap<>();
-    private static final Map<@SystemBarSide Integer, Integer> BAR_GESTURE_MAP = new ArrayMap<>();
+    private static final Map<@SystemBarSide Integer, InsetsFrameProvider> BAR_GESTURE_MAP =
+            new ArrayMap<>();
 
     private final Resources mResources;
     private final Map<@SystemBarSide Integer, SystemBarConfig> mSystemBarConfigMap =
@@ -92,14 +100,19 @@ public class SystemBarConfigs {
     private boolean mBottomNavBarEnabled;
     private boolean mLeftNavBarEnabled;
     private boolean mRightNavBarEnabled;
+    private int mDisplayCompatToolbarState = 0;
 
     @Inject
     public SystemBarConfigs(@Main Resources resources) {
         mResources = resources;
+        init();
+    }
 
+    private void init() {
         populateMaps();
         readConfigs();
 
+        checkOnlyOneDisplayCompatIsEnabled();
         checkEnabledBarsHaveUniqueBarTypes();
         checkAllOverlappingBarsHaveDifferentZOrders();
         checkSystemBarEnabledForNotificationPanel();
@@ -109,9 +122,25 @@ public class SystemBarConfigs {
         sortSystemBarSidesByZOrder();
     }
 
+    /**
+     * Invalidate cached resources and fetch from resources config file.
+     * TODO: b/260206944, Can remove this after we have a fix for overlaid resources not applied.
+     * <p>
+     * Since SystemBarConfig is a Scoped(Dagger Singleton Annotation), We will have stale values, of
+     * all the resources after the RRO is applied.
+     * Another way is to remove the Scope(Singleton), but the downside is that it will be re-created
+     * everytime.
+     * </p>
+     */
+    void resetSystemBarConfigs() {
+        init();
+    }
+
     protected WindowManager.LayoutParams getLayoutParamsBySide(@SystemBarSide int side) {
         return mSystemBarConfigMap.get(side) != null
-                ? mSystemBarConfigMap.get(side).getLayoutParams() : null;
+                ? mSystemBarConfigMap
+                .get(side).getLayoutParams(mResources.getBoolean(R.bool.config_enableDock))
+                : null;
     }
 
     protected boolean getEnabledStatusBySide(@SystemBarSide int side) {
@@ -121,9 +150,9 @@ public class SystemBarConfigs {
             case BOTTOM:
                 return mBottomNavBarEnabled;
             case LEFT:
-                return mLeftNavBarEnabled;
+                return mLeftNavBarEnabled || isLeftDisplayCompatToolbarEnabled();
             case RIGHT:
-                return mRightNavBarEnabled;
+                return mRightNavBarEnabled || isRightDisplayCompatToolbarEnabled();
             default:
                 return false;
         }
@@ -195,10 +224,14 @@ public class SystemBarConfigs {
         BAR_TITLE_MAP.put(LEFT, "LeftCarSystemBar");
         BAR_TITLE_MAP.put(RIGHT, "RightCarSystemBar");
 
-        BAR_GESTURE_MAP.put(TOP, InsetsState.ITYPE_TOP_MANDATORY_GESTURES);
-        BAR_GESTURE_MAP.put(BOTTOM, InsetsState.ITYPE_BOTTOM_MANDATORY_GESTURES);
-        BAR_GESTURE_MAP.put(LEFT, InsetsState.ITYPE_LEFT_MANDATORY_GESTURES);
-        BAR_GESTURE_MAP.put(RIGHT, InsetsState.ITYPE_RIGHT_MANDATORY_GESTURES);
+        BAR_GESTURE_MAP.put(TOP, new InsetsFrameProvider(
+                INSETS_OWNER, 0 /* index */, WindowInsets.Type.mandatorySystemGestures()));
+        BAR_GESTURE_MAP.put(BOTTOM, new InsetsFrameProvider(
+                INSETS_OWNER, 1 /* index */, WindowInsets.Type.mandatorySystemGestures()));
+        BAR_GESTURE_MAP.put(LEFT, new InsetsFrameProvider(
+                INSETS_OWNER, 2 /* index */, WindowInsets.Type.mandatorySystemGestures()));
+        BAR_GESTURE_MAP.put(RIGHT, new InsetsFrameProvider(
+                INSETS_OWNER, 3 /* index */, WindowInsets.Type.mandatorySystemGestures()));
     }
 
     private void readConfigs() {
@@ -206,6 +239,16 @@ public class SystemBarConfigs {
         mBottomNavBarEnabled = mResources.getBoolean(R.bool.config_enableBottomSystemBar);
         mLeftNavBarEnabled = mResources.getBoolean(R.bool.config_enableLeftSystemBar);
         mRightNavBarEnabled = mResources.getBoolean(R.bool.config_enableRightSystemBar);
+        mDisplayCompatToolbarState =
+            mResources.getInteger(R.integer.config_showDisplayCompatToolbarOnSystemBar);
+        mSystemBarConfigMap.clear();
+
+        if ((mLeftNavBarEnabled && isLeftDisplayCompatToolbarEnabled())
+                || (mRightNavBarEnabled && isRightDisplayCompatToolbarEnabled())) {
+            throw new IllegalStateException(
+                "Navigation Bar and Display Compat toolbar can't be "
+                    + "on the same side");
+        }
 
         if (mTopNavBarEnabled) {
             SystemBarConfig topBarConfig =
@@ -213,8 +256,10 @@ public class SystemBarConfigs {
                             .setSide(TOP)
                             .setGirth(mResources.getDimensionPixelSize(
                                     R.dimen.car_top_system_bar_height))
-                            .setBarType(mResources.getInteger(R.integer.config_topSystemBarType))
-                            .setZOrder(mResources.getInteger(R.integer.config_topSystemBarZOrder))
+                            .setBarType(
+                                    mResources.getInteger(R.integer.config_topSystemBarType))
+                            .setZOrder(
+                                    mResources.getInteger(R.integer.config_topSystemBarZOrder))
                             .setHideForKeyboard(mResources.getBoolean(
                                     R.bool.config_hideTopSystemBarForKeyboard))
                             .build();
@@ -227,41 +272,58 @@ public class SystemBarConfigs {
                             .setSide(BOTTOM)
                             .setGirth(mResources.getDimensionPixelSize(
                                     R.dimen.car_bottom_system_bar_height))
-                            .setBarType(mResources.getInteger(R.integer.config_bottomSystemBarType))
+                            .setBarType(
+                                    mResources.getInteger(R.integer.config_bottomSystemBarType))
                             .setZOrder(
-                                    mResources.getInteger(R.integer.config_bottomSystemBarZOrder))
+                                    mResources.getInteger(
+                                            R.integer.config_bottomSystemBarZOrder))
                             .setHideForKeyboard(mResources.getBoolean(
                                     R.bool.config_hideBottomSystemBarForKeyboard))
                             .build();
             mSystemBarConfigMap.put(BOTTOM, bottomBarConfig);
         }
 
-        if (mLeftNavBarEnabled) {
+        if (mLeftNavBarEnabled || isLeftDisplayCompatToolbarEnabled()) {
             SystemBarConfig leftBarConfig =
                     new SystemBarConfigBuilder()
                             .setSide(LEFT)
                             .setGirth(mResources.getDimensionPixelSize(
                                     R.dimen.car_left_system_bar_width))
-                            .setBarType(mResources.getInteger(R.integer.config_leftSystemBarType))
-                            .setZOrder(mResources.getInteger(R.integer.config_leftSystemBarZOrder))
+                            .setBarType(
+                                    mResources.getInteger(R.integer.config_leftSystemBarType))
+                            .setZOrder(
+                                    mResources.getInteger(R.integer.config_leftSystemBarZOrder))
                             .setHideForKeyboard(mResources.getBoolean(
                                     R.bool.config_hideLeftSystemBarForKeyboard))
                             .build();
             mSystemBarConfigMap.put(LEFT, leftBarConfig);
         }
 
-        if (mRightNavBarEnabled) {
+        if (mRightNavBarEnabled || isRightDisplayCompatToolbarEnabled()) {
             SystemBarConfig rightBarConfig =
                     new SystemBarConfigBuilder()
                             .setSide(RIGHT)
                             .setGirth(mResources.getDimensionPixelSize(
                                     R.dimen.car_right_system_bar_width))
-                            .setBarType(mResources.getInteger(R.integer.config_rightSystemBarType))
-                            .setZOrder(mResources.getInteger(R.integer.config_rightSystemBarZOrder))
+                            .setBarType(
+                                    mResources.getInteger(R.integer.config_rightSystemBarType))
+                            .setZOrder(mResources.getInteger(
+                                    R.integer.config_rightSystemBarZOrder))
                             .setHideForKeyboard(mResources.getBoolean(
                                     R.bool.config_hideRightSystemBarForKeyboard))
                             .build();
             mSystemBarConfigMap.put(RIGHT, rightBarConfig);
+        }
+    }
+
+    private void checkOnlyOneDisplayCompatIsEnabled() throws IllegalStateException {
+        boolean useRemoteLaunchTaskView =
+                mResources.getBoolean(R.bool.config_useRemoteLaunchTaskView);
+        int displayCompatEnabled =
+                mResources.getInteger(R.integer.config_showDisplayCompatToolbarOnSystemBar);
+        if (useRemoteLaunchTaskView && displayCompatEnabled != 0) {
+            throw new IllegalStateException("config_useRemoteLaunchTaskView is enabled but "
+                    + "config_showDisplayCompatToolbarOnSystemBar is non-zero");
         }
     }
 
@@ -351,15 +413,10 @@ public class SystemBarConfigs {
             }
         });
 
+        mSystemBarSidesByZOrder.clear();
         systemBarsByZOrder.forEach(systemBarConfig -> {
             mSystemBarSidesByZOrder.add(systemBarConfig.getSide());
         });
-    }
-
-    @InsetsState.InternalInsetsType
-    private int getSystemBarTypeBySide(@SystemBarSide int side) {
-        return mSystemBarConfigMap.get(side) != null
-                ? mSystemBarConfigMap.get(side).getBarType() : InsetsState.ITYPE_INVALID;
     }
 
     // On init, system bars are visible as long as they are enabled.
@@ -367,8 +424,8 @@ public class SystemBarConfigs {
         ArrayMap<@SystemBarSide Integer, Boolean> visibilityMap = new ArrayMap<>();
         visibilityMap.put(TOP, mTopNavBarEnabled);
         visibilityMap.put(BOTTOM, mBottomNavBarEnabled);
-        visibilityMap.put(LEFT, mLeftNavBarEnabled);
-        visibilityMap.put(RIGHT, mRightNavBarEnabled);
+        visibilityMap.put(LEFT, mLeftNavBarEnabled || isLeftDisplayCompatToolbarEnabled());
+        visibilityMap.put(RIGHT, mRightNavBarEnabled || isRightDisplayCompatToolbarEnabled());
         return visibilityMap;
     }
 
@@ -405,6 +462,13 @@ public class SystemBarConfigs {
 
     private static boolean isVerticalBar(@SystemBarSide int side) {
         return side == LEFT || side == RIGHT;
+    }
+    boolean isLeftDisplayCompatToolbarEnabled() {
+        return mDisplayCompatToolbarState == 1;
+    }
+
+    boolean isRightDisplayCompatToolbarEnabled() {
+        return mDisplayCompatToolbarState == 2;
     }
 
     private static final class SystemBarConfig {
@@ -449,7 +513,7 @@ public class SystemBarConfigs {
             return mPaddings;
         }
 
-        private WindowManager.LayoutParams getLayoutParams() {
+        private WindowManager.LayoutParams getLayoutParams(boolean isDockEnabled) {
             WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                     isHorizontalBar(mSide) ? ViewGroup.LayoutParams.MATCH_PARENT : mGirth,
                     isHorizontalBar(mSide) ? mGirth : ViewGroup.LayoutParams.MATCH_PARENT,
@@ -461,13 +525,17 @@ public class SystemBarConfigs {
                     PixelFormat.TRANSLUCENT);
             lp.setTitle(BAR_TITLE_MAP.get(mSide));
             lp.providedInsets = new InsetsFrameProvider[] {
-                new InsetsFrameProvider(BAR_TYPE_MAP[mBarType]),
-                new InsetsFrameProvider(BAR_GESTURE_MAP.get(mSide))
+                    BAR_PROVIDER_MAP[mBarType],
+                    BAR_GESTURE_MAP.get(mSide)
             };
             lp.setFitInsetsTypes(0);
             lp.windowAnimations = 0;
             lp.gravity = BAR_GRAVITY_MAP.get(mSide);
             lp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+            if (isDockEnabled) {
+                lp.privateFlags = lp.privateFlags
+                        | WindowManager.LayoutParams.PRIVATE_FLAG_INTERCEPT_GLOBAL_DRAG_AND_DROP;
+            }
             return lp;
         }
 

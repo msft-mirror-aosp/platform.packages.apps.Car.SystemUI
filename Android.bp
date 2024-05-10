@@ -39,8 +39,10 @@ android_library {
         "SettingsLib",
         "car-admin-ui-lib",
         "car-helper-lib",
-        "car-ui-lib",
+        "car-ui-lib-no-overlayable",
         "car-qc-lib",
+        "car-resource-common",
+        "com_android_systemui_car_flags_lib",
         "androidx.legacy_legacy-support-v4",
         "androidx.recyclerview_recyclerview",
         "androidx.preference_preference",
@@ -58,6 +60,8 @@ android_library {
         "SystemUI-proto",
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
+        "animationlib",
+        "CarDockLib",
     ],
 
     libs: [
@@ -67,6 +71,8 @@ android_library {
     aaptflags: [
         "--no-resource-deduping",
     ],
+
+    javacflags: ["-Adagger.fastInit=enabled"],
 
     manifest: "AndroidManifest.xml",
 
@@ -94,6 +100,7 @@ android_library {
         "SystemUIPluginLib",
         "SystemUISharedLib",
         "SettingsLib",
+        "android.car.test.utils",
         "androidx.legacy_legacy-support-v4",
         "androidx.recyclerview_recyclerview",
         "androidx.preference_preference",
@@ -109,18 +116,22 @@ android_library {
         "androidx.lifecycle_lifecycle-extensions",
         "car-admin-ui-lib",
         "car-helper-lib",
-        "car-ui-lib",
+        "car-ui-lib-no-overlayable",
         "car-qc-lib",
+        "car-resource-common",
+        "com_android_systemui_car_flags_lib",
         "SystemUI-tags",
         "SystemUI-proto",
         "metrics-helper-lib",
-        "androidx.test.rules", "hamcrest-library",
-        "mockito-target-inline-minus-junit4",
+        "androidx.test.rules",
+        "hamcrest-library",
+        "mockito-target-extended-minus-junit4",
         "testables",
-        "truth-prebuilt",
+        "truth",
         "testng",
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
+        "CarDockLib",
     ],
     libs: [
         "android.test.runner",
@@ -135,8 +146,14 @@ android_library {
 
     plugins: ["dagger2-compiler"],
 
+    lint: {
+        test: true,
+    },
+
     // TODO(b/218518451) re-enable errorprone.
-    errorprone: {enabled: false},
+    errorprone: {
+        enabled: false,
+    },
 }
 
 android_app {
@@ -154,7 +171,7 @@ android_app {
 
     resource_dirs: [],
 
-     overrides: [
+    overrides: [
         "SystemUI",
     ],
 
@@ -168,6 +185,10 @@ android_app {
             "proguard.flags",
         ],
     },
+    // TODO(b/301283770): Compiling CarSystemUI should not require -J-Xmx8192M
+    javacflags: [
+        "-J-Xmx8192M",
+    ],
     dxflags: ["--multi-dex"],
 
     aaptflags: [
@@ -175,9 +196,12 @@ android_app {
         "com.android.keyguard",
     ],
 
-    kotlincflags: ["-Xjvm-default=enable"],
+    kotlincflags: ["-Xjvm-default=all"],
 
     plugins: ["dagger2-compiler"],
 
-    required: ["privapp_whitelist_com.android.systemui", "allowed_privapp_com.android.carsystemui"],
+    required: [
+        "privapp_whitelist_com.android.systemui",
+        "allowed_privapp_com.android.carsystemui",
+    ],
 }

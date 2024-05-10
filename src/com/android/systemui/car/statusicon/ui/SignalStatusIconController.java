@@ -26,6 +26,7 @@ import com.android.settingslib.graph.SignalDrawable;
 import com.android.systemui.R;
 import com.android.systemui.car.statusicon.StatusIconController;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.statusbar.connectivity.IconState;
 import com.android.systemui.statusbar.connectivity.MobileDataIndicators;
 import com.android.systemui.statusbar.connectivity.NetworkController;
 import com.android.systemui.statusbar.connectivity.SignalCallback;
@@ -48,11 +49,14 @@ public class SignalStatusIconController extends StatusIconController implements
     private SignalDrawable mMobileSignalIconDrawable;
     private Drawable mWifiSignalIconDrawable;
     private Drawable mHotSpotIconDrawable;
+    private Drawable mEthernetIconDrawable;
     private boolean mIsWifiEnabledAndConnected;
     private boolean mIsHotspotEnabled;
+    private boolean mIsEthernetConnected;
     private String mMobileSignalContentDescription;
     private String mWifiConnectedContentDescription;
     private String mHotspotOnContentDescription;
+    private String mEthernetContentDescription;
 
     @Inject
     SignalStatusIconController(
@@ -77,10 +81,19 @@ public class SignalStatusIconController extends StatusIconController implements
     }
 
     @Override
+    protected void onDestroy() {
+        mNetworkController.removeCallback(this);
+        mHotspotController.removeCallback(this);
+    }
+
+    @Override
     protected void updateStatus() {
         if (mIsHotspotEnabled) {
             setIconDrawableToDisplay(mHotSpotIconDrawable);
             setIconContentDescription(mHotspotOnContentDescription);
+        } else if (mIsEthernetConnected) {
+            setIconDrawableToDisplay(mEthernetIconDrawable);
+            setIconContentDescription(mEthernetContentDescription);
         } else if (mIsWifiEnabledAndConnected) {
             setIconDrawableToDisplay(mWifiSignalIconDrawable);
             setIconContentDescription(mWifiConnectedContentDescription);
@@ -112,6 +125,16 @@ public class SignalStatusIconController extends StatusIconController implements
     }
 
     @Override
+    public void setEthernetIndicators(IconState state) {
+        mIsEthernetConnected = state.visible;
+        if (mIsEthernetConnected) {
+            mEthernetIconDrawable = mResources.getDrawable(state.icon, mContext.getTheme());
+            mEthernetContentDescription = state.contentDescription;
+        }
+        updateStatus();
+    }
+
+    @Override
     protected int getPanelContentLayout() {
         return R.layout.qc_connectivity_panel;
     }
@@ -129,6 +152,11 @@ public class SignalStatusIconController extends StatusIconController implements
     @VisibleForTesting
     Drawable getHotSpotIconDrawable() {
         return mHotSpotIconDrawable;
+    }
+
+    @VisibleForTesting
+    Drawable getEthernetIconDrawable() {
+        return mEthernetIconDrawable;
     }
 
     @Override

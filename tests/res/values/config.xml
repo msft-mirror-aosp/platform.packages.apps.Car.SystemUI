@@ -17,7 +17,13 @@
 <resources>
     <!-- Configure which system ui bars should be displayed.
          These can be overwritten within the tests. -->
+    <bool name="config_enableTopSystemBar">true</bool>
     <bool name="config_enableLeftSystemBar">false</bool>
     <bool name="config_enableRightSystemBar">false</bool>
-    <bool name="config_enableBottomSystemBar">false</bool>
+    <bool name="config_enableBottomSystemBar">true</bool>
+
+    <!-- Configure which NotificationPanelViewMediator is used.
+        These can be overwritten within the tests. -->
+    <string name="config_notificationPanelViewMediator" translatable="false">
+        com.android.systemui.car.notification.TopNotificationPanelViewMediator</string>
 </resources>

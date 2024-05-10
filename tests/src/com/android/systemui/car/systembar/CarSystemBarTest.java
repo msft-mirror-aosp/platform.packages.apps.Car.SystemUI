@@ -16,14 +16,18 @@
 
 package com.android.systemui.car.systembar;
 
-import static android.view.InsetsState.ITYPE_NAVIGATION_BAR;
-import static android.view.InsetsState.ITYPE_STATUS_BAR;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
 import static android.view.WindowInsetsController.APPEARANCE_OPAQUE_STATUS_BARS;
 import static android.view.WindowInsetsController.BEHAVIOR_DEFAULT;
 
+import static com.android.systemui.car.systembar.SystemBarConfigs.BOTTOM;
+import static com.android.systemui.car.systembar.SystemBarConfigs.LEFT;
+import static com.android.systemui.car.systembar.SystemBarConfigs.RIGHT;
+import static com.android.systemui.car.systembar.SystemBarConfigs.TOP;
+
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assume.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -37,6 +41,7 @@ import android.app.UiModeManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.RemoteException;
+import android.os.UserManager;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.testing.TestableResources;
@@ -44,6 +49,7 @@ import android.util.ArrayMap;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 
 import androidx.test.filters.SmallTest;
@@ -56,6 +62,7 @@ import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.hvac.HvacController;
+import com.android.systemui.settings.FakeDisplayTracker;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.phone.AutoHideController;
 import com.android.systemui.statusbar.phone.LightBarController;
@@ -79,6 +86,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.internal.InOrderImpl;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -126,6 +134,7 @@ public class CarSystemBarTest extends SysuiTestCase {
     private RegisterStatusBarResult mBarResult;
     private AppearanceRegion[] mAppearanceRegions;
     private FakeExecutor mUiBgExecutor;
+    private SystemBarConfigs mSystemBarConfigs;
 
     @Before
     public void setUp() {
@@ -150,9 +159,9 @@ public class CarSystemBarTest extends SysuiTestCase {
                 /* imeToken= */ null,
                 /* navbarColorMangedByIme= */ false,
                 BEHAVIOR_DEFAULT,
-                /* requestedVisibilities= */ null,
+                WindowInsets.Type.defaultVisible(),
                 /* packageName= */ null,
-                /* transientBarTypes= */ new int[]{},
+                /* transientBarTypes= */ 0,
                 /* letterboxDetails= */ null);
         try {
             when(mBarService.registerStatusBar(any())).thenReturn(mBarResult);
@@ -167,13 +176,15 @@ public class CarSystemBarTest extends SysuiTestCase {
     }
 
     private void initCarSystemBar() {
+        FakeDisplayTracker displayTracker = new FakeDisplayTracker(mContext);
+        mSystemBarConfigs = new SystemBarConfigs(mTestableResources.getResources());
         mCarSystemBar = new CarSystemBar(mContext, mCarSystemBarController, mLightBarController,
                 mStatusBarIconController, mWindowManager, mDeviceProvisionedController,
-                new CommandQueue(mContext), mAutoHideController, mButtonSelectionStateListener,
-                mExecutor, mUiBgExecutor, mBarService, () -> mKeyguardStateController,
-                () -> mIconPolicy, mHvacController, mSignalPolicy,
-                new SystemBarConfigs(mTestableResources.getResources()),
-                mock(ConfigurationController.class));
+                new CommandQueue(mContext, displayTracker), mAutoHideController,
+                mButtonSelectionStateListener, mExecutor, mUiBgExecutor, mBarService,
+                () -> mKeyguardStateController, () -> mIconPolicy, mHvacController, mSignalPolicy,
+                mSystemBarConfigs,
+                mock(ConfigurationController.class), displayTracker, Optional.empty(), null);
         mCarSystemBar.setSignalPolicy(mSignalPolicy);
     }
 
@@ -268,8 +279,8 @@ public class CarSystemBarTest extends SysuiTestCase {
         mCarSystemBar.start();
 
         int randomDisplay = Display.DEFAULT_DISPLAY + 10;
-        int[] insetTypes = new int[]{};
-        mCarSystemBar.showTransient(randomDisplay, insetTypes);
+        int insetTypes = 0;
+        mCarSystemBar.showTransient(randomDisplay, insetTypes, false);
 
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isFalse();
     }
@@ -281,8 +292,8 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
 
-        int[] insetTypes = new int[]{};
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes);
+        int insetTypes = 0;
+        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes, false);
 
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isFalse();
     }
@@ -294,8 +305,8 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
 
-        int[] insetTypes = new int[]{ITYPE_STATUS_BAR};
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes);
+        int insetTypes = WindowInsets.Type.statusBars();
+        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes, false);
 
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
     }
@@ -307,8 +318,8 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
 
-        int[] insetTypes = new int[]{};
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes);
+        int insetTypes = 0;
+        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes, false);
 
         assertThat(mCarSystemBar.isNavBarTransientShown()).isFalse();
     }
@@ -320,8 +331,8 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
 
-        int[] insetTypes = new int[]{ITYPE_NAVIGATION_BAR};
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes);
+        int insetTypes = WindowInsets.Type.navigationBars();
+        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY, insetTypes, false);
 
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
     }
@@ -332,12 +343,14 @@ public class CarSystemBarTest extends SysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY,
-                new int[]{ITYPE_STATUS_BAR, ITYPE_NAVIGATION_BAR});
+        mCarSystemBar.showTransient(
+                Display.DEFAULT_DISPLAY,
+                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars(),
+                false);
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
 
-        int[] insetTypes = new int[]{};
+        int insetTypes = 0;
         int randomDisplay = Display.DEFAULT_DISPLAY + 10;
         mCarSystemBar.abortTransient(randomDisplay, insetTypes);
 
@@ -352,12 +365,14 @@ public class CarSystemBarTest extends SysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY,
-                new int[]{ITYPE_STATUS_BAR, ITYPE_NAVIGATION_BAR});
+        mCarSystemBar.showTransient(
+                Display.DEFAULT_DISPLAY,
+                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars(),
+                false);
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
 
-        int[] insetTypes = new int[]{};
+        int insetTypes = 0;
         mCarSystemBar.abortTransient(Display.DEFAULT_DISPLAY, insetTypes);
 
         // The transient booleans were not cleared.
@@ -371,12 +386,14 @@ public class CarSystemBarTest extends SysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY,
-                new int[]{ITYPE_STATUS_BAR, ITYPE_NAVIGATION_BAR});
+        mCarSystemBar.showTransient(
+                Display.DEFAULT_DISPLAY,
+                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars(),
+                false);
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
 
-        int[] insetTypes = new int[]{ITYPE_STATUS_BAR};
+        int insetTypes = WindowInsets.Type.statusBars();
         mCarSystemBar.abortTransient(Display.DEFAULT_DISPLAY, insetTypes);
 
         // The transient booleans were cleared.
@@ -390,12 +407,14 @@ public class CarSystemBarTest extends SysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         mCarSystemBar.start();
-        mCarSystemBar.showTransient(Display.DEFAULT_DISPLAY,
-                new int[]{ITYPE_STATUS_BAR, ITYPE_NAVIGATION_BAR});
+        mCarSystemBar.showTransient(
+                Display.DEFAULT_DISPLAY,
+                WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars(),
+                false);
         assertThat(mCarSystemBar.isStatusBarTransientShown()).isTrue();
         assertThat(mCarSystemBar.isNavBarTransientShown()).isTrue();
 
-        int[] insetTypes = new int[]{ITYPE_NAVIGATION_BAR};
+        int insetTypes = WindowInsets.Type.navigationBars();
         mCarSystemBar.abortTransient(Display.DEFAULT_DISPLAY, insetTypes);
 
         // The transient booleans were cleared.
@@ -420,21 +439,27 @@ public class CarSystemBarTest extends SysuiTestCase {
     }
 
     @Test
-    public void onConfigChanged_setNightModeActivated() {
+    public void onConfigChanged_toggleNightMode() {
+        // get the current mode and then change to the opposite
+        boolean isNightMode = mContext.getResources().getConfiguration().isNightModeActive();
         Configuration config = new Configuration();
-        config.uiMode = Configuration.UI_MODE_NIGHT_YES;
+        config.uiMode =
+                isNightMode ? Configuration.UI_MODE_NIGHT_NO : Configuration.UI_MODE_NIGHT_YES;
         UiModeManager mockUiModeManager = mock(UiModeManager.class);
         mCarSystemBar.setUiModeManager(mockUiModeManager);
 
         mCarSystemBar.onConfigChanged(config);
 
-        verify(mockUiModeManager).setNightModeActivated(true);
+        verify(mockUiModeManager).setNightModeActivated(!isNightMode);
     }
 
     @Test
     public void onConfigChanged_callOnClick_profilePickerViewIsSelected() {
+        // alternative profile picker used on multi-display systems
+        assumeFalse(UserManager.isVisibleBackgroundUsersEnabled());
         Configuration config = new Configuration();
-        config.uiMode = Configuration.UI_MODE_NIGHT_YES;
+        config.uiMode = mContext.getResources().getConfiguration().isNightModeActive()
+                ? Configuration.UI_MODE_NIGHT_NO : Configuration.UI_MODE_NIGHT_YES;
         View mockProfilePickerView = mock(View.class);
         when(mockProfilePickerView.isSelected()).thenReturn(true);
         CarSystemBarView mockTopBarView = mock(CarSystemBarView.class);
@@ -456,7 +481,8 @@ public class CarSystemBarTest extends SysuiTestCase {
     public void onConfigChanged_callQuickControlsOnClickFromClassName_forSelectedQuickControl() {
         String clsName = "testClsName";
         Configuration config = new Configuration();
-        config.uiMode = Configuration.UI_MODE_NIGHT_YES;
+        config.uiMode = mContext.getResources().getConfiguration().isNightModeActive()
+                ? Configuration.UI_MODE_NIGHT_NO : Configuration.UI_MODE_NIGHT_YES;
         when(mCarSystemBarController.getSelectedQuickControlsClassName()).thenReturn(clsName);
         initCarSystemBar();
 
@@ -465,6 +491,44 @@ public class CarSystemBarTest extends SysuiTestCase {
 
         verify(mCarSystemBarController, times(2))
                 .callQuickControlsOnClickFromClassName(clsName);
+    }
+
+    @Test
+    public void restartSystemBars_newSystemBarConfig_recreatesSystemBars() {
+        mTestableResources.addOverride(R.integer.config_showDisplayCompatToolbarOnSystemBar, 0);
+        mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);
+        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
+        mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, false);
+        mTestableResources.addOverride(R.bool.config_enableRightSystemBar, false);
+        when(mCarSystemBarController.getTopWindow()).thenReturn(mock(ViewGroup.class));
+        when(mCarSystemBarController.getBottomWindow()).thenReturn(mock(ViewGroup.class));
+        when(mCarSystemBarController.getLeftWindow()).thenReturn(null);
+        when(mCarSystemBarController.getRightWindow()).thenReturn(null);
+
+        initCarSystemBar();
+        mCarSystemBar.start();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(TOP)).isNotNull();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(BOTTOM)).isNotNull();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(LEFT)).isNull();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(RIGHT)).isNull();
+
+        mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);
+        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, false);
+        mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, true);
+        mTestableResources.addOverride(R.bool.config_enableRightSystemBar, true);
+        mSystemBarConfigs = new SystemBarConfigs(mTestableResources.getResources());
+        when(mCarSystemBarController.getTopWindow()).thenReturn(mock(ViewGroup.class));
+        when(mCarSystemBarController.getBottomWindow()).thenReturn(null);
+        when(mCarSystemBarController.getLeftWindow()).thenReturn(mock(ViewGroup.class));
+        when(mCarSystemBarController.getRightWindow()).thenReturn(mock(ViewGroup.class));
+        mCarSystemBar.restartSystemBars();
+
+        verify(mCarSystemBarController, times(1)).removeAll();
+        verify(mCarSystemBarController, times(1)).resetSystemBarConfigs();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(TOP)).isNotNull();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(BOTTOM)).isNull();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(LEFT)).isNotNull();
+        assertThat(mCarSystemBar.getSystemBarWindowBySide(RIGHT)).isNotNull();
     }
 
     private void waitForDelayableExecutor() {

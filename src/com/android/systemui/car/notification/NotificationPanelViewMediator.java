@@ -23,16 +23,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
-import android.os.UserHandle;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.systembar.CarSystemBarController;
 import com.android.systemui.car.window.OverlayViewMediator;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import javax.inject.Inject;
@@ -48,10 +49,12 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
     private static final boolean DEBUG = false;
     private static final String TAG = "NotificationPanelVM";
 
+    private final Context mContext;
     private final CarSystemBarController mCarSystemBarController;
     private final NotificationPanelViewController mNotificationPanelViewController;
     private final PowerManagerHelper mPowerManagerHelper;
     private final BroadcastDispatcher mBroadcastDispatcher;
+    private final UserTracker mUserTracker;
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final ConfigurationController mConfigurationController;
     private final UiModeManager mUiModeManager;
@@ -69,24 +72,41 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         }
     };
 
+    private final UserTracker.Callback mUserTrackerCallback = new UserTracker.Callback() {
+        @Override
+        public void onUserChanged(int newUser, Context userContext) {
+            mBroadcastDispatcher.unregisterReceiver(mBroadcastReceiver);
+            mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
+                    new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* executor= */ null,
+                    mUserTracker.getUserHandle());
+        }
+
+        @Override
+        public void onUserChanging(int newUser, @NonNull Context userContext) {
+            mNotificationPanelViewController.clearCache();
+        }
+    };
+
     private boolean mIsUiModeNight;
 
     @Inject
     public NotificationPanelViewMediator(
+            Context context,
             CarSystemBarController carSystemBarController,
             NotificationPanelViewController notificationPanelViewController,
-
             PowerManagerHelper powerManagerHelper,
             BroadcastDispatcher broadcastDispatcher,
-
+            UserTracker userTracker,
             CarDeviceProvisionedController carDeviceProvisionedController,
             ConfigurationController configurationController,
             UiModeManager uiModeManager
     ) {
+        mContext = context;
         mCarSystemBarController = carSystemBarController;
         mNotificationPanelViewController = notificationPanelViewController;
         mPowerManagerHelper = powerManagerHelper;
         mBroadcastDispatcher = broadcastDispatcher;
+        mUserTracker = userTracker;
         mCarDeviceProvisionedController = carDeviceProvisionedController;
         mConfigurationController = configurationController;
         mUiModeManager = uiModeManager;
@@ -113,8 +133,13 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
                     }
                 });
 
+        mCarSystemBarController.registerNotificationPanelViewController(
+                mNotificationPanelViewController);
+
         mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
-                new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), null, UserHandle.ALL);
+                new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), null,
+                mUserTracker.getUserHandle());
+        mUserTracker.addCallback(mUserTrackerCallback, mContext.getMainExecutor());
     }
 
     @Override
@@ -137,8 +162,7 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
 
     @Override
     public void onConfigChanged(Configuration newConfig) {
-        boolean isConfigNightMode = (newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK)
-                == Configuration.UI_MODE_NIGHT_YES;
+        boolean isConfigNightMode = newConfig.isNightModeActive();
         // Only refresh UI on Night mode changes
         if (isConfigNightMode != mIsUiModeNight) {
             mIsUiModeNight = isConfigNightMode;

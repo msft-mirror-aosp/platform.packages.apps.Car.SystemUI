@@ -130,6 +130,5 @@
     <string name="fullscreen" msgid="7648956467442135844">"Täisekraan"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Kuva paketid"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Teie internetipakett on aegunud"</string>
-    <!-- no translation found for data_subscription_reactive_msg_prompt (8071634832814004999) -->
-    <skip />
+    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"See rakendus vajab internetiühendust"</string>
 </resources>

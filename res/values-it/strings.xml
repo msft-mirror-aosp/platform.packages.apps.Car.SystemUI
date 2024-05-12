@@ -130,6 +130,5 @@
     <string name="fullscreen" msgid="7648956467442135844">"Schermo intero"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Vedi i piani"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Il tuo piano internet è scaduto"</string>
-    <!-- no translation found for data_subscription_reactive_msg_prompt (8071634832814004999) -->
-    <skip />
+    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"Questa app necessita di una connessione a internet"</string>
 </resources>

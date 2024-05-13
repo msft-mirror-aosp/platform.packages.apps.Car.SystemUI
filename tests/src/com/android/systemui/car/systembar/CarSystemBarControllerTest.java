@@ -48,6 +48,7 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.privacy.CameraPrivacyElementsProviderImpl;
 import com.android.systemui.car.privacy.MicPrivacyElementsProviderImpl;
+import com.android.systemui.car.qc.DataSubscriptionController;
 import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
@@ -130,7 +131,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
         mCarSystemBarViewFactory = new CarSystemBarViewFactory(mSpiedContext, mFeatureFlags,
                 mQuickControlsEntryPointsController, mReadOnlyIconsController,
-                mock(UserTracker.class), mock(DataSubscriptionUnseenIconController.class));
+                mock(UserTracker.class), mock(DataSubscriptionUnseenIconController.class),
+                mock(DataSubscriptionController.class));
 
         // Needed to inflate top navigation bar.
         mDependency.injectMockDependency(DarkIconDispatcher.class);

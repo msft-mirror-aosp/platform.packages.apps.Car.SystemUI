@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 
 import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
+import com.android.systemui.car.qc.DataSubscriptionController;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
@@ -164,6 +165,14 @@ public class CarSystemBarView extends LinearLayout {
         if (mSignalStatusIcon != null) {
             View unseenIcon = mSignalStatusIcon.findViewById(R.id.qc_icon_button_unseen_icon);
             dataSubscriptionUnseenIconController.setUnseenIcon(unseenIcon);
+        }
+    }
+
+    void setupDataSubscriptionPopup(
+            DataSubscriptionController dataSubscriptionController) {
+        mSignalStatusIcon = findViewById(R.id.qc_signal_status_icon);
+        if (mSignalStatusIcon != null) {
+            dataSubscriptionController.setAnchorView(mSignalStatusIcon);
         }
     }
 

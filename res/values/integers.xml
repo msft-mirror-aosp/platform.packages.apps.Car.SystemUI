@@ -64,4 +64,7 @@
         <item>250</item>
         <item>999</item>
     </integer-array>
+
+    <!-- Timeout value for data subscription pop up in ms -->
+    <integer name="data_subscription_pop_up_timeout">30000</integer>
 </resources>

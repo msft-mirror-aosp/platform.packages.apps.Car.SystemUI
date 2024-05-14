@@ -130,6 +130,5 @@
     <string name="fullscreen" msgid="7648956467442135844">"អេក្រង់ពេញ"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"មើល​គម្រោង"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"គម្រោងអ៊ីនធឺណិតរបស់អ្នកផុតកំណត់ហើយ"</string>
-    <!-- no translation found for data_subscription_reactive_msg_prompt (8071634832814004999) -->
-    <skip />
+    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"កម្មវិធីនេះត្រូវការការតភ្ជាប់អ៊ីនធឺណិត"</string>
 </resources>

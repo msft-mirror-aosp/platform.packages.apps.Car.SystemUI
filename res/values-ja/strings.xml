@@ -130,6 +130,5 @@
     <string name="fullscreen" msgid="7648956467442135844">"全画面表示"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"プランを見る"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"ご利用のインターネット プランの期限が切れています"</string>
-    <!-- no translation found for data_subscription_reactive_msg_prompt (8071634832814004999) -->
-    <skip />
+    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"このアプリを使用するにはインターネット接続が必要です"</string>
 </resources>

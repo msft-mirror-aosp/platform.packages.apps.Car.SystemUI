@@ -130,6 +130,5 @@
     <string name="fullscreen" msgid="7648956467442135844">"પૂર્ણ સ્ક્રીન"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"પ્લાન જુઓ"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"તમારો ઇન્ટરનેટ પ્લાન સમાપ્ત થઈ ગયો છે"</string>
-    <!-- no translation found for data_subscription_reactive_msg_prompt (8071634832814004999) -->
-    <skip />
+    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"આ ઍપને કોઈ ઇન્ટરનેટ કનેક્શન હોવું જરૂરી છે"</string>
 </resources>

@@ -130,6 +130,5 @@
     <string name="fullscreen" msgid="7648956467442135844">"ဖန်သားပြင်အပြည့်"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"အစီအစဉ်များ ကြည့်ရန်"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"သင့်အင်တာနက်အစီအစဉ် သက်တမ်းကုန်သွားပါပြီ"</string>
-    <!-- no translation found for data_subscription_reactive_msg_prompt (8071634832814004999) -->
-    <skip />
+    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"ဤအက်ပ်သည် အင်တာနက်ချိတ်ဆက်မှု လိုအပ်သည်"</string>
 </resources>

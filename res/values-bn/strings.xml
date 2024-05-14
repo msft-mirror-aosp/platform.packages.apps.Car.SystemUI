@@ -130,6 +130,5 @@
     <string name="fullscreen" msgid="7648956467442135844">"ফুল-স্ক্রিন"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"প্ল্যান দেখুন"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"আপনার ইন্টারনেট প্ল্যানের মেয়াদ শেষ হয়ে গেছে"</string>
-    <!-- no translation found for data_subscription_reactive_msg_prompt (8071634832814004999) -->
-    <skip />
+    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"এই অ্যাপ ব্যবহার করার জন্য ইন্টারনেট কানেকশন থাকতে হবে।"</string>
 </resources>

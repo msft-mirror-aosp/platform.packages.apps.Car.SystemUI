@@ -130,6 +130,5 @@
     <string name="fullscreen" msgid="7648956467442135844">"Plein écran"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Afficher les forfaits"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Votre forfait Internet a expiré"</string>
-    <!-- no translation found for data_subscription_reactive_msg_prompt (8071634832814004999) -->
-    <skip />
+    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"Cette application a besoin d\'une connexion Internet"</string>
 </resources>

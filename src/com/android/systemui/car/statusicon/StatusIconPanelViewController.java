@@ -103,6 +103,17 @@ public class StatusIconPanelViewController extends ViewController<View> {
                 }
             };
 
+    private final View.OnLayoutChangeListener mPanelContentLayoutChangeListener =
+            new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    if (mPanelContent != null) {
+                        mPanelContent.invalidateOutline();
+                    }
+                }
+            };
+
     private final CarUxRestrictionsUtil.OnUxRestrictionsChangedListener
             mUxRestrictionsChangedListener =
             new CarUxRestrictionsUtil.OnUxRestrictionsChangedListener() {
@@ -341,6 +352,7 @@ public class StatusIconPanelViewController extends ViewController<View> {
         // clip content to the panel background (to handle rounded corners)
         mPanelContent.setOutlineProvider(new DrawableViewOutlineProvider(panelBackgroundDrawable));
         mPanelContent.setClipToOutline(true);
+        mPanelContent.addOnLayoutChangeListener(mPanelContentLayoutChangeListener);
 
         // initialize special views
         initQCElementViews(mPanelContent);
@@ -400,6 +412,9 @@ public class StatusIconPanelViewController extends ViewController<View> {
 
         mPanel.dismiss();
         mPanel = null;
+        if (mPanelContent != null) {
+            mPanelContent.removeOnLayoutChangeListener(mPanelContentLayoutChangeListener);
+        }
         mPanelContent = null;
         mQCViewControllers.forEach(SystemUIQCViewController::destroyQCViews);
         mQCViewControllers.clear();

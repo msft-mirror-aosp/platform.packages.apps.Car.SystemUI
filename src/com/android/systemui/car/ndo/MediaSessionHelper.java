@@ -21,7 +21,6 @@ import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.os.UserHandle;
-import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -91,7 +90,7 @@ public class MediaSessionHelper extends MediaController.Callback {
         List<MediaController> activeMediaControllers = new ArrayList<>();
 
         for (MediaController mediaController : mediaControllers) {
-            if (isPlayable(mediaController)) {
+            if (isActive(mediaController)) {
                 activeMediaControllers.add(mediaController);
             } else {
                 // Since playback state changes don't trigger an active media session change, we
@@ -103,15 +102,10 @@ public class MediaSessionHelper extends MediaController.Callback {
     }
 
 
-    /** Returns whether the MediaController is active or playable */
-    private boolean isPlayable(MediaController mediaController) {
+    /** Returns whether the MediaController is active */
+    private boolean isActive(MediaController mediaController) {
         PlaybackState playbackState = mediaController.getPlaybackState();
-        if (playbackState == null) {
-            return false;
-        }
-
-        return playbackState.isActive()
-                || (playbackState.getActions() & PlaybackStateCompat.ACTION_PLAY) != 0;
+        return playbackState != null && playbackState.isActive();
     }
 
     private void registerForPlaybackChanges(MediaController controller) {

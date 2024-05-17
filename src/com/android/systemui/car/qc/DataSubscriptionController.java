@@ -233,6 +233,8 @@ public class DataSubscriptionController {
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
         boolean focusable = true;
         mPopupWindow = new PopupWindow(mPopupView, width, height, focusable);
+        mPopupWindow.setTouchModal(false);
+        mPopupWindow.setOutsideTouchable(true);
         mPopupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

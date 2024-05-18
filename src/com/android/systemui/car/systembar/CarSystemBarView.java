@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.systembar;
 
+import static com.android.systemui.car.systembar.CarSystemBar.DEBUG;
+
 import android.annotation.IntDef;
 import android.annotation.Nullable;
 import android.content.Context;
@@ -52,7 +54,6 @@ public class CarSystemBarView extends LinearLayout {
     }
 
     private static final String TAG = CarSystemBarView.class.getSimpleName();
-    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     public static final int BUTTON_TYPE_NAVIGATION = 0;
     public static final int BUTTON_TYPE_KEYGUARD = 1;

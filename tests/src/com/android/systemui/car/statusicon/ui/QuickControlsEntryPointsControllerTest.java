@@ -123,9 +123,9 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
 
     @Test
     public void getButtonViewLayout_getButton() {
-        int resultValue = mQuickControlsEntryPointsController.getButtonViewLayout();
+        int resultValue = mQuickControlsEntryPointsController.getButtonViewLayout(false);
 
-        assertThat(resultValue).isEqualTo(R.layout.car_qc_entry_points_button);
+        assertThat(resultValue).isEqualTo(R.layout.car_qc_entry_points_button_horizontal);
     }
 
     @Test

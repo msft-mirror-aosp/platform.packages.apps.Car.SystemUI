@@ -251,6 +251,81 @@ public class SystemBarConfigsTest extends SysuiTestCase {
         assertEquals(SYSTEM_BAR_GIRTH, leftBar.getPaddingTop());
     }
 
+    @Test
+    public void updateInsetPaddings_overlappingBars_addsPaddingsByOrders() {
+        int horizontalBarHorizontalPadding = 150;
+        int verticalBarVerticalPadding = 200;
+
+        when(mResources.getDimensionPixelSize(R.dimen.car_top_system_bar_left_padding))
+                .thenReturn(horizontalBarHorizontalPadding);
+        when(mResources.getDimensionPixelSize(R.dimen.car_top_system_bar_right_padding))
+                .thenReturn(horizontalBarHorizontalPadding);
+        when(mResources.getDimensionPixelSize(R.dimen.car_bottom_system_bar_left_padding))
+                .thenReturn(horizontalBarHorizontalPadding);
+        when(mResources.getDimensionPixelSize(R.dimen.car_bottom_system_bar_right_padding))
+                .thenReturn(horizontalBarHorizontalPadding);
+
+        when(mResources.getDimensionPixelSize(R.dimen.car_left_system_bar_top_padding))
+                .thenReturn(verticalBarVerticalPadding);
+        when(mResources.getDimensionPixelSize(R.dimen.car_left_system_bar_bottom_padding))
+                .thenReturn(verticalBarVerticalPadding);
+        when(mResources.getDimensionPixelSize(R.dimen.car_right_system_bar_top_padding))
+                .thenReturn(verticalBarVerticalPadding);
+        when(mResources.getDimensionPixelSize(R.dimen.car_right_system_bar_bottom_padding))
+                .thenReturn(verticalBarVerticalPadding);
+
+        when(mResources.getDimensionPixelSize(
+                R.dimen.car_left_system_bar_width)).thenReturn(SYSTEM_BAR_GIRTH);
+        when(mResources.getDimensionPixelSize(
+                R.dimen.car_right_system_bar_width)).thenReturn(SYSTEM_BAR_GIRTH);
+
+        when(mResources.getDimensionPixelSize(
+                R.dimen.car_top_system_bar_height)).thenReturn(SYSTEM_BAR_GIRTH);
+        when(mResources.getDimensionPixelSize(
+                R.dimen.car_bottom_system_bar_height)).thenReturn(SYSTEM_BAR_GIRTH);
+
+        when(mResources.getBoolean(R.bool.config_enableTopSystemBar)).thenReturn(true);
+        when(mResources.getBoolean(R.bool.config_enableBottomSystemBar)).thenReturn(true);
+        when(mResources.getBoolean(R.bool.config_enableLeftSystemBar)).thenReturn(true);
+        when(mResources.getBoolean(R.bool.config_enableRightSystemBar)).thenReturn(true);
+
+        when(mResources.getInteger(R.integer.config_topSystemBarZOrder)).thenReturn(7);
+        when(mResources.getInteger(R.integer.config_bottomSystemBarZOrder)).thenReturn(10);
+        when(mResources.getInteger(R.integer.config_leftSystemBarZOrder)).thenReturn(8);
+        when(mResources.getInteger(R.integer.config_rightSystemBarZOrder)).thenReturn(6);
+
+        mSystemBarConfigs = new SystemBarConfigs(mResources);
+
+        CarSystemBarView topBar = new CarSystemBarView(mContext, /* attrs= */ null);
+        CarSystemBarView bottomBar = new CarSystemBarView(mContext, /* attrs= */ null);
+        CarSystemBarView leftBar = new CarSystemBarView(mContext, /* attrs= */ null);
+        CarSystemBarView rightBar = new CarSystemBarView(mContext, /* attrs= */ null);
+
+        Map<Integer, Boolean> visibilities = new ArrayMap<>();
+        visibilities.put(SystemBarConfigs.TOP, true);
+        visibilities.put(SystemBarConfigs.BOTTOM, true);
+        visibilities.put(SystemBarConfigs.LEFT, true);
+        visibilities.put(SystemBarConfigs.RIGHT, true);
+
+        mSystemBarConfigs.updateInsetPaddings(SystemBarConfigs.TOP, visibilities);
+        mSystemBarConfigs.insetSystemBar(SystemBarConfigs.TOP, topBar);
+        mSystemBarConfigs.updateInsetPaddings(SystemBarConfigs.BOTTOM, visibilities);
+        mSystemBarConfigs.insetSystemBar(SystemBarConfigs.BOTTOM, bottomBar);
+        mSystemBarConfigs.updateInsetPaddings(SystemBarConfigs.LEFT, visibilities);
+        mSystemBarConfigs.insetSystemBar(SystemBarConfigs.LEFT, leftBar);
+        mSystemBarConfigs.updateInsetPaddings(SystemBarConfigs.RIGHT, visibilities);
+        mSystemBarConfigs.insetSystemBar(SystemBarConfigs.RIGHT, rightBar);
+
+        assertEquals(horizontalBarHorizontalPadding, bottomBar.getPaddingLeft());
+        assertEquals(horizontalBarHorizontalPadding, bottomBar.getPaddingRight());
+        assertEquals(horizontalBarHorizontalPadding, topBar.getPaddingRight());
+        assertEquals(SYSTEM_BAR_GIRTH, topBar.getPaddingLeft());
+        assertEquals(verticalBarVerticalPadding, leftBar.getPaddingTop());
+        assertEquals(SYSTEM_BAR_GIRTH, leftBar.getPaddingBottom());
+        assertEquals(SYSTEM_BAR_GIRTH, rightBar.getPaddingTop());
+        assertEquals(SYSTEM_BAR_GIRTH, rightBar.getPaddingBottom());
+    }
+
     // Set valid config where all system bars are enabled.
     private void setDefaultValidConfig() {
         when(mResources.getBoolean(R.bool.config_enableTopSystemBar)).thenReturn(true);

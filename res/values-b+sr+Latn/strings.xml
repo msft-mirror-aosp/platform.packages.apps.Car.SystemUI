@@ -45,7 +45,7 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Mikrofon je isključen"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"Potvrdi"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Želite da uključite mikrofon vozila?"</string>
-    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Da biste nastavili, uključite mikrofon sistema za info-zabavu. Ovim će se uključiti mikrofon za sve aplikacije koje imaju dozvolu."</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Da biste nastavili, uključite mikrofon sistema za informacije i zabavu. Ovim će se uključiti mikrofon za sve aplikacije koje imaju dozvolu."</string>
     <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"<xliff:g id="APP">%s</xliff:g> koristi kameru"</string>
     <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"Aplikacije <xliff:g id="APP_LIST">%s</xliff:g> koriste kameru"</string>
     <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"Aplikacija <xliff:g id="APP">%s</xliff:g> je nedavno koristila kameru"</string>
@@ -54,7 +54,7 @@
     <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"Kamera je isključena"</string>
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"Potvrdi"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Želite da uključite kameru vozila?"</string>
-    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Da biste nastavili, uključite kameru sistema za info-zabavu. Ovim će se uključiti kameru za sve aplikacije koje imaju dozvolu."</string>
+    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Da biste nastavili, uključite kameru sistema za informacije i zabavu. Ovim će se uključiti kameru za sve aplikacije koje imaju dozvolu."</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"Početni ekran"</string>
     <string name="system_bar_phone_label" msgid="5664288201806823777">"Telefon"</string>
     <string name="system_bar_applications_label" msgid="7081862804211786227">"Aplikacije"</string>

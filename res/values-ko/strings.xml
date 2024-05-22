@@ -128,8 +128,7 @@
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=true;end"</string>
     <string name="back_btn" msgid="7774349944465667391">"뒤로"</string>
     <string name="fullscreen" msgid="7648956467442135844">"전체 화면"</string>
-    <!-- no translation found for data_subscription_button_text (6595983827855035949) -->
-    <skip />
-    <!-- no translation found for data_subscription_proactive_msg_prompt (3130110568883863205) -->
-    <skip />
+    <string name="data_subscription_button_text" msgid="6595983827855035949">"요금제 보기"</string>
+    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"인터넷 요금제가 만료되었습니다."</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"이 앱을 사용하려면 인터넷 연결이 필요합니다."</string>
 </resources>

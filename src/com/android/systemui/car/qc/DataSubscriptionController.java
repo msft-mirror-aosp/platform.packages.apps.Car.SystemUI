@@ -74,6 +74,8 @@ import javax.inject.Inject;
 public class DataSubscriptionController {
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
     private static final String TAG = DataSubscriptionController.class.toString();
+    private static final String DATA_SUBSCRIPTION_ACTION =
+            "android.intent.action.DATA_SUBSCRIPTION";
     // Timeout for network callback in ms
     private static final int CALLBACK_TIMEOUT_MS = 1000;
     private final Context mContext;
@@ -219,7 +221,8 @@ public class DataSubscriptionController {
         mUserTracker = userTracker;
         mMainHandler = mainHandler;
         mBackGroundExecutor = backgroundExecutor;
-        mIntent = new Intent(mContext.getString(
+        mIntent = new Intent(DATA_SUBSCRIPTION_ACTION);
+        mIntent.setPackage(mContext.getString(
                 R.string.connectivity_flow_app));
         mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         LayoutInflater inflater = LayoutInflater.from(mContext);
@@ -230,6 +233,8 @@ public class DataSubscriptionController {
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
         boolean focusable = true;
         mPopupWindow = new PopupWindow(mPopupView, width, height, focusable);
+        mPopupWindow.setTouchModal(false);
+        mPopupWindow.setOutsideTouchable(true);
         mPopupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

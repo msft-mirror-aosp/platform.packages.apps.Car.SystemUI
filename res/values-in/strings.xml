@@ -128,8 +128,7 @@
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
     <string name="back_btn" msgid="7774349944465667391">"Kembali"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Layar Penuh"</string>
-    <!-- no translation found for data_subscription_button_text (6595983827855035949) -->
-    <skip />
-    <!-- no translation found for data_subscription_proactive_msg_prompt (3130110568883863205) -->
-    <skip />
+    <string name="data_subscription_button_text" msgid="6595983827855035949">"Lihat paket"</string>
+    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Masa berlaku paket internet Anda telah berakhir"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"Aplikasi ini memerlukan koneksi internet"</string>
 </resources>

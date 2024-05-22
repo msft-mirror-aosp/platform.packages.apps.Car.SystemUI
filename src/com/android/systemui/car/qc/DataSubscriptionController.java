@@ -49,7 +49,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.datasubscription.DataSubscription;
-import com.android.car.datasubscription.DataSubscriptionStatus;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.R;
 import com.android.systemui.dagger.SysUISingleton;
@@ -71,7 +70,7 @@ import javax.inject.Inject;
  * Controller to display the data subscription pop-up
  */
 @SysUISingleton
-public class DataSubscriptionController {
+public class DataSubscriptionController implements DataSubscription.DataSubscriptionChangeListener {
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
     private static final String TAG = DataSubscriptionController.class.toString();
     private static final String DATA_SUBSCRIPTION_ACTION =
@@ -188,7 +187,6 @@ public class DataSubscriptionController {
                 }
             };
 
-    private int mSubscriptionStatus;
     // Determines whether a proactive message was already displayed
     private boolean mWasProactiveMsgDisplayed;
     // Determines whether the current message being displayed is proactive or reactive
@@ -197,11 +195,6 @@ public class DataSubscriptionController {
     private View mAnchorView;
     private boolean mShouldDisplayProactiveMsg;
 
-    private final DataSubscription.DataSubscriptionChangeListener mDataSubscriptionChangeListener =
-            value -> {
-                mSubscriptionStatus = value;
-                updateShouldDisplayProactiveMsg();
-            };
     private final int mPopUpTimeOut;
     private boolean mShouldDisplayReactiveMsg;
     private String mTopActivity;
@@ -217,7 +210,6 @@ public class DataSubscriptionController {
             @Background Executor backgroundExecutor) {
         mContext = context;
         mSubscription = new DataSubscription(context);
-        mSubscriptionStatus = mSubscription.getDataSubscriptionStatus();
         mUserTracker = userTracker;
         mMainHandler = mainHandler;
         mBackGroundExecutor = backgroundExecutor;
@@ -281,7 +273,7 @@ public class DataSubscriptionController {
         } else {
             // Determines whether a proactive message should be displayed
             mShouldDisplayProactiveMsg = !mWasProactiveMsgDisplayed
-                    && mSubscriptionStatus != DataSubscriptionStatus.PAID;
+                    && mSubscription.isDataSubscriptionInactiveOrTrial();
             if (mShouldDisplayProactiveMsg && mPopupWindow != null
                     && !mPopupWindow.isShowing()) {
                 mIsProactiveMsg = true;
@@ -298,9 +290,9 @@ public class DataSubscriptionController {
             mExplorationButton.setVisibility(View.VISIBLE);
         }
         if (!mPopupWindow.isShowing()) {
-            mShouldDisplayReactiveMsg = (mNetworkCapabilities == null
-                    || (!isSuspendedNetwork()
-                    && !isValidNetwork()));
+            mShouldDisplayReactiveMsg = ((mNetworkCapabilities == null
+                    || (!isSuspendedNetwork() && !isValidNetwork()))
+                    && mSubscription.isDataSubscriptionInactiveOrTrial());
             if (mShouldDisplayReactiveMsg) {
                 mIsProactiveMsg = false;
                 showPopUpWindow();
@@ -351,7 +343,7 @@ public class DataSubscriptionController {
     public void setAnchorView(@Nullable View view) {
         mAnchorView = view;
         if (mAnchorView != null) {
-            mSubscription.addDataSubscriptionListener(mDataSubscriptionChangeListener);
+            mSubscription.addDataSubscriptionListener(this);
             updateShouldDisplayProactiveMsg();
             if (!mIsUxRestrictionsListenerRegistered) {
                 CarUxRestrictionsUtil.getInstance(mContext).register(
@@ -376,6 +368,11 @@ public class DataSubscriptionController {
     boolean isSuspendedNetwork() {
         return !mNetworkCapabilities.hasCapability(
                 NetworkCapabilities.NET_CAPABILITY_NOT_SUSPENDED);
+    }
+
+    @Override
+    public void onChange(int value) {
+        updateShouldDisplayProactiveMsg();
     }
 
     public class DataSubscriptionNetworkCallback extends ConnectivityManager.NetworkCallback {
@@ -405,30 +402,21 @@ public class DataSubscriptionController {
         }
     }
 
-    @VisibleForTesting()
-    void setSubscription(DataSubscription dataSubscription) {
-        mSubscription = dataSubscription;
-    }
-
     @VisibleForTesting
     void setPopupWindow(PopupWindow popupWindow) {
         mPopupWindow = popupWindow;
     }
 
     @VisibleForTesting
-    void setSubscriptionStatus(int status) {
-        mSubscriptionStatus = status;
-    }
-
-    @VisibleForTesting
-    DataSubscription.DataSubscriptionChangeListener getDataSubscriptionChangeListener() {
-        return mDataSubscriptionChangeListener;
+    void setSubscription(DataSubscription dataSubscription) {
+        mSubscription = dataSubscription;
     }
 
     @VisibleForTesting
     boolean getShouldDisplayProactiveMsg() {
         return mShouldDisplayProactiveMsg;
     }
+
     @VisibleForTesting
     void setPackagesBlocklist(Set<String> list) {
         mPackagesBlocklist = list;
@@ -477,5 +465,10 @@ public class DataSubscriptionController {
     @VisibleForTesting
     void setIsUxRestrictionsListenerRegistered(boolean value) {
         mIsUxRestrictionsListenerRegistered = value;
+    }
+
+    @VisibleForTesting
+    void setWasProactiveMsgDisplayed(boolean value) {
+        mWasProactiveMsgDisplayed = value;
     }
 }

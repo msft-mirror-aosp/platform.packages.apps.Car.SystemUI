@@ -55,7 +55,6 @@ import android.widget.PopupWindow;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.datasubscription.DataSubscription;
-import com.android.car.datasubscription.DataSubscriptionStatus;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
@@ -140,7 +139,7 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
     @Test
     public void setAnchorView_viewNotNull_popUpDisplay() {
         when(mPopupWindow.isShowing()).thenReturn(false);
-        mController.setSubscriptionStatus(DataSubscriptionStatus.INACTIVE);
+        when(mDataSubscription.isDataSubscriptionInactiveOrTrial()).thenReturn(true);
 
         mController.setAnchorView(mAnchorView);
 
@@ -153,7 +152,7 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
     @Test
     public void setAnchorView_viewNull_popUpNotDisplay() {
         when(mPopupWindow.isShowing()).thenReturn(false);
-        mController.setSubscriptionStatus(DataSubscriptionStatus.INACTIVE);
+        when(mDataSubscription.isDataSubscriptionInactiveOrTrial()).thenReturn(true);
         mController.setIsUxRestrictionsListenerRegistered(true);
 
         mController.setAnchorView(null);
@@ -161,31 +160,6 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
         verify(mDataSubscription).removeDataSubscriptionListener();
         verify(mCarUxRestrictionsUtil).unregister(any());
         verify(mAnchorView, never()).post(any());
-    }
-
-    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
-    @Test
-    public void dataSubscriptionChange_statusInactive_popUpDisplay() {
-        DataSubscription.DataSubscriptionChangeListener listener =
-                mController.getDataSubscriptionChangeListener();
-
-        listener.onChange(DataSubscriptionStatus.PAID);
-        listener.onChange(DataSubscriptionStatus.INACTIVE);
-
-        Assert.assertTrue(mController.getShouldDisplayProactiveMsg());
-    }
-
-    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
-    @Test
-    public void dataSubscriptionChange_statusPaid_popUpNotDisplay() {
-
-        DataSubscription.DataSubscriptionChangeListener listener =
-                mController.getDataSubscriptionChangeListener();
-
-        listener.onChange(DataSubscriptionStatus.INACTIVE);
-        listener.onChange(DataSubscriptionStatus.PAID);
-
-        Assert.assertFalse(mController.getShouldDisplayProactiveMsg());
     }
 
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)

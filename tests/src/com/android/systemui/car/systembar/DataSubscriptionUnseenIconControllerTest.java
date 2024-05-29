@@ -31,14 +31,12 @@ import android.testing.TestableLooper;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.datasubscription.DataSubscription;
-import com.android.car.datasubscription.DataSubscriptionStatus;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.systembar.element.layout.CarSystemBarImageView;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -74,8 +72,7 @@ public class DataSubscriptionUnseenIconControllerTest extends SysuiTestCase {
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
     @Test
     public void onViewAttached_registerListener() {
-        when(mDataSubscription.getDataSubscriptionStatus()).thenReturn(
-                DataSubscriptionStatus.INACTIVE);
+        when(mDataSubscription.isDataSubscriptionInactiveOrTrial()).thenReturn(true);
 
         mController.onViewAttached();
 
@@ -85,37 +82,10 @@ public class DataSubscriptionUnseenIconControllerTest extends SysuiTestCase {
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
     @Test
     public void onViewDetached_UnregisterListener() {
-        when(mDataSubscription.getDataSubscriptionStatus()).thenReturn(
-                DataSubscriptionStatus.INACTIVE);
+        when(mDataSubscription.isDataSubscriptionInactiveOrTrial()).thenReturn(true);
 
         mController.onViewDetached();
 
         verify(mDataSubscription).removeDataSubscriptionListener();
-    }
-
-    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
-    @Test
-    public void dataSubscriptionChange_statusInactive_viewVisible() {
-        DataSubscription.DataSubscriptionChangeListener listener =
-                mController.getDataSubscriptionChangeListener();
-
-        listener.onChange(DataSubscriptionStatus.INACTIVE);
-
-        Assert.assertEquals(DataSubscriptionStatus.INACTIVE,
-                mController.getSubscriptionStatus());
-
-    }
-
-    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
-    @Test
-    public void dataSubscriptionChange_statusPaid_viewGone() {
-        DataSubscription.DataSubscriptionChangeListener listener =
-                mController.getDataSubscriptionChangeListener();
-
-        listener.onChange(DataSubscriptionStatus.PAID);
-
-        verify(mView).post(any());
-        Assert.assertEquals(DataSubscriptionStatus.PAID,
-                mController.getSubscriptionStatus());
     }
 }

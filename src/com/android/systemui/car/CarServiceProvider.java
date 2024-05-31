@@ -51,6 +51,8 @@ public class CarServiceProvider {
      */
     @GuardedBy("mCarLock")
     private Car mCar;
+    @GuardedBy("mCarLock")
+    private boolean mIsCarReady;
 
     @Inject
     public CarServiceProvider(@CarSysUIDumpable Context context) {
@@ -59,6 +61,7 @@ public class CarServiceProvider {
                 (car, ready) -> {
                     synchronized (mCarLock) {
                         synchronized (mListeners) {
+                            mIsCarReady = ready;
                             mCar = car;
                             if (ready) {
                                 for (CarServiceOnConnectedListener listener : mListeners) {
@@ -83,12 +86,12 @@ public class CarServiceProvider {
     @AnyThread
     public void addListener(CarServiceOnConnectedListener listener) {
         synchronized (mCarLock) {
-            if (mCar.isConnected()) {
+            if (mIsCarReady) {
                 listener.onConnected(mCar);
             }
-        }
-        synchronized (mListeners) {
-            mListeners.add(listener);
+            synchronized (mListeners) {
+                mListeners.add(listener);
+            }
         }
     }
 

@@ -21,7 +21,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.datasubscription.DataSubscription;
-import com.android.car.datasubscription.DataSubscriptionStatus;
 import com.android.car.datasubscription.Flags;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
@@ -36,14 +35,9 @@ import dagger.assisted.AssistedInject;
  * Controller to display the unseen icon for signal status icon
  */
 public class DataSubscriptionUnseenIconController extends
-        CarSystemBarElementController<CarSystemBarImageView> {
+        CarSystemBarElementController<CarSystemBarImageView>
+        implements DataSubscription.DataSubscriptionChangeListener{
     private DataSubscription mSubscription;
-    private int mSubscriptionStatus;
-    private final DataSubscription.DataSubscriptionChangeListener mDataSubscriptionChangeListener =
-            value -> {
-                mSubscriptionStatus = value;
-                updateShouldDisplayUnseenIcon();
-            };
 
     @AssistedInject
     DataSubscriptionUnseenIconController(@Assisted CarSystemBarImageView view,
@@ -51,6 +45,11 @@ public class DataSubscriptionUnseenIconController extends
             CarSystemBarElementStateController stateController) {
         super(view, disableController, stateController);
         mSubscription = new DataSubscription(mView.getContext());
+    }
+
+    @Override
+    public void onChange(int value) {
+        updateShouldDisplayUnseenIcon();
     }
 
     @AssistedFactory
@@ -63,11 +62,10 @@ public class DataSubscriptionUnseenIconController extends
     protected void onViewAttached() {
         super.onViewAttached();
         if (Flags.dataSubscriptionPopUp()) {
-            mSubscriptionStatus = mSubscription.getDataSubscriptionStatus();
-            if (mSubscriptionStatus != DataSubscriptionStatus.PAID) {
+            if (mSubscription.isDataSubscriptionInactiveOrTrial()) {
                 mView.setVisibility(View.VISIBLE);
             }
-            mSubscription.addDataSubscriptionListener(mDataSubscriptionChangeListener);
+            mSubscription.addDataSubscriptionListener(this);
         }
     }
 
@@ -85,7 +83,7 @@ public class DataSubscriptionUnseenIconController extends
      */
     public void updateShouldDisplayUnseenIcon() {
         mView.post(() -> {
-            if (mSubscriptionStatus != DataSubscriptionStatus.PAID) {
+            if (mSubscription.isDataSubscriptionInactiveOrTrial()) {
                 mView.setVisibility(View.VISIBLE);
             } else {
                 mView.setVisibility(View.GONE);
@@ -97,15 +95,5 @@ public class DataSubscriptionUnseenIconController extends
     @VisibleForTesting
     void setSubscription(DataSubscription subscription) {
         mSubscription = subscription;
-    }
-
-    @VisibleForTesting
-    DataSubscription.DataSubscriptionChangeListener getDataSubscriptionChangeListener() {
-        return mDataSubscriptionChangeListener;
-    }
-
-    @VisibleForTesting
-    @DataSubscriptionStatus int getSubscriptionStatus() {
-        return mSubscriptionStatus;
     }
 }

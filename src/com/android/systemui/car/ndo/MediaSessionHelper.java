@@ -75,7 +75,7 @@ public class MediaSessionHelper extends MediaController.Callback {
 
     @Override
     public void onPlaybackStateChanged(@Nullable PlaybackState state) {
-        if (state != null && state.isActive()) {
+        if (isPausedOrActive(state)) {
             onMediaSessionChange(mMediaSessionManager
                     .getActiveSessionsForUser(/* notificationListener= */ null, mUserHandle));
         }
@@ -90,7 +90,7 @@ public class MediaSessionHelper extends MediaController.Callback {
         List<MediaController> activeMediaControllers = new ArrayList<>();
 
         for (MediaController mediaController : mediaControllers) {
-            if (isActive(mediaController)) {
+            if (isPausedOrActive(mediaController.getPlaybackState())) {
                 activeMediaControllers.add(mediaController);
             } else {
                 // Since playback state changes don't trigger an active media session change, we
@@ -101,11 +101,12 @@ public class MediaSessionHelper extends MediaController.Callback {
         mLiveData.setValue(activeMediaControllers);
     }
 
-
-    /** Returns whether the MediaController is active */
-    private boolean isActive(MediaController mediaController) {
-        PlaybackState playbackState = mediaController.getPlaybackState();
-        return playbackState != null && playbackState.isActive();
+    /** Returns whether the MediaController is paused active */
+    private boolean isPausedOrActive(PlaybackState playbackState) {
+        if (playbackState == null) {
+            return false;
+        }
+        return playbackState.isActive() || playbackState.getState() == PlaybackState.STATE_PAUSED;
     }
 
     private void registerForPlaybackChanges(MediaController controller) {

@@ -62,7 +62,7 @@ public class DataSubscriptionUnseenIconController extends
     protected void onViewAttached() {
         super.onViewAttached();
         if (Flags.dataSubscriptionPopUp()) {
-            if (mSubscription.isDataSubscriptionInactiveOrTrial()) {
+            if (mSubscription.isDataSubscriptionInactive()) {
                 mView.setVisibility(View.VISIBLE);
             }
             mSubscription.addDataSubscriptionListener(this);
@@ -83,7 +83,7 @@ public class DataSubscriptionUnseenIconController extends
      */
     public void updateShouldDisplayUnseenIcon() {
         mView.post(() -> {
-            if (mSubscription.isDataSubscriptionInactiveOrTrial()) {
+            if (mSubscription.isDataSubscriptionInactive()) {
                 mView.setVisibility(View.VISIBLE);
             } else {
                 mView.setVisibility(View.GONE);

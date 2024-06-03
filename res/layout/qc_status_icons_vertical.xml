@@ -33,8 +33,8 @@
         systemui:systemBarDisable2Flags="quickSettings">
         <com.android.systemui.car.statusicon.StatusIconView
             android:id="@+id/bluetooth_status_icon"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/car_quick_controls_icon_drawable_width"
+            android:layout_height="@dimen/car_quick_controls_icon_drawable_height"
             android:layout_gravity="center"
             android:tint="@color/car_status_icon_color"
             android:duplicateParentState="true"
@@ -51,14 +51,28 @@
         systemui:panelLayoutRes="@layout/qc_connectivity_panel"
         systemui:disabledWhileUnprovisioned="true"
         systemui:systemBarDisable2Flags="quickSettings">
-        <com.android.systemui.car.statusicon.StatusIconView
-            android:id="@+id/connectivity_status_icon"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_gravity="center"
-            android:tint="@color/car_status_icon_color"
-            android:duplicateParentState="true"
-            systemui:controller="com.android.systemui.car.statusicon.ui.SignalStatusIconController"/>
+        <FrameLayout
+            android:layout_width="@dimen/car_quick_controls_icon_drawable_width"
+            android:layout_height="@dimen/car_quick_controls_icon_drawable_height">
+            <com.android.systemui.car.statusicon.StatusIconView
+                android:id="@+id/connectivity_status_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:tint="@color/car_status_icon_color"
+                android:duplicateParentState="true"
+                systemui:controller="com.android.systemui.car.statusicon.ui.SignalStatusIconController"/>
+            <com.android.systemui.car.systembar.element.layout.CarSystemBarImageView
+                android:id="@+id/qc_icon_button_unseen_icon"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_gravity="center"
+                android:src="@drawable/car_qc_icon_button_unseen_indicator"
+                android:scaleType="fitCenter"
+                android:clickable="false"
+                android:visibility="gone"
+                systemui:controller="com.android.systemui.car.systembar.DataSubscriptionUnseenIconController"/>
+        </FrameLayout>
     </com.android.systemui.car.systembar.CarSystemBarPanelButtonView>
     <com.android.systemui.car.systembar.CarSystemBarPanelButtonView
         android:id="@+id/display_panel_button"
@@ -73,8 +87,8 @@
         systemui:systemBarDisable2Flags="quickSettings">
         <com.android.systemui.car.statusicon.StatusIconView
             android:id="@+id/display_status_icon"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/car_quick_controls_icon_drawable_width"
+            android:layout_height="@dimen/car_quick_controls_icon_drawable_height"
             android:layout_gravity="center"
             android:tint="@color/car_status_icon_color"
             android:duplicateParentState="true"

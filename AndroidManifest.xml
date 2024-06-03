@@ -51,6 +51,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <!-- This permission is required to register the car system ui proxy -->
     <uses-permission android:name="android.car.permission.REGISTER_CAR_SYSTEM_UI_PROXY"/>
+    <!-- This permission is required to listen to the keyguard state -->
+    <uses-permission android:name="android.permission.SUBSCRIBE_TO_KEYGUARD_LOCKED_STATE" />
     <!-- This permission is required to create a CarTaskViewController -->
     <uses-permission android:name="android.car.permission.MANAGE_CAR_SYSTEM_UI"/>
     <!-- use for ActivityBlockingActivity to tell whether it's on driver or passenger display -->
@@ -63,25 +65,27 @@
     <!-- Permissions for the InCallController to bind the InCallService as non-ui -->
     <uses-permission android:name="android.permission.CONTROL_INCALL_EXPERIENCE"/>
     <uses-permission android:name="android.permission.MANAGE_ONGOING_CALLS"/>
+    <!-- System permission to control media playback of the active session -->
+    <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/>
 
     <application
         tools:replace="android:name,android:appComponentFactory"
         android:name=".CarSystemUIApplication"
         android:appComponentFactory="com.android.systemui.CarSystemUIAppComponentFactory">
         <activity
-            android:name=".car.activity.ActivityBlockingActivity"
+            android:name=".car.wm.activity.ActivityBlockingActivity"
             android:documentLaunchMode="always"
             android:excludeFromRecents="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"
             android:showForAllUsers="true"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
         <activity
-            android:name=".car.activity.ContinuousBlankActivity"
+            android:name=".car.wm.activity.ContinuousBlankActivity"
             android:excludeFromRecents="true"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:exported="false"

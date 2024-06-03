@@ -15,8 +15,16 @@
  */
 package com.android.systemui.car.ndo;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.media.session.MediaController;
+import android.os.UserHandle;
+import android.telecom.Call;
 import android.util.Slog;
 
+import androidx.annotation.VisibleForTesting;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.android.car.telephony.calling.InCallServiceManager;
@@ -24,6 +32,7 @@ import com.android.systemui.car.telecom.InCallServiceImpl;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -33,17 +42,25 @@ import javax.inject.Inject;
 public class BlockerViewModel extends ViewModel implements PropertyChangeListener {
     private static final String TAG = "SysUi.BlockerViewModel";
     private static final String PROPERTY_IN_CALL_SERVICE = "PROPERTY_IN_CALL_SERVICE";
+    private final Context mContext;
+    private String mBlockedActivity;
 
-    private InCallLiveData mInCallLiveData;
+    @VisibleForTesting
+    InCallLiveData mInCallLiveData;
     private final InCallServiceManager mServiceManager;
+    @VisibleForTesting
+    MediaSessionHelper mMediaSessionHelper;
+    private final MediatorLiveData<BlockingType> mBlockingTypeLiveData = new MediatorLiveData<>();
 
     @Inject
-    public BlockerViewModel(InCallServiceManager serviceManager) {
+    public BlockerViewModel(Context context, InCallServiceManager serviceManager) {
+        mContext = context;
         mServiceManager = serviceManager;
     }
 
     /** Initialize data sources **/
-    public void initialize(String blockedActivity) {
+    public void initialize(String blockedActivity, UserHandle userHandle) {
+        mBlockedActivity = blockedActivity;
         mInCallLiveData = new InCallLiveData(mServiceManager, blockedActivity);
 
         // Listens to the call manager for when the inCallService is started after ABA.
@@ -51,13 +68,22 @@ public class BlockerViewModel extends ViewModel implements PropertyChangeListene
         if (mServiceManager.getInCallService() != null) {
             onInCallServiceConnected();
         }
+
+        mMediaSessionHelper = new MediaSessionHelper(mContext, userHandle);
+
+        // Set initial liveData value
+        onUpdate();
+
+        mBlockingTypeLiveData.addSource(mInCallLiveData, call -> onUpdate());
+        mBlockingTypeLiveData.addSource(mMediaSessionHelper.getActiveMediaSessions(),
+                mediaSources -> onUpdate());
     }
 
     /**
-     * Returns the livedata that provides the first call of the currently blocked calling activity.
+     * Returns the livedata that indicates whether the blocked activity is voip or media.
      */
-    public InCallLiveData getInCallLiveData() {
-        return mInCallLiveData;
+    public LiveData<BlockingType> getBlockingTypeLiveData() {
+        return mBlockingTypeLiveData;
     }
 
     /**
@@ -79,11 +105,52 @@ public class BlockerViewModel extends ViewModel implements PropertyChangeListene
             inCallService.removeListener(mInCallLiveData);
         }
         mServiceManager.removeObserver(this);
+        mMediaSessionHelper.cleanup();
+        mBlockingTypeLiveData.removeSource(mInCallLiveData);
+        mBlockingTypeLiveData.removeSource(mMediaSessionHelper.getActiveMediaSessions());
+    }
+
+    @VisibleForTesting
+    void onUpdate() {
+        // Prioritize dialer first
+        Call call = mInCallLiveData.getValue();
+        if (call != null) {
+            mBlockingTypeLiveData.setValue(BlockingType.DIALER);
+        } else if (isBlockingActiveMediaSession(
+                mMediaSessionHelper.getActiveMediaSessions().getValue())) {
+            mBlockingTypeLiveData.setValue(BlockingType.MEDIA);
+        } else {
+            mBlockingTypeLiveData.setValue(BlockingType.NONE);
+        }
     }
 
     private void onInCallServiceConnected() {
         Slog.d(TAG, "inCallService Connected");
         InCallServiceImpl inCallService = (InCallServiceImpl) mServiceManager.getInCallService();
         inCallService.addListener(mInCallLiveData);
+    }
+
+    /** @return whether the ABA is blocking an app with an active media session or not */
+    private boolean isBlockingActiveMediaSession(List<MediaController> mediaControllers) {
+        ComponentName componentName = ComponentName.unflattenFromString(mBlockedActivity);
+        if (componentName == null || mediaControllers == null) {
+            return false;
+        }
+
+        for (MediaController mediaController : mediaControllers) {
+            if (mediaController.getPackageName().equals(componentName.getPackageName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Enum for the different types of apps that are being blocked
+     */
+    public enum BlockingType {
+        NONE,
+        DIALER,
+        MEDIA
     }
 }

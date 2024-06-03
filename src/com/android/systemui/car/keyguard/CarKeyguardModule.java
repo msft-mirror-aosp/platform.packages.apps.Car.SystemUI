@@ -33,10 +33,12 @@ import com.android.keyguard.dagger.KeyguardStatusBarViewComponent;
 import com.android.keyguard.dagger.KeyguardStatusViewComponent;
 import com.android.keyguard.dagger.KeyguardUserSwitcherComponent;
 import com.android.keyguard.mediator.ScreenOnCoordinator;
+import com.android.systemui.CoreStartable;
 import com.android.systemui.animation.ActivityTransitionAnimator;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.classifier.FalsingModule;
+import com.android.systemui.communal.ui.viewmodel.CommunalTransitionViewModel;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
@@ -74,9 +76,12 @@ import com.android.systemui.util.time.SystemClock;
 import com.android.systemui.wallpapers.data.repository.WallpaperRepository;
 import com.android.wm.shell.keyguard.KeyguardTransitions;
 
+import dagger.Binds;
 import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.ClassKey;
+import dagger.multibindings.IntoMap;
 
 import java.util.concurrent.Executor;
 
@@ -95,14 +100,14 @@ import kotlinx.coroutines.CoroutineDispatcher;
                 KeyguardFaceAuthNotSupportedModule.class,
                 KeyguardRepositoryModule.class,
         })
-public class CarKeyguardModule {
+public interface CarKeyguardModule {
 
     /**
      * Provides our instance of CarKeyguardViewMediator
      */
     @Provides
     @SysUISingleton
-    public static KeyguardViewMediator newKeyguardViewMediator(
+    static KeyguardViewMediator newKeyguardViewMediator(
             Context context,
             UiEventLogger uiEventLogger,
             SessionTracker sessionTracker,
@@ -144,6 +149,7 @@ public class CarKeyguardModule {
             SystemClock systemClock,
             @Main CoroutineDispatcher mainDispatcher,
             Lazy<DreamViewModel> dreamViewModel,
+            Lazy<CommunalTransitionViewModel> communalTransitionViewModel,
             SystemPropertiesHelper systemPropertiesHelper,
             Lazy<WindowManagerLockscreenVisibilityManager> wmLockscreenVisibilityManager,
             SelectedUserInteractor selectedUserInteractor,
@@ -191,6 +197,7 @@ public class CarKeyguardModule {
                 systemClock,
                 mainDispatcher,
                 dreamViewModel,
+                communalTransitionViewModel,
                 systemPropertiesHelper,
                 wmLockscreenVisibilityManager,
                 selectedUserInteractor,
@@ -200,7 +207,13 @@ public class CarKeyguardModule {
 
     /** */
     @Provides
-    public ViewMediatorCallback providesViewMediatorCallback(KeyguardViewMediator viewMediator) {
+    static ViewMediatorCallback providesViewMediatorCallback(KeyguardViewMediator viewMediator) {
         return viewMediator.getViewMediatorCallback();
     }
+
+    /** Binds {@link KeyguardUpdateMonitor} as a {@link CoreStartable}. */
+    @Binds
+    @IntoMap
+    @ClassKey(KeyguardUpdateMonitor.class)
+    CoreStartable bindsKeyguardUpdateMonitor(KeyguardUpdateMonitor keyguardUpdateMonitor);
 }

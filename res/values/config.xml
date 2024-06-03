@@ -263,4 +263,20 @@
     <!-- 0 horizontal. -->
     <!-- 1 vertical -->
     <integer name="config_statusIconLayoutOrientation">0</integer>
+
+    <!--
+        The list to define which activities the data subscription pop-up should not display
+        a message when they are launched
+    -->
+    <string-array translatable="false" name="config_dataSubscriptionBlockedActivitiesList">
+    </string-array>
+
+    <!--
+    The list to define which packages the data subscription pop-up should not display
+    a message when they are launched
+    -->
+    <string-array translatable="false" name="config_dataSubscriptionBlockedPackagesList">
+        <item>com.android.car.settings</item>
+        <item>com.android.car.carlauncher</item>
+    </string-array>
 </resources>

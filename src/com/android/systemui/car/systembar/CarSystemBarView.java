@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 
 import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
+import com.android.systemui.car.qc.DataSubscriptionController;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
@@ -71,6 +72,7 @@ public class CarSystemBarView extends LinearLayout {
     private HvacPanelController mHvacPanelController;
     private View mLockScreenButtons;
     private View mOcclusionButtons;
+    private View mSignalStatusIcon;
     private ViewGroup mQcEntryPointsContainer;
     private ViewGroup mReadOnlyIconsContainer;
     // used to wire in open/close gestures for overlay panels
@@ -156,6 +158,24 @@ public class CarSystemBarView extends LinearLayout {
             }
         }
     }
+
+    void setupUnseenIconController(
+            DataSubscriptionUnseenIconController dataSubscriptionUnseenIconController) {
+        mSignalStatusIcon = findViewById(R.id.qc_signal_status_icon);
+        if (mSignalStatusIcon != null) {
+            View unseenIcon = mSignalStatusIcon.findViewById(R.id.qc_icon_button_unseen_icon);
+            dataSubscriptionUnseenIconController.setUnseenIcon(unseenIcon);
+        }
+    }
+
+    void setupDataSubscriptionPopup(
+            DataSubscriptionController dataSubscriptionController) {
+        mSignalStatusIcon = findViewById(R.id.qc_signal_status_icon);
+        if (mSignalStatusIcon != null) {
+            dataSubscriptionController.setAnchorView(mSignalStatusIcon);
+        }
+    }
+
 
     void updateControlCenterButtonVisibility(boolean isMumd) {
         if (mControlCenterButton != null) {

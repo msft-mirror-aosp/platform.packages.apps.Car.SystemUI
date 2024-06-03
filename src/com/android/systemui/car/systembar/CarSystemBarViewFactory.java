@@ -26,6 +26,7 @@ import androidx.annotation.LayoutRes;
 
 import com.android.car.ui.FocusParkingView;
 import com.android.systemui.R;
+import com.android.systemui.car.qc.DataSubscriptionController;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.dagger.SysUISingleton;
@@ -61,6 +62,8 @@ public class CarSystemBarViewFactory {
     private final FeatureFlags mFeatureFlags;
     private final QuickControlsEntryPointsController mQuickControlsEntryPointsController;
     private final ReadOnlyIconsController mReadOnlyIconsController;
+    private final DataSubscriptionUnseenIconController mDataSubscriptionUnseenIconController;
+    private final DataSubscriptionController mDataSubscriptionController;
     private final UserTracker mUserTracker;
 
     /** Type of navigation bar to be created. */
@@ -81,13 +84,17 @@ public class CarSystemBarViewFactory {
             FeatureFlags featureFlags,
             QuickControlsEntryPointsController quickControlsEntryPointsController,
             ReadOnlyIconsController readOnlyIconsController,
-            UserTracker userTracker
+            UserTracker userTracker,
+            DataSubscriptionUnseenIconController dataSubscriptionUnseenIconController,
+            DataSubscriptionController dataSubscriptionController
     ) {
         mContext = context;
         mFeatureFlags = featureFlags;
         mQuickControlsEntryPointsController = quickControlsEntryPointsController;
         mReadOnlyIconsController = readOnlyIconsController;
         mUserTracker = userTracker;
+        mDataSubscriptionUnseenIconController = dataSubscriptionUnseenIconController;
+        mDataSubscriptionController = dataSubscriptionController;
     }
 
     /** Gets the top window. */
@@ -169,6 +176,8 @@ public class CarSystemBarViewFactory {
 
         view.setupHvacButton();
         view.setupQuickControlsEntryPoints(mQuickControlsEntryPointsController, isSetUp);
+        view.setupUnseenIconController(mDataSubscriptionUnseenIconController);
+        view.setupDataSubscriptionPopup(mDataSubscriptionController);
         view.setupReadOnlyIcons(mReadOnlyIconsController);
         view.setupSystemBarButtons(mUserTracker);
 
@@ -197,6 +206,7 @@ public class CarSystemBarViewFactory {
     protected void resetSystemBarViewCache() {
         mQuickControlsEntryPointsController.resetCache();
         mReadOnlyIconsController.resetCache();
+        mDataSubscriptionUnseenIconController.unregisterListener();
         mCachedViewMap.clear();
     }
 

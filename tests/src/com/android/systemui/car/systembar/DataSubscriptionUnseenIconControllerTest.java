@@ -72,7 +72,7 @@ public class DataSubscriptionUnseenIconControllerTest extends SysuiTestCase {
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
     @Test
     public void onViewAttached_registerListener() {
-        when(mDataSubscription.isDataSubscriptionInactiveOrTrial()).thenReturn(true);
+        when(mDataSubscription.isDataSubscriptionInactive()).thenReturn(true);
 
         mController.onViewAttached();
 
@@ -82,7 +82,7 @@ public class DataSubscriptionUnseenIconControllerTest extends SysuiTestCase {
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
     @Test
     public void onViewDetached_UnregisterListener() {
-        when(mDataSubscription.isDataSubscriptionInactiveOrTrial()).thenReturn(true);
+        when(mDataSubscription.isDataSubscriptionInactive()).thenReturn(true);
 
         mController.onViewDetached();
 

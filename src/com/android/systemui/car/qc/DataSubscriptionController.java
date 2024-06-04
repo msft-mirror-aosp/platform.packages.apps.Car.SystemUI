@@ -273,7 +273,7 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
         } else {
             // Determines whether a proactive message should be displayed
             mShouldDisplayProactiveMsg = !mWasProactiveMsgDisplayed
-                    && mSubscription.isDataSubscriptionInactiveOrTrial();
+                    && mSubscription.isDataSubscriptionInactive();
             if (mShouldDisplayProactiveMsg && mPopupWindow != null
                     && !mPopupWindow.isShowing()) {
                 mIsProactiveMsg = true;
@@ -292,7 +292,7 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
         if (!mPopupWindow.isShowing()) {
             mShouldDisplayReactiveMsg = ((mNetworkCapabilities == null
                     || (!isSuspendedNetwork() && !isValidNetwork()))
-                    && mSubscription.isDataSubscriptionInactiveOrTrial());
+                    && mSubscription.isDataSubscriptionInactive());
             if (mShouldDisplayReactiveMsg) {
                 mIsProactiveMsg = false;
                 showPopUpWindow();

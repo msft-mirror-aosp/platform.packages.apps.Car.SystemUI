@@ -85,7 +85,7 @@ public class CarDeviceProvisionedControllerImpl extends DeviceProvisionedControl
         if (!mInitted.compareAndSet(false, true)) {
             return;
         }
-        mSecureSettings.registerContentObserverForUser(
+        mSecureSettings.registerContentObserverForUserSync(
                 mUserSetupInProgressUri, /* notifyForDescendants= */ true,
                 mCarSettingsObserver, UserHandle.USER_ALL);
         super.init();

@@ -92,6 +92,15 @@
             android:launchMode="singleTask">
         </activity>
         <activity
+            android:name=".car.wm.activity.LaunchOnPrivateDisplayRouterActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:label="LaunchOnPrivateDisplayRouterActivity"
+            android:launchMode="singleInstance"
+            android:noHistory="true"
+            android:permission="android.car.permission.ACCESS_PRIVATE_DISPLAY_ID"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        <activity
             android:name=".car.userpicker.UserPickerActivity"
             android:label="UserPicker"
             android:icon="@drawable/ic_user_picker"

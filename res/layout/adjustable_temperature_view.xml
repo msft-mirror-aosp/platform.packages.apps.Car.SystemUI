@@ -23,31 +23,27 @@
     android:gravity="center_vertical"
     android:paddingEnd="@dimen/hvac_container_padding"
     android:paddingStart="@dimen/hvac_container_padding">
-
     <ImageView
         android:id="@+id/hvac_decrease_button"
         android:layout_width="@dimen/hvac_temperature_button_size"
         android:layout_height="@dimen/hvac_temperature_button_size"
-        android:background="@drawable/system_bar_button_background"
+        android:padding="@dimen/hvac_temperature_button_padding"
         android:scaleType="center"
         android:src="@drawable/hvac_decrease_button"
         android:contentDescription="@string/hvac_decrease_button_label"/>
-
     <TextView
         android:id="@+id/hvac_temperature_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:paddingEnd="@dimen/hvac_temperature_text_padding"
-        android:paddingStart="@dimen/hvac_temperature_text_padding"
+        android:paddingHorizontal="@dimen/hvac_temperature_text_padding"
         android:textColor="@color/system_bar_text_color"
         android:textSize="@dimen/hvac_temperature_text_size"/>
-
     <ImageView
         android:id="@+id/hvac_increase_button"
         android:layout_width="@dimen/hvac_temperature_button_size"
         android:layout_height="@dimen/hvac_temperature_button_size"
-        android:background="@drawable/system_bar_button_background"
+        android:padding="@dimen/hvac_temperature_button_padding"
         android:scaleType="center"
         android:src="@drawable/hvac_increase_button"
         android:contentDescription="@string/hvac_increase_button_label"/>

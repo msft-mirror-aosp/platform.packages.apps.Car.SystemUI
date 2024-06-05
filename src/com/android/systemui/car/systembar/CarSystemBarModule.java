@@ -17,15 +17,34 @@
 package com.android.systemui.car.systembar;
 
 import android.content.Context;
+import android.content.res.Resources;
 
+import com.android.systemui.CoreStartable;
+import com.android.systemui.R;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
+import com.android.systemui.car.statusbar.UserNameViewController;
+import com.android.systemui.car.statusicon.StatusIconPanelViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementController;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
 
-import java.util.Optional;
-
+import dagger.Binds;
 import dagger.BindsOptionalOf;
+import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.ClassKey;
+import dagger.multibindings.IntoMap;
+import dagger.multibindings.IntoSet;
+import dagger.multibindings.Multibinds;
+
+import java.util.Map;
+import java.util.Optional;
+
+import javax.inject.Provider;
 
 /**
  * Dagger injection module for {@link CarSystemBar}.
@@ -36,6 +55,39 @@ import dagger.Provides;
  */
 @Module
 public abstract class CarSystemBarModule {
+    /**
+     * TODO(): b/260206944,
+     * @return CarSystemBarMediator for SecondaryMUMDSystemUI which blocks CarSystemBar#start()
+     * util RROs are applied, otherwise return CarSystemBar
+     */
+    @Provides
+    @IntoMap
+    @ClassKey(CarSystemBar.class)
+    static CoreStartable bindCarSystemBarStartable(
+            Lazy<CarSystemBar> systemBarService,
+            Lazy<CarSystemBarMediator> applyRROService,
+            @Main Resources resources) {
+        if ((CarSystemUIUserUtil.isSecondaryMUMDSystemUI()
+                || CarSystemUIUserUtil.isMUPANDSystemUI())
+                && resources.getBoolean(R.bool.config_enableSecondaryUserRRO)) {
+            return applyRROService.get();
+        }
+        return systemBarService.get();
+    }
+
+    @Provides
+    @IntoSet
+    static ConfigurationListener provideCarSystemBarConfigListener(
+            Lazy<CarSystemBar> systemBarService,
+            Lazy<CarSystemBarMediator> applyRROService,
+            @Main Resources resources) {
+        if ((CarSystemUIUserUtil.isSecondaryMUMDSystemUI()
+                || CarSystemUIUserUtil.isMUPANDSystemUI())
+                && resources.getBoolean(R.bool.config_enableSecondaryUserRRO)) {
+            return applyRROService.get();
+        }
+        return systemBarService.get();
+    }
 
     @BindsOptionalOf
     @CarSysUIDynamicOverride
@@ -65,4 +117,64 @@ public abstract class CarSystemBarModule {
         }
         return new ButtonSelectionStateController(context);
     }
+
+    @BindsOptionalOf
+    @CarSysUIDynamicOverride
+    abstract CarSystemBarController optionalCarSystemBarController();
+
+    /**
+     * Allows for the replacement of {@link CarSystemBarController} class with a custom subclass.
+     * Note that this is not ideal and should be used as a last resort since there are no guarantees
+     * that there will not be changes upstream that break the dependencies here (creating additional
+     * maintenance burden).
+     */
+    @SysUISingleton
+    @Provides
+    static CarSystemBarController provideCarSystemBarController(
+            @CarSysUIDynamicOverride Optional<CarSystemBarController> carSystemBarController,
+            Context context,
+            UserTracker userTracker,
+            CarSystemBarViewFactory carSystemBarViewFactory,
+            ButtonSelectionStateController buttonSelectionStateController,
+            Lazy<UserNameViewController> userNameViewControllerLazy,
+            Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
+            Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
+            ButtonRoleHolderController buttonRoleHolderController,
+            SystemBarConfigs systemBarConfigs,
+            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider) {
+        if (carSystemBarController.isPresent()) {
+            return carSystemBarController.get();
+        }
+        return new CarSystemBarController(context, userTracker, carSystemBarViewFactory,
+                buttonSelectionStateController, userNameViewControllerLazy,
+                micPrivacyChipViewControllerLazy, cameraPrivacyChipViewControllerLazy,
+                buttonRoleHolderController, systemBarConfigs, panelControllerBuilderProvider);
+    }
+
+    // CarSystemBarElements
+
+    /** Empty set for CarSystemBarElements. */
+    @Multibinds
+    abstract Map<Class<?>, CarSystemBarElementController.Factory> bindEmptyElementFactoryMap();
+
+    /** Injects CarSystemBarPanelButtonViewController */
+    @Binds
+    @IntoMap
+    @ClassKey(CarSystemBarPanelButtonViewController.class)
+    public abstract CarSystemBarElementController.Factory bindSystemBarPanelButtonController(
+            CarSystemBarPanelButtonViewController.Factory factory);
+
+    /** Injects DockViewControllerWrapper */
+    @Binds
+    @IntoMap
+    @ClassKey(DockViewControllerWrapper.class)
+    public abstract CarSystemBarElementController.Factory bindDockViewControllerWrapper(
+            DockViewControllerWrapper.Factory factory);
+
+    /** Injects DataSubscriptionUnseenIconController */
+    @Binds
+    @IntoMap
+    @ClassKey(DataSubscriptionUnseenIconController.class)
+    public abstract CarSystemBarElementController.Factory bindDataSubscriptionUnseenIconController(
+            DataSubscriptionUnseenIconController.Factory factory);
 }

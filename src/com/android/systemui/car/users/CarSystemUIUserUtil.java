@@ -23,6 +23,7 @@ import android.os.Process;
 import android.os.UserHandle;
 import android.os.UserManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.systemui.settings.UserTracker;
@@ -87,13 +88,13 @@ public final class CarSystemUIUserUtil {
      * Helper function that returns {@code true} if the specified displayId is associated with the
      * current SystemUI instance.
      */
-    public static boolean isCurrentSystemUIDisplay(CarOccupantZoneManager carOccupantZoneManager,
-            UserHandle userHandle, int displayId) {
+    public static boolean isCurrentSystemUIDisplay(
+            @NonNull CarOccupantZoneManager carOccupantZoneManager,
+            @NonNull CarOccupantZoneManager.OccupantZoneInfo occupantZone,
+            int displayId) {
         if (!isMUMDSystemUI()) {
             return true;
         }
-        CarOccupantZoneManager.OccupantZoneInfo occupantZone =
-                carOccupantZoneManager.getOccupantZoneForUser(userHandle);
         return carOccupantZoneManager.getAllDisplaysForOccupant(occupantZone).stream().anyMatch(
                 d -> d.getDisplayId() == displayId);
     }

@@ -16,13 +16,24 @@
 
 package com.android.systemui.wm;
 
+import static android.content.Intent.ACTION_OVERLAY_CHANGED;
+import static android.view.WindowInsets.Type.navigationBars;
+import static android.view.WindowInsets.Type.statusBars;
+import static android.view.WindowInsets.Type.systemBars;
+
 import static com.android.systemui.car.users.CarSystemUIUserUtil.isSecondaryMUMDSystemUI;
 
 import android.annotation.Nullable;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
+import android.os.PatternMatcher;
 import android.os.RemoteException;
+import android.os.UserHandle;
+import android.util.Log;
 import android.util.Slog;
 import android.util.SparseArray;
 import android.view.IDisplayWindowInsetsController;
@@ -37,12 +48,12 @@ import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.android.systemui.R;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * Controller that maps between displays and {@link IDisplayWindowInsetsController} in order to
@@ -52,14 +63,42 @@ import java.util.Objects;
  */
 public class DisplaySystemBarsController implements DisplayController.OnDisplaysChangedListener {
 
-    private static final String TAG = "DisplaySystemBarsController";
+    private static final String TAG = DisplaySystemBarsController.class.getSimpleName();
+    private static final int STATE_NON_IMMERSIVE = systemBars();
+    private static final int STATE_IMMERSIVE_WITH_NAV_BAR = navigationBars();
+    private static final int STATE_IMMERSIVE_WITH_STATUS_BAR = statusBars();
+    private static final int STATE_IMMERSIVE = 0;
+    private static final boolean DEBUG = Log.isLoggable(DisplayController.class.getSimpleName(),
+            Log.DEBUG);
 
     protected final Context mContext;
     protected final IWindowManager mWmService;
     protected final DisplayInsetsController mDisplayInsetsController;
     protected final Handler mHandler;
+
+    private final int[] mDefaultVisibilities =
+            new int[]{WindowInsets.Type.systemBars(), 0};
+    private final int[] mImmersiveWithNavBarVisibilities = new int[]{
+            WindowInsets.Type.navigationBars() | WindowInsets.Type.captionBar()
+                    | WindowInsets.Type.systemOverlays(),
+            WindowInsets.Type.statusBars()
+    };
+    private final int[] mImmersiveWithStatusBarVisibilities = new int[]{
+            WindowInsets.Type.statusBars() | WindowInsets.Type.captionBar()
+                    | WindowInsets.Type.systemOverlays(),
+            WindowInsets.Type.navigationBars()
+    };
+    private final int[] mImmersiveVisibilities =
+            new int[]{0, WindowInsets.Type.systemBars()};
+
     @VisibleForTesting
     SparseArray<PerDisplay> mPerDisplaySparseArray;
+    @InsetsType
+    private int mWindowRequestedVisibleTypes = WindowInsets.Type.defaultVisible();
+    @InsetsType
+    private int mAppRequestedVisibleTypes = WindowInsets.Type.defaultVisible();
+    @InsetsType
+    private int mImmersiveState = systemBars();
 
     public DisplaySystemBarsController(
             Context context,
@@ -105,11 +144,14 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
     }
 
     class PerDisplay implements DisplayInsetsController.OnInsetsChangedListener {
+        private static final String OVERLAY_FILTER_DATA_SCHEME = "package";
 
         int mDisplayId;
         InsetsController mInsetsController;
-        @InsetsType int mRequestedVisibleTypes = WindowInsets.Type.defaultVisible();
+        @InsetsType
+        int mRequestedVisibleTypes = WindowInsets.Type.defaultVisible();
         String mPackageName;
+        int mBehavior = 0;
 
         PerDisplay(int displayId) {
             mDisplayId = displayId;
@@ -121,6 +163,9 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
                         updateDisplayWindowRequestedVisibleTypes();
                     }, inputMethodManager)
             );
+            mBehavior = mContext.getResources().getInteger(
+                    R.integer.config_systemBarPersistency);
+            registerOverlayChangeBroadcastReceiver();
         }
 
         public void register() {
@@ -170,20 +215,103 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         public void topFocusedWindowChanged(ComponentName component,
                 @InsetsType int requestedVisibleTypes) {
             String packageName = component != null ? component.getPackageName() : null;
-            if (Objects.equals(mPackageName, packageName)) {
-                return;
+            boolean showNavRequest =
+                    (requestedVisibleTypes & navigationBars()) == navigationBars();
+            boolean showStatusRequest =
+                    (requestedVisibleTypes & statusBars()) == statusBars();
+
+
+            boolean maybeUpdate = (mWindowRequestedVisibleTypes != requestedVisibleTypes || (
+                    mPackageName != null && !mPackageName.equals(packageName)));
+
+            if (DEBUG) {
+                Slog.d(TAG, "topFocusedWindowChanged behavior = " + mBehavior
+                        + ", component = " + component
+                        + ", requestedVisibleTypes = " + requestedVisibleTypes
+                        + ", showNavRequest = " + showNavRequest
+                        + ", showStatusRequest = " + showStatusRequest
+                        + ", mWindowRequestedVisibleTypes = " + mWindowRequestedVisibleTypes
+                        + ", mPackageName = " + mPackageName
+                        + ", maybeUpdate = " + maybeUpdate);
             }
+
+            if (maybeUpdate) {
+                if (mBehavior == 1) {
+                    mImmersiveState = 0;
+                    if (showNavRequest) {
+                        mImmersiveState |= navigationBars();
+                    }
+                    if (showStatusRequest) {
+                        mImmersiveState |= statusBars();
+                    }
+                } else if (mBehavior == 2) {
+                    mImmersiveState = navigationBars();
+                    if (showStatusRequest) {
+                        mImmersiveState |= statusBars();
+                    }
+                }
+            } else {
+                mImmersiveState = STATE_NON_IMMERSIVE;
+            }
+
             mPackageName = packageName;
             updateDisplayWindowRequestedVisibleTypes();
+        }
+
+        @Override
+        public void setImeInputTargetRequestedVisibility(boolean visible) {
+            // TODO
+        }
+
+        private void registerOverlayChangeBroadcastReceiver() {
+            IntentFilter overlayFilter = new IntentFilter(ACTION_OVERLAY_CHANGED);
+            overlayFilter.addDataScheme(OVERLAY_FILTER_DATA_SCHEME);
+            overlayFilter.addDataSchemeSpecificPart(mContext.getPackageName(),
+                    PatternMatcher.PATTERN_LITERAL);
+            BroadcastReceiver receiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    Slog.d(TAG, "topFocusedWindowChanged behavior = ");
+                    mBehavior = mContext.getResources().getInteger(
+                            R.integer.config_systemBarPersistency);
+                    Slog.d(TAG, "Refresh system bar persistency behavior on overlay change"
+                            + mBehavior);
+                }
+            };
+            mContext.registerReceiverAsUser(receiver, UserHandle.ALL,
+                    overlayFilter, /* broadcastPermission= */null, /* handler= */ null);
         }
 
         protected void updateDisplayWindowRequestedVisibleTypes() {
             if (mPackageName == null) {
                 return;
             }
-            int[] barVisibilities = BarControlPolicy.getBarVisibilities(mPackageName);
+
+            int[] barVisibilities;
+            if (mImmersiveState == STATE_IMMERSIVE_WITH_NAV_BAR) {
+                barVisibilities = mImmersiveWithNavBarVisibilities;
+            } else if (mImmersiveState == STATE_IMMERSIVE_WITH_STATUS_BAR) {
+                barVisibilities = mImmersiveWithStatusBarVisibilities;
+            } else if (mImmersiveState == STATE_IMMERSIVE) {
+                barVisibilities = mImmersiveVisibilities;
+            } else if (mImmersiveState == STATE_NON_IMMERSIVE) {
+                barVisibilities = mDefaultVisibilities;
+            } else {
+                barVisibilities = mDefaultVisibilities;
+            }
+            if (DEBUG) {
+                Slog.d(TAG, "mImmersiveState = " + mImmersiveState + "barVisibilities to "
+                        + Arrays.toString(barVisibilities));
+            }
+
             updateRequestedVisibleTypes(barVisibilities[0], /* visible= */ true);
             updateRequestedVisibleTypes(barVisibilities[1], /* visible= */ false);
+
+            if (mAppRequestedVisibleTypes == mRequestedVisibleTypes) {
+                return;
+            }
+            mAppRequestedVisibleTypes = mRequestedVisibleTypes;
+
             showInsets(barVisibilities[0], /* fromIme= */ false, /* statsToken= */ null);
             hideInsets(barVisibilities[1], /* fromIme= */ false, /* statsToken = */ null);
             try {

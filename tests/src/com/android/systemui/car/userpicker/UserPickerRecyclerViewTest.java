@@ -24,7 +24,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import android.content.pm.UserInfo;
 import android.os.UserManager;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
@@ -32,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.filters.SmallTest;
 
 import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
@@ -151,7 +151,7 @@ public class UserPickerRecyclerViewTest extends UserPickerTestCase {
         UserRecord mGuest = UserRecord.create(/* mInfo= */ null, /* mName= */ mGuestLabel,
                 /* mIsStartGuestSession= */ true, /* mIsAddUser= */ false,
                 /* mIsForeground= */ false,
-                mMockUserIconProvider.getRoundedGuestDefaultIcon(mContext.getResources()),
+                mMockUserIconProvider.getRoundedGuestDefaultIcon(mContext),
                 /* OnClickListenerMaker */ new OnClickListenerCreator(), false, INVALID_DISPLAY,
                 /* mSeatLocationName= */"", /* mIsStopping= */ false);
         UserRecord mAddUser = UserRecord.create(/* mInfo= */ null, /* mName= */ mAddLabel,
@@ -202,7 +202,7 @@ public class UserPickerRecyclerViewTest extends UserPickerTestCase {
         UserRecord mGuest = UserRecord.create(/* mInfo= */ null, /* mName= */ mGuestLabel,
                 /* mIsStartGuestSession= */ true, /* mIsAddUser= */ false,
                 /* mIsForeground= */ false,
-                mMockUserIconProvider.getRoundedGuestDefaultIcon(mContext.getResources()),
+                mMockUserIconProvider.getRoundedGuestDefaultIcon(mContext),
                 /* OnClickListenerMaker */ new OnClickListenerCreator(), false, INVALID_DISPLAY,
                 /* mSeatLocationName= */"", /* mIsStopping= */ false);
         UserRecord mAddUser = UserRecord.create(/* mInfo= */ null, /* mName= */ mAddLabel,

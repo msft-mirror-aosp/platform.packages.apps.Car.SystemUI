@@ -21,7 +21,7 @@
     android:id="@+id/car_top_bar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/system_bar_background"
+    android:background="@drawable/status_bar_background"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -30,20 +30,18 @@
         android:layout_weight="1"
         android:layoutDirection="ltr">
 
-        <LinearLayout
-            android:id="@+id/qc_entry_points_container"
+        <include layout="@layout/qc_status_icons_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_alignParentStart="true"
-        />
+            android:layout_alignParentStart="true" />
 
         <FrameLayout
             android:id="@+id/clock_container"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingStart="@dimen/car_padding_2"
-            android:paddingEnd="@dimen/car_padding_2"
+            android:paddingStart="@dimen/car_padding_4"
+            android:paddingEnd="@dimen/car_padding_4"
             android:layout_centerInParent="true">
             <com.android.systemui.statusbar.policy.Clock
                 android:id="@+id/clock"
@@ -57,13 +55,11 @@
             />
         </FrameLayout>
 
-        <LinearLayout
-            android:id="@+id/read_only_icons_container"
+        <include layout="@layout/read_only_status_icons"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/clock_container"
-        />
+            android:layout_toRightOf="@id/clock_container"/>
 
         <include layout="@layout/camera_privacy_chip"
             android:layout_width="wrap_content"
@@ -75,23 +71,24 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/user_name_container" />
+            android:layout_toLeftOf="@id/user_name_container"
+            android:contentDescription="@string/system_bar_mic_privacy_chip"
+        />
 
         <FrameLayout
             android:id="@+id/user_name_container"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginTop="@dimen/car_padding_2"
-        >
+            android:layout_centerVertical="true">
             <com.android.systemui.car.systembar.CarSystemBarButton
                 android:id="@+id/user_name"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="@dimen/car_system_bar_user_name_button_height"
                 android:layout_marginEnd="@dimen/car_padding_2"
                 android:background="@drawable/status_icon_background"
-                android:gravity="center_vertical">
+                android:layout_gravity="center_vertical"
+                systemui:longIntent="@string/user_profile_long_press_intent">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -107,6 +104,7 @@
                         android:src="@drawable/car_ic_users_icon"
                         android:tint="@color/system_bar_icon_color_with_selection"
                         android:layout_marginEnd="@dimen/system_bar_user_icon_padding"
+                        android:contentDescription="@string/system_bar_user_avatar"
                     />
                     <TextView
                         android:id="@+id/user_name_text"
@@ -117,6 +115,7 @@
                         android:singleLine="true"
                         android:maxWidth="@dimen/car_system_bar_user_name_max_width"
                         android:layout_marginEnd="@dimen/system_bar_user_icon_padding"
+                        android:contentDescription="@string/system_bar_user_name_text"
                     />
                 </LinearLayout>
             </com.android.systemui.car.systembar.CarSystemBarButton>

@@ -18,7 +18,9 @@ package com.android.systemui.car.statusicon.ui;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import android.content.res.Resources;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 
@@ -27,6 +29,9 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.statusbar.connectivity.IconState;
 import com.android.systemui.statusbar.connectivity.MobileDataIndicators;
 import com.android.systemui.statusbar.connectivity.NetworkController;
@@ -43,20 +48,37 @@ import org.mockito.MockitoAnnotations;
 @SmallTest
 public class MobileSignalStatusIconControllerTest extends SysuiTestCase {
     @Mock
-    Resources mResources;
-    @Mock
     NetworkController mNetworkController;
     @Mock
-    MobileDataIndicators mMobileDataIndicator;
+    CarSystemBarElementStatusBarDisableController mDisableController;
+    @Mock
+    CarSystemBarElementStateController mStateController;
 
+    private StatusIconView mView;
     private MobileSignalStatusIconController mMobileSignalStatusIconController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mMobileSignalStatusIconController =
-                new MobileSignalStatusIconController(mContext, mResources, mNetworkController);
+        mView = new StatusIconView(mContext);
+        mMobileSignalStatusIconController = new MobileSignalStatusIconController(mView,
+                mDisableController, mStateController, mContext, mNetworkController);
+    }
+
+    @Test
+    public void onAttached_registersNetworkCallback() {
+        mMobileSignalStatusIconController.onViewAttached();
+        verify(mNetworkController).addCallback(any());
+    }
+
+    @Test
+    public void onDetached_unregistersNetworkCallback() {
+        mMobileSignalStatusIconController.onViewAttached();
+
+        mMobileSignalStatusIconController.onViewDetached();
+
+        verify(mNetworkController).removeCallback(any());
     }
 
     @Test

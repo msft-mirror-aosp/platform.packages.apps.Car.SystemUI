@@ -26,11 +26,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.car.hardware.CarPropertyValue;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.LayoutInflater;
 import android.view.View;
+
+import androidx.test.filters.SmallTest;
 
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
@@ -91,6 +92,10 @@ public class HvacIntegerToggleButtonTest extends SysuiTestCase {
         mTurnOnWhenPowerOffButton.setHvacPropertySetter(mHvacPropertySetterTurnOnWhenPowerOff);
         mTurnOffWhenAutoOnButton.setHvacPropertySetter(mHvacPropertySetterTurnOffWhenAutoOn);
         mKeepOnPreventOffButton.setHvacPropertySetter(mHvacPropertySetterKeepOnPreventOff);
+        mDefaultButton.setDisableViewIfPowerOff(true);
+        mTurnOnWhenPowerOffButton.setDisableViewIfPowerOff(false);
+        mTurnOffWhenAutoOnButton.setDisableViewIfPowerOff(true);
+        mKeepOnPreventOffButton.setDisableViewIfPowerOff(true);
     }
 
     @Test
@@ -265,6 +270,38 @@ public class HvacIntegerToggleButtonTest extends SysuiTestCase {
         mKeepOnPreventOffButton.performClick();
 
         verify(mHvacPropertySetterKeepOnPreventOff, never()).setHvacProperty(anyInt(), anyInt(),
+                anyInt());
+    }
+
+    @Test
+    public void onClickWhenNotHvacPowerDependent_autoOff_setsNewValue() {
+        mTurnOffWhenAutoOnButton.setDisableViewIfPowerOff(false);
+        setPowerPropertyValue(false);
+        mTurnOffWhenAutoOnButton.onPropertyChanged(mHvacPowerProperty);
+        setAutoPropertyValue(false);
+        mTurnOffWhenAutoOnButton.onPropertyChanged(mHvacAutoProperty);
+        setCarPropertyValue(OFF_VALUE);
+        mTurnOffWhenAutoOnButton.onPropertyChanged(mCarPropertyValue);
+
+        mTurnOffWhenAutoOnButton.performClick();
+
+        verify(mHvacPropertySetterTurnOffWhenAutoOn).setHvacProperty(PROPERTY_ID, AREA_ID,
+                ON_VALUE);
+    }
+
+    @Test
+    public void onClickWhenNotHvacPowerDependent_autoOn_doesNotSetNewValue() {
+        mTurnOffWhenAutoOnButton.setDisableViewIfPowerOff(false);
+        setPowerPropertyValue(false);
+        mTurnOffWhenAutoOnButton.onPropertyChanged(mHvacPowerProperty);
+        setAutoPropertyValue(true);
+        mTurnOffWhenAutoOnButton.onPropertyChanged(mHvacAutoProperty);
+        setCarPropertyValue(OFF_VALUE);
+        mTurnOffWhenAutoOnButton.onPropertyChanged(mCarPropertyValue);
+
+        mTurnOffWhenAutoOnButton.performClick();
+
+        verify(mHvacPropertySetterTurnOffWhenAutoOn, never()).setHvacProperty(anyInt(), anyInt(),
                 anyInt());
     }
 

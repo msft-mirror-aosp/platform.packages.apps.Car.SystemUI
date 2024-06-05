@@ -17,6 +17,7 @@
 package com.android.systemui.car.userpicker;
 
 import static android.view.WindowManager.LayoutParams.SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS;
+import static android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT;
 
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_CHANGE_USER;
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_LOGOUT;
@@ -35,6 +36,7 @@ import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
+import android.window.OnBackInvokedCallback;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -44,7 +46,7 @@ import com.android.car.ui.recyclerview.CarUiRecyclerView;
 import com.android.systemui.Dumpable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
-import com.android.systemui.car.statusicon.ui.UserPickerReadOnlyIconsController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.userpicker.UserPickerController.Callbacks;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.settings.DisplayTracker;
@@ -69,7 +71,7 @@ public class UserPickerActivity extends Activity implements Dumpable {
     private boolean mIsDriver;
 
     @Inject
-    UserPickerReadOnlyIconsController mUserPickerReadOnlyIconsController;
+    CarSystemBarElementInitializer mCarSystemBarElementInitializer;
     @Inject
     DisplayTracker mDisplayTracker;
     @Inject
@@ -93,6 +95,11 @@ public class UserPickerActivity extends Activity implements Dumpable {
     View mLogoutButton;
     @VisibleForTesting
     View mBackButton;
+
+    private final OnBackInvokedCallback mIgnoreBackCallback = () -> {
+        // Ignore back press.
+        if (DEBUG) Log.d(TAG, "Skip Back");
+    };
 
     @Inject
     UserPickerActivity(
@@ -153,6 +160,8 @@ public class UserPickerActivity extends Activity implements Dumpable {
         super.onCreate(savedInstanceState);
         setShowWhenLocked(true);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getOnBackInvokedDispatcher()
+                .registerOnBackInvokedCallback(PRIORITY_DEFAULT, mIgnoreBackCallback);
         init();
     }
 
@@ -200,11 +209,10 @@ public class UserPickerActivity extends Activity implements Dumpable {
 
         initRecyclerView();
 
-        ViewGroup statusIconContainer = mRootView
-                .findViewById(R.id.user_picker_status_icon_container);
-        if (statusIconContainer != null && mUserPickerReadOnlyIconsController != null) {
-            mUserPickerReadOnlyIconsController.addIconViews(statusIconContainer,
-                    /* shouldAttachPanel= */ false);
+        // Initialize bar element within the user picker's bottom bar
+        View bottomBar = mRootView.findViewById(R.id.user_picker_bottom_bar);
+        if (bottomBar instanceof ViewGroup) {
+            mCarSystemBarElementInitializer.initializeCarSystemBarElements((ViewGroup) bottomBar);
         }
     }
 
@@ -265,6 +273,7 @@ public class UserPickerActivity extends Activity implements Dumpable {
         if (DEBUG) {
             Slog.d(TAG, "onDestroy: displayId=" + getDisplayId());
         }
+        getOnBackInvokedDispatcher().unregisterOnBackInvokedCallback(mIgnoreBackCallback);
         if (mController != null) {
             mController.onDestroy();
         }

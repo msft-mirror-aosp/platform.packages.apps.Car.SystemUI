@@ -22,48 +22,65 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.android.car.datasubscription.Flags;
 import com.android.settingslib.graph.SignalDrawable;
 import com.android.systemui.R;
-import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.car.qc.DataSubscriptionController;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.statusicon.StatusIconViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.statusbar.connectivity.IconState;
 import com.android.systemui.statusbar.connectivity.MobileDataIndicators;
 import com.android.systemui.statusbar.connectivity.NetworkController;
 import com.android.systemui.statusbar.connectivity.SignalCallback;
 import com.android.systemui.statusbar.connectivity.WifiIndicators;
 import com.android.systemui.statusbar.policy.HotspotController;
 
-import javax.inject.Inject;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * A controller for status icon about mobile data, Wi-Fi, and hotspot.
  */
-public class SignalStatusIconController extends StatusIconController implements
+public class SignalStatusIconController extends StatusIconViewController implements
         SignalCallback, HotspotController.Callback {
 
     private final Context mContext;
     private final Resources mResources;
     private final HotspotController mHotspotController;
     private final NetworkController mNetworkController;
-
+    private final DataSubscriptionController mDataSubscriptionController;
     private SignalDrawable mMobileSignalIconDrawable;
     private Drawable mWifiSignalIconDrawable;
     private Drawable mHotSpotIconDrawable;
+    private Drawable mEthernetIconDrawable;
     private boolean mIsWifiEnabledAndConnected;
     private boolean mIsHotspotEnabled;
+    private boolean mIsEthernetConnected;
     private String mMobileSignalContentDescription;
     private String mWifiConnectedContentDescription;
     private String mHotspotOnContentDescription;
+    private String mEthernetContentDescription;
 
-    @Inject
+    @AssistedInject
     SignalStatusIconController(
+            @Assisted StatusIconView view,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
             Context context,
             @Main Resources resources,
             NetworkController networkController,
-            HotspotController hotspotController) {
+            HotspotController hotspotController,
+            DataSubscriptionController dataSubscriptionController) {
+        super(view, disableController, stateController);
         mContext = context;
         mResources = resources;
         mHotspotController = hotspotController;
         mNetworkController = networkController;
+        mDataSubscriptionController = dataSubscriptionController;
 
         mMobileSignalIconDrawable = new SignalDrawable(mContext);
         mHotSpotIconDrawable = mResources.getDrawable(R.drawable.ic_hotspot, mContext.getTheme());
@@ -71,9 +88,31 @@ public class SignalStatusIconController extends StatusIconController implements
         mMobileSignalContentDescription = resources.getString(R.string.status_icon_signal_mobile);
         mWifiConnectedContentDescription = resources.getString(R.string.status_icon_signal_wifi);
         mHotspotOnContentDescription = resources.getString(R.string.status_icon_signal_hotspot);
+    }
 
+    @AssistedFactory
+    public interface Factory extends
+            StatusIconViewController.Factory<SignalStatusIconController> {
+    }
+
+    @Override
+    protected void onViewAttached() {
+        super.onViewAttached();
         mNetworkController.addCallback(this);
         mHotspotController.addCallback(this);
+        if (Flags.dataSubscriptionPopUp()) {
+            mDataSubscriptionController.setAnchorView(mView);
+        }
+    }
+
+    @Override
+    protected void onViewDetached() {
+        super.onViewDetached();
+        mNetworkController.removeCallback(this);
+        mHotspotController.removeCallback(this);
+        if (Flags.dataSubscriptionPopUp()) {
+            mDataSubscriptionController.setAnchorView(null);
+        }
     }
 
     @Override
@@ -81,6 +120,9 @@ public class SignalStatusIconController extends StatusIconController implements
         if (mIsHotspotEnabled) {
             setIconDrawableToDisplay(mHotSpotIconDrawable);
             setIconContentDescription(mHotspotOnContentDescription);
+        } else if (mIsEthernetConnected) {
+            setIconDrawableToDisplay(mEthernetIconDrawable);
+            setIconContentDescription(mEthernetContentDescription);
         } else if (mIsWifiEnabledAndConnected) {
             setIconDrawableToDisplay(mWifiSignalIconDrawable);
             setIconContentDescription(mWifiConnectedContentDescription);
@@ -112,8 +154,13 @@ public class SignalStatusIconController extends StatusIconController implements
     }
 
     @Override
-    protected int getPanelContentLayout() {
-        return R.layout.qc_connectivity_panel;
+    public void setEthernetIndicators(IconState state) {
+        mIsEthernetConnected = state.visible;
+        if (mIsEthernetConnected) {
+            mEthernetIconDrawable = mResources.getDrawable(state.icon, mContext.getTheme());
+            mEthernetContentDescription = state.contentDescription;
+        }
+        updateStatus();
     }
 
     @VisibleForTesting
@@ -131,8 +178,8 @@ public class SignalStatusIconController extends StatusIconController implements
         return mHotSpotIconDrawable;
     }
 
-    @Override
-    protected int getId() {
-        return R.id.qc_signal_status_icon;
+    @VisibleForTesting
+    Drawable getEthernetIconDrawable() {
+        return mEthernetIconDrawable;
     }
 }

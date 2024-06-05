@@ -41,6 +41,7 @@ import android.content.pm.UserInfo;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.sysprop.CarProperties;
@@ -65,6 +66,7 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.userswitcher.UserIconProvider;
+import com.android.systemui.dagger.qualifiers.Background;
 import com.android.systemui.settings.UserTracker;
 
 import java.util.List;
@@ -81,35 +83,53 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
     private static final int TIMEOUT_MS = CarProperties.user_hal_timeout().orElse(5_000) + 500;
 
+    private final CarServiceProvider.CarServiceOnConnectedListener mCarServiceOnConnectedListener =
+            new CarServiceProvider.CarServiceOnConnectedListener() {
+                @Override
+                public void onConnected(Car car) {
+                    if (DEBUG) {
+                        Log.d(TAG, "car connected");
+                    }
+                    mCarUserManager = car.getCarManager(CarUserManager.class);
+                    notifyChange();
+                }
+            };
+
     protected final UserTracker mUserTracker;
     protected final UserIconProvider mUserIconProvider;
     private final UserManager mUserManager;
     private final DevicePolicyManager mDevicePolicyManager;
+    public final Handler mHandler;
+    private final CarServiceProvider mCarServiceProvider;
     @Nullable
     private CarUserManager mCarUserManager;
     protected boolean mPendingUserAdd;
 
     @Inject
     public ProfileSwitcher(Context context, UserTracker userTracker,
-            CarServiceProvider carServiceProvider) {
+            CarServiceProvider carServiceProvider, @Background Handler handler) {
         super(context);
         mUserTracker = userTracker;
         mUserManager = context.getSystemService(UserManager.class);
         mDevicePolicyManager = context.getSystemService(DevicePolicyManager.class);
         mUserIconProvider = new UserIconProvider();
-        carServiceProvider.addListener(this::onCarConnected);
+        mHandler = handler;
+        mCarServiceProvider = carServiceProvider;
+        mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
     }
 
     @VisibleForTesting
     ProfileSwitcher(Context context, UserTracker userTracker, UserManager userManager,
             DevicePolicyManager devicePolicyManager, CarUserManager carUserManager,
-            UserIconProvider userIconProvider) {
+            UserIconProvider userIconProvider, Handler handler) {
         super(context);
         mUserTracker = userTracker;
         mUserManager = userManager;
         mDevicePolicyManager = devicePolicyManager;
         mUserIconProvider = userIconProvider;
         mCarUserManager = carUserManager;
+        mCarServiceProvider = null;
+        mHandler = handler;
     }
 
     @Override
@@ -152,6 +172,13 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             listBuilder.addRow(createLogOutRow());
         }
         return listBuilder.build();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mCarServiceProvider != null) {
+            mCarServiceProvider.removeListener(mCarServiceOnConnectedListener);
+        }
     }
 
     private List<UserInfo> getProfileList() {
@@ -198,7 +225,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 mUserIconProvider.getDrawableWithBadge(mContext, userInfo), actionHandler);
     }
 
-    private QCRow createGuestProfileRow() {
+    protected QCRow createGuestProfileRow() {
         QCItem.ActionHandler actionHandler = (item, context, intent) -> {
             if (mPendingUserAdd) {
                 return;
@@ -210,7 +237,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         };
 
         return createProfileRow(mContext.getString(com.android.internal.R.string.guest_name),
-                mUserIconProvider.getRoundedGuestDefaultIcon(mContext.getResources()),
+                mUserIconProvider.getRoundedGuestDefaultIcon(mContext),
                 actionHandler);
     }
 
@@ -276,54 +303,62 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     }
 
     private void switchForegroundUser(@UserIdInt int userId) {
-        UserSwitchResult userSwitchResult = null;
-        try {
-            SyncResultCallback<UserSwitchResult> userSwitchCallback = new SyncResultCallback<>();
-            mCarUserManager.switchUser(
-                    new UserSwitchRequest.Builder(UserHandle.of(userId)).build(),
-                    Runnable::run, userSwitchCallback);
-            userSwitchResult = userSwitchCallback.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            Log.w(TAG, "Exception while switching to the user " + userId, e);
-        }
-        if (userSwitchResult == null || !userSwitchResult.isSuccess()) {
-            Log.w(TAG, "Could not switch user: " + userSwitchResult);
-        }
+        // Switch user in the background thread to avoid ANR in UI thread.
+        mHandler.post(() -> {
+            UserSwitchResult userSwitchResult = null;
+            try {
+                SyncResultCallback<UserSwitchResult> userSwitchCallback =
+                        new SyncResultCallback<>();
+                mCarUserManager.switchUser(
+                        new UserSwitchRequest.Builder(UserHandle.of(userId)).build(),
+                        Runnable::run, userSwitchCallback);
+                userSwitchResult = userSwitchCallback.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            } catch (Exception e) {
+                Log.w(TAG, "Exception while switching to the user " + userId, e);
+            }
+            if (userSwitchResult == null || !userSwitchResult.isSuccess()) {
+                Log.w(TAG, "Could not switch user: " + userSwitchResult);
+            }
+        });
     }
 
     private void switchSecondaryUser(@UserIdInt int userId) {
-        try {
-            SyncResultCallback<UserStopResponse> userStopCallback = new SyncResultCallback<>();
-            mCarUserManager.stopUser(
-                    new UserStopRequest.Builder(mUserTracker.getUserHandle()).setForce().build(),
-                    Runnable::run, userStopCallback);
-            UserStopResponse userStopResponse =
-                    userStopCallback.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            if (!userStopResponse.isSuccess()) {
-                Log.w(TAG, "Could not stop user " + mUserTracker.getUserId() + ". Response: "
-                        + userStopResponse);
+        // Switch user in the background thread to avoid ANR in UI thread.
+        mHandler.post(() -> {
+            try {
+                SyncResultCallback<UserStopResponse> userStopCallback = new SyncResultCallback<>();
+                mCarUserManager.stopUser(new UserStopRequest.Builder(
+                                mUserTracker.getUserHandle()).setForce().build(),
+                        Runnable::run, userStopCallback);
+                UserStopResponse userStopResponse =
+                        userStopCallback.get(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                if (!userStopResponse.isSuccess()) {
+                    Log.w(TAG, "Could not stop user " + mUserTracker.getUserId() + ". Response: "
+                            + userStopResponse);
+                    return;
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Exception while stopping user " + mUserTracker.getUserId(), e);
                 return;
             }
-        } catch (Exception e) {
-            Log.w(TAG, "Exception while stopping user " + mUserTracker.getUserId(), e);
-            return;
-        }
 
-        int displayId = mContext.getDisplayId();
-        try {
-            mCarUserManager.startUser(
-                    new UserStartRequest.Builder(UserHandle.of(userId)).setDisplayId(
-                            displayId).build(),
-                    Runnable::run,
-                    response -> {
-                        if (!response.isSuccess()) {
-                            Log.e(TAG, "Could not start user " + userId + " on display "
-                                    + displayId + ". Response: " + response);
-                        }
-                    });
-        } catch (Exception e) {
-            Log.w(TAG, "Exception while starting user " + userId + " on display " + displayId, e);
-        }
+            int displayId = mContext.getDisplayId();
+            try {
+                mCarUserManager.startUser(
+                        new UserStartRequest.Builder(UserHandle.of(userId)).setDisplayId(
+                                displayId).build(),
+                        Runnable::run,
+                        response -> {
+                            if (!response.isSuccess()) {
+                                Log.e(TAG, "Could not start user " + userId + " on display "
+                                        + displayId + ". Response: " + response);
+                            }
+                        });
+            } catch (Exception e) {
+                Log.w(TAG, "Exception while starting user " + userId + " on display " + displayId,
+                        e);
+            }
+        });
     }
 
     private void logoutUser() {
@@ -351,7 +386,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
      * @return UserInfo representing the Guest user
      */
     @Nullable
-    private UserInfo createNewOrFindExistingGuest(Context context) {
+    protected UserInfo createNewOrFindExistingGuest(Context context) {
         AsyncFuture<UserCreationResult> future = mCarUserManager.createGuest(
                 context.getString(com.android.internal.R.string.guest_name));
         // CreateGuest will return null if a guest already exists.
@@ -450,14 +485,6 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         window.getAttributes().setFitInsetsTypes(
                 window.getAttributes().getFitInsetsTypes() & ~statusBars());
-    }
-
-    private void onCarConnected(Car car) {
-        if (DEBUG) {
-            Log.d(TAG, "car connected");
-        }
-        mCarUserManager = car.getCarManager(CarUserManager.class);
-        notifyChange();
     }
 
     private class AddNewUserTask extends AsyncTask<String, Void, UserInfo> {

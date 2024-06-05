@@ -112,6 +112,12 @@ public abstract class StatusIconController {
     }
 
     /**
+     * Lifecycle method executed when this controller is destroyed to clean up any references.
+     */
+    protected void onDestroy() {
+    }
+
+    /**
      * Provides observing views with the {@link StatusIconData} and causes them to update
      * themselves accordingly through {@link #updateIconView}.
      */
@@ -130,6 +136,7 @@ public abstract class StatusIconController {
         view.setVisibility(data.getIsIconVisible() ? View.VISIBLE : View.GONE);
         view.setContentDescription(data.getContentDescription());
     }
+
     /**
      * Returns the resource id of the layout to be drawn inside the panel associated with this
      * status icon.

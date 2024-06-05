@@ -16,42 +16,47 @@
 
 package com.android.systemui.car.statusicon.ui;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
 
 import com.android.systemui.R;
-import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.statusicon.StatusIconViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.statusbar.policy.BluetoothController;
 
-import javax.inject.Inject;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * A controller for Bluetooth status icon.
  */
-public class BluetoothStatusIconController extends StatusIconController implements
+public class BluetoothStatusIconController extends StatusIconViewController implements
         BluetoothController.Callback {
-    private final Context mContext;
     private final BluetoothController mBluetoothController;
+    private final Drawable mBluetoothOffDrawable;
+    private final Drawable mBluetoothOnDisconnectedDrawable;
+    private final Drawable mBluetoothOnConnectedDrawable;
+    private final String mBluetoothOffContentDescription;
+    private final String mBluetoothOnDisconnectedContentDescription;
+    private final String mBluetoothOnConnectedContentDescription;
 
     private boolean mBluetoothEnabled;
     private boolean mBluetoothConnected;
-    private Drawable mBluetoothOffDrawable;
-    private Drawable mBluetoothOnDisconnectedDrawable;
-    private Drawable mBluetoothOnConnectedDrawable;
-    private String mBluetoothOffContentDescription;
-    private String mBluetoothOnDisconnectedContentDescription;
-    private String mBluetoothOnConnectedContentDescription;
 
-    @Inject
+    @AssistedInject
     BluetoothStatusIconController(
-            Context context,
+            @Assisted StatusIconView view,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
             @Main Resources resources,
             BluetoothController bluetoothController) {
-        mContext = context;
+        super(view, disableController, stateController);
         mBluetoothController = bluetoothController;
 
         mBluetoothOffDrawable = resources.getDrawable(
@@ -67,8 +72,25 @@ public class BluetoothStatusIconController extends StatusIconController implemen
                 R.string.status_icon_bluetooth_disconnected);
         mBluetoothOnConnectedContentDescription = resources.getString(
                 R.string.status_icon_bluetooth_connected);
+    }
 
+    @AssistedFactory
+    public interface Factory extends
+            StatusIconViewController.Factory<BluetoothStatusIconController> {
+    }
+
+    @Override
+    protected void onViewAttached() {
+        super.onViewAttached();
         mBluetoothController.addCallback(this);
+        mBluetoothConnected = !mBluetoothController.getConnectedDevices().isEmpty();
+        updateStatus();
+    }
+
+    @Override
+    protected void onViewDetached() {
+        super.onViewDetached();
+        mBluetoothController.removeCallback(this);
     }
 
     @Override
@@ -103,11 +125,6 @@ public class BluetoothStatusIconController extends StatusIconController implemen
         return mBluetoothOffDrawable;
     }
 
-    @Override
-    protected int getPanelContentLayout() {
-        return R.layout.qc_bluetooth_panel;
-    }
-
     @VisibleForTesting
     Drawable getBluetoothOnDisconnectedDrawable() {
         return mBluetoothOnDisconnectedDrawable;
@@ -116,10 +133,5 @@ public class BluetoothStatusIconController extends StatusIconController implemen
     @VisibleForTesting
     Drawable getBluetoothOnConnectedDrawable() {
         return mBluetoothOnConnectedDrawable;
-    }
-
-    @Override
-    protected int getId() {
-        return R.id.qc_bluetooth_status_icon;
     }
 }

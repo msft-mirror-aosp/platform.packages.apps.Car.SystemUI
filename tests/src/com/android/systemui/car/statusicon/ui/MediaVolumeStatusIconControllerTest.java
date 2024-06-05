@@ -23,6 +23,7 @@ import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSess
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import android.car.Car;
@@ -37,6 +38,9 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.settings.UserTracker;
 
 import org.junit.After;
@@ -65,7 +69,12 @@ public class MediaVolumeStatusIconControllerTest extends SysuiTestCase {
     CarServiceProvider mCarServiceProvider;
     @Mock
     UserTracker mUserTracker;
+    @Mock
+    CarSystemBarElementStatusBarDisableController mDisableController;
+    @Mock
+    CarSystemBarElementStateController mStateController;
 
+    private StatusIconView mView;
     private MediaVolumeStatusIconController mMediaVolumeStatusIconController;
     private MockitoSession mMockingSession;
     private CarAudioManager.CarVolumeCallback mVolumeChangeCallback;
@@ -83,12 +92,126 @@ public class MediaVolumeStatusIconControllerTest extends SysuiTestCase {
                 .strictness(Strictness.WARN)
                 .startMocking();
 
+        mView = new StatusIconView(mContext);
+        mMediaVolumeStatusIconController =
+                new MediaVolumeStatusIconController(mView, mDisableController, mStateController,
+                        mContext, mUserTracker, mContext.getResources(), mCarServiceProvider);
+    }
+
+    @After
+    public void tearDown() {
+        if (mMockingSession != null) {
+            mMockingSession.finishMocking();
+        }
+    }
+
+    @Test
+    public void onViewAttached_registersListeners() {
+        mMediaVolumeStatusIconController.onViewAttached();
+        verify(mUserTracker).addCallback(any(), any());
+        verify(mCarServiceProvider).addListener(any());
+    }
+
+    @Test
+    public void onViewDetached_unregistersListeners() {
+        attachAndSetAudioMocks();
+        mMediaVolumeStatusIconController.onViewDetached();
+        verify(mCarServiceProvider).removeListener(any());
+        verify(mCarAudioManager).unregisterCarVolumeCallback(any());
+        verify(mUserTracker).removeCallback(any());
+    }
+
+    @Test
+    public void onGroupVolumeChanged_whenZoneIdAndGroupIdAreSame_updateStatus() {
+        attachAndSetAudioMocks();
+        int zoneId = 100;
+        int groupId = 10;
+        int volume = 0;
+        doReturn(volume).when(mCarAudioManager).getGroupVolume(zoneId, groupId);
+
+        mVolumeChangeCallback.onGroupVolumeChanged(zoneId, groupId, /* flag= */ 0);
+
+        assertThat(mInitialStatusIconDrawable).isNotEqualTo(
+                mMediaVolumeStatusIconController.getIconDrawableToDisplay());
+    }
+
+    @Test
+    public void onGroupVolumeChanged_whenZoneIdIsNotSame_doNotUpdateStatus() {
+        attachAndSetAudioMocks();
+        int zoneId = 99;
+        int groupId = 10;
+        int volume = 0;
+        doReturn(groupId).when(mCarAudioManager).getVolumeGroupIdForUsage(zoneId, USAGE_MEDIA);
+        doReturn(volume).when(mCarAudioManager).getGroupVolume(zoneId, groupId);
+
+        mVolumeChangeCallback.onGroupVolumeChanged(zoneId, groupId, /* flag= */ 0);
+
+        assertThat(mInitialStatusIconDrawable).isEqualTo(
+                mMediaVolumeStatusIconController.getIconDrawableToDisplay());
+    }
+
+    @Test
+    public void onGroupVolumeChanged_whenGroupIdIsNotSame_doNotUpdateStatus() {
+        attachAndSetAudioMocks();
+        int zoneId = 100;
+        int groupId = 9;
+        int volume = 0;
+        doReturn(volume).when(mCarAudioManager).getGroupVolume(zoneId, groupId);
+
+        mVolumeChangeCallback.onGroupVolumeChanged(zoneId, groupId, /* flag= */ 0);
+
+        assertThat(mInitialStatusIconDrawable).isEqualTo(
+                mMediaVolumeStatusIconController.getIconDrawableToDisplay());
+    }
+
+    @Test
+    public void onGroupMuteChanged_whenZoneIdAndGroupIdAreSame_updateStatus() {
+        attachAndSetAudioMocks();
+        int zoneId = 100;
+        int groupId = 10;
+        int volume = 0;
+        doReturn(volume).when(mCarAudioManager).getGroupVolume(zoneId, groupId);
+
+        mVolumeChangeCallback.onGroupMuteChanged(zoneId, groupId, /* flag= */ 0);
+
+        assertThat(mInitialStatusIconDrawable).isNotEqualTo(
+                mMediaVolumeStatusIconController.getIconDrawableToDisplay());
+    }
+
+    @Test
+    public void onGroupMuteChanged_whenZoneIdIsNotSame_doNotUpdateStatus() {
+        attachAndSetAudioMocks();
+        int zoneId = 99;
+        int groupId = 10;
+        int volume = 0;
+        doReturn(groupId).when(mCarAudioManager).getVolumeGroupIdForUsage(zoneId, USAGE_MEDIA);
+        doReturn(volume).when(mCarAudioManager).getGroupVolume(zoneId, groupId);
+
+        mVolumeChangeCallback.onGroupMuteChanged(zoneId, groupId, /* flag= */ 0);
+
+        assertThat(mInitialStatusIconDrawable).isEqualTo(
+                mMediaVolumeStatusIconController.getIconDrawableToDisplay());
+    }
+
+    @Test
+    public void onGroupMuteChanged_whenGroupIdIsNotSame_doNotUpdateStatus() {
+        attachAndSetAudioMocks();
+        int zoneId = 100;
+        int groupId = 9;
+        int volume = 0;
+        doReturn(volume).when(mCarAudioManager).getGroupVolume(zoneId, groupId);
+
+        mVolumeChangeCallback.onGroupMuteChanged(zoneId, groupId, /* flag= */ 0);
+
+        assertThat(mInitialStatusIconDrawable).isEqualTo(
+                mMediaVolumeStatusIconController.getIconDrawableToDisplay());
+    }
+
+    private void attachAndSetAudioMocks() {
         ArgumentCaptor<CarServiceProvider.CarServiceOnConnectedListener> listenerCaptor =
                 ArgumentCaptor.forClass(CarServiceProvider.CarServiceOnConnectedListener.class);
 
-        mMediaVolumeStatusIconController =
-                new MediaVolumeStatusIconController(mContext, mUserTracker, mContext.getResources(),
-                mCarServiceProvider);
+        mMediaVolumeStatusIconController.onViewAttached();
         verify(mCarServiceProvider).addListener(listenerCaptor.capture());
 
         doReturn(mCarOccupantZoneManager).when(mCar).getCarManager(Car.CAR_OCCUPANT_ZONE_SERVICE);
@@ -107,92 +230,5 @@ public class MediaVolumeStatusIconControllerTest extends SysuiTestCase {
         mVolumeChangeCallback = callbackCaptor.getValue();
         mInitialStatusIconDrawable =
                 mMediaVolumeStatusIconController.getMediaVolumeStatusIconDrawable();
-    }
-
-    @After
-    public void tearDown() {
-        if (mMockingSession != null) {
-            mMockingSession.finishMocking();
-        }
-    }
-
-    @Test
-    public void onGroupVolumeChanged_whenZoneIdAndGroupIdAreSame_updateStatus() {
-        int zoneId = 100;
-        int groupId = 10;
-        int volume = 0;
-        doReturn(volume).when(mCarAudioManager).getGroupVolume(zoneId, groupId);
-
-        mVolumeChangeCallback.onGroupVolumeChanged(zoneId, groupId, /* flag= */ 0);
-
-        assertThat(mInitialStatusIconDrawable).isNotEqualTo(
-                mMediaVolumeStatusIconController.getIconDrawableToDisplay());
-    }
-
-    @Test
-    public void onGroupVolumeChanged_whenZoneIdIsNotSame_doNotUpdateStatus() {
-        int zoneId = 99;
-        int groupId = 10;
-        int volume = 0;
-        doReturn(groupId).when(mCarAudioManager).getVolumeGroupIdForUsage(zoneId, USAGE_MEDIA);
-        doReturn(volume).when(mCarAudioManager).getGroupVolume(zoneId, groupId);
-
-        mVolumeChangeCallback.onGroupVolumeChanged(zoneId, groupId, /* flag= */ 0);
-
-        assertThat(mInitialStatusIconDrawable).isEqualTo(
-                mMediaVolumeStatusIconController.getIconDrawableToDisplay());
-    }
-
-    @Test
-    public void onGroupVolumeChanged_whenGroupIdIsNotSame_doNotUpdateStatus() {
-        int zoneId = 100;
-        int groupId = 9;
-        int volume = 0;
-        doReturn(volume).when(mCarAudioManager).getGroupVolume(zoneId, groupId);
-
-        mVolumeChangeCallback.onGroupVolumeChanged(zoneId, groupId, /* flag= */ 0);
-
-        assertThat(mInitialStatusIconDrawable).isEqualTo(
-                mMediaVolumeStatusIconController.getIconDrawableToDisplay());
-    }
-
-    @Test
-    public void onGroupMuteChanged_whenZoneIdAndGroupIdAreSame_updateStatus() {
-        int zoneId = 100;
-        int groupId = 10;
-        int volume = 0;
-        doReturn(volume).when(mCarAudioManager).getGroupVolume(zoneId, groupId);
-
-        mVolumeChangeCallback.onGroupMuteChanged(zoneId, groupId, /* flag= */ 0);
-
-        assertThat(mInitialStatusIconDrawable).isNotEqualTo(
-                mMediaVolumeStatusIconController.getIconDrawableToDisplay());
-    }
-
-    @Test
-    public void onGroupMuteChanged_whenZoneIdIsNotSame_doNotUpdateStatus() {
-        int zoneId = 99;
-        int groupId = 10;
-        int volume = 0;
-        doReturn(groupId).when(mCarAudioManager).getVolumeGroupIdForUsage(zoneId, USAGE_MEDIA);
-        doReturn(volume).when(mCarAudioManager).getGroupVolume(zoneId, groupId);
-
-        mVolumeChangeCallback.onGroupMuteChanged(zoneId, groupId, /* flag= */ 0);
-
-        assertThat(mInitialStatusIconDrawable).isEqualTo(
-                mMediaVolumeStatusIconController.getIconDrawableToDisplay());
-    }
-
-    @Test
-    public void onGroupMuteChanged_whenGroupIdIsNotSame_doNotUpdateStatus() {
-        int zoneId = 100;
-        int groupId = 9;
-        int volume = 0;
-        doReturn(volume).when(mCarAudioManager).getGroupVolume(zoneId, groupId);
-
-        mVolumeChangeCallback.onGroupMuteChanged(zoneId, groupId, /* flag= */ 0);
-
-        assertThat(mInitialStatusIconDrawable).isEqualTo(
-                mMediaVolumeStatusIconController.getIconDrawableToDisplay());
     }
 }

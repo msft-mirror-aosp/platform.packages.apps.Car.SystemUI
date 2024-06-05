@@ -16,73 +16,41 @@
 
 package com.android.systemui
 
-import android.content.Context
 import com.android.keyguard.KeyguardBiometricLockoutLogger
-import com.android.systemui.biometrics.AuthController
-import com.android.systemui.car.cluster.ClusterDisplayController
 import com.android.systemui.car.input.DisplayInputSinkController
-import com.android.systemui.car.systembar.CarSystemBar
-import com.android.systemui.car.systembar.CarSystemBarMediator
 import com.android.systemui.car.toast.CarToastUI
-import com.android.systemui.car.users.CarSystemUIUserUtil
 import com.android.systemui.car.voicerecognition.ConnectedDeviceVoiceRecognitionNotifier
-import com.android.systemui.car.volume.VolumeUI
 import com.android.systemui.car.window.SystemUIOverlayWindowManager
+import com.android.systemui.car.wm.activity.window.ActivityWindowManager
+import com.android.systemui.car.wm.cluster.ClusterDisplayController
 import com.android.systemui.dagger.qualifiers.PerUser
 import com.android.systemui.keyguard.KeyguardViewMediator
 import com.android.systemui.log.SessionTracker
 import com.android.systemui.media.RingtonePlayer
-import com.android.systemui.power.PowerUI
-import com.android.systemui.recents.Recents
 import com.android.systemui.theme.ThemeOverlayController
 import com.android.systemui.usb.StorageNotification
 import com.android.systemui.util.NotificationChannels
 import com.android.systemui.wmshell.WMShell
 import dagger.Binds
-import dagger.Lazy
 import dagger.Module
-import dagger.Provides
 import dagger.multibindings.ClassKey
 import dagger.multibindings.IntoMap
 import dagger.multibindings.Multibinds
 
+/**
+ * DEPRECATED: DO NOT ADD THINGS TO THIS FILE.
+ *
+ * Add a feature specific dagger module for what you are working on. Bind your CoreStartable there.
+ * Include that module where it is needed.
+ *
+ * @deprecated
+ */
 @Module
 abstract class CarSystemUICoreStartableModule {
     /** Empty set for @PerUser. */
     @Multibinds
     @PerUser
     abstract fun bindEmptyPerUserMap(): Map<Class<*>, CoreStartable>
-
-    /** Inject into AuthController.  */
-    @Binds
-    @IntoMap
-    @ClassKey(AuthController::class)
-    abstract fun bindAuthController(service: AuthController): CoreStartable
-
-    /** Inject into CarSystemBar.  */
-    companion object {
-        /**
-         * TODO(): b/260206944,
-         * @return CarSystemBarMediator for SecondaryMUMDSystemUI which blocks CarSystemBar#start()
-         * util RROs are applied, otherwise return CarSystemBar
-         */
-        @Provides
-        @IntoMap
-        @JvmStatic
-        @ClassKey(CarSystemBar::class)
-        fun bindCarSystemBar(
-                systemBarService: Lazy<CarSystemBar>,
-                applyRROService: Lazy<CarSystemBarMediator>,
-                context: Context
-        ): CoreStartable {
-            if ((CarSystemUIUserUtil.isSecondaryMUMDSystemUI() ||
-                    CarSystemUIUserUtil.isMUPANDSystemUI()) &&
-                    context.resources.getBoolean(R.bool.config_enableSecondaryUserRRO)) {
-                return applyRROService.get()
-            }
-            return systemBarService.get()
-        }
-    }
 
     /** Inject into CarToastUI.  */
     @Binds
@@ -131,23 +99,11 @@ abstract class CarSystemUICoreStartableModule {
     @PerUser
     abstract fun bindNotificationChannels(sysui: NotificationChannels): CoreStartable
 
-    /** Inject into PowerUI.  */
-    @Binds
-    @IntoMap
-    @ClassKey(PowerUI::class)
-    abstract fun bindPowerUI(sysui: PowerUI): CoreStartable
-
     /** Inject into RingtonePlayer.  */
     @Binds
     @IntoMap
     @ClassKey(RingtonePlayer::class)
     abstract fun bind(sysui: RingtonePlayer): CoreStartable
-
-    /** Inject into ScreenDecorations.  */
-    @Binds
-    @IntoMap
-    @ClassKey(ScreenDecorations::class)
-    abstract fun bindScreenDecorations(sysui: ScreenDecorations): CoreStartable
 
     /** Inject into SessionTracker.  */
     @Binds
@@ -175,21 +131,17 @@ abstract class CarSystemUICoreStartableModule {
     @ClassKey(ThemeOverlayController::class)
     abstract fun bindThemeOverlayController(sysui: ThemeOverlayController): CoreStartable
 
-    /** Inject into VolumeUI.  */
-    @Binds
-    @IntoMap
-    @ClassKey(VolumeUI::class)
-    abstract fun bindVolumeUI(sysui: VolumeUI): CoreStartable
-
     /** Inject into WMShell.  */
     @Binds
     @IntoMap
     @ClassKey(WMShell::class)
     abstract fun bindWMShell(sysui: WMShell): CoreStartable
 
-    /** Inject into Recents.  */
+    /** Inject into ActivityWindowManager. */
     @Binds
     @IntoMap
-    @ClassKey(Recents::class)
-    abstract fun bindRecents(sysui: Recents): CoreStartable
+    @ClassKey(ActivityWindowManager::class)
+    abstract fun bindActivityWindowManager(
+        activityWindowManager: ActivityWindowManager
+    ): CoreStartable
 }

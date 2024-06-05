@@ -20,11 +20,15 @@ import android.content.Context;
 import android.content.om.OverlayManager;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.UserHandle;
 import android.util.Log;
 
 import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
+import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import javax.inject.Inject;
 
@@ -37,7 +41,9 @@ import javax.inject.Inject;
  *     with overlaid resources.
  * </p>
  */
-public class CarSystemBarMediator implements CoreStartable {
+@SysUISingleton
+public class CarSystemBarMediator implements CoreStartable,
+        ConfigurationController.ConfigurationListener {
     private static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;
 
     private final CarSystemBar mCarSystemBar;
@@ -69,9 +75,13 @@ public class CarSystemBarMediator implements CoreStartable {
         if (DEBUG) {
             Log.d(TAG, "start(), toggle RRO package:" + rroPackageName);
         }
+        // The RRO must be applied to the user that SystemUI is running as.
+        // MUPAND SystemUI runs as the system user, not the actual user.
+        UserHandle userHandle = CarSystemUIUserUtil.isMUPANDSystemUI() ? UserHandle.SYSTEM
+                : mUserTracker.getUserHandle();
         try {
-            mOverlayManager.setEnabled(rroPackageName, false, mUserTracker.getUserHandle());
-            mOverlayManager.setEnabled(rroPackageName, true, mUserTracker.getUserHandle());
+            mOverlayManager.setEnabled(rroPackageName, false, userHandle);
+            mOverlayManager.setEnabled(rroPackageName, true, userHandle);
         } catch (IllegalArgumentException ex) {
             Log.w(TAG, "Failed to set overlay package: " + ex);
             mCarSystemBar.start();
@@ -80,7 +90,7 @@ public class CarSystemBarMediator implements CoreStartable {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigChanged(Configuration newConfig) {
         if (DEBUG) {
             Log.d(TAG, "onConfigurationChanged(), reset resources and start CarSystemBar");
         }

@@ -27,19 +27,24 @@ import android.telephony.TelephonyManager;
 import androidx.annotation.NonNull;
 
 import com.android.systemui.R;
-import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.statusicon.StatusIconViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
 
-import javax.inject.Inject;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * A controller for the read-only icon that shows phone call active status.
  */
-public class PhoneCallStatusIconController extends StatusIconController {
+public class PhoneCallStatusIconController extends StatusIconViewController {
 
-    private static final String TAG = PhoneCallStatusIconController.class.getSimpleName();
-
+    private final Context mContext;
+    private final UserTracker mUserTracker;
     private final TelecomManager mTelecomManager;
 
     final BroadcastReceiver mPhoneStateChangeReceiver = new BroadcastReceiver() {
@@ -58,29 +63,44 @@ public class PhoneCallStatusIconController extends StatusIconController {
         }
     };
 
-    @Inject
-    PhoneCallStatusIconController(
-            Context context,
-            @Main Resources resources,
-            UserTracker userTracker) {
+    @AssistedInject
+    protected PhoneCallStatusIconController(@Assisted StatusIconView view,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
+            Context context, @Main Resources resources, UserTracker userTracker) {
+        super(view, disableController, stateController);
+        mContext = context;
+        mUserTracker = userTracker;
         mTelecomManager = context.getSystemService(TelecomManager.class);
+        setIconDrawableToDisplay(resources.getDrawable(R.drawable.ic_phone, context.getTheme()));
+    }
+
+    @AssistedFactory
+    public interface Factory extends
+            StatusIconViewController.Factory<PhoneCallStatusIconController> {
+    }
+
+    @Override
+    protected void onViewAttached() {
+        super.onViewAttached();
         IntentFilter filter = new IntentFilter();
         filter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
-        context.registerReceiverForAllUsers(mPhoneStateChangeReceiver,
+        mContext.registerReceiverForAllUsers(mPhoneStateChangeReceiver,
                 filter,  /* broadcastPermission= */ null, /* scheduler= */ null);
-        userTracker.addCallback(mUserChangedCallback, context.getMainExecutor());
-        setIconDrawableToDisplay(resources.getDrawable(R.drawable.ic_phone, context.getTheme()));
+        mUserTracker.addCallback(mUserChangedCallback, mContext.getMainExecutor());
         updateStatus();
+    }
+
+    @Override
+    protected void onViewDetached() {
+        super.onViewDetached();
+        mContext.unregisterReceiver(mPhoneStateChangeReceiver);
+        mUserTracker.removeCallback(mUserChangedCallback);
     }
 
     @Override
     protected void updateStatus() {
         setIconVisibility(mTelecomManager.isInCall());
         onStatusUpdated();
-    }
-
-    @Override
-    protected int getId() {
-        return R.id.qc_phone_call_status_icon;
     }
 }

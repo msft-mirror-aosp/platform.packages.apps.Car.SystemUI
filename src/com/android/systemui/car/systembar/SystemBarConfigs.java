@@ -18,6 +18,8 @@ package com.android.systemui.car.systembar;
 
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
 
+import static com.android.systemui.car.systembar.CarSystemBar.DEBUG;
+
 import android.annotation.IntDef;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
@@ -31,6 +33,7 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
+import com.android.car.dockutil.Flags;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.car.notification.BottomNotificationPanelViewMediator;
@@ -41,6 +44,7 @@ import com.android.systemui.dagger.qualifiers.Main;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +104,7 @@ public class SystemBarConfigs {
     private boolean mBottomNavBarEnabled;
     private boolean mLeftNavBarEnabled;
     private boolean mRightNavBarEnabled;
+    private int mDisplayCompatToolbarState = 0;
 
     @Inject
     public SystemBarConfigs(@Main Resources resources) {
@@ -111,6 +116,7 @@ public class SystemBarConfigs {
         populateMaps();
         readConfigs();
 
+        checkOnlyOneDisplayCompatIsEnabled();
         checkEnabledBarsHaveUniqueBarTypes();
         checkAllOverlappingBarsHaveDifferentZOrders();
         checkSystemBarEnabledForNotificationPanel();
@@ -136,7 +142,9 @@ public class SystemBarConfigs {
 
     protected WindowManager.LayoutParams getLayoutParamsBySide(@SystemBarSide int side) {
         return mSystemBarConfigMap.get(side) != null
-                ? mSystemBarConfigMap.get(side).getLayoutParams() : null;
+                ? mSystemBarConfigMap
+                .get(side).getLayoutParams()
+                : null;
     }
 
     protected boolean getEnabledStatusBySide(@SystemBarSide int side) {
@@ -146,9 +154,9 @@ public class SystemBarConfigs {
             case BOTTOM:
                 return mBottomNavBarEnabled;
             case LEFT:
-                return mLeftNavBarEnabled;
+                return mLeftNavBarEnabled || isLeftDisplayCompatToolbarEnabled();
             case RIGHT:
-                return mRightNavBarEnabled;
+                return mRightNavBarEnabled || isRightDisplayCompatToolbarEnabled();
             default:
                 return false;
         }
@@ -163,7 +171,10 @@ public class SystemBarConfigs {
         if (mSystemBarConfigMap.get(side) == null) return;
 
         int[] paddings = mSystemBarConfigMap.get(side).getPaddings();
-        view.setPadding(paddings[2], paddings[0], paddings[3], paddings[1]);
+        if (DEBUG) {
+            Log.d(TAG, "Set padding to side = " + side + ", to " + Arrays.toString(paddings));
+        }
+        view.setPadding(paddings[LEFT], paddings[TOP], paddings[RIGHT], paddings[BOTTOM]);
     }
 
     protected List<Integer> getSystemBarSidesByZOrder() {
@@ -177,30 +188,100 @@ public class SystemBarConfigs {
 
         if (currentConfig == null) return;
 
+        int defaultLeftPadding = 0;
+        int defaultRightPadding = 0;
+        int defaultTopPadding = 0;
+        int defaultBottomPadding = 0;
+
+        switch (side) {
+            case LEFT: {
+                defaultLeftPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_left_system_bar_left_padding);
+                defaultRightPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_left_system_bar_right_padding);
+                defaultTopPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_left_system_bar_top_padding);
+                defaultBottomPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_left_system_bar_bottom_padding);
+                break;
+            }
+            case RIGHT: {
+                defaultLeftPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_right_system_bar_left_padding);
+                defaultRightPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_right_system_bar_right_padding);
+                defaultTopPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_right_system_bar_top_padding);
+                defaultBottomPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_right_system_bar_bottom_padding);
+                break;
+            }
+            case TOP: {
+                defaultLeftPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_top_system_bar_left_padding);
+                defaultRightPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_top_system_bar_right_padding);
+                defaultTopPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_top_system_bar_top_padding);
+                defaultBottomPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_top_system_bar_bottom_padding);
+                break;
+            }
+            case BOTTOM: {
+                defaultLeftPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_bottom_system_bar_left_padding);
+                defaultRightPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_bottom_system_bar_right_padding);
+                defaultTopPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_bottom_system_bar_top_padding);
+                defaultBottomPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_bottom_system_bar_bottom_padding);
+                break;
+            }
+            default:
+        }
+
+        currentConfig.setPaddingBySide(LEFT, defaultLeftPadding);
+        currentConfig.setPaddingBySide(RIGHT, defaultRightPadding);
+        currentConfig.setPaddingBySide(TOP, defaultTopPadding);
+        currentConfig.setPaddingBySide(BOTTOM, defaultBottomPadding);
+
         if (isHorizontalBar(side)) {
             if (mLeftNavBarEnabled && currentConfig.getZOrder() < mSystemBarConfigMap.get(
                     LEFT).getZOrder()) {
                 currentConfig.setPaddingBySide(LEFT,
-                        barVisibilities.get(LEFT) ? mSystemBarConfigMap.get(LEFT).getGirth() : 0);
+                        barVisibilities.get(LEFT)
+                                ? mSystemBarConfigMap.get(LEFT).getGirth()
+                                : defaultLeftPadding);
             }
             if (mRightNavBarEnabled && currentConfig.getZOrder() < mSystemBarConfigMap.get(
                     RIGHT).getZOrder()) {
                 currentConfig.setPaddingBySide(RIGHT,
-                        barVisibilities.get(RIGHT) ? mSystemBarConfigMap.get(RIGHT).getGirth() : 0);
+                        barVisibilities.get(RIGHT)
+                                ? mSystemBarConfigMap.get(RIGHT).getGirth()
+                                : defaultRightPadding);
             }
         }
         if (isVerticalBar(side)) {
             if (mTopNavBarEnabled && currentConfig.getZOrder() < mSystemBarConfigMap.get(
                     TOP).getZOrder()) {
                 currentConfig.setPaddingBySide(TOP,
-                        barVisibilities.get(TOP) ? mSystemBarConfigMap.get(TOP).getGirth() : 0);
+                        barVisibilities.get(TOP)
+                                ? mSystemBarConfigMap.get(TOP).getGirth()
+                                : defaultTopPadding);
             }
             if (mBottomNavBarEnabled && currentConfig.getZOrder() < mSystemBarConfigMap.get(
                     BOTTOM).getZOrder()) {
                 currentConfig.setPaddingBySide(BOTTOM,
-                        barVisibilities.get(BOTTOM) ? mSystemBarConfigMap.get(BOTTOM).getGirth()
-                                : 0);
+                        barVisibilities.get(BOTTOM)
+                                ? mSystemBarConfigMap.get(BOTTOM).getGirth()
+                                : defaultBottomPadding);
             }
+
+        }
+        if (DEBUG) {
+            Log.d(TAG, "Update padding for side = " + side + " to "
+                    + Arrays.toString(currentConfig.getPaddings()));
         }
     }
 
@@ -235,6 +316,16 @@ public class SystemBarConfigs {
         mBottomNavBarEnabled = mResources.getBoolean(R.bool.config_enableBottomSystemBar);
         mLeftNavBarEnabled = mResources.getBoolean(R.bool.config_enableLeftSystemBar);
         mRightNavBarEnabled = mResources.getBoolean(R.bool.config_enableRightSystemBar);
+        mDisplayCompatToolbarState =
+            mResources.getInteger(R.integer.config_showDisplayCompatToolbarOnSystemBar);
+        mSystemBarConfigMap.clear();
+
+        if ((mLeftNavBarEnabled && isLeftDisplayCompatToolbarEnabled())
+                || (mRightNavBarEnabled && isRightDisplayCompatToolbarEnabled())) {
+            throw new IllegalStateException(
+                "Navigation Bar and Display Compat toolbar can't be "
+                    + "on the same side");
+        }
 
         if (mTopNavBarEnabled) {
             SystemBarConfig topBarConfig =
@@ -242,8 +333,10 @@ public class SystemBarConfigs {
                             .setSide(TOP)
                             .setGirth(mResources.getDimensionPixelSize(
                                     R.dimen.car_top_system_bar_height))
-                            .setBarType(mResources.getInteger(R.integer.config_topSystemBarType))
-                            .setZOrder(mResources.getInteger(R.integer.config_topSystemBarZOrder))
+                            .setBarType(
+                                    mResources.getInteger(R.integer.config_topSystemBarType))
+                            .setZOrder(
+                                    mResources.getInteger(R.integer.config_topSystemBarZOrder))
                             .setHideForKeyboard(mResources.getBoolean(
                                     R.bool.config_hideTopSystemBarForKeyboard))
                             .build();
@@ -256,41 +349,58 @@ public class SystemBarConfigs {
                             .setSide(BOTTOM)
                             .setGirth(mResources.getDimensionPixelSize(
                                     R.dimen.car_bottom_system_bar_height))
-                            .setBarType(mResources.getInteger(R.integer.config_bottomSystemBarType))
+                            .setBarType(
+                                    mResources.getInteger(R.integer.config_bottomSystemBarType))
                             .setZOrder(
-                                    mResources.getInteger(R.integer.config_bottomSystemBarZOrder))
+                                    mResources.getInteger(
+                                            R.integer.config_bottomSystemBarZOrder))
                             .setHideForKeyboard(mResources.getBoolean(
                                     R.bool.config_hideBottomSystemBarForKeyboard))
                             .build();
             mSystemBarConfigMap.put(BOTTOM, bottomBarConfig);
         }
 
-        if (mLeftNavBarEnabled) {
+        if (mLeftNavBarEnabled || isLeftDisplayCompatToolbarEnabled()) {
             SystemBarConfig leftBarConfig =
                     new SystemBarConfigBuilder()
                             .setSide(LEFT)
                             .setGirth(mResources.getDimensionPixelSize(
                                     R.dimen.car_left_system_bar_width))
-                            .setBarType(mResources.getInteger(R.integer.config_leftSystemBarType))
-                            .setZOrder(mResources.getInteger(R.integer.config_leftSystemBarZOrder))
+                            .setBarType(
+                                    mResources.getInteger(R.integer.config_leftSystemBarType))
+                            .setZOrder(
+                                    mResources.getInteger(R.integer.config_leftSystemBarZOrder))
                             .setHideForKeyboard(mResources.getBoolean(
                                     R.bool.config_hideLeftSystemBarForKeyboard))
                             .build();
             mSystemBarConfigMap.put(LEFT, leftBarConfig);
         }
 
-        if (mRightNavBarEnabled) {
+        if (mRightNavBarEnabled || isRightDisplayCompatToolbarEnabled()) {
             SystemBarConfig rightBarConfig =
                     new SystemBarConfigBuilder()
                             .setSide(RIGHT)
                             .setGirth(mResources.getDimensionPixelSize(
                                     R.dimen.car_right_system_bar_width))
-                            .setBarType(mResources.getInteger(R.integer.config_rightSystemBarType))
-                            .setZOrder(mResources.getInteger(R.integer.config_rightSystemBarZOrder))
+                            .setBarType(
+                                    mResources.getInteger(R.integer.config_rightSystemBarType))
+                            .setZOrder(mResources.getInteger(
+                                    R.integer.config_rightSystemBarZOrder))
                             .setHideForKeyboard(mResources.getBoolean(
                                     R.bool.config_hideRightSystemBarForKeyboard))
                             .build();
             mSystemBarConfigMap.put(RIGHT, rightBarConfig);
+        }
+    }
+
+    private void checkOnlyOneDisplayCompatIsEnabled() throws IllegalStateException {
+        boolean useRemoteLaunchTaskView =
+                mResources.getBoolean(R.bool.config_useRemoteLaunchTaskView);
+        int displayCompatEnabled =
+                mResources.getInteger(R.integer.config_showDisplayCompatToolbarOnSystemBar);
+        if (useRemoteLaunchTaskView && displayCompatEnabled != 0) {
+            throw new IllegalStateException("config_useRemoteLaunchTaskView is enabled but "
+                    + "config_showDisplayCompatToolbarOnSystemBar is non-zero");
         }
     }
 
@@ -391,8 +501,8 @@ public class SystemBarConfigs {
         ArrayMap<@SystemBarSide Integer, Boolean> visibilityMap = new ArrayMap<>();
         visibilityMap.put(TOP, mTopNavBarEnabled);
         visibilityMap.put(BOTTOM, mBottomNavBarEnabled);
-        visibilityMap.put(LEFT, mLeftNavBarEnabled);
-        visibilityMap.put(RIGHT, mRightNavBarEnabled);
+        visibilityMap.put(LEFT, mLeftNavBarEnabled || isLeftDisplayCompatToolbarEnabled());
+        visibilityMap.put(RIGHT, mRightNavBarEnabled || isRightDisplayCompatToolbarEnabled());
         return visibilityMap;
     }
 
@@ -429,6 +539,13 @@ public class SystemBarConfigs {
 
     private static boolean isVerticalBar(@SystemBarSide int side) {
         return side == LEFT || side == RIGHT;
+    }
+    boolean isLeftDisplayCompatToolbarEnabled() {
+        return mDisplayCompatToolbarState == 1;
+    }
+
+    boolean isRightDisplayCompatToolbarEnabled() {
+        return mDisplayCompatToolbarState == 2;
     }
 
     private static final class SystemBarConfig {
@@ -492,6 +609,10 @@ public class SystemBarConfigs {
             lp.windowAnimations = 0;
             lp.gravity = BAR_GRAVITY_MAP.get(mSide);
             lp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+            if (Flags.dockFeature()) {
+                lp.privateFlags = lp.privateFlags
+                        | WindowManager.LayoutParams.PRIVATE_FLAG_INTERCEPT_GLOBAL_DRAG_AND_DROP;
+            }
             return lp;
         }
 

@@ -91,7 +91,8 @@ public class HvacController implements HvacPropertySetter,
                     HVAC_STEERING_WHEEL_HEAT, HVAC_TEMPERATURE_DISPLAY_UNITS,
                     HVAC_ACTUAL_FAN_SPEED_RPM, HVAC_POWER_ON, HVAC_FAN_DIRECTION_AVAILABLE,
                     HVAC_AUTO_RECIRC_ON, HVAC_SEAT_VENTILATION, HVAC_ELECTRIC_DEFROSTER_ON};
-    private static final int[] HVAC_PROPERTIES_TO_GET_ON_INIT = {HVAC_POWER_ON, HVAC_AUTO_ON};
+    private static final int[] HVAC_PROPERTIES_TO_GET_ON_INIT =
+            {HVAC_POWER_ON, HVAC_AUTO_ON, HVAC_FAN_DIRECTION_AVAILABLE};
     private static final int GLOBAL_AREA_ID = 0;
 
     @IntDef(value = {HVAC_FAN_SPEED, HVAC_FAN_DIRECTION, HVAC_TEMPERATURE_CURRENT,
@@ -122,6 +123,7 @@ public class HvacController implements HvacPropertySetter,
      * This must be accessed via {@link #mExecutor} to ensure thread safety.
      */
     private final ArrayList<View> mViewsToInit = new ArrayList<>();
+    @GuardedBy("itself")
     private final Map<@HvacProperty Integer, Map<@AreaId Integer, List<HvacView>>>
             mHvacPropertyViewMap = new HashMap<>();
 
@@ -298,6 +300,7 @@ public class HvacController implements HvacPropertySetter,
 
                 hvacView.setHvacPropertySetter(this);
                 hvacView.setConfigInfo(carPropertyConfig);
+                hvacView.setDisableViewIfPowerOff(mHvacPowerDependentProperties.contains(propId));
 
                 ArrayList<Integer> supportedAreaIds = getAreaIdsFromTargetAreaId(propId.intValue(),
                         targetAreaId.intValue());
@@ -393,34 +396,40 @@ public class HvacController implements HvacPropertySetter,
             handleHvacPowerOn(value);
         }
         if (value.getPropertyId() == HVAC_TEMPERATURE_DISPLAY_UNITS) {
-            mHvacPropertyViewMap.forEach((propId, areaIds) -> {
-                areaIds.forEach((areaId, views) -> {
-                    views.forEach(v -> v.onHvacTemperatureUnitChanged(
-                            (Integer) value.getValue() == VehicleUnit.FAHRENHEIT));
+            synchronized (mHvacPropertyViewMap) {
+                mHvacPropertyViewMap.forEach((propId, areaIds) -> {
+                    areaIds.forEach((areaId, views) -> {
+                        views.forEach(v -> v.onHvacTemperatureUnitChanged(
+                                (Integer) value.getValue() == VehicleUnit.FAHRENHEIT));
+                    });
                 });
-            });
+            }
             return;
         }
 
         int valueAreaType = mCarPropertyManager.getCarPropertyConfig(value.getPropertyId())
                 .getAreaType();
         if (valueAreaType == VEHICLE_AREA_TYPE_GLOBAL) {
-            mHvacPropertyViewMap.forEach((propId, areaIds) -> {
-                areaIds.forEach((areaId, views) -> {
-                    views.forEach(v -> v.onPropertyChanged(value));
-                });
-            });
-        } else {
-            mHvacPropertyViewMap.forEach((propId, areaIds) -> {
-                if (valueAreaType
-                        == mCarPropertyManager.getCarPropertyConfig(propId).getAreaType()) {
+            synchronized (mHvacPropertyViewMap) {
+                mHvacPropertyViewMap.forEach((propId, areaIds) -> {
                     areaIds.forEach((areaId, views) -> {
-                        if ((value.getAreaId() & areaId) == areaId) {
-                            views.forEach(v -> v.onPropertyChanged(value));
-                        }
+                        views.forEach(v -> v.onPropertyChanged(value));
                     });
-                }
-            });
+                });
+            }
+        } else {
+            synchronized (mHvacPropertyViewMap) {
+                mHvacPropertyViewMap.forEach((propId, areaIds) -> {
+                    if (valueAreaType
+                            == mCarPropertyManager.getCarPropertyConfig(propId).getAreaType()) {
+                        areaIds.forEach((areaId, views) -> {
+                            if ((value.getAreaId() & areaId) == areaId) {
+                                views.forEach(v -> v.onPropertyChanged(value));
+                            }
+                        });
+                    }
+                });
+            }
         }
     }
 
@@ -432,10 +441,12 @@ public class HvacController implements HvacPropertySetter,
     @Override
     public void onLocaleListChanged() {
         // Call {@link HvacView#onLocaleListChanged} on all {@link HvacView} instances.
-        for (Map<@AreaId Integer, List<HvacView>> subMap : mHvacPropertyViewMap.values()) {
-            for (List<HvacView> views : subMap.values()) {
-                for (HvacView view : views) {
-                    view.onLocaleListChanged();
+        synchronized (mHvacPropertyViewMap) {
+            for (Map<@AreaId Integer, List<HvacView>> subMap : mHvacPropertyViewMap.values()) {
+                for (List<HvacView> views : subMap.values()) {
+                    for (HvacView view : views) {
+                        view.onLocaleListChanged();
+                    }
                 }
             }
         }
@@ -516,21 +527,25 @@ public class HvacController implements HvacPropertySetter,
 
     private void addHvacViewToMap(@HvacProperty int propId, @AreaId int areaId,
             HvacView v) {
-        mHvacPropertyViewMap.computeIfAbsent(propId, k -> new HashMap<>())
-                .computeIfAbsent(areaId, k -> new ArrayList<>())
-                .add(v);
+        synchronized (mHvacPropertyViewMap) {
+            mHvacPropertyViewMap.computeIfAbsent(propId, k -> new HashMap<>())
+                    .computeIfAbsent(areaId, k -> new ArrayList<>())
+                    .add(v);
+        }
     }
 
     private void removeHvacViewFromMap(@HvacProperty int propId, @AreaId int areaId, HvacView v) {
-        Map<Integer, List<HvacView>> viewsRegisteredForProp = mHvacPropertyViewMap.get(propId);
-        if (viewsRegisteredForProp != null) {
-            List<HvacView> registeredViews = viewsRegisteredForProp.get(areaId);
-            if (registeredViews != null) {
-                registeredViews.remove(v);
-                if (registeredViews.isEmpty()) {
-                    viewsRegisteredForProp.remove(areaId);
-                    if (viewsRegisteredForProp.isEmpty()) {
-                        mHvacPropertyViewMap.remove(propId);
+        synchronized (mHvacPropertyViewMap) {
+            Map<Integer, List<HvacView>> viewsRegisteredForProp = mHvacPropertyViewMap.get(propId);
+            if (viewsRegisteredForProp != null) {
+                List<HvacView> registeredViews = viewsRegisteredForProp.get(areaId);
+                if (registeredViews != null) {
+                    registeredViews.remove(v);
+                    if (registeredViews.isEmpty()) {
+                        viewsRegisteredForProp.remove(areaId);
+                        if (viewsRegisteredForProp.isEmpty()) {
+                            mHvacPropertyViewMap.remove(propId);
+                        }
                     }
                 }
             }

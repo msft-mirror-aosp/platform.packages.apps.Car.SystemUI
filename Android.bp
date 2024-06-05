@@ -39,8 +39,12 @@ android_library {
         "SettingsLib",
         "car-admin-ui-lib",
         "car-helper-lib",
-        "car-ui-lib",
+        "car-telephony-common-no-overlayable",
+        "car-ui-lib-no-overlayable",
         "car-qc-lib",
+        "car-resource-common",
+        "com_android_systemui_car_flags_lib",
+        "androidx.annotation_annotation",
         "androidx.legacy_legacy-support-v4",
         "androidx.recyclerview_recyclerview",
         "androidx.preference_preference",
@@ -53,12 +57,16 @@ android_library {
         "androidx.slice_slice-view",
         "androidx.slice_slice-builders",
         "androidx.arch.core_core-runtime",
+        "androidx.lifecycle_lifecycle-common-java8",
         "androidx.lifecycle_lifecycle-extensions",
         "SystemUI-tags",
         "SystemUI-proto",
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
-        "animationlib",
+        "//frameworks/libs/systemui:animationlib",
+        "CarDockLib",
+        "androidx.test.rules",
+        "car-data-subscription-lib",
     ],
 
     libs: [
@@ -69,9 +77,13 @@ android_library {
         "--no-resource-deduping",
     ],
 
+    javacflags: ["-Adagger.fastInit=enabled"],
+
     manifest: "AndroidManifest.xml",
 
     plugins: ["dagger2-compiler"],
+    // TODO(b/319708040): re-enable use_resource_processor
+    use_resource_processor: false,
 
 }
 
@@ -108,21 +120,30 @@ android_library {
         "androidx.slice_slice-view",
         "androidx.slice_slice-builders",
         "androidx.arch.core_core-runtime",
+        "androidx.lifecycle_lifecycle-common-java8",
         "androidx.lifecycle_lifecycle-extensions",
         "car-admin-ui-lib",
         "car-helper-lib",
-        "car-ui-lib",
+        "car-telephony-common-no-overlayable",
+        "car-ui-lib-no-overlayable",
         "car-qc-lib",
+        "car-resource-common",
+        "com_android_systemui_car_flags_lib",
         "SystemUI-tags",
         "SystemUI-proto",
         "metrics-helper-lib",
-        "androidx.test.rules", "hamcrest-library",
+        "androidx.test.rules",
+        "hamcrest-library",
         "mockito-target-extended-minus-junit4",
+        "flag-junit",
         "testables",
-        "truth-prebuilt",
+        "truth",
         "testng",
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
+        "CarDockLib",
+        "car-data-subscription-lib",
+
     ],
     libs: [
         "android.test.runner",
@@ -137,8 +158,16 @@ android_library {
 
     plugins: ["dagger2-compiler"],
 
+    lint: {
+        test: true,
+    },
+
     // TODO(b/218518451) re-enable errorprone.
-    errorprone: {enabled: false},
+    errorprone: {
+        enabled: false,
+    },
+    // TODO(b/319708040): re-enable use_resource_processor
+    use_resource_processor: false,
 }
 
 android_app {
@@ -156,7 +185,7 @@ android_app {
 
     resource_dirs: [],
 
-     overrides: [
+    overrides: [
         "SystemUI",
     ],
 
@@ -170,6 +199,10 @@ android_app {
             "proguard.flags",
         ],
     },
+    // TODO(b/301283770): Compiling CarSystemUI should not require -J-Xmx8192M
+    javacflags: [
+        "-J-Xmx8192M",
+    ],
     dxflags: ["--multi-dex"],
 
     aaptflags: [
@@ -181,5 +214,30 @@ android_app {
 
     plugins: ["dagger2-compiler"],
 
-    required: ["privapp_whitelist_com.android.systemui", "allowed_privapp_com.android.carsystemui"],
+    required: [
+        "privapp_whitelist_com.android.systemui",
+        "allowed_privapp_com.android.carsystemui",
+    ],
+}
+
+// Resource lib
+// To be used ONLY for RROs of CarSystemUI
+android_library {
+    name: "CarSystemUI-res",
+    sdk_version: "system_current",
+    resource_dirs: [
+        "res-keyguard",
+        "res",
+    ],
+    manifest: "AndroidManifest-res.xml",
+    use_resource_processor: true,
+    static_libs: [
+        "SystemUI-res",
+        "CarNotification-res",
+        "car-resource-common",
+        "car-ui-lib-no-overlayable",
+    ],
+    lint: {
+        disabled_checks: ["MissingClass"],
+    },
 }

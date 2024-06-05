@@ -80,7 +80,7 @@ C33.4622,34.1902 34.0672,35.2032 34.0672,37.0162 C34.0672,37.0442
 30.8002,37.0562 30.8002,37.0162" />
             </group>
             <path
-                android:fillColor="#80CBC4"
+                android:fillColor="@color/hvac_seat_heat_level_drawable_on_fill_color"
                 android:strokeWidth="1"
                 android:pathData="M93.6901028,27.5014524 C91.9767653,24.9400312 90.0097515,22.5335347
 87.8442975,20.3470313 C85.6788435,18.1594949 83.2944914,16.1733607
@@ -127,7 +127,7 @@ C46.0115511,102.208916 47.081492,103.845953 46.7418931,105.522238
 C46.4452556,106.988858 45.1666455,108 43.7386938,108 C43.535139,108
 43.3285157,107.979343 43.1208694,107.935964 Z" />
             <path
-                android:fillColor="@color/hvac_seat_heat_level_drawable_fill_color"
+                android:fillColor="@color/hvac_seat_heat_level_drawable_off_fill_color"
                 android:strokeWidth="1"
                 android:pathData="M64.2613062,108 C62.8333545,108 61.5547444,106.988858 61.2581069,105.522238
 C60.918508,103.845953 61.9884489,102.208916 63.6496192,101.866016

@@ -21,6 +21,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.UserHandle;
@@ -36,8 +39,6 @@ import com.android.car.qc.QCItem;
 import com.android.car.qc.QCList;
 import com.android.car.qc.QCRow;
 import com.android.car.qc.provider.BaseLocalQCProvider;
-import com.android.launcher3.icons.BitmapInfo;
-import com.android.launcher3.icons.IconFactory;
 import com.android.systemui.R;
 import com.android.systemui.privacy.PrivacyDialog;
 
@@ -163,7 +164,7 @@ public abstract class SensorQcPanel extends BaseLocalQCProvider
             }
 
             listBuilder.addRow(new QCRow.Builder()
-                    .setIcon(getBadgedIcon(mContext, applicationInfo.get()))
+                    .setIcon(loadAppIcon(applicationInfo.get()))
                     .setIconTintable(false)
                     .setTitle(title)
                     .build());
@@ -197,26 +198,36 @@ public abstract class SensorQcPanel extends BaseLocalQCProvider
                         .toString());
     }
 
-    @NonNull
-    private Icon getBadgedIcon(@NonNull Context context,
-            @NonNull ApplicationInfo appInfo) {
+    private Icon loadAppIcon(@NonNull ApplicationInfo appInfo) {
         UserHandle user = UserHandle.getUserHandleForUid(appInfo.uid);
-        try (IconFactory iconFactory = IconFactory.obtain(context)) {
-            Drawable d = iconFactory.createBadgedIconBitmap(
-                            appInfo.loadUnbadgedIcon(context.getPackageManager()),
-                            new IconFactory.IconOptions()
-                                    .setShrinkNonAdaptiveIcons(false)
-                                    .setUser(user))
-                    .newIcon(context);
-            BitmapInfo bitmapInfo = iconFactory.createBadgedIconBitmap(
-                    d, new IconFactory.IconOptions()
-                            .setShrinkNonAdaptiveIcons(false));
-            return Icon.createWithBitmap(bitmapInfo.icon);
+        Context userContext = mContext.createContextAsUser(user, /* flags= */ 0);
+        PackageManager pm = userContext.getPackageManager();
+        Drawable appIcon = pm.getApplicationIcon(appInfo);
+        return Icon.createWithBitmap(createBitmapFromDrawable(pm.getUserBadgedIcon(appIcon, user)));
+    }
+
+    private static Bitmap createBitmapFromDrawable(Drawable drawable) {
+        Bitmap bitmap;
+        if (drawable instanceof BitmapDrawable) {
+            bitmap = ((BitmapDrawable) drawable).getBitmap();
+        } else {
+            int width = drawable.getIntrinsicWidth() > 0 ? drawable.getIntrinsicWidth() : 1;
+            int height = drawable.getIntrinsicHeight() > 0 ? drawable.getIntrinsicHeight() : 1;
+            bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
         }
+        return bitmap;
     }
 
     @Override
-    public void onSensorInfoUpdate() {
+    public void onSensorPrivacyChanged() {
+        notifyChange();
+    }
+
+    @Override
+    public void onPrivacyItemsChanged() {
         notifyChange();
     }
 

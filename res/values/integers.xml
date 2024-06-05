@@ -48,16 +48,19 @@
     <integer name="hvac_seat_heat_level_count">4</integer>
     <!-- Immersive privacy indicator animation duration. -->
     <integer name="privacy_indicator_animation_duration">500</integer>
+    <!-- The minimum fan speed value.-->
+    <integer name="hvac_min_fan_speed">1</integer>
+    <!-- The maximum fan speed value. -->
+    <integer name="hvac_max_fan_speed">6</integer>
 
     <!-- The upper bounds for background colors used in Adjustable Background Temperature Control
     View. Note that these integers should be in Celsius and will be divided by 10 so that the first
     decimal can be expressed. The corresponding background color for each level is defined in
-    colors.xml (see hvac_temperature_level_backgrounds). -->
+    arrays.xml (see hvac_temperature_level_backgrounds). -->
     <integer-array name="hvac_temperature_control_levels">
-        <item>180</item>
-        <item>200</item>
-        <item>220</item>
-        <item>250</item>
-        <item>999</item>
+        <item>9999</item>
     </integer-array>
+
+    <!-- Timeout value for data subscription pop up in ms -->
+    <integer name="data_subscription_pop_up_timeout">30000</integer>
 </resources>

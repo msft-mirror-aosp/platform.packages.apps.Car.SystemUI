@@ -25,10 +25,13 @@ import android.os.UserHandle;
 import android.os.UserManager;
 
 import com.android.systemui.CoreStartable;
+import com.android.systemui.InitController;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.dagger.qualifiers.Application;
 import com.android.systemui.dagger.qualifiers.Background;
 import com.android.systemui.dump.DumpManager;
+import com.android.systemui.flags.FeatureFlagsClassic;
 import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.UserContentResolverProvider;
 import com.android.systemui.settings.UserContextProvider;
@@ -41,6 +44,11 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
+
+import javax.inject.Provider;
+
+import kotlinx.coroutines.CoroutineDispatcher;
+import kotlinx.coroutines.CoroutineScope;
 
 /**
  * Car-specific dagger Module for classes found within the com.android.systemui.settings package.
@@ -60,15 +68,20 @@ public abstract class CarMultiUserUtilsModule {
     @Provides
     static UserTracker provideUserTracker(
             Context context,
+            Provider<FeatureFlagsClassic> featureFlagsProvider,
             UserManager userManager,
             IActivityManager iActivityManager,
             DumpManager dumpManager,
+            @Application CoroutineScope appScope,
+            @Background CoroutineDispatcher backgroundDispatcher,
             @Background Handler handler,
-            CarServiceProvider carServiceProvider
+            CarServiceProvider carServiceProvider,
+            InitController initController
     ) {
         if (CarSystemUIUserUtil.isMUPANDSystemUI()) {
             CarMUPANDUserTrackerImpl mupandTracker = new CarMUPANDUserTrackerImpl(context,
-                    userManager, iActivityManager, dumpManager, handler, carServiceProvider);
+                    featureFlagsProvider, userManager, iActivityManager, dumpManager, appScope,
+                    backgroundDispatcher, handler, carServiceProvider, initController);
             mupandTracker.initialize(ActivityManager.getCurrentUser());
             return mupandTracker;
         }
@@ -78,8 +91,9 @@ public abstract class CarMultiUserUtilsModule {
         int startingUser = isSecondaryUserSystemUI
                 ? processUser.getIdentifier()
                 : ActivityManager.getCurrentUser();
-        CarUserTrackerImpl tracker = new CarUserTrackerImpl(context, userManager, iActivityManager,
-                dumpManager, handler, isSecondaryUserSystemUI);
+        CarUserTrackerImpl tracker = new CarUserTrackerImpl(context, featureFlagsProvider,
+                userManager, iActivityManager, dumpManager, appScope, backgroundDispatcher,
+                handler, isSecondaryUserSystemUI);
         tracker.initialize(startingUser);
         return tracker;
     }

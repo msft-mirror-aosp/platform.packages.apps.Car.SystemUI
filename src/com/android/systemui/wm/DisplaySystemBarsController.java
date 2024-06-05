@@ -258,6 +258,11 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             updateDisplayWindowRequestedVisibleTypes();
         }
 
+        @Override
+        public void setImeInputTargetRequestedVisibility(boolean visible) {
+            // TODO
+        }
+
         private void registerOverlayChangeBroadcastReceiver() {
             IntentFilter overlayFilter = new IntentFilter(ACTION_OVERLAY_CHANGED);
             overlayFilter.addDataScheme(OVERLAY_FILTER_DATA_SCHEME);

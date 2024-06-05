@@ -173,6 +173,11 @@ public class MDSystemBarsController {
                 @Nullable ImeTracker.Token statsToken) {
             //no-op
         }
+
+        @Override
+        public void setImeInputTargetRequestedVisibility(boolean visible) {
+            //no-op
+        }
     }
 
     /**

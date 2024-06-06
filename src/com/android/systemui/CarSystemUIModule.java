@@ -45,6 +45,7 @@ import com.android.systemui.display.ui.viewmodel.ConnectingDisplayViewModel;
 import com.android.systemui.dock.DockManager;
 import com.android.systemui.dock.DockManagerImpl;
 import com.android.systemui.doze.DozeHost;
+import com.android.systemui.globalactions.ShutdownUiModule;
 import com.android.systemui.media.muteawait.MediaMuteAwaitConnectionCli;
 import com.android.systemui.media.nearby.NearbyMediaDevicesManager;
 import com.android.systemui.navigationbar.NoopNavigationBarControllerModule;
@@ -104,6 +105,7 @@ import javax.inject.Named;
                 ScreenDecorationsModule.class,
                 ShadeEmptyImplModule.class,
                 SysUIUnfoldStartableModule.class,
+                ShutdownUiModule.class,
         }
 )
 abstract class CarSystemUIModule {

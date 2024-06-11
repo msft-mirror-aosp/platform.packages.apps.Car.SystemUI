@@ -139,7 +139,7 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
     @Test
     public void setAnchorView_viewNotNull_popUpDisplay() {
         when(mPopupWindow.isShowing()).thenReturn(false);
-        when(mDataSubscription.isDataSubscriptionInactiveOrTrial()).thenReturn(true);
+        when(mDataSubscription.isDataSubscriptionInactive()).thenReturn(true);
 
         mController.setAnchorView(mAnchorView);
 
@@ -152,7 +152,7 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
     @Test
     public void setAnchorView_viewNull_popUpNotDisplay() {
         when(mPopupWindow.isShowing()).thenReturn(false);
-        when(mDataSubscription.isDataSubscriptionInactiveOrTrial()).thenReturn(true);
+        when(mDataSubscription.isDataSubscriptionInactive()).thenReturn(true);
         mController.setIsUxRestrictionsListenerRegistered(true);
 
         mController.setAnchorView(null);

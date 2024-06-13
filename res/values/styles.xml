@@ -66,6 +66,10 @@
         <item name="android:background">@drawable/nav_bar_button_background</item>
         <item name="unselectedAlpha">1.0</item>
     </style>
+    <style name="SystemBarButton.Vertical">
+        <item name="android:layout_marginEnd">0dp</item>
+        <item name="android:layout_marginBottom">@dimen/system_bar_button_margin</item>
+    </style>
 
     <!-- todo(b/304320644): update SystemBarButton -->
     <style name="SystemBarButtonWithDock" parent="SystemBarButton">
@@ -242,13 +246,11 @@
 
 
     <!-- Biometrics -->
-    <style name="PinPadKey">
+    <style name="PinPadKey" parent="TextAppearance.Car.Headline.Medium">
         <item name="android:gravity">center</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textSize">@*android:dimen/car_body1_size</item>
         <item name="android:textColor">@*android:color/car_body3</item>
         <item name="android:tint">@*android:color/car_body3</item>
         <item name="android:clickable">true</item>
-        <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
 </resources>

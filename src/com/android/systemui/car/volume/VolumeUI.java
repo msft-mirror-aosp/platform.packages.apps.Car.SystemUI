@@ -42,6 +42,7 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.volume.VolumeDialogComponent;
 
 import dagger.Lazy;
@@ -54,7 +55,7 @@ import javax.inject.Inject;
 
 /** The entry point for controlling the volume ui in cars. */
 @SysUISingleton
-public class VolumeUI implements CoreStartable {
+public class VolumeUI implements CoreStartable, ConfigurationController.ConfigurationListener {
 
     private static final String TAG = "VolumeUI";
     private final Resources mResources;
@@ -194,7 +195,7 @@ public class VolumeUI implements CoreStartable {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigChanged(Configuration newConfig) {
         if (!mEnabled) return;
         if (mVolumeDialogComponent != null) {
             mVolumeDialogComponent.onConfigurationChanged(newConfig);

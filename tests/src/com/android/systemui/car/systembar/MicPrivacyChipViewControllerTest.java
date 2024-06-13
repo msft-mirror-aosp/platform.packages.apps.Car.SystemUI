@@ -48,6 +48,7 @@ import com.android.systemui.car.privacy.MicPrivacyChip;
 import com.android.systemui.privacy.PrivacyItem;
 import com.android.systemui.privacy.PrivacyItemController;
 import com.android.systemui.privacy.PrivacyType;
+import com.android.systemui.settings.UserTracker;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -87,6 +88,8 @@ public class MicPrivacyChipViewControllerTest extends SysuiTestCase {
     @Mock
     private SensorPrivacyManager mSensorPrivacyManager;
     @Mock
+    private UserTracker mUserTracker;
+    @Mock
     private Car mCar;
     @Mock
     private Runnable mQsTileNotifyUpdateRunnable;
@@ -105,7 +108,7 @@ public class MicPrivacyChipViewControllerTest extends SysuiTestCase {
         when(mCar.isConnected()).thenReturn(true);
 
         mMicPrivacyChipViewController = new MicPrivacyChipViewController(mContext,
-                mPrivacyItemController, mSensorPrivacyManager);
+                mPrivacyItemController, mSensorPrivacyManager, mUserTracker);
     }
 
     @Test
@@ -113,6 +116,7 @@ public class MicPrivacyChipViewControllerTest extends SysuiTestCase {
         mMicPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
 
         verify(mPrivacyItemController).addCallback(any());
+        verify(mUserTracker).addCallback(any(), any());
     }
 
     @Test
@@ -132,6 +136,20 @@ public class MicPrivacyChipViewControllerTest extends SysuiTestCase {
         mMicPrivacyChipViewController.addPrivacyChipView(new View(getContext()));
 
         verify(mPrivacyItemController, never()).addCallback(any());
+        verify(mUserTracker, never()).addCallback(any(), any());
+    }
+
+    @Test
+    public void onUserChanged_micStatusSet() {
+        when(mSensorPrivacyManager.isSensorPrivacyEnabled(anyInt(), eq(MICROPHONE)))
+                .thenReturn(false);
+        mMicPrivacyChipViewController.addPrivacyChipView(mFrameLayout);
+        ArgumentCaptor<UserTracker.Callback> captor = ArgumentCaptor.forClass(
+                UserTracker.Callback.class);
+        verify(mUserTracker).addCallback(captor.capture(), any());
+
+        captor.getValue().onUserChanged(mContext.getUserId(), mContext);
+        verify(mMicPrivacyChip).setSensorEnabled(eq(true));
     }
 
     @Test

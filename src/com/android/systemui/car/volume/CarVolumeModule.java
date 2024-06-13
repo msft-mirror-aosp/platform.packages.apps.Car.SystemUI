@@ -20,6 +20,7 @@ package com.android.systemui.car.volume;
 
 import android.content.Context;
 
+import com.android.systemui.CoreStartable;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.plugins.VolumeDialog;
 import com.android.systemui.settings.UserTracker;
@@ -30,10 +31,23 @@ import com.android.systemui.volume.VolumeDialogComponent;
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.ClassKey;
+import dagger.multibindings.IntoMap;
+import dagger.multibindings.IntoSet;
 
 /** Dagger module for code in car/volume. */
 @Module
 public interface CarVolumeModule {
+    /** Starts VolumeUI.  */
+    @Binds
+    @IntoMap
+    @ClassKey(VolumeUI.class)
+    CoreStartable bindVolumeUIStartable(VolumeUI impl);
+
+    /** Listen to config changes for VolumeUI. */
+    @Binds
+    @IntoSet
+    ConfigurationController.ConfigurationListener bindVolumeUIConfigChanges(VolumeUI impl);
 
     /** */
     @Binds

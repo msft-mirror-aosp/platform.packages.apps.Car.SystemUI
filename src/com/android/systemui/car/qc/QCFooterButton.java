@@ -16,21 +16,18 @@
 
 package com.android.systemui.car.qc;
 
-import static com.android.systemui.car.users.CarSystemUIUserUtil.getCurrentUserHandle;
-
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
 
-import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.R;
-import com.android.systemui.settings.UserTracker;
+import com.android.systemui.car.systembar.element.CarSystemBarElement;
+import com.android.systemui.car.systembar.element.CarSystemBarElementFlags;
+import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
 
 import java.net.URISyntaxException;
 
@@ -41,13 +38,13 @@ import java.net.URISyntaxException;
  * attribute and for enabled state to be set according to driving mode via the
  * {@link R.styleable.QCFooterButton_disableWhileDriving} attribute.
  */
-public class QCFooterButton extends Button {
-    private static final String TAG = "QCFooterButton";
+public class QCFooterButton extends Button implements CarSystemBarElement {
+    private final Class<?> mElementControllerClassAttr;
+    private final int mSystemBarDisableFlags;
+    private final int mSystemBarDisable2Flags;
+    private final boolean mDisableForLockTaskModeLocked;
+    private final Intent mIntent;
     private final boolean mDisableWhileDriving;
-    private final CarUxRestrictionsUtil.OnUxRestrictionsChangedListener mListener =
-            carUxRestrictions -> setEnabled(!carUxRestrictions.isRequiresDistractionOptimization());
-    @Nullable
-    private UserTracker mUserTracker;
 
     public QCFooterButton(Context context) {
         this(context, /* attrs= */ null);
@@ -63,7 +60,19 @@ public class QCFooterButton extends Button {
 
     public QCFooterButton(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        mElementControllerClassAttr =
+                CarSystemBarElementResolver.getElementControllerClassFromAttributes(context, attrs);
+        mSystemBarDisableFlags =
+                CarSystemBarElementFlags.getStatusBarManagerDisableFlagsFromAttributes(context,
+                        attrs);
+        mSystemBarDisable2Flags =
+                CarSystemBarElementFlags.getStatusBarManagerDisable2FlagsFromAttributes(context,
+                        attrs);
+        mDisableForLockTaskModeLocked =
+                CarSystemBarElementFlags.getDisableForLockTaskModeLockedFromAttributes(context,
+                        attrs);
         if (attrs == null) {
+            mIntent = null;
             mDisableWhileDriving = false;
             return;
         }
@@ -72,48 +81,48 @@ public class QCFooterButton extends Button {
                 R.styleable.QCFooterButton);
         String intentString = typedArray.getString(R.styleable.QCFooterButton_intent);
         if (intentString != null) {
-            Intent intent;
             try {
-                intent = Intent.parseUri(intentString, Intent.URI_INTENT_SCHEME);
+                mIntent = Intent.parseUri(intentString, Intent.URI_INTENT_SCHEME);
             } catch (URISyntaxException e) {
                 throw new RuntimeException("Failed to attach intent", e);
             }
-            Intent finalIntent = intent;
-            setOnClickListener(v -> {
-                mContext.sendBroadcastAsUser(new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS),
-                        getCurrentUserHandle(mContext, mUserTracker));
-                try {
-                    ActivityOptions options = ActivityOptions.makeBasic();
-                    options.setLaunchDisplayId(mContext.getDisplayId());
-                    mContext.startActivityAsUser(finalIntent, options.toBundle(),
-                            getCurrentUserHandle(mContext, mUserTracker));
-                } catch (Exception e) {
-                    Log.e(TAG, "Failed to launch intent", e);
-                }
-            });
+        } else {
+            mIntent = null;
         }
 
         mDisableWhileDriving = typedArray.getBoolean(
                 R.styleable.QCFooterButton_disableWhileDriving, /* defValue= */ false);
     }
 
-    public void setUserTracker(UserTracker userTracker) {
-        mUserTracker = userTracker;
+    @Nullable
+    public Intent getOnClickIntent() {
+        return mIntent;
+    }
+
+    public boolean isDisableWhileDriving() {
+        return mDisableWhileDriving;
     }
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if (mDisableWhileDriving) {
-            CarUxRestrictionsUtil.getInstance(mContext).register(mListener);
+    public Class<?> getElementControllerClass() {
+        if (mElementControllerClassAttr != null) {
+            return mElementControllerClassAttr;
         }
+        return QCFooterButtonController.class;
     }
 
     @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if (mDisableWhileDriving) {
-            CarUxRestrictionsUtil.getInstance(mContext).unregister(mListener);
-        }
+    public int getSystemBarDisableFlags() {
+        return mSystemBarDisableFlags;
+    }
+
+    @Override
+    public int getSystemBarDisable2Flags() {
+        return mSystemBarDisable2Flags;
+    }
+
+    @Override
+    public boolean disableForLockTaskModeLocked() {
+        return mDisableForLockTaskModeLocked;
     }
 }

@@ -23,18 +23,23 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.systemui.R;
-import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.statusicon.StatusIconViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.statusbar.connectivity.NetworkController;
 import com.android.systemui.statusbar.connectivity.SignalCallback;
 import com.android.systemui.statusbar.connectivity.WifiIndicators;
 
-import javax.inject.Inject;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * A controller for the read-only status icon about Wi-Fi.
  */
-public class WifiSignalStatusIconController extends StatusIconController implements
+public class WifiSignalStatusIconController extends StatusIconViewController implements
         SignalCallback {
 
     private final Context mContext;
@@ -44,22 +49,33 @@ public class WifiSignalStatusIconController extends StatusIconController impleme
     private Drawable mWifiSignalIconDrawable;
     private String mWifiConnectedContentDescription;
 
-    @Inject
-    WifiSignalStatusIconController(
-            Context context,
-            @Main Resources resources,
-            NetworkController networkController) {
-        mContext = context;
+    @AssistedInject
+    protected WifiSignalStatusIconController(@Assisted StatusIconView view,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
+            @Main Resources resources, Context context, NetworkController networkController) {
+        super(view, disableController, stateController);
         mResources = resources;
+        mContext = context;
         mNetworkController = networkController;
 
-        mWifiConnectedContentDescription = resources.getString(R.string.status_icon_signal_wifi);
+        mWifiConnectedContentDescription = context.getString(R.string.status_icon_signal_wifi);
+    }
 
+    @AssistedFactory
+    public interface Factory extends
+            StatusIconViewController.Factory<WifiSignalStatusIconController> {
+    }
+
+    @Override
+    protected void onViewAttached() {
+        super.onViewAttached();
         mNetworkController.addCallback(this);
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onViewDetached() {
+        super.onViewDetached();
         mNetworkController.removeCallback(this);
     }
 
@@ -87,10 +103,5 @@ public class WifiSignalStatusIconController extends StatusIconController impleme
     @VisibleForTesting
     Drawable getWifiSignalIconDrawable() {
         return mWifiSignalIconDrawable;
-    }
-
-    @Override
-    protected int getId() {
-        return R.id.qc_wifi_signal_status_icon;
     }
 }

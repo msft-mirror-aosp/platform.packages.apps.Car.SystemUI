@@ -22,6 +22,7 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/nav_bar_background"
     app:default_layout="@layout/car_right_system_bar_default"
     app:displaycompat_layout="@layout/displaycompat_toolbar"
     app:displaycompat_side="right">

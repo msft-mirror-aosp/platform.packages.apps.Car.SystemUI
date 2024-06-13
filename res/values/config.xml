@@ -137,24 +137,6 @@
         <item>com.android.systemui.car.statusicon.ui.SignalStatusIconController</item>
     </string-array>
 
-    <!-- List of StatusIconControllers associated with read-only status icons.
-         The icons will be added to the view in the order their controllers appear on this list.-->
-    <string-array name="config_readOnlyIconControllers" translatable="false">
-        <item>com.android.systemui.car.statusicon.ui.LocationStatusIconController</item>
-        <item>com.android.systemui.car.statusicon.ui.PhoneCallStatusIconController</item>
-    </string-array>
-
-    <!-- List of StatusIconControllers associated with read-only status icons for QC panels.
-         The icons will be added to the view in the order their controllers appear on this list. -->
-    <string-array name="config_qcPanelReadOnlyIconControllers" translatable="false">
-        <item>com.android.systemui.car.statusicon.ui.LocationStatusIconController</item>
-        <item>com.android.systemui.car.statusicon.ui.MobileSignalStatusIconController</item>
-        <item>com.android.systemui.car.statusicon.ui.WifiSignalStatusIconController</item>
-    </string-array>
-
-    <string-array name="config_userpickerReadOnlyIconControllers" translatable="false">
-    </string-array>
-
     <!-- List of package names that are allowed sources of app installation. -->
     <string-array name="config_allowedAppInstallSources" translatable="false">
         <item>com.android.vending</item>
@@ -251,4 +233,16 @@
     <!-- 1 left -->
     <!-- 2 right -->
     <integer name="config_showDisplayCompatToolbarOnSystemBar">0</integer>
+
+    <!-- Determines how to show navigation bar and status bar on app's immersive request, only
+        works if config_remoteInsetsControllerControlsSystemBars is set to true-->
+    <!-- 0 non_immersive show all system bars on immersive request. -->
+    <!-- 1 immersive, hide both bars -->
+    <!-- 2 immersive_with_nav, show nav bar and hide status bar -->
+    <integer name="config_systemBarPersistency">1</integer>
+
+    <!-- Determines the orientation of the status icon. -->
+    <!-- 0 horizontal. -->
+    <!-- 1 vertical -->
+    <integer name="config_statusIconLayoutOrientation">0</integer>
 </resources>

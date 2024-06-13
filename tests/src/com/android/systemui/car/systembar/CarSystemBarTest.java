@@ -184,7 +184,8 @@ public class CarSystemBarTest extends SysuiTestCase {
                 mButtonSelectionStateListener, mExecutor, mUiBgExecutor, mBarService,
                 () -> mKeyguardStateController, () -> mIconPolicy, mHvacController, mSignalPolicy,
                 mSystemBarConfigs,
-                mock(ConfigurationController.class), displayTracker, Optional.empty(), null);
+                mock(ConfigurationController.class), mock(CarSystemBarRestartTracker.class),
+                displayTracker, Optional.empty(), null);
         mCarSystemBar.setSignalPolicy(mSignalPolicy);
     }
 

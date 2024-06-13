@@ -17,49 +17,60 @@
 package com.android.systemui.car.statusicon.ui;
 
 import android.content.Context;
-import android.content.res.Resources;
 
 import androidx.annotation.VisibleForTesting;
 
 import com.android.settingslib.graph.SignalDrawable;
 import com.android.systemui.R;
-import com.android.systemui.car.statusicon.StatusIconController;
-import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.statusicon.StatusIconViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.statusbar.connectivity.MobileDataIndicators;
 import com.android.systemui.statusbar.connectivity.NetworkController;
 import com.android.systemui.statusbar.connectivity.SignalCallback;
 
-import javax.inject.Inject;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * A controller for the read-only status icon about mobile data.
  */
-public class MobileSignalStatusIconController extends StatusIconController implements
+public class MobileSignalStatusIconController extends StatusIconViewController implements
         SignalCallback{
-
-    private final Context mContext;
     private final NetworkController mNetworkController;
 
-    private SignalDrawable mMobileSignalIconDrawable;
-    private String mMobileSignalContentDescription;
+    private final SignalDrawable mMobileSignalIconDrawable;
+    private final String mMobileSignalContentDescription;
 
-    @Inject
-    MobileSignalStatusIconController(
-            Context context,
-            @Main Resources resources,
-            NetworkController networkController) {
-        mContext = context;
+    @AssistedInject
+    protected MobileSignalStatusIconController(@Assisted StatusIconView view,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
+            Context context, NetworkController networkController) {
+        super(view, disableController, stateController);
         mNetworkController = networkController;
 
-        mMobileSignalIconDrawable = new SignalDrawable(mContext);
-        mMobileSignalContentDescription = resources.getString(R.string.status_icon_signal_mobile);
-        updateStatus();
+        mMobileSignalIconDrawable = new SignalDrawable(context);
+        mMobileSignalContentDescription = context.getString(R.string.status_icon_signal_mobile);
+    }
 
-        mNetworkController.addCallback(this);
+    @AssistedFactory
+    public interface Factory extends
+            StatusIconViewController.Factory<MobileSignalStatusIconController> {
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onViewAttached() {
+        super.onViewAttached();
+        mNetworkController.addCallback(this);
+        updateStatus();
+    }
+
+    @Override
+    protected void onViewDetached() {
+        super.onViewDetached();
         mNetworkController.removeCallback(this);
     }
 
@@ -79,10 +90,5 @@ public class MobileSignalStatusIconController extends StatusIconController imple
     @VisibleForTesting
     SignalDrawable getMobileSignalIconDrawable() {
         return mMobileSignalIconDrawable;
-    }
-
-    @Override
-    protected int getId() {
-        return R.id.qc_mobile_signal_status_icon;
     }
 }

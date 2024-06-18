@@ -33,7 +33,7 @@ import com.android.keyguard.KeyguardDisplayManager;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardViewController;
 import com.android.keyguard.mediator.ScreenOnCoordinator;
-import com.android.systemui.animation.ActivityLaunchAnimator;
+import com.android.systemui.animation.ActivityTransitionAnimator;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
@@ -45,8 +45,8 @@ import com.android.systemui.flags.SystemPropertiesHelper;
 import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
-import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
 import com.android.systemui.keyguard.WindowManagerLockscreenVisibilityManager;
+import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
 import com.android.systemui.keyguard.ui.viewmodel.DreamingToLockscreenTransitionViewModel;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationModeController;
@@ -122,7 +122,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             WallpaperRepository wallpaperRepository,
             Lazy<ShadeController> mShadeControllerLazy,
             Lazy<NotificationShadeWindowController> notificationShadeWindowControllerLazy,
-            Lazy<ActivityLaunchAnimator> activityLaunchAnimator,
+            Lazy<ActivityTransitionAnimator> activityTransitionAnimator,
             Lazy<ScrimController> scrimControllerLazy,
             IActivityTaskManager activityTaskManagerService,
             FeatureFlags featureFlags,
@@ -148,7 +148,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 wallpaperRepository,
                 mShadeControllerLazy,
                 notificationShadeWindowControllerLazy,
-                activityLaunchAnimator,
+                activityTransitionAnimator,
                 scrimControllerLazy,
                 activityTaskManagerService,
                 featureFlags, secureSettings, systemSettings, systemClock,

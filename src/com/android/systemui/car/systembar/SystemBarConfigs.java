@@ -18,6 +18,8 @@ package com.android.systemui.car.systembar;
 
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
 
+import static com.android.systemui.car.systembar.CarSystemBar.DEBUG;
+
 import android.annotation.IntDef;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
@@ -31,6 +33,7 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
+import com.android.car.dockutil.Flags;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.car.notification.BottomNotificationPanelViewMediator;
@@ -41,6 +44,7 @@ import com.android.systemui.dagger.qualifiers.Main;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +143,7 @@ public class SystemBarConfigs {
     protected WindowManager.LayoutParams getLayoutParamsBySide(@SystemBarSide int side) {
         return mSystemBarConfigMap.get(side) != null
                 ? mSystemBarConfigMap
-                .get(side).getLayoutParams(mResources.getBoolean(R.bool.config_enableDock))
+                .get(side).getLayoutParams()
                 : null;
     }
 
@@ -167,7 +171,10 @@ public class SystemBarConfigs {
         if (mSystemBarConfigMap.get(side) == null) return;
 
         int[] paddings = mSystemBarConfigMap.get(side).getPaddings();
-        view.setPadding(paddings[2], paddings[0], paddings[3], paddings[1]);
+        if (DEBUG) {
+            Log.d(TAG, "Set padding to side = " + side + ", to " + Arrays.toString(paddings));
+        }
+        view.setPadding(paddings[LEFT], paddings[TOP], paddings[RIGHT], paddings[BOTTOM]);
     }
 
     protected List<Integer> getSystemBarSidesByZOrder() {
@@ -181,30 +188,100 @@ public class SystemBarConfigs {
 
         if (currentConfig == null) return;
 
+        int defaultLeftPadding = 0;
+        int defaultRightPadding = 0;
+        int defaultTopPadding = 0;
+        int defaultBottomPadding = 0;
+
+        switch (side) {
+            case LEFT: {
+                defaultLeftPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_left_system_bar_left_padding);
+                defaultRightPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_left_system_bar_right_padding);
+                defaultTopPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_left_system_bar_top_padding);
+                defaultBottomPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_left_system_bar_bottom_padding);
+                break;
+            }
+            case RIGHT: {
+                defaultLeftPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_right_system_bar_left_padding);
+                defaultRightPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_right_system_bar_right_padding);
+                defaultTopPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_right_system_bar_top_padding);
+                defaultBottomPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_right_system_bar_bottom_padding);
+                break;
+            }
+            case TOP: {
+                defaultLeftPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_top_system_bar_left_padding);
+                defaultRightPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_top_system_bar_right_padding);
+                defaultTopPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_top_system_bar_top_padding);
+                defaultBottomPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_top_system_bar_bottom_padding);
+                break;
+            }
+            case BOTTOM: {
+                defaultLeftPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_bottom_system_bar_left_padding);
+                defaultRightPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_bottom_system_bar_right_padding);
+                defaultTopPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_bottom_system_bar_top_padding);
+                defaultBottomPadding = mResources
+                        .getDimensionPixelSize(R.dimen.car_bottom_system_bar_bottom_padding);
+                break;
+            }
+            default:
+        }
+
+        currentConfig.setPaddingBySide(LEFT, defaultLeftPadding);
+        currentConfig.setPaddingBySide(RIGHT, defaultRightPadding);
+        currentConfig.setPaddingBySide(TOP, defaultTopPadding);
+        currentConfig.setPaddingBySide(BOTTOM, defaultBottomPadding);
+
         if (isHorizontalBar(side)) {
             if (mLeftNavBarEnabled && currentConfig.getZOrder() < mSystemBarConfigMap.get(
                     LEFT).getZOrder()) {
                 currentConfig.setPaddingBySide(LEFT,
-                        barVisibilities.get(LEFT) ? mSystemBarConfigMap.get(LEFT).getGirth() : 0);
+                        barVisibilities.get(LEFT)
+                                ? mSystemBarConfigMap.get(LEFT).getGirth()
+                                : defaultLeftPadding);
             }
             if (mRightNavBarEnabled && currentConfig.getZOrder() < mSystemBarConfigMap.get(
                     RIGHT).getZOrder()) {
                 currentConfig.setPaddingBySide(RIGHT,
-                        barVisibilities.get(RIGHT) ? mSystemBarConfigMap.get(RIGHT).getGirth() : 0);
+                        barVisibilities.get(RIGHT)
+                                ? mSystemBarConfigMap.get(RIGHT).getGirth()
+                                : defaultRightPadding);
             }
         }
         if (isVerticalBar(side)) {
             if (mTopNavBarEnabled && currentConfig.getZOrder() < mSystemBarConfigMap.get(
                     TOP).getZOrder()) {
                 currentConfig.setPaddingBySide(TOP,
-                        barVisibilities.get(TOP) ? mSystemBarConfigMap.get(TOP).getGirth() : 0);
+                        barVisibilities.get(TOP)
+                                ? mSystemBarConfigMap.get(TOP).getGirth()
+                                : defaultTopPadding);
             }
             if (mBottomNavBarEnabled && currentConfig.getZOrder() < mSystemBarConfigMap.get(
                     BOTTOM).getZOrder()) {
                 currentConfig.setPaddingBySide(BOTTOM,
-                        barVisibilities.get(BOTTOM) ? mSystemBarConfigMap.get(BOTTOM).getGirth()
-                                : 0);
+                        barVisibilities.get(BOTTOM)
+                                ? mSystemBarConfigMap.get(BOTTOM).getGirth()
+                                : defaultBottomPadding);
             }
+
+        }
+        if (DEBUG) {
+            Log.d(TAG, "Update padding for side = " + side + " to "
+                    + Arrays.toString(currentConfig.getPaddings()));
         }
     }
 
@@ -513,7 +590,7 @@ public class SystemBarConfigs {
             return mPaddings;
         }
 
-        private WindowManager.LayoutParams getLayoutParams(boolean isDockEnabled) {
+        private WindowManager.LayoutParams getLayoutParams() {
             WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                     isHorizontalBar(mSide) ? ViewGroup.LayoutParams.MATCH_PARENT : mGirth,
                     isHorizontalBar(mSide) ? mGirth : ViewGroup.LayoutParams.MATCH_PARENT,
@@ -532,7 +609,7 @@ public class SystemBarConfigs {
             lp.windowAnimations = 0;
             lp.gravity = BAR_GRAVITY_MAP.get(mSide);
             lp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
-            if (isDockEnabled) {
+            if (Flags.dockFeature()) {
                 lp.privateFlags = lp.privateFlags
                         | WindowManager.LayoutParams.PRIVATE_FLAG_INTERCEPT_GLOBAL_DRAG_AND_DROP;
             }

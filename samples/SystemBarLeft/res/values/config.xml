@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (C) 2020 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2023 The Android Open Source Project
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -45,6 +44,11 @@
     <integer name="config_rightSystemBarZOrder">0</integer>
     <integer name="config_bottomSystemBarZOrder">0</integer>
 
+    <!-- Determines the orientation of the status icon. -->
+    <!-- 0 horizontal. -->
+    <!-- 1 vertical -->
+    <integer name="config_statusIconLayoutOrientation">1</integer>
+
     <!-- Whether heads-up notifications should be shown on the bottom. If false, heads-up
          notifications will be shown pushed to the top of their parent container. If true, they will
          be shown pushed to the bottom of their parent container. If true, then should override
@@ -53,14 +57,28 @@
          CarHeadsUpNotificationBottomAnimationHelper. -->
     <bool name="config_showHeadsUpNotificationOnBottom">true</bool>
 
+
+    <!-- Determines which system bar to use for display compat toolbar. -->
+    <!-- 0 disabled -->
+    <!-- 1 left -->
+    <!-- 2 right -->
+    <integer name="config_showDisplayCompatToolbarOnSystemBar">0</integer>
+
+    <!-- Determines if how to show navigation bar and status bar on app's immersive request, only
+    works if config_remoteInsetsControllerControlsSystemBars is set to true-->
+    <!-- 0 non_immersive show all system bars on immersive request. -->
+    <!-- 1 immersive, hide both bars -->
+    <!-- 2 immersive_with_nav, show nav bar and hide status bar -->
+    <integer name="config_systemBarPersistency">1</integer>
+
     <string name="config_notificationPanelViewMediator" translatable="false">
         com.android.systemui.car.notification.NotificationPanelViewMediator</string>
 
     <string name="config_appGridComponentName" translatable="false">
         com.android.car.carlauncher/.AppGridActivity</string>
 
-     <string-array name="config_quickControlsEntryPointIconControllers" translatable="false">
+    <string-array name="config_quickControlsEntryPointIconControllers" translatable="false">
         <item>com.android.systemui.car.statusicon.ui.SignalStatusIconController</item>
         <item>com.android.systemui.car.statusicon.ui.DisplayStatusIconController</item>
-     </string-array>
+    </string-array>
 </resources>

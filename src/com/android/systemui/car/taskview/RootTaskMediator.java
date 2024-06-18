@@ -20,7 +20,6 @@ import static android.app.WindowConfiguration.ACTIVITY_TYPE_ASSISTANT;
 import static android.app.WindowConfiguration.ACTIVITY_TYPE_HOME;
 import static android.app.WindowConfiguration.ACTIVITY_TYPE_RECENTS;
 import static android.app.WindowConfiguration.ACTIVITY_TYPE_STANDARD;
-import static android.app.WindowConfiguration.WINDOWING_MODE_FULLSCREEN;
 import static android.app.WindowConfiguration.WINDOWING_MODE_MULTI_WINDOW;
 import static android.app.WindowConfiguration.WINDOWING_MODE_UNDEFINED;
 
@@ -153,6 +152,9 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             mTaskViewTaskShellPart.onTaskInfoChanged(taskInfo);
             return;
         }
+        // For all the children tasks, just update the client part and no notification/update is
+        // sent to the shell part
+        mTaskViewClientPart.onTaskInfoChanged(taskInfo);
         if (mIsLaunchRoot) {
             mCarActivityManager.onTaskInfoChanged(taskInfo);
         }
@@ -172,6 +174,9 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             mTaskViewTaskShellPart.onTaskVanished(taskInfo);
             return;
         }
+        // For all the children tasks, just update the client part and no notification/update is
+        // sent to the shell part
+        mTaskViewClientPart.onTaskVanished(taskInfo);
         if (mIsLaunchRoot) {
             mCarActivityManager.onTaskVanished(taskInfo);
         }
@@ -200,10 +205,31 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         mSyncQueue.queue(wct);
     }
 
+    @Override
+    public void attachChildSurfaceToTask(int taskId, SurfaceControl.Builder b) {
+        if (mRootTask != null
+                && mRootTask.taskId == taskId) {
+            mTaskViewTaskShellPart.attachChildSurfaceToTask(taskId, b);
+            return;
+        }
+        ShellTaskOrganizer.TaskListener.super.attachChildSurfaceToTask(taskId, b);
+    }
+
+    @Override
+    public void reparentChildSurfaceToTask(int taskId, SurfaceControl sc,
+                                           SurfaceControl.Transaction t) {
+        if (mRootTask != null
+                && mRootTask.taskId == taskId) {
+            mTaskViewTaskShellPart.reparentChildSurfaceToTask(taskId, sc, t);
+            return;
+        }
+        ShellTaskOrganizer.TaskListener.super.reparentChildSurfaceToTask(taskId, sc, t);
+    }
+
     private void setRootTaskAsLaunchRoot(ActivityManager.RunningTaskInfo taskInfo) {
         WindowContainerTransaction wct = new WindowContainerTransaction();
         wct.setLaunchRoot(taskInfo.token,
-                        new int[]{WINDOWING_MODE_FULLSCREEN, WINDOWING_MODE_UNDEFINED},
+                        new int[]{WINDOWING_MODE_UNDEFINED},
                         mActivityTypes)
                 .reorder(taskInfo.token, true);
         mSyncQueue.queue(wct);

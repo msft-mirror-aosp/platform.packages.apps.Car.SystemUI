@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.systembar;
 
+import static com.android.systemui.car.systembar.CarSystemBar.DEBUG;
+
 import android.annotation.IntDef;
 import android.annotation.Nullable;
 import android.content.Context;
@@ -26,13 +28,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.android.car.dockutil.Flags;
 import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.hvac.HvacView;
 import com.android.systemui.car.hvac.TemperatureControlView;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
-import com.android.systemui.car.statusicon.ui.ReadOnlyIconsController;
 import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
 import com.android.systemui.car.systembar.CarSystemBarController.NotificationsShadeController;
 import com.android.systemui.settings.UserTracker;
@@ -55,7 +57,6 @@ public class CarSystemBarView extends LinearLayout {
     }
 
     private static final String TAG = CarSystemBarView.class.getSimpleName();
-    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     public static final int BUTTON_TYPE_NAVIGATION = 0;
     public static final int BUTTON_TYPE_KEYGUARD = 1;
@@ -63,8 +64,6 @@ public class CarSystemBarView extends LinearLayout {
 
     private final boolean mConsumeTouchWhenPanelOpen;
     private final boolean mButtonsDraggable;
-    private final boolean mIsDockEnabled;
-
     private CarSystemBarButton mHomeButton;
     private CarSystemBarButton mPassengerHomeButton;
     private View mNavButtons;
@@ -77,7 +76,6 @@ public class CarSystemBarView extends LinearLayout {
     private View mLockScreenButtons;
     private View mOcclusionButtons;
     private ViewGroup mQcEntryPointsContainer;
-    private ViewGroup mReadOnlyIconsContainer;
     // used to wire in open/close gestures for overlay panels
     private Set<OnTouchListener> mStatusBarWindowTouchListeners;
     private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
@@ -89,7 +87,6 @@ public class CarSystemBarView extends LinearLayout {
         mConsumeTouchWhenPanelOpen = getResources().getBoolean(
                 R.bool.config_consumeSystemBarTouchWhenNotificationPanelOpen);
         mButtonsDraggable = getResources().getBoolean(R.bool.config_systemBarButtonsDraggable);
-        mIsDockEnabled = getResources().getBoolean(R.bool.config_enableDock);
     }
 
     @Override
@@ -104,7 +101,6 @@ public class CarSystemBarView extends LinearLayout {
         mDriverHvacView = findViewById(R.id.driver_hvac);
         mPassengerHvacView = findViewById(R.id.passenger_hvac);
         mQcEntryPointsContainer = findViewById(R.id.qc_entry_points_container);
-        mReadOnlyIconsContainer = findViewById(R.id.read_only_icons_container);
         mControlCenterButton = findViewById(R.id.control_center_nav);
         if (mNotificationsButton != null) {
             mNotificationsButton.setOnClickListener(this::onNotificationsClick);
@@ -133,7 +129,7 @@ public class CarSystemBarView extends LinearLayout {
             mHvacButton.setOnClickListener(this::onHvacClick);
         }
 
-        if (mIsDockEnabled) {
+        if (Flags.dockFeature()) {
             if (mDriverHvacView instanceof TemperatureControlView) {
                 ((TemperatureControlView) mDriverHvacView).setTemperatureTextClickListener(
                         this::onHvacClick);
@@ -150,13 +146,6 @@ public class CarSystemBarView extends LinearLayout {
             boolean isSetUp) {
         if (mQcEntryPointsContainer != null) {
             quickControlsEntryPointsController.addIconViews(mQcEntryPointsContainer, isSetUp);
-        }
-    }
-
-    void setupReadOnlyIcons(ReadOnlyIconsController readOnlyIconsController) {
-        if (mReadOnlyIconsContainer != null) {
-            readOnlyIconsController.addIconViews(mReadOnlyIconsContainer,
-                    /* shouldAttachPanel= */false);
         }
     }
 

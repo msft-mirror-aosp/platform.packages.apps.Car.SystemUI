@@ -56,6 +56,7 @@ public class CarSystemUIInitializer extends SystemUIInitializer {
         carWm.getDisplaySystemBarsController();
         if (Process.myUserHandle().isSystem()) {
             carWm.getCarSystemUIProxy();
+            carWm.getRemoteCarTaskViewTransitions();
         }
     }
 }

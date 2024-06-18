@@ -19,14 +19,8 @@ package {
 }
 
 // Sets the CarSystemUI system bar position to bottom only and have round background.
-android_app {
+runtime_resource_overlay {
     name: "CarSystemUIBottomRoundedRRO",
     resource_dirs: ["res"],
-    certificate: "platform",
-    platform_apis: true,
     manifest: "AndroidManifest.xml",
-    aaptflags: [
-        "--no-resource-deduping",
-        "--no-resource-removal",
-     ]
 }

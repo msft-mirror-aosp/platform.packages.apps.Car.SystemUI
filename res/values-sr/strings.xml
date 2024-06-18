@@ -45,7 +45,7 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Микрофон је искључен"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"Потврди"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Желите да укључите микрофон возила?"</string>
-    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Да бисте наставили, укључите микрофон система за инфо-забаву. Овим ће се укључити микрофон за све апликације које имају дозволу."</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Да бисте наставили, укључите микрофон система за информације и забаву. Овим ће се укључити микрофон за све апликације које имају дозволу."</string>
     <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"<xliff:g id="APP">%s</xliff:g> користи камеру"</string>
     <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"Апликације <xliff:g id="APP_LIST">%s</xliff:g> користе камеру"</string>
     <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"Апликација <xliff:g id="APP">%s</xliff:g> је недавно користила камеру"</string>
@@ -54,7 +54,7 @@
     <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"Камера је искључена"</string>
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"Потврди"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Желите да укључите камеру возила?"</string>
-    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Да бисте наставили, укључите камеру система за инфо-забаву. Овим ће се укључити камеру за све апликације које имају дозволу."</string>
+    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Да бисте наставили, укључите камеру система за информације и забаву. Овим ће се укључити камеру за све апликације које имају дозволу."</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"Почетни екран"</string>
     <string name="system_bar_phone_label" msgid="5664288201806823777">"Телефон"</string>
     <string name="system_bar_applications_label" msgid="7081862804211786227">"Апликације"</string>
@@ -128,4 +128,7 @@
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
     <string name="back_btn" msgid="7774349944465667391">"Назад"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Цео екран"</string>
+    <string name="data_subscription_button_text" msgid="6595983827855035949">"Прикажи пакете"</string>
+    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Интернет пакет је истекао"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"За ову апликацију је потребна интернет веза"</string>
 </resources>

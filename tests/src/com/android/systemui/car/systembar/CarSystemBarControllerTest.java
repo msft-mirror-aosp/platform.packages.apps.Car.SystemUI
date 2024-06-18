@@ -24,6 +24,7 @@ import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assume.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -42,21 +43,20 @@ import android.view.ViewGroup;
 
 import androidx.test.filters.SmallTest;
 
+import com.android.car.dockutil.Flags;
 import com.android.car.ui.FocusParkingView;
 import com.android.dx.mockito.inline.extended.ExtendedMockito;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
-import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.settings.UserTracker;
-import com.android.systemui.statusbar.phone.StatusBarIconController;
+import com.android.systemui.statusbar.phone.ui.StatusBarIconController;
 
 import org.junit.After;
 import org.junit.Before;
@@ -73,7 +73,6 @@ import java.util.Set;
 @TestableLooper.RunWithLooper
 @SmallTest
 public class CarSystemBarControllerTest extends SysuiTestCase {
-
     private static final String TOP_NOTIFICATION_PANEL =
             "com.android.systemui.car.notification.TopNotificationPanelViewMediator";
     private static final String BOTTOM_NOTIFICATION_PANEL =
@@ -101,13 +100,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Mock
     private FeatureFlags mFeatureFlags;
     @Mock
-    private QuickControlsEntryPointsController mQuickControlsEntryPointsController;
-    @Mock
     private StatusIconPanelViewController.Builder mPanelControllerBuilder;
     @Mock
     private StatusIconPanelViewController mPanelController;
-    @Mock
-    private CarServiceProvider mCarServiceProvider;
     @Mock
     private CarSystemBarElementInitializer mCarSystemBarElementInitializer;
 
@@ -122,8 +117,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mSpiedContext = spy(mContext);
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
         mCarSystemBarViewFactory = new CarSystemBarViewFactory(mSpiedContext, mFeatureFlags,
-                mQuickControlsEntryPointsController, mock(UserTracker.class),
-                mCarSystemBarElementInitializer);
+                mock(UserTracker.class), mCarSystemBarElementInitializer);
         setupPanelControllerBuilderMocks();
 
         // Needed to inflate top navigation bar.
@@ -140,7 +134,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     private CarSystemBarController createSystemBarController() {
         return new CarSystemBarController(mSpiedContext, mUserTracker, mCarSystemBarViewFactory,
-                mCarServiceProvider, mButtonSelectionStateController, () -> mUserNameViewController,
+                mButtonSelectionStateController, () -> mUserNameViewController,
                 () -> mMicPrivacyChipViewController, () -> mCameraPrivacyChipViewController,
                 mButtonRoleHolderController,
                 new SystemBarConfigs(mTestableResources.getResources()),
@@ -597,10 +591,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     @Test
     public void testToggleAllNotificationsUnseenIndicator_bottomEnabled_hasUnseen_setCorrectly() {
-        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
+        enableSystemBarWithNotificationButton();
         mCarSystemBar = createSystemBarController();
-        CarSystemBarView bottomBar = mCarSystemBar.getBottomBar(/* isSetUp= */ true);
-        CarSystemBarButton notifications = bottomBar.findViewById(R.id.notifications);
+        CarSystemBarButton notifications = getNotificationCarSystemBarButton();
 
         boolean hasUnseen = true;
         mCarSystemBar.toggleAllNotificationsUnseenIndicator(/* isSetUp= */ true,
@@ -611,10 +604,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     @Test
     public void testToggleAllNotificationsUnseenIndicator_bottomEnabled_noUnseen_setCorrectly() {
-        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
+        enableSystemBarWithNotificationButton();
         mCarSystemBar = createSystemBarController();
-        CarSystemBarView bottomBar = mCarSystemBar.getBottomBar(/* isSetUp= */ true);
-        CarSystemBarButton notifications = bottomBar.findViewById(R.id.notifications);
+        CarSystemBarButton notifications = getNotificationCarSystemBarButton();
 
         boolean hasUnseen = false;
         mCarSystemBar.toggleAllNotificationsUnseenIndicator(/* isSetUp= */ true,
@@ -661,6 +653,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     @Test
     public void testRefreshSystemBar_phoneNavDisabled() {
+        assumeFalse("Phone nav button is removed when Dock is enabled", Flags.dockFeature());
+
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         mCarSystemBar = createSystemBarController();
         CarSystemBarView bottomBar = mCarSystemBar.getBottomBar(/* isSetUp= */ true);
@@ -689,45 +683,15 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
     @Test
     public void testRefreshSystemBar_notificationDisabled() {
-        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
+        enableSystemBarWithNotificationButton();
         mCarSystemBar = createSystemBarController();
-        CarSystemBarView bottomBar = mCarSystemBar.getBottomBar(/* isSetUp= */ true);
         clearSystemBarStates();
-        CarSystemBarButton button = bottomBar.findViewById(R.id.notifications);
+        CarSystemBarButton button = getNotificationCarSystemBarButton();
         assertThat(button.getDisabled()).isFalse();
 
         mCarSystemBar.setSystemBarStates(DISABLE_NOTIFICATION_ICONS, /* state2= */ 0);
 
         assertThat(button.getDisabled()).isTrue();
-    }
-
-    @Test
-    public void testRefreshSystemBar_disableQcFlagOn_qcHidden() {
-        mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);
-        mCarSystemBar = createSystemBarController();
-
-        CarSystemBarView topBar = mCarSystemBar.getTopBar(/* isSetUp= */ true);
-        View qcView = topBar.findViewById(R.id.qc_entry_points_container);
-        clearSystemBarStates();
-        assertThat(qcView.getVisibility()).isEqualTo(View.VISIBLE);
-
-        mCarSystemBar.setSystemBarStates(0, DISABLE2_QUICK_SETTINGS);
-
-        assertThat(qcView.getVisibility()).isEqualTo(View.INVISIBLE);
-    }
-
-    @Test
-    public void testRefreshSystemBar_lockTaskModeOn_qcHidden() {
-        mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);
-        mCarSystemBar = createSystemBarController();
-        CarSystemBarView topBar = mCarSystemBar.getTopBar(/* isSetUp= */ true);
-        View qcView = topBar.findViewById(R.id.qc_entry_points_container);
-        clearSystemBarStates();
-        assertThat(qcView.getVisibility()).isEqualTo(View.VISIBLE);
-
-        setLockTaskModeLocked(/* locked= */ true);
-
-        assertThat(qcView.getVisibility()).isEqualTo(View.INVISIBLE);
     }
 
     @Test
@@ -824,5 +788,23 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         when(mPanelControllerBuilder.setShowAsDropDown(anyBoolean())).thenReturn(
                 mPanelControllerBuilder);
         when(mPanelControllerBuilder.build(any(), anyInt(), anyInt())).thenReturn(mPanelController);
+    }
+
+    private void enableSystemBarWithNotificationButton() {
+        if (Flags.dockFeature()) {
+            mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);
+        } else {
+            mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
+        }
+    }
+
+    private CarSystemBarButton getNotificationCarSystemBarButton() {
+        if (Flags.dockFeature()) {
+            CarSystemBarView topBar = mCarSystemBar.getTopBar(/* isSetUp= */ true);
+            return topBar.findViewById(R.id.notifications);
+        } else {
+            CarSystemBarView bottomBar = mCarSystemBar.getBottomBar(/* isSetUp= */ true);
+            return bottomBar.findViewById(R.id.notifications);
+        }
     }
 }

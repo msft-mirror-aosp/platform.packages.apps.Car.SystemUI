@@ -51,39 +51,55 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <!-- This permission is required to register the car system ui proxy -->
     <uses-permission android:name="android.car.permission.REGISTER_CAR_SYSTEM_UI_PROXY"/>
+    <!-- This permission is required to listen to the keyguard state -->
+    <uses-permission android:name="android.permission.SUBSCRIBE_TO_KEYGUARD_LOCKED_STATE" />
     <!-- This permission is required to create a CarTaskViewController -->
     <uses-permission android:name="android.car.permission.MANAGE_CAR_SYSTEM_UI"/>
     <!-- use for ActivityBlockingActivity to tell whether it's on driver or passenger display -->
     <uses-permission android:name="android.car.permission.ACCESS_PRIVATE_DISPLAY_ID"/>
     <!-- use for querying DisplayCompat packages -->
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
-    <uses-permission android:name="android.car.permission.QUERY_DISPLAY_COMPATIBILITY"/>
+    <uses-permission android:name="android.car.permission.MANAGE_DISPLAY_COMPATIBILITY"/>
     <!-- Permission to allow receiving broadcast events for the dock -->
     <uses-permission android:name="com.android.car.docklib.permission.BROADCAST_RECEIVER" />
+    <!-- Permissions for the InCallController to bind the InCallService as non-ui -->
+    <uses-permission android:name="android.permission.CONTROL_INCALL_EXPERIENCE"/>
+    <uses-permission android:name="android.permission.MANAGE_ONGOING_CALLS"/>
+    <!-- System permission to control media playback of the active session -->
+    <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/>
 
     <application
         tools:replace="android:name,android:appComponentFactory"
         android:name=".CarSystemUIApplication"
         android:appComponentFactory="com.android.systemui.CarSystemUIAppComponentFactory">
         <activity
-            android:name=".car.activity.ActivityBlockingActivity"
+            android:name=".car.wm.activity.ActivityBlockingActivity"
             android:documentLaunchMode="always"
             android:excludeFromRecents="true"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"
             android:showForAllUsers="true"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
         <activity
-            android:name=".car.activity.ContinuousBlankActivity"
+            android:name=".car.wm.activity.ContinuousBlankActivity"
             android:excludeFromRecents="true"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:exported="false"
             android:launchMode="singleTask">
         </activity>
+        <activity
+            android:name=".car.wm.activity.LaunchOnPrivateDisplayRouterActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:label="LaunchOnPrivateDisplayRouterActivity"
+            android:launchMode="singleInstance"
+            android:noHistory="true"
+            android:permission="android.car.permission.ACCESS_PRIVATE_DISPLAY_ID"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
         <activity
             android:name=".car.userpicker.UserPickerActivity"
             android:label="UserPicker"
@@ -102,5 +118,24 @@
             </intent-filter>
             <meta-data android:name="distractionOptimized" android:value="true"/>
         </activity>
+        <!-- The service needs to be directBootAware so that it can reflect the correct call state
+         when the system boots up. -->
+        <service android:name=".car.telecom.InCallServiceImpl"
+            android:directBootAware="true"
+            android:permission="android.permission.BIND_INCALL_SERVICE"
+            android:exported="true"
+            android:singleUser="true"
+            android:enabled="@bool/config_enableAppBlockingActivities">
+            <!-- ABA does not display the in-call UI. This is handled by the
+            Dialer application.-->
+            <meta-data android:name="android.telecom.IN_CALL_SERVICE_UI" android:value="false"/>
+            <meta-data android:name="android.telecom.IN_CALL_SERVICE_CAR_MODE_UI"
+                android:value="false"/>
+            <meta-data android:name="android.telecom.INCLUDE_SELF_MANAGED_CALLS"
+                android:value="true"/>
+            <intent-filter>
+                <action android:name="android.telecom.InCallService"/>
+            </intent-filter>
+        </service>
     </application>
 </manifest>

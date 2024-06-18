@@ -352,8 +352,11 @@ public class NotificationPanelViewController extends OverlayPanelViewController
                                 mCarNotificationListener.getCurrentRanking());
                 mUnseenCountUpdateListener.onUnseenCountUpdate(unseenCount);
             }
-            mCarNotificationListener.setNotificationsShown(
-                    mNotificationDataManager.getSeenNotifications());
+            if (isPanelExpanded()) {
+                // only report the seen notifications when the panel is expanded
+                mCarNotificationListener.setNotificationsShown(
+                        mNotificationDataManager.getSeenNotifications());
+            }
             // This logs both when the notification panel is expanded and when the notification
             // panel is scrolled.
             mNotificationVisibilityLogger.log(isPanelExpanded());

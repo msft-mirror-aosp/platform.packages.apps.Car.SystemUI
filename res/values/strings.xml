@@ -16,12 +16,10 @@
   -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- Format for HVAC temperature in fahrenheit (No decimal place and the degree symbol) -->
-    <string name="hvac_temperature_format_fahrenheit" translatable="false">%.0f\u00B0</string>
-    <!-- Format for HVAC temperature in celsius (One decimal place and the degree symbol) -->
-    <string name="hvac_temperature_format_celsius" translatable="false">%.1f\u00B0</string>
-    <!-- Tag to use to identify the icon view within the quick controls entry point button -->
-    <string name="qc_icon_tag" translatable="false">TAG_QC_ICON</string>
+    <!-- Format for HVAC temperature in fahrenheit (No decimal place) -->
+    <string name="hvac_temperature_format_fahrenheit" translatable="false">%.0f</string>
+    <!-- Format for HVAC temperature in celsius (One decimal place) -->
+    <string name="hvac_temperature_format_celsius" translatable="false">%.1f</string>
     <!-- String to represent lowest setting of an HVAC system [CHAR LIMIT=10]-->
     <string name="hvac_min_text">Min</string>
     <!-- String to represent the highest setting of an HVAC system [CHAR LIMIT=10]-->
@@ -274,5 +272,11 @@
 
     <!-- Intent binding to long press action of user profile icon in car top system bar. -->
     <string name="user_profile_long_press_intent" translatable="false"></string>
+
+    <!-- Data subscription button text [CHAR LIMIT=30]-->
+    <string name="data_subscription_button_text">See plans</string>
+    <!-- Data subscription proactive message prompt-->
+    <string name="data_subscription_proactive_msg_prompt">Your internet plan expired</string>
+    <string name="data_subscription_reactive_msg_prompt">This app needs an internet connection</string>
 
 </resources>

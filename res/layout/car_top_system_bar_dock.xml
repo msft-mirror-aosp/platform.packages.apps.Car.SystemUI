@@ -22,7 +22,7 @@
     android:id="@+id/car_top_bar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/system_bar_background"
+    android:background="@drawable/status_bar_background"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -58,13 +58,11 @@
                 />
         </FrameLayout>
 
-        <LinearLayout
-            android:id="@+id/read_only_icons_container"
+        <include layout="@layout/read_only_status_icons"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/clock_container"
-            />
+            android:layout_toRightOf="@id/clock_container"/>
 
         <com.android.systemui.car.systembar.CarSystemBarButton
             android:id="@+id/notifications"

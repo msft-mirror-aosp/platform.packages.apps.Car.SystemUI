@@ -19,6 +19,7 @@ package com.android.systemui.car.systembar;
 import static android.content.Intent.ACTION_OVERLAY_CHANGED;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
 
+import static com.android.systemui.car.Flags.configAwareSystemui;
 import static com.android.systemui.car.systembar.SystemBarConfigs.BOTTOM;
 import static com.android.systemui.car.systembar.SystemBarConfigs.LEFT;
 import static com.android.systemui.car.systembar.SystemBarConfigs.RIGHT;
@@ -42,6 +43,7 @@ import android.os.IBinder;
 import android.os.PatternMatcher;
 import android.os.RemoteException;
 import android.os.UserHandle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -62,6 +64,7 @@ import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
+import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -85,16 +88,22 @@ import dagger.Lazy;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
 
 /** Navigation bars customized for the automotive use case. */
+@SysUISingleton
 public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         ConfigurationController.ConfigurationListener,
         MDSystemBarsController.Listener {
+    private static final String TAG = CarSystemBar.class.getSimpleName();
     private static final String OVERLAY_FILTER_DATA_SCHEME = "package";
+
+    protected static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
+
     private final Context mContext;
     private final CarSystemBarController mCarSystemBarController;
     private final SysuiDarkIconDispatcher mStatusBarIconController;
@@ -111,13 +120,12 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     private final Lazy<PhoneStatusBarPolicy> mIconPolicyLazy;
     private final HvacController mHvacController;
     private final ConfigurationController mConfigurationController;
-
-    private UiModeManager mUiModeManager;
-
+    private final CarSystemBarRestartTracker mCarSystemBarRestartTracker;
     private final int mDisplayId;
     private final SystemBarConfigs mSystemBarConfigs;
     @Nullable
     private final ToolbarController mDisplayCompatToolbarController;
+    private UiModeManager mUiModeManager;
     private StatusBarSignalPolicy mSignalPolicy;
 
     // If the nav bar should be hidden when the soft keyboard is visible.
@@ -155,6 +163,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     private boolean mIsUiModeNight = false;
     private MDSystemBarsController mMDSystemBarsController;
 
+    private Locale mCurrentLocale;
+
     @Inject
     public CarSystemBar(Context context,
             CarSystemBarController carSystemBarController,
@@ -175,6 +185,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
             StatusBarSignalPolicy signalPolicy,
             SystemBarConfigs systemBarConfigs,
             ConfigurationController configurationController,
+            CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
             Optional<MDSystemBarsController> mdSystemBarsController,
             @Nullable ToolbarController toolbarController
@@ -200,11 +211,19 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mDisplayTracker = displayTracker;
         mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
         mMDSystemBarsController = mdSystemBarsController.orElse(null);
+        mCurrentLocale = mContext.getResources().getConfiguration().getLocales().get(0);
         mConfigurationController = configurationController;
+        mCarSystemBarRestartTracker = restartTracker;
         mDisplayCompatToolbarController = toolbarController;
     }
 
     private void registerOverlayChangeBroadcastReceiver() {
+        if (!configAwareSystemui()) {
+            if (DEBUG) {
+                Log.d(TAG, "Ignore overlay change for car systemui");
+            }
+            return;
+        }
         IntentFilter overlayFilter = new IntentFilter(ACTION_OVERLAY_CHANGED);
         overlayFilter.addDataScheme(OVERLAY_FILTER_DATA_SCHEME);
         overlayFilter.addDataSchemeSpecificPart(mContext.getPackageName(),
@@ -212,7 +231,10 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                restartSystemBars();
+                if (mTopSystemBarAttached || mBottomSystemBarAttached || mLeftSystemBarAttached
+                        || mRightSystemBarAttached) {
+                    restartSystemBars();
+                }
             }
         };
         mContext.registerReceiverAsUser(receiver, UserHandle.ALL,
@@ -299,17 +321,17 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                 new CarDeviceProvisionedListener() {
                     @Override
                     public void onUserSetupInProgressChanged() {
-                        mExecutor.execute(() -> restartNavBarsIfNecessary());
+                        mExecutor.execute(() -> resetSystemBarContentIfNecessary());
                     }
 
                     @Override
                     public void onUserSetupChanged() {
-                        mExecutor.execute(() -> restartNavBarsIfNecessary());
+                        mExecutor.execute(() -> resetSystemBarContentIfNecessary());
                     }
 
                     @Override
                     public void onUserSwitched() {
-                        mExecutor.execute(() -> restartNavBarsIfNecessary());
+                        mExecutor.execute(() -> resetSystemBarContentIfNecessary());
                     }
                 });
 
@@ -322,18 +344,18 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                 mButtonSelectionStateListener);
         TaskStackChangeListeners.getInstance().registerTaskStackListener(
                 new TaskStackChangeListener() {
-                @Override
-                public void onLockTaskModeChanged(int mode) {
-                    mCarSystemBarController.refreshSystemBar();
-                }
-
-                @Override
-                public void onTaskMovedToFront(RunningTaskInfo taskInfo) {
-                    if (mDisplayCompatToolbarController != null) {
-                        mDisplayCompatToolbarController.update(taskInfo);
+                    @Override
+                    public void onLockTaskModeChanged(int mode) {
+                        mCarSystemBarController.refreshSystemBar();
                     }
-                }
-        });
+
+                    @Override
+                    public void onTaskMovedToFront(RunningTaskInfo taskInfo) {
+                        if (mDisplayCompatToolbarController != null) {
+                            mDisplayCompatToolbarController.update(taskInfo);
+                        }
+                    }
+                });
 
         // Lastly, call to the icon policy to install/update all the icons.
         // Must be called on the main thread due to the use of observeForever() in
@@ -343,7 +365,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         });
     }
 
-    private void restartNavBarsIfNecessary() {
+    private void resetSystemBarContentIfNecessary() {
         boolean currentUserSetup = mCarDeviceProvisionedController.isCurrentUserSetup();
         boolean currentUserSetupInProgress = mCarDeviceProvisionedController
                 .isCurrentUserSetupInProgress();
@@ -351,7 +373,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                 || mDeviceIsSetUpForUser != currentUserSetup) {
             mDeviceIsSetUpForUser = currentUserSetup;
             mIsUserSetupInProgress = currentUserSetupInProgress;
-            restartNavBars();
+            resetSystemBarContent(/* isProvisionedStateChange= */ true);
         }
     }
 
@@ -359,7 +381,13 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
      * Remove all content from navbars and rebuild them. Used to allow for different nav bars
      * before and after the device is provisioned. . Also for change of density and font size.
      */
-    private void restartNavBars() {
+    private void resetSystemBarContent(boolean isProvisionedStateChange) {
+        mCarSystemBarRestartTracker.notifyPendingRestart(/* recreateWindows= */ false,
+                isProvisionedStateChange);
+
+        if (!isProvisionedStateChange) {
+            mCarSystemBarController.resetViewCache();
+        }
         // remove and reattach all components such that we don't keep a reference to unused ui
         // elements
         mCarSystemBarController.removeAll();
@@ -377,6 +405,9 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         // Upon restarting the Navigation Bar, CarFacetButtonController should immediately apply the
         // selection state that reflects the current task stack.
         mButtonSelectionStateListener.onTaskStackChanged();
+
+        mCarSystemBarRestartTracker.notifyRestartComplete(/* recreateWindows= */ false,
+                isProvisionedStateChange);
     }
 
     private boolean isDeviceSetupForUser() {
@@ -447,7 +478,6 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(this::attachNavBarBySide);
     }
 
-
     @VisibleForTesting
     ViewGroup getSystemBarWindowBySide(int side) {
         switch (side) {
@@ -459,35 +489,61 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                 return mLeftSystemBarWindow;
             case RIGHT:
                 return mRightSystemBarWindow;
-            default: return null;
+            default:
+                return null;
         }
     }
 
     private void attachNavBarBySide(int side) {
         switch (side) {
             case TOP:
-                if (mTopSystemBarWindow != null && !mTopSystemBarAttached) {
+                if (DEBUG) {
+                    Log.d(TAG, "mTopSystemBarWindow = " + mTopSystemBarWindow
+                            + ", mTopSystemBarAttached=" + mTopSystemBarAttached
+                            + ", enabled=" + mSystemBarConfigs.getEnabledStatusBySide(TOP));
+                }
+                if (mTopSystemBarWindow != null && !mTopSystemBarAttached
+                        && mSystemBarConfigs.getEnabledStatusBySide(TOP)) {
                     mWindowManager.addView(mTopSystemBarWindow,
                             mSystemBarConfigs.getLayoutParamsBySide(TOP));
                     mTopSystemBarAttached = true;
                 }
                 break;
             case BOTTOM:
-                if (mBottomSystemBarWindow != null && !mBottomSystemBarAttached) {
+                if (DEBUG) {
+                    Log.d(TAG, "mBottomSystemBarWindow = " + mBottomSystemBarWindow
+                            + ", mBottomSystemBarAttached=" + mBottomSystemBarAttached
+                            + ", enabled=" + mSystemBarConfigs.getEnabledStatusBySide(BOTTOM));
+                }
+                if (mBottomSystemBarWindow != null && !mBottomSystemBarAttached
+                        && mSystemBarConfigs.getEnabledStatusBySide(BOTTOM)) {
                     mWindowManager.addView(mBottomSystemBarWindow,
                             mSystemBarConfigs.getLayoutParamsBySide(BOTTOM));
                     mBottomSystemBarAttached = true;
                 }
                 break;
             case LEFT:
-                if (mLeftSystemBarWindow != null && !mLeftSystemBarAttached) {
+                if (DEBUG) {
+                    Log.d(TAG, "mLeftSystemBarWindow = " + mLeftSystemBarWindow
+                            + ", mLeftSystemBarAttached=" + mLeftSystemBarAttached
+                            + ", enabled=" + mSystemBarConfigs.getEnabledStatusBySide(LEFT));
+                }
+                if (mLeftSystemBarWindow != null && !mLeftSystemBarAttached
+                        && mSystemBarConfigs.getEnabledStatusBySide(LEFT)) {
                     mWindowManager.addView(mLeftSystemBarWindow,
                             mSystemBarConfigs.getLayoutParamsBySide(LEFT));
                     mLeftSystemBarAttached = true;
                 }
                 break;
             case RIGHT:
-                if (mRightSystemBarWindow != null && !mRightSystemBarAttached) {
+                if (DEBUG) {
+                    Log.d(TAG, "mRightSystemBarWindow = " + mRightSystemBarWindow
+                            + ", mRightSystemBarAttached=" + mRightSystemBarAttached
+                            + ", "
+                            + "enabled=" + mSystemBarConfigs.getEnabledStatusBySide(RIGHT));
+                }
+                if (mRightSystemBarWindow != null && !mRightSystemBarAttached
+                        && mSystemBarConfigs.getEnabledStatusBySide(RIGHT)) {
                     mWindowManager.addView(mRightSystemBarWindow,
                             mSystemBarConfigs.getLayoutParamsBySide(RIGHT));
                     mRightSystemBarAttached = true;
@@ -695,68 +751,80 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
 
     @Override
     public void onConfigChanged(Configuration newConfig) {
+        Locale oldLocale = mCurrentLocale;
+        mCurrentLocale = newConfig.getLocales().get(0);
+
         boolean isConfigNightMode = newConfig.isNightModeActive();
-        // Only refresh UI on Night mode changes
+        if (isConfigNightMode == mIsUiModeNight
+                && (mCurrentLocale != null && mCurrentLocale.equals(oldLocale)
+                || mCurrentLocale == oldLocale)) {
+            return;
+        }
+
+        // Refresh UI on Night mode or system language changes.
         if (isConfigNightMode != mIsUiModeNight) {
             mIsUiModeNight = isConfigNightMode;
             mUiModeManager.setNightModeActivated(mIsUiModeNight);
-
-            // cache the current state
-            // The focused view will be destroyed during re-layout, causing the framework to adjust
-            // the focus unexpectedly. To avoid that, move focus to a view that won't be
-            // destroyed during re-layout and has no focus highlight (the FocusParkingView), then
-            // move focus back to the previously focused view after re-layout.
-            mCarSystemBarController.cacheAndHideFocus();
-            String selectedQuickControlsClsName = null;
-            View profilePickerView = null;
-            boolean isProfilePickerOpen = false;
-            if (mTopSystemBarView != null) {
-                profilePickerView = mTopSystemBarView.findViewById(
-                        R.id.user_name);
-            }
-            if (profilePickerView != null) isProfilePickerOpen = profilePickerView.isSelected();
-            if (isProfilePickerOpen) {
-                profilePickerView.callOnClick();
-            } else {
-                selectedQuickControlsClsName =
-                        mCarSystemBarController.getSelectedQuickControlsClassName();
-                mCarSystemBarController.callQuickControlsOnClickFromClassName(
-                        selectedQuickControlsClsName);
-            }
-
-            mCarSystemBarController.resetCache();
-            restartNavBars();
-
-            // retrieve the previous state
-            if (isProfilePickerOpen) {
-                if (mTopSystemBarView != null) {
-                    profilePickerView = mTopSystemBarView.findViewById(
-                            R.id.user_name);
-                }
-                if (profilePickerView != null) profilePickerView.callOnClick();
-            } else {
-                mCarSystemBarController.callQuickControlsOnClickFromClassName(
-                        selectedQuickControlsClsName);
-            }
-            mCarSystemBarController.restoreFocus();
         }
+
+        // cache the current state
+        // The focused view will be destroyed during re-layout, causing the framework to adjust
+        // the focus unexpectedly. To avoid that, move focus to a view that won't be
+        // destroyed during re-layout and has no focus highlight (the FocusParkingView), then
+        // move focus back to the previously focused view after re-layout.
+        mCarSystemBarController.cacheAndHideFocus();
+        String selectedQuickControlsClsName = null;
+        View profilePickerView = null;
+        boolean isProfilePickerOpen = false;
+        if (mTopSystemBarView != null) {
+            profilePickerView = mTopSystemBarView.findViewById(R.id.user_name);
+        }
+        if (profilePickerView != null) isProfilePickerOpen = profilePickerView.isSelected();
+        if (isProfilePickerOpen) {
+            profilePickerView.callOnClick();
+        } else {
+            selectedQuickControlsClsName =
+                    mCarSystemBarController.getSelectedQuickControlsClassName();
+            mCarSystemBarController.callQuickControlsOnClickFromClassName(
+                    selectedQuickControlsClsName);
+        }
+
+        resetSystemBarContent(/* isProvisionedStateChange= */ false);
+
+        // retrieve the previous state
+        if (isProfilePickerOpen) {
+            if (mTopSystemBarView != null) {
+                profilePickerView = mTopSystemBarView.findViewById(R.id.user_name);
+            }
+            if (profilePickerView != null) profilePickerView.callOnClick();
+        } else {
+            mCarSystemBarController.callQuickControlsOnClickFromClassName(
+                    selectedQuickControlsClsName);
+        }
+        mCarSystemBarController.restoreFocus();
     }
 
     @VisibleForTesting
     void restartSystemBars() {
+        mCarSystemBarRestartTracker.notifyPendingRestart(/* recreateWindows= */ true,
+                /* provisionedStateChanged= */ false);
+
         mCarSystemBarController.removeAll();
         mCarSystemBarController.resetSystemBarConfigs();
         clearSystemBarWindow(/* removeUnusedWindow= */ true);
         buildNavBarWindows();
         buildNavBarContent();
         attachNavBarWindows();
+
+        mCarSystemBarRestartTracker.notifyRestartComplete(/* recreateWindows= */ true,
+                /* provisionedStateChanged= */ false);
     }
 
     private void clearSystemBarWindow(boolean removeUnusedWindow) {
         if (mTopSystemBarWindow != null) {
             mTopSystemBarWindow.removeAllViews();
             mHvacController.unregisterViews(mTopSystemBarView);
-            if (removeUnusedWindow && !mSystemBarConfigs.getEnabledStatusBySide(TOP)) {
+            if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mTopSystemBarWindow);
                 mTopSystemBarAttached = false;
             }
@@ -766,18 +834,17 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         if (mBottomSystemBarWindow != null) {
             mBottomSystemBarWindow.removeAllViews();
             mHvacController.unregisterViews(mBottomSystemBarView);
-            if (removeUnusedWindow && !mSystemBarConfigs.getEnabledStatusBySide(BOTTOM)) {
+            if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mBottomSystemBarWindow);
                 mBottomSystemBarAttached = false;
             }
             mBottomSystemBarView = null;
-
         }
 
         if (mLeftSystemBarWindow != null) {
             mLeftSystemBarWindow.removeAllViews();
             mHvacController.unregisterViews(mLeftSystemBarView);
-            if (removeUnusedWindow && !mSystemBarConfigs.getEnabledStatusBySide(LEFT)) {
+            if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mLeftSystemBarWindow);
                 mLeftSystemBarAttached = false;
             }
@@ -787,7 +854,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         if (mRightSystemBarWindow != null) {
             mRightSystemBarWindow.removeAllViews();
             mHvacController.unregisterViews(mRightSystemBarView);
-            if (removeUnusedWindow && !mSystemBarConfigs.getEnabledStatusBySide(RIGHT)) {
+            if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mRightSystemBarWindow);
                 mRightSystemBarAttached = false;
             }

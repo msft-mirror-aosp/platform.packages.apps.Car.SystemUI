@@ -22,8 +22,6 @@ import static android.view.WindowManager.LayoutParams.TYPE_INPUT_CONSUMER;
 
 import android.annotation.NonNull;
 import android.annotation.Nullable;
-import android.os.Binder;
-import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.view.Display;
@@ -33,6 +31,7 @@ import android.view.InputEvent;
 import android.view.InputEventReceiver;
 import android.view.SurfaceControl;
 import android.view.WindowManagerGlobal;
+import android.window.InputTransferToken;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -52,7 +51,7 @@ public final class DisplayInputSink {
     private final OnInputEventListener mCallback;
 
     private BaseIWindow mFakeWindow;
-    private IBinder mFocusGrantToken;
+    private InputTransferToken mFocusGrantToken;
     private InputChannel mInputChannel;
     @VisibleForTesting
     InputEventReceiver mInputEventReceiver;
@@ -107,7 +106,7 @@ public final class DisplayInputSink {
         // to create a buffer layer for it so we can't use ViewRootImpl.
         mFakeWindow = new BaseIWindow();
         mFakeWindow.setSession(mWindowSession);
-        mFocusGrantToken = new Binder();
+        mFocusGrantToken = new InputTransferToken();
         mInputChannel = new InputChannel();
         try {
             mWindowSession.grantInputChannel(

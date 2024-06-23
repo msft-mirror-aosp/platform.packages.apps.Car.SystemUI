@@ -21,9 +21,10 @@ import static com.android.dx.mockito.inline.extended.ExtendedMockito.spyOn;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,14 +37,10 @@ import android.view.ViewGroup;
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.SysuiTestCase;
-import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.lifecycle.InstantTaskExecutorRule;
-import com.android.systemui.settings.UserTracker;
-import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.tests.R;
 
 import org.junit.Before;
@@ -64,19 +61,13 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
     private QuickControlsEntryPointsController mQuickControlsEntryPointsController;
 
     @Mock
-    private UserTracker mUserTracker;
-    @Mock
-    private CarServiceProvider mCarServiceProvider;
-    @Mock
-    private BroadcastDispatcher mBroadcastDispatcher;
-    @Mock
-    private ConfigurationController mConfigurationController;
-    @Mock
-    private SystemUIQCViewController mSystemUIQCViewController;
-    @Mock
     private Map mIconControllerCreators;
     @Mock
-    private QCPanelReadOnlyIconsController mQCPanelReadOnlyIconsController;
+    private Provider<StatusIconPanelViewController.Builder> mPanelControllerBuilderProvider;
+    @Mock
+    private StatusIconPanelViewController.Builder mPanelControllerBuilder;
+    @Mock
+    private StatusIconPanelViewController mPanelController;
     @Mock
     Provider<StatusIconController> mProvider;
     @Mock
@@ -87,17 +78,13 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-
+        when(mPanelControllerBuilderProvider.get()).thenReturn(mPanelControllerBuilder);
+        setupBuilderMocks();
         mQuickControlsEntryPointsController = new QuickControlsEntryPointsController(
                 mContext,
-                mUserTracker,
                 mContext.getOrCreateTestableResources().getResources(),
-                mCarServiceProvider,
-                mBroadcastDispatcher,
-                mConfigurationController,
-                () -> mSystemUIQCViewController,
                 mIconControllerCreators,
-                mQCPanelReadOnlyIconsController);
+                mPanelControllerBuilderProvider);
     }
 
     @Test
@@ -123,9 +110,9 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
 
     @Test
     public void getButtonViewLayout_getButton() {
-        int resultValue = mQuickControlsEntryPointsController.getButtonViewLayout();
+        int resultValue = mQuickControlsEntryPointsController.getButtonViewLayout(false);
 
-        assertThat(resultValue).isEqualTo(R.layout.car_qc_entry_points_button);
+        assertThat(resultValue).isEqualTo(R.layout.car_qc_entry_points_button_horizontal);
     }
 
     @Test
@@ -144,42 +131,14 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
         verify(qcEntryPointContainer, times(3)).addView(any());
     }
 
-    @Test
-    public void addIconViews_notQcEntryPointContainerAdded_addView() {
-        doReturn(mStatusIconController).when(mProvider).get();
-        doReturn(mProvider).when(mIconControllerCreators).get(any());
-        ViewGroup baseLayout = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                R.layout.car_quick_controls_panel_test, /* root= */ null);
-        ViewGroup qcHeaderReadOnlyIconsContainer =
-                baseLayout.findViewById(R.id.qc_header_read_only_icons_container);
-        spyOn(qcHeaderReadOnlyIconsContainer);
-
-        mQuickControlsEntryPointsController.addIconViews(qcHeaderReadOnlyIconsContainer,
-                /* shouldAttachPanel= */ true);
-
-        verify(qcHeaderReadOnlyIconsContainer, times(3)).addView(any());
-    }
-
-    @Test
-    public void addIconViews_qcControlsStatusIconListContoller_registerIconViewAndGetPanelInfo() {
-        doReturn(mProvider).when(mIconControllerCreators).get(any());
-        doReturn(mStatusIconController).when(mProvider).get();
-        QuickControlsStatusIconListController controller =
-                new QuickControlsStatusIconListController(mContext,
-                mContext.getOrCreateTestableResources().getResources(), mIconControllerCreators);
-        spyOn(controller);
-        reset(mProvider);
-        doReturn(controller).when(mProvider).get();
-        ViewGroup baseLayout = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                R.layout.car_quick_controls_panel_test, /* root= */ null);
-        ViewGroup qcHeaderReadOnlyIconsContainer =
-                baseLayout.findViewById(R.id.qc_header_read_only_icons_container);
-
-        mQuickControlsEntryPointsController.addIconViews(qcHeaderReadOnlyIconsContainer,
-                /* shouldAttachPanel= */ true);
-
-        verify(controller, times(3)).registerIconView(any());
-        verify(controller, times(6)).getPanelContentLayout();
-        verify(controller, times(3)).getPanelWidth();
+    private void setupBuilderMocks() {
+        when(mPanelControllerBuilder.setXOffset(anyInt())).thenReturn(mPanelControllerBuilder);
+        when(mPanelControllerBuilder.setYOffset(anyInt())).thenReturn(mPanelControllerBuilder);
+        when(mPanelControllerBuilder.setGravity(anyInt())).thenReturn(mPanelControllerBuilder);
+        when(mPanelControllerBuilder.setDisabledWhileDriving(anyBoolean())).thenReturn(
+                mPanelControllerBuilder);
+        when(mPanelControllerBuilder.setShowAsDropDown(anyBoolean())).thenReturn(
+                mPanelControllerBuilder);
+        when(mPanelControllerBuilder.build(any(), anyInt(), anyInt())).thenReturn(mPanelController);
     }
 }

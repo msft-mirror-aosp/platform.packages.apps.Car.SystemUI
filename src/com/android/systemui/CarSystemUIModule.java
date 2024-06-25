@@ -25,6 +25,8 @@ import android.window.DisplayAreaOrganizer;
 
 import com.android.keyguard.KeyguardViewController;
 import com.android.keyguard.dagger.KeyguardDisplayModule;
+import com.android.systemui.accessibility.AccessibilityModule;
+import com.android.systemui.accessibility.data.repository.AccessibilityRepositoryModule;
 import com.android.systemui.biometrics.dagger.BiometricsModule;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
@@ -83,6 +85,8 @@ import javax.inject.Named;
 
 @Module(
         includes = {
+                AccessibilityModule.class,
+                AccessibilityRepositoryModule.class,
                 ActivityWindowModule.class,
                 AospPolicyModule.class,
                 BiometricsModule.class,

@@ -35,3 +35,10 @@ flag {
     description: "Flag that enables task to move between distant display experience"
     bug: "341963483"
 }
+
+flag {
+    name: "config_qc_sound_panel"
+    namespace: "car_sys_exp"
+    description: "Flag that shows the quick controls panel for sound."
+    bug: "344677470"
+}

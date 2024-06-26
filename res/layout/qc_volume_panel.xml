@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2021 The Android Open Source Project
+  ~ Copyright (C) 2024 The Android Open Source Project
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <ScrollView
+                android:id="@+id/sound_panel_scroll_view"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginBottom="@dimen/car_quick_controls_footer_button_margin_top"
@@ -39,7 +40,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/qc_display_footer_button">
+                app:layout_constraintBottom_toTopOf="@+id/qc_sound_footer_button">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -48,32 +49,33 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        app:remoteQCProvider="content://com.android.car.settings.qc/brightness_slider_with_icon"/>
+                        app:remoteQCProvider="content://com.android.car.settings.qc/media_audio_selector"/>
                     <com.android.systemui.car.qc.SystemUIQCView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        app:remoteQCProvider="content://com.android.car.settings.qc/adaptive_brightness_switch"/>
+                        app:remoteQCProvider="content://com.android.car.settings.qc/media_volume_slider"/>
                     <com.android.systemui.car.qc.SystemUIQCView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        app:remoteQCProvider="content://com.android.car.settings.qc/theme_toggle"/>
+                        app:remoteQCProvider="content://com.android.car.settings.qc/call_volume_slider"/>
                     <com.android.systemui.car.qc.SystemUIQCView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        app:remoteQCProvider="content://com.android.car.carlauncher.calmmode/calm_mode"/>
+                        app:remoteQCProvider="content://com.android.car.settings.qc/navigation_volume_slider"/>
                 </LinearLayout>
             </ScrollView>
             <com.android.systemui.car.qc.QCFooterButton
-                android:id="@+id/qc_display_footer_button"
+                android:id="@+id/qc_sound_footer_button"
+                app:layout_constraintTop_toBottomOf="@id/sound_panel_scroll_view"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 style="@style/QCFooterButtonStyle"
-                android:text="@string/qc_footer_display_settings"
-                app:intent="intent:#Intent;action=android.settings.DISPLAY_SETTINGS;launchFlags=0x14000000;end"/>
+                android:text="@string/qc_footer_network_sound_settings"
+                app:intent="intent:#Intent;component=com.android.car.settings/.common.CarSettingActivities$SoundSettingsActivity;launchFlags=0x14008000;end"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.android.car.ui.FocusArea>
 </FrameLayout>

@@ -42,7 +42,6 @@ import android.inputmethodservice.InputMethodService;
 import android.os.IBinder;
 import android.os.PatternMatcher;
 import android.os.RemoteException;
-import android.os.UserHandle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -237,8 +236,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                 }
             }
         };
-        mContext.registerReceiverAsUser(receiver, UserHandle.ALL,
-                overlayFilter, /* broadcastPermission= */null, /* handler= */ null);
+        mContext.registerReceiver(receiver, overlayFilter, /* broadcastPermission= */
+                null, /* handler= */ null);
     }
 
     @Override

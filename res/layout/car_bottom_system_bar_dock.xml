@@ -118,6 +118,26 @@
             style="@style/SystemBarButtonWithDock"
             systemui:icon="@drawable/car_ic_volume" />
 
+        <com.android.systemui.car.systembar.CarSystemBarPanelButtonView
+            android:id="@+id/volume_panel"
+            android:layout_width="@dimen/car_quick_controls_entry_points_button_width"
+            android:layout_height="match_parent"
+            style="@style/SystemBarButtonWithDock"
+            systemui:gravity="center"
+            systemui:showAsDropDown="false"
+            systemui:panelLayoutRes="@layout/qc_volume_panel"
+            systemui:disabledWhileUnprovisioned="true"
+            systemui:systemBarDisable2Flags="quickSettings">
+            <com.android.systemui.car.statusicon.StatusIconView
+                android:id="@+id/volume_status_icon"
+                android:layout_width="@dimen/car_quick_controls_icon_drawable_width"
+                android:layout_height="@dimen/car_quick_controls_icon_drawable_height"
+                android:layout_gravity="center"
+                android:tint="@color/car_status_icon_color"
+                android:duplicateParentState="true"
+                systemui:controller="com.android.systemui.car.statusicon.ui.MediaVolumeStatusIconController"/>
+        </com.android.systemui.car.systembar.CarSystemBarPanelButtonView>
+
     </LinearLayout>
 
     <LinearLayout

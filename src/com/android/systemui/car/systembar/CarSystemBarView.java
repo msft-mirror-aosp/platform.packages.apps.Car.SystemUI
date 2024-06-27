@@ -120,7 +120,7 @@ public class CarSystemBarView extends LinearLayout {
         if (mVolumeButton == null || mVolumeStatusIcon == null || mVolumePanelView == null) {
             return;
         }
-        if (com.android.systemui.car.Flags.configQcSoundPanel()) {
+        if (com.android.systemui.car.Flags.showQcSoundPanel()) {
             mVolumeButton.setVisibility(View.GONE);
             mVolumeStatusIcon.setVisibility(View.VISIBLE);
             mVolumePanelView.setVisibility(View.VISIBLE);

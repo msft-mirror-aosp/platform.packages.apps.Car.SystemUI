@@ -123,7 +123,7 @@
             android:layout_width="@dimen/car_quick_controls_entry_points_button_width"
             android:layout_height="match_parent"
             style="@style/SystemBarButtonWithDock"
-            systemui:gravity="center"
+            systemui:gravity="center|center_vertical"
             systemui:showAsDropDown="false"
             systemui:panelLayoutRes="@layout/qc_volume_panel"
             systemui:disabledWhileUnprovisioned="true"

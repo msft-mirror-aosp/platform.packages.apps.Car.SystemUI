@@ -45,6 +45,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.FragmentActivity;
@@ -173,7 +174,7 @@ public class ActivityBlockingActivity extends FragmentActivity {
                             getString(R.string.config_dialerBlockingActivity));
                     case MEDIA -> startBlockingActivity(
                             getString(R.string.config_mediaBlockingActivity));
-                    case NONE -> { /* no-op */ }
+                    case NONE -> displayBlockingContent();
                 }
             });
         }
@@ -282,6 +283,14 @@ public class ActivityBlockingActivity extends FragmentActivity {
         int bottomY = displayBounds.height() - systemBarInsets.bottom;
 
         return new Rect(leftX, topY, rightX, bottomY);
+    }
+
+    private void displayBlockingContent() {
+        LinearLayout blockingContent = findViewById(R.id.activity_blocking_content);
+
+        if (blockingContent != null) {
+            blockingContent.setVisibility(View.VISIBLE);
+        }
     }
 
     private void displayExitButton() {
@@ -486,6 +495,10 @@ public class ActivityBlockingActivity extends FragmentActivity {
     }
 
     private void startBlockingActivity(String blockingActivity) {
+        if (isFinishing()) {
+            return;
+        }
+
         int userOnDisplay = getUserForCurrentDisplay();
         if (userOnDisplay == CarOccupantZoneManager.INVALID_USER_ID) {
             Slog.w(TAG, "Can't find user on display " + getDisplayId()
@@ -499,6 +512,7 @@ public class ActivityBlockingActivity extends FragmentActivity {
         intent.putExtra(Intent.EXTRA_COMPONENT_NAME, mBlockedActivityName);
         try {
             startActivityAsUser(intent, UserHandle.of(userOnDisplay));
+            finish();
         } catch (ActivityNotFoundException ex) {
             Slog.e(TAG, "Unable to resolve blocking activity " + blockingActivity, ex);
         } catch (RuntimeException ex) {

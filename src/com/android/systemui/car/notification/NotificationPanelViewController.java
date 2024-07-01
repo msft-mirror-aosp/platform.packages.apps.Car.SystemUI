@@ -50,6 +50,7 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarServiceProvider.CarServiceOnConnectedListener;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.window.OverlayPanelViewController;
 import com.android.systemui.car.window.OverlayViewController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
@@ -525,6 +526,12 @@ public class NotificationPanelViewController extends OverlayPanelViewController
     @Override
     protected void onPanelVisible(boolean visible) {
         super.onPanelVisible(visible);
+        if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
+            // TODO: b/341604160 - Supports visible background users properly.
+            Log.d(TAG, "Status bar manager is disabled for visible background users");
+            return;
+        }
+
         mUiBgExecutor.execute(() -> {
             try {
                 if (visible) {
@@ -565,6 +572,12 @@ public class NotificationPanelViewController extends OverlayPanelViewController
      * Clear Buzz/Beep/Blink.
      */
     private void clearNotificationEffects() {
+        if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
+            // TODO: b/341604160 - Supports visible background users properly.
+            Log.d(TAG, "Status bar manager is disabled for visible background users");
+            return;
+        }
+
         try {
             mBarService.clearNotificationEffects();
         } catch (RemoteException e) {

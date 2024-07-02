@@ -37,7 +37,7 @@ flag {
 }
 
 flag {
-    name: "config_qc_sound_panel"
+    name: "show_qc_sound_panel"
     namespace: "car_sys_exp"
     description: "Flag that shows the quick controls panel for sound."
     bug: "344677470"

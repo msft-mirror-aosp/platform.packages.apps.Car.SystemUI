@@ -30,4 +30,10 @@
         <item name="snackbarButtonStyle">@style/Widget.MaterialComponents.Button.TextButton.Snackbar</item>
         <item name="snackbarTextViewStyle">@style/UserPickerSnackBarText</item>
     </style>
+
+    <!-- Used by the ActivityBlockingActivity to hide the splash screen icon -->
+    <style name="Theme.NoTitleBar.NoSplash" parent="@android:style/Theme.NoTitleBar">
+        <item name="android:windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="android:windowSplashScreenAnimationDuration">0</item>
+    </style>
 </resources>

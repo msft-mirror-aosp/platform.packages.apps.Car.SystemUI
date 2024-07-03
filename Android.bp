@@ -97,6 +97,7 @@ android_library {
     ],
     srcs: [
         "tests/src/**/*.java",
+        "tests/src/**/*.kt",
         "src/**/*.java",
         "src/**/*.kt",
         "src/**/I*.aidl",

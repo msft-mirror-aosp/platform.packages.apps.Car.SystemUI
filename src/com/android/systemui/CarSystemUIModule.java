@@ -32,6 +32,7 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
 import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
+import com.android.systemui.car.displayconfig.ExternalDisplayController;
 import com.android.systemui.car.drivemode.DriveModeModule;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
@@ -43,7 +44,6 @@ import com.android.systemui.dagger.GlobalRootComponent;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.decor.PrivacyDotDecorProviderFactory;
-import com.android.systemui.display.ui.viewmodel.ConnectingDisplayViewModel;
 import com.android.systemui.dock.DockManager;
 import com.android.systemui.dock.DockManagerImpl;
 import com.android.systemui.doze.DozeHost;
@@ -92,7 +92,7 @@ import javax.inject.Named;
                 BiometricsModule.class,
                 CarMultiUserUtilsModule.class,
                 CarVolumeModule.class,
-                ConnectingDisplayViewModel.StartableModule.class,
+                ExternalDisplayController.StartableModule.class,
                 DriveModeModule.class,
                 GestureModule.class,
                 HeadsUpEmptyImplModule.class,

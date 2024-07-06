@@ -219,17 +219,18 @@ public class CarVolumeDialogImpl
                     mCarAudioManager = (CarAudioManager) car.getCarManager(Car.AUDIO_SERVICE);
                     if (mCarAudioManager != null) {
                         int volumeGroupCount = mCarAudioManager.getVolumeGroupCount(mAudioZoneId);
+                        List<VolumeItem> availableVolumeItems = new ArrayList<>();
                         // Populates volume slider items from volume groups to UI.
                         for (int groupId = 0; groupId < volumeGroupCount; groupId++) {
                             VolumeItem volumeItem = getVolumeItemForUsages(
                                     mCarAudioManager.getUsagesForVolumeGroupId(mAudioZoneId,
                                             groupId));
-                            mAvailableVolumeItems.add(volumeItem);
-                            // The first one is the default item.
-                            if (groupId == 0) {
-                                clearAllAndSetupDefaultCarVolumeLineItem(0);
-                            }
+                            availableVolumeItems.add(volumeItem);
                         }
+                        mAvailableVolumeItems.clear();
+                        mAvailableVolumeItems.addAll(availableVolumeItems);
+                        // The first one is the default item.
+                        clearAllAndSetupDefaultCarVolumeLineItem(0);
 
                         // If list is already initiated, update its content.
                         if (mVolumeItemsAdapter != null) {

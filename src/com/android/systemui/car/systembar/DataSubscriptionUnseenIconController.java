@@ -22,27 +22,28 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.datasubscription.DataSubscription;
-import com.android.car.datasubscription.DataSubscriptionStatus;
 
 import javax.inject.Inject;
 
 /**
  * Controller to display the unseen icon for signal status icon
  */
-public class DataSubscriptionUnseenIconController {
+
+public class DataSubscriptionUnseenIconController
+        implements DataSubscription.DataSubscriptionChangeListener{
     private DataSubscription mSubscription;
-    private int mSubscriptionStatus;
     private View mView;
     private boolean mIsListenerRegistered;
-    private final DataSubscription.DataSubscriptionChangeListener mDataSubscriptionChangeListener =
-            value -> {
-                mSubscriptionStatus = value;
-                updateShouldDisplayUnseenIcon();
-            };
 
     @Inject
     DataSubscriptionUnseenIconController(Context context) {
         mSubscription = new DataSubscription(context);
+    }
+
+
+    @Override
+    public void onChange(int value) {
+        updateShouldDisplayUnseenIcon();
     }
 
     /**
@@ -50,7 +51,7 @@ public class DataSubscriptionUnseenIconController {
      */
     public void updateShouldDisplayUnseenIcon() {
         mView.post(() -> {
-            if (mSubscriptionStatus != DataSubscriptionStatus.PAID) {
+            if (mSubscription.isDataSubscriptionInactive()) {
                 mView.setVisibility(View.VISIBLE);
             } else {
                 mView.setVisibility(View.GONE);
@@ -64,9 +65,8 @@ public class DataSubscriptionUnseenIconController {
     public void setUnseenIcon(View view) {
         mView = view;
         if (mView != null && !mIsListenerRegistered) {
-            mSubscription.addDataSubscriptionListener(mDataSubscriptionChangeListener);
+            mSubscription.addDataSubscriptionListener(this);
             mIsListenerRegistered = true;
-            mSubscriptionStatus = mSubscription.getDataSubscriptionStatus();
             updateShouldDisplayUnseenIcon();
         }
     }
@@ -88,12 +88,7 @@ public class DataSubscriptionUnseenIconController {
     }
 
     @VisibleForTesting
-    DataSubscription.DataSubscriptionChangeListener getDataSubscriptionChangeListener() {
-        return mDataSubscriptionChangeListener;
-    }
-
-    @VisibleForTesting
-    @DataSubscriptionStatus int getSubscriptionStatus() {
-        return mSubscriptionStatus;
+    void setIsListenerRegistered(boolean value) {
+        mIsListenerRegistered = value;
     }
 }

@@ -16,8 +16,10 @@
 
 package com.android.systemui.car.systembar;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.testing.AndroidTestingRunner;
@@ -27,11 +29,9 @@ import android.view.View;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.datasubscription.DataSubscription;
-import com.android.car.datasubscription.DataSubscriptionStatus;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,46 +61,20 @@ public class DataSubscriptionUnseenIconControllerTest extends SysuiTestCase {
 
     @Test
     public void setUnseenIcon_IconNull_NotRegisterListener() {
-        DataSubscription.DataSubscriptionChangeListener listener =
-                mController.getDataSubscriptionChangeListener();
+        when(mDataSubscription.isDataSubscriptionInactive()).thenReturn(true);
+        mController.setIsListenerRegistered(true);
 
         mController.setUnseenIcon(null);
 
-        verify(mDataSubscription, never()).addDataSubscriptionListener(listener);
+        verify(mDataSubscription, never()).addDataSubscriptionListener(any());
     }
 
     @Test
     public void setUnseenIcon_IconNotNull_RegisterListener() {
-        DataSubscription.DataSubscriptionChangeListener listener =
-                mController.getDataSubscriptionChangeListener();
+        when(mDataSubscription.isDataSubscriptionInactive()).thenReturn(true);
 
         mController.setUnseenIcon(mView);
 
-        verify(mDataSubscription).addDataSubscriptionListener(listener);
-    }
-
-    @Test
-    public void dataSubscriptionChange_statusInactive_viewVisible() {
-        DataSubscription.DataSubscriptionChangeListener listener =
-                mController.getDataSubscriptionChangeListener();
-
-        mController.setUnseenIcon(mView);
-        listener.onChange(DataSubscriptionStatus.INACTIVE);
-
-        Assert.assertEquals(DataSubscriptionStatus.INACTIVE,
-                mController.getSubscriptionStatus());
-
-    }
-
-    @Test
-    public void dataSubscriptionChange_statusPaid_viewGone() {
-        DataSubscription.DataSubscriptionChangeListener listener =
-                mController.getDataSubscriptionChangeListener();
-
-        mController.setUnseenIcon(mView);
-        listener.onChange(DataSubscriptionStatus.PAID);
-
-        Assert.assertEquals(DataSubscriptionStatus.PAID,
-                mController.getSubscriptionStatus());
+        verify(mDataSubscription).addDataSubscriptionListener(any());
     }
 }

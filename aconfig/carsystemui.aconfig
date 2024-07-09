@@ -37,6 +37,13 @@ flag {
 }
 
 flag {
+    name: "daview_based_windowing"
+    namespace: "car_framework"
+    description: "Flag controlling the use of DaView and DaViewTransitions to implement windowing structure"
+    bug: "348502619"
+}
+
+flag {
     name: "show_qc_sound_panel"
     namespace: "car_sys_exp"
     description: "Flag that shows the quick controls panel for sound."

@@ -28,12 +28,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.android.car.dockutil.Flags;
 import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.hvac.HvacView;
 import com.android.systemui.car.hvac.TemperatureControlView;
 import com.android.systemui.car.notification.NotificationPanelViewController;
+import com.android.systemui.car.statusicon.StatusIconView;
 import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
 import com.android.systemui.car.systembar.CarSystemBarController.NotificationsShadeController;
 import com.android.systemui.settings.UserTracker;
@@ -70,6 +70,9 @@ public class CarSystemBarView extends LinearLayout {
     private CarSystemBarButton mHvacButton;
     private HvacView mDriverHvacView;
     private HvacView mPassengerHvacView;
+    private VolumeButton mVolumeButton;
+    private CarSystemBarPanelButtonView mVolumePanelView;
+    private StatusIconView mVolumeStatusIcon;
     private NotificationsShadeController mNotificationsShadeController;
     private HvacPanelController mHvacPanelController;
     private View mLockScreenButtons;
@@ -98,15 +101,34 @@ public class CarSystemBarView extends LinearLayout {
         mHvacButton = findViewById(R.id.hvac);
         mDriverHvacView = findViewById(R.id.driver_hvac);
         mPassengerHvacView = findViewById(R.id.passenger_hvac);
+        mVolumeButton = findViewById(R.id.volume);
+        mVolumePanelView = findViewById(R.id.volume_panel);
+        mVolumeStatusIcon = findViewById(R.id.volume_status_icon);
         mControlCenterButton = findViewById(R.id.control_center_nav);
         if (mNotificationsButton != null) {
             mNotificationsButton.setOnClickListener(this::onNotificationsClick);
         }
+        setupVolumeControl();
         setupHvacButton();
         // Needs to be clickable so that it will receive ACTION_MOVE events.
         setClickable(true);
         // Needs to not be focusable so rotary won't highlight the entire nav bar.
         setFocusable(false);
+    }
+
+    private void setupVolumeControl() {
+        if (mVolumeButton == null || mVolumeStatusIcon == null || mVolumePanelView == null) {
+            return;
+        }
+        if (com.android.systemui.car.Flags.showQcSoundPanel()) {
+            mVolumeButton.setVisibility(View.GONE);
+            mVolumeStatusIcon.setVisibility(View.VISIBLE);
+            mVolumePanelView.setVisibility(View.VISIBLE);
+        } else {
+            mVolumeButton.setVisibility(View.VISIBLE);
+            mVolumeStatusIcon.setVisibility(View.GONE);
+            mVolumePanelView.setVisibility(View.GONE);
+        }
     }
 
     void updateHomeButtonVisibility(boolean isPassenger) {
@@ -126,7 +148,7 @@ public class CarSystemBarView extends LinearLayout {
             mHvacButton.setOnClickListener(this::onHvacClick);
         }
 
-        if (Flags.dockFeature()) {
+        if (com.android.car.dockutil.Flags.dockFeature()) {
             if (mDriverHvacView instanceof TemperatureControlView) {
                 ((TemperatureControlView) mDriverHvacView).setTemperatureTextClickListener(
                         this::onHvacClick);

@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.userpicker;
 
+import static android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
 import static android.view.WindowManager.LayoutParams.SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS;
 import static android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT;
 
@@ -231,6 +232,9 @@ public class UserPickerActivity extends Activity implements Dumpable {
             insetsController.setAnimationsDisabled(true);
             insetsController.hide(WindowInsets.Type.statusBars()
                     | WindowInsets.Type.navigationBars());
+            // TODO(b/271139033): Supports passenger display. Currently only systemBars on main
+            // display supports showing transient by swipe.
+            insetsController.setSystemBarsBehavior(BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
         }
     }
 

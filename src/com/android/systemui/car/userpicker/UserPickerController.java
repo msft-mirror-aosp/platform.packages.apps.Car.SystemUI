@@ -141,7 +141,7 @@ final class UserPickerController {
         UserCreationResult result = mUserEventManager.createNewUser();
         runOnMainHandler(REQ_DISMISS_ADDING_DIALOG);
 
-        if (result.isSuccess()) {
+        if (result != null && result.isSuccess()) {
             UserInfo newUserInfo = mUserEventManager.getUserInfo(result.getUser().getIdentifier());
             UserRecord userRecord = UserRecord.create(newUserInfo, newUserInfo.name,
                     /* isStartGuestSession= */ false, /* isAddUser= */ false,
@@ -151,7 +151,7 @@ final class UserPickerController {
             mIsUserPickerClickable = false;
             handleUserSelected(userRecord);
         } else {
-            Slog.w(TAG, "Unsuccessful UserCreationResult:" + result.toString());
+            Slog.w(TAG, "Unsuccessful UserCreationResult:" + result);
             // Show snack bar message for the failure of user creation.
             runOnMainHandler(REQ_SHOW_SNACKBAR,
                     mContext.getString(R.string.create_user_failed_message));

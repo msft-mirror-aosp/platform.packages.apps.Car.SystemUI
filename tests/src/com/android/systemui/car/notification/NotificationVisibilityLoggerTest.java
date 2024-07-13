@@ -16,9 +16,12 @@
 
 package com.android.systemui.car.notification;
 
+import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,19 +37,23 @@ import androidx.test.filters.SmallTest;
 
 import com.android.car.notification.AlertEntry;
 import com.android.car.notification.NotificationDataManager;
+import com.android.dx.mockito.inline.extended.ExtendedMockito;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.NotificationVisibility;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.util.concurrency.FakeExecutor;
 import com.android.systemui.util.time.FakeSystemClock;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.MockitoSession;
+import org.mockito.quality.Strictness;
 
 import java.util.Collections;
 
@@ -73,13 +80,18 @@ public class NotificationVisibilityLoggerTest extends SysuiTestCase {
     @Mock
     private NotificationDataManager mNotificationDataManager;
 
+    private MockitoSession mSession;
     private NotificationVisibilityLogger mNotificationVisibilityLogger;
     private FakeExecutor mUiBgExecutor;
     private AlertEntry mMessageNotification;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(/* testClass= */this);
+        mSession = ExtendedMockito.mockitoSession()
+                .initMocks(this)
+                .spyStatic(CarSystemUIUserUtil.class)
+                .strictness(Strictness.LENIENT)
+                .startMocking();
 
         mUiBgExecutor = new FakeExecutor(new FakeSystemClock());
         Notification.Builder mNotificationBuilder1 = new Notification.Builder(mContext, CHANNEL_ID)
@@ -90,9 +102,18 @@ public class NotificationVisibilityLoggerTest extends SysuiTestCase {
 
         when(mNotificationDataManager.getVisibleNotifications()).thenReturn(
                 Collections.singletonList(mMessageNotification));
+        doReturn(false).when(() -> CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
 
         mNotificationVisibilityLogger = new NotificationVisibilityLogger(
                 mUiBgExecutor, mBarService, mNotificationDataManager);
+    }
+
+    @After
+    public void tearDown() {
+        if (mSession != null) {
+            mSession.finishMocking();
+            mSession = null;
+        }
     }
 
     @Test
@@ -101,6 +122,18 @@ public class NotificationVisibilityLoggerTest extends SysuiTestCase {
         mUiBgExecutor.runNextReady();
 
         verify(mBarService).onNotificationVisibilityChanged(
+                any(NotificationVisibility[].class), any(NotificationVisibility[].class));
+    }
+
+    @Test
+    public void log_visibleBackgroundUser_doesNotNotifyStatusBarService() throws RemoteException {
+        // TODO: b/341604160 - support visible background users properly.
+        doReturn(true).when(() -> CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
+
+        mNotificationVisibilityLogger.log(/* isVisible= */ true);
+        mUiBgExecutor.runNextReady();
+
+        verify(mBarService, never()).onNotificationVisibilityChanged(
                 any(NotificationVisibility[].class), any(NotificationVisibility[].class));
     }
 

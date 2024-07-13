@@ -28,6 +28,7 @@ import android.view.RemoteAnimationTarget;
 
 import com.android.internal.jank.InteractionJankMonitor;
 import com.android.internal.logging.UiEventLogger;
+import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardDisplayManager;
 import com.android.keyguard.KeyguardUpdateMonitor;
@@ -52,6 +53,7 @@ import com.android.systemui.keyguard.WindowManagerOcclusionManager;
 import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationModeController;
+import com.android.systemui.process.ProcessWrapper;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.ShadeController;
 import com.android.systemui.statusbar.NotificationShadeDepthController;
@@ -127,10 +129,12 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             Lazy<ActivityTransitionAnimator> activityTransitionAnimator,
             Lazy<ScrimController> scrimControllerLazy,
             IActivityTaskManager activityTaskManagerService,
+            IStatusBarService statusBarService,
             FeatureFlags featureFlags,
             SecureSettings secureSettings,
             SystemSettings systemSettings,
             SystemClock systemClock,
+            ProcessWrapper processWrapper,
             @Main CoroutineDispatcher mainDispatcher,
             Lazy<DreamViewModel> dreamViewModel,
             Lazy<CommunalTransitionViewModel> communalTransitionViewModel,
@@ -155,7 +159,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 activityTransitionAnimator,
                 scrimControllerLazy,
                 activityTaskManagerService,
-                featureFlags, secureSettings, systemSettings, systemClock,
+                statusBarService,
+                featureFlags, secureSettings, systemSettings, systemClock, processWrapper,
                 mainDispatcher,
                 dreamViewModel,
                 communalTransitionViewModel,

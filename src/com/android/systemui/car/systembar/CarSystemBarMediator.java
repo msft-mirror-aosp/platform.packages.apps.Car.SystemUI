@@ -97,6 +97,7 @@ public class CarSystemBarMediator implements CoreStartable,
         // Do not start any components which depend on the overlaid resources before RROs gets
         // applied.
         if (mCarSystemBarStarted) {
+            mCarSystemBar.onConfigChanged(newConfig);
             return;
         }
         mSystemBarConfigs.resetSystemBarConfigs();

@@ -217,6 +217,7 @@ public class MediaVolumeStatusIconControllerTest extends SysuiTestCase {
         doReturn(mCarOccupantZoneManager).when(mCar).getCarManager(Car.CAR_OCCUPANT_ZONE_SERVICE);
         mInfo.zoneId = mInitZoneId;
         doReturn(mInfo).when(mCarOccupantZoneManager).getMyOccupantZone();
+        doReturn(mInitZoneId).when(mCarOccupantZoneManager).getAudioZoneIdForOccupant(mInfo);
         doReturn(mCarAudioManager).when(mCar).getCarManager(Car.AUDIO_SERVICE);
         doReturn(mInitGroupId).when(mCarAudioManager)
                 .getVolumeGroupIdForUsage(mInitZoneId, USAGE_MEDIA);

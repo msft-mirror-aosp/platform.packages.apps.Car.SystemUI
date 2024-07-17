@@ -31,7 +31,6 @@ import android.annotation.Nullable;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.StatusBarManager.Disable2Flags;
 import android.app.StatusBarManager.DisableFlags;
-import android.app.UiModeManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -124,7 +123,6 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     private final SystemBarConfigs mSystemBarConfigs;
     @Nullable
     private final ToolbarController mDisplayCompatToolbarController;
-    private UiModeManager mUiModeManager;
     private StatusBarSignalPolicy mSignalPolicy;
 
     // If the nav bar should be hidden when the soft keyboard is visible.
@@ -206,7 +204,6 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mSystemBarConfigs = systemBarConfigs;
         mSignalPolicy = signalPolicy;
         mDisplayId = context.getDisplayId();
-        mUiModeManager = mContext.getSystemService(UiModeManager.class);
         mDisplayTracker = displayTracker;
         mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
         mMDSystemBarsController = mdSystemBarsController.orElse(null);
@@ -763,7 +760,6 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         // Refresh UI on Night mode or system language changes.
         if (isConfigNightMode != mIsUiModeNight) {
             mIsUiModeNight = isConfigNightMode;
-            mUiModeManager.setNightModeActivated(mIsUiModeNight);
         }
 
         // cache the current state
@@ -854,8 +850,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     }
 
     @VisibleForTesting
-    void setUiModeManager(UiModeManager uiModeManager) {
-        mUiModeManager = uiModeManager;
+    boolean getIsUiModeNight() {
+        return mIsUiModeNight;
     }
 
     @Override

@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.notification;
 
-import android.app.UiModeManager;
 import android.content.Context;
 
 import com.android.systemui.broadcast.BroadcastDispatcher;
@@ -45,8 +44,7 @@ public class BottomNotificationPanelViewMediator extends NotificationPanelViewMe
             BroadcastDispatcher broadcastDispatcher,
             UserTracker userTracker,
             CarDeviceProvisionedController carDeviceProvisionedController,
-            ConfigurationController configurationController,
-            UiModeManager uiModeManager
+            ConfigurationController configurationController
     ) {
         super(context,
                 carSystemBarController,
@@ -55,8 +53,7 @@ public class BottomNotificationPanelViewMediator extends NotificationPanelViewMe
                 broadcastDispatcher,
                 userTracker,
                 carDeviceProvisionedController,
-                configurationController,
-                uiModeManager);
+                configurationController);
         notificationPanelViewController.setOverlayDirection(
                 OverlayPanelViewController.OVERLAY_FROM_BOTTOM_BAR);
     }

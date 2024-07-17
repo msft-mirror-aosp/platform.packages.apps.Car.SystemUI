@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.notification;
 
-import android.app.UiModeManager;
 import android.car.hardware.power.CarPowerManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -57,7 +56,6 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
     private final UserTracker mUserTracker;
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final ConfigurationController mConfigurationController;
-    private final UiModeManager mUiModeManager;
 
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -98,8 +96,7 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
             BroadcastDispatcher broadcastDispatcher,
             UserTracker userTracker,
             CarDeviceProvisionedController carDeviceProvisionedController,
-            ConfigurationController configurationController,
-            UiModeManager uiModeManager
+            ConfigurationController configurationController
     ) {
         mContext = context;
         mCarSystemBarController = carSystemBarController;
@@ -109,7 +106,6 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         mUserTracker = userTracker;
         mCarDeviceProvisionedController = carDeviceProvisionedController;
         mConfigurationController = configurationController;
-        mUiModeManager = uiModeManager;
     }
 
     @Override
@@ -166,7 +162,6 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         // Only refresh UI on Night mode changes
         if (isConfigNightMode != mIsUiModeNight) {
             mIsUiModeNight = isConfigNightMode;
-            mUiModeManager.setNightModeActivated(mIsUiModeNight);
             mNotificationPanelViewController.reinflate();
             registerListeners();
         }

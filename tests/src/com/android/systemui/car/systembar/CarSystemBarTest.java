@@ -37,7 +37,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.UiModeManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.RemoteException;
@@ -446,12 +445,10 @@ public class CarSystemBarTest extends SysuiTestCase {
         Configuration config = new Configuration();
         config.uiMode =
                 isNightMode ? Configuration.UI_MODE_NIGHT_NO : Configuration.UI_MODE_NIGHT_YES;
-        UiModeManager mockUiModeManager = mock(UiModeManager.class);
-        mCarSystemBar.setUiModeManager(mockUiModeManager);
 
         mCarSystemBar.onConfigChanged(config);
 
-        verify(mockUiModeManager).setNightModeActivated(!isNightMode);
+        assertThat(mCarSystemBar.getIsUiModeNight()).isNotEqualTo(isNightMode);
     }
 
     @Test

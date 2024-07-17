@@ -26,7 +26,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.UiModeManager;
 import android.content.res.Configuration;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
@@ -73,8 +72,6 @@ public class HvacPanelOverlayViewControllerTest extends SysuiTestCase {
     CarDeviceProvisionedController mCarDeviceProvisionedController;
     @Mock
     ConfigurationController mConfigurationController;
-    @Mock
-    UiModeManager mUiModeManager;
 
     @Before
     public void setUp() {
@@ -89,7 +86,7 @@ public class HvacPanelOverlayViewControllerTest extends SysuiTestCase {
         mHvacPanelOverlayViewController = new HvacPanelOverlayViewController(
                 mContext, getContext().getOrCreateTestableResources().getResources(),
                 mHvacController, mOverlayViewGlobalStateController, mFlingAnimationUtilsBuilder,
-                mCarDeviceProvisionedController, mConfigurationController, mUiModeManager);
+                mCarDeviceProvisionedController, mConfigurationController);
     }
 
     @Test

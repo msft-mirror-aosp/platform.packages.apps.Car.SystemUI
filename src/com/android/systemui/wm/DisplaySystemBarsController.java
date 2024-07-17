@@ -21,6 +21,12 @@ import static android.view.WindowInsets.Type.navigationBars;
 import static android.view.WindowInsets.Type.statusBars;
 import static android.view.WindowInsets.Type.systemBars;
 
+import static com.android.systemui.car.systembar.SystemBarUtil.SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY;
+import static com.android.systemui.car.systembar.SystemBarUtil.SYSTEM_BAR_PERSISTENCY_CONFIG_IMMERSIVE;
+import static com.android.systemui.car.systembar.SystemBarUtil.SYSTEM_BAR_PERSISTENCY_CONFIG_IMMERSIVE_WITH_NAV;
+import static com.android.systemui.car.systembar.SystemBarUtil.SYSTEM_BAR_PERSISTENCY_CONFIG_NON_IMMERSIVE;
+import static com.android.systemui.car.systembar.SystemBarUtil.VISIBLE_BAR_VISIBILITIES_TYPES_INDEX;
+import static com.android.systemui.car.systembar.SystemBarUtil.INVISIBLE_BAR_VISIBILITIES_TYPES_INDEX;
 import static com.android.systemui.car.users.CarSystemUIUserUtil.isSecondaryMUMDSystemUI;
 
 import android.annotation.Nullable;
@@ -33,7 +39,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.PatternMatcher;
 import android.os.RemoteException;
-import android.os.UserHandle;
 import android.util.Slog;
 import android.util.SparseArray;
 import android.view.IDisplayWindowInsetsController;
@@ -70,12 +75,6 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
     private static final int STATE_IMMERSIVE_WITH_STATUS_BAR = statusBars();
     private static final int STATE_IMMERSIVE = 0;
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
-
-    //Config mapping to config_systemBarPersistency.
-    private static final int SYSTEM_BAR_PERSISTENCY_CONFIG_NON_IMMERSIVE = 0;
-    private static final int SYSTEM_BAR_PERSISTENCY_CONFIG_IMMERSIVE = 1;
-    private static final int SYSTEM_BAR_PERSISTENCY_CONFIG_IMMERSIVE_WITH_NAV = 2;
-    private static final int SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY = 3;
 
     protected final Context mContext;
     protected final IWindowManager mWmService;
@@ -151,8 +150,6 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
 
     class PerDisplay implements DisplayInsetsController.OnInsetsChangedListener {
         private static final String OVERLAY_FILTER_DATA_SCHEME = "package";
-        private static final int VISIBLE_BAR_VISIBILITIES_TYPES_INDEX = 0;
-        private static final int INVISIBLE_BAR_VISIBILITIES_TYPES_INDEX = 1;
 
         int mDisplayId;
         InsetsController mInsetsController;
@@ -229,7 +226,10 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
                         + ", component = " + component
                         + ", requestedVisibleTypes = " + requestedVisibleTypes
                         + ", mWindowRequestedVisibleTypes = " + mWindowRequestedVisibleTypes
-                        + ", mPackageName = " + mPackageName);
+                        + ", mPackageName = " + mPackageName
+                        + ", userId = " + mContext.getUserId()
+                        + ", display id = " + mDisplayId
+                );
             }
             String packageName = component != null ? component.getPackageName() : null;
 
@@ -239,7 +239,6 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
                 }
             } else {
                 if (mWindowRequestedVisibleTypes == requestedVisibleTypes) {
-                    Slog.d(TAG, "requestedVisibleTypes unchanged");
                     return;
                 }
             }
@@ -290,11 +289,12 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
                 public void onReceive(Context context, Intent intent) {
                     mBehavior = mContext.getResources().getInteger(
                             R.integer.config_systemBarPersistency);
-                    Slog.d(TAG, "Refresh system bar persistency behavior on overlay change"
-                            + mBehavior + " on display = " + mDisplayId);
+                    Slog.d(TAG, "Update system bar persistency behavior to" + mBehavior
+                            + " on overlay change on userId = " + mContext.getUserId()
+                            + " on display = " + mDisplayId);
                 }
             };
-            mContext.registerReceiverAsUser(mOverlayChangeBroadcastReceiver, UserHandle.ALL,
+            mContext.registerReceiver(mOverlayChangeBroadcastReceiver,
                     overlayFilter, /* broadcastPermission= */ null, /* handler= */ null);
         }
 

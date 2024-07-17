@@ -17,9 +17,11 @@ package com.android.systemui.car.userpicker;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import android.graphics.Insets;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
+import android.view.WindowInsets;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -59,8 +61,6 @@ public class UserPickerBottomBarTest extends UserPickerTestCase {
 
             assertThat(height).isEqualTo(target_height);
         });
-
-
     }
 
     @Test
@@ -69,6 +69,16 @@ public class UserPickerBottomBarTest extends UserPickerTestCase {
             Clock clock = activity.findViewById(R.id.user_picker_bottom_bar_clock);
             assertThat(clock).isNotNull();
             assertThat(clock.getVisibility()).isEqualTo(View.VISIBLE);
+        });
+    }
+
+    @Test
+    public void checkNavBarInsets_isZero() {
+        mActivityRule.getScenario().onActivity(activity -> {
+            Insets insets = activity.getWindow().getDecorView().getRootWindowInsets().getInsets(
+                    WindowInsets.Type.navigationBars());
+            int height = insets.bottom - insets.top;
+            assertThat(height).isEqualTo(0);
         });
     }
 }

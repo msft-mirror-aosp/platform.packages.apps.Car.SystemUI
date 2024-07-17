@@ -114,7 +114,7 @@ public class BarControlPolicy {
      *         is the inset types that should be hidden.
      */
     @WindowInsets.Type.InsetsType
-    static int[] getBarVisibilities(String packageName) {
+    public static int[] getBarVisibilities(String packageName) {
         int hideTypes = 0;
         int showTypes = 0;
         if (matchesStatusFilter(packageName)) {

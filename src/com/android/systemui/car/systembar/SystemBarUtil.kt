@@ -25,13 +25,22 @@ import android.provider.Settings
 import android.text.TextUtils
 import android.util.ArraySet
 import android.util.Log
+import android.view.WindowInsets.Type.navigationBars
+import android.view.WindowInsets.Type.statusBars
 import com.android.systemui.R
 import com.android.systemui.settings.UserTracker
+import com.android.systemui.wm.BarControlPolicy
 import java.net.URISyntaxException
 
 object SystemBarUtil {
     private const val TAG = "SystemBarUtil"
     private const val TOS_DISABLED_APPS_SEPARATOR = ","
+    const val SYSTEM_BAR_PERSISTENCY_CONFIG_NON_IMMERSIVE = 0
+    const val SYSTEM_BAR_PERSISTENCY_CONFIG_IMMERSIVE = 1
+    const val SYSTEM_BAR_PERSISTENCY_CONFIG_IMMERSIVE_WITH_NAV = 2
+    const val SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY = 3
+    const val VISIBLE_BAR_VISIBILITIES_TYPES_INDEX: Int = 0
+    const val INVISIBLE_BAR_VISIBILITIES_TYPES_INDEX: Int = 1
 
     /**
      * Returns a set of packages that are disabled by tos
@@ -45,8 +54,11 @@ object SystemBarUtil {
         if (uid == null) {
             return ArraySet()
         }
-        val settingsValue = Settings.Secure
-                .getStringForUser(context.contentResolver, KEY_UNACCEPTED_TOS_DISABLED_APPS, uid)
+        val settingsValue = Settings.Secure.getStringForUser(
+            context.contentResolver,
+            KEY_UNACCEPTED_TOS_DISABLED_APPS,
+            uid
+        )
         return if (TextUtils.isEmpty(settingsValue)) {
             ArraySet()
         } else {
@@ -103,5 +115,50 @@ object SystemBarUtil {
             return
         }
         launchApp(context, tosIntent, userHandle)
+    }
+
+    /**
+     * Helper function that returns {@code true} if the navigation bar is persistent on the display.
+     */
+    fun isNavBarPersistent(context: Context): Boolean {
+        val behavior = context.resources.getInteger(R.integer.config_systemBarPersistency)
+        val remoteInsetsControllerControlsSystemBars =
+            context.resources.getBoolean(
+                android.R.bool.config_remoteInsetsControllerControlsSystemBars
+            )
+        val navBarVisibleOnBarControlPolicy =
+            (behavior == SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY) &&
+                    isBarVisibleOnBarControlPolicy(context, navigationBars())
+
+        return remoteInsetsControllerControlsSystemBars &&
+                (behavior == SYSTEM_BAR_PERSISTENCY_CONFIG_NON_IMMERSIVE ||
+                        behavior == SYSTEM_BAR_PERSISTENCY_CONFIG_IMMERSIVE_WITH_NAV ||
+                        navBarVisibleOnBarControlPolicy)
+    }
+
+    /**
+     * Helper function that returns {@code true} if the status bar is persistent on the display.
+     */
+    fun isStatusBarPersistent(context: Context): Boolean {
+        val behavior = context.resources.getInteger(R.integer.config_systemBarPersistency)
+        val remoteInsetsControllerControlsSystemBars =
+            context.resources.getBoolean(
+                android.R.bool.config_remoteInsetsControllerControlsSystemBars
+            )
+        val statusBarVisibleOnBarControlPolicy =
+            (behavior == SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY) &&
+                    isBarVisibleOnBarControlPolicy(context, statusBars())
+
+        return remoteInsetsControllerControlsSystemBars &&
+                (behavior == SYSTEM_BAR_PERSISTENCY_CONFIG_NON_IMMERSIVE ||
+                        statusBarVisibleOnBarControlPolicy)
+    }
+
+    private fun isBarVisibleOnBarControlPolicy(context: Context, type: Int): Boolean {
+        val showTypes =
+            BarControlPolicy.getBarVisibilities(
+                context.packageName
+            )[VISIBLE_BAR_VISIBILITIES_TYPES_INDEX]
+        return (showTypes and type) != 0
     }
 }

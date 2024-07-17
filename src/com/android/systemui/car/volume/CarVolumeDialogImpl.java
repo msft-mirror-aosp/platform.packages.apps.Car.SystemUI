@@ -35,7 +35,6 @@ import android.annotation.DrawableRes;
 import android.annotation.Nullable;
 import android.app.Dialog;
 import android.app.KeyguardManager;
-import android.app.UiModeManager;
 import android.car.Car;
 import android.car.CarOccupantZoneManager;
 import android.car.media.CarAudioManager;
@@ -125,7 +124,6 @@ public class CarVolumeDialogImpl
     private final CarServiceProvider mCarServiceProvider;
     private final ConfigurationController mConfigurationController;
     private final UserTracker mUserTracker;
-    private final UiModeManager mUiModeManager;
     private final Executor mExecutor;
 
     private Window mWindow;
@@ -293,7 +291,6 @@ public class CarVolumeDialogImpl
         mExpHoveringTimeout = mContext.getResources().getInteger(
                 R.integer.car_volume_dialog_display_expanded_hovering_timeout);
         mConfigurationController = configurationController;
-        mUiModeManager = mContext.getSystemService(UiModeManager.class);
         mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
         mExecutor = context.getMainExecutor();
     }
@@ -365,7 +362,6 @@ public class CarVolumeDialogImpl
 
         if (isConfigNightMode != mIsUiModeNight) {
             mIsUiModeNight = isConfigNightMode;
-            mUiModeManager.setNightModeActivated(mIsUiModeNight);
             // Call notifyDataSetChanged to force trigger the mVolumeItemsAdapter#onBindViewHolder
             // and reset items background color. notify() or invalidate() don't work here.
             mVolumeItemsAdapter.notifyDataSetChanged();

@@ -22,6 +22,7 @@ import android.content.Context;
 
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.plugins.VolumeDialog;
+import com.android.systemui.plugins.VolumeDialogController;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.volume.VolumeComponent;
@@ -43,9 +44,11 @@ public interface CarVolumeModule {
     @Provides
     static VolumeDialog provideVolumeDialog(Context context,
             CarServiceProvider carServiceProvider,
+            VolumeDialogController volumeDialogController,
             ConfigurationController configurationController,
             UserTracker userTracker) {
-        return new CarVolumeDialogImpl(context, carServiceProvider, configurationController,
+        return new CarVolumeDialogImpl(
+                context, carServiceProvider, volumeDialogController, configurationController,
                 userTracker);
     }
 }

@@ -255,5 +255,6 @@
     -->
     <string-array translatable="false" name="config_dataSubscriptionBlockedPackagesList">
         <item>com.android.car.settings</item>
+        <item>com.android.car.carlauncher</item>
     </string-array>
 </resources>

@@ -27,6 +27,7 @@ import android.app.ActivityTaskManager;
 import android.app.role.RoleManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -35,6 +36,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -70,6 +72,7 @@ public class CarSystemBarButton extends LinearLayout implements
     private final ActivityManager mActivityManager;
     @Nullable
     private UserTracker mUserTracker;
+    private ViewGroup mIconContainer;
     private AlphaOptimizedImageView mIcon;
     private AlphaOptimizedImageView mMoreIcon;
     private ImageView mUnseenIcon;
@@ -418,27 +421,39 @@ public class CarSystemBarButton extends LinearLayout implements
                 mShowMoreWhenSelected);
 
         mIconResourceId = typedArray.getResourceId(
-                R.styleable.CarSystemBarButton_icon, 0);
+                R.styleable.CarSystemBarButton_icon, Resources.ID_NULL);
         mSelectedIconResourceId = typedArray.getResourceId(
                 R.styleable.CarSystemBarButton_selectedIcon, mIconResourceId);
         mIsDefaultAppIconForRoleEnabled = typedArray.getBoolean(
                 R.styleable.CarSystemBarButton_useDefaultAppIconForRole, false);
         mToggleSelectedState = typedArray.getBoolean(
                 R.styleable.CarSystemBarButton_toggleSelected, false);
+        mIconContainer = findViewById(R.id.car_nav_button_icon);
         mIcon = findViewById(R.id.car_nav_button_icon_image);
-        refreshIconAlpha(mIcon);
         mMoreIcon = findViewById(R.id.car_nav_button_more_icon);
         mUnseenIcon = findViewById(R.id.car_nav_button_unseen_icon);
+        refreshIconAlpha(mIcon);
         updateImage(mIcon);
+    }
+
+    private void updateIconContainerVisibility() {
+        boolean visible = mIcon.getVisibility() == VISIBLE
+                || mUnseenIcon.getVisibility() == VISIBLE
+                || mMoreIcon.getVisibility() == VISIBLE;
+        mIconContainer.setVisibility(visible ? VISIBLE : GONE);
     }
 
     protected void updateImage(AlphaOptimizedImageView icon) {
         if (mIsDefaultAppIconForRoleEnabled && mAppIcon != null) {
             icon.setImageDrawable(mAppIcon);
+            icon.setVisibility(VISIBLE);
         } else {
-            icon.setImageResource(mSelected ? mSelectedIconResourceId : mIconResourceId);
+            int resId = mSelected ? mSelectedIconResourceId : mIconResourceId;
+            icon.setImageResource(resId);
+            icon.setVisibility(resId != Resources.ID_NULL ? VISIBLE : GONE);
         }
         mUnseenIcon.setVisibility(mHasUnseen ? VISIBLE : GONE);
+        updateIconContainerVisibility();
     }
 
     protected void refreshIconAlpha(AlphaOptimizedImageView icon) {

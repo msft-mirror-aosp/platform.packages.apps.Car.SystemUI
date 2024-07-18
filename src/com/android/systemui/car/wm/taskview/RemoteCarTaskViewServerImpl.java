@@ -118,7 +118,8 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             ensureManageSystemUIPermission(mContext);
             ActivityOptions opt = ActivityOptions.fromBundle(options);
             // Need this for the pending intent to work under BAL hardening.
-            opt.setPendingIntentBackgroundActivityLaunchAllowedByPermission(true);
+            opt.setPendingIntentBackgroundActivityStartMode(
+                    ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOW_ALWAYS);
             mTaskViewTaskController.startActivity(
                     pendingIntent,
                     fillInIntent,

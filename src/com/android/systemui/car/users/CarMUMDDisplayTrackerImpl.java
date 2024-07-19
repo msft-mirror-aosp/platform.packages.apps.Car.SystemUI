@@ -43,11 +43,11 @@ import java.util.List;
 import java.util.concurrent.Executor;
 
 /**
- * Custom {@link DisplayTracker} for CarSystemUI. This class utilizes the
- * {@link CarOccupantZoneManager} to provide the relevant displays and callbacks for a particular
- * SystemUI instance running for a particular user.
+ * Custom {@link DisplayTracker} for multi-user multi-display configurations of CarSystemUI.
+ * This class utilizes the {@link CarOccupantZoneManager} to provide the relevant displays and
+ * callbacks for a particular SystemUI instance running for a particular user.
  */
-public class CarDisplayTrackerImpl implements DisplayTracker {
+public class CarMUMDDisplayTrackerImpl implements DisplayTracker {
     private final Context mContext;
     private final DisplayManager mDisplayManager;
     private final UserTracker mUserTracker;
@@ -76,7 +76,7 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
                     synchronized (mDisplayCallbacks) {
                         callbacks = List.copyOf(mDisplayCallbacks);
                     }
-                    CarDisplayTrackerImpl.this.onDisplayAdded(displayId, callbacks);
+                    CarMUMDDisplayTrackerImpl.this.onDisplayAdded(displayId, callbacks);
                 }
 
                 @Override
@@ -85,7 +85,7 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
                     synchronized (mDisplayCallbacks) {
                         callbacks = List.copyOf(mDisplayCallbacks);
                     }
-                    CarDisplayTrackerImpl.this.onDisplayRemoved(displayId, callbacks);
+                    CarMUMDDisplayTrackerImpl.this.onDisplayRemoved(displayId, callbacks);
                 }
 
                 @Override
@@ -94,7 +94,7 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
                     synchronized (mDisplayCallbacks) {
                         callbacks = List.copyOf(mDisplayCallbacks);
                     }
-                    CarDisplayTrackerImpl.this.onDisplayChanged(displayId, callbacks);
+                    CarMUMDDisplayTrackerImpl.this.onDisplayChanged(displayId, callbacks);
                 }
             };
 
@@ -114,11 +114,11 @@ public class CarDisplayTrackerImpl implements DisplayTracker {
                     synchronized (mBrightnessCallbacks) {
                         callbacks = List.copyOf(mBrightnessCallbacks);
                     }
-                    CarDisplayTrackerImpl.this.onDisplayChanged(displayId, callbacks);
+                    CarMUMDDisplayTrackerImpl.this.onDisplayChanged(displayId, callbacks);
                 }
             };
 
-    public CarDisplayTrackerImpl(Context context, UserTracker userTracker,
+    public CarMUMDDisplayTrackerImpl(Context context, UserTracker userTracker,
             CarServiceProvider carServiceProvider, Handler backgroundHandler) {
         mContext = context;
         mDisplayManager = mContext.getSystemService(DisplayManager.class);

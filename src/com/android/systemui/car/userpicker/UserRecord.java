@@ -39,6 +39,7 @@ final class UserRecord {
     public final boolean mIsAddUser;
     public final boolean mIsForeground;
     public final Drawable mIcon;
+    public final boolean mIsSecure;
     public final boolean mIsLoggedIn;
     public final int mLoggedInDisplay;
     public final String mSeatLocationName;
@@ -48,14 +49,15 @@ final class UserRecord {
     public View.OnClickListener mOnClickListener;
 
     private UserRecord(UserInfo info, String name, boolean isStartGuestSession, boolean isAddUser,
-            boolean isForeground, Drawable icon, boolean isLoggedIn, int loggedInDisplay,
-            String seatLocationName, boolean isStopping) {
+            boolean isForeground, Drawable icon, boolean isSecure, boolean isLoggedIn,
+            int loggedInDisplay, String seatLocationName, boolean isStopping) {
         mInfo = info;
         mName = name;
         mIsStartGuestSession = isStartGuestSession;
         mIsAddUser = isAddUser;
         mIsForeground = isForeground;
         mIcon = icon;
+        mIsSecure = isSecure;
         mIsLoggedIn = isLoggedIn;
         mLoggedInDisplay = loggedInDisplay;
         mSeatLocationName = seatLocationName;
@@ -66,15 +68,16 @@ final class UserRecord {
             boolean isAddUser, boolean isForeground, Drawable icon,
             OnClickListenerCreatorBase listenerMaker) {
         return create(info, name, isStartGuestSession, isAddUser, isForeground, icon, listenerMaker,
-                false, INVALID_DISPLAY, null, false);
+                false, false, INVALID_DISPLAY, null, false);
     }
 
     static UserRecord create(UserInfo info, String name, boolean isStartGuestSession,
             boolean isAddUser, boolean isForeground, Drawable icon,
-            OnClickListenerCreatorBase listenerMaker, boolean isLoggedIn, int loggedInDisplay,
-            String seatLocationName, boolean isStopping) {
+            OnClickListenerCreatorBase listenerMaker, boolean isSecure, boolean isLoggedIn,
+            int loggedInDisplay, String seatLocationName, boolean isStopping) {
         UserRecord userRecord = new UserRecord(info, name, isStartGuestSession, isAddUser,
-                isForeground, icon, isLoggedIn, loggedInDisplay, seatLocationName, isStopping);
+                isForeground, icon, isSecure, isLoggedIn, loggedInDisplay, seatLocationName,
+                isStopping);
         listenerMaker.setUserRecord(userRecord);
         userRecord.mOnClickListener = listenerMaker.createOnClickListenerWithUserRecord();
         return userRecord;

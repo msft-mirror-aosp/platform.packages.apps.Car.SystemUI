@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.statusicon.ui;
 
+import static android.car.media.CarAudioManager.INVALID_AUDIO_ZONE;
 import static android.car.media.CarAudioManager.PRIMARY_AUDIO_ZONE;
 import static android.media.AudioAttributes.USAGE_MEDIA;
 
@@ -77,8 +78,14 @@ public class MediaVolumeStatusIconController extends StatusIconViewController {
                     if (carOccupantZoneManager != null) {
                         occupantZoneInfo = carOccupantZoneManager.getMyOccupantZone();
                     }
-                    mZoneId =
-                            occupantZoneInfo != null ? occupantZoneInfo.zoneId : PRIMARY_AUDIO_ZONE;
+                    mZoneId = PRIMARY_AUDIO_ZONE;
+                    if (occupantZoneInfo != null) {
+                        int occupantAudioId = carOccupantZoneManager
+                                .getAudioZoneIdForOccupant(occupantZoneInfo);
+                        if (occupantAudioId != INVALID_AUDIO_ZONE) {
+                            mZoneId = occupantAudioId;
+                        }
+                    }
 
                     mCarAudioManager = (CarAudioManager) car.getCarManager(Car.AUDIO_SERVICE);
 

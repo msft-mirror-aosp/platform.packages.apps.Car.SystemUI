@@ -58,8 +58,8 @@
             android:layout_width="@dimen/data_subscription_pop_up_button_width"
             android:layout_height="@dimen/data_subscription_pop_up_button_height"
             android:layout_marginRight="@dimen/data_subscription_pop_up_horizontal_padding"
-            android:text="@string/data_subscription_button_text"/>
-
+            android:text="@string/data_subscription_button_text"
+            style="@android:style/Widget.DeviceDefault.Button.Colored"/>
     </LinearLayout>
 
 </com.android.car.ui.shortcutspopup.CarUiArrowContainerView>

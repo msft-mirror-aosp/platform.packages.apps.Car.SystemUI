@@ -470,15 +470,17 @@
 
     <dimen name="dock_container_margin">10dp</dimen>
 
-    <dimen name="data_subscription_pop_up_radius">16dp</dimen>
+    <dimen name="data_subscription_pop_up_radius">24dp</dimen>
     <dimen name="data_subscription_pop_up_arrow_height">19dp</dimen>
     <dimen name="data_subscription_pop_up_arrow_width">38dp</dimen>
     <dimen name="data_subscription_pop_up_arrow_radius">5dp</dimen>
-    <dimen name="data_subscription_pop_up_arrow_offset">30dp</dimen>
+    <dimen name="data_subscription_pop_up_arrow_offset">84dp</dimen>
     <dimen name="data_subscription_pop_up_vertical_padding">46dp</dimen>
     <dimen name="data_subscription_pop_up_horizontal_padding">@*android:dimen/car_padding_3</dimen>
     <dimen name="data_subscription_pop_up_button_width">224dp</dimen>
     <dimen name="data_subscription_pop_up_button_height">68dp</dimen>
     <dimen name="car_quick_controls_panel_margin">8dp</dimen>
     <dimen name="data_subscription_pop_up_horizontal_margin">15dp</dimen>
+    <dimen name="data_subscription_pop_up_horizontal_offset">92dp</dimen>
+    <dimen name="data_subscription_pop_up_vertical_offset">6dp</dimen>
 </resources>

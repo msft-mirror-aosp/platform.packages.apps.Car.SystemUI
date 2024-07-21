@@ -16,6 +16,7 @@
 
 PRODUCT_PACKAGES += \
     CarSystemUIControllsSystemBarInsetsRRO \
+    CarSystemUISystemBarPersistcyBarPolicy \
     CarSystemUISystemBarPersistcyImmersive \
     CarSystemUISystemBarPersistcyImmersiveWithNav \
     CarSystemUISystemBarPersistcyNonImmersive \

@@ -19,6 +19,7 @@ package com.android.systemui.wm;
 import static android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
 
 import android.annotation.NonNull;
+import android.annotation.Nullable;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.InsetsController;
@@ -27,6 +28,7 @@ import android.view.SyncRtSurfaceTransactionApplier;
 import android.view.WindowInsets;
 import android.view.WindowInsetsAnimation;
 import android.view.WindowInsetsController;
+import android.view.inputmethod.ImeTracker;
 import android.view.inputmethod.InputMethodManager;
 
 import java.util.List;
@@ -97,7 +99,8 @@ public class DisplaySystemBarsInsetsControllerHost implements InsetsController.H
     }
 
     @Override
-    public void updateRequestedVisibleTypes(@WindowInsets.Type.InsetsType int types) {
+    public void updateRequestedVisibleTypes(@WindowInsets.Type.InsetsType int types,
+            @Nullable ImeTracker.Token statsToken) {
         mRequestedVisibleTypesCallback.accept(types);
     }
 

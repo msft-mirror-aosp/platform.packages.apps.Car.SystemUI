@@ -27,6 +27,7 @@ import com.android.systemui.R;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.privacy.PrivacyItemController;
 import com.android.systemui.privacy.PrivacyType;
+import com.android.systemui.settings.UserTracker;
 
 import javax.inject.Inject;
 
@@ -37,8 +38,9 @@ public class MicPrivacyChipViewController extends PrivacyChipViewController {
     @Inject
     public MicPrivacyChipViewController(Context context,
             PrivacyItemController privacyItemController,
-            SensorPrivacyManager sensorPrivacyManager) {
-        super(context, privacyItemController, sensorPrivacyManager);
+            SensorPrivacyManager sensorPrivacyManager,
+            UserTracker userTracker) {
+        super(context, privacyItemController, sensorPrivacyManager, userTracker);
     }
 
     @Override

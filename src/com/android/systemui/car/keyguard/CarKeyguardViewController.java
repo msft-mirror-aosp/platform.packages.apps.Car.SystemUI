@@ -55,18 +55,18 @@ import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
-import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.keyguard.ui.viewmodel.PrimaryBouncerToGoneTransitionViewModel;
 import com.android.systemui.log.BouncerLogger;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.ShadeExpansionStateManager;
-import com.android.systemui.shade.ShadeViewController;
+import com.android.systemui.shade.ShadeLockscreenInteractor;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
 import com.android.systemui.statusbar.phone.CentralSurfaces;
 import com.android.systemui.statusbar.phone.KeyguardBypassController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.toast.SystemUIToast;
 import com.android.systemui.toast.ToastFactory;
+import com.android.systemui.user.domain.interactor.SelectedUserInteractor;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 
 import dagger.Lazy;
@@ -86,7 +86,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private static final float TOAST_PARAMS_VERTICAL_WEIGHT = 1.0f;
 
     private final Context mContext;
-    private final UserTracker mUserTracker;
     private final DelayableExecutor mMainExecutor;
     private final WindowManager mWindowManager;
     private final ToastFactory mToastFactory;
@@ -137,7 +136,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
             };
     private final KeyguardMessageAreaController.Factory mMessageAreaControllerFactory;
     private final BouncerLogger mBouncerLogger;
-    private final FeatureFlags mFeatureFlags;
+    private final SelectedUserInteractor mSelectedUserInteractor;
     private final BouncerMessageInteractor mBouncerMessageInteractor;
 
     private OnKeyguardCancelClickedListener mKeyguardCancelClickedListener;
@@ -170,12 +169,11 @@ public class CarKeyguardViewController extends OverlayViewController implements
             BouncerView bouncerView,
             KeyguardMessageAreaController.Factory messageAreaControllerFactory,
             BouncerLogger bouncerLogger,
-            FeatureFlags featureFlags,
-            BouncerMessageInteractor bouncerMessageInteractor) {
+            BouncerMessageInteractor bouncerMessageInteractor,
+            SelectedUserInteractor selectedUserInteractor) {
         super(R.id.keyguard_stub, overlayViewGlobalStateController);
 
         mContext = context;
-        mUserTracker = userTracker;
         mMainExecutor = mainExecutor;
         mWindowManager = windowManager;
         mToastFactory = toastFactory;
@@ -192,12 +190,12 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mKeyguardBouncerComponentFactory = keyguardBouncerComponentFactory;
         mPrimaryBouncerToGoneTransitionViewModel = primaryBouncerToGoneTransitionViewModel;
         mBouncerView = bouncerView;
+        mSelectedUserInteractor = selectedUserInteractor;
 
         mToastShowDurationMillisecond = mContext.getResources().getInteger(
                 R.integer.car_keyguard_toast_show_duration_millisecond);
         mMessageAreaControllerFactory = messageAreaControllerFactory;
         mBouncerLogger = bouncerLogger;
-        mFeatureFlags = featureFlags;
         mBouncerMessageInteractor = bouncerMessageInteractor;
         primaryBouncerCallbackInteractor.addBouncerExpansionCallback(mExpansionCallback);
     }
@@ -221,14 +219,14 @@ public class CarKeyguardViewController extends OverlayViewController implements
                 mMessageAreaControllerFactory,
                 mBouncerMessageInteractor,
                 mBouncerLogger,
-                mFeatureFlags);
+                mSelectedUserInteractor);
         mBiometricUnlockControllerLazy.get().setKeyguardViewController(this);
     }
 
     @Override
     @MainThread
     public void notifyKeyguardAuthenticated(boolean strongAuth) {
-        mPrimaryBouncerInteractor.notifyKeyguardAuthenticated(strongAuth);
+        mPrimaryBouncerInteractor.notifyKeyguardAuthenticatedBiometrics(strongAuth);
     }
 
     @Override
@@ -309,7 +307,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mKeyguardStateController.notifyKeyguardState(
                 mKeyguardStateController.isShowing(), occluded);
         getOverlayViewGlobalStateController().setOccluded(occluded);
-        if (occluded) {
+        if (occluded && !mKeyguardStateController.isUnlocked()) {
             mCarSystemBarController.showAllOcclusionButtons(/* isSetup= */ true);
         } else {
             if (mShowing && isSecure()) {
@@ -446,7 +444,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     @Override
     public void registerCentralSurfaces(
             CentralSurfaces centralSurfaces,
-            ShadeViewController shadeViewController,
+            ShadeLockscreenInteractor shadeLockscreenInteractor,
             ShadeExpansionStateManager shadeExpansionStateManager,
             BiometricUnlockController biometricUnlockController,
             View notificationContainer,
@@ -502,8 +500,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
      * WARNING: This method might cause Binder calls.
      */
     private boolean isSecure() {
-        return mKeyguardSecurityModel.getSecurityMode(
-                KeyguardUpdateMonitor.getCurrentUser()) != KeyguardSecurityModel.SecurityMode.None;
+        return mKeyguardSecurityModel.getSecurityMode(mSelectedUserInteractor.getSelectedUserId())
+                != KeyguardSecurityModel.SecurityMode.None;
     }
 
 

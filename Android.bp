@@ -41,6 +41,8 @@ android_library {
         "car-helper-lib",
         "car-ui-lib-no-overlayable",
         "car-qc-lib",
+        "car-resource-common",
+        "com_android_systemui_car_flags_lib",
         "androidx.legacy_legacy-support-v4",
         "androidx.recyclerview_recyclerview",
         "androidx.preference_preference",
@@ -59,6 +61,8 @@ android_library {
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
         "animationlib",
+        "CarDockLib",
+        "androidx.test.rules",
     ],
 
     libs: [
@@ -69,9 +73,13 @@ android_library {
         "--no-resource-deduping",
     ],
 
+    javacflags: ["-Adagger.fastInit=enabled"],
+
     manifest: "AndroidManifest.xml",
 
     plugins: ["dagger2-compiler"],
+    // TODO(b/319708040): re-enable use_resource_processor
+    use_resource_processor: false,
 
 }
 
@@ -113,6 +121,8 @@ android_library {
         "car-helper-lib",
         "car-ui-lib-no-overlayable",
         "car-qc-lib",
+        "car-resource-common",
+        "com_android_systemui_car_flags_lib",
         "SystemUI-tags",
         "SystemUI-proto",
         "metrics-helper-lib",
@@ -124,6 +134,7 @@ android_library {
         "testng",
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
+        "CarDockLib",
     ],
     libs: [
         "android.test.runner",
@@ -138,10 +149,16 @@ android_library {
 
     plugins: ["dagger2-compiler"],
 
+    lint: {
+        test: true,
+    },
+
     // TODO(b/218518451) re-enable errorprone.
     errorprone: {
         enabled: false,
     },
+    // TODO(b/319708040): re-enable use_resource_processor
+    use_resource_processor: false,
 }
 
 android_app {
@@ -173,6 +190,10 @@ android_app {
             "proguard.flags",
         ],
     },
+    // TODO(b/301283770): Compiling CarSystemUI should not require -J-Xmx8192M
+    javacflags: [
+        "-J-Xmx8192M",
+    ],
     dxflags: ["--multi-dex"],
 
     aaptflags: [
@@ -188,4 +209,7 @@ android_app {
         "privapp_whitelist_com.android.systemui",
         "allowed_privapp_com.android.carsystemui",
     ],
+
+    // TODO(b/319708040): re-enable use_resource_processor
+    use_resource_processor: false,
 }

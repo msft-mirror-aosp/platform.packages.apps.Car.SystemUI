@@ -15,24 +15,18 @@
   ~ limitations under the License.
   -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:viewportWidth="108"
-    android:viewportHeight="108"
-    android:alpha="@dimen/hvac_turned_off_alpha"
-    android:width="@dimen/hvac_icon_drawable_width"
-    android:height="@dimen/hvac_icon_drawable_height">
-    <group
-        android:scaleX="-1"
-        android:scaleY="-1"
-        android:translateX="96.33334"
-        android:translateY="73">
-        <path
-            android:pathData="M57.5 38.25l0 -3.5 -12.845 0 0 -4.083333L38.833333 36.5 44.655 42.333333 44.655 38.25Z"
-            android:fillColor="@color/hvac_icon_color" />
-    </group>
+        android:viewportWidth="96"
+        android:viewportHeight="96"
+        android:alpha="@dimen/hvac_turned_off_alpha"
+        android:width="@dimen/hvac_icon_drawable_width"
+        android:height="@dimen/hvac_icon_drawable_height">
     <path
-        android:pathData="M59.012449 61.002836l2.402926 -9.566666 1.394434 -5.6c0.592448 -1.966757 1.907369 -2.950135 3.131464 -3.29 0.74654 -0.21 1.539739 -0.28 2.309608 -0.14 2.916172 0.513333 4.82918 3.243333 4.339264 6.09l-3.149466 13.813333c-0.653222 3.313333 -3.522735 5.693333 -6.882165 5.693333l-15.980621 0 -8.91182 7 -3.499406 -3.5 13.461048 -10.5 11.384734 0z"
-        android:fillColor="@color/hvac_icon_color" />
+        android:pathData="M45.52,34.05V38.13L51.34,32.3L45.52,26.47V30.55H32.68V34.05H45.52Z"
+        android:fillColor="@color/hvac_icon_off_foreground_color"/>
     <path
-        android:pathData="M67.648549 39.158549c-2.1 -1.493334 -2.613334 -4.386667 -1.143334 -6.51 1.47 -2.1 4.386667 -2.613334 6.51 -1.143334 2.1 1.493334 2.613334 4.386667 1.143334 6.51 -1.493334 2.1 -4.386667 2.613334 -6.51 1.143334l0 0z"
-        android:fillColor="@color/hvac_icon_color" />
+        android:pathData="M52.85,56.8L55.25,47.23L56.64,41.63C57.23,39.66 58.55,38.68 59.77,38.34C60.52,38.13 61.31,38.06 62.08,38.2C65,38.71 66.91,41.44 66.42,44.29L63.27,58.1C62.62,61.41 59.75,63.79 56.39,63.79H40.41L31.5,70.79L28,67.29L41.46,56.79H52.85V56.8Z"
+        android:fillColor="@color/hvac_icon_off_foreground_color"/>
+    <path
+        android:pathData="M61.49,34.96C59.39,33.47 58.88,30.57 60.35,28.45C61.82,26.35 64.74,25.84 66.86,27.31C68.96,28.8 69.47,31.7 68,33.82C66.51,35.92 63.61,36.43 61.49,34.96Z"
+        android:fillColor="@color/hvac_icon_off_foreground_color"/>
 </vector>

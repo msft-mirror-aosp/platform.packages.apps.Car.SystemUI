@@ -20,7 +20,6 @@ import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
 import static android.car.VehiclePropertyIds.HVAC_FAN_DIRECTION;
 import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
 
-import android.car.hardware.CarPropertyConfig;
 import android.car.hardware.CarPropertyValue;
 import android.content.Context;
 import android.os.Build;
@@ -35,6 +34,7 @@ import androidx.annotation.Nullable;
 import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPropertySetter;
+import com.android.systemui.car.hvac.HvacUtils;
 import com.android.systemui.car.hvac.HvacView;
 
 import java.util.ArrayList;
@@ -80,6 +80,7 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
     private HvacPropertySetter mHvacPropertySetter;
     private boolean mPowerOn = false;
     private boolean mAutoOn = false;
+    private boolean mDisableViewIfPowerOff = false;
     private float mOnAlpha;
     private float mOffAlpha;
     private int mCurrentDirection = INVALID_ID;
@@ -128,8 +129,8 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
     }
 
     @Override
-    public void setConfigInfo(CarPropertyConfig<?> carPropertyConfig) {
-        // no-op.
+    public void setDisableViewIfPowerOff(boolean disableViewIfPowerOff) {
+        mDisableViewIfPowerOff = disableViewIfPowerOff;
     }
 
     @Override
@@ -184,16 +185,6 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
         return mHvacGlobalAreaId;
     }
 
-    @Override
-    public void onLocaleListChanged() {
-        // no-op.
-    }
-
-    @Override
-    public void onHvacTemperatureUnitChanged(boolean usesFahrenheit) {
-        // no-op.
-    }
-
     private void init() {
         inflate(getContext(), R.layout.fan_direction, this);
         mHvacGlobalAreaId = getContext().getResources().getInteger(R.integer.hvac_global_area_id);
@@ -213,6 +204,6 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
     }
 
     private boolean shouldAllowControl() {
-        return mPowerOn && !mAutoOn;
+        return HvacUtils.shouldAllowControl(mDisableViewIfPowerOff, mPowerOn, mAutoOn);
     }
 }

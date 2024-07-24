@@ -17,11 +17,8 @@
 package com.android.systemui.car.hvac;
 
 import static android.car.VehiclePropertyIds.HVAC_AUTO_ON;
-import static android.car.VehiclePropertyIds.HVAC_FAN_DIRECTION;
 import static android.car.VehiclePropertyIds.HVAC_FAN_SPEED;
 import static android.car.VehiclePropertyIds.HVAC_POWER_ON;
-
-import static com.android.systemui.car.hvac.referenceui.FanDirectionButtons.FAN_DIRECTION_FACE;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
@@ -29,11 +26,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.car.hardware.CarPropertyValue;
-import android.test.suitebuilder.annotation.SmallTest;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.LayoutInflater;
 import android.widget.TextView;
+
+import androidx.test.filters.SmallTest;
 
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
@@ -86,7 +84,7 @@ public class FanSpeedBarTest extends SysuiTestCase {
     }
 
     @Test
-    public void onClickOffButton_allowsControl_setsFanSpeedToOff() {
+    public void onClickOffButton_allowsControl_setsFanSpeedToMin() {
         setPowerPropertyValue(true);
         mFanSpeedBar.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(false);
@@ -98,7 +96,7 @@ public class FanSpeedBarTest extends SysuiTestCase {
     }
 
     @Test
-    public void onClickSpeedOneButton_allowsControl_setsFanSpeedToOne() {
+    public void onClickSpeedOneButton_allowsControl_setsFanSpeedToTwo() {
         setPowerPropertyValue(true);
         mFanSpeedBar.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(false);
@@ -110,7 +108,7 @@ public class FanSpeedBarTest extends SysuiTestCase {
     }
 
     @Test
-    public void onClickSpeedTwoButton_allowsControl_setsFanSpeedToTwo() {
+    public void onClickSpeedTwoButton_allowsControl_setsFanSpeedToThree() {
         setPowerPropertyValue(true);
         mFanSpeedBar.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(false);
@@ -122,7 +120,7 @@ public class FanSpeedBarTest extends SysuiTestCase {
     }
 
     @Test
-    public void onClickSpeedThreeButton_allowsControl_setsFanSpeedToThree() {
+    public void onClickSpeedThreeButton_allowsControl_setsFanSpeedToFour() {
         setPowerPropertyValue(true);
         mFanSpeedBar.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(false);
@@ -134,7 +132,7 @@ public class FanSpeedBarTest extends SysuiTestCase {
     }
 
     @Test
-    public void onClickSpeedFourButton_allowsControl_setsFanSpeedToFour() {
+    public void onClickSpeedFourButton_allowsControl_setsFanSpeedToFive() {
         setPowerPropertyValue(true);
         mFanSpeedBar.onPropertyChanged(mHvacPowerProperty);
         setAutoPropertyValue(false);

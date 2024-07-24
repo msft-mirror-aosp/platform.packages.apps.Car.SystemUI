@@ -154,16 +154,6 @@ public class SeatTemperatureLevelButton extends ImageButton implements HvacView 
         return mAreaId;
     }
 
-    @Override
-    public void onHvacTemperatureUnitChanged(boolean usesFahrenheit) {
-        // no-op.
-    }
-
-    @Override
-    public void onLocaleListChanged() {
-        // no-op.
-    }
-
     private void updateIcon() {
         mContext.getMainThreadHandler().post(() -> {
             setSelected(mCurrentLevel != 0);

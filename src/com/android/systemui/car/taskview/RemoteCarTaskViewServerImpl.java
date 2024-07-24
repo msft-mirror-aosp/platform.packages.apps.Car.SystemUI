@@ -18,18 +18,18 @@ package com.android.systemui.car.taskview;
 
 import static android.app.ActivityTaskManager.INVALID_TASK_ID;
 
+import static com.android.systemui.car.taskview.CarSystemUIProxyImpl.ensureManageSystemUIPermission;
+
 import android.annotation.NonNull;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.ActivityTaskManager;
 import android.app.PendingIntent;
-import android.car.Car;
 import android.car.app.CarActivityManager;
 import android.car.app.CarTaskViewClient;
 import android.car.app.CarTaskViewHost;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Binder;
 import android.os.Bundle;
@@ -67,7 +67,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     private final CarTaskViewHost mHostImpl = new CarTaskViewHost() {
         @Override
         public void release() {
-            ensureManageSystemUIPermission();
+            ensureManageSystemUIPermission(mContext);
             if (mReleased) {
                 Slog.w(TAG, "TaskView server part already released");
                 return;
@@ -91,19 +91,19 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
 
         @Override
         public void notifySurfaceCreated(SurfaceControl control) {
-            ensureManageSystemUIPermission();
+            ensureManageSystemUIPermission(mContext);
             mTaskViewTaskController.surfaceCreated(control);
         }
 
         @Override
         public void setWindowBounds(Rect bounds) {
-            ensureManageSystemUIPermission();
+            ensureManageSystemUIPermission(mContext);
             mTaskViewTaskController.setWindowBounds(bounds);
         }
 
         @Override
         public void notifySurfaceDestroyed() {
-            ensureManageSystemUIPermission();
+            ensureManageSystemUIPermission(mContext);
             mTaskViewTaskController.surfaceDestroyed();
         }
 
@@ -113,7 +113,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
                 Intent fillInIntent,
                 Bundle options,
                 Rect launchBounds) {
-            ensureManageSystemUIPermission();
+            ensureManageSystemUIPermission(mContext);
             mTaskViewTaskController.startActivity(
                     pendingIntent,
                     fillInIntent,
@@ -131,7 +131,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         // in the base class.
         @Keep
         public void createRootTask(int displayId) {
-            ensureManageSystemUIPermission();
+            ensureManageSystemUIPermission(mContext);
             if (mRootTaskMediator != null) {
                 throw new IllegalStateException("Root task is already created for this task view.");
             }
@@ -152,7 +152,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         @Keep
         public void createLaunchRootTask(int displayId, boolean embedHomeTask,
                 boolean embedRecentsTask, boolean embedAssistantTask) {
-            ensureManageSystemUIPermission();
+            ensureManageSystemUIPermission(mContext);
             if (mCarSystemUIProxy.isLaunchRootTaskPresent(displayId)) {
                 throw new IllegalArgumentException("Cannot create more than 1 root task on the"
                         + " display=" + displayId);
@@ -170,9 +170,8 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
 
         @Override
         public void showEmbeddedTask() {
-            ensureManageSystemUIPermission();
-            ActivityManager.RunningTaskInfo taskInfo =
-                    mTaskViewTaskController.getTaskInfo();
+            ensureManageSystemUIPermission(mContext);
+            ActivityManager.RunningTaskInfo taskInfo = mTaskViewTaskController.getTaskInfo();
             if (taskInfo == null) {
                 return;
             }
@@ -185,8 +184,40 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         }
 
         @Override
+        // TODO(b/24087642): Remove @Keep once this method is promoted to SystemApi.
+        // @Keep is used to prevent the removal of this method by the compiler as it is a hidden api
+        // in the base class.
+        @Keep
+        public void setTaskVisibility(boolean visibility) {
+            ensureManageSystemUIPermission(mContext);
+            ActivityManager.RunningTaskInfo taskInfo = mTaskViewTaskController.getTaskInfo();
+            if (taskInfo == null) {
+                return;
+            }
+            WindowContainerTransaction wct = new WindowContainerTransaction();
+            wct.setHidden(taskInfo.token, !visibility);
+            mSyncQueue.queue(wct);
+        }
+
+        @Override
+        // TODO(b/24087642): Remove @Keep once this method is promoted to SystemApi.
+        // @Keep is used to prevent the removal of this method by the compiler as it is a hidden api
+        // in the base class.
+        @Keep
+        public void reorderTask(boolean onTop) {
+            ensureManageSystemUIPermission(mContext);
+            ActivityManager.RunningTaskInfo taskInfo = mTaskViewTaskController.getTaskInfo();
+            if (taskInfo == null) {
+                return;
+            }
+            WindowContainerTransaction wct = new WindowContainerTransaction();
+            wct.reorder(taskInfo.token, onTop);
+            mSyncQueue.queue(wct);
+        }
+
+        @Override
         public void addInsets(int index, int type, @NonNull Rect frame) {
-            ensureManageSystemUIPermission();
+            ensureManageSystemUIPermission(mContext);
             mInsets.append(InsetsSource.createId(mInsetsOwner, index, type), frame);
 
             if (mTaskViewTaskController.getTaskInfo() == null) {
@@ -196,13 +227,13 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             }
             WindowContainerTransaction wct = new WindowContainerTransaction();
             wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
-                    mInsetsOwner, index, type, frame);
+                    mInsetsOwner, index, type, frame, /* boundingRects = */ null);
             mSyncQueue.queue(wct);
         }
 
         @Override
         public void removeInsets(int index, int type) {
-            ensureManageSystemUIPermission();
+            ensureManageSystemUIPermission(mContext);
             if (mInsets.size() == 0) {
                 Slog.w(TAG, "No insets set.");
                 return;
@@ -246,18 +277,6 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         mTaskViewTaskController.setTaskViewBase(this);
     }
 
-    private void ensureManageSystemUIPermission() {
-        if (Binder.getCallingPid() == android.os.Process.myPid()) {
-            // If called from within CarSystemUI, allow.
-            return;
-        }
-        if (mContext.checkCallingPermission(Car.PERMISSION_MANAGE_CAR_SYSTEM_UI)
-                == PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        throw new SecurityException("requires permission " + Car.PERMISSION_MANAGE_CAR_SYSTEM_UI);
-    }
-
     public CarTaskViewHost getHostImpl() {
         return mHostImpl;
     }
@@ -283,9 +302,11 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     public String toString() {
         ActivityManager.RunningTaskInfo taskInfo = mTaskViewTaskController.getTaskInfo();
         return "RemoteCarTaskViewServerImpl {"
-                + "mInsets=" + mInsets
+                + "insets=" + mInsets
                 + ", taskId=" + (taskInfo == null ? "null" : taskInfo.taskId)
                 + ", taskInfo=" + (taskInfo == null ? "null" : taskInfo)
+                + ", rootTaskMediator=" + (mRootTaskMediator == null ? "null"
+                : mRootTaskMediator.toString())
                 + "}";
     }
 
@@ -344,7 +365,8 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             final int id = mInsets.keyAt(i);
             final Rect frame = mInsets.valueAt(i);
             wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
-                    mInsetsOwner, InsetsSource.getIndex(id), InsetsSource.getType(id), frame);
+                    mInsetsOwner, InsetsSource.getIndex(id), InsetsSource.getType(id), frame,
+                    null /* boundingRects */);
         }
         mSyncQueue.queue(wct);
     }

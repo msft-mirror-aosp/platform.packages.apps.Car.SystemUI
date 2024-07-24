@@ -20,18 +20,26 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.Nullable;
 
 import com.android.car.qc.controller.BaseQCController;
 import com.android.car.qc.controller.LocalQCController;
 import com.android.car.qc.controller.RemoteQCController;
 import com.android.car.qc.provider.BaseLocalQCProvider;
+import com.android.car.qc.view.QCView;
+import com.android.systemui.car.systembar.element.CarSystemBarElementController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.settings.UserTracker;
+
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
 /**
@@ -39,12 +47,11 @@ import javax.inject.Provider;
  * attaching either a remote controller for the current user or a local controller using a dagger
  * injected constructor and fall back to a default {@link Context} constructor when not present.
  */
-public final class SystemUIQCViewController {
+public final class SystemUIQCViewController extends CarSystemBarElementController<SystemUIQCView> {
     private static final String TAG = SystemUIQCViewController.class.getName();
     private final Context mContext;
     private final UserTracker mUserTracker;
     private final Map<Class<?>, Provider<BaseLocalQCProvider>> mLocalQCProviderCreators;
-    private SystemUIQCView mView;
     private BaseQCController mController;
     private boolean mUserChangedCallbackRegistered;
 
@@ -55,19 +62,61 @@ public final class SystemUIQCViewController {
         }
     };
 
-    @Inject
-    public SystemUIQCViewController(Context context, UserTracker userTracker,
+    @AssistedInject
+    public SystemUIQCViewController(@Assisted SystemUIQCView view,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController, Context context,
+            UserTracker userTracker,
             Map<Class<?>, Provider<BaseLocalQCProvider>> localQCProviderCreators) {
+        super(view, disableController, stateController);
         mContext = context;
         mUserTracker = userTracker;
         mLocalQCProviderCreators = localQCProviderCreators;
     }
 
+    @AssistedFactory
+    public interface Factory extends
+            CarSystemBarElementController.Factory<SystemUIQCView, SystemUIQCViewController> {}
+
+    @Override
+    protected void onInit() {
+        bindQCView();
+    }
+
+    @Override
+    @CallSuper
+    protected void onViewAttached() {
+        super.onViewAttached();
+        listen(true);
+    }
+
+    @Override
+    @CallSuper
+    protected void onViewDetached() {
+        super.onViewDetached();
+        listen(false);
+    }
+
     /**
-     * Attaches a {@link SystemUIQCView} to this controller.
+     * Sets the action listener on the QCView.
      */
-    public void attachView(SystemUIQCView view) {
-        mView = view;
+    public void setActionListener(QCView.QCActionListener listener) {
+        mView.setActionListener(listener);
+    }
+
+    /**
+     * Destroys the current QCView and associated controller. Should be called when the anchor
+     * view is no longer attached.
+     */
+    public void destroyQCViews() {
+        resetViewAndController();
+        if (mUserChangedCallbackRegistered) {
+            mUserTracker.removeCallback(mUserChangedCallback);
+            mUserChangedCallbackRegistered = false;
+        }
+    }
+
+    private void bindQCView() {
         if (mView.getRemoteUriString() != null) {
             Uri uri = Uri.parse(mView.getRemoteUriString());
             if (uri.getUserInfo() == null) {
@@ -89,31 +138,17 @@ public final class SystemUIQCViewController {
     }
 
     /**
-     * Toggles whether or not this view should listen to live updates.
+     * Toggles whether this view should listen to live updates.
      */
-    public void listen(boolean shouldListen) {
+    private void listen(boolean shouldListen) {
         if (mController != null) {
             mController.listen(shouldListen);
         }
     }
 
-    /**
-     * Destroys the current QCView and associated controller.
-     */
-    public void destroy() {
-        resetViewAndController();
-        if (mUserChangedCallbackRegistered) {
-            mUserTracker.removeCallback(mUserChangedCallback);
-            mUserChangedCallbackRegistered = false;
-        }
-    }
-
     private void rebindController() {
-        if (mView == null) {
-            return;
-        }
         resetViewAndController();
-        attachView(mView);
+        bindQCView();
     }
 
     private void resetViewAndController() {

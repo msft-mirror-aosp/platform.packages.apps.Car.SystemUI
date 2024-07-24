@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.keyguard;
 
+import android.app.IActivityTaskManager;
 import android.app.trust.TrustManager;
 import android.content.Context;
 import android.os.PowerManager;
@@ -32,7 +33,7 @@ import com.android.keyguard.KeyguardDisplayManager;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardViewController;
 import com.android.keyguard.mediator.ScreenOnCoordinator;
-import com.android.systemui.animation.ActivityLaunchAnimator;
+import com.android.systemui.animation.ActivityTransitionAnimator;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
@@ -45,6 +46,7 @@ import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.keyguard.WindowManagerLockscreenVisibilityManager;
+import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
 import com.android.systemui.keyguard.ui.viewmodel.DreamingToLockscreenTransitionViewModel;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationModeController;
@@ -58,6 +60,7 @@ import com.android.systemui.statusbar.phone.ScreenOffAnimationController;
 import com.android.systemui.statusbar.phone.ScrimController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
+import com.android.systemui.user.domain.interactor.SelectedUserInteractor;
 import com.android.systemui.util.DeviceConfigProxy;
 import com.android.systemui.util.kotlin.JavaAdapter;
 import com.android.systemui.util.settings.SecureSettings;
@@ -119,8 +122,9 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             WallpaperRepository wallpaperRepository,
             Lazy<ShadeController> mShadeControllerLazy,
             Lazy<NotificationShadeWindowController> notificationShadeWindowControllerLazy,
-            Lazy<ActivityLaunchAnimator> activityLaunchAnimator,
+            Lazy<ActivityTransitionAnimator> activityTransitionAnimator,
             Lazy<ScrimController> scrimControllerLazy,
+            IActivityTaskManager activityTaskManagerService,
             FeatureFlags featureFlags,
             SecureSettings secureSettings,
             SystemSettings systemSettings,
@@ -128,7 +132,9 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             @Main CoroutineDispatcher mainDispatcher,
             Lazy<DreamingToLockscreenTransitionViewModel> dreamingToLockscreenTransitionViewModel,
             SystemPropertiesHelper systemPropertiesHelper,
-            Lazy<WindowManagerLockscreenVisibilityManager> wmLockscreenVisibilityManager) {
+            Lazy<WindowManagerLockscreenVisibilityManager> wmLockscreenVisibilityManager,
+            SelectedUserInteractor selectedUserInteractor,
+            KeyguardInteractor keyguardInteractor) {
         super(context, uiEventLogger, sessionTracker,
                 userTracker, falsingCollector, lockPatternUtils, broadcastDispatcher,
                 statusBarKeyguardViewManagerLazy, dismissCallbackRegistry, keyguardUpdateMonitor,
@@ -142,12 +148,16 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 wallpaperRepository,
                 mShadeControllerLazy,
                 notificationShadeWindowControllerLazy,
-                activityLaunchAnimator,
-                scrimControllerLazy, featureFlags, secureSettings, systemSettings, systemClock,
+                activityTransitionAnimator,
+                scrimControllerLazy,
+                activityTaskManagerService,
+                featureFlags, secureSettings, systemSettings, systemClock,
                 mainDispatcher,
                 dreamingToLockscreenTransitionViewModel,
                 systemPropertiesHelper,
-                wmLockscreenVisibilityManager);
+                wmLockscreenVisibilityManager,
+                selectedUserInteractor,
+                keyguardInteractor);
         mContext = context;
     }
 

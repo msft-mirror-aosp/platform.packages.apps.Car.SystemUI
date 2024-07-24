@@ -22,4 +22,10 @@
         <item>@drawable/ic_seat_heat_level_2</item>
         <item>@drawable/ic_seat_heat_level_3</item>
     </array>
+
+    <!-- Different colors to indicate different temperature levels. The upper bound for each color
+    is defined in integers.xml (see hvac_temperature_control_levels). -->
+    <array name="hvac_temperature_level_backgrounds">
+        <item>@color/car_primary</item>
+    </array>
 </resources>

@@ -22,6 +22,7 @@ import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_M
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Binder;
+import android.view.DisplayCutout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
 
 import com.android.systemui.R;
 import com.android.systemui.dagger.SysUISingleton;
@@ -121,11 +123,13 @@ public class SystemUIOverlayWindowController implements
                         | WindowManager.LayoutParams.FLAG_TOUCHABLE_WHEN_WAKING
                         | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
                         | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
-                        | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS,
+                        | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+                        | WindowManager.LayoutParams.FLAG_DIM_BEHIND,
                 PixelFormat.TRANSLUCENT);
         mLp.token = new Binder();
         mLp.gravity = Gravity.TOP;
         mLp.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
+        mLp.dimAmount = 0f;
         mLp.setTitle("SystemUIOverlayWindow");
         mLp.packageName = mContext.getPackageName();
         mLp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
@@ -172,6 +176,12 @@ public class SystemUIOverlayWindowController implements
         updateWindow();
     }
 
+    /** Sets the dim behind the window */
+    public void setDimBehind(float dimAmount) {
+        mLpChanged.dimAmount = dimAmount;
+        updateWindow();
+    }
+
     /** Sets the window to enable IME. */
     public void setWindowNeedsInput(boolean needsInput) {
         if (needsInput) {
@@ -198,8 +208,48 @@ public class SystemUIOverlayWindowController implements
     private void updateWindow() {
         if (mLp != null && mLp.copyFrom(mLpChanged) != 0) {
             if (isAttached()) {
+                handleDisplayCutout();
                 mLp.insetsFlags.behavior = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
                 mWindowManager.updateViewLayout(mBaseLayout, mLp);
+            }
+        }
+    }
+
+    /**
+     * Certain device configurations may contain a curvature at the top-left or top-right of the
+     * screen. In those cases, overlay window should still render under the cutout in order to cover
+     * the entire screen, but the content of HVAC and Notification Center should be centered around
+     * the app area.
+     *
+     * TODO (b/326495987): Find an alternative approach to update all component together rather than
+     * only measuring and updating HVAC and notifications.
+     */
+    private void handleDisplayCutout() {
+        DisplayCutout cutout =
+                mWindowManager.getCurrentWindowMetrics().getWindowInsets().getDisplayCutout();
+        if (cutout != null) {
+            int leftMargin = cutout.getBoundingRectLeft().width();
+            int rightMargin = cutout.getBoundingRectRight().width();
+            int appWindowWidth = mBaseLayout.getWidth() - (leftMargin + rightMargin);
+
+            View notificationsPanelView = mBaseLayout.findViewById(R.id.notifications);
+            if (notificationsPanelView != null) {
+                ViewGroup.MarginLayoutParams newLayoutParams =
+                        new ViewGroup.MarginLayoutParams(notificationsPanelView.getLayoutParams());
+                newLayoutParams.width = appWindowWidth;
+                newLayoutParams.leftMargin = leftMargin;
+                newLayoutParams.rightMargin = rightMargin;
+                notificationsPanelView.setLayoutParams(newLayoutParams);
+            }
+
+            View hvacPanelView = mBaseLayout.findViewById(R.id.hvac_panel);
+            if (hvacPanelView != null) {
+                LinearLayout.LayoutParams newLayoutParams =
+                        (LinearLayout.LayoutParams) hvacPanelView.getLayoutParams();
+                newLayoutParams.width = appWindowWidth;
+                newLayoutParams.leftMargin = leftMargin;
+                newLayoutParams.rightMargin = rightMargin;
+                hvacPanelView.setLayoutParams(newLayoutParams);
             }
         }
     }

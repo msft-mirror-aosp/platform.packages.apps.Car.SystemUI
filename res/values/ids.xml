@@ -20,7 +20,7 @@
     <item type="id" name="lock_screen_nav_buttons"/>
     <item type="id" name="hvac_panel_close_button"/>
 
-    <!-- Values assigneed to quick control views    -->
+    <!-- Values assigned to quick control views    -->
     <item type="id" name="qc_display_status_icon"/>
     <item type="id" name="qc_bluetooth_status_icon"/>
     <item type="id" name="qc_signal_status_icon"/>
@@ -31,4 +31,10 @@
     <item type="id" name="qc_wifi_signal_status_icon"/>
     <item type="id" name="qc_media_volume_status_icon"/>
     <item type="id" name="qc_status_icon_list"/>
+
+    <!-- Id values for system bar windows (to guarantee root view id uniqueness for the individual bars) -->
+    <item type="id" name="car_top_bar_window"/>
+    <item type="id" name="car_bottom_bar_window"/>
+    <item type="id" name="car_left_bar_window"/>
+    <item type="id" name="car_right_bar_window"/>
 </resources>

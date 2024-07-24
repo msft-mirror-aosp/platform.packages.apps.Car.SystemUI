@@ -91,7 +91,8 @@ public class HvacController implements HvacPropertySetter,
                     HVAC_STEERING_WHEEL_HEAT, HVAC_TEMPERATURE_DISPLAY_UNITS,
                     HVAC_ACTUAL_FAN_SPEED_RPM, HVAC_POWER_ON, HVAC_FAN_DIRECTION_AVAILABLE,
                     HVAC_AUTO_RECIRC_ON, HVAC_SEAT_VENTILATION, HVAC_ELECTRIC_DEFROSTER_ON};
-    private static final int[] HVAC_PROPERTIES_TO_GET_ON_INIT = {HVAC_POWER_ON, HVAC_AUTO_ON};
+    private static final int[] HVAC_PROPERTIES_TO_GET_ON_INIT =
+            {HVAC_POWER_ON, HVAC_AUTO_ON, HVAC_FAN_DIRECTION_AVAILABLE};
     private static final int GLOBAL_AREA_ID = 0;
 
     @IntDef(value = {HVAC_FAN_SPEED, HVAC_FAN_DIRECTION, HVAC_TEMPERATURE_CURRENT,
@@ -298,6 +299,7 @@ public class HvacController implements HvacPropertySetter,
 
                 hvacView.setHvacPropertySetter(this);
                 hvacView.setConfigInfo(carPropertyConfig);
+                hvacView.setDisableViewIfPowerOff(mHvacPowerDependentProperties.contains(propId));
 
                 ArrayList<Integer> supportedAreaIds = getAreaIdsFromTargetAreaId(propId.intValue(),
                         targetAreaId.intValue());

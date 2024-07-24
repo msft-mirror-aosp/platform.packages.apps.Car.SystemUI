@@ -86,6 +86,8 @@ import kotlinx.coroutines.CoroutineDispatcher;
 public class CarKeyguardViewMediator extends KeyguardViewMediator {
     private static final String TAG = "CarKeyguardViewMediator";
     private final Context mContext;
+    private final TrustManager mTrustManager;
+    private final UserTracker mUserTracker;
     private final Object mOcclusionLock = new Object();
     private final IRemoteAnimationRunner mOccludeAnimationRunner =
             new CarOcclusionAnimationRunner(/* occlude= */ true);
@@ -170,6 +172,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 keyguardInteractor,
                 wmOcclusionManager);
         mContext = context;
+        mTrustManager = trustManager;
+        mUserTracker = userTracker;
     }
 
     @Override
@@ -177,6 +181,11 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
         if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
             // Currently keyguard is not functional for the secondary users in a MUMD configuration
             // TODO_MD: make keyguard functional for secondary users
+
+            // Until keyguard for secondary users is supported, the secondary user's lock status
+            // must be manually updated instead of relying on keyguard hooks.
+            mTrustManager.reportEnabledTrustAgentsChanged(mUserTracker.getUserId());
+
             return;
         }
         super.start();

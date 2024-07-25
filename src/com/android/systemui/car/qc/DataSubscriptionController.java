@@ -311,10 +311,10 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
                         }
                     }
                     int xOffsetInPx = mContext.getResources().getDimensionPixelSize(
-                            R.dimen.car_quick_controls_entry_points_button_width);
+                            R.dimen.data_subscription_pop_up_horizontal_offset);
                     int yOffsetInPx = mContext.getResources().getDimensionPixelSize(
-                            R.dimen.car_quick_controls_panel_margin);
-                    mPopupWindow.showAsDropDown(mAnchorView, -xOffsetInPx / 2, yOffsetInPx);
+                            R.dimen.data_subscription_pop_up_vertical_offset);
+                    mPopupWindow.showAsDropDown(mAnchorView, -xOffsetInPx, yOffsetInPx);
                     mAnchorView.getHandler().postDelayed(new Runnable() {
 
                         public void run() {

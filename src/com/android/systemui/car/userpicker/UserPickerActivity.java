@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.userpicker;
 
+import static android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
 import static android.view.WindowManager.LayoutParams.SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS;
 import static android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT;
 
@@ -26,6 +27,8 @@ import static com.android.systemui.car.users.CarSystemUIUserUtil.isMUPANDSystemU
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Insets;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Slog;
@@ -46,6 +49,7 @@ import com.android.car.ui.recyclerview.CarUiRecyclerView;
 import com.android.systemui.Dumpable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.systembar.SystemBarUtil;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.userpicker.UserPickerController.Callbacks;
 import com.android.systemui.dump.DumpManager;
@@ -65,11 +69,10 @@ import javax.inject.Inject;
  */
 public class UserPickerActivity extends Activity implements Dumpable {
     private static final String TAG = UserPickerActivity.class.getSimpleName();
-    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
+    private static final boolean DEBUG = Build.IS_DEBUGGABLE;
 
     private UserPickerActivityComponent mUserPickerActivityComponent;
     private boolean mIsDriver;
-
     @Inject
     CarSystemBarElementInitializer mCarSystemBarElementInitializer;
     @Inject
@@ -226,13 +229,32 @@ public class UserPickerActivity extends Activity implements Dumpable {
 
     private void initWindow() {
         Window window = getWindow();
+        window.getDecorView().getRootView().setOnApplyWindowInsetsListener(
+                mOnApplyWindowInsetsListener);
+
         WindowInsetsController insetsController = window.getInsetsController();
         if (insetsController != null) {
             insetsController.setAnimationsDisabled(true);
             insetsController.hide(WindowInsets.Type.statusBars()
                     | WindowInsets.Type.navigationBars());
+            // TODO(b/271139033): Supports passenger display. Currently only systemBars on main
+            // display supports showing transient by swipe.
+            insetsController.setSystemBarsBehavior(BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
         }
     }
+
+    // Avoid activity resizing due to dismissible system bars.
+    private final View.OnApplyWindowInsetsListener mOnApplyWindowInsetsListener = (v, insets) -> {
+        if (!SystemBarUtil.INSTANCE.isStatusBarPersistent(this)) {
+            Insets statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars());
+            insets.inset(statusBarInsets);
+        }
+        if (!SystemBarUtil.INSTANCE.isNavBarPersistent(/* context*/ this)) {
+            Insets navBarInsets = insets.getInsets(WindowInsets.Type.navigationBars());
+            insets.inset(navBarInsets);
+        }
+        return insets;
+    };
 
     private void initManagers(View rootView) {
         mDialogManager.initContextFromView(rootView);

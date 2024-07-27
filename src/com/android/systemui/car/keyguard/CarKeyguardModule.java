@@ -25,6 +25,7 @@ import com.android.internal.jank.InteractionJankMonitor;
 import com.android.internal.logging.UiEventLogger;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.widget.LockPatternUtils;
+import com.android.keyguard.ConnectedDisplayKeyguardPresentation;
 import com.android.keyguard.KeyguardDisplayManager;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardViewController;
@@ -37,6 +38,7 @@ import com.android.keyguard.mediator.ScreenOnCoordinator;
 import com.android.systemui.CoreStartable;
 import com.android.systemui.animation.ActivityTransitionAnimator;
 import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.classifier.FalsingModule;
 import com.android.systemui.communal.ui.viewmodel.CommunalTransitionViewModel;
@@ -57,8 +59,11 @@ import com.android.systemui.keyguard.dagger.KeyguardFaceAuthNotSupportedModule;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
 import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
 import com.android.systemui.log.SessionTracker;
+import com.android.systemui.navigationbar.NavigationBarController;
 import com.android.systemui.navigationbar.NavigationModeController;
 import com.android.systemui.process.ProcessWrapper;
+import com.android.systemui.settings.DisplayTracker;
+import com.android.systemui.settings.DisplayTrackerImpl;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.ShadeController;
 import com.android.systemui.statusbar.NotificationShadeDepthController;
@@ -85,9 +90,9 @@ import dagger.Provides;
 import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
 
-import java.util.concurrent.Executor;
-
 import kotlinx.coroutines.CoroutineDispatcher;
+
+import java.util.concurrent.Executor;
 
 /**
  * Dagger Module providing keyguard.
@@ -127,7 +132,7 @@ public interface CarKeyguardModule {
             @UiBackground Executor uiBgExecutor,
             DeviceConfigProxy deviceConfig,
             NavigationModeController navigationModeController,
-            KeyguardDisplayManager keyguardDisplayManager,
+            CarKeyguardDisplayManager keyguardDisplayManager,
             DozeParameters dozeParameters,
             SysuiStatusBarStateController statusBarStateController,
             KeyguardStateController keyguardStateController,
@@ -215,6 +220,27 @@ public interface CarKeyguardModule {
     @Provides
     static ViewMediatorCallback providesViewMediatorCallback(KeyguardViewMediator viewMediator) {
         return viewMediator.getViewMediatorCallback();
+    }
+
+    /** Provide car keyguard display manager instance. */
+    @Provides
+    @SysUISingleton
+    static CarKeyguardDisplayManager provideCarKeyguardDisplayManager(Context context,
+            Lazy<NavigationBarController> navigationBarControllerLazy,
+            DisplayTracker defaultDisplayTracker,
+            Lazy<DisplayTrackerImpl> displayTrackerImpl,
+            @Main Executor mainExecutor,
+            @UiBackground Executor uiBgExecutor,
+            KeyguardDisplayManager.DeviceStateHelper deviceStateHelper,
+            KeyguardStateController keyguardStateController,
+            ConnectedDisplayKeyguardPresentation.Factory
+                    connectedDisplayKeyguardPresentationFactory) {
+        DisplayTracker finalDisplayTracker =
+                CarSystemUIUserUtil.isDriverMUMDSystemUI() ? displayTrackerImpl.get()
+                        : defaultDisplayTracker;
+        return new CarKeyguardDisplayManager(context, navigationBarControllerLazy,
+                finalDisplayTracker, mainExecutor, uiBgExecutor, deviceStateHelper,
+                keyguardStateController, connectedDisplayKeyguardPresentationFactory);
     }
 
     /** Binds {@link KeyguardUpdateMonitor} as a {@link CoreStartable}. */

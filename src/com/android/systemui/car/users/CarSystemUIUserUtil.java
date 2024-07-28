@@ -65,6 +65,16 @@ public final class CarSystemUIUserUtil {
     }
 
     /**
+     * Helper function that returns {@code true} if the current SystemUI instance is the driver
+     * (primary) SystemUI on an MUMD system.
+     */
+    public static boolean isDriverMUMDSystemUI() {
+        UserHandle myUserHandle = Process.myUserHandle();
+        return isMUMDSystemUI() && !UserManager.isVisibleBackgroundUsersOnDefaultDisplayEnabled()
+                && myUserHandle.isSystem();
+    }
+
+    /**
      * Helper function that returns {@code true} if the current instance of SystemUI is running as
      * a secondary user on MUMD system.
      */

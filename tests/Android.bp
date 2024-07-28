@@ -48,4 +48,7 @@ android_test {
     ],
 
     certificate: "platform",
+
+    // TODO(b/319708040): re-enable use_resource_processor
+    use_resource_processor: false,
 }

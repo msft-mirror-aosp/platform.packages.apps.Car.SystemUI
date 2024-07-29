@@ -226,6 +226,7 @@
     <!-- 0 non_immersive show all system bars on immersive request. -->
     <!-- 1 immersive, hide both bars -->
     <!-- 2 immersive_with_nav, show nav bar and hide status bar -->
+    <!-- 3 immersive based on bar control policy  -->
     <integer name="config_systemBarPersistency">1</integer>
 
     <!-- Determines the orientation of the status icon. -->
@@ -255,5 +256,6 @@
     -->
     <string-array translatable="false" name="config_dataSubscriptionBlockedPackagesList">
         <item>com.android.car.settings</item>
+        <item>com.android.car.carlauncher</item>
     </string-array>
 </resources>

@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.hvac;
 
-import android.app.UiModeManager;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -46,7 +45,6 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
     private final Context mContext;
     private final Resources mResources;
     private final HvacController mHvacController;
-    private final UiModeManager mUiModeManager;
     private final float mFullyOpenDimAmount;
 
     private boolean mIsUiModeNight;
@@ -61,14 +59,12 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
             OverlayViewGlobalStateController overlayViewGlobalStateController,
             FlingAnimationUtils.Builder flingAnimationUtilsBuilder,
             CarDeviceProvisionedController carDeviceProvisionedController,
-            ConfigurationController configurationController,
-            UiModeManager uiModeManager) {
+            ConfigurationController configurationController) {
         super(context, resources, R.id.hvac_panel_stub, overlayViewGlobalStateController,
                 flingAnimationUtilsBuilder, carDeviceProvisionedController);
         mContext = context;
         mResources = resources;
         mHvacController = hvacController;
-        mUiModeManager = uiModeManager;
         configurationController.addCallback(this);
         mFullyOpenDimAmount = mContext.getResources().getFloat(
                 R.fraction.hvac_overlay_window_dim_amount);
@@ -208,7 +204,6 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
         // Only refresh UI on Night mode changes
         if (isConfigNightMode != mIsUiModeNight) {
             mIsUiModeNight = isConfigNightMode;
-            mUiModeManager.setNightModeActivated(mIsUiModeNight);
 
             if (getLayout() == null) return;
             mHvacPanelView = getLayout().findViewById(R.id.hvac_panel);

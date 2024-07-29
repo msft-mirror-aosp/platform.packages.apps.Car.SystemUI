@@ -24,6 +24,7 @@ import com.android.car.notification.AlertEntry;
 import com.android.car.notification.NotificationDataManager;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.NotificationVisibility;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 
@@ -114,6 +115,12 @@ public class NotificationVisibilityLogger {
     private void onNotificationVisibilityChanged(
             Set<NotificationVisibility> newlyVisible, Set<NotificationVisibility> noLongerVisible) {
         if (newlyVisible.isEmpty() && noLongerVisible.isEmpty()) {
+            return;
+        }
+
+        if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
+            // TODO: b/341604160 - Supports visible background users properly.
+            Log.d(TAG, "Status bar manager is disabled for visible background users");
             return;
         }
 

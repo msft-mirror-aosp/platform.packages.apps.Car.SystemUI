@@ -221,6 +221,10 @@
     <string name="stopping_user_text">Signing out…</string>
     <!-- User Picker: snack bar message when clicking stopping user -->
     <string name="wait_for_until_stopped_message"><xliff:g id="user_name" example="Peter">%s</xliff:g> is being signed out. Try again later.</string>
+    <!-- User Picker: text when user is unavailable because they're secure -->
+    <string name="unavailable_secure_user_text">User currently unavailable</string>
+    <!-- User Picker: snack bar message when clicking unavailable secure user -->
+    <string name="unavailable_secure_user_message">Unable to start secure user on passenger display</string>
 
     <!-- User Picker: seat string -->
     <string name="seat_driver">driver</string>

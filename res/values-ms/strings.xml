@@ -112,6 +112,10 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"Tidak dapat memulakan profil Tetamu. Cuba lagi nanti."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"Melog keluar…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> sedang dilog keluar. Cuba lagi nanti."</string>
+    <!-- no translation found for unavailable_secure_user_text (6029519754897637674) -->
+    <skip />
+    <!-- no translation found for unavailable_secure_user_message (4358973342428603745) -->
+    <skip />
     <string name="seat_driver" msgid="4502591979520445677">"pemandu"</string>
     <string name="seat_front" msgid="836133281052793377">"hadapan"</string>
     <string name="seat_rear" msgid="403133444964528577">"belakang"</string>

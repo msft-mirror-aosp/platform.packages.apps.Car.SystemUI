@@ -112,6 +112,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"ゲスト プロファイルを開始できません。しばらくしてからもう一度お試しください。"</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"ログアウトしています…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> さんはログアウト中です。しばらくしてからもう一度お試しください。"</string>
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"現在、このユーザーは利用できません"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"助手席のディスプレイでセキュア ユーザーを開始できません"</string>
     <string name="seat_driver" msgid="4502591979520445677">"ドライバー"</string>
     <string name="seat_front" msgid="836133281052793377">"前"</string>
     <string name="seat_rear" msgid="403133444964528577">"後"</string>

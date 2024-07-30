@@ -105,6 +105,11 @@ public class DozeServiceHost implements DozeHost {
     }
 
     @Override
+    public void setDozeScreenBrightnessFloat(float value) {
+        // No op.
+    }
+
+    @Override
     public void prepareForGentleSleep(Runnable onDisplayOffCallback) {
         // No op.
     }

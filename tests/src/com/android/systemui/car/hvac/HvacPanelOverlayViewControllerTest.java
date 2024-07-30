@@ -20,15 +20,19 @@ import static com.android.systemui.car.window.OverlayPanelViewController.OVERLAY
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Configuration;
+import android.os.Handler;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
+import android.testing.TestableResources;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -59,6 +63,7 @@ import java.util.Collections;
 @SmallTest
 public class HvacPanelOverlayViewControllerTest extends SysuiTestCase {
     HvacPanelOverlayViewController mHvacPanelOverlayViewController;
+    TestableResources mTestableResources;
 
     @Mock
     HvacController mHvacController;
@@ -72,6 +77,8 @@ public class HvacPanelOverlayViewControllerTest extends SysuiTestCase {
     CarDeviceProvisionedController mCarDeviceProvisionedController;
     @Mock
     ConfigurationController mConfigurationController;
+    @Mock
+    private Handler mHandler;
 
     @Before
     public void setUp() {
@@ -83,14 +90,12 @@ public class HvacPanelOverlayViewControllerTest extends SysuiTestCase {
                 mFlingAnimationUtilsBuilder);
         when(mFlingAnimationUtilsBuilder.build()).thenReturn(mFlingAnimationUtils);
 
-        mHvacPanelOverlayViewController = new HvacPanelOverlayViewController(
-                mContext, getContext().getOrCreateTestableResources().getResources(),
-                mHvacController, mOverlayViewGlobalStateController, mFlingAnimationUtilsBuilder,
-                mCarDeviceProvisionedController, mConfigurationController);
+        mTestableResources = getContext().getOrCreateTestableResources();
     }
 
     @Test
     public void onScroll_updateDim() {
+        createHvacPanelOverlayViewController();
         int height = 100;
         View mockLayout = mock(View.class);
         when(mockLayout.getHeight()).thenReturn(height);
@@ -104,7 +109,44 @@ public class HvacPanelOverlayViewControllerTest extends SysuiTestCase {
     }
 
     @Test
+    public void onAnimateExpandPanel_noTimeout_timeoutNotSet() {
+        mTestableResources.addOverride(R.integer.config_hvacAutoDismissDurationMs, 0);
+        createHvacPanelOverlayViewController();
+        View mockLayout = mock(View.class);
+        mHvacPanelOverlayViewController.setLayout(mockLayout);
+
+        mHvacPanelOverlayViewController.onAnimateExpandPanel();
+
+        verify(mHandler, never()).postDelayed(any(), anyLong());
+    }
+
+    @Test
+    public void onAnimateExpandPanel_timeoutSet() {
+        mTestableResources.addOverride(R.integer.config_hvacAutoDismissDurationMs, 1000);
+        createHvacPanelOverlayViewController();
+        View mockLayout = mock(View.class);
+        mHvacPanelOverlayViewController.setLayout(mockLayout);
+
+        mHvacPanelOverlayViewController.onAnimateExpandPanel();
+
+        verify(mHandler).postDelayed(any(), anyLong());
+    }
+
+    @Test
+    public void onAnimateCollapsePanel_timeoutCancelled() {
+        mTestableResources.addOverride(R.integer.config_hvacAutoDismissDurationMs, 1000);
+        createHvacPanelOverlayViewController();
+        View mockLayout = mock(View.class);
+        mHvacPanelOverlayViewController.setLayout(mockLayout);
+
+        mHvacPanelOverlayViewController.onAnimateCollapsePanel();
+
+        verify(mHandler).removeCallbacks(any());
+    }
+
+    @Test
     public void onConfigChanged_oldHVACViewRemoved_newHVACViewAdded() {
+        createHvacPanelOverlayViewController();
         Configuration config = new Configuration();
         config.uiMode = Configuration.UI_MODE_NIGHT_YES;
         int mockIndex = 3;
@@ -128,5 +170,12 @@ public class HvacPanelOverlayViewControllerTest extends SysuiTestCase {
         inOrder.verify(mockHvacPanelParentView).addView(
                 argThat(view -> view.hashCode() != mockHvacPanelView.hashCode()),
                 eq(mockIndex));
+    }
+
+    private void createHvacPanelOverlayViewController() {
+        mHvacPanelOverlayViewController = new HvacPanelOverlayViewController(
+                mContext, mTestableResources.getResources(), mHandler,
+                mHvacController, mOverlayViewGlobalStateController, mFlingAnimationUtilsBuilder,
+                mCarDeviceProvisionedController, mConfigurationController);
     }
 }

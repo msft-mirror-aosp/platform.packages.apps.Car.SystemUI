@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -375,12 +376,12 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
         }
         mIsAnimating = true;
         mIsTracking = true;
-        ValueAnimator animator = ValueAnimator.ofFloat(from, to);
-        animator.addUpdateListener(
-                animation -> {
-                    float animatedValue = (Float) animation.getAnimatedValue();
-                    setViewClipBounds((int) animatedValue);
-                });
+
+        Animator animator = getCustomAnimator(from, to, velocity, isClosing);
+        if (animator == null) {
+            animator = getDefaultAnimator(from, to);
+        }
+
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -394,11 +395,29 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
                 } else {
                     onExpandAnimationEnd();
                     setPanelExpanded(true);
+                    setViewClipBounds((int) to);
+
                 }
             }
         });
         getFlingAnimationUtils().apply(animator, from, to, Math.abs(velocity));
         animator.start();
+    }
+
+    /** Specify a custom animator to be run when the panel state is changing. */
+    @Nullable
+    protected Animator getCustomAnimator(float from, float to, float velocity, boolean isClosing) {
+        return null;
+    }
+
+    private Animator getDefaultAnimator(float from, float to) {
+        ValueAnimator animator = ValueAnimator.ofFloat(from, to);
+        animator.addUpdateListener(
+                animation -> {
+                    float animatedValue = (Float) animation.getAnimatedValue();
+                    setViewClipBounds((int) animatedValue);
+                });
+        return animator;
     }
 
     protected void resetPanelVisibility() {

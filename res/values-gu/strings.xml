@@ -112,6 +112,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"અતિથિની પ્રોફાઇલ શરૂ કરી શકતાં નથી. થોડા સમય પછી ફરી પ્રયાસ કરો."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"સાઇન ઇન કરી રહ્યાં છીએ…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> સાઇન આઉટ થઈ રહ્યાં છે. થોડા સમય પછી ફરી પ્રયાસ કરો."</string>
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"વપરાશકર્તા હાલમાં ઉપલબ્ધ નથી"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"મુસાફરના ડિસ્પ્લે પર સુરક્ષિત વપરાશકર્તા માટે શરૂઆત કરી શકતા નથી"</string>
     <string name="seat_driver" msgid="4502591979520445677">"ડ્રાઇવર"</string>
     <string name="seat_front" msgid="836133281052793377">"આગળ"</string>
     <string name="seat_rear" msgid="403133444964528577">"પાછળ"</string>

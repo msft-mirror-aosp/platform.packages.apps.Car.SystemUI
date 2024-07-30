@@ -38,4 +38,8 @@
     <item type="id" name="car_bottom_bar_window"/>
     <item type="id" name="car_left_bar_window"/>
     <item type="id" name="car_right_bar_window"/>
+
+    <!-- Id values for custom HVAC animations -->
+    <item type="anim" name="hvac_open_anim"/>
+    <item type="anim" name="hvac_close_anim"/>
 </resources>

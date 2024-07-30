@@ -24,14 +24,13 @@ import static com.android.systemui.car.systembar.SystemBarConfigs.BOTTOM;
 import static com.android.systemui.car.systembar.SystemBarConfigs.LEFT;
 import static com.android.systemui.car.systembar.SystemBarConfigs.RIGHT;
 import static com.android.systemui.car.systembar.SystemBarConfigs.TOP;
-import static com.android.systemui.statusbar.phone.BarTransitions.MODE_SEMI_TRANSPARENT;
-import static com.android.systemui.statusbar.phone.BarTransitions.MODE_TRANSPARENT;
+import static com.android.systemui.shared.statusbar.phone.BarTransitions.MODE_SEMI_TRANSPARENT;
+import static com.android.systemui.shared.statusbar.phone.BarTransitions.MODE_TRANSPARENT;
 
 import android.annotation.Nullable;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.StatusBarManager.Disable2Flags;
 import android.app.StatusBarManager.DisableFlags;
-import android.app.UiModeManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -42,7 +41,6 @@ import android.inputmethodservice.InputMethodService;
 import android.os.IBinder;
 import android.os.PatternMatcher;
 import android.os.RemoteException;
-import android.os.UserHandle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,12 +67,12 @@ import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.settings.DisplayTracker;
+import com.android.systemui.shared.statusbar.phone.BarTransitions;
 import com.android.systemui.shared.system.TaskStackChangeListener;
 import com.android.systemui.shared.system.TaskStackChangeListeners;
 import com.android.systemui.statusbar.AutoHideUiElement;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.phone.AutoHideController;
-import com.android.systemui.statusbar.phone.BarTransitions;
 import com.android.systemui.statusbar.phone.LightBarController;
 import com.android.systemui.statusbar.phone.PhoneStatusBarPolicy;
 import com.android.systemui.statusbar.phone.StatusBarSignalPolicy;
@@ -125,7 +123,6 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     private final SystemBarConfigs mSystemBarConfigs;
     @Nullable
     private final ToolbarController mDisplayCompatToolbarController;
-    private UiModeManager mUiModeManager;
     private StatusBarSignalPolicy mSignalPolicy;
 
     // If the nav bar should be hidden when the soft keyboard is visible.
@@ -207,7 +204,6 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mSystemBarConfigs = systemBarConfigs;
         mSignalPolicy = signalPolicy;
         mDisplayId = context.getDisplayId();
-        mUiModeManager = mContext.getSystemService(UiModeManager.class);
         mDisplayTracker = displayTracker;
         mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
         mMDSystemBarsController = mdSystemBarsController.orElse(null);
@@ -237,8 +233,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                 }
             }
         };
-        mContext.registerReceiverAsUser(receiver, UserHandle.ALL,
-                overlayFilter, /* broadcastPermission= */null, /* handler= */ null);
+        mContext.registerReceiver(receiver, overlayFilter, /* broadcastPermission= */
+                null, /* handler= */ null);
     }
 
     @Override
@@ -764,7 +760,6 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         // Refresh UI on Night mode or system language changes.
         if (isConfigNightMode != mIsUiModeNight) {
             mIsUiModeNight = isConfigNightMode;
-            mUiModeManager.setNightModeActivated(mIsUiModeNight);
         }
 
         // cache the current state
@@ -855,8 +850,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     }
 
     @VisibleForTesting
-    void setUiModeManager(UiModeManager uiModeManager) {
-        mUiModeManager = uiModeManager;
+    boolean getIsUiModeNight() {
+        return mIsUiModeNight;
     }
 
     @Override

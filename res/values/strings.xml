@@ -144,6 +144,7 @@
     <string name="status_icon_signal_hotspot">Signal Settings: Hotspot On</string>
     <!-- Status icon for display settings in status bar-->
     <string name="status_icon_display_status">Display Settings</string>
+    <string name="status_icon_sound_status">Sound Settings</string>
     <!-- Status icon for drive mode settings in status bar -->
     <string name="status_icon_drive_mode">Drive Mode</string>
 
@@ -220,6 +221,10 @@
     <string name="stopping_user_text">Signing out…</string>
     <!-- User Picker: snack bar message when clicking stopping user -->
     <string name="wait_for_until_stopped_message"><xliff:g id="user_name" example="Peter">%s</xliff:g> is being signed out. Try again later.</string>
+    <!-- User Picker: text when user is unavailable because they're secure -->
+    <string name="unavailable_secure_user_text">User currently unavailable</string>
+    <!-- User Picker: snack bar message when clicking unavailable secure user -->
+    <string name="unavailable_secure_user_message">Unable to start secure user on passenger display</string>
 
     <!-- User Picker: seat string -->
     <string name="seat_driver">driver</string>

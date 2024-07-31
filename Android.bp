@@ -97,6 +97,7 @@ android_library {
     ],
     srcs: [
         "tests/src/**/*.java",
+        "tests/src/**/*.kt",
         "src/**/*.java",
         "src/**/*.kt",
         "src/**/I*.aidl",
@@ -218,6 +219,9 @@ android_app {
         "privapp_whitelist_com.android.systemui",
         "allowed_privapp_com.android.carsystemui",
     ],
+
+    // TODO(b/319708040): re-enable use_resource_processor
+    use_resource_processor: false,
 }
 
 // Resource lib

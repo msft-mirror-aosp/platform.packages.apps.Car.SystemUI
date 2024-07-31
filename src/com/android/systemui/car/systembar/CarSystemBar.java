@@ -38,7 +38,6 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.inputmethodservice.InputMethodService;
-import android.os.IBinder;
 import android.os.PatternMatcher;
 import android.os.RemoteException;
 import android.util.Log;
@@ -266,9 +265,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                     result.mRequestedVisibleTypes,
                     result.mPackageName, result.mLetterboxDetails);
 
-            // StatusBarManagerService has a back up of IME token and it's restored here.
-            setImeWindowStatus(mDisplayId, result.mImeToken, result.mImeWindowVis,
-                    result.mImeBackDisposition, result.mShowImeSwitcher);
+            setImeWindowStatus(mDisplayId, result.mImeWindowVis, result.mImeBackDisposition,
+                    result.mShowImeSwitcher);
 
             // Set up the initial icon state
             int numIcons = result.mIcons.size();
@@ -417,9 +415,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
 
         // Try setting up the initial state of the nav bar if applicable.
         if (result != null) {
-            setImeWindowStatus(mDisplayTracker.getDefaultDisplayId(), result.mImeToken,
-                    result.mImeWindowVis, result.mImeBackDisposition,
-                    result.mShowImeSwitcher);
+            setImeWindowStatus(mDisplayTracker.getDefaultDisplayId(), result.mImeWindowVis,
+                    result.mImeBackDisposition, result.mShowImeSwitcher);
         }
     }
 
@@ -556,7 +553,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
      * {@code com.android.internal.R.bool.config_hideNavBarForKeyboard}.
      */
     @Override
-    public void setImeWindowStatus(int displayId, IBinder token, int vis, int backDisposition,
+    public void setImeWindowStatus(int displayId, int vis, int backDisposition,
             boolean showImeSwitcher) {
         if (mContext.getDisplayId() != displayId) {
             return;

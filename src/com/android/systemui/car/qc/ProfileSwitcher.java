@@ -220,9 +220,11 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             }
             switchUser(userInfo.id);
         };
+        boolean isCurrentProfile = userInfo.id == mUserTracker.getUserId();
 
         return createProfileRow(userInfo.name,
-                mUserIconProvider.getDrawableWithBadge(mContext, userInfo), actionHandler);
+                mUserIconProvider.getDrawableWithBadge(mContext, userInfo), actionHandler,
+                isCurrentProfile);
     }
 
     protected QCRow createGuestProfileRow() {
@@ -235,10 +237,12 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 switchUser(guest.id);
             }
         };
+        boolean isCurrentProfile = mUserTracker.getUserInfo() != null
+                && mUserTracker.getUserInfo().isGuest();
 
         return createProfileRow(mContext.getString(com.android.internal.R.string.guest_name),
                 mUserIconProvider.getRoundedGuestDefaultIcon(mContext),
-                actionHandler);
+                actionHandler, isCurrentProfile);
     }
 
     private QCRow createAddProfileRow() {
@@ -269,12 +273,20 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
 
     private QCRow createProfileRow(String title, Drawable iconDrawable,
             QCItem.ActionHandler actionHandler) {
+        return createProfileRow(title, iconDrawable, actionHandler, /* isCurrentProfile= */ false);
+    }
+
+    private QCRow createProfileRow(String title, Drawable iconDrawable,
+            QCItem.ActionHandler actionHandler, boolean isCurrentProfile) {
         Icon icon = Icon.createWithBitmap(drawableToBitmap(iconDrawable));
-        QCRow row = new QCRow.Builder()
+        QCRow.Builder rowBuilder = new QCRow.Builder()
                 .setIcon(icon)
                 .setIconTintable(false)
-                .setTitle(title)
-                .build();
+                .setTitle(title);
+        if (isCurrentProfile) {
+            rowBuilder.setSubtitle(mContext.getString(R.string.current_profile_subtitle));
+        }
+        QCRow row = rowBuilder.build();
         row.setActionHandler(actionHandler);
         return row;
     }

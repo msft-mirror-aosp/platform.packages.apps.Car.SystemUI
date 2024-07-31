@@ -24,7 +24,6 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.inputmethodservice.InputMethodService;
-import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -232,7 +231,7 @@ public class NotificationPanelViewController extends OverlayPanelViewController
     }
 
     @Override
-    public void setImeWindowStatus(int displayId, IBinder token, int vis, int backDisposition,
+    public void setImeWindowStatus(int displayId, int vis, int backDisposition,
             boolean showImeSwitcher) {
         if (mContext.getDisplayId() != displayId) {
             return;

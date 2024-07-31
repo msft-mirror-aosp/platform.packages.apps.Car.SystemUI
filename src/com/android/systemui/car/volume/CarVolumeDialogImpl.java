@@ -35,7 +35,6 @@ import android.annotation.DrawableRes;
 import android.annotation.Nullable;
 import android.app.Dialog;
 import android.app.KeyguardManager;
-import android.app.UiModeManager;
 import android.car.Car;
 import android.car.CarOccupantZoneManager;
 import android.car.media.CarAudioManager;
@@ -125,7 +124,6 @@ public class CarVolumeDialogImpl
     private final CarServiceProvider mCarServiceProvider;
     private final ConfigurationController mConfigurationController;
     private final UserTracker mUserTracker;
-    private final UiModeManager mUiModeManager;
     private final Executor mExecutor;
 
     private Window mWindow;
@@ -219,17 +217,18 @@ public class CarVolumeDialogImpl
                     mCarAudioManager = (CarAudioManager) car.getCarManager(Car.AUDIO_SERVICE);
                     if (mCarAudioManager != null) {
                         int volumeGroupCount = mCarAudioManager.getVolumeGroupCount(mAudioZoneId);
+                        List<VolumeItem> availableVolumeItems = new ArrayList<>();
                         // Populates volume slider items from volume groups to UI.
                         for (int groupId = 0; groupId < volumeGroupCount; groupId++) {
                             VolumeItem volumeItem = getVolumeItemForUsages(
                                     mCarAudioManager.getUsagesForVolumeGroupId(mAudioZoneId,
                                             groupId));
-                            mAvailableVolumeItems.add(volumeItem);
-                            // The first one is the default item.
-                            if (groupId == 0) {
-                                clearAllAndSetupDefaultCarVolumeLineItem(0);
-                            }
+                            availableVolumeItems.add(volumeItem);
                         }
+                        mAvailableVolumeItems.clear();
+                        mAvailableVolumeItems.addAll(availableVolumeItems);
+                        // The first one is the default item.
+                        clearAllAndSetupDefaultCarVolumeLineItem(0);
 
                         // If list is already initiated, update its content.
                         if (mVolumeItemsAdapter != null) {
@@ -292,7 +291,6 @@ public class CarVolumeDialogImpl
         mExpHoveringTimeout = mContext.getResources().getInteger(
                 R.integer.car_volume_dialog_display_expanded_hovering_timeout);
         mConfigurationController = configurationController;
-        mUiModeManager = mContext.getSystemService(UiModeManager.class);
         mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
         mExecutor = context.getMainExecutor();
     }
@@ -364,7 +362,6 @@ public class CarVolumeDialogImpl
 
         if (isConfigNightMode != mIsUiModeNight) {
             mIsUiModeNight = isConfigNightMode;
-            mUiModeManager.setNightModeActivated(mIsUiModeNight);
             // Call notifyDataSetChanged to force trigger the mVolumeItemsAdapter#onBindViewHolder
             // and reset items background color. notify() or invalidate() don't work here.
             mVolumeItemsAdapter.notifyDataSetChanged();

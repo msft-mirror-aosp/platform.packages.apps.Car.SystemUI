@@ -76,6 +76,7 @@
     <string name="status_icon_signal_wifi" msgid="1257569337648058522">"Signalinställningar: Wifi på"</string>
     <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"Signalinställningar: Surfzon på"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"Skärminställningar"</string>
+    <string name="status_icon_sound_status" msgid="4923149230650995670">"Ljudinställningar"</string>
     <string name="status_icon_drive_mode" msgid="3938622431486261076">"Körläge"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Du kan inte använda funktionen medan du kör"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Stäng appen"</string>
@@ -111,6 +112,10 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"Det gick inte att starta gästprofilen. Försök igen senare."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"Loggar ut …"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> loggas ut. Försök igen senare."</string>
+    <!-- no translation found for unavailable_secure_user_text (6029519754897637674) -->
+    <skip />
+    <!-- no translation found for unavailable_secure_user_message (4358973342428603745) -->
+    <skip />
     <string name="seat_driver" msgid="4502591979520445677">"förarsätet"</string>
     <string name="seat_front" msgid="836133281052793377">"framsätet"</string>
     <string name="seat_rear" msgid="403133444964528577">"baksätet"</string>

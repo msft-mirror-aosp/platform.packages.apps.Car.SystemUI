@@ -24,11 +24,13 @@ import com.android.systemui.car.notification.TopNotificationPanelViewMediator;
 import com.android.systemui.car.systemdialogs.SystemDialogsViewMediator;
 import com.android.systemui.car.userswitcher.FullscreenUserSwitcherViewMediator;
 import com.android.systemui.car.userswitcher.UserSwitchTransitionViewMediator;
+import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
 
 import dagger.Binds;
 import dagger.Module;
 import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
+import dagger.multibindings.IntoSet;
 
 /**
  * Dagger injection module for {@link SystemUIOverlayWindowManager}
@@ -91,4 +93,10 @@ public abstract class OverlayWindowModule {
     @ClassKey(SystemDialogsViewMediator.class)
     public abstract OverlayViewMediator bindSystemDialogsViewMediator(
             SystemDialogsViewMediator sysui);
+
+    /** Listen to config changes for SystemUIOverlayWindowManager. */
+    @Binds
+    @IntoSet
+    public abstract ConfigurationListener bindSystemUIOverlayWindowManagerConfigChanges(
+            SystemUIOverlayWindowManager systemUIOverlayWindowManager);
 }

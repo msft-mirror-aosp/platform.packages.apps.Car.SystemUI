@@ -118,7 +118,8 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             ensureManageSystemUIPermission(mContext);
             ActivityOptions opt = ActivityOptions.fromBundle(options);
             // Need this for the pending intent to work under BAL hardening.
-            opt.setPendingIntentBackgroundActivityLaunchAllowedByPermission(true);
+            opt.setPendingIntentBackgroundActivityStartMode(
+                    ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOW_ALWAYS);
             mTaskViewTaskController.startActivity(
                     pendingIntent,
                     fillInIntent,
@@ -249,7 +250,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             }
             WindowContainerTransaction wct = new WindowContainerTransaction();
             wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
-                    mInsetsOwner, index, type, frame, /* boundingRects = */ null);
+                    mInsetsOwner, index, type, frame, /* boundingRects = */ null, /* flags = */ 0);
             mShellTaskOrganizer.applyTransaction(wct);
         }
 
@@ -389,7 +390,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             final Rect frame = mInsets.valueAt(i);
             wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
                     mInsetsOwner, InsetsSource.getIndex(id), InsetsSource.getType(id), frame,
-                    null /* boundingRects */);
+                    null /* boundingRects */, 0 /* flags */);
         }
         mShellTaskOrganizer.applyTransaction(wct);
     }

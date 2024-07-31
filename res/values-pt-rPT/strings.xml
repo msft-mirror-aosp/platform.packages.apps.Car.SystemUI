@@ -76,6 +76,7 @@
     <string name="status_icon_signal_wifi" msgid="1257569337648058522">"Definições do sinal: Wi-Fi ativado"</string>
     <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"Definições do sinal: zona Wi-Fi ativada"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"Definições do ecrã"</string>
+    <string name="status_icon_sound_status" msgid="4923149230650995670">"Definições de som"</string>
     <string name="status_icon_drive_mode" msgid="3938622431486261076">"Modo de condução"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Não pode usar esta funcionalidade enquanto conduz"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Fechar app"</string>
@@ -111,6 +112,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"Não é possível iniciar o perfil de convidado. Tente mais tarde."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"A terminar sessão…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"A sessão de <xliff:g id="USER_NAME">%s</xliff:g> está a ser terminada. Tente mais tarde."</string>
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Utilizador atualmente indisponível"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Não é possível iniciar o utilizador seguro no ecrã do passageiro"</string>
     <string name="seat_driver" msgid="4502591979520445677">"condutor"</string>
     <string name="seat_front" msgid="836133281052793377">"frente"</string>
     <string name="seat_rear" msgid="403133444964528577">"traseira"</string>

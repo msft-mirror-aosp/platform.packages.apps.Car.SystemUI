@@ -321,6 +321,16 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     }
 
     @Test
+    public void switchAllowed_currentUser_hasSubtitle() {
+        UserInfo currentUser = generateUser(mUserTracker.getUserId(), "User1");
+        mAliveUsers.add(currentUser);
+        when(mUserManager.getUserInfo(mUserTracker.getUserId())).thenReturn(currentUser);
+        List<QCRow> rows = getProfileRows();
+        assertThat(rows.get(0).getSubtitle()).isEqualTo(
+                mContext.getString(R.string.current_profile_subtitle));
+    }
+
+    @Test
     public void onUserPressed_triggersSwitch() {
         int currentUserId = 1000;
         int otherUserId = 1001;

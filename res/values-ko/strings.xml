@@ -112,6 +112,10 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"게스트 프로필을 시작할 수 없습니다. 나중에 다시 시도해 주세요."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"로그아웃 중…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g>님이 로그아웃 중입니다. 나중에 다시 시도해 주세요."</string>
+    <!-- no translation found for unavailable_secure_user_text (6029519754897637674) -->
+    <skip />
+    <!-- no translation found for unavailable_secure_user_message (4358973342428603745) -->
+    <skip />
     <string name="seat_driver" msgid="4502591979520445677">"드라이버"</string>
     <string name="seat_front" msgid="836133281052793377">"전면"</string>
     <string name="seat_rear" msgid="403133444964528577">"후면"</string>

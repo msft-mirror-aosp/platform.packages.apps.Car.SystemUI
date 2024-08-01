@@ -112,6 +112,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"Impossibile avviare profilo ospite. Riprova più tardi."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"Uscita…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> è in uscita. Riprova più tardi."</string>
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Utente al momento non disponibile"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Impossibile avviare la protezione utente sul display del passeggero"</string>
     <string name="seat_driver" msgid="4502591979520445677">"conducente"</string>
     <string name="seat_front" msgid="836133281052793377">"anteriore"</string>
     <string name="seat_rear" msgid="403133444964528577">"posteriore"</string>

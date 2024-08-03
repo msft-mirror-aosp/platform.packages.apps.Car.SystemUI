@@ -155,7 +155,6 @@ public class CarSystemBarTest extends SysuiTestCase {
                 /* imeBackDisposition= */ 0,
                 /* showImeSwitcher= */ false,
                 /* disabledFlags2= */ 0,
-                /* imeToken= */ null,
                 /* navbarColorMangedByIme= */ false,
                 BEHAVIOR_DEFAULT,
                 WindowInsets.Type.defaultVisible(),

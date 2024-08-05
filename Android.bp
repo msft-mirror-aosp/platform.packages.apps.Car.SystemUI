@@ -15,6 +15,7 @@
 //
 package {
     default_applicable_licenses: ["Android-Apache-2.0"],
+    default_team: "trendy_team_system_experience",
 }
 
 android_library {
@@ -85,90 +86,6 @@ android_library {
     // TODO(b/319708040): re-enable use_resource_processor
     use_resource_processor: false,
 
-}
-
-android_library {
-    name: "CarSystemUI-tests",
-    manifest: "tests/AndroidManifest.xml",
-    resource_dirs: [
-        "tests/res",
-        "res-keyguard",
-        "res",
-    ],
-    srcs: [
-        "tests/src/**/*.java",
-        "tests/src/**/*.kt",
-        "src/**/*.java",
-        "src/**/*.kt",
-        "src/**/I*.aidl",
-    ],
-    static_libs: [
-        "SystemUI-tests",
-        "CarNotificationLib",
-        "SystemUIPluginLib",
-        "SystemUISharedLib",
-        "SettingsLib",
-        "android.car.test.utils",
-        "androidx.legacy_legacy-support-v4",
-        "androidx.recyclerview_recyclerview",
-        "androidx.preference_preference",
-        "androidx.appcompat_appcompat",
-        "androidx.mediarouter_mediarouter",
-        "androidx.palette_palette",
-        "androidx.legacy_legacy-preference-v14",
-        "androidx.leanback_leanback",
-        "androidx.slice_slice-core",
-        "androidx.slice_slice-view",
-        "androidx.slice_slice-builders",
-        "androidx.arch.core_core-runtime",
-        "androidx.lifecycle_lifecycle-common-java8",
-        "androidx.lifecycle_lifecycle-extensions",
-        "car-admin-ui-lib",
-        "car-helper-lib",
-        "car-telephony-common-no-overlayable",
-        "car-ui-lib-no-overlayable",
-        "car-qc-lib",
-        "car-resource-common",
-        "com_android_systemui_car_flags_lib",
-        "SystemUI-tags",
-        "SystemUI-proto",
-        "metrics-helper-lib",
-        "androidx.test.rules",
-        "hamcrest-library",
-        "mockito-target-extended-minus-junit4",
-        "flag-junit",
-        "testables",
-        "truth",
-        "testng",
-        "dagger2",
-        "//external/kotlinc:kotlin-annotations",
-        "CarDockLib",
-        "car-data-subscription-lib",
-
-    ],
-    libs: [
-        "android.test.runner",
-        "android.test.base",
-        "android.car",
-    ],
-
-    aaptflags: [
-        "--extra-packages",
-        "com.android.systemui",
-    ],
-
-    plugins: ["dagger2-compiler"],
-
-    lint: {
-        test: true,
-    },
-
-    // TODO(b/218518451) re-enable errorprone.
-    errorprone: {
-        enabled: false,
-    },
-    // TODO(b/319708040): re-enable use_resource_processor
-    use_resource_processor: false,
 }
 
 android_app {
@@ -244,4 +161,180 @@ android_library {
     lint: {
         disabled_checks: ["MissingClass"],
     },
+}
+
+android_library {
+    name: "CarSystemUI-tests-base",
+    manifest: "tests/AndroidManifest-base.xml",
+    resource_dirs: [
+        "tests/res",
+    ],
+    static_libs: [
+        "CarSystemUI-res",
+        "SystemUI-tests-base",
+        "CarNotificationLib",
+        "android.car.test.utils",
+        "car-admin-ui-lib",
+        "car-helper-lib",
+        "car-telephony-common-no-overlayable",
+        "car-ui-lib-no-overlayable",
+        "car-qc-lib",
+        "car-resource-common",
+        "com_android_systemui_car_flags_lib",
+        "CarDockLib",
+        "car-data-subscription-lib",
+        "testng",
+        "//external/kotlinc:kotlin-annotations",
+    ],
+}
+
+android_library {
+    name: "CarSystemUI-tests",
+    manifest: "tests/AndroidManifest-base.xml",
+    additional_manifests: ["tests/AndroidManifest.xml"],
+    srcs: [
+        "tests/src/**/*.java",
+        "tests/src/**/*.kt",
+        ":CarSystemUI-tests-multivalent",
+        "src/**/*.java",
+        "src/**/*.kt",
+        "src/**/I*.aidl",
+    ],
+    static_libs: [
+        "SystemUI-tests",
+        "CarSystemUI-tests-base",
+    ],
+    libs: [
+        "android.test.runner",
+        "android.test.base",
+        "android.car",
+    ],
+
+    aaptflags: [
+        "--extra-packages",
+        "com.android.systemui",
+    ],
+
+    plugins: ["dagger2-compiler"],
+
+    lint: {
+        test: true,
+    },
+
+    // TODO(b/218518451) re-enable errorprone.
+    errorprone: {
+        enabled: false,
+    },
+    // TODO(b/319708040): re-enable use_resource_processor
+    use_resource_processor: false,
+}
+
+android_app {
+    name: "CarSystemUIRobo-stub",
+    defaults: [
+        "platform_app_defaults",
+        "SystemUI_optimized_defaults",
+    ],
+    manifest: "tests/AndroidManifest-base.xml",
+
+    srcs: [
+        "src/**/*.java",
+        "src/**/*.kt",
+        "src/**/I*.aidl",
+    ],
+    static_libs: [
+        "//frameworks/libs/systemui:compilelib",
+        "CarSystemUI-tests-base",
+        "androidx.compose.runtime_runtime",
+        "CarSystemUI-core",
+    ],
+    libs: [
+        "keepanno-annotations",
+        "android.car",
+    ],
+    aaptflags: [
+        "--extra-packages",
+        "com.android.systemui",
+    ],
+    dont_merge_manifests: true,
+    platform_apis: true,
+    system_ext_specific: true,
+    certificate: "platform",
+    privileged: true,
+    kotlincflags: ["-Xjvm-default=all"],
+    optimize: {
+        shrink_resources: false,
+        optimized_shrink_resources: false,
+        proguard_flags_files: ["proguard.flags"],
+    },
+
+    plugins: ["dagger2-compiler"],
+
+    // TODO(b/319708040): re-enable use_resource_processor
+    use_resource_processor: false,
+}
+
+android_robolectric_test {
+    name: "CarSystemUIRoboTests",
+    srcs: [
+        ":SystemUI-robotest-utils",
+        ":SystemUI-tests-utils",
+        ":CarSystemUI-tests-multivalent",
+    ],
+    static_libs: [
+        "RoboTestLibraries",
+    ],
+    libs: [
+        "android.car",
+        "android.test.runner",
+        "android.test.base",
+        "android.test.mock",
+        "truth",
+    ],
+
+    upstream: true,
+
+    instrumentation_for: "CarSystemUIRobo-stub",
+    java_resource_dirs: ["tests/robolectric/config"],
+    plugins: [
+        "dagger2-compiler",
+    ],
+    strict_mode: false,
+}
+
+android_ravenwood_test {
+    name: "CarSystemUIRavenTests",
+    srcs: [
+        ":SystemUI-tests-utils",
+        ":CarSystemUI-tests-multivalent",
+        ":CarSystemUIRobo-stub{.aapt.srcjar}",
+    ],
+    static_libs: [
+        "CarSystemUI-core",
+        "CarSystemUI-res",
+        "CarSystemUI-tests-base",
+        "androidx.test.uiautomator_uiautomator",
+        "androidx.core_core-animation-testing",
+        "androidx.test.ext.junit",
+        "kosmos",
+        "mockito-kotlin-nodeps",
+    ],
+    libs: [
+        "android.car",
+        "android.test.runner",
+        "android.test.base",
+        "android.test.mock",
+    ],
+    auto_gen_config: true,
+    plugins: [
+        "dagger2-compiler",
+    ],
+}
+
+filegroup {
+    name: "CarSystemUI-tests-multivalent",
+    srcs: [
+        "multivalentTests/src/**/*.kt",
+        "multivalentTests/src/**/*.java",
+    ],
 }

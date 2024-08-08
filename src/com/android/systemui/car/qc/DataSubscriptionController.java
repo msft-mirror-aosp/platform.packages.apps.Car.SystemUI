@@ -132,6 +132,7 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
 
                 ApplicationInfo appInfo = mContext.getPackageManager().getApplicationInfoAsUser(
                         mTopPackage, 0, mUserTracker.getUserId());
+                mTopLabel = appInfo.loadLabel(mContext.getPackageManager());
                 int uid = appInfo.uid;
                 mConnectivityManager.registerDefaultNetworkCallbackForUid(uid, mNetworkCallback,
                         mMainHandler);
@@ -199,6 +200,7 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
     private boolean mShouldDisplayReactiveMsg;
     private String mTopActivity;
     private String mTopPackage;
+    private CharSequence mTopLabel;
     private NetworkCapabilities mNetworkCapabilities;
     private boolean mIsUxRestrictionsListenerRegistered;
 
@@ -316,7 +318,7 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
                         if (mIsProactiveMsg) {
                             popUpPrompt.setText(R.string.data_subscription_proactive_msg_prompt);
                         } else {
-                            popUpPrompt.setText(R.string.data_subscription_reactive_msg_prompt);
+                            popUpPrompt.setText(getReactiveMsg());
                         }
                     }
                     int xOffsetInPx = mContext.getResources().getDimensionPixelSize(
@@ -368,6 +370,15 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
     boolean isSuspendedNetwork() {
         return !mNetworkCapabilities.hasCapability(
                 NetworkCapabilities.NET_CAPABILITY_NOT_SUSPENDED);
+    }
+
+    private CharSequence getReactiveMsg() {
+        return mContext.getString(
+                R.string.data_subscription_reactive_msg_prompt, mTopLabel.isEmpty()
+                ? mContext.getResources().getString(
+                        R.string.data_subscription_reactive_generic_app_label) :
+                        mTopLabel);
+
     }
 
     @Override

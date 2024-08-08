@@ -531,7 +531,6 @@ public class CarVolumeDialogImpl
         dismissAnimator.addListener(new DismissAnimationListener());
         dismissAnimator.start();
 
-        mController.notifyVisible(false);
         Events.writeEvent(Events.EVENT_DISMISS_DIALOG, reason);
     }
 

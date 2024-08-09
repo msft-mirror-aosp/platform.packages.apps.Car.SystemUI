@@ -124,9 +124,7 @@ final class CarServiceMediator {
             UserLifecycleListener listener) {
         mUserLifecycleListeners.put(listener, new Pair<>(receiver, filter));
         if (mCarUserManager != null) {
-            mCarServiceProvider.addListener(car -> {
-                mCarUserManager.addListener(receiver, filter, listener);
-            });
+            mCarUserManager.addListener(receiver, filter, listener);
         }
     }
 

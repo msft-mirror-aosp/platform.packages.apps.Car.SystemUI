@@ -43,14 +43,11 @@
         android:min="0"
         android:paddingBottom="@dimen/car_volume_item_seekbar_padding_vertical"
         android:layout_centerVertical="true"
-        android:paddingEnd="0dp"
-        android:paddingStart="0dp"
         android:paddingTop="@dimen/car_volume_item_seekbar_padding_vertical"
         android:splitTrack="false"
         android:layout_toStartOf="@id/supplemental_icon_divider"
         android:layout_marginStart="@dimen/car_volume_item_seekbar_margin_start"
-        android:layout_marginEnd="@dimen/car_volume_item_seekbar_margin_end"
-        android:thumbOffset="0dp"/>
+        android:layout_marginEnd="@dimen/car_volume_item_seekbar_margin_end"/>
 
     <!-- Supplemental action. -->
     <View

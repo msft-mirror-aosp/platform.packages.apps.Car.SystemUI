@@ -33,6 +33,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Можно создать только один профиль.}one{Можно добавить до # профиля.}few{Можно добавить до # профилей.}many{Можно добавить до # профилей.}other{Можно добавить до # профиля.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Загрузка…"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Загрузка профиля пользователя (с <xliff:g id="FROM_USER">%1$d</xliff:g> по <xliff:g id="TO_USER">%2$d</xliff:g>)…"</string>
+    <string name="current_profile_subtitle" msgid="7149515449757434139">"Текущий профиль"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g>: отключено."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"Использовать <xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Для приложений, у которых есть разрешение"</string>
@@ -76,6 +77,7 @@
     <string name="status_icon_signal_wifi" msgid="1257569337648058522">"Настройки связи: сеть Wi-Fi включена"</string>
     <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"Настройки связи: точка доступа включена"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"Настройки экрана"</string>
+    <string name="status_icon_sound_status" msgid="4923149230650995670">"Настройки звука"</string>
     <string name="status_icon_drive_mode" msgid="3938622431486261076">"Режим вождения"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Эту функцию нельзя использовать во время вождения."</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Закрыть приложение"</string>
@@ -111,6 +113,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"Не удалось использовать гостевой профиль. Повторите попытку позже."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"Выход…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"Сейчас выходит пользователь <xliff:g id="USER_NAME">%s</xliff:g>. Повторите попытку позже."</string>
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Пользователь сейчас недоступен"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Не удается выбрать защищенного пользователя на экране пассажира."</string>
     <string name="seat_driver" msgid="4502591979520445677">"на водительском сиденье"</string>
     <string name="seat_front" msgid="836133281052793377">"на переднем сиденье"</string>
     <string name="seat_rear" msgid="403133444964528577">"на заднем сиденье"</string>
@@ -130,5 +134,8 @@
     <string name="fullscreen" msgid="7648956467442135844">"Полноэкранный режим"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Посмотреть тарифы"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Ваш тарифный план на интернет больше не действует"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"Для работы приложению требуется подключение к интернету."</string>
+    <!-- no translation found for data_subscription_reactive_msg_prompt (5252304501097103082) -->
+    <skip />
+    <!-- no translation found for data_subscription_reactive_generic_app_label (5641823691346968670) -->
+    <skip />
 </resources>

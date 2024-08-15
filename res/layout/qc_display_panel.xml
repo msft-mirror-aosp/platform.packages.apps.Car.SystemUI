@@ -48,7 +48,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        app:remoteQCProvider="content://com.android.car.settings.qc/brightness_slider"/>
+                        app:remoteQCProvider="content://com.android.car.settings.qc/brightness_slider_with_icon"/>
                     <com.android.systemui.car.qc.SystemUIQCView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

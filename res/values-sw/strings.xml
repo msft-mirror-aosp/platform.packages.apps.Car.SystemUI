@@ -33,6 +33,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Unaweza kuweka wasifu mmoja pekee.}other{Unaweza kuweka hadi wasifu #.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Inapakia"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Inapakia wasifu wa mtumiaji (kutoka <xliff:g id="FROM_USER">%1$d</xliff:g> kuwa <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
+    <string name="current_profile_subtitle" msgid="7149515449757434139">"Wasifu wa sasa"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> imezimwa"</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"Tumia <xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Kwenye programu zilizo na ruhusa"</string>
@@ -76,6 +77,7 @@
     <string name="status_icon_signal_wifi" msgid="1257569337648058522">"Mipangilio ya Mtandao: Wifi Imewashwa"</string>
     <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"Mipangilio ya Mtandao: Mtandao pepe Umewashwa"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"Mipangilio ya Skrini"</string>
+    <string name="status_icon_sound_status" msgid="4923149230650995670">"Mipangilio ya Sauti"</string>
     <string name="status_icon_drive_mode" msgid="3938622431486261076">"Hali ya Kuendesha Gari"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Huwezi kutumia kipengele hiki wakati unaendesha gari"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Funga programu"</string>
@@ -111,6 +113,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"Huwezi kuanzisha Wasifu wa mgeni. Jaribu tena baadaye."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"Inaondoka katika akaunti…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> anaondolewa katika akaunti. Jaribu tena baadaye."</string>
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Mtumiaji hapatikani kwa sasa"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Imeshindwa kuanzisha hali ya mtumiaji salama kwenye skrini ya abiria"</string>
     <string name="seat_driver" msgid="4502591979520445677">"dereva"</string>
     <string name="seat_front" msgid="836133281052793377">"mbele"</string>
     <string name="seat_rear" msgid="403133444964528577">"nyuma"</string>
@@ -130,5 +134,6 @@
     <string name="fullscreen" msgid="7648956467442135844">"Skrini Nzima"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Angalia mipango"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Muda wa mpango wako wa intaneti umeisha"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"Programu hii inahitaji muunganisho wa intaneti"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s inahitaji muunganisho wa intaneti"</string>
+    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"Programu hii"</string>
 </resources>

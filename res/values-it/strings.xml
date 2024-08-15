@@ -33,6 +33,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{È possibile creare un solo profilo.}other{Puoi aggiungere massimo # profili.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Caricamento"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Caricamento dell\'utente (da <xliff:g id="FROM_USER">%1$d</xliff:g> a <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
+    <string name="current_profile_subtitle" msgid="7149515449757434139">"Profilo corrente"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> spento."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"Usa <xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Per le app provviste di autorizzazione"</string>
@@ -133,5 +134,6 @@
     <string name="fullscreen" msgid="7648956467442135844">"Schermo intero"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Vedi i piani"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Il tuo piano internet è scaduto"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"Questa app necessita di una connessione a internet"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s richiede una connessione a internet"</string>
+    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"Quest\'app"</string>
 </resources>

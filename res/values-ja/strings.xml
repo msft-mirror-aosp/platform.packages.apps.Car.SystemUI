@@ -33,6 +33,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{作成できるプロファイルは 1 件のみです。}other{追加できるプロファイルは # 件までです。}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"読み込んでいます"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"ユーザーを読み込んでいます（<xliff:g id="FROM_USER">%1$d</xliff:g>～<xliff:g id="TO_USER">%2$d</xliff:g>）"</string>
+    <string name="current_profile_subtitle" msgid="7149515449757434139">"現在のプロファイル"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g>は OFF です。"</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g>の使用"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"権限が付与されているアプリ"</string>
@@ -133,5 +134,6 @@
     <string name="fullscreen" msgid="7648956467442135844">"全画面表示"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"プランを見る"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"ご利用のインターネット プランの期限が切れています"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"このアプリを使用するにはインターネット接続が必要です"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s を使用するには、インターネット接続が必要です"</string>
+    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"このアプリ"</string>
 </resources>

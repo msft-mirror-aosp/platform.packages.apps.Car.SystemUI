@@ -33,6 +33,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{ஒரு சுயவிவரத்தை மட்டுமே உருவாக்க முடியும்.}other{# சுயவிவரங்கள் வரை சேர்க்க முடியும்.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"ஏற்றுகிறது"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"பயனர் தகவலை ஏற்றுகிறது (<xliff:g id="FROM_USER">%1$d</xliff:g>லிருந்து <xliff:g id="TO_USER">%2$d</xliff:g> வரை)"</string>
+    <string name="current_profile_subtitle" msgid="7149515449757434139">"தற்போதைய சுயவிவரம்"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> முடக்கப்பட்டுள்ளது."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g> ஐ உபயோகித்தல்"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"அனுமதியுள்ள ஆப்ஸுக்கு"</string>
@@ -112,10 +113,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"விருந்தினர் சுயவிவரத்தைத் தொடங்க முடியவில்லை. பிறகு மீண்டும் முயலவும்."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"வெளியேறுகிறது…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> வெளியேறுகிறார். பிறகு மீண்டும் முயலவும்."</string>
-    <!-- no translation found for unavailable_secure_user_text (6029519754897637674) -->
-    <skip />
-    <!-- no translation found for unavailable_secure_user_message (4358973342428603745) -->
-    <skip />
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"தற்சமயம் பயனர் இல்லை"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"பயணியின் திரையில் பயனரைப் பாதுகாத்தலைத் தொடங்க முடியவில்லை"</string>
     <string name="seat_driver" msgid="4502591979520445677">"ஓட்டுநர்"</string>
     <string name="seat_front" msgid="836133281052793377">"முன்புறம்"</string>
     <string name="seat_rear" msgid="403133444964528577">"பின்புறம்"</string>
@@ -135,5 +134,6 @@
     <string name="fullscreen" msgid="7648956467442135844">"முழுத்திரை"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"திட்டங்களைக் காட்டு"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"உங்கள் இணையத் திட்டம் காலாவதியாகிவிட்டது"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"இந்த ஆப்ஸுக்கு இணைய இணைப்பு தேவை"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%sக்கு இணைய இணைப்பு தேவை"</string>
+    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"இந்த ஆப்ஸ்"</string>
 </resources>

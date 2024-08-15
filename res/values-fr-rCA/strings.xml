@@ -33,6 +33,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Un seul profil peut être créé.}one{Vous pouvez ajouter jusqu\'à # profil.}other{Vous pouvez ajouter jusqu\'à # profils.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Chargement en cours…"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Chargement de l\'utilisateur (de <xliff:g id="FROM_USER">%1$d</xliff:g> vers <xliff:g id="TO_USER">%2$d</xliff:g>) en cours…"</string>
+    <string name="current_profile_subtitle" msgid="7149515449757434139">"Profil actuel"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"Le capteur <xliff:g id="SENSOR">%1$s</xliff:g> est désactivé."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"Utiliser <xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Pour les applications qui ont l\'autorisation"</string>
@@ -112,10 +113,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"Impossible de lancer le profil d\'invité. Réessayez plus tard."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"Déconnexion en cours…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"Déconnexion de <xliff:g id="USER_NAME">%s</xliff:g> en cours… Réessayez plus tard."</string>
-    <!-- no translation found for unavailable_secure_user_text (6029519754897637674) -->
-    <skip />
-    <!-- no translation found for unavailable_secure_user_message (4358973342428603745) -->
-    <skip />
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Utilisateur actuellement inaccessible"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Impossible de lancer l\'utilisateur sécurisé sur l\'écran du passager"</string>
     <string name="seat_driver" msgid="4502591979520445677">"conducteur"</string>
     <string name="seat_front" msgid="836133281052793377">"avant"</string>
     <string name="seat_rear" msgid="403133444964528577">"arrière"</string>
@@ -135,5 +134,6 @@
     <string name="fullscreen" msgid="7648956467442135844">"Plein écran"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Voir les forfaits"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Votre forfait Internet a expiré"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"Cette appli nécessite une connexion Internet"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s nécessite une connexion Internet"</string>
+    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"Cette appli"</string>
 </resources>

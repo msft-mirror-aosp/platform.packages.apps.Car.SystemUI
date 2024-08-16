@@ -31,7 +31,6 @@ import android.annotation.Nullable;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.StatusBarManager.Disable2Flags;
 import android.app.StatusBarManager.DisableFlags;
-import android.app.UiModeManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -39,7 +38,6 @@ import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.inputmethodservice.InputMethodService;
-import android.os.IBinder;
 import android.os.PatternMatcher;
 import android.os.RemoteException;
 import android.util.Log;
@@ -124,7 +122,6 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     private final SystemBarConfigs mSystemBarConfigs;
     @Nullable
     private final ToolbarController mDisplayCompatToolbarController;
-    private UiModeManager mUiModeManager;
     private StatusBarSignalPolicy mSignalPolicy;
 
     // If the nav bar should be hidden when the soft keyboard is visible.
@@ -206,7 +203,6 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mSystemBarConfigs = systemBarConfigs;
         mSignalPolicy = signalPolicy;
         mDisplayId = context.getDisplayId();
-        mUiModeManager = mContext.getSystemService(UiModeManager.class);
         mDisplayTracker = displayTracker;
         mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
         mMDSystemBarsController = mdSystemBarsController.orElse(null);
@@ -269,9 +265,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
                     result.mRequestedVisibleTypes,
                     result.mPackageName, result.mLetterboxDetails);
 
-            // StatusBarManagerService has a back up of IME token and it's restored here.
-            setImeWindowStatus(mDisplayId, result.mImeToken, result.mImeWindowVis,
-                    result.mImeBackDisposition, result.mShowImeSwitcher);
+            setImeWindowStatus(mDisplayId, result.mImeWindowVis, result.mImeBackDisposition,
+                    result.mShowImeSwitcher);
 
             // Set up the initial icon state
             int numIcons = result.mIcons.size();
@@ -420,9 +415,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
 
         // Try setting up the initial state of the nav bar if applicable.
         if (result != null) {
-            setImeWindowStatus(mDisplayTracker.getDefaultDisplayId(), result.mImeToken,
-                    result.mImeWindowVis, result.mImeBackDisposition,
-                    result.mShowImeSwitcher);
+            setImeWindowStatus(mDisplayTracker.getDefaultDisplayId(), result.mImeWindowVis,
+                    result.mImeBackDisposition, result.mShowImeSwitcher);
         }
     }
 
@@ -559,7 +553,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
      * {@code com.android.internal.R.bool.config_hideNavBarForKeyboard}.
      */
     @Override
-    public void setImeWindowStatus(int displayId, IBinder token, int vis, int backDisposition,
+    public void setImeWindowStatus(int displayId, int vis, int backDisposition,
             boolean showImeSwitcher) {
         if (mContext.getDisplayId() != displayId) {
             return;
@@ -763,7 +757,6 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         // Refresh UI on Night mode or system language changes.
         if (isConfigNightMode != mIsUiModeNight) {
             mIsUiModeNight = isConfigNightMode;
-            mUiModeManager.setNightModeActivated(mIsUiModeNight);
         }
 
         // cache the current state
@@ -854,8 +847,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     }
 
     @VisibleForTesting
-    void setUiModeManager(UiModeManager uiModeManager) {
-        mUiModeManager = uiModeManager;
+    boolean getIsUiModeNight() {
+        return mIsUiModeNight;
     }
 
     @Override

@@ -141,7 +141,7 @@ final class UserPickerController {
         UserCreationResult result = mUserEventManager.createNewUser();
         runOnMainHandler(REQ_DISMISS_ADDING_DIALOG);
 
-        if (result.isSuccess()) {
+        if (result != null && result.isSuccess()) {
             UserInfo newUserInfo = mUserEventManager.getUserInfo(result.getUser().getIdentifier());
             UserRecord userRecord = UserRecord.create(newUserInfo, newUserInfo.name,
                     /* isStartGuestSession= */ false, /* isAddUser= */ false,
@@ -151,7 +151,7 @@ final class UserPickerController {
             mIsUserPickerClickable = false;
             handleUserSelected(userRecord);
         } else {
-            Slog.w(TAG, "Unsuccessful UserCreationResult:" + result.toString());
+            Slog.w(TAG, "Unsuccessful UserCreationResult:" + result);
             // Show snack bar message for the failure of user creation.
             runOnMainHandler(REQ_SHOW_SNACKBAR,
                     mContext.getString(R.string.create_user_failed_message));
@@ -314,6 +314,7 @@ final class UserPickerController {
                         /* isForeground= */ true,
                         /* icon= */ mUserIconProvider.getRoundedUserIcon(foregroundUser, mContext),
                         /* listenerMaker */ new OnClickListenerCreator(),
+                        mLockPatternUtils.isSecure(foregroundUser.id),
                         /* isLoggedIn= */ true, /* loggedInDisplay= */ mDisplayId,
                         /* seatLocationName= */ mCarServiceMediator.getSeatString(mDisplayId),
                         /* isStopping= */ false));
@@ -333,6 +334,7 @@ final class UserPickerController {
                     /* isForeground= */ userInfo.id == foregroundUser.id,
                     /* icon= */ mUserIconProvider.getRoundedUserIcon(userInfo, mContext),
                     /* listenerMaker */ new OnClickListenerCreator(),
+                    /* isSecure= */ mLockPatternUtils.isSecure(userInfo.id),
                     /* isLoggedIn= */ loggedInDisplayId != INVALID_DISPLAY,
                     /* loggedInDisplay= */ loggedInDisplayId,
                     /* seatLocationName= */ mCarServiceMediator.getSeatString(loggedInDisplayId),
@@ -369,6 +371,7 @@ final class UserPickerController {
                 /* isForeground= */ false,
                 /* icon= */ mUserIconProvider.getRoundedGuestDefaultIcon(mContext),
                 /* listenerMaker */ new OnClickListenerCreator(),
+                /* isSecure */ false,
                 loggedIn, loggedInDisplay,
                 /* seatLocationName= */mCarServiceMediator.getSeatString(loggedInDisplay),
                 /* isStopping= */ false);
@@ -400,13 +403,18 @@ final class UserPickerController {
                 return;
             }
 
+            boolean isFgUserStart = prevUserId == ActivityManager.getCurrentUser();
+
             // Second, check user has been already logged-in in another display or is stopping.
-            if (userRecord.mIsLoggedIn && userRecord.mLoggedInDisplay != mDisplayId
-                    || mUserPickerSharedState.isStoppingUser(userId)) {
+            if ((userRecord.mIsLoggedIn && userRecord.mLoggedInDisplay != mDisplayId)
+                    || mUserPickerSharedState.isStoppingUser(userId)
+                    || (userRecord.mIsSecure && !isFgUserStart)) {
                 String message;
                 if (userRecord.mIsStopping) {
                     message = mContext.getString(R.string.wait_for_until_stopped_message,
                             userRecord.mName);
+                } else if (userRecord.mIsSecure && !isFgUserStart) {
+                    message = mContext.getString(R.string.unavailable_secure_user_message);
                 } else {
                     message = mContext.getString(R.string.already_logged_in_message,
                             userRecord.mName, userRecord.mSeatLocationName);
@@ -443,7 +451,6 @@ final class UserPickerController {
                     return;
                 }
 
-                boolean isFgUserStart = prevUserId == ActivityManager.getCurrentUser();
                 if (!isFgUserStart && !stopUserAssignedToDisplay(prevUserId)) {
                     return;
                 }

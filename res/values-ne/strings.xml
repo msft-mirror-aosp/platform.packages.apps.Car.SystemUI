@@ -33,6 +33,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{तपाईं एउटा मात्र प्रोफाइल बनाउन सक्नुहुन्छ।}other{तपाईं बढीमा # वटा प्रोफाइल थप्न सक्नुहुन्छ।}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"लोड गरिँदै"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"प्रयोगकर्तासम्बन्धी जानकारी लोड गरिँदै (<xliff:g id="FROM_USER">%1$d</xliff:g> बाट <xliff:g id="TO_USER">%2$d</xliff:g> मा)"</string>
+    <string name="current_profile_subtitle" msgid="7149515449757434139">"हालको प्रोफाइल"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> अफ छ।"</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g> प्रयोग गर्नुहोस्"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"अनुमति प्राप्त एपहरूका हकमा"</string>
@@ -76,6 +77,7 @@
     <string name="status_icon_signal_wifi" msgid="1257569337648058522">"सिग्नलसम्बन्धी सेटिङ: Wifi अन छ"</string>
     <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"सिग्नलसम्बन्धी सेटिङ: हटस्पट अन छ"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"डिस्प्लेसम्बन्धी सेटिङ"</string>
+    <string name="status_icon_sound_status" msgid="4923149230650995670">"साउन्डसम्बन्धी सेटिङ"</string>
     <string name="status_icon_drive_mode" msgid="3938622431486261076">"ड्राइभ मोड"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"तपाईं सवारी साधन चलाइरहेका बेला यो सुविधा प्रयोग गर्न सक्नुहुन्न"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"एप बन्द गर्नुहोस्"</string>
@@ -111,6 +113,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"अतिथि प्रोफाइल सुरु गर्न सकिएन। पछि फेरि प्रयास गर्नुहोस्।"</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"साइन आउट गरिँदै छ…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> को प्रोफाइल साइन आउट गरिँदै छ। पछि फेरि प्रयास गर्नुहोस्।"</string>
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"यी प्रयोगकर्ता हाल उपलब्ध हुनुहुन्न"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"यात्रुको जानकारी देखाइने डिस्प्लेमा \"सुरक्षित प्रयोगकर्ता\" सुरु गर्न सकिएन"</string>
     <string name="seat_driver" msgid="4502591979520445677">"चालकको सिट"</string>
     <string name="seat_front" msgid="836133281052793377">"अगाडिको सिट"</string>
     <string name="seat_rear" msgid="403133444964528577">"पछाडिको सिट"</string>
@@ -130,5 +134,6 @@
     <string name="fullscreen" msgid="7648956467442135844">"फुल स्क्रिन"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"योजनाहरू हेर्नुहोस्"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"तपाईंको इन्टरनेट योजनाको म्याद सकिएको छ"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"यो एप चलाउन इन्टरनेट कनेक्सन चाहिन्छ"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s चलाउन इन्टरनेट कनेक्सन चाहिन्छ"</string>
+    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"यो एप"</string>
 </resources>

@@ -17,11 +17,16 @@
 package com.android.systemui.car.window;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.util.Log;
 
 import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -35,18 +40,23 @@ import javax.inject.Provider;
  * OverlayViewController}(s) to allow for the correct visibility of system bars.
  */
 @SysUISingleton
-public class SystemUIOverlayWindowManager implements CoreStartable {
+public class SystemUIOverlayWindowManager implements CoreStartable,
+        ConfigurationController.ConfigurationListener {
+    private static final boolean DEBUG = Build.isDebuggable();
     private static final String TAG = "SystemUIOverlayWM";
     private final Context mContext;
     private final Map<Class<?>, Provider<OverlayViewMediator>>
             mContentMediatorCreators;
     private final OverlayViewGlobalStateController mOverlayViewGlobalStateController;
+    private boolean mSystemUiOverlayViewsMediatorsStarted = false;
 
     @Inject
     public SystemUIOverlayWindowManager(
             Context context,
             Map<Class<?>, Provider<OverlayViewMediator>> contentMediatorCreators,
-            OverlayViewGlobalStateController overlayViewGlobalStateController) {
+            OverlayViewGlobalStateController overlayViewGlobalStateController,
+            UserTracker userTracker
+    ) {
         mContext = context;
         mContentMediatorCreators = contentMediatorCreators;
         mOverlayViewGlobalStateController = overlayViewGlobalStateController;
@@ -54,13 +64,25 @@ public class SystemUIOverlayWindowManager implements CoreStartable {
 
     @Override
     public void start() {
+        // TODO(b/282070679): ideally resources should be ready in start(), so no need to wait for
+        //  config change.
+        if (!hasPendingConfigChangeForSecondaryUser()) {
+            startInternal();
+        }
+    }
+
+    private void startInternal() {
         String[] names = mContext.getResources().getStringArray(
                 R.array.config_carSystemUIOverlayViewsMediators);
         startServices(names);
+        mSystemUiOverlayViewsMediatorsStarted = true;
     }
 
     private void startServices(String[] services) {
         for (String clsName : services) {
+            if (DEBUG) {
+                Log.d(TAG, "Initialization of " + clsName + "for user: " + mContext.getUserId());
+            }
             long ti = System.currentTimeMillis();
             try {
                 OverlayViewMediator obj = resolveContentMediator(clsName);
@@ -97,5 +119,21 @@ public class SystemUIOverlayWindowManager implements CoreStartable {
         } catch (ClassNotFoundException e) {
             return null;
         }
+    }
+
+    @Override
+    public void onConfigChanged(Configuration newConfig) {
+        if (DEBUG) {
+            Log.d(TAG, "onConfigChanged for user: " + mContext.getUserId());
+        }
+        if (!mSystemUiOverlayViewsMediatorsStarted) {
+            startInternal();
+        }
+    }
+
+    private boolean hasPendingConfigChangeForSecondaryUser() {
+        return mContext.getResources().getBoolean(R.bool.config_enableSecondaryUserRRO) && (
+                CarSystemUIUserUtil.isSecondaryMUMDSystemUI()
+                        || CarSystemUIUserUtil.isMUPANDSystemUI());
     }
 }

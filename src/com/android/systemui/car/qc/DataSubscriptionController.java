@@ -18,6 +18,7 @@ package com.android.systemui.car.qc;
 
 import static android.Manifest.permission.ACCESS_NETWORK_STATE;
 import static android.Manifest.permission.INTERNET;
+import static android.widget.PopupWindow.INPUT_METHOD_NOT_NEEDED;
 
 import android.annotation.Nullable;
 import android.annotation.SuppressLint;
@@ -229,6 +230,7 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
         mPopupWindow = new PopupWindow(mPopupView, width, height, focusable);
         mPopupWindow.setTouchModal(false);
         mPopupWindow.setOutsideTouchable(true);
+        mPopupWindow.setInputMethodMode(INPUT_METHOD_NOT_NEEDED);
         mPopupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

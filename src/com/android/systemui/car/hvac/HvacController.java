@@ -178,6 +178,9 @@ public class HvacController implements HvacPropertySetter,
     }
 
     private int[] getSupportedAreaIds(int propertyId) {
+        if (mCarPropertyManager == null) {
+            return new int[] {};
+        }
         CarPropertyConfig config = mCarPropertyManager.getCarPropertyConfig(propertyId);
         if (config == null) {
             // This property isn't supported/exposed by the CarPropertyManager. So an empty array is
@@ -366,6 +369,10 @@ public class HvacController implements HvacPropertySetter,
      * Unregisters all {@link HvacView}s in the {@code rootView} and its descendents.
      */
     public void unregisterViews(View rootView) {
+        if (!mIsConnectedToCar) {
+            mViewsToInit.remove(rootView);
+            return;
+        }
         if (rootView instanceof HvacView) {
             HvacView hvacView = (HvacView) rootView;
             @HvacProperty Integer propId = hvacView.getHvacPropertyToView();

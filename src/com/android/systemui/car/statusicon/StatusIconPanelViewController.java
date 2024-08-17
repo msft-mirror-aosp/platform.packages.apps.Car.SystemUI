@@ -18,6 +18,7 @@ package com.android.systemui.car.statusicon;
 
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
+import static android.widget.PopupWindow.INPUT_METHOD_NOT_NEEDED;
 
 import android.annotation.DimenRes;
 import android.annotation.LayoutRes;
@@ -362,6 +363,7 @@ public class StatusIconPanelViewController extends ViewController<View> {
         mPanel.setBackgroundDrawable(panelBackgroundDrawable);
         mPanel.setWindowLayoutType(TYPE_SYSTEM_DIALOG);
         mPanel.setFocusable(true);
+        mPanel.setInputMethodMode(INPUT_METHOD_NOT_NEEDED);
         mPanel.setOutsideTouchable(false);
         mPanel.setOnDismissListener(() -> {
             setAnimatedStatusIconHighlightedStatus(false);

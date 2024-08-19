@@ -33,6 +33,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{ഒരു പ്രൊഫൈൽ മാത്രമേ സൃഷ്‌ടിക്കാനാകൂ.}other{നിങ്ങൾക്ക് # പ്രൊഫൈലുകൾ വരെ ചേർക്കാനാകും.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"ലോഡ് ചെയ്യുന്നു"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"ഉപയോക്തൃ പ്രൊഫൈൽ ലോഡ് ചെയ്യുന്നു (<xliff:g id="FROM_USER">%1$d</xliff:g> എന്നതിൽ നിന്ന് <xliff:g id="TO_USER">%2$d</xliff:g> എന്നതിലേക്ക്)"</string>
+    <string name="current_profile_subtitle" msgid="7149515449757434139">"നിലവിലെ പ്രൊഫൈൽ"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> ഓഫാണ്."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g> ഉപയോഗിക്കുക"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"അനുമതിയുള്ള ആപ്പുകൾക്ക്"</string>
@@ -76,6 +77,7 @@
     <string name="status_icon_signal_wifi" msgid="1257569337648058522">"സിഗ്നൽ ക്രമീകരണം: വൈഫൈ ഓണാണ്"</string>
     <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"സിഗ്നൽ ക്രമീകരണം: ഹോട്ട്സ്പോട്ട് ഓണാണ്"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"ഡിസ്‌പ്ലേ ക്രമീകരണം"</string>
+    <string name="status_icon_sound_status" msgid="4923149230650995670">"ശബ്‌ദ ക്രമീകരണം"</string>
     <string name="status_icon_drive_mode" msgid="3938622431486261076">"ഡ്രെെവ് മോഡ്"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"ഡ്രെെവ് ചെയ്യുമ്പോൾ നിങ്ങൾ ഈ ഫീച്ചർ ഉപയോഗിക്കരുത്"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"ആപ്പ് അടയ്‌ക്കുക"</string>
@@ -111,6 +113,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"അതിഥി പ്രൊഫൈൽ ആരംഭിക്കാനാകില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"സൈൻ ഔട്ട് ചെയ്യുന്നു…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> സൈൻ ഔട്ട് ചെയ്‌തു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക."</string>
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"ഉപയോക്താവ് നിലവിൽ ലഭ്യമല്ല"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"പാസഞ്ചർ ഡിസ്‌പ്ലേയിൽ സുരക്ഷിത ഉപയോക്താവിനെ തിരഞ്ഞെടുക്കാനാകുന്നില്ല"</string>
     <string name="seat_driver" msgid="4502591979520445677">"ഡ്രൈവർ"</string>
     <string name="seat_front" msgid="836133281052793377">"മുൻവശം"</string>
     <string name="seat_rear" msgid="403133444964528577">"പിൻഭാഗം"</string>
@@ -130,5 +134,6 @@
     <string name="fullscreen" msgid="7648956467442135844">"പൂർണ്ണ സ്ക്രീൻ"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"പ്ലാനുകൾ കാണുക"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"നിങ്ങളുടെ ഇന്റർനെറ്റ് പ്ലാൻ കാലഹരണപ്പെട്ടു"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"ഈ ആപ്പിന് ഇന്റർനെറ്റ് കണക്ഷൻ ആവശ്യമാണ്"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s എന്നതിന് ഇന്റർനെറ്റ് കണക്ഷൻ ആവശ്യമാണ്"</string>
+    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"ഈ ആപ്പ്"</string>
 </resources>

@@ -18,6 +18,7 @@ package com.android.systemui.car.qc;
 
 import static android.Manifest.permission.ACCESS_NETWORK_STATE;
 import static android.Manifest.permission.INTERNET;
+import static android.widget.PopupWindow.INPUT_METHOD_NOT_NEEDED;
 
 import android.annotation.Nullable;
 import android.annotation.SuppressLint;
@@ -132,6 +133,7 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
 
                 ApplicationInfo appInfo = mContext.getPackageManager().getApplicationInfoAsUser(
                         mTopPackage, 0, mUserTracker.getUserId());
+                mTopLabel = appInfo.loadLabel(mContext.getPackageManager());
                 int uid = appInfo.uid;
                 mConnectivityManager.registerDefaultNetworkCallbackForUid(uid, mNetworkCallback,
                         mMainHandler);
@@ -199,6 +201,7 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
     private boolean mShouldDisplayReactiveMsg;
     private String mTopActivity;
     private String mTopPackage;
+    private CharSequence mTopLabel;
     private NetworkCapabilities mNetworkCapabilities;
     private boolean mIsUxRestrictionsListenerRegistered;
 
@@ -227,6 +230,7 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
         mPopupWindow = new PopupWindow(mPopupView, width, height, focusable);
         mPopupWindow.setTouchModal(false);
         mPopupWindow.setOutsideTouchable(true);
+        mPopupWindow.setInputMethodMode(INPUT_METHOD_NOT_NEEDED);
         mPopupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -316,14 +320,14 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
                         if (mIsProactiveMsg) {
                             popUpPrompt.setText(R.string.data_subscription_proactive_msg_prompt);
                         } else {
-                            popUpPrompt.setText(R.string.data_subscription_reactive_msg_prompt);
+                            popUpPrompt.setText(getReactiveMsg());
                         }
                     }
                     int xOffsetInPx = mContext.getResources().getDimensionPixelSize(
-                            R.dimen.car_quick_controls_entry_points_button_width);
+                            R.dimen.data_subscription_pop_up_horizontal_offset);
                     int yOffsetInPx = mContext.getResources().getDimensionPixelSize(
-                            R.dimen.car_quick_controls_panel_margin);
-                    mPopupWindow.showAsDropDown(mAnchorView, -xOffsetInPx / 2, yOffsetInPx);
+                            R.dimen.data_subscription_pop_up_vertical_offset);
+                    mPopupWindow.showAsDropDown(mAnchorView, -xOffsetInPx, yOffsetInPx);
                     mAnchorView.getHandler().postDelayed(new Runnable() {
 
                         public void run() {
@@ -368,6 +372,15 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
     boolean isSuspendedNetwork() {
         return !mNetworkCapabilities.hasCapability(
                 NetworkCapabilities.NET_CAPABILITY_NOT_SUSPENDED);
+    }
+
+    private CharSequence getReactiveMsg() {
+        return mContext.getString(
+                R.string.data_subscription_reactive_msg_prompt, mTopLabel.isEmpty()
+                ? mContext.getResources().getString(
+                        R.string.data_subscription_reactive_generic_app_label) :
+                        mTopLabel);
+
     }
 
     @Override

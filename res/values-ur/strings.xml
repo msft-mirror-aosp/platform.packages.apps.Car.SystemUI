@@ -33,6 +33,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{صرف ایک پروفائل تخلیق کی جا سکتی ہے۔}other{آپ # تک پروفائلز شامل کر سکتے ہیں۔}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"لوڈ ہو رہی ہے"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"صارف کی نئی پروفائل لوڈ ہو رہی ہے (<xliff:g id="FROM_USER">%1$d</xliff:g> سے <xliff:g id="TO_USER">%2$d</xliff:g> کو)"</string>
+    <string name="current_profile_subtitle" msgid="7149515449757434139">"موجودہ پروفائل"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> آف ہے۔"</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g> استعمال کریں"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"ان ایپس کے لیے جن کو اجازت ہے"</string>
@@ -76,6 +77,7 @@
     <string name="status_icon_signal_wifi" msgid="1257569337648058522">"سگنل کی ترتیبات: Wifi آن ہے"</string>
     <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"سگنل کی ترتیبات: ہاٹ اسپاٹ آن ہے"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"ڈسپلے کی ترتیبات"</string>
+    <string name="status_icon_sound_status" msgid="4923149230650995670">"صوتی ترتیبات"</string>
     <string name="status_icon_drive_mode" msgid="3938622431486261076">"ڈرائیو وضع"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"ڈرائیونگ کے دوران آپ یہ خصوصیت استعمال نہیں کر سکتے"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"ایپ بند کریں"</string>
@@ -111,6 +113,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"مہمان پروفائل شروع نہیں کر سکتے۔ بعد میں دوبارہ کوشش کریں۔"</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"سائن آؤٹ ہو رہا ہے…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> سائن آؤٹ ہو رہا ہے۔ بعد میں دوبارہ کوشش کریں۔"</string>
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"صارف فی الحال دستیاب نہیں ہے"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"مسافر ڈسپلے پر صارف کی محفوظ پروفائل شروع کرنے سے قاصر ہے"</string>
     <string name="seat_driver" msgid="4502591979520445677">"ڈرائیور"</string>
     <string name="seat_front" msgid="836133281052793377">"فرنٹ"</string>
     <string name="seat_rear" msgid="403133444964528577">"پیچھے"</string>
@@ -130,5 +134,6 @@
     <string name="fullscreen" msgid="7648956467442135844">"فُل اسکرین"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"پلانز دیکھیں"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"آپ کے انٹرنیٹ پلان کی میعاد ختم ہو گئی"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"اس ایپ کو انٹرنیٹ کنکشن درکار ہے"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"‫%s کو انٹرنیٹ کنکشن درکار ہے"</string>
+    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"یہ ایپ"</string>
 </resources>

@@ -21,6 +21,7 @@ import static android.app.WindowConfiguration.WINDOWING_MODE_FULLSCREEN;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assume.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.when;
 import android.app.ActivityManager;
 import android.app.ActivityTaskManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.RemoteException;
 import android.testing.AndroidTestingRunner;
@@ -252,6 +254,8 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
 
     @Test
     public void onClick_launchesIntentActivity() {
+        assumeFalse(hasSplitscreenMultitaskingFeature());
+
         mDefaultButton.performClick();
 
         CarSystemBarButton dialerButton = mTestView.findViewById(R.id.dialer_activity);
@@ -263,6 +267,8 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
 
     @Test
     public void onLongClick_longIntentDefined_launchesLongIntentActivity() {
+        assumeFalse(hasSplitscreenMultitaskingFeature());
+
         mDefaultButton.performClick();
         waitForIdleSync();
 
@@ -377,5 +383,13 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
         } catch (RemoteException e) {
             return null;
         }
+    }
+
+    /**
+     * Checks whether the device has automotive split-screen multitasking feature enabled
+     */
+    private boolean hasSplitscreenMultitaskingFeature() {
+        return mContext.getPackageManager()
+            .hasSystemFeature(PackageManager.FEATURE_CAR_SPLITSCREEN_MULTITASKING);
     }
 }

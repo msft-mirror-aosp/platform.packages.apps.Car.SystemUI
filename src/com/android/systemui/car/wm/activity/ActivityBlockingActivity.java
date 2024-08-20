@@ -15,6 +15,8 @@
  */
 package com.android.systemui.car.wm.activity;
 
+import static android.app.WindowConfiguration.WINDOWING_MODE_MULTI_WINDOW;
+
 import static com.android.systemui.car.Flags.configAppBlockingActivities;
 
 import android.app.ActivityManager;
@@ -28,6 +30,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Insets;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
@@ -332,6 +335,17 @@ public class ActivityBlockingActivity extends FragmentActivity {
             ActivityManager.RunningTaskInfo taskInfo = taskInfosTopToBottom.get(i);
             if (taskInfo.displayId != getDisplayId()) {
                 // ignore stacks on other displays
+                continue;
+            }
+
+            // TODO(b/359583186): Remove this check when targets with splitscreen multitasking
+            // feature are moved to DaViews.
+            if (getApplicationContext().getPackageManager().hasSystemFeature(
+                    PackageManager.FEATURE_CAR_SPLITSCREEN_MULTITASKING)
+                    && taskInfo.getWindowingMode() != WINDOWING_MODE_MULTI_WINDOW) {
+                // targets which have splitscreen multitasking feature, can have other visible
+                // tasks such as home which are not blocked. Only consider tasks with multi
+                // window windowing mode.
                 continue;
             }
 

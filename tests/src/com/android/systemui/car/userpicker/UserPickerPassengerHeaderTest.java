@@ -146,6 +146,8 @@ public class UserPickerPassengerHeaderTest extends UserPickerTestCase {
         mHeaderstate.setState(HEADER_STATE_CHANGE_USER);
         mActivityRule.getScenario().onActivity(activity -> {
             activity.setupHeaderBar(mHeaderstate);
+            // clear any previous caches
+            clearInvocations(activity.mAdapter);
             // initial settings
             Configuration origConfiguration = activity.getResources().getConfiguration();
             Configuration newConfiguration = origConfiguration;

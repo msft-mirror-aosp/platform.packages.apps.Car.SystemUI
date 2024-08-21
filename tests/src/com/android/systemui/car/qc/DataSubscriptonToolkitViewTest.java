@@ -60,6 +60,8 @@ public class DataSubscriptonToolkitViewTest extends SysuiTestCase {
     @Mock
     private View mAnchorView;
     @Mock
+    private DataSubscriptionStatsLogHelper mDataSubscriptionStatsLogHelper;
+    @Mock
     private UserTracker mUserTracker;
     @Mock
     private DataSubscriptionViewActionListener mDataSubscriptionViewActionListener;
@@ -77,7 +79,7 @@ public class DataSubscriptonToolkitViewTest extends SysuiTestCase {
         MockitoAnnotations.initMocks(this);
         when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(1000));
         mDataSubscriptionToolkitView = new DataSubscriptionToolkitView(mContext, mUserTracker,
-                mDataSubscriptionMessageCreator);
+            mDataSubscriptionStatsLogHelper, mDataSubscriptionMessageCreator);
         mDataSubscriptionToolkitView.setDataSubscriptionViewActionListener(
                 mDataSubscriptionViewActionListener);
         mDataSubscriptionToolkitView.setPopupWindow(mPopupWindow);

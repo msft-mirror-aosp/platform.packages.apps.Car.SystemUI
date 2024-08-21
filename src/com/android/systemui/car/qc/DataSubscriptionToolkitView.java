@@ -47,6 +47,7 @@ import javax.inject.Inject;
  */
 
 public class DataSubscriptionToolkitView implements DataSubscriptionMessageEventListener {
+    private final DataSubscriptionStatsLogHelper mDataSubscriptionStatsLogHelper;
     private final Context mContext;
     @NonNull
     private PopupWindow mPopupWindow;
@@ -65,9 +66,11 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
     public DataSubscriptionToolkitView(
             Context context,
             UserTracker userTracker,
+            DataSubscriptionStatsLogHelper dataSubscriptionStatsLogHelper,
             DataSubscriptionMessageCreator dataSubscriptionMessageCreator) {
         mContext = context;
         mUserTracker = userTracker;
+        mDataSubscriptionStatsLogHelper = dataSubscriptionStatsLogHelper;
         mListener = new DataSubscriptionController(mContext, dataSubscriptionMessageCreator);
         mIntent = new Intent(DATA_SUBSCRIPTION_ACTION);
         mIntent.setPackage(mContext.getString(
@@ -89,6 +92,7 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
             public boolean onTouch(View v, MotionEvent event) {
                 mPopupWindow.dismiss();
                 mListener.onMessageDismissed();
+                mDataSubscriptionStatsLogHelper.logSessionFinished();
                 return true;
             }
         });
@@ -98,6 +102,7 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
         mExplorationButton.setOnClickListener(v -> {
             mPopupWindow.dismiss();
             mContext.startActivityAsUser(mIntent, mUserTracker.getUserHandle());
+            mDataSubscriptionStatsLogHelper.logButtonClicked();
         });
         mPopUpPrompt = mPopupView.findViewById(R.id.popup_text_view);
         mUxrPrompt = mPopupView.findViewById(R.id.popup_uxr_text_view);
@@ -108,6 +113,7 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
             String proactiveMessage, String uxrPrompt) {
         if (isUxrRequired && mPopupWindow.isShowing()) {
             mPopupWindow.dismiss();
+            mDataSubscriptionStatsLogHelper.logSessionFinished();
             return false;
         }
         if (proactiveMessage != null && !proactiveMessage.isEmpty()
@@ -123,6 +129,7 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
             String uxrPrompt) {
         if (isUxrRequired && mPopupWindow.isShowing()) {
             mPopupWindow.dismiss();
+            mDataSubscriptionStatsLogHelper.logSessionFinished();
             return false;
         }
         if (isUxrRequired) {
@@ -144,6 +151,7 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
     public boolean onUxrChanged(boolean isUxrRequired, String uxrPrompt) {
         if (mIsProactiveMessage && mPopupWindow.isShowing() && isUxrRequired) {
             mPopupWindow.dismiss();
+            mDataSubscriptionStatsLogHelper.logSessionFinished();
             return false;
         }
 
@@ -165,6 +173,15 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
         if (mAnchorView != null) {
             mPopUpPrompt.setText(message);
             mUxrPrompt.setText(uxrPrompt);
+            if (mIsProactiveMessage) {
+                mDataSubscriptionStatsLogHelper.logSessionStarted(
+                        DataSubscriptionStatsLogHelper.DataSubscriptionMessageType
+                            .PROACTIVE);
+            } else {
+                mDataSubscriptionStatsLogHelper.logSessionStarted(
+                        DataSubscriptionStatsLogHelper.DataSubscriptionMessageType
+                            .REACTIVE);
+            }
             int xOffsetInPx = mContext.getResources().getDimensionPixelSize(
                     R.dimen.data_subscription_pop_up_horizontal_offset);
             int yOffsetInPx = mContext.getResources().getDimensionPixelSize(
@@ -178,6 +195,7 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
                         mIsProactiveMessage = false;
                         mPopupWindow.dismiss();
                         mListener.onMessageDismissed();
+                        mDataSubscriptionStatsLogHelper.logSessionFinished();
                     }
                 }, mPopUpTimeOut);
             });

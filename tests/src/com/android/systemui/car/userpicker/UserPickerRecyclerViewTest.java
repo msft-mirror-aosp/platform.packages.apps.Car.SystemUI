@@ -36,6 +36,8 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.userswitcher.UserIconProvider;
+import com.android.systemui.settings.UserTracker;
+import com.android.systemui.tuner.TunerService;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -77,6 +79,9 @@ public class UserPickerRecyclerViewTest extends UserPickerTestCase {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        mDependency.injectMockDependency(TunerService.class);
+        mDependency.injectMockDependency(UserTracker.class);
 
         doReturn(mDriverUserInfo).when(mMockUserManager).getUserInfo(USER_ID_DRIVER);
         doReturn(mFrontUserInfo).when(mMockUserManager).getUserInfo(USER_ID_FRONT);

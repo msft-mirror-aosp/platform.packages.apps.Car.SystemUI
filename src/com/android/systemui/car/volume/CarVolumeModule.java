@@ -17,6 +17,7 @@
 package com.android.systemui.car.volume;
 
 /** Dagger module for code in the car/volume package. */
+
 import android.content.Context;
 
 import com.android.systemui.CoreStartable;
@@ -27,6 +28,7 @@ import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.volume.VolumeComponent;
 import com.android.systemui.volume.VolumeDialogComponent;
+import com.android.systemui.volume.dagger.AudioModule;
 import com.android.systemui.volume.dagger.AudioSharingEmptyImplModule;
 
 import dagger.Binds;
@@ -37,7 +39,12 @@ import dagger.multibindings.IntoMap;
 import dagger.multibindings.IntoSet;
 
 /** Dagger module for code in car/volume. */
-@Module(includes = {AudioSharingEmptyImplModule.class})
+@Module(
+        includes = {
+                AudioSharingEmptyImplModule.class,
+                AudioModule.class,
+        }
+)
 public interface CarVolumeModule {
     /** Starts VolumeUI. */
     @Binds
@@ -50,11 +57,11 @@ public interface CarVolumeModule {
     @IntoSet
     ConfigurationController.ConfigurationListener bindVolumeUIConfigChanges(VolumeUI impl);
 
-    /** */
+    /**  */
     @Binds
     VolumeComponent provideVolumeComponent(VolumeDialogComponent volumeDialogComponent);
 
-    /** */
+    /**  */
     @Provides
     static VolumeDialog provideVolumeDialog(
             Context context,

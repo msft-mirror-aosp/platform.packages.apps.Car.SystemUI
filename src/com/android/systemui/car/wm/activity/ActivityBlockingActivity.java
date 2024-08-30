@@ -40,6 +40,7 @@ import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Slog;
+import android.view.Display;
 import android.view.DisplayInfo;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -242,7 +243,14 @@ public class ActivityBlockingActivity extends FragmentActivity {
         DisplayInfo displayInfo = new DisplayInfo();
 
         int displayId = getDisplayId();
-        displayManager.getDisplay(displayId).getDisplayInfo(displayInfo);
+        Display display = displayManager.getDisplay(displayId);
+        if (display == null) {
+            Slog.e(TAG, "Can't find display handle for : " + displayId);
+            // force close this activity since it has no home
+            finish();
+            return;
+        }
+        display.getDisplayInfo(displayInfo);
 
         Rect windowRect = getAppWindowRect();
 

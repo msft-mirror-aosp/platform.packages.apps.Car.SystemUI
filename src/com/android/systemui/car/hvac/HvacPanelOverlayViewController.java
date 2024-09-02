@@ -117,6 +117,10 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
             return true;
         });
 
+        mHvacPanelView.setMotionEventHandler((event -> {
+            setAutoDismissTimeout();
+        }));
+
         loadCustomAnimators();
     }
 

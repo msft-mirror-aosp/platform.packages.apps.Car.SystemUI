@@ -16,16 +16,24 @@
 
 package com.android.systemui.car.hvac;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.os.Build;
+import android.os.Handler;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
+
+import androidx.annotation.Nullable;
 
 import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
@@ -41,20 +49,35 @@ import javax.inject.Inject;
 @SysUISingleton
 public class HvacPanelOverlayViewController extends OverlayPanelViewController implements
         ConfigurationController.ConfigurationListener {
+    private static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;
+    private static final String TAG = HvacPanelOverlayViewController.class.getName();
 
     private final Context mContext;
     private final Resources mResources;
+    private final Handler mHandler;
     private final HvacController mHvacController;
     private final float mFullyOpenDimAmount;
+    private final int mAutoDismissDurationMs;
 
     private boolean mIsUiModeNight;
     private float mCurrentDimAmount = 0f;
+    @Nullable
+    private Animator mOpenAnimator;
+    @Nullable
+    private Animator mCloseAnimator;
 
     private HvacPanelView mHvacPanelView;
+
+    private final Runnable mAutoDismiss = () -> {
+        if (isPanelExpanded()) {
+            toggle();
+        }
+    };
 
     @Inject
     public HvacPanelOverlayViewController(Context context,
             @Main Resources resources,
+            @Main Handler handler,
             HvacController hvacController,
             OverlayViewGlobalStateController overlayViewGlobalStateController,
             FlingAnimationUtils.Builder flingAnimationUtilsBuilder,
@@ -64,10 +87,11 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
                 flingAnimationUtilsBuilder, carDeviceProvisionedController);
         mContext = context;
         mResources = resources;
+        mHandler = handler;
         mHvacController = hvacController;
         configurationController.addCallback(this);
-        mFullyOpenDimAmount = mContext.getResources().getFloat(
-                R.fraction.hvac_overlay_window_dim_amount);
+        mFullyOpenDimAmount = mResources.getFloat(R.fraction.hvac_overlay_window_dim_amount);
+        mAutoDismissDurationMs = mResources.getInteger(R.integer.config_hvacAutoDismissDurationMs);
     }
 
     @Override
@@ -76,7 +100,7 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
 
         View closeButton = getLayout().findViewById(R.id.hvac_panel_close_button);
         if (closeButton != null) {
-            closeButton.setOnClickListener(v -> toggle());
+            closeButton.setOnClickListener(v -> dismissHvacPanel());
         }
 
         mHvacPanelView = getLayout().findViewById(R.id.hvac_panel);
@@ -88,10 +112,16 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
             }
 
             if (event.getAction() == KeyEvent.ACTION_UP && isPanelExpanded()) {
-                toggle();
+                dismissHvacPanel();
             }
             return true;
         });
+
+        mHvacPanelView.setMotionEventHandler((event -> {
+            setAutoDismissTimeout();
+        }));
+
+        loadCustomAnimators();
     }
 
     @Override
@@ -145,13 +175,13 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
     }
 
     @Override
-    protected void onAnimateCollapsePanel() {
-        // no-op.
+    protected void onAnimateExpandPanel() {
+        setAutoDismissTimeout();
     }
 
     @Override
-    protected void onAnimateExpandPanel() {
-        // no-op.
+    protected void onAnimateCollapsePanel() {
+        removeAutoDismissTimeout();
     }
 
     @Override
@@ -178,7 +208,7 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
         mHvacPanelView.getBoundsInWindow(outBounds, /* clipToParent= */ true);
         if (isPanelExpanded() && (event.getAction() == MotionEvent.ACTION_UP)
                 && isTouchOutside(outBounds, event.getX(), event.getY())) {
-            toggle();
+            dismissHvacPanel();
         }
     }
 
@@ -195,6 +225,57 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
 
     private boolean isTouchOutside(Rect bounds, float x, float y) {
         return x < bounds.left || x > bounds.right || y < bounds.top || y > bounds.bottom;
+    }
+
+    private void dismissHvacPanel() {
+        removeAutoDismissTimeout();
+        mHandler.post(mAutoDismiss);
+    }
+
+    private void setAutoDismissTimeout() {
+        if (mAutoDismissDurationMs > 0) {
+            mHandler.removeCallbacks(mAutoDismiss);
+            mHandler.postDelayed(mAutoDismiss, mAutoDismissDurationMs);
+        }
+    }
+
+    private void removeAutoDismissTimeout() {
+        if (mAutoDismissDurationMs > 0) {
+            mHandler.removeCallbacks(mAutoDismiss);
+        }
+    }
+
+    private void loadCustomAnimators() {
+        try {
+            mOpenAnimator = AnimatorInflater.loadAnimator(mContext, R.anim.hvac_open_anim);
+            mOpenAnimator.setTarget(getLayout());
+        } catch (Resources.NotFoundException e) {
+            if (DEBUG) {
+                Log.d(TAG, "Custom open animator not found - using default");
+            }
+        }
+
+        try {
+            mCloseAnimator = AnimatorInflater.loadAnimator(mContext, R.anim.hvac_close_anim);
+            mCloseAnimator.setTarget(getLayout());
+        } catch (Resources.NotFoundException e) {
+            if (DEBUG) {
+                Log.d(TAG, "Custom close animator not found - using default");
+            }
+        }
+    }
+
+    @Override
+    protected Animator getCustomAnimator(float from, float to, float velocity, boolean isClosing) {
+        Animator animator = isClosing ? mCloseAnimator : mOpenAnimator;
+        if (animator != null) {
+            animator.removeAllListeners();
+            if (animator instanceof ValueAnimator) {
+                ((ValueAnimator) animator).setFloatValues(from, to);
+            }
+        }
+
+        return animator;
     }
 
     @Override

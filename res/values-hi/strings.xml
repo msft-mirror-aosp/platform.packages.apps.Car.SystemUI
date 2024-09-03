@@ -33,6 +33,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{सिर्फ़ एक प्रोफ़ाइल बनाई जा सकती है.}one{ज़्यादा से ज़्यादा # प्रोफ़ाइल जोड़ी जा सकती है.}other{ज़्यादा से ज़्यादा # प्रोफ़ाइलें जोड़ी जा सकती हैं.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"लोड हो रही है"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"उपयोगकर्ता को लोड किया जा रहा है (<xliff:g id="FROM_USER">%1$d</xliff:g> से <xliff:g id="TO_USER">%2$d</xliff:g> पर)"</string>
+    <string name="current_profile_subtitle" msgid="7149515449757434139">"मौजूदा प्रोफ़ाइल"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> बंद है."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g> का इस्तेमाल करें"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"उन ऐप्लिकेशन के लिए जिन्हें अनुमति है"</string>
@@ -112,6 +113,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"मेहमान प्रोफ़ाइल नहीं बनाई जा सकी. कुछ देर बाद कोशिश करें."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"साइन आउट किया जा रहा है…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> को साइन आउट किया जा रहा है. कुछ देर बाद कोशिश करें."</string>
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"फ़िलहाल, उपयोगकर्ता की प्रोफ़ाइल उपलब्ध नहीं है"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"पैसेंजर की डिसप्ले पर, उपयोगकर्ता की सुरक्षित प्रोफ़ाइल को चालू नहीं किया जा सका"</string>
     <string name="seat_driver" msgid="4502591979520445677">"ड्राइवर वाली सीट"</string>
     <string name="seat_front" msgid="836133281052793377">"सामने वाली सीट"</string>
     <string name="seat_rear" msgid="403133444964528577">"पीछे वाली सीट"</string>
@@ -131,5 +134,6 @@
     <string name="fullscreen" msgid="7648956467442135844">"फ़ुल स्क्रीन"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"प्लान देखें"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"आपका इंटरनेट प्लान खत्म हो गया है"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"इस ऐप्लिकेशन को इंटरनेट कनेक्शन की ज़रूरत हैं"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s के लिए इंटरनेट कनेक्शन होना ज़रूरी है"</string>
+    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"यह ऐप्लिकेशन"</string>
 </resources>

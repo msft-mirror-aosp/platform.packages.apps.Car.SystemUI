@@ -59,6 +59,8 @@
     <string name="car_loading_profile">Loading</string>
     <!-- Message to inform user that the new user profile is loading with additional information on the previous and the next user. [CHAR LIMIT=100] -->
     <string name="car_loading_profile_developer_message">Loading user (from <xliff:g id="from_user" example="10">%1$d</xliff:g> to <xliff:g id="to_user" example="12">%2$d</xliff:g>)</string>
+    <!-- Subtitle for current profile in profile switch panel [CHAR LIMIT=20]-->
+    <string name="current_profile_subtitle">Current profile</string>
 
     <!-- Accessibility content description for microphone/camera off state of privacy chip. [CHAR LIMIT=40]-->
     <string name="privacy_chip_off_content"><xliff:g id="sensor" example="Microphone">%1$s</xliff:g> is off.</string>
@@ -282,6 +284,7 @@
     <string name="data_subscription_button_text">See plans</string>
     <!-- Data subscription proactive message prompt-->
     <string name="data_subscription_proactive_msg_prompt">Your internet plan expired</string>
-    <string name="data_subscription_reactive_msg_prompt">This app needs an internet connection</string>
+    <string name="data_subscription_reactive_msg_prompt">%s needs an internet connection</string>
+    <string name="data_subscription_reactive_generic_app_label">This app</string>
 
 </resources>

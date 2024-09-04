@@ -33,6 +33,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Galima sukurti tik vieną profilį.}one{Galite pridėti iki # profilio.}few{Galite pridėti iki # profilių.}many{Galite pridėti iki # profilio.}other{Galite pridėti iki # profilių.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Įkeliama"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Įkeliamas naudotojo profilis (<xliff:g id="FROM_USER">%1$d</xliff:g> – <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
+    <string name="current_profile_subtitle" msgid="7149515449757434139">"Dabartinis profilis"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> – išjungta."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"Naudoti: <xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Programoms, turinčioms leidimą"</string>
@@ -112,10 +113,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"Nepavyko paleisti svečio profilio. Vėliau bandykite dar kartą."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"Atsijungiama…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> atsijungė. Vėliau bandykite dar kartą."</string>
-    <!-- no translation found for unavailable_secure_user_text (6029519754897637674) -->
-    <skip />
-    <!-- no translation found for unavailable_secure_user_message (4358973342428603745) -->
-    <skip />
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Naudotojas šiuo metu nepasiekiamas"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Nepavyko pasiekti saugaus naudotojo keleivio ekrane"</string>
     <string name="seat_driver" msgid="4502591979520445677">"vairuotojas"</string>
     <string name="seat_front" msgid="836133281052793377">"priekis"</string>
     <string name="seat_rear" msgid="403133444964528577">"galas"</string>
@@ -135,5 +134,6 @@
     <string name="fullscreen" msgid="7648956467442135844">"Visas ekranas"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Peržiūrėti planus"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Jūsų interneto planas nebegalioja"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"Šiai programai reikalingas interneto ryšys"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s reikalingas interneto ryšys"</string>
+    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"Šiai programai"</string>
 </resources>

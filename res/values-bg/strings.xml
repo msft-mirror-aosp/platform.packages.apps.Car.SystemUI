@@ -33,6 +33,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Може да бъде създаден само един потребителски профил.}other{Можете да добавите до # потребителски профила.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Зарежда се"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Потребителят се зарежда (от <xliff:g id="FROM_USER">%1$d</xliff:g> до <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
+    <string name="current_profile_subtitle" msgid="7149515449757434139">"Текущ потр. профил"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> е изкл."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"Използване на <xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"За приложения, които имат разрешение"</string>
@@ -133,5 +134,6 @@
     <string name="fullscreen" msgid="7648956467442135844">"Цял екран"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Вижте плановете"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Планът ви за интернет е изтекъл"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"За това приложение е необходима връзка с интернет"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s се нуждае от връзка с интернет"</string>
+    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"Това приложение"</string>
 </resources>

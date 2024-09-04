@@ -16,20 +16,38 @@
 
 package com.android.systemui.car.systembar;
 
+import android.annotation.Nullable;
 import android.content.Context;
 import android.content.res.Resources;
+import android.view.WindowManager;
 
+import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
+import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
+import com.android.systemui.car.displaycompat.ToolbarController;
+import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.dagger.qualifiers.UiBackground;
+import com.android.systemui.plugins.DarkIconDispatcher;
+import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.CommandQueue;
+import com.android.systemui.statusbar.phone.AutoHideController;
+import com.android.systemui.statusbar.phone.LightBarController;
+import com.android.systemui.statusbar.phone.PhoneStatusBarPolicy;
+import com.android.systemui.statusbar.phone.StatusBarSignalPolicy;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
+import com.android.systemui.statusbar.policy.KeyguardStateController;
+import com.android.systemui.util.concurrency.DelayableExecutor;
+import com.android.systemui.wm.MDSystemBarsController;
 
 import dagger.Binds;
 import dagger.BindsOptionalOf;
@@ -43,6 +61,7 @@ import dagger.multibindings.Multibinds;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executor;
 
 import javax.inject.Provider;
 
@@ -78,7 +97,7 @@ public abstract class CarSystemBarModule {
     @Provides
     @IntoSet
     static ConfigurationListener provideCarSystemBarConfigListener(
-            Lazy<CarSystemBar> systemBarService,
+            Lazy<CarSystemBarController> systemBarController,
             Lazy<CarSystemBarMediator> applyRROService,
             @Main Resources resources) {
         if ((CarSystemUIUserUtil.isSecondaryMUMDSystemUI()
@@ -86,7 +105,7 @@ public abstract class CarSystemBarModule {
                 && resources.getBoolean(R.bool.config_enableSecondaryUserRRO)) {
             return applyRROService.get();
         }
-        return systemBarService.get();
+        return systemBarController.get();
     }
 
     @BindsOptionalOf
@@ -141,14 +160,39 @@ public abstract class CarSystemBarModule {
             Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
             ButtonRoleHolderController buttonRoleHolderController,
             SystemBarConfigs systemBarConfigs,
-            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider) {
+            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider,
+            // TODO(b/156052638): Should not need to inject LightBarController
+            LightBarController lightBarController,
+            DarkIconDispatcher darkIconDispatcher,
+            WindowManager windowManager,
+            CarDeviceProvisionedController deviceProvisionedController,
+            CommandQueue commandQueue,
+            AutoHideController autoHideController,
+            ButtonSelectionStateListener buttonSelectionStateListener,
+            @Main DelayableExecutor mainExecutor,
+            @UiBackground Executor uiBgExecutor,
+            IStatusBarService barService,
+            Lazy<KeyguardStateController> keyguardStateControllerLazy,
+            Lazy<PhoneStatusBarPolicy> iconPolicyLazy,
+            HvacController hvacController,
+            StatusBarSignalPolicy signalPolicy,
+            ConfigurationController configurationController,
+            CarSystemBarRestartTracker restartTracker,
+            DisplayTracker displayTracker,
+            Optional<MDSystemBarsController> mdSystemBarsController,
+            @Nullable ToolbarController toolbarController) {
         if (carSystemBarController.isPresent()) {
             return carSystemBarController.get();
         }
         return new CarSystemBarController(context, userTracker, carSystemBarViewFactory,
                 buttonSelectionStateController, userNameViewControllerLazy,
                 micPrivacyChipViewControllerLazy, cameraPrivacyChipViewControllerLazy,
-                buttonRoleHolderController, systemBarConfigs, panelControllerBuilderProvider);
+                buttonRoleHolderController, systemBarConfigs, panelControllerBuilderProvider,
+                lightBarController, darkIconDispatcher, windowManager, deviceProvisionedController,
+                commandQueue, autoHideController, buttonSelectionStateListener, mainExecutor,
+                uiBgExecutor, barService, keyguardStateControllerLazy, iconPolicyLazy,
+                hvacController, signalPolicy, configurationController, restartTracker,
+                displayTracker, mdSystemBarsController, toolbarController);
     }
 
     // CarSystemBarElements

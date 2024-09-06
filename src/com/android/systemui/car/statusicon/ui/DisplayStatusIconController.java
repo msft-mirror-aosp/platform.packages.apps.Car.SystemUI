@@ -21,21 +21,31 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import com.android.systemui.R;
-import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.statusicon.StatusIconViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.dagger.qualifiers.Main;
 
-import javax.inject.Inject;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * A controller for Display status icon.
  */
-public class DisplayStatusIconController extends StatusIconController {
+public class DisplayStatusIconController extends StatusIconViewController {
 
     private final Drawable mDisplayBrightnessDrawable;
-    private String mDisplayBrightnessContentDescription;
+    private final String mDisplayBrightnessContentDescription;
 
-    @Inject
-    DisplayStatusIconController(Context context, @Main Resources resources) {
+    @AssistedInject
+    DisplayStatusIconController(
+            @Assisted StatusIconView view,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
+            Context context, @Main Resources resources) {
+        super(view, disableController, stateController);
         mDisplayBrightnessDrawable = resources.getDrawable(R.drawable.car_ic_brightness,
                 context.getTheme());
         mDisplayBrightnessContentDescription = resources.getString(
@@ -43,20 +53,15 @@ public class DisplayStatusIconController extends StatusIconController {
         updateStatus();
     }
 
+    @AssistedFactory
+    public interface Factory extends
+            StatusIconViewController.Factory<DisplayStatusIconController> {
+    }
+
     @Override
     protected void updateStatus() {
         setIconDrawableToDisplay(mDisplayBrightnessDrawable);
         setIconContentDescription(mDisplayBrightnessContentDescription);
         onStatusUpdated();
-    }
-
-    @Override
-    protected int getPanelContentLayout() {
-        return R.layout.qc_display_panel;
-    }
-
-    @Override
-    protected int getId() {
-        return R.id.qc_display_status_icon;
     }
 }

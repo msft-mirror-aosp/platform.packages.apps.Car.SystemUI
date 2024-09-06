@@ -31,13 +31,11 @@
         android:layout_weight="1"
         android:layoutDirection="ltr">
 
-        <LinearLayout
-            android:id="@+id/qc_entry_points_container"
+        <include layout="@layout/qc_status_icons_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_alignParentStart="true"
-            />
+            android:layout_alignParentStart="true" />
 
         <FrameLayout
             android:id="@+id/clock_container"
@@ -86,13 +84,13 @@
             </LinearLayout>
         </com.android.systemui.car.systembar.CarSystemBarButton>
 
-        <include layout="@layout/camera_privacy_chip_dock"
+        <include layout="@layout/camera_privacy_chip"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/mic_privacy_chip" />
 
-        <include layout="@layout/mic_privacy_chip_dock"
+        <include layout="@layout/mic_privacy_chip"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerVertical="true"

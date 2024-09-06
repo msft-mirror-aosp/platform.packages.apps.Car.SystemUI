@@ -59,7 +59,7 @@
             android:id="@+id/driver_hvac"
             style="@style/TemperatureControlView"
             systemui:hvacAreaId="49">
-            <include layout="@layout/adjustable_temperature_view_dock"/>
+            <include layout="@layout/adjustable_temperature_view"/>
         </com.android.systemui.car.hvac.TemperatureControlView>
 
         <Space
@@ -77,11 +77,16 @@
             systemui:intent="@string/system_bar_app_drawer_intent"
             systemui:clearBackStack="true"/>
 
-        <com.android.car.docklib.view.DockView
-            android:id="@+id/dock"
+        <com.android.systemui.car.systembar.element.layout.CarSystemBarFrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="@dimen/dock_container_margin" />
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dock_container_margin"
+            systemui:controller="com.android.systemui.car.systembar.DockViewControllerWrapper">
+            <com.android.car.docklib.view.DockView
+                android:id="@+id/dock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </com.android.systemui.car.systembar.element.layout.CarSystemBarFrameLayout>
 
         <com.android.systemui.car.systembar.AssistantButton
             android:id="@+id/assistant"
@@ -99,7 +104,7 @@
             android:id="@+id/passenger_hvac"
             style="@style/TemperatureControlView"
             systemui:hvacAreaId="68">
-            <include layout="@layout/adjustable_temperature_view_dock"/>
+            <include layout="@layout/adjustable_temperature_view"/>
         </com.android.systemui.car.hvac.TemperatureControlView>
 
         <Space

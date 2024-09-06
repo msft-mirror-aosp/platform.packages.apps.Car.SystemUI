@@ -68,9 +68,9 @@ import com.android.systemui.statusbar.phone.AutoHideController;
 import com.android.systemui.statusbar.phone.LightBarController;
 import com.android.systemui.statusbar.phone.LightBarTransitionsController;
 import com.android.systemui.statusbar.phone.PhoneStatusBarPolicy;
-import com.android.systemui.statusbar.phone.StatusBarIconController;
 import com.android.systemui.statusbar.phone.StatusBarSignalPolicy;
 import com.android.systemui.statusbar.phone.SysuiDarkIconDispatcher;
+import com.android.systemui.statusbar.phone.ui.StatusBarIconController;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.util.concurrency.FakeExecutor;
@@ -476,22 +476,6 @@ public class CarSystemBarTest extends SysuiTestCase {
         inOrder.verify(mockProfilePickerView).callOnClick();
         inOrder.verify(mockTopBarView).findViewById(R.id.user_name);
         inOrder.verify(mockProfilePickerView).callOnClick();
-    }
-
-    @Test
-    public void onConfigChanged_callQuickControlsOnClickFromClassName_forSelectedQuickControl() {
-        String clsName = "testClsName";
-        Configuration config = new Configuration();
-        config.uiMode = mContext.getResources().getConfiguration().isNightModeActive()
-                ? Configuration.UI_MODE_NIGHT_NO : Configuration.UI_MODE_NIGHT_YES;
-        when(mCarSystemBarController.getSelectedQuickControlsClassName()).thenReturn(clsName);
-        initCarSystemBar();
-
-        mCarSystemBar.start();
-        mCarSystemBar.onConfigChanged(config);
-
-        verify(mCarSystemBarController, times(2))
-                .callQuickControlsOnClickFromClassName(clsName);
     }
 
     @Test

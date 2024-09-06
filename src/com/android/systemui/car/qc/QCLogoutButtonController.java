@@ -179,7 +179,7 @@ public class QCLogoutButtonController extends QCFooterViewController {
                 try {
                     // Use stopUserWithDelayedLocking instead of stopUser
                     // to make the call more efficient.
-                    am.stopUserWithDelayedLocking(userId, /* force= */ false, /* callback= */ null);
+                    am.stopUserWithDelayedLocking(userId, /* callback= */ null);
                 } catch (RemoteException e) {
                     Log.e(TAG, "Cannot stop user " + userId);
                     return;

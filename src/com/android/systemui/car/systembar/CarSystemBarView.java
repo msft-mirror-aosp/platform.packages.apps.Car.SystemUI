@@ -34,7 +34,6 @@ import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.hvac.HvacView;
 import com.android.systemui.car.hvac.TemperatureControlView;
 import com.android.systemui.car.notification.NotificationPanelViewController;
-import com.android.systemui.car.statusicon.ui.QuickControlsEntryPointsController;
 import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
 import com.android.systemui.car.systembar.CarSystemBarController.NotificationsShadeController;
 import com.android.systemui.settings.UserTracker;
@@ -75,7 +74,6 @@ public class CarSystemBarView extends LinearLayout {
     private HvacPanelController mHvacPanelController;
     private View mLockScreenButtons;
     private View mOcclusionButtons;
-    private ViewGroup mQcEntryPointsContainer;
     // used to wire in open/close gestures for overlay panels
     private Set<OnTouchListener> mStatusBarWindowTouchListeners;
     private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
@@ -100,7 +98,6 @@ public class CarSystemBarView extends LinearLayout {
         mHvacButton = findViewById(R.id.hvac);
         mDriverHvacView = findViewById(R.id.driver_hvac);
         mPassengerHvacView = findViewById(R.id.passenger_hvac);
-        mQcEntryPointsContainer = findViewById(R.id.qc_entry_points_container);
         mControlCenterButton = findViewById(R.id.control_center_nav);
         if (mNotificationsButton != null) {
             mNotificationsButton.setOnClickListener(this::onNotificationsClick);
@@ -138,14 +135,6 @@ public class CarSystemBarView extends LinearLayout {
                 ((TemperatureControlView) mPassengerHvacView).setTemperatureTextClickListener(
                         this::onHvacClick);
             }
-        }
-    }
-
-    void setupQuickControlsEntryPoints(
-            QuickControlsEntryPointsController quickControlsEntryPointsController,
-            boolean isSetUp) {
-        if (mQcEntryPointsContainer != null) {
-            quickControlsEntryPointsController.addIconViews(mQcEntryPointsContainer, isSetUp);
         }
     }
 

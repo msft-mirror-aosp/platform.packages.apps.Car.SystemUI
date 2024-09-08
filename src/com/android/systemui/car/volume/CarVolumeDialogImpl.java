@@ -78,6 +78,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.plugins.VolumeDialog;
+import com.android.systemui.plugins.VolumeDialogController;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.volume.Events;
@@ -123,6 +124,7 @@ public class CarVolumeDialogImpl
     private final int mExpNormalTimeout;
     private final int mExpHoveringTimeout;
     private final CarServiceProvider mCarServiceProvider;
+    private final VolumeDialogController mController;
     private final ConfigurationController mConfigurationController;
     private final UserTracker mUserTracker;
     private final UiModeManager mUiModeManager;
@@ -278,6 +280,7 @@ public class CarVolumeDialogImpl
     public CarVolumeDialogImpl(
             Context context,
             CarServiceProvider carServiceProvider,
+            VolumeDialogController volumeDialogController,
             ConfigurationController configurationController,
             UserTracker userTracker) {
         mContext = context;
@@ -292,6 +295,7 @@ public class CarVolumeDialogImpl
                 R.integer.car_volume_dialog_display_expanded_normal_timeout);
         mExpHoveringTimeout = mContext.getResources().getInteger(
                 R.integer.car_volume_dialog_display_expanded_hovering_timeout);
+        mController = volumeDialogController;
         mConfigurationController = configurationController;
         mUiModeManager = mContext.getSystemService(UiModeManager.class);
         mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
@@ -340,6 +344,7 @@ public class CarVolumeDialogImpl
 
     @Override
     public void destroy() {
+        mController.notifyVisible(false);
         mHandler.removeCallbacksAndMessages(/* token= */ null);
 
         mUserTracker.removeCallback(mUserTrackerCallback);
@@ -474,6 +479,7 @@ public class CarVolumeDialogImpl
         clearAllAndSetupDefaultCarVolumeLineItem(mCurrentlyDisplayingGroupId);
         mDismissing = false;
         mDialog.show();
+        mController.notifyVisible(true);
         Events.writeEvent(Events.EVENT_SHOW_DIALOG, reason, mKeyguard.isKeyguardLocked());
     }
 

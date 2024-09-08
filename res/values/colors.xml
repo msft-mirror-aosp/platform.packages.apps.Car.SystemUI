@@ -163,6 +163,6 @@
     <color name="car_qc_unseen_indicator_color">@color/car_yellow_color</color>
 
     <!-- Color for data subscription popup.-->
-    <color name="qc_pop_up_color">#66B5FF</color>
-    <color name="qc_pop_up_text_color">@android:color/black</color>
+    <color name="qc_pop_up_color">@color/car_surface_2</color>
+    <color name="qc_pop_up_text_color">@color/car_on_surface</color>
 </resources>

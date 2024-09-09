@@ -85,4 +85,10 @@ public abstract class QuickControlsEntryPointsModule {
     public abstract StatusIconController bindQuickControlsStatusIconListController(
             QuickControlsStatusIconListController quickControlsStatusIconListController);
 
+    /** Injects DisplayStatusIconController. */
+    @Binds
+    @IntoMap
+    @ClassKey(DebugStatusIconController.class)
+    public abstract StatusIconController bindDebugStatusIconController(
+            DebugStatusIconController debugStatusIconController);
 }

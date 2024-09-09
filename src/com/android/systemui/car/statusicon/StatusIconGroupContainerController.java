@@ -259,5 +259,4 @@ public abstract class StatusIconGroupContainerController {
     public void setStatusIconViewClassMap(Map<String, View> statusIconViewClassMap) {
         mStatusIconViewClassMap = statusIconViewClassMap;
     }
-
 }

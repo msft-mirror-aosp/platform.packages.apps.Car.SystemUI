@@ -78,7 +78,8 @@ public class BlockerViewModelTest extends SysuiTestCase {
     public void setup() {
         MockitoAnnotations.initMocks(/* testClass= */ this);
         mInCallServiceManager = new InCallServiceManager();
-        mBlockerViewModel = new BlockerViewModel(mContext, mInCallServiceManager);
+        mBlockerViewModel = new BlockerViewModel(mContext, mInCallServiceManager,
+                mMediaSessionHelper);
         mBlockingLiveData = mBlockerViewModel.getBlockingTypeLiveData();
     }
 
@@ -165,9 +166,8 @@ public class BlockerViewModelTest extends SysuiTestCase {
     }
 
     private void initializeViewModel() {
+        when(mMediaSessionHelper.getActiveMediaSessions()).thenReturn(mMediaLiveData);
         mBlockerViewModel.initialize(BLOCKED_ACTIVITY, UserHandle.CURRENT);
         mBlockerViewModel.mInCallLiveData = mInCallLiveData;
-        mBlockerViewModel.mMediaSessionHelper = mMediaSessionHelper;
-        when(mMediaSessionHelper.getActiveMediaSessions()).thenReturn(mMediaLiveData);
     }
 }

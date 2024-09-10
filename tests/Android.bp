@@ -40,9 +40,9 @@ android_test {
         "libstaticjvmtiagent",
     ],
     libs: [
-        "android.test.runner",
+        "android.test.runner.stubs.system",
         "telephony-common",
-        "android.test.base",
+        "android.test.base.stubs.system",
     ],
     aaptflags: [
         "--extra-packages com.android.systemui",
@@ -52,4 +52,7 @@ android_test {
 
     // TODO(b/319708040): re-enable use_resource_processor
     use_resource_processor: false,
+
+    additional_manifests: ["AndroidManifest.xml"],
+    manifest: "AndroidManifest-base.xml",
 }

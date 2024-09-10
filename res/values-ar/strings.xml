@@ -33,6 +33,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{يمكنك إنشاء ملف شخصي واحد فقط.}zero{يمكنك إضافة # ملف شخصي كحد أقصى.}two{يمكنك إضافة ملفين شخصيين كحد أقصى.}few{يمكنك إضافة # ملفات شخصية كحد أقصى.}many{يمكنك إضافة # ملفًا شخصيًا كحد أقصى.}other{يمكنك إضافة # ملف شخصي كحد أقصى.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"جارٍ التحميل"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"جارٍ تحميل الملف الشخصي الجديد للمستخدم (من <xliff:g id="FROM_USER">%1$d</xliff:g> إلى <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
+    <string name="current_profile_subtitle" msgid="7149515449757434139">"الملف الشخصي الحالي"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"تم إيقاف ميزة <xliff:g id="SENSOR">%1$s</xliff:g>."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"استخدام <xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"للتطبيقات التي حصلت على الإذن"</string>
@@ -112,10 +113,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"يتعذّر بدء استخدام الملف الشخصي للضيف. يُرجى إعادة المحاولة لاحقًا."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"جارٍ تسجيل الخروج…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"يتم الآن تسجيل خروج \"<xliff:g id="USER_NAME">%s</xliff:g>\". يُرجى إعادة المحاولة لاحقًا."</string>
-    <!-- no translation found for unavailable_secure_user_text (6029519754897637674) -->
-    <skip />
-    <!-- no translation found for unavailable_secure_user_message (4358973342428603745) -->
-    <skip />
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"المستخدم غير متاح حاليًا"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"يتعذّر بدء تشغيل مستخدم آمن على شاشة الراكب"</string>
     <string name="seat_driver" msgid="4502591979520445677">"السائق"</string>
     <string name="seat_front" msgid="836133281052793377">"المقعد الأمامي"</string>
     <string name="seat_rear" msgid="403133444964528577">"المقعد الخلفي"</string>
@@ -135,5 +134,6 @@
     <string name="fullscreen" msgid="7648956467442135844">"ملء الشاشة"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"الاطّلاع على الخطط"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"انتهت صلاحية خطط الإنترنت الخاصة بك"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"يحتاج هذا التطبيق إلى اتصال بالإنترنت"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"يحتاج %s إلى الاتصال بالإنترنت"</string>
+    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"هذا التطبيق"</string>
 </resources>

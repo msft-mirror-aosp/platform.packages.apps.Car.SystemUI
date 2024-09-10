@@ -39,10 +39,12 @@ android_library {
         "SettingsLib",
         "car-admin-ui-lib",
         "car-helper-lib",
+        "car-telephony-common-no-overlayable",
         "car-ui-lib-no-overlayable",
         "car-qc-lib",
         "car-resource-common",
         "com_android_systemui_car_flags_lib",
+        "androidx.annotation_annotation",
         "androidx.legacy_legacy-support-v4",
         "androidx.recyclerview_recyclerview",
         "androidx.preference_preference",
@@ -55,14 +57,16 @@ android_library {
         "androidx.slice_slice-view",
         "androidx.slice_slice-builders",
         "androidx.arch.core_core-runtime",
+        "androidx.lifecycle_lifecycle-common-java8",
         "androidx.lifecycle_lifecycle-extensions",
         "SystemUI-tags",
         "SystemUI-proto",
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
-        "animationlib",
+        "//frameworks/libs/systemui:animationlib",
         "CarDockLib",
         "androidx.test.rules",
+        "car-data-subscription-lib",
     ],
 
     libs: [
@@ -116,9 +120,11 @@ android_library {
         "androidx.slice_slice-view",
         "androidx.slice_slice-builders",
         "androidx.arch.core_core-runtime",
+        "androidx.lifecycle_lifecycle-common-java8",
         "androidx.lifecycle_lifecycle-extensions",
         "car-admin-ui-lib",
         "car-helper-lib",
+        "car-telephony-common-no-overlayable",
         "car-ui-lib-no-overlayable",
         "car-qc-lib",
         "car-resource-common",
@@ -129,12 +135,15 @@ android_library {
         "androidx.test.rules",
         "hamcrest-library",
         "mockito-target-extended-minus-junit4",
+        "flag-junit",
         "testables",
         "truth",
         "testng",
         "dagger2",
         "//external/kotlinc:kotlin-annotations",
         "CarDockLib",
+        "car-data-subscription-lib",
+
     ],
     libs: [
         "android.test.runner",
@@ -212,4 +221,26 @@ android_app {
 
     // TODO(b/319708040): re-enable use_resource_processor
     use_resource_processor: false,
+}
+
+// Resource lib
+// To be used ONLY for RROs of CarSystemUI
+android_library {
+    name: "CarSystemUI-res",
+    sdk_version: "system_current",
+    resource_dirs: [
+        "res-keyguard",
+        "res",
+    ],
+    manifest: "AndroidManifest-res.xml",
+    use_resource_processor: true,
+    static_libs: [
+        "SystemUI-res",
+        "CarNotification-res",
+        "car-resource-common",
+        "car-ui-lib-no-overlayable",
+    ],
+    lint: {
+        disabled_checks: ["MissingClass"],
+    },
 }

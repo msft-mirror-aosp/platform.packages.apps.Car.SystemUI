@@ -52,6 +52,8 @@ public class CarSystemBarPanelButtonView extends LinearLayout implements CarSyst
     @Nullable
     private Boolean mDisabledWhileDriving;
     @Nullable
+    private Boolean mDisabledWhileUnprovisioned;
+    @Nullable
     private Boolean mShowAsDropDown;
 
     public CarSystemBarPanelButtonView(Context context) {
@@ -107,6 +109,10 @@ public class CarSystemBarPanelButtonView extends LinearLayout implements CarSyst
                 typedArray.hasValue(R.styleable.CarSystemBarPanelButtonView_disabledWhileDriving)
                         ? typedArray.getBoolean(
                         R.styleable.CarSystemBarPanelButtonView_disabledWhileDriving, false) : null;
+        mDisabledWhileUnprovisioned = typedArray.hasValue(
+                R.styleable.CarSystemBarPanelButtonView_disabledWhileUnprovisioned)
+                ? typedArray.getBoolean(
+                R.styleable.CarSystemBarPanelButtonView_disabledWhileUnprovisioned, false) : null;
         mShowAsDropDown =
                 typedArray.hasValue(R.styleable.CarSystemBarPanelButtonView_showAsDropDown)
                         ? typedArray.getBoolean(
@@ -143,6 +149,11 @@ public class CarSystemBarPanelButtonView extends LinearLayout implements CarSyst
     @Nullable
     public Boolean getDisabledWhileDriving() {
         return mDisabledWhileDriving;
+    }
+
+    @Nullable
+    public Boolean getDisabledWhileUnprovisioned() {
+        return mDisabledWhileUnprovisioned;
     }
 
     @Nullable

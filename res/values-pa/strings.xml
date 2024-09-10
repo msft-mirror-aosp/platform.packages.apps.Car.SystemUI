@@ -45,7 +45,7 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ਠੀਕ ਹੈ"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"ਕੀ ਵਾਹਨ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?"</string>
-    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"ਜਾਰੀ ਰੱਖਣ ਲਈ, ਵਾਹਨ ਆਡੀਓ ਸਿਸਟਮ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨੂੰ ਚਾਲੂ ਕਰੋ। ਇਹ ਇਜਾਜ਼ਤ ਵਾਲੀਆਂ ਸਾਰੀਆਂ ਐਪਾਂ ਲਈ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨੂੰ ਚਾਲੂ ਕਰ ਦੇਵੇਗਾ।"</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"ਜਾਰੀ ਰੱਖਣ ਲਈ, ਇੰਫ਼ੋਟੇਨਮੈਂਟ ਸਿਸਟਮ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨੂੰ ਚਾਲੂ ਕਰੋ। ਇਹ ਇਜਾਜ਼ਤ ਵਾਲੀਆਂ ਸਾਰੀਆਂ ਐਪਾਂ ਲਈ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨੂੰ ਚਾਲੂ ਕਰ ਦੇਵੇਗਾ।"</string>
     <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"<xliff:g id="APP">%s</xliff:g> ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੀ ਹੈ"</string>
     <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"<xliff:g id="APP_LIST">%s</xliff:g> ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੀਆਂ ਹਨ"</string>
     <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"<xliff:g id="APP">%s</xliff:g> ਨੇ ਹਾਲ ਹੀ ਵਿੱਚ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕੀਤੀ"</string>
@@ -54,7 +54,7 @@
     <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"ਕੈਮਰਾ ਬੰਦ ਕੀਤਾ ਗਿਆ"</string>
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"ਠੀਕ ਹੈ"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"ਕੀ ਵਾਹਨ ਦਾ ਕੈਮਰਾ ਚਾਲੂ ਕਰਨਾ ਹੈ?"</string>
-    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"ਜਾਰੀ ਰੱਖਣ ਲਈ, ਵਾਹਨ ਆਡੀਓ ਸਿਸਟਮ ਦੇ ਕੈਮਰੇ ਨੂੰ ਚਾਲੂ ਕਰੋ। ਇਹ ਇਜਾਜ਼ਤ ਵਾਲੀਆਂ ਸਾਰੀਆਂ ਐਪਾਂ ਲਈ ਕੈਮਰੇ ਨੂੰ ਚਾਲੂ ਕਰ ਦੇਵੇਗਾ।"</string>
+    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"ਜਾਰੀ ਰੱਖਣ ਲਈ, ਇੰਫ਼ੋਟੇਨਮੈਂਟ ਸਿਸਟਮ ਦੇ ਕੈਮਰੇ ਨੂੰ ਚਾਲੂ ਕਰੋ। ਇਹ ਇਜਾਜ਼ਤ ਵਾਲੀਆਂ ਸਾਰੀਆਂ ਐਪਾਂ ਲਈ ਕੈਮਰੇ ਨੂੰ ਚਾਲੂ ਕਰ ਦੇਵੇਗਾ।"</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"ਹੋਮ ਸਕ੍ਰੀਨ"</string>
     <string name="system_bar_phone_label" msgid="5664288201806823777">"ਫ਼ੋਨ"</string>
     <string name="system_bar_applications_label" msgid="7081862804211786227">"ਐਪਲੀਕੇਸ਼ਨਾਂ"</string>
@@ -128,4 +128,7 @@
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
     <string name="back_btn" msgid="7774349944465667391">"ਪਿੱਛੇ"</string>
     <string name="fullscreen" msgid="7648956467442135844">"ਪੂਰੀ ਸਕ੍ਰੀਨ"</string>
+    <string name="data_subscription_button_text" msgid="6595983827855035949">"ਪਲਾਨ ਦੇਖੋ"</string>
+    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"ਤੁਹਾਡੇ ਇੰਟਰਨੈੱਟ ਪਲਾਨ ਦੀ ਮਿਆਦ ਸਮਾਪਤ ਹੋ ਗਈ ਹੈ"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"ਇਸ ਐਪ ਲਈ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਲੋੜ ਹੈ"</string>
 </resources>

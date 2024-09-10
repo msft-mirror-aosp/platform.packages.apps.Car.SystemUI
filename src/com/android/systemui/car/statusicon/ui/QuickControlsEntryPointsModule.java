@@ -16,7 +16,7 @@
 
 package com.android.systemui.car.statusicon.ui;
 
-import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.car.statusicon.StatusIconViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 
 import dagger.Binds;
@@ -25,7 +25,7 @@ import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
 
 /**
- * Dagger injection module for {@link QuickControlsEntryPointsController}
+ * Dagger injection module for {@link StatusIconViewController}
  */
 @Module
 public abstract class QuickControlsEntryPointsModule {
@@ -34,22 +34,22 @@ public abstract class QuickControlsEntryPointsModule {
     @Binds
     @IntoMap
     @ClassKey(BluetoothStatusIconController.class)
-    public abstract StatusIconController bindBluetoothStatusIconController(
-            BluetoothStatusIconController bluetoothStatusIconController);
+    public abstract CarSystemBarElementController.Factory bindBluetoothStatusIconController(
+            BluetoothStatusIconController.Factory bluetoothStatusIconController);
 
     /** Injects SignalStatusIconController. */
     @Binds
     @IntoMap
     @ClassKey(SignalStatusIconController.class)
-    public abstract StatusIconController bindSignalStatusIconController(
-            SignalStatusIconController signalStatusIconController);
+    public abstract CarSystemBarElementController.Factory bindSignalStatusIconController(
+            SignalStatusIconController.Factory signalStatusIconController);
 
     /** Injects DisplayStatusIconController. */
     @Binds
     @IntoMap
     @ClassKey(DisplayStatusIconController.class)
-    public abstract StatusIconController bindDisplayStatusIconController(
-            DisplayStatusIconController displayStatusIconController);
+    public abstract CarSystemBarElementController.Factory bindDisplayStatusIconController(
+            DisplayStatusIconController.Factory displayStatusIconController);
 
     /** Injects LocationStatusIconController. */
     @Binds
@@ -69,21 +69,13 @@ public abstract class QuickControlsEntryPointsModule {
     @Binds
     @IntoMap
     @ClassKey(DriveModeStatusIconController.class)
-    public abstract StatusIconController bindDriveModeStatusIconController(
-            DriveModeStatusIconController driveModeStatusIconController);
+    public abstract CarSystemBarElementController.Factory bindDriveModeStatusIconController(
+            DriveModeStatusIconController.Factory driveModeStatusIconController);
 
     /** Injects MediaVolumeStatusIconController. */
     @Binds
     @IntoMap
     @ClassKey(MediaVolumeStatusIconController.class)
-    public abstract StatusIconController bindMediaVolumeStatusIconController(
-            MediaVolumeStatusIconController mediaVolumeStatusIconController);
-
-    /** Injects QuickControlsStatusIconListController. */
-    @Binds
-    @IntoMap
-    @ClassKey(QuickControlsStatusIconListController.class)
-    public abstract StatusIconController bindQuickControlsStatusIconListController(
-            QuickControlsStatusIconListController quickControlsStatusIconListController);
-
+    public abstract CarSystemBarElementController.Factory bindMediaVolumeStatusIconController(
+            MediaVolumeStatusIconController.Factory mediaVolumeStatusIconController);
 }

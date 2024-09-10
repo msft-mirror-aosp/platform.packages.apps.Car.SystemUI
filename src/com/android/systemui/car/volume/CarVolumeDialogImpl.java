@@ -19,6 +19,7 @@ package com.android.systemui.car.volume;
 import static android.car.media.CarAudioManager.AUDIO_FEATURE_VOLUME_GROUP_EVENTS;
 import static android.car.media.CarAudioManager.AUDIO_FEATURE_VOLUME_GROUP_MUTING;
 import static android.car.media.CarAudioManager.INVALID_AUDIO_ZONE;
+import static android.car.media.CarAudioManager.PRIMARY_AUDIO_ZONE;
 import static android.car.media.CarVolumeGroupEvent.EVENT_TYPE_MUTE_CHANGED;
 import static android.car.media.CarVolumeGroupEvent.EVENT_TYPE_VOLUME_GAIN_INDEX_CHANGED;
 import static android.car.media.CarVolumeGroupEvent.EVENT_TYPE_VOLUME_MAX_INDEX_CHANGED;
@@ -212,7 +213,8 @@ public class CarVolumeDialogImpl
                         }
                     }
                     if (mAudioZoneId == INVALID_AUDIO_ZONE) {
-                        return;
+                        // No audio zone found in occupant zone mapping - default to primary zone
+                        mAudioZoneId = PRIMARY_AUDIO_ZONE;
                     }
                     mCarAudioManager = (CarAudioManager) car.getCarManager(Car.AUDIO_SERVICE);
                     if (mCarAudioManager != null) {
@@ -442,6 +444,11 @@ public class CarVolumeDialogImpl
 
 
     private void showH(int reason) {
+        if (mCarAudioManager == null) {
+            Log.w(TAG, "cannot show dialog - car audio manager is null");
+            return;
+        }
+
         if (DEBUG) {
             Log.d(TAG, "showH r=" + Events.DISMISS_REASONS[reason]);
         }
@@ -471,6 +478,10 @@ public class CarVolumeDialogImpl
 
     private void clearAllAndSetupDefaultCarVolumeLineItem(int groupId) {
         mCarVolumeLineItems.clear();
+        if (groupId >= mAvailableVolumeItems.size()) {
+            Log.w(TAG, "group id not in available volume items");
+            return;
+        }
         VolumeItem volumeItem = mAvailableVolumeItems.get(groupId);
         volumeItem.mDefaultItem = true;
         addCarVolumeListItem(volumeItem, mAudioZoneId, /* volumeGroupId = */ groupId,

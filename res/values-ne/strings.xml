@@ -121,11 +121,14 @@
     <string name="keyguard_enter_your_pattern" msgid="4004401928097798697"></string>
     <string name="keyguard_enter_your_password" msgid="1345546935461513721"></string>
     <string name="car_keyguard_enter_your_pin" msgid="6306637610891409860">"आफ्नो PIN हाल्नुहोस्"</string>
-    <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"आफ्नो प्याटर्न कोर्नुहोस्"</string>
+    <string name="car_keyguard_enter_your_pattern" msgid="7314854851472119334">"आफ्नो प्याटर्न हाल्नुहोस्"</string>
     <string name="car_keyguard_enter_your_password" msgid="2084173625085820354">"आफ्नो पासवर्ड हाल्नुहोस्"</string>
     <string name="backspace_key" msgid="5570862528655375412">"ब्याकस्पेस की"</string>
     <string name="enter_key" msgid="747962923921283095">"इन्टर की"</string>
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
     <string name="back_btn" msgid="7774349944465667391">"पछाडि"</string>
     <string name="fullscreen" msgid="7648956467442135844">"फुल स्क्रिन"</string>
+    <string name="data_subscription_button_text" msgid="6595983827855035949">"योजनाहरू हेर्नुहोस्"</string>
+    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"तपाईंको इन्टरनेट योजनाको म्याद सकिएको छ"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"यो एप चलाउन इन्टरनेट कनेक्सन चाहिन्छ"</string>
 </resources>

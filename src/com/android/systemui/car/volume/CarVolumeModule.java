@@ -23,10 +23,13 @@ import android.content.Context;
 import com.android.systemui.CoreStartable;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.plugins.VolumeDialog;
+import com.android.systemui.plugins.VolumeDialogController;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.volume.VolumeComponent;
 import com.android.systemui.volume.VolumeDialogComponent;
+import com.android.systemui.volume.dagger.AudioModule;
+import com.android.systemui.volume.dagger.AudioSharingEmptyImplModule;
 
 import dagger.Binds;
 import dagger.Module;
@@ -36,9 +39,14 @@ import dagger.multibindings.IntoMap;
 import dagger.multibindings.IntoSet;
 
 /** Dagger module for code in car/volume. */
-@Module
+@Module(
+        includes = {
+                AudioSharingEmptyImplModule.class,
+                AudioModule.class,
+        }
+)
 public interface CarVolumeModule {
-    /** Starts VolumeUI.  */
+    /** Starts VolumeUI. */
     @Binds
     @IntoMap
     @ClassKey(VolumeUI.class)
@@ -49,17 +57,20 @@ public interface CarVolumeModule {
     @IntoSet
     ConfigurationController.ConfigurationListener bindVolumeUIConfigChanges(VolumeUI impl);
 
-    /** */
+    /**  */
     @Binds
     VolumeComponent provideVolumeComponent(VolumeDialogComponent volumeDialogComponent);
 
-    /** */
+    /**  */
     @Provides
-    static VolumeDialog provideVolumeDialog(Context context,
+    static VolumeDialog provideVolumeDialog(
+            Context context,
             CarServiceProvider carServiceProvider,
+            VolumeDialogController volumeDialogController,
             ConfigurationController configurationController,
             UserTracker userTracker) {
-        return new CarVolumeDialogImpl(context, carServiceProvider, configurationController,
+        return new CarVolumeDialogImpl(
+                context, carServiceProvider, volumeDialogController, configurationController,
                 userTracker);
     }
 }

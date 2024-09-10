@@ -47,7 +47,6 @@ public class CarSystemBarMediator implements CoreStartable,
     private static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;
 
     private final CarSystemBar mCarSystemBar;
-    private final SystemBarConfigs mSystemBarConfigs;
     private final CarSystemBarController mCarSystemBarController;
     private final OverlayManager mOverlayManager;
     private final UserTracker mUserTracker;
@@ -57,11 +56,10 @@ public class CarSystemBarMediator implements CoreStartable,
     private final Context mContext;
 
     @Inject
-    public CarSystemBarMediator(CarSystemBar carSystemBar, SystemBarConfigs systemBarConfigs,
+    public CarSystemBarMediator(CarSystemBar carSystemBar,
             CarSystemBarController carSystemBarController, Context context,
             UserTracker userTracker) {
         mCarSystemBar = carSystemBar;
-        mSystemBarConfigs = systemBarConfigs;
         mCarSystemBarController = carSystemBarController;
         mOverlayManager = context.getSystemService(OverlayManager.class);
         mUserTracker = userTracker;
@@ -97,9 +95,9 @@ public class CarSystemBarMediator implements CoreStartable,
         // Do not start any components which depend on the overlaid resources before RROs gets
         // applied.
         if (mCarSystemBarStarted) {
+            mCarSystemBarController.onConfigChanged(newConfig);
             return;
         }
-        mSystemBarConfigs.resetSystemBarConfigs();
         mCarSystemBarController.resetSystemBarConfigs();
         mCarSystemBar.start();
         mCarSystemBarStarted = true;

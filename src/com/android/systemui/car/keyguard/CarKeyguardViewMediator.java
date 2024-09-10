@@ -28,6 +28,7 @@ import android.view.RemoteAnimationTarget;
 
 import com.android.internal.jank.InteractionJankMonitor;
 import com.android.internal.logging.UiEventLogger;
+import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardDisplayManager;
 import com.android.keyguard.KeyguardUpdateMonitor;
@@ -52,6 +53,7 @@ import com.android.systemui.keyguard.WindowManagerOcclusionManager;
 import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationModeController;
+import com.android.systemui.process.ProcessWrapper;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.ShadeController;
 import com.android.systemui.statusbar.NotificationShadeDepthController;
@@ -84,6 +86,8 @@ import kotlinx.coroutines.CoroutineDispatcher;
 public class CarKeyguardViewMediator extends KeyguardViewMediator {
     private static final String TAG = "CarKeyguardViewMediator";
     private final Context mContext;
+    private final TrustManager mTrustManager;
+    private final UserTracker mUserTracker;
     private final Object mOcclusionLock = new Object();
     private final IRemoteAnimationRunner mOccludeAnimationRunner =
             new CarOcclusionAnimationRunner(/* occlude= */ true);
@@ -127,10 +131,12 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             Lazy<ActivityTransitionAnimator> activityTransitionAnimator,
             Lazy<ScrimController> scrimControllerLazy,
             IActivityTaskManager activityTaskManagerService,
+            IStatusBarService statusBarService,
             FeatureFlags featureFlags,
             SecureSettings secureSettings,
             SystemSettings systemSettings,
             SystemClock systemClock,
+            ProcessWrapper processWrapper,
             @Main CoroutineDispatcher mainDispatcher,
             Lazy<DreamViewModel> dreamViewModel,
             Lazy<CommunalTransitionViewModel> communalTransitionViewModel,
@@ -155,7 +161,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 activityTransitionAnimator,
                 scrimControllerLazy,
                 activityTaskManagerService,
-                featureFlags, secureSettings, systemSettings, systemClock,
+                statusBarService,
+                featureFlags, secureSettings, systemSettings, systemClock, processWrapper,
                 mainDispatcher,
                 dreamViewModel,
                 communalTransitionViewModel,
@@ -165,6 +172,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 keyguardInteractor,
                 wmOcclusionManager);
         mContext = context;
+        mTrustManager = trustManager;
+        mUserTracker = userTracker;
     }
 
     @Override
@@ -172,6 +181,11 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
         if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
             // Currently keyguard is not functional for the secondary users in a MUMD configuration
             // TODO_MD: make keyguard functional for secondary users
+
+            // Until keyguard for secondary users is supported, the secondary user's lock status
+            // must be manually updated instead of relying on keyguard hooks.
+            mTrustManager.reportEnabledTrustAgentsChanged(mUserTracker.getUserId());
+
             return;
         }
         super.start();

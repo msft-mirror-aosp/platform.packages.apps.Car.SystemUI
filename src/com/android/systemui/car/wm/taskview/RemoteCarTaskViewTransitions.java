@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.wm.taskview;
 
+import static android.view.WindowManager.TRANSIT_TO_FRONT;
+
 import android.app.ActivityManager;
 import android.app.WindowConfiguration;
 import android.content.Context;
@@ -46,11 +48,13 @@ import javax.inject.Inject;
  */
 @WMSingleton
 public final class RemoteCarTaskViewTransitions implements Transitions.TransitionHandler {
+    // TODO(b/359584498): Add unit tests for this class.
     private static final String TAG = "CarTaskViewTransit";
 
     private final Transitions mTransitions;
     private final Context mContext;
     private final Lazy<CarSystemUIProxyImpl> mCarSystemUIProxy;
+    private IBinder mReorderedToTop;
 
     @Inject
     public RemoteCarTaskViewTransitions(Transitions transitions,
@@ -77,23 +81,14 @@ public final class RemoteCarTaskViewTransitions implements Transitions.Transitio
             return null;
         }
 
+        mReorderedToTop = null;
         WindowContainerTransaction wct = null;
         // TODO(b/333923667): Plumb some API and get the host activity from CarSystemUiProxyImpl
         //  on a per taskview basis and remove the ACTIVITY_TYPE_HOME check.
         if (isHome(request.getTriggerTask())
                 && TransitionUtil.isOpeningType(request.getType())) {
-            wct = new WindowContainerTransaction();
-            for (int i = mCarSystemUIProxy.get().getAllTaskViews().size() - 1; i >= 0; i--) {
-                ActivityManager.RunningTaskInfo task =
-                        mCarSystemUIProxy.get().getAllTaskViews().valueAt(i).getTaskInfo();
-                if (task == null) continue;
-                if (task.displayId != request.getTriggerTask().displayId) continue;
-                if (Log.isLoggable(TAG, Log.DEBUG)) {
-                    Slog.d(TAG, "Adding transition work to bring the embedded "
-                            + task.topActivity + " to top");
-                }
-                wct.reorder(task.token, true);
-            }
+            wct = reorderEmbeddedTasksToTop(request.getTriggerTask().displayId);
+            mReorderedToTop = transition;
         }
 
         // TODO(b/333923667): Think of moving this to CarUiPortraitSystemUI instead.
@@ -119,12 +114,44 @@ public final class RemoteCarTaskViewTransitions implements Transitions.Transitio
         return taskInfo.getWindowingMode() == WindowConfiguration.WINDOWING_MODE_FULLSCREEN;
     }
 
+    private WindowContainerTransaction reorderEmbeddedTasksToTop(int endDisplayId) {
+        WindowContainerTransaction wct = new WindowContainerTransaction();
+        for (int i = mCarSystemUIProxy.get().getAllTaskViews().size() - 1; i >= 0; i--) {
+            // TODO(b/359586295): Handle restarting of tasks if required.
+            ActivityManager.RunningTaskInfo task =
+                    mCarSystemUIProxy.get().getAllTaskViews().valueAt(i).getTaskInfo();
+            if (task == null) continue;
+            if (task.displayId != endDisplayId) continue;
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Slog.d(TAG, "Adding transition work to bring the embedded " + task.topActivity
+                        + " to top");
+            }
+            wct.reorder(task.token, true);
+        }
+        return wct;
+    }
+
     @Override
     public boolean startAnimation(@NonNull IBinder transition, @NonNull TransitionInfo info,
             @NonNull SurfaceControl.Transaction startTransaction,
             @NonNull SurfaceControl.Transaction finishTransaction,
             @NonNull Transitions.TransitionFinishCallback finishCallback) {
-        // No animation required for now.
+        if (mReorderedToTop != transition) {
+            mReorderedToTop = null;
+            // This is to handle the case where when some activity on top of home goes away by
+            // pressing back, a handleRequest is not sent for the home due to which the home
+            // comes to the top and embedded tasks become invisible. Only do this when home is
+            // coming to the top due to opening type transition. Note that a new transition will
+            // be sent out for each home activity if the TransitionInfo.Change contains multiple
+            // home activities.
+            for (TransitionInfo.Change chg : info.getChanges()) {
+                if (chg.getTaskInfo() != null && isHome(chg.getTaskInfo())
+                        && TransitionUtil.isOpeningType(chg.getMode())) {
+                    mTransitions.startTransition(TRANSIT_TO_FRONT,
+                            reorderEmbeddedTasksToTop(chg.getEndDisplayId()), null);
+                }
+            }
+        }
         return false;
     }
 }

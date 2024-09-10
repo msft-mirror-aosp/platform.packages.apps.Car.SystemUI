@@ -40,23 +40,38 @@ import android.testing.TestableLooper;
 import android.testing.TestableResources;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import androidx.test.filters.SmallTest;
 
 import com.android.car.dockutil.Flags;
 import com.android.car.ui.FocusParkingView;
 import com.android.dx.mockito.inline.extended.ExtendedMockito;
+import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
+import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.plugins.DarkIconDispatcher;
+import com.android.systemui.settings.FakeDisplayTracker;
 import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.CommandQueue;
+import com.android.systemui.statusbar.phone.AutoHideController;
+import com.android.systemui.statusbar.phone.LightBarController;
+import com.android.systemui.statusbar.phone.PhoneStatusBarPolicy;
+import com.android.systemui.statusbar.phone.StatusBarSignalPolicy;
+import com.android.systemui.statusbar.phone.SysuiDarkIconDispatcher;
 import com.android.systemui.statusbar.phone.ui.StatusBarIconController;
+import com.android.systemui.statusbar.policy.ConfigurationController;
+import com.android.systemui.statusbar.policy.KeyguardStateController;
+import com.android.systemui.util.concurrency.FakeExecutor;
+import com.android.systemui.util.time.FakeSystemClock;
 
 import org.junit.After;
 import org.junit.Before;
@@ -66,6 +81,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoSession;
 import org.mockito.quality.Strictness;
 
+import java.util.Optional;
 import java.util.Set;
 
 @CarSystemUiTest
@@ -105,6 +121,34 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     private StatusIconPanelViewController mPanelController;
     @Mock
     private CarSystemBarElementInitializer mCarSystemBarElementInitializer;
+    @Mock
+    private LightBarController mLightBarController;
+    @Mock
+    private SysuiDarkIconDispatcher mStatusBarIconController;
+    @Mock
+    private WindowManager mWindowManager;
+    @Mock
+    private CarDeviceProvisionedController mDeviceProvisionedController;
+    @Mock
+    private AutoHideController mAutoHideController;
+    @Mock
+    private ButtonSelectionStateListener mButtonSelectionStateListener;
+    @Mock
+    private IStatusBarService mBarService;
+    @Mock
+    private KeyguardStateController mKeyguardStateController;
+    @Mock
+    private PhoneStatusBarPolicy mIconPolicy;
+    @Mock
+    private StatusBarIconController mIconController;
+    @Mock
+    private StatusBarSignalPolicy mSignalPolicy;
+    @Mock
+    private HvacController mHvacController;
+    @Mock
+    private ConfigurationController mConfigurationController;
+    @Mock
+    private CarSystemBarRestartTracker mCarSystemBarRestartTracker;
 
     @Before
     public void setUp() throws Exception {
@@ -133,12 +177,22 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     }
 
     private CarSystemBarController createSystemBarController() {
+        SystemBarConfigs systemBarConfigs = new SystemBarConfigs(mTestableResources.getResources());
+        FakeDisplayTracker displayTracker = new FakeDisplayTracker(mContext);
+        FakeExecutor executor = new FakeExecutor(new FakeSystemClock());
+        FakeExecutor uiBgExecutor = new FakeExecutor(new FakeSystemClock());
+
         return new CarSystemBarController(mSpiedContext, mUserTracker, mCarSystemBarViewFactory,
                 mButtonSelectionStateController, () -> mUserNameViewController,
                 () -> mMicPrivacyChipViewController, () -> mCameraPrivacyChipViewController,
                 mButtonRoleHolderController,
-                new SystemBarConfigs(mTestableResources.getResources()),
-                () -> mPanelControllerBuilder);
+                systemBarConfigs, () -> mPanelControllerBuilder, mLightBarController,
+                mStatusBarIconController, mWindowManager, mDeviceProvisionedController,
+                new CommandQueue(mContext, displayTracker), mAutoHideController,
+                mButtonSelectionStateListener, executor, uiBgExecutor, mBarService,
+                () -> mKeyguardStateController, () -> mIconPolicy, mHvacController, mSignalPolicy,
+                mConfigurationController, mCarSystemBarRestartTracker, displayTracker,
+                Optional.empty(), null);
     }
 
     @Test

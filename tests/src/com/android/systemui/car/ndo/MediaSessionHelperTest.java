@@ -27,10 +27,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.INotificationManager;
+import android.app.Notification;
 import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
+import android.os.Bundle;
 import android.os.UserHandle;
+import android.service.notification.StatusBarNotification;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 
@@ -66,12 +70,24 @@ public class MediaSessionHelperTest extends SysuiTestCase {
 
     @Mock
     private MediaSessionManager mMediaSessionManager;
+    @Mock
+    private INotificationManager mINotificationManager;
+    @Mock
+    private StatusBarNotification mStatusBarNotification;
+    @Mock
+    private Notification mNotification;
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         MockitoAnnotations.initMocks(/* testClass= */ this);
         mContext = spy(mContext);
         when(mContext.getSystemService(MediaSessionManager.class)).thenReturn(mMediaSessionManager);
+
+        StatusBarNotification[] statusBarNotifications = { mStatusBarNotification };
+        when(mINotificationManager.getActiveNotificationsWithAttribution(
+                eq(mContext.getPackageName()), isNull())).thenReturn(statusBarNotifications);
+        when(mStatusBarNotification.getNotification()).thenReturn(mNotification);
+        mNotification.extras = new Bundle();
 
         mActiveMediaController = mock(MediaController.class);
         PlaybackState activePlaybackState = mock(PlaybackState.class);
@@ -89,28 +105,52 @@ public class MediaSessionHelperTest extends SysuiTestCase {
         when(mMediaSessionManager.getActiveSessionsForUser(isNull(), eq(mUserHandle)))
                 .thenReturn(mediaControllers);
 
-        mMediaSessionHelper = new MediaSessionHelper(mContext, mUserHandle);
+        mMediaSessionHelper = new MediaSessionHelper(mContext, mINotificationManager);
+        mMediaSessionHelper.init(mUserHandle);
     }
 
     @Test
     public void onCreate_setsInitialValue() {
-        assertControllersSet();
+        assertThat(mMediaSessionHelper.getActiveMediaSessions().getValue().size())
+                .isEqualTo(0);
+        assertThat(mMediaSessionHelper.mMediaControllersList.size()).isEqualTo(2);
     }
 
     @Test
-    public void onActivePlaybackStateChanged_queriesNewMediaSessions() {
+    public void onActivePlaybackStateChanged_hasMediaNotification_queriesNewMediaSessions() {
         PlaybackState playbackState = mock(PlaybackState.class);
         when(playbackState.isActive()).thenReturn(true);
+        when(mNotification.isMediaNotification()).thenReturn(true);
 
         mMediaSessionHelper.onPlaybackStateChanged(playbackState);
 
-        assertControllersSet();
+        assertThat(mMediaSessionHelper.getActiveMediaSessions().getValue().size())
+                .isEqualTo(1);
+        assertThat(mMediaSessionHelper.getActiveMediaSessions().getValue().getFirst())
+                .isEqualTo(mActiveMediaController);
+        assertThat(mMediaSessionHelper.mMediaControllersList.size()).isEqualTo(1);
+        assertThat(mMediaSessionHelper.mMediaControllersList.getFirst())
+                .isEqualTo(mInactiveMediaController);
+    }
+
+    @Test
+    public void onActivePlaybackStateChanged_noMediaNotification_queriesNewMediaSessions() {
+        PlaybackState playbackState = mock(PlaybackState.class);
+        when(playbackState.isActive()).thenReturn(true);
+        when(mNotification.isMediaNotification()).thenReturn(false);
+
+        mMediaSessionHelper.onPlaybackStateChanged(playbackState);
+
+        assertThat(mMediaSessionHelper.getActiveMediaSessions().getValue().size())
+                .isEqualTo(0);
+        assertThat(mMediaSessionHelper.mMediaControllersList.size()).isEqualTo(2);
     }
 
     @Test
     public void onInactivePlaybackStateChanged_doesNothing() {
         PlaybackState playbackState = mock(PlaybackState.class);
         when(playbackState.isActive()).thenReturn(false);
+        when(mNotification.isMediaNotification()).thenReturn(true);
 
         mMediaSessionHelper.onPlaybackStateChanged(playbackState);
 
@@ -126,15 +166,5 @@ public class MediaSessionHelperTest extends SysuiTestCase {
 
         assertThat(mMediaSessionHelper.mMediaControllersList.isEmpty()).isTrue();
         verify(mMediaSessionManager).removeOnActiveSessionsChangedListener(any());
-    }
-
-    private void assertControllersSet() {
-        assertThat(mMediaSessionHelper.getActiveMediaSessions().getValue().size())
-                .isEqualTo(1);
-        assertThat(mMediaSessionHelper.getActiveMediaSessions().getValue().getFirst())
-                .isEqualTo(mActiveMediaController);
-        assertThat(mMediaSessionHelper.mMediaControllersList.size()).isEqualTo(1);
-        assertThat(mMediaSessionHelper.mMediaControllersList.getFirst())
-                .isEqualTo(mInactiveMediaController);
     }
 }

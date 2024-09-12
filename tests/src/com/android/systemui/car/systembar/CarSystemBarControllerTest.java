@@ -53,7 +53,6 @@ import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.hvac.HvacController;
-import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
@@ -107,8 +106,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     private ButtonSelectionStateController mButtonSelectionStateController;
     @Mock
     private ButtonRoleHolderController mButtonRoleHolderController;
-    @Mock
-    private UserNameViewController mUserNameViewController;
     @Mock
     private MicPrivacyChipViewController mMicPrivacyChipViewController;
     @Mock
@@ -183,7 +180,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         FakeExecutor uiBgExecutor = new FakeExecutor(new FakeSystemClock());
 
         return new CarSystemBarController(mSpiedContext, mUserTracker, mCarSystemBarViewFactory,
-                mButtonSelectionStateController, () -> mUserNameViewController,
+                mButtonSelectionStateController,
                 () -> mMicPrivacyChipViewController, () -> mCameraPrivacyChipViewController,
                 mButtonRoleHolderController,
                 systemBarConfigs, () -> mPanelControllerBuilder, mLightBarController,
@@ -746,35 +743,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBar.setSystemBarStates(DISABLE_NOTIFICATION_ICONS, /* state2= */ 0);
 
         assertThat(button.getDisabled()).isTrue();
-    }
-
-    @Test
-    public void testRefreshSystemBar_disableQcFlagOn_userSwitcherHidden() {
-        mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);
-        mCarSystemBar = createSystemBarController();
-        CarSystemBarView topBar = mCarSystemBar.getTopBar(/* isSetUp= */ true);
-
-        View userSwitcher = topBar.findViewById(R.id.user_name_container);
-        clearSystemBarStates();
-        assertThat(userSwitcher.getVisibility()).isEqualTo(View.VISIBLE);
-
-        mCarSystemBar.setSystemBarStates(0, DISABLE2_QUICK_SETTINGS);
-
-        assertThat(userSwitcher.getVisibility()).isEqualTo(View.INVISIBLE);
-    }
-
-    @Test
-    public void testRefreshSystemBar_lockTaskModeOn_userSwitcherHidden() {
-        mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);
-        mCarSystemBar = createSystemBarController();
-        CarSystemBarView topBar = mCarSystemBar.getTopBar(/* isSetUp= */ true);
-        View userSwitcher = topBar.findViewById(R.id.user_name_container);
-        clearSystemBarStates();
-        assertThat(userSwitcher.getVisibility()).isEqualTo(View.VISIBLE);
-
-        setLockTaskModeLocked(/* locked= */ true);
-
-        assertThat(userSwitcher.getVisibility()).isEqualTo(View.INVISIBLE);
     }
 
     @Test

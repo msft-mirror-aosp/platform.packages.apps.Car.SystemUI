@@ -32,10 +32,17 @@ import com.android.car.admin.ui.UserAvatarView;
 import com.android.car.internal.user.UserHelper;
 import com.android.systemui.R;
 
+import javax.inject.Inject;
+
 /**
  * Simple class for providing icons for users.
  */
 public class UserIconProvider {
+
+    @Inject
+    public UserIconProvider() {
+    }
+
     /**
      * Sets a rounded icon with the first letter of the given user name.
      * This method will update UserManager to use that icon.

@@ -45,7 +45,6 @@ import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarDeviceProvisionedController;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.settings.UserTracker;
@@ -71,8 +70,6 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
     @Mock
     private UserTracker mUserTracker;
     @Mock
-    private CarServiceProvider mCarServiceProvider;
-    @Mock
     private BroadcastDispatcher mBroadcastDispatcher;
     @Mock
     private ConfigurationController mConfigurationController;
@@ -93,8 +90,8 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
         mAnchorView.setImageDrawable(mContext.getDrawable(R.drawable.ic_bluetooth_status_off));
         mAnchorView.setColorFilter(mContext.getColor(R.color.car_status_icon_color));
         mViewController = new StatusIconPanelViewController.Builder(mContext, mUserTracker,
-                mCarServiceProvider, mBroadcastDispatcher, mConfigurationController,
-                mDeviceProvisionedController, mCarSystemBarElementInitializer).build(mAnchorView,
+                mBroadcastDispatcher, mConfigurationController, mDeviceProvisionedController,
+                mCarSystemBarElementInitializer).build(mAnchorView,
                 R.layout.qc_display_panel, R.dimen.car_status_icon_panel_default_width);
         spyOn(mViewController);
         reset(mAnchorView);
@@ -115,13 +112,11 @@ public class StatusIconPanelViewControllerTest extends SysuiTestCase {
         verify(mBroadcastDispatcher).registerReceiver(any(), any(), any(), any());
         verify(mUserTracker).addCallback(any(), any());
         verify(mConfigurationController).addCallback(any());
-        verify(mCarServiceProvider).addListener(any());
     }
 
     @Test
     public void onViewDetached_unregistersListeners() {
         mViewController.onViewDetached();
-        verify(mCarServiceProvider).removeListener(any());
         verify(mConfigurationController).removeCallback(any());
         verify(mUserTracker).removeCallback(any());
         verify(mBroadcastDispatcher).unregisterReceiver(any());

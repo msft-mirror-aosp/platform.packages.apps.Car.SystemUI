@@ -33,6 +33,7 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Može se izraditi samo jedan profil.}one{Možete dodati najviše # profil.}few{Možete dodati najviše # profila.}other{Možete dodati najviše # profila.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Učitavanje"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Učitavanje korisnika (od <xliff:g id="FROM_USER">%1$d</xliff:g> do <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
+    <string name="current_profile_subtitle" msgid="7149515449757434139">"Trenutačni profil"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g>: isključeno."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"Koristi sljedeće: <xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Za aplikacije koje imaju dopuštenje"</string>
@@ -112,6 +113,8 @@
     <string name="guest_creation_failed_message" msgid="8198126434029601949">"Pokretanje profila gosta nije uspjelo. Pokušajte ponovo kasnije."</string>
     <string name="stopping_user_text" msgid="4946464635279894684">"Odjava…"</string>
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> se odjavljuje. Pokušajte ponovo kasnije."</string>
+    <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Korisnik trenutačno nije dostupan"</string>
+    <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Nije moguće pokrenuti profil sigurnog korisnika na zaslonu putnika"</string>
     <string name="seat_driver" msgid="4502591979520445677">"vozač"</string>
     <string name="seat_front" msgid="836133281052793377">"prednja"</string>
     <string name="seat_rear" msgid="403133444964528577">"stražnja"</string>
@@ -131,5 +134,6 @@
     <string name="fullscreen" msgid="7648956467442135844">"Cijeli zaslon"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Prikaži pakete"</string>
     <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Vaš je internetski paket istekao"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="8071634832814004999">"Ova aplikacija zahtjeva internetsku vezu"</string>
+    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s zahtijeva internetsku vezu"</string>
+    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"Ova aplikacija"</string>
 </resources>

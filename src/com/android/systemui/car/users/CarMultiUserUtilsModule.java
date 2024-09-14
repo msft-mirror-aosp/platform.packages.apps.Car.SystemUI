@@ -133,5 +133,8 @@ public abstract class CarMultiUserUtilsModule {
     @Binds
     abstract UserFileManager bindUserFileManager(UserFileManagerImpl impl);
 
-
+    @Binds
+    @IntoMap
+    @ClassKey(CarProfileIconUpdater.class)
+    abstract CoreStartable bindCarProfileIconUpdaterStartable(CarProfileIconUpdater iconUpdater);
 }

@@ -27,7 +27,6 @@ import static com.android.systemui.car.systembar.SystemBarConfigs.TOP;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assume.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -43,13 +42,11 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.RemoteException;
-import android.os.UserManager;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.testing.TestableResources;
 import android.util.ArrayMap;
 import android.view.Display;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowManager;
@@ -64,7 +61,6 @@ import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.hvac.HvacController;
-import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -87,12 +83,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.internal.InOrderImpl;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -117,8 +110,6 @@ public class CarSystemBarTest extends SysuiTestCase {
     private ButtonSelectionStateController mButtonSelectionStateController;
     @Mock
     private ButtonRoleHolderController mButtonRoleHolderController;
-    @Mock
-    private UserNameViewController mUserNameViewController;
     @Mock
     private MicPrivacyChipViewController mMicPrivacyChipViewController;
     @Mock
@@ -239,15 +230,14 @@ public class CarSystemBarTest extends SysuiTestCase {
         FakeDisplayTracker displayTracker = new FakeDisplayTracker(mContext);
         mCarSystemBarController = spy(new CarSystemBarController(mSpiedContext, mUserTracker,
                 mCarSystemBarViewFactory, mButtonSelectionStateController,
-                () -> mUserNameViewController, () -> mMicPrivacyChipViewController,
-                () -> mCameraPrivacyChipViewController, mButtonRoleHolderController,
-                systemBarConfigs, () -> mPanelControllerBuilder, mLightBarController,
-                mStatusBarIconController, mWindowManager, mDeviceProvisionedController,
-                new CommandQueue(mContext, displayTracker), mAutoHideController,
-                mButtonSelectionStateListener, mExecutor, mUiBgExecutor, mBarService,
-                () -> mKeyguardStateController, () -> mIconPolicy, mHvacController, mSignalPolicy,
-                mConfigurationController, mCarSystemBarRestartTracker, displayTracker,
-                Optional.empty(), null));
+                () -> mMicPrivacyChipViewController, () -> mCameraPrivacyChipViewController,
+                mButtonRoleHolderController, systemBarConfigs, () -> mPanelControllerBuilder,
+                mLightBarController, mStatusBarIconController, mWindowManager,
+                mDeviceProvisionedController, new CommandQueue(mContext, displayTracker),
+                mAutoHideController, mButtonSelectionStateListener, mExecutor, mUiBgExecutor,
+                mBarService, () -> mKeyguardStateController, () -> mIconPolicy, mHvacController,
+                mSignalPolicy, mConfigurationController, mCarSystemBarRestartTracker,
+                displayTracker, Optional.empty(), null));
     }
 
     @Test
@@ -512,30 +502,6 @@ public class CarSystemBarTest extends SysuiTestCase {
         mCarSystemBarController.onConfigChanged(config);
 
         assertThat(mCarSystemBarController.getIsUiModeNight()).isNotEqualTo(isNightMode);
-    }
-
-    @Test
-    public void onConfigChanged_callOnClick_profilePickerViewIsSelected() {
-        // alternative profile picker used on multi-display systems
-        assumeFalse(UserManager.isVisibleBackgroundUsersEnabled());
-        Configuration config = new Configuration();
-        config.uiMode = mContext.getResources().getConfiguration().isNightModeActive()
-                ? Configuration.UI_MODE_NIGHT_NO : Configuration.UI_MODE_NIGHT_YES;
-        View mockProfilePickerView = mock(View.class);
-        when(mockProfilePickerView.isSelected()).thenReturn(true);
-        CarSystemBarView mockTopBarView = mock(CarSystemBarView.class);
-        when(mockTopBarView.findViewById(R.id.user_name)).thenReturn(mockProfilePickerView);
-        when(mCarSystemBarViewFactory.getTopBar(anyBoolean())).thenReturn(mockTopBarView);
-        initCarSystemBar();
-
-        mCarSystemBarController.init();
-        mCarSystemBarController.onConfigChanged(config);
-
-        InOrder inOrder = new InOrderImpl(Arrays.asList(mockProfilePickerView, mockTopBarView));
-        inOrder.verify(mockTopBarView).findViewById(R.id.user_name);
-        inOrder.verify(mockProfilePickerView).callOnClick();
-        inOrder.verify(mockTopBarView).findViewById(R.id.user_name);
-        inOrder.verify(mockProfilePickerView).callOnClick();
     }
 
     @Test

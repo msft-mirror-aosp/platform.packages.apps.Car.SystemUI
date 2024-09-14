@@ -160,6 +160,7 @@ public class ActivityBlockingActivity extends FragmentActivity {
 
         if (!configAppBlockingActivities()) {
             Slog.d(TAG, "Ignoring app blocking activity feature");
+            displayBlockingContent();
         } else if (getResources().getBoolean(R.bool.config_enableAppBlockingActivities)) {
             mBlockedActivityName = getIntent().getStringExtra(
                     CarPackageManager.BLOCKING_INTENT_EXTRA_BLOCKED_ACTIVITY_NAME);

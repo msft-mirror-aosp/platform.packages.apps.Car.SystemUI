@@ -205,8 +205,8 @@ android_library {
         "CarSystemUI-tests-base",
     ],
     libs: [
-        "android.test.runner",
-        "android.test.base",
+        "android.test.runner.stubs.system",
+        "android.test.base.stubs.system",
         "android.car",
     ],
 
@@ -286,9 +286,9 @@ android_robolectric_test {
     ],
     libs: [
         "android.car",
-        "android.test.runner",
-        "android.test.base",
-        "android.test.mock",
+        "android.test.runner.stubs.system",
+        "android.test.base.stubs.system",
+        "android.test.mock.stubs.system",
         "truth",
     ],
 
@@ -321,9 +321,9 @@ android_ravenwood_test {
     ],
     libs: [
         "android.car",
-        "android.test.runner",
-        "android.test.base",
-        "android.test.mock",
+        "android.test.runner.stubs.system",
+        "android.test.base.stubs.system",
+        "android.test.mock.stubs.system",
     ],
     auto_gen_config: true,
     plugins: [

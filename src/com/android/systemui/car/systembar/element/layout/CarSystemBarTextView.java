@@ -20,38 +20,38 @@ import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.android.systemui.car.systembar.element.CarSystemBarElement;
 import com.android.systemui.car.systembar.element.CarSystemBarElementFlags;
 import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
 
-/** Implementation of ImageView that supports {@link CarSystemBarElement} attributes */
-public class CarSystemBarImageView extends ImageView implements CarSystemBarElement {
+/** Implementation of TextView that supports {@link CarSystemBarElement} attributes */
+public class CarSystemBarTextView extends TextView implements CarSystemBarElement {
     @Nullable
     private Class<?> mElementControllerClassAttr;
     private int mSystemBarDisableFlags;
     private int mSystemBarDisable2Flags;
     private boolean mDisableForLockTaskModeLocked;
 
-    public CarSystemBarImageView(@NonNull Context context) {
+    public CarSystemBarTextView(@NonNull Context context) {
         super(context);
         init(context, /* attrs= */ null);
     }
 
-    public CarSystemBarImageView(@NonNull Context context,
+    public CarSystemBarTextView(@NonNull Context context,
             @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public CarSystemBarImageView(@NonNull Context context, @Nullable AttributeSet attrs,
+    public CarSystemBarTextView(@NonNull Context context, @Nullable AttributeSet attrs,
             int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
 
-    public CarSystemBarImageView(@NonNull Context context, @Nullable AttributeSet attrs,
+    public CarSystemBarTextView(@NonNull Context context, @Nullable AttributeSet attrs,
             int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context, attrs);

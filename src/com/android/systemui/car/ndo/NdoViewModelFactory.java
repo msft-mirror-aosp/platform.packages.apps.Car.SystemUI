@@ -34,11 +34,14 @@ public class NdoViewModelFactory implements ViewModelProvider.Factory {
 
     private final Context mContext;
     private final InCallServiceManager mServiceManager;
+    private final MediaSessionHelper mMediaSessionHelper;
 
     @Inject
-    public NdoViewModelFactory(Context context, InCallServiceManager serviceManager) {
+    public NdoViewModelFactory(Context context, InCallServiceManager serviceManager,
+            MediaSessionHelper mediaSessionHelper) {
         mContext = context;
         mServiceManager = serviceManager;
+        mMediaSessionHelper = mediaSessionHelper;
     }
 
     /**
@@ -49,7 +52,7 @@ public class NdoViewModelFactory implements ViewModelProvider.Factory {
     @SuppressWarnings("unchecked")
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(BlockerViewModel.class)) {
-            return (T) new BlockerViewModel(mContext, mServiceManager);
+            return (T) new BlockerViewModel(mContext, mServiceManager, mMediaSessionHelper);
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

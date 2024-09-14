@@ -19,11 +19,11 @@ package com.android.systemui.car.systembar;
 import static android.content.Intent.ACTION_OVERLAY_CHANGED;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
 
+import static com.android.systemui.car.Flags.configAwareSystemui;
 import static com.android.systemui.car.systembar.SystemBarConfigs.BOTTOM;
 import static com.android.systemui.car.systembar.SystemBarConfigs.LEFT;
 import static com.android.systemui.car.systembar.SystemBarConfigs.RIGHT;
 import static com.android.systemui.car.systembar.SystemBarConfigs.TOP;
-import static com.android.systemui.car.Flags.configAwareSystemui;
 import static com.android.systemui.shared.statusbar.phone.BarTransitions.MODE_SEMI_TRANSPARENT;
 import static com.android.systemui.shared.statusbar.phone.BarTransitions.MODE_TRANSPARENT;
 
@@ -71,7 +71,6 @@ import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.notification.NotificationPanelViewController;
-import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
@@ -122,7 +121,6 @@ public class CarSystemBarController implements CommandQueue.Callbacks,
     private final ButtonSelectionStateController mButtonSelectionStateController;
     private final ButtonRoleHolderController mButtonRoleHolderController;
     private final Provider<StatusIconPanelViewController.Builder> mPanelControllerBuilderProvider;
-    private final Lazy<UserNameViewController> mUserNameViewControllerLazy;
     private final Lazy<MicPrivacyChipViewController> mMicPrivacyChipViewControllerLazy;
     private final Lazy<CameraPrivacyChipViewController> mCameraPrivacyChipViewControllerLazy;
     private final SystemBarConfigs mSystemBarConfigs;
@@ -154,7 +152,6 @@ public class CarSystemBarController implements CommandQueue.Callbacks,
     private HvacPanelController mHvacPanelController;
     private StatusIconPanelViewController mMicPanelController;
     private StatusIconPanelViewController mCameraPanelController;
-    private StatusIconPanelViewController mProfilePanelController;
     private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
     private NotificationPanelViewController mNotificationPanelViewController;
     private StatusBarSignalPolicy mSignalPolicy;
@@ -220,7 +217,6 @@ public class CarSystemBarController implements CommandQueue.Callbacks,
             UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,
             ButtonSelectionStateController buttonSelectionStateController,
-            Lazy<UserNameViewController> userNameViewControllerLazy,
             Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
             Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
             ButtonRoleHolderController buttonRoleHolderController,
@@ -250,7 +246,6 @@ public class CarSystemBarController implements CommandQueue.Callbacks,
         mUserTracker = userTracker;
         mCarSystemBarViewFactory = carSystemBarViewFactory;
         mButtonSelectionStateController = buttonSelectionStateController;
-        mUserNameViewControllerLazy = userNameViewControllerLazy;
         mMicPrivacyChipViewControllerLazy = micPrivacyChipViewControllerLazy;
         mCameraPrivacyChipViewControllerLazy = cameraPrivacyChipViewControllerLazy;
         mButtonRoleHolderController = buttonRoleHolderController;
@@ -515,26 +510,10 @@ public class CarSystemBarController implements CommandQueue.Callbacks,
         // destroyed during re-layout and has no focus highlight (the FocusParkingView), then
         // move focus back to the previously focused view after re-layout.
         cacheAndHideFocus();
-        View profilePickerView = null;
-        boolean isProfilePickerOpen = false;
-        if (mTopView != null) {
-            profilePickerView = mTopView.findViewById(R.id.user_name);
-        }
-        if (profilePickerView != null) isProfilePickerOpen = profilePickerView.isSelected();
-        if (isProfilePickerOpen) {
-            profilePickerView.callOnClick();
-        }
 
         resetSystemBarContent(/* isProvisionedStateChange= */ false);
 
         // retrieve the previous state
-        if (isProfilePickerOpen) {
-            if (mTopView != null) {
-                profilePickerView = mTopView.findViewById(R.id.user_name);
-            }
-            if (profilePickerView != null) profilePickerView.callOnClick();
-        }
-
         restoreFocus();
     }
 
@@ -574,13 +553,11 @@ public class CarSystemBarController implements CommandQueue.Callbacks,
     public void removeAll() {
         mButtonSelectionStateController.removeAll();
         mButtonRoleHolderController.removeAll();
-        mUserNameViewControllerLazy.get().removeAll();
         mMicPrivacyChipViewControllerLazy.get().removeAll();
         mCameraPrivacyChipViewControllerLazy.get().removeAll();
 
         mMicPanelController = null;
         mCameraPanelController = null;
-        mProfilePanelController = null;
     }
 
     /** Gets the top window if configured to do so. */
@@ -708,9 +685,6 @@ public class CarSystemBarController implements CommandQueue.Callbacks,
         setDisabledSystemBarButton(R.id.grid_nav, homeDisabled, "grid_nav");
         setDisabledSystemBarButton(R.id.notifications, notificationDisabled, "notifications");
 
-        setDisabledSystemBarContainer(R.id.user_name_container, qcDisabled,
-                "user_name_container");
-
         if (DEBUG) {
             Log.d(TAG, "refreshSystemBar: locked?: " + locked
                     + " homeDisabled: " + homeDisabled
@@ -729,14 +703,6 @@ public class CarSystemBarController implements CommandQueue.Callbacks,
         for (CarSystemBarView barView : getAllAvailableSystemBarViews()) {
             barView.setDisabledSystemBarButton(viewId, disabled,
                     () -> showAdminSupportDetailsDialog(), buttonName);
-        }
-    }
-
-    private void setDisabledSystemBarContainer(int viewId, boolean disabled,
-                @Nullable String viewName) {
-        for (CarSystemBarView barView : getAllAvailableSystemBarViews()) {
-            barView.setVisibilityByViewId(viewId, viewName,
-                    disabled ? View.INVISIBLE : View.VISIBLE);
         }
     }
 
@@ -761,13 +727,11 @@ public class CarSystemBarController implements CommandQueue.Callbacks,
                 mNotificationPanelViewController);
 
         if (isSetUp) {
-            // We do not want the privacy chips or the profile picker to be clickable in
-            // unprovisioned mode.
+            // We do not want the privacy chips to be clickable in unprovisioned mode.
             mMicPanelController = setupSensorQcPanel(mMicPanelController, R.id.mic_privacy_chip,
                     R.layout.qc_mic_panel);
             mCameraPanelController = setupSensorQcPanel(mCameraPanelController,
                     R.id.camera_privacy_chip, R.layout.qc_camera_panel);
-            setupProfilePanel();
         }
 
         return mTopView;
@@ -830,7 +794,6 @@ public class CarSystemBarController implements CommandQueue.Callbacks,
         view.updateControlCenterButtonVisibility(CarSystemUIUserUtil.isMUMDSystemUI());
         mButtonSelectionStateController.addAllButtonsWithSelectionState(view);
         mButtonRoleHolderController.addAllButtonsWithRoleName(view);
-        mUserNameViewControllerLazy.get().addUserNameView(view);
         mMicPrivacyChipViewControllerLazy.get().addPrivacyChipView(view);
         mCameraPrivacyChipViewControllerLazy.get().addPrivacyChipView(view);
     }
@@ -849,20 +812,6 @@ public class CarSystemBarController implements CommandQueue.Callbacks,
             }
         }
         return panelController;
-    }
-
-    private void setupProfilePanel() {
-        View profilePickerView = mTopView.findViewById(R.id.user_name);
-        if (mProfilePanelController == null && profilePickerView != null) {
-            boolean profilePanelDisabledWhileDriving = mContext.getResources().getBoolean(
-                    R.bool.config_profile_panel_disabled_while_driving);
-            mProfilePanelController = mPanelControllerBuilderProvider.get()
-                    .setGravity(Gravity.TOP | Gravity.END)
-                    .setDisabledWhileDriving(profilePanelDisabledWhileDriving)
-                    .build(profilePickerView, R.layout.qc_profile_switcher,
-                            R.dimen.car_profile_quick_controls_panel_width);
-            mProfilePanelController.init();
-        }
     }
 
     /** Sets a touch listener for the top navigation bar. */

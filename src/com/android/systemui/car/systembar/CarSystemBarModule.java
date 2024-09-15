@@ -28,7 +28,6 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.hvac.HvacController;
-import com.android.systemui.car.statusbar.UserNameViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
@@ -155,7 +154,6 @@ public abstract class CarSystemBarModule {
             UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,
             ButtonSelectionStateController buttonSelectionStateController,
-            Lazy<UserNameViewController> userNameViewControllerLazy,
             Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
             Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
             ButtonRoleHolderController buttonRoleHolderController,
@@ -185,7 +183,7 @@ public abstract class CarSystemBarModule {
             return carSystemBarController.get();
         }
         return new CarSystemBarController(context, userTracker, carSystemBarViewFactory,
-                buttonSelectionStateController, userNameViewControllerLazy,
+                buttonSelectionStateController,
                 micPrivacyChipViewControllerLazy, cameraPrivacyChipViewControllerLazy,
                 buttonRoleHolderController, systemBarConfigs, panelControllerBuilderProvider,
                 lightBarController, darkIconDispatcher, windowManager, deviceProvisionedController,
@@ -221,4 +219,25 @@ public abstract class CarSystemBarModule {
     @ClassKey(DataSubscriptionUnseenIconController.class)
     public abstract CarSystemBarElementController.Factory bindDataSubscriptionUnseenIconController(
             DataSubscriptionUnseenIconController.Factory factory);
+
+    /** Injects UserNamePanelButtonViewController */
+    @Binds
+    @IntoMap
+    @ClassKey(UserNamePanelButtonViewController.class)
+    public abstract CarSystemBarElementController.Factory bindUserNamePanelButtonViewController(
+            UserNamePanelButtonViewController.Factory factory);
+
+    /** Injects UserNameTextViewController */
+    @Binds
+    @IntoMap
+    @ClassKey(UserNameTextViewController.class)
+    public abstract CarSystemBarElementController.Factory bindUserNameTextViewController(
+            UserNameTextViewController.Factory factory);
+
+    /** Injects UserNameImageViewController */
+    @Binds
+    @IntoMap
+    @ClassKey(UserNameImageViewController.class)
+    public abstract CarSystemBarElementController.Factory bindUserNameImageViewController(
+            UserNameImageViewController.Factory factory);
 }

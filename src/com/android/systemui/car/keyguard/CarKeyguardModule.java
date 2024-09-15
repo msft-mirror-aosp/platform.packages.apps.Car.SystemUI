@@ -33,14 +33,17 @@ import com.android.keyguard.dagger.KeyguardStatusBarViewComponent;
 import com.android.keyguard.dagger.KeyguardStatusViewComponent;
 import com.android.keyguard.dagger.KeyguardUserSwitcherComponent;
 import com.android.keyguard.mediator.ScreenOnCoordinator;
+import com.android.systemui.CoreStartable;
 import com.android.systemui.animation.ActivityTransitionAnimator;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.classifier.FalsingModule;
+import com.android.systemui.communal.ui.viewmodel.CommunalTransitionViewModel;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.systemui.dreams.DreamOverlayStateController;
+import com.android.systemui.dreams.ui.viewmodel.DreamViewModel;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.flags.SystemPropertiesHelper;
@@ -48,10 +51,10 @@ import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.keyguard.WindowManagerLockscreenVisibilityManager;
+import com.android.systemui.keyguard.WindowManagerOcclusionManager;
 import com.android.systemui.keyguard.dagger.KeyguardFaceAuthNotSupportedModule;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
 import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
-import com.android.systemui.keyguard.ui.viewmodel.DreamingToLockscreenTransitionViewModel;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationModeController;
 import com.android.systemui.settings.UserTracker;
@@ -73,9 +76,12 @@ import com.android.systemui.util.time.SystemClock;
 import com.android.systemui.wallpapers.data.repository.WallpaperRepository;
 import com.android.wm.shell.keyguard.KeyguardTransitions;
 
+import dagger.Binds;
 import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.ClassKey;
+import dagger.multibindings.IntoMap;
 
 import java.util.concurrent.Executor;
 
@@ -94,14 +100,14 @@ import kotlinx.coroutines.CoroutineDispatcher;
                 KeyguardFaceAuthNotSupportedModule.class,
                 KeyguardRepositoryModule.class,
         })
-public class CarKeyguardModule {
+public interface CarKeyguardModule {
 
     /**
      * Provides our instance of CarKeyguardViewMediator
      */
     @Provides
     @SysUISingleton
-    public static KeyguardViewMediator newKeyguardViewMediator(
+    static KeyguardViewMediator newKeyguardViewMediator(
             Context context,
             UiEventLogger uiEventLogger,
             SessionTracker sessionTracker,
@@ -142,11 +148,13 @@ public class CarKeyguardModule {
             SystemSettings systemSettings,
             SystemClock systemClock,
             @Main CoroutineDispatcher mainDispatcher,
-            Lazy<DreamingToLockscreenTransitionViewModel> dreamingToLockscreenTransitionViewModel,
+            Lazy<DreamViewModel> dreamViewModel,
+            Lazy<CommunalTransitionViewModel> communalTransitionViewModel,
             SystemPropertiesHelper systemPropertiesHelper,
             Lazy<WindowManagerLockscreenVisibilityManager> wmLockscreenVisibilityManager,
             SelectedUserInteractor selectedUserInteractor,
-            KeyguardInteractor keyguardInteractor) {
+            KeyguardInteractor keyguardInteractor,
+            WindowManagerOcclusionManager wmOcclusionManager) {
         return new CarKeyguardViewMediator(
                 context,
                 uiEventLogger,
@@ -188,16 +196,24 @@ public class CarKeyguardModule {
                 systemSettings,
                 systemClock,
                 mainDispatcher,
-                dreamingToLockscreenTransitionViewModel,
+                dreamViewModel,
+                communalTransitionViewModel,
                 systemPropertiesHelper,
                 wmLockscreenVisibilityManager,
                 selectedUserInteractor,
-                keyguardInteractor);
+                keyguardInteractor,
+                wmOcclusionManager);
     }
 
     /** */
     @Provides
-    public ViewMediatorCallback providesViewMediatorCallback(KeyguardViewMediator viewMediator) {
+    static ViewMediatorCallback providesViewMediatorCallback(KeyguardViewMediator viewMediator) {
         return viewMediator.getViewMediatorCallback();
     }
+
+    /** Binds {@link KeyguardUpdateMonitor} as a {@link CoreStartable}. */
+    @Binds
+    @IntoMap
+    @ClassKey(KeyguardUpdateMonitor.class)
+    CoreStartable bindsKeyguardUpdateMonitor(KeyguardUpdateMonitor keyguardUpdateMonitor);
 }

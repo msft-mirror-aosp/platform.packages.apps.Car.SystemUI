@@ -29,6 +29,7 @@ import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
 
 /** Implementation of FrameLayout ViewGroup that supports {@link CarSystemBarElement} attributes */
 public class CarSystemBarFrameLayout extends FrameLayout implements CarSystemBarElement {
+    @Nullable
     private Class<?> mElementControllerClassAttr;
     private int mSystemBarDisableFlags;
     private int mSystemBarDisable2Flags;

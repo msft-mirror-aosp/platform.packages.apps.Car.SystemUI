@@ -21,6 +21,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
+
 import com.android.systemui.dagger.SysUISingleton;
 
 import java.util.ArrayList;
@@ -115,6 +117,7 @@ public class CarSystemBarElementInitializer {
             return mView;
         }
 
+        @Nullable
         Class<?> getControllerClass() {
             return mControllerClass;
         }

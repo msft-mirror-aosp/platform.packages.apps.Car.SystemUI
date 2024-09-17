@@ -16,6 +16,11 @@
 
 package com.android.systemui.car.notification;
 
+import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
+import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
+import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
+import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
+
 import android.car.hardware.power.CarPowerManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -117,7 +122,7 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         registerRightBarTouchListener();
 
         mCarSystemBarController.registerNotificationController(
-                new CarSystemBarController.NotificationsShadeController() {
+                new NotificationsShadeController() {
                     @Override
                     public void togglePanel() {
                         mNotificationPanelViewController.toggle();
@@ -189,22 +194,22 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
     }
 
     protected void registerTopBarTouchListener() {
-        mCarSystemBarController.registerTopBarTouchListener(
+        mCarSystemBarController.registerBarTouchListener(TOP,
                 mNotificationPanelViewController.getDragCloseTouchListener());
     }
 
     protected void registerBottomBarTouchListener() {
-        mCarSystemBarController.registerBottomBarTouchListener(
+        mCarSystemBarController.registerBarTouchListener(BOTTOM,
                 mNotificationPanelViewController.getDragCloseTouchListener());
     }
 
     protected void registerLeftBarTouchListener() {
-        mCarSystemBarController.registerLeftBarTouchListener(
+        mCarSystemBarController.registerBarTouchListener(LEFT,
                 mNotificationPanelViewController.getDragCloseTouchListener());
     }
 
     protected void registerRightBarTouchListener() {
-        mCarSystemBarController.registerRightBarTouchListener(
+        mCarSystemBarController.registerBarTouchListener(RIGHT,
                 mNotificationPanelViewController.getDragCloseTouchListener());
     }
 

@@ -28,7 +28,8 @@ import com.android.systemui.car.systembar.CarSystemBarView;
  */
 public class CarDisplayCompatSystemBarView extends CarSystemBarView {
 
-    public static final String DISPLAYCOMPAT_SYSTEM_FEATURE = "android.car.displaycompatibility";
+    public static final String DISPLAYCOMPAT_SYSTEM_FEATURE =
+            "android.software.car.display_compatibility";
 
     public CarDisplayCompatSystemBarView(Context context, AttributeSet attrs) {
         super(context, attrs);

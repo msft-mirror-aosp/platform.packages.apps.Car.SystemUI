@@ -21,11 +21,9 @@ import android.os.Handler;
 import android.view.IWindowManager;
 
 import com.android.systemui.car.CarServiceProvider;
-import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
-import com.android.systemui.wm.MDSystemBarsController;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
@@ -58,19 +56,6 @@ public abstract class CarWMShellModule {
             @Main Handler mainHandler) {
         return new DisplaySystemBarsController(context, wmService, displayController,
                 displayInsetsController, mainHandler);
-    }
-
-    @WMSingleton
-    @Provides
-    static Optional<MDSystemBarsController> provideMUMDPerDisplayInsetsChangeController(
-            IWindowManager windowManager,
-            @Main Handler mainHandler,
-            Context context) {
-        if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
-            return Optional.of(
-                    new MDSystemBarsController(windowManager, mainHandler, context));
-        }
-        return Optional.empty();
     }
 
     @BindsOptionalOf

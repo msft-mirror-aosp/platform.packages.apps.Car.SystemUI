@@ -24,7 +24,7 @@
     android:orientation="vertical"
     app:default_layout="@layout/car_left_system_bar_default"
     app:displaycompat_layout="@layout/displaycompat_toolbar"
-    app:displaycompat_side="left"
+    app:displaycompat_side="1"
     android:background="@drawable/nav_bar_background">
 
 </com.android.systemui.car.displaycompat.CarDisplayCompatSystemBarView>

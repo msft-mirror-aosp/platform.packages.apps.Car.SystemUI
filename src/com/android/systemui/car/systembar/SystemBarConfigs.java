@@ -19,6 +19,8 @@ package com.android.systemui.car.systembar;
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
 
 import static com.android.systemui.car.systembar.CarSystemBar.DEBUG;
+import static com.android.systemui.car.Flags.displayCompatibilityV2;
+import static com.android.car.dockutil.Flags.dockFeature;
 
 import android.annotation.IntDef;
 import android.content.res.Resources;
@@ -33,7 +35,6 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
-import com.android.car.dockutil.Flags;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.car.notification.BottomNotificationPanelViewMediator;
@@ -541,11 +542,11 @@ public class SystemBarConfigs {
         return side == LEFT || side == RIGHT;
     }
     boolean isLeftDisplayCompatToolbarEnabled() {
-        return mDisplayCompatToolbarState == 1;
+        return displayCompatibilityV2() && mDisplayCompatToolbarState == 1;
     }
 
     boolean isRightDisplayCompatToolbarEnabled() {
-        return mDisplayCompatToolbarState == 2;
+        return displayCompatibilityV2() && mDisplayCompatToolbarState == 2;
     }
 
     private static final class SystemBarConfig {
@@ -609,7 +610,7 @@ public class SystemBarConfigs {
             lp.windowAnimations = 0;
             lp.gravity = BAR_GRAVITY_MAP.get(mSide);
             lp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
-            if (Flags.dockFeature()) {
+            if (dockFeature()) {
                 lp.privateFlags = lp.privateFlags
                         | WindowManager.LayoutParams.PRIVATE_FLAG_INTERCEPT_GLOBAL_DRAG_AND_DROP;
             }

@@ -16,8 +16,6 @@
 
 package com.android.systemui.car.systembar;
 
-import android.util.Log;
-
 import com.android.systemui.CoreStartable;
 import com.android.systemui.dagger.SysUISingleton;
 
@@ -26,9 +24,6 @@ import javax.inject.Inject;
 /** Corestartable class that is responsible for initializing the system bar controller. */
 @SysUISingleton
 public class CarSystemBar implements CoreStartable {
-    private static final String TAG = CarSystemBar.class.getSimpleName();
-    public static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
-
     private final CarSystemBarController mCarSystemBarController;
 
     @Inject

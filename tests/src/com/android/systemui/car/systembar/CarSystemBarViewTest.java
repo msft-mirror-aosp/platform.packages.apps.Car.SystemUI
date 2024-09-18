@@ -31,6 +31,7 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.notification.NotificationsShadeController;
 
 import org.junit.After;
 import org.junit.Before;
@@ -50,7 +51,7 @@ public class CarSystemBarViewTest extends SysuiTestCase {
     private CarSystemBarView mNavBarView;
 
     @Mock
-    private CarSystemBarController.NotificationsShadeController mNotificationsShadeController;
+    private NotificationsShadeController mNotificationsShadeController;
 
     @Mock
     private View.OnTouchListener mNavBarTouchListener;

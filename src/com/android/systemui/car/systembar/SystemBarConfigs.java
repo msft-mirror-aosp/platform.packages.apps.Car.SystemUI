@@ -18,11 +18,13 @@ package com.android.systemui.car.systembar;
 
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
 
-import static com.android.systemui.car.systembar.CarSystemBar.DEBUG;
-import static com.android.systemui.car.Flags.displayCompatibilityV2;
 import static com.android.car.dockutil.Flags.dockFeature;
+import static com.android.systemui.car.Flags.displayCompatibilityV2;
+import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
+import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
+import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
+import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
 
-import android.annotation.IntDef;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.Binder;
@@ -39,11 +41,10 @@ import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.car.notification.BottomNotificationPanelViewMediator;
 import com.android.systemui.car.notification.TopNotificationPanelViewMediator;
+import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -61,18 +62,10 @@ import javax.inject.Inject;
 public class SystemBarConfigs {
 
     private static final String TAG = SystemBarConfigs.class.getSimpleName();
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
+
     // The z-order from which system bars will start to appear on top of HUN's.
     private static final int HUN_ZORDER = 10;
-
-    @IntDef(value = {TOP, BOTTOM, LEFT, RIGHT})
-    @Target({ElementType.TYPE_PARAMETER, ElementType.TYPE_USE})
-    private @interface SystemBarSide {
-    }
-
-    public static final int TOP = 0;
-    public static final int BOTTOM = 1;
-    public static final int LEFT = 2;
-    public static final int RIGHT = 3;
 
     private static final Binder INSETS_OWNER = new Binder();
 
@@ -124,7 +117,7 @@ public class SystemBarConfigs {
         checkHideBottomBarForKeyboardConfigSync();
 
         setInsetPaddingsForOverlappingCorners();
-        sortSystemBarSidesByZOrder();
+        sortSystemBarTypesByZOrder();
     }
 
     /**
@@ -481,7 +474,7 @@ public class SystemBarConfigs {
         updateInsetPaddings(RIGHT, systemBarVisibilityOnInit);
     }
 
-    private void sortSystemBarSidesByZOrder() {
+    private void sortSystemBarTypesByZOrder() {
         List<SystemBarConfig> systemBarsByZOrder = new ArrayList<>(mSystemBarConfigMap.values());
 
         systemBarsByZOrder.sort(new Comparator<SystemBarConfig>() {

@@ -158,10 +158,11 @@ public class ActivityBlockingActivity extends FragmentActivity {
 
         setupGLSurface();
 
-        if (!configAppBlockingActivities()) {
+        if (!configAppBlockingActivities()
+                || !getResources().getBoolean(R.bool.config_enableAppBlockingActivities)) {
             Slog.d(TAG, "Ignoring app blocking activity feature");
             displayBlockingContent();
-        } else if (getResources().getBoolean(R.bool.config_enableAppBlockingActivities)) {
+        } else {
             mBlockedActivityName = getIntent().getStringExtra(
                     CarPackageManager.BLOCKING_INTENT_EXTRA_BLOCKED_ACTIVITY_NAME);
             BlockerViewModel blockerViewModel = new ViewModelProvider(this, mViewModelFactory)

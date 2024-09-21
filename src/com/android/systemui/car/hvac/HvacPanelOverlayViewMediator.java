@@ -16,6 +16,10 @@
 
 package com.android.systemui.car.hvac;
 
+import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
+import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
+import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
+import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
 import static com.android.systemui.car.window.OverlayPanelViewController.OVERLAY_FROM_BOTTOM_BAR;
 
 import android.content.BroadcastReceiver;
@@ -85,17 +89,17 @@ public class HvacPanelOverlayViewMediator implements OverlayViewMediator {
 
     @Override
     public void registerListeners() {
-        mCarSystemBarController.registerTopBarTouchListener(
+        mCarSystemBarController.registerBarTouchListener(TOP,
                 mHvacPanelOverlayViewController.getDragCloseTouchListener());
-        mCarSystemBarController.registerBottomBarTouchListener(
+        mCarSystemBarController.registerBarTouchListener(BOTTOM,
                 mHvacPanelOverlayViewController.getDragCloseTouchListener());
-        mCarSystemBarController.registerLeftBarTouchListener(
+        mCarSystemBarController.registerBarTouchListener(LEFT,
                 mHvacPanelOverlayViewController.getDragCloseTouchListener());
-        mCarSystemBarController.registerRightBarTouchListener(
+        mCarSystemBarController.registerBarTouchListener(RIGHT,
                 mHvacPanelOverlayViewController.getDragCloseTouchListener());
 
         mCarSystemBarController.registerHvacPanelController(
-                new CarSystemBarController.HvacPanelController() {
+                new HvacPanelController() {
                     @Override
                     public void togglePanel() {
                         mHvacPanelOverlayViewController.toggle();

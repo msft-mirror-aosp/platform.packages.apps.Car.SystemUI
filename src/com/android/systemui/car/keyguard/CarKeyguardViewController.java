@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.keyguard;
 
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -49,7 +48,6 @@ import com.android.systemui.bouncer.domain.interactor.PrimaryBouncerInteractor;
 import com.android.systemui.bouncer.ui.BouncerView;
 import com.android.systemui.bouncer.ui.binder.KeyguardBouncerViewBinder;
 import com.android.systemui.bouncer.ui.viewmodel.KeyguardBouncerViewModel;
-import com.android.systemui.car.systembar.CarSystemBarController;
 import com.android.systemui.car.window.OverlayViewController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
@@ -69,6 +67,8 @@ import com.android.systemui.user.domain.interactor.SelectedUserInteractor;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 
 import dagger.Lazy;
+
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -93,7 +93,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private final KeyguardUpdateMonitor mKeyguardUpdateMonitor;
     private final Lazy<BiometricUnlockController> mBiometricUnlockControllerLazy;
     private final ViewMediatorCallback mViewMediatorCallback;
-    private final CarSystemBarController mCarSystemBarController;
     private final PrimaryBouncerInteractor mPrimaryBouncerInteractor;
     private final KeyguardSecurityModel mKeyguardSecurityModel;
     private final KeyguardBouncerViewModel mKeyguardBouncerViewModel;
@@ -144,6 +143,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private int mToastShowDurationMillisecond;
     private ViewGroup mKeyguardContainer;
     private PrimaryBouncerToGoneTransitionViewModel mPrimaryBouncerToGoneTransitionViewModel;
+    private final Optional<KeyguardSystemBarPresenter> mKeyguardSystemBarPresenter;
 
     @Inject
     public CarKeyguardViewController(
@@ -158,7 +158,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
             KeyguardUpdateMonitor keyguardUpdateMonitor,
             Lazy<BiometricUnlockController> biometricUnlockControllerLazy,
             ViewMediatorCallback viewMediatorCallback,
-            CarSystemBarController carSystemBarController,
             PrimaryBouncerCallbackInteractor primaryBouncerCallbackInteractor,
             PrimaryBouncerInteractor primaryBouncerInteractor,
             KeyguardSecurityModel keyguardSecurityModel,
@@ -169,7 +168,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
             KeyguardMessageAreaController.Factory messageAreaControllerFactory,
             BouncerLogger bouncerLogger,
             BouncerMessageInteractor bouncerMessageInteractor,
-            SelectedUserInteractor selectedUserInteractor) {
+            SelectedUserInteractor selectedUserInteractor,
+            Optional<KeyguardSystemBarPresenter> keyguardSystemBarPresenter) {
         super(R.id.keyguard_stub, overlayViewGlobalStateController);
 
         mContext = context;
@@ -182,7 +182,6 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mKeyguardUpdateMonitor = keyguardUpdateMonitor;
         mBiometricUnlockControllerLazy = biometricUnlockControllerLazy;
         mViewMediatorCallback = viewMediatorCallback;
-        mCarSystemBarController = carSystemBarController;
         mPrimaryBouncerInteractor = primaryBouncerInteractor;
         mKeyguardSecurityModel = keyguardSecurityModel;
         mKeyguardBouncerViewModel = keyguardBouncerViewModel;
@@ -197,6 +196,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mBouncerLogger = bouncerLogger;
         mBouncerMessageInteractor = bouncerMessageInteractor;
         primaryBouncerCallbackInteractor.addBouncerExpansionCallback(mExpansionCallback);
+        mKeyguardSystemBarPresenter = keyguardSystemBarPresenter;
     }
 
     @Override
@@ -244,7 +244,9 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mShowing = true;
         mKeyguardStateController.notifyKeyguardState(mShowing,
                 mKeyguardStateController.isOccluded());
-        mCarSystemBarController.showAllKeyguardButtons(/* isSetUp= */ true);
+        if (mKeyguardSystemBarPresenter.isPresent()) {
+            mKeyguardSystemBarPresenter.get().showAllKeyguardButtons();
+        }
         start();
         reset(/* hideBouncerWhenShowing= */ false);
         notifyKeyguardUpdateMonitor();
@@ -260,7 +262,9 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mKeyguardStateController.notifyKeyguardState(mShowing,
                 mKeyguardStateController.isOccluded());
         mPrimaryBouncerInteractor.hide();
-        mCarSystemBarController.showAllNavigationButtons(/* isSetUp= */ true);
+        if (mKeyguardSystemBarPresenter.isPresent()) {
+            mKeyguardSystemBarPresenter.get().showAllNavigationButtons();
+        }
         stop();
         mKeyguardStateController.notifyKeyguardDoneFading();
         mMainExecutor.execute(mViewMediatorCallback::keyguardGone);
@@ -306,13 +310,15 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mKeyguardStateController.notifyKeyguardState(
                 mKeyguardStateController.isShowing(), occluded);
         getOverlayViewGlobalStateController().setOccluded(occluded);
-        if (occluded && !mKeyguardStateController.isUnlocked()) {
-            mCarSystemBarController.showAllOcclusionButtons(/* isSetup= */ true);
-        } else {
-            if (mShowing && isSecure()) {
-                mCarSystemBarController.showAllKeyguardButtons(/* isSetup= */ true);
+        if (mKeyguardSystemBarPresenter.isPresent()) {
+            if (occluded && !mKeyguardStateController.isUnlocked()) {
+                mKeyguardSystemBarPresenter.get().showAllOcclusionButtons();
             } else {
-                mCarSystemBarController.showAllNavigationButtons(/* isSetUp= */ true);
+                if (mShowing && isSecure()) {
+                    mKeyguardSystemBarPresenter.get().showAllKeyguardButtons();
+                } else {
+                    mKeyguardSystemBarPresenter.get().showAllNavigationButtons();
+                }
             }
         }
     }

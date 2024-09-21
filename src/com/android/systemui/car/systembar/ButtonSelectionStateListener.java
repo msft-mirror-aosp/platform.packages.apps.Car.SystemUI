@@ -27,7 +27,7 @@ import com.android.systemui.shared.system.TaskStackChangeListener;
  * task stack and notifies the navigation bar.
  */
 @SysUISingleton
-class ButtonSelectionStateListener implements TaskStackChangeListener {
+public class ButtonSelectionStateListener implements TaskStackChangeListener {
     private static final String TAG = ButtonSelectionStateListener.class.getSimpleName();
 
     /* Visible so that subclasses can make calls to this controller. */

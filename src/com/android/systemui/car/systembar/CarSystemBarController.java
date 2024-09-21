@@ -119,21 +119,6 @@ public interface CarSystemBarController extends ConfigurationController.Configur
     void registerBarTouchListener(@SystemBarSide int side, View.OnTouchListener listener);
 
     /**
-     * Shows all navigation buttons.
-     */
-    void showAllNavigationButtons(boolean isSetUp);
-
-    /**
-     * Shows all keugaurd buttons.
-     */
-    void showAllKeyguardButtons(boolean isSetUp);
-
-    /**
-     * Shows all occulusion buttons.
-     */
-    void showAllOcclusionButtons(boolean isSetUp);
-
-    /**
      * Toggles all notification unseen indicator.
      */
     void toggleAllNotificationsUnseenIndicator(boolean isSetUp, boolean hasUnseen);

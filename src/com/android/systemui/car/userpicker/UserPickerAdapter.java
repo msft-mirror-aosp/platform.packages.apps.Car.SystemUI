@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.userpicker;
 
+import android.car.feature.Flags;
 import android.content.Context;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -75,7 +76,8 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapter.UserPickerAdapte
 
     private void setUserLoggedInInfo(UserPickerAdapterViewHolder holder, UserRecord userRecord) {
         if (!userRecord.mIsStopping && !userRecord.mIsLoggedIn) {
-            if (userRecord.mIsSecure && mDisplayId != Display.DEFAULT_DISPLAY) {
+            if (userRecord.mIsSecure && mDisplayId != Display.DEFAULT_DISPLAY
+                    && !Flags.supportsSecurePassengerUsers()) {
                 holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
                 holder.mLoggedInTextView.setText(mUnavailableSecureUserText);
                 updateAlpha(holder, /* disabled= */ true);

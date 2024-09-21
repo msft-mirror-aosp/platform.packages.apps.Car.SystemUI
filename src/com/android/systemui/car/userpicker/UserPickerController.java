@@ -32,6 +32,7 @@ import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_LOGOU
 import android.annotation.IntDef;
 import android.annotation.UserIdInt;
 import android.app.ActivityManager;
+import android.car.feature.Flags;
 import android.car.user.UserCreationResult;
 import android.content.Context;
 import android.content.pm.UserInfo;
@@ -408,12 +409,14 @@ final class UserPickerController {
             // Second, check user has been already logged-in in another display or is stopping.
             if ((userRecord.mIsLoggedIn && userRecord.mLoggedInDisplay != mDisplayId)
                     || mUserPickerSharedState.isStoppingUser(userId)
-                    || (userRecord.mIsSecure && !isFgUserStart)) {
+                    || (!Flags.supportsSecurePassengerUsers() && userRecord.mIsSecure
+                    && !isFgUserStart)) {
                 String message;
                 if (userRecord.mIsStopping) {
                     message = mContext.getString(R.string.wait_for_until_stopped_message,
                             userRecord.mName);
-                } else if (userRecord.mIsSecure && !isFgUserStart) {
+                } else if (!Flags.supportsSecurePassengerUsers() && userRecord.mIsSecure
+                        && !isFgUserStart) {
                     message = mContext.getString(R.string.unavailable_secure_user_message);
                 } else {
                     message = mContext.getString(R.string.already_logged_in_message,

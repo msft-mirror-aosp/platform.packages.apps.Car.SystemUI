@@ -29,6 +29,7 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.hvac.HvacController;
+import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
@@ -235,4 +236,16 @@ public abstract class CarSystemBarModule {
     @ClassKey(UserNameImageViewController.class)
     public abstract CarSystemBarElementController.Factory bindUserNameImageViewController(
             UserNameImageViewController.Factory factory);
+
+    /** Injects KeyguardSystemBarPresenter */
+    @SysUISingleton
+    @Provides
+    static Optional<KeyguardSystemBarPresenter> bindKeyguardSystemBarPresenter(
+             CarSystemBarController controller) {
+        if (controller instanceof KeyguardSystemBarPresenter) {
+            return Optional.of((KeyguardSystemBarPresenter) controller);
+        } else {
+            return Optional.empty();
+        }
+    }
 }

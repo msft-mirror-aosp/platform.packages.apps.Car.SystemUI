@@ -576,7 +576,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 /* isSetUp= */ true);
         View bottomNavButtons = bottomBar.findViewById(R.id.nav_buttons);
 
-        mCarSystemBarController.showAllNavigationButtons(/* isSetUp= */ true);
+        mCarSystemBarController.showAllNavigationButtons();
 
         assertThat(bottomNavButtons.getVisibility()).isEqualTo(View.VISIBLE);
     }
@@ -589,7 +589,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 /* isSetUp= */ true);
         View bottomKeyguardButtons = bottomBar.findViewById(R.id.lock_screen_nav_buttons);
 
-        mCarSystemBarController.showAllNavigationButtons(/* isSetUp= */ true);
+        mCarSystemBarController.showAllNavigationButtons();
 
         assertThat(bottomKeyguardButtons.getVisibility()).isEqualTo(View.GONE);
     }
@@ -602,7 +602,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 /* isSetUp= */ true);
         View occlusionButtons = bottomBar.findViewById(R.id.occlusion_buttons);
 
-        mCarSystemBarController.showAllNavigationButtons(/* isSetUp= */ true);
+        mCarSystemBarController.showAllNavigationButtons();
 
         assertThat(occlusionButtons.getVisibility()).isEqualTo(View.GONE);
     }
@@ -615,7 +615,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 /* isSetUp= */ true);
         View bottomKeyguardButtons = bottomBar.findViewById(R.id.lock_screen_nav_buttons);
 
-        mCarSystemBarController.showAllKeyguardButtons(/* isSetUp= */ true);
+        mCarSystemBarController.showAllKeyguardButtons();
 
         assertThat(bottomKeyguardButtons.getVisibility()).isEqualTo(View.VISIBLE);
     }
@@ -628,7 +628,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 /* isSetUp= */ true);
         View bottomNavButtons = bottomBar.findViewById(R.id.nav_buttons);
 
-        mCarSystemBarController.showAllKeyguardButtons(/* isSetUp= */ true);
+        mCarSystemBarController.showAllKeyguardButtons();
 
         assertThat(bottomNavButtons.getVisibility()).isEqualTo(View.GONE);
     }
@@ -641,7 +641,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 /* isSetUp= */ true);
         View occlusionButtons = bottomBar.findViewById(R.id.occlusion_buttons);
 
-        mCarSystemBarController.showAllKeyguardButtons(/* isSetUp= */ true);
+        mCarSystemBarController.showAllKeyguardButtons();
 
         assertThat(occlusionButtons.getVisibility()).isEqualTo(View.GONE);
     }
@@ -654,7 +654,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 /* isSetUp= */ true);
         View occlusionButtons = bottomBar.findViewById(R.id.occlusion_buttons);
 
-        mCarSystemBarController.showAllOcclusionButtons(/* isSetUp= */ true);
+        mCarSystemBarController.showAllOcclusionButtons();
 
         assertThat(occlusionButtons.getVisibility()).isEqualTo(View.VISIBLE);
     }
@@ -667,7 +667,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 /* isSetUp= */ true);
         View bottomNavButtons = bottomBar.findViewById(R.id.nav_buttons);
 
-        mCarSystemBarController.showAllOcclusionButtons(/* isSetUp= */ true);
+        mCarSystemBarController.showAllOcclusionButtons();
 
         assertThat(bottomNavButtons.getVisibility()).isEqualTo(View.GONE);
     }
@@ -680,7 +680,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 /* isSetUp= */ true);
         View keyguardButtons = bottomBar.findViewById(R.id.lock_screen_nav_buttons);
 
-        mCarSystemBarController.showAllOcclusionButtons(/* isSetUp= */ true);
+        mCarSystemBarController.showAllOcclusionButtons();
 
         assertThat(keyguardButtons.getVisibility()).isEqualTo(View.GONE);
     }

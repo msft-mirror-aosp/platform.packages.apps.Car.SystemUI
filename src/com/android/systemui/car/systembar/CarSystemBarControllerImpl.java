@@ -71,6 +71,7 @@ import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
+import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationsShadeController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
@@ -105,7 +106,8 @@ import javax.inject.Provider;
 /** A single class which controls the system bar views. */
 @SysUISingleton
 public class CarSystemBarControllerImpl implements CarSystemBarController,
-        CommandQueue.Callbacks, ConfigurationController.ConfigurationListener {
+        CommandQueue.Callbacks, ConfigurationController.ConfigurationListener,
+        KeyguardSystemBarPresenter {
     private static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;
 
     private static final String TAG = CarSystemBarController.class.getSimpleName();
@@ -980,8 +982,14 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     /**
      * Shows all of the navigation buttons on the valid instances of {@link CarSystemBarView}.
      */
-    public void showAllNavigationButtons(boolean isSetUp) {
-        checkAllBars(isSetUp);
+    @Override
+    public void showAllNavigationButtons() {
+        showAllNavigationButtons(true);
+    }
+
+    // TODO(b/368407601): can we remove this?
+    protected void showAllNavigationButtons(boolean isSetup) {
+        checkAllBars(isSetup);
         if (mTopView != null) {
             mTopView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_NAVIGATION);
         }
@@ -1000,7 +1008,14 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      * Shows all of the keyguard specific buttons on the valid instances of
      * {@link CarSystemBarView}.
      */
-    public void showAllKeyguardButtons(boolean isSetUp) {
+    @Override
+    public void showAllKeyguardButtons() {
+        showAllKeyguardButtons(true);
+    }
+
+    @VisibleForTesting
+    // TODO(b/368407601): can we remove this?
+    protected void showAllKeyguardButtons(boolean isSetUp) {
         checkAllBars(isSetUp);
         if (mTopView != null) {
             mTopView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_KEYGUARD);
@@ -1020,7 +1035,13 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      * Shows all of the occlusion state buttons on the valid instances of
      * {@link CarSystemBarView}.
      */
-    public void showAllOcclusionButtons(boolean isSetUp) {
+    @Override
+    public void showAllOcclusionButtons() {
+        showAllOcclusionButtons(true);
+    }
+
+    // TODO(b/368407601): can we remove this?
+    protected void showAllOcclusionButtons(boolean isSetUp) {
         checkAllBars(isSetUp);
         if (mTopView != null) {
             mTopView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_OCCLUSION);

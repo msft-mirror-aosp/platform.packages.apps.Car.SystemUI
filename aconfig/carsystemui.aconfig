@@ -49,3 +49,10 @@ flag {
     description: "Flag that shows the quick controls panel for sound."
     bug: "344677470"
 }
+
+flag {
+    name: "display_compatibility_v2"
+    namespace: "car_sys_exp"
+    description: "This flag controls v2 development to enable display compatibility feature."
+    bug: "364382110"
+}

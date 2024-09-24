@@ -73,6 +73,7 @@ import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationPanelViewController;
+import com.android.systemui.car.notification.NotificationSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationsShadeController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
@@ -107,7 +108,7 @@ import javax.inject.Provider;
 @SysUISingleton
 public class CarSystemBarControllerImpl implements CarSystemBarController,
         CommandQueue.Callbacks, ConfigurationController.ConfigurationListener,
-        KeyguardSystemBarPresenter {
+        KeyguardSystemBarPresenter, NotificationSystemBarPresenter {
     private static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;
 
     private static final String TAG = CarSystemBarController.class.getSimpleName();
@@ -909,7 +910,8 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     /** Sets a notification controller which toggles the notification panel. */
-    public void registerNotificationController(
+    @Override
+    public void registerNotificationShadeController(
             NotificationsShadeController notificationsShadeController) {
         mNotificationsShadeController = notificationsShadeController;
         if (mTopView != null) {
@@ -927,6 +929,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     /** Sets the NotificationPanelViewController for views to listen to the panel's state. */
+    @Override
     public void registerNotificationPanelViewController(
             NotificationPanelViewController notificationPanelViewController) {
         mNotificationPanelViewController = notificationPanelViewController;
@@ -1058,7 +1061,15 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     /** Toggles whether the notifications icon has an unseen indicator or not. */
-    public void toggleAllNotificationsUnseenIndicator(boolean isSetUp, boolean hasUnseen) {
+    @Override
+    public void toggleAllNotificationsUnseenIndicator(boolean hasUnseen) {
+        toggleAllNotificationsUnseenIndicator(
+                mCarDeviceProvisionedController.isCurrentUserFullySetup(), hasUnseen);
+    }
+
+    // TODO(b/368407601): can we remove this?
+    @VisibleForTesting
+    void toggleAllNotificationsUnseenIndicator(boolean isSetUp, boolean hasUnseen) {
         checkAllBars(isSetUp);
         if (mTopView != null) {
             mTopView.toggleNotificationUnseenIndicator(hasUnseen);

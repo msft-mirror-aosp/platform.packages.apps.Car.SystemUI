@@ -42,10 +42,10 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationPanelViewMediator;
+import com.android.systemui.car.notification.NotificationSystemBarPresenter;
 import com.android.systemui.car.notification.PowerManagerHelper;
 import com.android.systemui.car.notification.TopNotificationPanelViewMediator;
 import com.android.systemui.settings.UserTracker;
@@ -60,6 +60,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -380,11 +381,11 @@ public class SystemBarConfigsTest extends SysuiTestCase {
                 PowerManagerHelper powerManagerHelper,
                 BroadcastDispatcher broadcastDispatcher,
                 UserTracker userTracker,
-                CarDeviceProvisionedController carDeviceProvisionedController,
-                ConfigurationController configurationController) {
+                ConfigurationController configurationController,
+                Optional<NotificationSystemBarPresenter> presenter) {
             super(context, carSystemBarController, notificationPanelViewController,
                     powerManagerHelper, broadcastDispatcher, userTracker,
-                    carDeviceProvisionedController, configurationController);
+                    configurationController, presenter);
         }
     }
 }

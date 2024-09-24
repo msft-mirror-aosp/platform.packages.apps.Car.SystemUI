@@ -22,8 +22,6 @@ import android.view.ViewGroup;
 
 import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
-import com.android.systemui.car.notification.NotificationPanelViewController;
-import com.android.systemui.car.notification.NotificationsShadeController;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import java.lang.annotation.ElementType;
@@ -73,11 +71,6 @@ public interface CarSystemBarController extends ConfigurationController.Configur
     void registerBarTouchListener(@SystemBarSide int side, View.OnTouchListener listener);
 
     /**
-     * Toggles all notification unseen indicator.
-     */
-    void toggleAllNotificationsUnseenIndicator(boolean isSetUp, boolean hasUnseen);
-
-    /**
      * Registers a {@link HvacPanelController}
      */
     void registerHvacPanelController(HvacPanelController hvacPanelController);
@@ -87,16 +80,4 @@ public interface CarSystemBarController extends ConfigurationController.Configur
      */
     void registerHvacPanelOverlayViewController(
             HvacPanelOverlayViewController hvacPanelOverlayViewController);
-
-    /**
-     * Registers a {@link NotificationsShadeController}
-     */
-    void registerNotificationController(
-            NotificationsShadeController notificationsShadeController);
-
-    /**
-     * Registers a {@link NotificationPanelViewController}
-     */
-    void registerNotificationPanelViewController(
-            NotificationPanelViewController notificationPanelViewController);
 }

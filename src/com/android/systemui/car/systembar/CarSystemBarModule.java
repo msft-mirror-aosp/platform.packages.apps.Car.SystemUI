@@ -240,7 +240,7 @@ public abstract class CarSystemBarModule {
     /** Injects KeyguardSystemBarPresenter */
     @SysUISingleton
     @Provides
-    static Optional<KeyguardSystemBarPresenter> bindKeyguardSystemBarPresenter(
+    static Optional<KeyguardSystemBarPresenter> provideKeyguardSystemBarPresenter(
              CarSystemBarController controller) {
         if (controller instanceof KeyguardSystemBarPresenter) {
             return Optional.of((KeyguardSystemBarPresenter) controller);

@@ -16,8 +16,6 @@
 
 package com.android.systemui.car.wm.taskview;
 
-import static android.view.WindowManager.TRANSIT_TO_FRONT;
-
 import android.app.ActivityManager;
 import android.app.WindowConfiguration;
 import android.content.Context;
@@ -54,7 +52,6 @@ public final class RemoteCarTaskViewTransitions implements Transitions.Transitio
     private final Transitions mTransitions;
     private final Context mContext;
     private final Lazy<CarSystemUIProxyImpl> mCarSystemUIProxy;
-    private IBinder mReorderedToTop;
 
     @Inject
     public RemoteCarTaskViewTransitions(Transitions transitions,
@@ -81,14 +78,12 @@ public final class RemoteCarTaskViewTransitions implements Transitions.Transitio
             return null;
         }
 
-        mReorderedToTop = null;
         WindowContainerTransaction wct = null;
         // TODO(b/333923667): Plumb some API and get the host activity from CarSystemUiProxyImpl
         //  on a per taskview basis and remove the ACTIVITY_TYPE_HOME check.
         if (isHome(request.getTriggerTask())
                 && TransitionUtil.isOpeningType(request.getType())) {
             wct = reorderEmbeddedTasksToTop(request.getTriggerTask().displayId);
-            mReorderedToTop = transition;
         }
 
         // TODO(b/333923667): Think of moving this to CarUiPortraitSystemUI instead.
@@ -136,22 +131,7 @@ public final class RemoteCarTaskViewTransitions implements Transitions.Transitio
             @NonNull SurfaceControl.Transaction startTransaction,
             @NonNull SurfaceControl.Transaction finishTransaction,
             @NonNull Transitions.TransitionFinishCallback finishCallback) {
-        if (mReorderedToTop != transition) {
-            mReorderedToTop = null;
-            // This is to handle the case where when some activity on top of home goes away by
-            // pressing back, a handleRequest is not sent for the home due to which the home
-            // comes to the top and embedded tasks become invisible. Only do this when home is
-            // coming to the top due to opening type transition. Note that a new transition will
-            // be sent out for each home activity if the TransitionInfo.Change contains multiple
-            // home activities.
-            for (TransitionInfo.Change chg : info.getChanges()) {
-                if (chg.getTaskInfo() != null && isHome(chg.getTaskInfo())
-                        && TransitionUtil.isOpeningType(chg.getMode())) {
-                    mTransitions.startTransition(TRANSIT_TO_FRONT,
-                            reorderEmbeddedTasksToTop(chg.getEndDisplayId()), null);
-                }
-            }
-        }
+        // TODO(b/369186876): Implement reordering of task view task with the host task
         return false;
     }
 }

@@ -248,4 +248,11 @@ public abstract class CarSystemBarModule {
             return Optional.empty();
         }
     }
+
+    /** Injects DebugPanelButtonViewController */
+    @Binds
+    @IntoMap
+    @ClassKey(DebugPanelButtonViewController.class)
+    public abstract CarSystemBarElementController.Factory bindDebugPanelButtonViewController(
+            DebugPanelButtonViewController.Factory factory);
 }

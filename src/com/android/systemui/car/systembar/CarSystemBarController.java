@@ -20,8 +20,6 @@ import android.annotation.IntDef;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.android.systemui.car.hvac.HvacPanelController;
-import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import java.lang.annotation.ElementType;
@@ -69,15 +67,4 @@ public interface CarSystemBarController extends ConfigurationController.Configur
      * Registers a touch listener callbar for the given system bar side.
      */
     void registerBarTouchListener(@SystemBarSide int side, View.OnTouchListener listener);
-
-    /**
-     * Registers a {@link HvacPanelController}
-     */
-    void registerHvacPanelController(HvacPanelController hvacPanelController);
-
-    /**
-     * Registers a {@link HvacPanelOverlayViewController}
-     */
-    void registerHvacPanelOverlayViewController(
-            HvacPanelOverlayViewController hvacPanelOverlayViewController);
 }

@@ -29,6 +29,7 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.hvac.HvacController;
+import com.android.systemui.car.hvac.HvacSystemBarPresenter;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationSystemBarPresenter;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
@@ -264,6 +265,18 @@ public abstract class CarSystemBarModule {
              CarSystemBarController controller) {
         if (controller instanceof NotificationSystemBarPresenter) {
             return Optional.of((NotificationSystemBarPresenter) controller);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /** Injects HvacSystemBarPresenter */
+    @SysUISingleton
+    @Provides
+    static Optional<HvacSystemBarPresenter> provideHvacSystemBarPresenter(
+             CarSystemBarController controller) {
+        if (controller instanceof HvacSystemBarPresenter) {
+            return Optional.of((HvacSystemBarPresenter) controller);
         } else {
             return Optional.empty();
         }

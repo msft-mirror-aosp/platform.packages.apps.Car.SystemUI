@@ -148,7 +148,7 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
     @Override
     public void toggleSensor() {
         mSensorPrivacyManager.setSensorPrivacy(/* source= */ QS_TILE, /* sensor= */ getChipSensor(),
-                /* enable= */ isSensorEnabled());
+                /* enable= */ isSensorEnabled(), mUserTracker.getUserId());
     }
 
     @Override

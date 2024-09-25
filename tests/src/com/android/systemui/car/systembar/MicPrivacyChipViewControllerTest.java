@@ -66,6 +66,7 @@ import java.util.concurrent.Executor;
 @TestableLooper.RunWithLooper
 @SmallTest
 public class MicPrivacyChipViewControllerTest extends SysuiTestCase {
+    private static final int TEST_USER_ID = 1001;
 
     private MicPrivacyChipViewController mMicPrivacyChipViewController;
     private FrameLayout mFrameLayout;
@@ -106,6 +107,7 @@ public class MicPrivacyChipViewControllerTest extends SysuiTestCase {
 
         when(mContext.getMainExecutor()).thenReturn(mExecutor);
         when(mCar.isConnected()).thenReturn(true);
+        when(mUserTracker.getUserId()).thenReturn(TEST_USER_ID);
 
         mMicPrivacyChipViewController = new MicPrivacyChipViewController(mContext,
                 mPrivacyItemController, mSensorPrivacyManager, mUserTracker);
@@ -311,7 +313,8 @@ public class MicPrivacyChipViewControllerTest extends SysuiTestCase {
 
         mMicPrivacyChipViewController.toggleSensor();
 
-        verify(mSensorPrivacyManager).setSensorPrivacy(eq(QS_TILE), eq(MICROPHONE), eq(true));
+        verify(mSensorPrivacyManager).setSensorPrivacy(eq(QS_TILE), eq(MICROPHONE), eq(true),
+                eq(TEST_USER_ID));
     }
 
     @Test
@@ -321,6 +324,7 @@ public class MicPrivacyChipViewControllerTest extends SysuiTestCase {
 
         mMicPrivacyChipViewController.toggleSensor();
 
-        verify(mSensorPrivacyManager).setSensorPrivacy(eq(QS_TILE), eq(MICROPHONE), eq(false));
+        verify(mSensorPrivacyManager).setSensorPrivacy(eq(QS_TILE), eq(MICROPHONE), eq(false),
+                eq(TEST_USER_ID));
     }
 }

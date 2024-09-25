@@ -71,6 +71,7 @@ import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
+import com.android.systemui.car.hvac.HvacSystemBarPresenter;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationSystemBarPresenter;
@@ -108,7 +109,7 @@ import javax.inject.Provider;
 @SysUISingleton
 public class CarSystemBarControllerImpl implements CarSystemBarController,
         CommandQueue.Callbacks, ConfigurationController.ConfigurationListener,
-        KeyguardSystemBarPresenter, NotificationSystemBarPresenter {
+        KeyguardSystemBarPresenter, NotificationSystemBarPresenter, HvacSystemBarPresenter {
     private static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;
 
     private static final String TAG = CarSystemBarController.class.getSimpleName();
@@ -948,6 +949,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     /** Sets an HVAC controller which toggles the HVAC panel. */
+    @Override
     public void registerHvacPanelController(HvacPanelController hvacPanelController) {
         mHvacPanelController = hvacPanelController;
         if (mTopView != null) {
@@ -965,6 +967,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     /** Sets the HVACPanelOverlayViewController for views to listen to the panel's state. */
+    @Override
     public void registerHvacPanelOverlayViewController(
             HvacPanelOverlayViewController hvacPanelOverlayViewController) {
         mHvacPanelOverlayViewController = hvacPanelOverlayViewController;

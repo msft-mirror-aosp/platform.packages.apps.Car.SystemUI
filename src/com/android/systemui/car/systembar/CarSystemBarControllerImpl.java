@@ -506,28 +506,9 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mShowRight = mSystemBarConfigs.getEnabledStatusBySide(RIGHT);
     }
 
-    /**
-     * Hides all system bars.
-     */
-    public void hideBars() {
-        setTopWindowVisibility(View.GONE);
-        setBottomWindowVisibility(View.GONE);
-        setLeftWindowVisibility(View.GONE);
-        setRightWindowVisibility(View.GONE);
-    }
-
-    /**
-     * Shows all system bars.
-     */
-    public void showBars() {
-        setTopWindowVisibility(View.VISIBLE);
-        setBottomWindowVisibility(View.VISIBLE);
-        setLeftWindowVisibility(View.VISIBLE);
-        setRightWindowVisibility(View.VISIBLE);
-    }
-
     /** Clean up */
-    public void removeAll() {
+    @VisibleForTesting
+    void removeAll() {
         mButtonSelectionStateController.removeAll();
         mButtonRoleHolderController.removeAll();
         mMicPrivacyChipViewControllerLazy.get().removeAll();
@@ -540,49 +521,31 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     /** Gets the top window if configured to do so. */
     @Nullable
-    public ViewGroup getTopWindow() {
+    private ViewGroup getTopWindow() {
         return mShowTop ? mCarSystemBarViewFactory.getTopWindow() : null;
     }
 
     /** Gets the bottom window if configured to do so. */
     @Nullable
-    public ViewGroup getBottomWindow() {
+    private ViewGroup getBottomWindow() {
         return mShowBottom ? mCarSystemBarViewFactory.getBottomWindow() : null;
     }
 
     /** Gets the left window if configured to do so. */
     @Nullable
-    public ViewGroup getLeftWindow() {
+    private ViewGroup getLeftWindow() {
         return mShowLeft ? mCarSystemBarViewFactory.getLeftWindow() : null;
     }
 
     /** Gets the right window if configured to do so. */
     @Nullable
-    public ViewGroup getRightWindow() {
+    private ViewGroup getRightWindow() {
         return mShowRight ? mCarSystemBarViewFactory.getRightWindow() : null;
     }
 
-    /** Toggles the top nav bar visibility. */
-    public boolean setTopWindowVisibility(@View.Visibility int visibility) {
-        return setWindowVisibility(getTopWindow(), visibility);
-    }
-
-    /** Toggles the bottom nav bar visibility. */
-    public boolean setBottomWindowVisibility(@View.Visibility int visibility) {
-        return setWindowVisibility(getBottomWindow(), visibility);
-    }
-
-    /** Toggles the left nav bar visibility. */
-    public boolean setLeftWindowVisibility(@View.Visibility int visibility) {
-        return setWindowVisibility(getLeftWindow(), visibility);
-    }
-
     /** Toggles the right nav bar visibility. */
-    public boolean setRightWindowVisibility(@View.Visibility int visibility) {
-        return setWindowVisibility(getRightWindow(), visibility);
-    }
-
-    private boolean setWindowVisibility(ViewGroup window, @View.Visibility int visibility) {
+    @VisibleForTesting
+    boolean setWindowVisibility(ViewGroup window, @View.Visibility int visibility) {
         if (window == null) {
             return false;
         }
@@ -603,7 +566,8 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      * @param state {@code StatusBarManager.DisableFlags}
      * @param state2 {@code StatusBarManager.Disable2Flags}
      */
-    public void setSystemBarStates(int state, int state2) {
+    @VisibleForTesting
+    void setSystemBarStates(int state, int state2) {
         int diff = (state ^ mStatusBarState) | (state2 ^ mStatusBarState2);
         int lockTaskMode = getLockTaskModeState();
         if (diff == 0 && mLockTaskMode == lockTaskMode) {
@@ -620,18 +584,13 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     @VisibleForTesting
-    protected int getStatusBarState() {
+    int getStatusBarState() {
         return mStatusBarState;
     }
 
     @VisibleForTesting
-    protected int getStatusBarState2() {
+    int getStatusBarState2() {
         return mStatusBarState2;
-    }
-
-    @VisibleForTesting
-    protected int getLockTaskMode() {
-        return mLockTaskMode;
     }
 
     /**
@@ -647,7 +606,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      * {@code StatusBarManager.DISABLE2_QUICK_SETTINGS} is set.
      * </ul>
      */
-    public void refreshSystemBar() {
+    private void refreshSystemBar() {
         boolean homeDisabled = ((mStatusBarState & StatusBarManager.DISABLE_HOME) > 0);
         boolean notificationDisabled =
                 ((mStatusBarState & StatusBarManager.DISABLE_NOTIFICATION_ICONS) > 0);
@@ -692,25 +651,9 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
                 Toast.LENGTH_LONG).show();
     }
 
-    @Override
-    public boolean setBarVisibility(@SystemBarSide int side, @View.Visibility int visibility) {
-        switch (side) {
-            case BOTTOM:
-                return setBottomWindowVisibility(visibility);
-            case LEFT:
-                return setLeftWindowVisibility(visibility);
-            case RIGHT:
-                return setRightWindowVisibility(visibility);
-            case TOP:
-                return setTopWindowVisibility(visibility);
-            default:
-                return false;
-        }
-    }
-
-    @Override
+    @VisibleForTesting
     @Nullable
-    public ViewGroup getBarWindow(@SystemBarSide int side) {
+    ViewGroup getBarWindow(@SystemBarSide int side) {
         switch (side) {
             case BOTTOM:
                 return getBottomWindow();
@@ -725,9 +668,9 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         }
     }
 
-    @Override
+    @VisibleForTesting
     @Nullable
-    public CarSystemBarView getBarView(@SystemBarSide int side, boolean isSetUp) {
+    CarSystemBarView getBarView(@SystemBarSide int side, boolean isSetUp) {
         switch (side) {
             case BOTTOM:
                 return getBottomBar(isSetUp);
@@ -764,7 +707,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     /** Gets the top navigation bar with the appropriate listeners set. */
     @Nullable
-    public CarSystemBarView getTopBar(boolean isSetUp) {
+    private CarSystemBarView getTopBar(boolean isSetUp) {
         if (!mShowTop) {
             return null;
         }
@@ -789,7 +732,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     /** Gets the bottom navigation bar with the appropriate listeners set. */
     @Nullable
-    public CarSystemBarView getBottomBar(boolean isSetUp) {
+    private CarSystemBarView getBottomBar(boolean isSetUp) {
         if (!mShowBottom) {
             return null;
         }
@@ -804,7 +747,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     /** Gets the left navigation bar with the appropriate listeners set. */
     @Nullable
-    public CarSystemBarView getLeftBar(boolean isSetUp) {
+    private CarSystemBarView getLeftBar(boolean isSetUp) {
         if (!mShowLeft) {
             return null;
         }
@@ -818,7 +761,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     /** Gets the right navigation bar with the appropriate listeners set. */
     @Nullable
-    public CarSystemBarView getRightBar(boolean isSetUp) {
+    private CarSystemBarView getRightBar(boolean isSetUp) {
         if (!mShowRight) {
             return null;
         }
@@ -879,7 +822,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     /** Sets a touch listener for the top navigation bar. */
-    public void registerTopBarTouchListener(View.OnTouchListener listener) {
+    private void registerTopBarTouchListener(View.OnTouchListener listener) {
         boolean setModified = mTopBarTouchListeners.add(listener);
         if (setModified && mTopView != null) {
             mTopView.setStatusBarWindowTouchListeners(mTopBarTouchListeners);
@@ -887,7 +830,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     /** Sets a touch listener for the bottom navigation bar. */
-    public void registerBottomBarTouchListener(View.OnTouchListener listener) {
+    private void registerBottomBarTouchListener(View.OnTouchListener listener) {
         boolean setModified = mBottomBarTouchListeners.add(listener);
         if (setModified && mBottomView != null) {
             mBottomView.setStatusBarWindowTouchListeners(mBottomBarTouchListeners);
@@ -895,7 +838,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     /** Sets a touch listener for the left navigation bar. */
-    public void registerLeftBarTouchListener(View.OnTouchListener listener) {
+    private void registerLeftBarTouchListener(View.OnTouchListener listener) {
         boolean setModified = mLeftBarTouchListeners.add(listener);
         if (setModified && mLeftView != null) {
             mLeftView.setStatusBarWindowTouchListeners(mLeftBarTouchListeners);
@@ -903,7 +846,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     /** Sets a touch listener for the right navigation bar. */
-    public void registerRightBarTouchListener(View.OnTouchListener listener) {
+    private void registerRightBarTouchListener(View.OnTouchListener listener) {
         boolean setModified = mRightBarTouchListeners.add(listener);
         if (setModified && mRightView != null) {
             mRightView.setStatusBarWindowTouchListeners(mRightBarTouchListeners);
@@ -994,7 +937,8 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     // TODO(b/368407601): can we remove this?
-    protected void showAllNavigationButtons(boolean isSetup) {
+    @VisibleForTesting
+    void showAllNavigationButtons(boolean isSetup) {
         checkAllBars(isSetup);
         if (mTopView != null) {
             mTopView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_NAVIGATION);
@@ -1019,9 +963,9 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         showAllKeyguardButtons(true);
     }
 
-    @VisibleForTesting
     // TODO(b/368407601): can we remove this?
-    protected void showAllKeyguardButtons(boolean isSetUp) {
+    @VisibleForTesting
+    void showAllKeyguardButtons(boolean isSetUp) {
         checkAllBars(isSetUp);
         if (mTopView != null) {
             mTopView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_KEYGUARD);
@@ -1047,7 +991,8 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     // TODO(b/368407601): can we remove this?
-    protected void showAllOcclusionButtons(boolean isSetUp) {
+    @VisibleForTesting
+    void showAllOcclusionButtons(boolean isSetUp) {
         checkAllBars(isSetUp);
         if (mTopView != null) {
             mTopView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_OCCLUSION);
@@ -1121,14 +1066,16 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      * Invalidate SystemBarConfigs and fetch again from Resources.
      * TODO(): b/260206944, Can remove this after we have a fix for overlaid resources not applied.
      */
-    protected void resetSystemBarConfigs() {
+    @VisibleForTesting
+    void resetSystemBarConfigs() {
         mSystemBarConfigs.resetSystemBarConfigs();
         mCarSystemBarViewFactory.resetSystemBarWindowCache();
         readConfigs();
     }
 
     /** Stores the ID of the View that is currently focused and hides the focus. */
-    protected void cacheAndHideFocus() {
+    @VisibleForTesting
+    void cacheAndHideFocus() {
         mTopFocusedViewId = cacheAndHideFocus(mTopView);
         if (mTopFocusedViewId != View.NO_ID) return;
         mBottomFocusedViewId = cacheAndHideFocus(mBottomView);
@@ -1149,7 +1096,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     /** Requests focus on the View that matches the cached ID. */
-    protected void restoreFocus() {
+    private void restoreFocus() {
         if (restoreFocus(mTopView, mTopFocusedViewId)) return;
         if (restoreFocus(mBottomView, mBottomFocusedViewId)) return;
         if (restoreFocus(mLeftView, mLeftFocusedViewId)) return;
@@ -1166,18 +1113,18 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     protected void updateKeyboardVisibility(boolean isKeyboardVisible) {
         if (mHideTopBarForKeyboard) {
-            setTopWindowVisibility(isKeyboardVisible ? View.GONE : View.VISIBLE);
+            setWindowVisibility(getTopWindow(), isKeyboardVisible ? View.GONE : View.VISIBLE);
         }
 
         if (mHideBottomBarForKeyboard) {
-            setBottomWindowVisibility(isKeyboardVisible ? View.GONE : View.VISIBLE);
+            setWindowVisibility(getBottomWindow(), isKeyboardVisible ? View.GONE : View.VISIBLE);
         }
 
         if (mHideLeftBarForKeyboard) {
-            setLeftWindowVisibility(isKeyboardVisible ? View.GONE : View.VISIBLE);
+            setWindowVisibility(getLeftWindow(), isKeyboardVisible ? View.GONE : View.VISIBLE);
         }
         if (mHideRightBarForKeyboard) {
-            setRightWindowVisibility(isKeyboardVisible ? View.GONE : View.VISIBLE);
+            setWindowVisibility(getRightWindow(), isKeyboardVisible ? View.GONE : View.VISIBLE);
         }
     }
 
@@ -1268,22 +1215,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     private void attachNavBarWindows() {
         mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(this::attachNavBarBySide);
-    }
-
-    @VisibleForTesting
-    ViewGroup getSystemBarWindowBySide(int side) {
-        switch (side) {
-            case TOP:
-                return mTopSystemBarWindow;
-            case BOTTOM:
-                return mBottomSystemBarWindow;
-            case LEFT:
-                return mLeftSystemBarWindow;
-            case RIGHT:
-                return mRightSystemBarWindow;
-            default:
-                return null;
-        }
     }
 
     private void attachNavBarBySide(int side) {

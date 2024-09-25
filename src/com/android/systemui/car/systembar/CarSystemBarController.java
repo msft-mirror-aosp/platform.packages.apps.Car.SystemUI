@@ -18,7 +18,6 @@ package com.android.systemui.car.systembar;
 
 import android.annotation.IntDef;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
@@ -47,21 +46,6 @@ public interface CarSystemBarController extends ConfigurationController.Configur
      * initializes the system bars.
      */
     void init();
-
-    /**
-     * Changes window visibility of the given system bar side.
-     */
-    boolean setBarVisibility(@SystemBarSide int side, @View.Visibility int visibility);
-
-    /**
-     * Returns the window of the given system bar side.
-     */
-    ViewGroup getBarWindow(@SystemBarSide int side);
-
-    /**
-     * Returns the view of the given system bar side.
-     */
-    CarSystemBarView getBarView(@SystemBarSide int side, boolean isSetUp);
 
     /**
      * Registers a touch listener callbar for the given system bar side.

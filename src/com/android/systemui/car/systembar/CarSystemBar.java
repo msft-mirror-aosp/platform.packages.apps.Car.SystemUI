@@ -26,6 +26,7 @@ import static com.android.systemui.car.systembar.SystemBarConfigs.TOP;
 import static com.android.systemui.statusbar.phone.BarTransitions.MODE_SEMI_TRANSPARENT;
 import static com.android.systemui.statusbar.phone.BarTransitions.MODE_TRANSPARENT;
 
+import android.annotation.Nullable;
 import android.app.StatusBarManager.Disable2Flags;
 import android.app.StatusBarManager.DisableFlags;
 import android.app.UiModeManager;
@@ -58,6 +59,7 @@ import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
+import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
@@ -157,6 +159,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
     private MDSystemBarsController mMDSystemBarsController;
 
     private Locale mCurrentLocale;
+    @Nullable
+    private final ToolbarController mDisplayCompatToolbarController;
 
     @Inject
     public CarSystemBar(Context context,
@@ -179,7 +183,8 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
             SystemBarConfigs systemBarConfigs,
             ConfigurationController configurationController,
             DisplayTracker displayTracker,
-            Optional<MDSystemBarsController> mdSystemBarsController
+            Optional<MDSystemBarsController> mdSystemBarsController,
+            @Nullable ToolbarController toolbarController
     ) {
         mContext = context;
         mCarSystemBarController = carSystemBarController;
@@ -204,6 +209,7 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mMDSystemBarsController = mdSystemBarsController.orElse(null);
         mCurrentLocale = mContext.getResources().getConfiguration().getLocales().get(0);
         mConfigurationController = configurationController;
+        mDisplayCompatToolbarController = toolbarController;
     }
 
     private void registerOverlayChangeBroadcastReceiver() {
@@ -399,6 +405,10 @@ public class CarSystemBar implements CoreStartable, CommandQueue.Callbacks,
         mBottomSystemBarWindow = mCarSystemBarController.getBottomWindow();
         mLeftSystemBarWindow = mCarSystemBarController.getLeftWindow();
         mRightSystemBarWindow = mCarSystemBarController.getRightWindow();
+
+        if (mDisplayCompatToolbarController != null) {
+            mDisplayCompatToolbarController.init(mCarSystemBarController);
+        }
     }
 
     private void buildNavBarContent() {

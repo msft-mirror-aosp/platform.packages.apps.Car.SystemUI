@@ -275,4 +275,11 @@
     <string name="data_subscription_reactive_generic_app_label">This app</string>
 
     <string name="debug_status_icon_class_name">com.android.systemui.car.statusicon.ui.DebugStatusIconController</string>
+
+    <!-- Floating Back Button -->
+    <string name="fab_drag_up">Drag Up</string>
+    <string name="fab_drag_down">Drag Down</string>
+    <string name="fab_back_button">Back Button</string>
+    <string name="fab_tooltip">Long press to close the app</string>
+
 </resources>

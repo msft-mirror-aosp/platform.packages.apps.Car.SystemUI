@@ -15,13 +15,9 @@
  */
 package com.android.systemui.car.ndo;
 
-import static com.android.dx.mockito.inline.extended.ExtendedMockito.doNothing;
-
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.ComponentName;
@@ -45,8 +41,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -71,8 +65,6 @@ public class InCallLiveDataTest extends SysuiTestCase {
     @Mock
     private Call mMockCall;
     private Call.Details mMockDetails;
-    @Captor
-    private ArgumentCaptor<Call.Callback> mCallbackCaptor;
 
     @Before
     public void setup() {
@@ -81,7 +73,6 @@ public class InCallLiveDataTest extends SysuiTestCase {
         when(mMockInCallService.getCalls()).thenReturn(List.of(mMockCall));
         mMockDetails = createMockCallDetails(NUMBER, Call.STATE_HOLDING);
         when(mMockCall.getDetails()).thenReturn(mMockDetails);
-        doNothing().when(mMockCall).registerCallback(mCallbackCaptor.capture());
 
         mInCallServiceManager = new InCallServiceManager();
         mInCallServiceManager.setInCallService(mMockInCallService);
@@ -91,17 +82,13 @@ public class InCallLiveDataTest extends SysuiTestCase {
     @Test
     public void testOnCallAdded() {
         mInCallLiveData.onCallAdded(mMockCall);
-
-        verify(mMockCall).registerCallback(any());
         assertThat(mInCallLiveData.getValue()).isEqualTo(mMockCall);
     }
 
     @Test
     public void testOnCallRemoved() {
         when(mMockInCallService.getCalls()).thenReturn(List.of());
-
         mInCallLiveData.onCallRemoved(mMockCall);
-        verify(mMockCall).unregisterCallback(any());
         assertThat(mInCallLiveData.getValue()).isNull();
     }
 
@@ -109,12 +96,10 @@ public class InCallLiveDataTest extends SysuiTestCase {
     public void testOnStateChanged() {
         when(mMockDetails.getState()).thenReturn(Call.STATE_RINGING);
         mInCallLiveData.onCallAdded(mMockCall);
-
-        verify(mMockCall).registerCallback(any());
         assertThat(mInCallLiveData.getValue()).isNull();
 
         when(mMockDetails.getState()).thenReturn(Call.STATE_ACTIVE);
-        mCallbackCaptor.getValue().onStateChanged(mMockCall, Call.STATE_ACTIVE);
+        mInCallLiveData.onStateChanged(mMockCall, Call.STATE_ACTIVE);
         assertThat(mInCallLiveData.getValue()).isEqualTo(mMockCall);
     }
 

@@ -149,4 +149,12 @@
     <color name="qc_pop_up_color">@color/car_surface_2</color>
     <color name="qc_pop_up_text_color">@color/car_on_surface</color>
 
+    <!-- Colors for floating back button -->
+    <color name="fab_button_text_color">#FFFFFF</color>
+    <color name="fab_default_background">#80000000</color>
+    <color name="fab_highlighted_background_activated">#800000FF</color>
+    <color name="fab_highlighted_background_pressed">#9DFF5722</color>
+    <color name="fab_ripple_color">#40FFFFFF</color>
+    <color name="fab_white">#FFFFFF</color>
+
 </resources>

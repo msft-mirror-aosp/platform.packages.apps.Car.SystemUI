@@ -510,5 +510,10 @@
     <dimen name="panel_grip_bar_decor_width">100dp</dimen>
     <dimen name="panel_grip_bar_decor_height">4dp</dimen>
 
+     <!-- Dimens for Floating Back Button -->
+    <dimen name="fab_corner_radius_50">50dp</dimen>
+    <dimen name="fab_corner_radius_zero">0dp</dimen>
+    <dimen name="fab_shape_height">60dp</dimen>
+    <dimen name="fab_shape_width">80dp</dimen>
 
 </resources>

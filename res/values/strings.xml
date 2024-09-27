@@ -287,4 +287,10 @@
     <!-- Data subscription button text [CHAR LIMIT=30]-->
     <string name="data_subscription_button_text">See plans</string>
 
+    <!-- Floating Back Button -->
+    <string name="fab_drag_up">Drag Up</string>
+    <string name="fab_drag_down">Drag Down</string>
+    <string name="fab_back_button">Back Button</string>
+    <string name="fab_tooltip">Long press to close the app</string>
+
 </resources>

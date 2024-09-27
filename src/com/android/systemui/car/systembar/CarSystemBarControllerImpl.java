@@ -353,13 +353,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
                     public void onLockTaskModeChanged(int mode) {
                         refreshSystemBar();
                     }
-
-                    @Override
-                    public void onTaskMovedToFront(RunningTaskInfo taskInfo) {
-                        if (mDisplayCompatToolbarController != null) {
-                            mDisplayCompatToolbarController.update(taskInfo);
-                        }
-                    }
                 });
 
         // Lastly, call to the icon policy to install/update all the icons.
@@ -1173,12 +1166,20 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mRightSystemBarWindow = getRightWindow();
 
         if (mDisplayCompatToolbarController != null) {
-            if (mSystemBarConfigs
-                    .isLeftDisplayCompatToolbarEnabled()) {
-                mDisplayCompatToolbarController.init(mLeftSystemBarWindow);
-            } else if (mSystemBarConfigs
-                    .isRightDisplayCompatToolbarEnabled()) {
-                mDisplayCompatToolbarController.init(mRightSystemBarWindow);
+            ViewGroup targetWindow = null;
+
+            if (mTopSystemBarWindow != null) {
+                targetWindow = mTopSystemBarWindow;
+            } else if (mBottomSystemBarWindow != null) {
+                targetWindow = mBottomSystemBarWindow;
+            } else if (mLeftSystemBarWindow != null) {
+                targetWindow = mLeftSystemBarWindow;
+            } else if (mRightSystemBarWindow != null) {
+                targetWindow = mRightSystemBarWindow;
+            }
+
+            if (targetWindow != null) {
+                mDisplayCompatToolbarController.init(targetWindow);
             }
         }
     }

@@ -16,7 +16,7 @@
 package com.android.systemui.car.displaycompat;
 
 import android.annotation.NonNull;
-import android.app.ActivityManager.RunningTaskInfo;
+import android.app.ActivityTaskManager.RootTaskInfo;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,7 +30,7 @@ public interface ToolbarController {
      * @param parent this is supposed to be the container of the toolbar which will be used to
      * set the visibility of the toolbar.
      */
-    void init(ViewGroup parent);
+    void init(@NonNull ViewGroup parent);
 
     /**
      * Sets the visibility of the toolbar to {@link View#VISIBLE}
@@ -45,5 +45,5 @@ public interface ToolbarController {
     /**
      * Call this method when a task is moved to front.
      */
-    void update(@NonNull RunningTaskInfo taskInfo);
+    void update(@NonNull RootTaskInfo taskInfo);
 }

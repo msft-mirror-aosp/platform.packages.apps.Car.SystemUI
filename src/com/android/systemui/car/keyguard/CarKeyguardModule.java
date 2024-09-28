@@ -58,6 +58,7 @@ import com.android.systemui.keyguard.WindowManagerOcclusionManager;
 import com.android.systemui.keyguard.dagger.KeyguardFaceAuthNotSupportedModule;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
 import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
+import com.android.systemui.keyguard.domain.interactor.KeyguardTransitionBootInteractor;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationBarController;
 import com.android.systemui.navigationbar.NavigationModeController;
@@ -163,6 +164,7 @@ public interface CarKeyguardModule {
             Lazy<WindowManagerLockscreenVisibilityManager> wmLockscreenVisibilityManager,
             SelectedUserInteractor selectedUserInteractor,
             KeyguardInteractor keyguardInteractor,
+            KeyguardTransitionBootInteractor transitionBootInteractor,
             WindowManagerOcclusionManager wmOcclusionManager) {
         return new CarKeyguardViewMediator(
                 context,
@@ -213,6 +215,7 @@ public interface CarKeyguardModule {
                 wmLockscreenVisibilityManager,
                 selectedUserInteractor,
                 keyguardInteractor,
+                transitionBootInteractor,
                 wmOcclusionManager);
     }
 

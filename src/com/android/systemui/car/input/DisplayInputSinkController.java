@@ -173,6 +173,10 @@ public final class DisplayInputSinkController implements CoreStartable {
 
     @Override
     public void start() {
+        if (!UserManager.isVisibleBackgroundUsersEnabled()) {
+            Slog.i(TAG, "Disable DisplayInputSinkController for non MUMD system");
+            return;
+        }
         if (UserHandle.myUserId() != UserHandle.USER_SYSTEM
                 && UserManager.isHeadlessSystemUserMode()) {
             Slog.i(TAG, "Disable DisplayInputSinkController for non system user "
@@ -199,6 +203,10 @@ public final class DisplayInputSinkController implements CoreStartable {
 
     // Assumes that all main displays for passengers are static.
     private void initPassengerDisplays() {
+        if (mOccupantZoneManager == null) {
+            Slog.w(TAG, "CarOccupantZoneManager isn't connected yet");
+            return;
+        }
         List<OccupantZoneInfo> allZones = mOccupantZoneManager.getAllOccupantZones();
         for (int i = allZones.size() - 1; i >= 0; --i) {
             OccupantZoneInfo zone = allZones.get(i);

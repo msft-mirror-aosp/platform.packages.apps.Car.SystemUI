@@ -33,7 +33,6 @@ import com.android.systemui.car.hvac.HvacView;
 import com.android.systemui.car.hvac.TemperatureControlView;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationsShadeController;
-import com.android.systemui.car.statusicon.StatusIconView;
 import com.android.systemui.settings.UserTracker;
 
 import java.lang.annotation.ElementType;
@@ -69,9 +68,6 @@ public class CarSystemBarView extends LinearLayout {
     private CarSystemBarButton mHvacButton;
     private HvacView mDriverHvacView;
     private HvacView mPassengerHvacView;
-    private VolumeButton mVolumeButton;
-    private CarSystemBarPanelButtonView mVolumePanelView;
-    private StatusIconView mVolumeStatusIcon;
     private NotificationsShadeController mNotificationsShadeController;
     private HvacPanelController mHvacPanelController;
     private View mLockScreenButtons;

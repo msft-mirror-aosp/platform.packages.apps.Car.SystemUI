@@ -146,6 +146,8 @@
     <string name="status_icon_signal_hotspot">Signal Settings: Hotspot On</string>
     <!-- Status icon for display settings in status bar-->
     <string name="status_icon_display_status">Display Settings</string>
+    <!-- Status icon for debug settings in status bar-->
+    <string name="status_icon_debug_status">Debug Settings</string>
     <string name="status_icon_sound_status">Sound Settings</string>
     <!-- Status icon for drive mode settings in status bar -->
     <string name="status_icon_drive_mode">Drive Mode</string>
@@ -177,6 +179,8 @@
     <string name="qc_footer_network_sound_settings">Sound settings</string>
     <!-- Quick Controls: Message to be displayed as the footer button to launch profiles and accounts settings [CHAR LIMIT=45] -->
     <string name="qc_footer_profiles_accounts_settings">Profiles &amp; accounts settings</string>
+    <!-- Quick Controls: Message to be displayed as the footer button to launch developer options settings [CHAR LIMIT=45] -->
+    <string name="qc_footer_debug_settings">Developer options</string>
 
     <!-- Message shown when the lock pattern is focused. [CHAR LIMIT=40] -->
     <string name="lockpattern_does_not_support_rotary">Pattern does not support rotary; please use touch</string>

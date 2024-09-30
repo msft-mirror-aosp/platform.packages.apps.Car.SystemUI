@@ -462,12 +462,12 @@
     <dimen name="data_subscription_pop_up_arrow_height">19dp</dimen>
     <dimen name="data_subscription_pop_up_arrow_width">38dp</dimen>
     <dimen name="data_subscription_pop_up_arrow_radius">5dp</dimen>
-    <dimen name="data_subscription_pop_up_arrow_offset">84dp</dimen>
+    <dimen name="data_subscription_pop_up_arrow_offset">130dp</dimen>
     <dimen name="data_subscription_pop_up_vertical_padding">46dp</dimen>
     <dimen name="data_subscription_pop_up_horizontal_padding">@*android:dimen/car_padding_3</dimen>
     <dimen name="data_subscription_pop_up_button_width">224dp</dimen>
     <dimen name="data_subscription_pop_up_button_height">68dp</dimen>
     <dimen name="data_subscription_pop_up_horizontal_margin">15dp</dimen>
-    <dimen name="data_subscription_pop_up_horizontal_offset">92dp</dimen>
+    <dimen name="data_subscription_pop_up_horizontal_offset">108dp</dimen>
     <dimen name="data_subscription_pop_up_vertical_offset">6dp</dimen>
 </resources>

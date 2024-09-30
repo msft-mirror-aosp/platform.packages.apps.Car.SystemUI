@@ -507,7 +507,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void testRegisterNotificationController_createViewFirst_registrationSuccessful() {
+    public void testRegisterNotificationShadeController_createViewFirst_registrationSuccessful() {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         mCarSystemBarController.init();
 
@@ -516,7 +516,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         NotificationsShadeController controller =
                 bottomBar.getNotificationsPanelController();
         assertThat(controller).isNull();
-        mCarSystemBarController.registerNotificationController(
+        mCarSystemBarController.registerNotificationShadeController(
                 mock(NotificationsShadeController.class));
         controller = bottomBar.getNotificationsPanelController();
 
@@ -524,11 +524,11 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void testRegisterNotificationController_registerFirst_registrationSuccessful() {
+    public void testRegisterNotificationShadeController_registerFirst_registrationSuccessful() {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         mCarSystemBarController.init();
 
-        mCarSystemBarController.registerNotificationController(
+        mCarSystemBarController.registerNotificationShadeController(
                 mock(NotificationsShadeController.class));
         CarSystemBarView bottomBar = mCarSystemBarController.getBarView(BOTTOM,
                 /* isSetUp= */ true);

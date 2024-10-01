@@ -26,18 +26,11 @@ import android.view.ViewGroup;
 import androidx.annotation.LayoutRes;
 
 import com.android.car.dockutil.Flags;
-import com.android.car.ui.FocusParkingView;
 import com.android.systemui.R;
-import com.android.systemui.car.systembar.element.CarSystemBarElementController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.dagger.SysUISingleton;
-import com.android.systemui.flags.FeatureFlags;
-import com.android.systemui.settings.UserTracker;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 /** A factory that creates and caches views for navigation bars. */
 @SysUISingleton
@@ -65,11 +58,8 @@ public class CarSystemBarViewFactory {
     private final ArrayMap<Type, CarSystemBarView> mCachedViewMap = new ArrayMap<>(
             Type.values().length);
     private final ArrayMap<Type, ViewGroup> mCachedContainerMap = new ArrayMap<>();
-    private final FeatureFlags mFeatureFlags;
-    private final UserTracker mUserTracker;
-    private final CarSystemBarElementInitializer mCarSystemBarElementInitializer;
-    private final List<CarSystemBarElementController> mCarSystemBarElementControllers =
-            new ArrayList<>();
+    private final Provider<CarSystemBarViewController.Factory>
+            mCarSystemBarViewControllerFactoryProvider;
 
     /** Type of navigation bar to be created. */
     private enum Type {
@@ -88,14 +78,10 @@ public class CarSystemBarViewFactory {
     @Inject
     public CarSystemBarViewFactory(
             Context context,
-            FeatureFlags featureFlags,
-            UserTracker userTracker,
-            CarSystemBarElementInitializer elementInitializer
+            Provider<CarSystemBarViewController.Factory> carSystemBarViewControllerFactoryProvider
     ) {
         mContext = context;
-        mFeatureFlags = featureFlags;
-        mUserTracker = userTracker;
-        mCarSystemBarElementInitializer = elementInitializer;
+        mCarSystemBarViewControllerFactoryProvider = carSystemBarViewControllerFactoryProvider;
     }
 
     /** Gets the top window. */
@@ -193,14 +179,9 @@ public class CarSystemBarViewFactory {
         CarSystemBarView view = (CarSystemBarView) View.inflate(mContext, barLayout,
                 /* root= */ null);
 
-        view.setupHvacButton();
-        view.setupSystemBarButtons(mUserTracker);
-        mCarSystemBarElementControllers.addAll(
-                mCarSystemBarElementInitializer.initializeCarSystemBarElements(view));
-
-        // Include a FocusParkingView at the beginning. The rotary controller "parks" the focus here
-        // when the user navigates to another window. This is also used to prevent wrap-around.
-        view.addView(new FocusParkingView(mContext), 0);
+        CarSystemBarViewController controller = mCarSystemBarViewControllerFactoryProvider.get()
+                .create(view);
+        controller.init();
 
         mCachedViewMap.put(type, view);
         return mCachedViewMap.get(type);

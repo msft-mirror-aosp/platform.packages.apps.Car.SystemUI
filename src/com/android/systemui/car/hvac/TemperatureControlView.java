@@ -43,6 +43,11 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
 
     private static final int INVALID_ID = -1;
 
+    /**
+     * @see android.car.VehiclePropertyIds#HVAC_TEMPERATURE_SET
+     */
+    private static final int HVAC_TEMPERATURE_SET_CONFIG_ARRAY_SIZE = 6;
+
     private final int mAreaId;
     private final int mAvailableTextColor;
     private final int mUnavailableTextColor;
@@ -132,6 +137,9 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     @Override
     public void setConfigInfo(CarPropertyConfig<?> carPropertyConfig) {
         List<Integer> configArray = carPropertyConfig.getConfigArray();
+        if (configArray.size() != HVAC_TEMPERATURE_SET_CONFIG_ARRAY_SIZE) {
+            return;
+        }
         // Need to divide by 10 because config array values are temperature values that have been
         // multiplied by 10.
         mMinTempC = configArray.get(0) / 10f;

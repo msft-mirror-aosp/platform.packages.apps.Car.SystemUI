@@ -33,12 +33,13 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.systembar.CarSystemBarController;
 import com.android.systemui.car.window.OverlayViewMediator;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
+
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -59,8 +60,8 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
     private final PowerManagerHelper mPowerManagerHelper;
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final UserTracker mUserTracker;
-    private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final ConfigurationController mConfigurationController;
+    private final Optional<NotificationSystemBarPresenter> mNotificationSystemBarPresenter;
 
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -100,8 +101,8 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
             PowerManagerHelper powerManagerHelper,
             BroadcastDispatcher broadcastDispatcher,
             UserTracker userTracker,
-            CarDeviceProvisionedController carDeviceProvisionedController,
-            ConfigurationController configurationController
+            ConfigurationController configurationController,
+            Optional<NotificationSystemBarPresenter> notificationSystemBarPresenter
     ) {
         mContext = context;
         mCarSystemBarController = carSystemBarController;
@@ -109,8 +110,8 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         mPowerManagerHelper = powerManagerHelper;
         mBroadcastDispatcher = broadcastDispatcher;
         mUserTracker = userTracker;
-        mCarDeviceProvisionedController = carDeviceProvisionedController;
         mConfigurationController = configurationController;
+        mNotificationSystemBarPresenter = notificationSystemBarPresenter;
     }
 
     @Override
@@ -121,21 +122,23 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         registerLeftBarTouchListener();
         registerRightBarTouchListener();
 
-        mCarSystemBarController.registerNotificationController(
-                new NotificationsShadeController() {
-                    @Override
-                    public void togglePanel() {
-                        mNotificationPanelViewController.toggle();
-                    }
+        if (mNotificationSystemBarPresenter.isPresent()) {
+            mNotificationSystemBarPresenter.get().registerNotificationShadeController(
+                    new NotificationsShadeController() {
+                        @Override
+                        public void togglePanel() {
+                            mNotificationPanelViewController.toggle();
+                        }
 
-                    @Override
-                    public boolean isNotificationPanelOpen() {
-                        return mNotificationPanelViewController.isPanelExpanded();
-                    }
-                });
+                        @Override
+                        public boolean isNotificationPanelOpen() {
+                            return mNotificationPanelViewController.isPanelExpanded();
+                        }
+                    });
 
-        mCarSystemBarController.registerNotificationPanelViewController(
-                mNotificationPanelViewController);
+            mNotificationSystemBarPresenter.get().registerNotificationPanelViewController(
+                    mNotificationPanelViewController);
+        }
 
         mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), null,
@@ -147,8 +150,10 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
     public void setUpOverlayContentViewControllers() {
         mNotificationPanelViewController.setOnUnseenCountUpdateListener(unseenNotificationCount -> {
             boolean hasUnseen = unseenNotificationCount > 0;
-            mCarSystemBarController.toggleAllNotificationsUnseenIndicator(
-                    mCarDeviceProvisionedController.isCurrentUserFullySetup(), hasUnseen);
+            if (mNotificationSystemBarPresenter.isPresent()) {
+                mNotificationSystemBarPresenter.get()
+                        .toggleAllNotificationsUnseenIndicator(hasUnseen);
+            }
         });
 
         mPowerManagerHelper.setCarPowerStateListener(state -> {

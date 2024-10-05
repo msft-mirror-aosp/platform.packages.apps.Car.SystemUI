@@ -156,18 +156,18 @@ public class DockViewControllerWrapper extends
             }
             return;
         }
+        int currentDisplayId = mView.getDisplay() != null ? mView.getDisplay().getDisplayId()
+                : INVALID_DISPLAY;
+        if (!isDockSupportedOnDisplay(mContext, currentDisplayId)) {
+            Log.e(TAG, "Dock cannot be initialised: Tried to launch on unsupported display "
+                    + currentDisplayId);
+            return;
+        }
         DockView dockView = mView.findViewById(R.id.dock);
         if (dockView == null) {
             if (DEBUG) {
                 Log.d(TAG, "Dock cannot be initialised: Cannot find dock view");
             }
-            return;
-        }
-        int currentDisplayId = dockView.getDisplay() != null ? dockView.getDisplay().getDisplayId()
-                : INVALID_DISPLAY;
-        if (!isDockSupportedOnDisplay(mContext, currentDisplayId)) {
-            Log.e(TAG, "Dock cannot be initialised: Tried to launch on unsupported display "
-                    + currentDisplayId);
             return;
         }
         if (!mUserManager.isUserUnlocked(mUserTracker.getUserId())) {

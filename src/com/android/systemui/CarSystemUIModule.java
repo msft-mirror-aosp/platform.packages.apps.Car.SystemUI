@@ -59,6 +59,7 @@ import com.android.systemui.recents.Recents;
 import com.android.systemui.recents.RecentsImplementation;
 import com.android.systemui.recents.RecentsModule;
 import com.android.systemui.screenshot.ReferenceScreenshotModule;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.ShadeEmptyImplModule;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.NotificationLockscreenUserManager;
@@ -155,9 +156,9 @@ abstract class CarSystemUIModule {
     @Provides
     @SysUISingleton
     static IndividualSensorPrivacyController provideIndividualSensorPrivacyController(
-            SensorPrivacyManager sensorPrivacyManager) {
+            SensorPrivacyManager sensorPrivacyManager, UserTracker userTracker) {
         IndividualSensorPrivacyController spC = new IndividualSensorPrivacyControllerImpl(
-                sensorPrivacyManager);
+                sensorPrivacyManager, userTracker);
         spC.init();
         return spC;
     }

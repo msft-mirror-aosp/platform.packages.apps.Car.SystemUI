@@ -51,7 +51,6 @@ import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.keyguard.WindowManagerLockscreenVisibilityManager;
 import com.android.systemui.keyguard.WindowManagerOcclusionManager;
 import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
-import com.android.systemui.keyguard.domain.interactor.KeyguardTransitionBootInteractor;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationModeController;
 import com.android.systemui.process.ProcessWrapper;
@@ -145,7 +144,6 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             Lazy<WindowManagerLockscreenVisibilityManager> wmLockscreenVisibilityManager,
             SelectedUserInteractor selectedUserInteractor,
             KeyguardInteractor keyguardInteractor,
-            KeyguardTransitionBootInteractor transitionBootInteractor,
             WindowManagerOcclusionManager wmOcclusionManager) {
         super(context, uiEventLogger, sessionTracker,
                 userTracker, falsingCollector, lockPatternUtils, broadcastDispatcher,
@@ -172,7 +170,6 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 wmLockscreenVisibilityManager,
                 selectedUserInteractor,
                 keyguardInteractor,
-                transitionBootInteractor,
                 wmOcclusionManager);
         mContext = context;
         mTrustManager = trustManager;

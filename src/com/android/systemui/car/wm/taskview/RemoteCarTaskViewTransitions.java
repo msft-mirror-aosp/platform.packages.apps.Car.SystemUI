@@ -46,6 +46,7 @@ import javax.inject.Inject;
  */
 @WMSingleton
 public final class RemoteCarTaskViewTransitions implements Transitions.TransitionHandler {
+    // TODO(b/359584498): Add unit tests for this class.
     private static final String TAG = "CarTaskViewTransit";
 
     private final Transitions mTransitions;
@@ -82,18 +83,7 @@ public final class RemoteCarTaskViewTransitions implements Transitions.Transitio
         //  on a per taskview basis and remove the ACTIVITY_TYPE_HOME check.
         if (isHome(request.getTriggerTask())
                 && TransitionUtil.isOpeningType(request.getType())) {
-            wct = new WindowContainerTransaction();
-            for (int i = mCarSystemUIProxy.get().getAllTaskViews().size() - 1; i >= 0; i--) {
-                ActivityManager.RunningTaskInfo task =
-                        mCarSystemUIProxy.get().getAllTaskViews().valueAt(i).getTaskInfo();
-                if (task == null) continue;
-                if (task.displayId != request.getTriggerTask().displayId) continue;
-                if (Log.isLoggable(TAG, Log.DEBUG)) {
-                    Slog.d(TAG, "Adding transition work to bring the embedded "
-                            + task.topActivity + " to top");
-                }
-                wct.reorder(task.token, true);
-            }
+            wct = reorderEmbeddedTasksToTop(request.getTriggerTask().displayId);
         }
 
         // TODO(b/333923667): Think of moving this to CarUiPortraitSystemUI instead.
@@ -119,12 +109,29 @@ public final class RemoteCarTaskViewTransitions implements Transitions.Transitio
         return taskInfo.getWindowingMode() == WindowConfiguration.WINDOWING_MODE_FULLSCREEN;
     }
 
+    private WindowContainerTransaction reorderEmbeddedTasksToTop(int endDisplayId) {
+        WindowContainerTransaction wct = new WindowContainerTransaction();
+        for (int i = mCarSystemUIProxy.get().getAllTaskViews().size() - 1; i >= 0; i--) {
+            // TODO(b/359586295): Handle restarting of tasks if required.
+            ActivityManager.RunningTaskInfo task =
+                    mCarSystemUIProxy.get().getAllTaskViews().valueAt(i).getTaskInfo();
+            if (task == null) continue;
+            if (task.displayId != endDisplayId) continue;
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Slog.d(TAG, "Adding transition work to bring the embedded " + task.topActivity
+                        + " to top");
+            }
+            wct.reorder(task.token, true);
+        }
+        return wct;
+    }
+
     @Override
     public boolean startAnimation(@NonNull IBinder transition, @NonNull TransitionInfo info,
             @NonNull SurfaceControl.Transaction startTransaction,
             @NonNull SurfaceControl.Transaction finishTransaction,
             @NonNull Transitions.TransitionFinishCallback finishCallback) {
-        // No animation required for now.
+        // TODO(b/369186876): Implement reordering of task view task with the host task
         return false;
     }
 }

@@ -41,6 +41,7 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.inputmethodservice.InputMethodService;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.PatternMatcher;
 import android.os.RemoteException;
 import android.util.ArraySet;
@@ -58,8 +59,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.android.car.ui.FocusParkingView;
-import com.android.car.ui.utils.ViewUtils;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.LetterboxDetails;
 import com.android.internal.statusbar.RegisterStatusBarResult;
@@ -99,8 +98,10 @@ import com.android.systemui.util.concurrency.DelayableExecutor;
 import dagger.Lazy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Provider;
@@ -471,32 +472,21 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         }
 
         // cache the current state
-        // The focused view will be destroyed during re-layout, causing the framework to adjust
-        // the focus unexpectedly. To avoid that, move focus to a view that won't be
-        // destroyed during re-layout and has no focus highlight (the FocusParkingView), then
-        // move focus back to the previously focused view after re-layout.
-        cacheAndHideFocus();
-        View profilePickerView = null;
-        boolean isProfilePickerOpen = false;
-        if (mTopViewController != null) {
-            profilePickerView = mTopViewController.getView().findViewById(R.id.user_name);
-        }
-        if (profilePickerView != null) isProfilePickerOpen = profilePickerView.isSelected();
-        if (isProfilePickerOpen) {
-            profilePickerView.callOnClick();
-        }
+        Map<Integer, Bundle> savedStates = mSystemBarConfigs.getSystemBarSidesByZOrder().stream()
+                .collect(HashMap::new,
+                        (map, side) -> {
+                            Bundle bundle = new Bundle();
+                            getBarView(side, isDeviceSetupForUser()).onSaveInstanceState(bundle);
+                            map.put(side, bundle);
+                        },
+                        HashMap::putAll);
 
         resetSystemBarContent(/* isProvisionedStateChange= */ false);
 
         // retrieve the previous state
-        if (isProfilePickerOpen) {
-            if (mTopViewController != null) {
-                profilePickerView = mTopViewController.getView().findViewById(R.id.user_name);
-            }
-            if (profilePickerView != null) profilePickerView.callOnClick();
-        }
-
-        restoreFocus();
+        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
+            getBarView(side, isDeviceSetupForUser()).onRestoreInstanceState(savedStates.get(side));
+        });
     }
 
     private void readConfigs() {
@@ -1075,63 +1065,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mSystemBarConfigs.resetSystemBarConfigs();
         mCarSystemBarViewFactory.resetSystemBarWindowCache();
         readConfigs();
-    }
-
-    /** Stores the ID of the View that is currently focused and hides the focus. */
-    @VisibleForTesting
-    void cacheAndHideFocus() {
-        if (mTopViewController != null) {
-            mTopFocusedViewId = cacheAndHideFocus(mTopViewController.getView());
-        }
-        if (mTopFocusedViewId != View.NO_ID) return;
-        if (mBottomViewController != null) {
-            mBottomFocusedViewId = cacheAndHideFocus(mBottomViewController.getView());
-        }
-        if (mBottomFocusedViewId != View.NO_ID) return;
-        if (mLeftViewController != null) {
-            mLeftFocusedViewId = cacheAndHideFocus(mLeftViewController.getView());
-        }
-        if (mLeftFocusedViewId != View.NO_ID) return;
-        if (mRightViewController != null) {
-            mRightFocusedViewId = cacheAndHideFocus(mRightViewController.getView());
-        }
-    }
-
-    @VisibleForTesting
-    int cacheAndHideFocus(@Nullable View rootView) {
-        if (rootView == null) return View.NO_ID;
-        View focusedView = rootView.findFocus();
-        if (focusedView == null || focusedView instanceof FocusParkingView) return View.NO_ID;
-        int focusedViewId = focusedView.getId();
-        ViewUtils.hideFocus(rootView);
-        return focusedViewId;
-    }
-
-    /** Requests focus on the View that matches the cached ID. */
-    private void restoreFocus() {
-        if (mTopViewController != null
-                && restoreFocus(mTopViewController.getView(), mTopFocusedViewId)) {
-            return;
-        }
-        if (mBottomViewController != null
-                && restoreFocus(mBottomViewController.getView(), mBottomFocusedViewId)) {
-            return;
-        }
-        if (mLeftViewController != null
-                && restoreFocus(mLeftViewController.getView(), mLeftFocusedViewId)) {
-            return;
-        }
-        if (mRightViewController != null) {
-            restoreFocus(mRightViewController.getView(), mRightFocusedViewId);
-        }
-    }
-
-    private boolean restoreFocus(@Nullable View rootView, @IdRes int viewToFocusId) {
-        if (rootView == null || viewToFocusId == View.NO_ID) return false;
-        View focusedView = rootView.findViewById(viewToFocusId);
-        if (focusedView == null) return false;
-        focusedView.requestFocus();
-        return true;
     }
 
     protected void updateKeyboardVisibility(boolean isKeyboardVisible) {

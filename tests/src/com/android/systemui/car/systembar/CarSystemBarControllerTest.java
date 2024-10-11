@@ -165,7 +165,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
         when(mCarSystemBarViewControllerFactory.create(any()))
                 .thenReturn(mock(CarSystemBarViewController.class));
-        mCarSystemBarViewFactory = new CarSystemBarViewFactory(mSpiedContext,
+        mCarSystemBarViewFactory = new CarSystemBarViewFactoryImpl(mSpiedContext,
                 () -> mCarSystemBarViewControllerFactory);
         setupPanelControllerBuilderMocks();
 

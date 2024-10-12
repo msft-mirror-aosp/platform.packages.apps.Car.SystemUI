@@ -30,6 +30,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -182,14 +183,14 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
         when(mStatusBarIconController.getTransitionsController()).thenReturn(
                 mLightBarTransitionsController);
-        when(mCarSystemBarViewFactory.getTopBar(anyBoolean())).thenReturn(mTopBar);
-        when(mCarSystemBarViewFactory.getTopWindow()).thenReturn(mTopWindow);
-        when(mCarSystemBarViewFactory.getRightBar(anyBoolean())).thenReturn(mRigthBar);
-        when(mCarSystemBarViewFactory.getRightWindow()).thenReturn(mRightWindow);
-        when(mCarSystemBarViewFactory.getBottomBar(anyBoolean())).thenReturn(mBottomBar);
-        when(mCarSystemBarViewFactory.getBottomWindow()).thenReturn(mBottomWindow);
-        when(mCarSystemBarViewFactory.getLeftBar(anyBoolean())).thenReturn(mLeftBar);
-        when(mCarSystemBarViewFactory.getLeftWindow()).thenReturn(mLeftWindow);
+        when(mCarSystemBarViewFactory.getBar(eq(TOP), anyBoolean())).thenReturn(mTopBar);
+        when(mCarSystemBarViewFactory.getWindow(eq(TOP))).thenReturn(mTopWindow);
+        when(mCarSystemBarViewFactory.getBar(eq(RIGHT), anyBoolean())).thenReturn(mRigthBar);
+        when(mCarSystemBarViewFactory.getWindow(eq(RIGHT))).thenReturn(mRightWindow);
+        when(mCarSystemBarViewFactory.getBar(eq(BOTTOM), anyBoolean())).thenReturn(mBottomBar);
+        when(mCarSystemBarViewFactory.getWindow(eq(BOTTOM))).thenReturn(mBottomWindow);
+        when(mCarSystemBarViewFactory.getBar(eq(LEFT), anyBoolean())).thenReturn(mLeftBar);
+        when(mCarSystemBarViewFactory.getWindow(eq(LEFT))).thenReturn(mLeftWindow);
         mAppearanceRegions = new AppearanceRegion[]{
                 new AppearanceRegion(APPEARANCE_LIGHT_STATUS_BARS, new Rect())
         };

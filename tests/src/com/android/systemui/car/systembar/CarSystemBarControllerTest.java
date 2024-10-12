@@ -64,9 +64,7 @@ import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.notification.NotificationsShadeController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
-import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.settings.FakeDisplayTracker;
 import com.android.systemui.settings.UserTracker;
@@ -120,13 +118,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Mock
     private CameraPrivacyChipViewController mCameraPrivacyChipViewController;
     @Mock
-    private FeatureFlags mFeatureFlags;
-    @Mock
     private StatusIconPanelViewController.Builder mPanelControllerBuilder;
     @Mock
     private StatusIconPanelViewController mPanelController;
-    @Mock
-    private CarSystemBarElementInitializer mCarSystemBarElementInitializer;
     @Mock
     private LightBarController mLightBarController;
     @Mock
@@ -155,6 +149,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     private ConfigurationController mConfigurationController;
     @Mock
     private CarSystemBarRestartTracker mCarSystemBarRestartTracker;
+    @Mock
+    private CarSystemBarViewController.Factory mCarSystemBarViewControllerFactory;
     RegisterStatusBarResult mRegisterStatusBarResult;
 
     @Before
@@ -167,8 +163,10 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mTestableResources = mContext.getOrCreateTestableResources();
         mSpiedContext = spy(mContext);
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
-        mCarSystemBarViewFactory = new CarSystemBarViewFactory(mSpiedContext, mFeatureFlags,
-                mock(UserTracker.class), mCarSystemBarElementInitializer);
+        when(mCarSystemBarViewControllerFactory.create(any()))
+                .thenReturn(mock(CarSystemBarViewController.class));
+        mCarSystemBarViewFactory = new CarSystemBarViewFactoryImpl(mSpiedContext,
+                () -> mCarSystemBarViewControllerFactory);
         setupPanelControllerBuilderMocks();
 
         mRegisterStatusBarResult = new RegisterStatusBarResult(new ArrayMap<>(), 0, 0,

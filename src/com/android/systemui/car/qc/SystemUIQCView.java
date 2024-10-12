@@ -35,8 +35,8 @@ import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
  * attributes. This is then retrieved by a {@link SystemUIQCViewController} to be bound and
  * controlled.
  *
- * @attr ref R.styleable#SystemUIQCView_remoteQCProvider
- * @attr ref R.styleable#SystemUIQCView_localQCProvider
+ * @attr ref android.R.styleable#SystemUIQCView_remoteQCProvider
+ * @attr ref android.R.styleable#SystemUIQCView_localQCProvider
  */
 public class SystemUIQCView extends QCView implements CarSystemBarElement {
     private Class<?> mElementControllerClassAttr;

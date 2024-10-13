@@ -522,25 +522,25 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     /** Gets the top window if configured to do so. */
     @Nullable
     private ViewGroup getTopWindow() {
-        return mShowTop ? mCarSystemBarViewFactory.getTopWindow() : null;
+        return mShowTop ? mCarSystemBarViewFactory.getWindow(TOP) : null;
     }
 
     /** Gets the bottom window if configured to do so. */
     @Nullable
     private ViewGroup getBottomWindow() {
-        return mShowBottom ? mCarSystemBarViewFactory.getBottomWindow() : null;
+        return mShowBottom ? mCarSystemBarViewFactory.getWindow(BOTTOM) : null;
     }
 
     /** Gets the left window if configured to do so. */
     @Nullable
     private ViewGroup getLeftWindow() {
-        return mShowLeft ? mCarSystemBarViewFactory.getLeftWindow() : null;
+        return mShowLeft ? mCarSystemBarViewFactory.getWindow(LEFT) : null;
     }
 
     /** Gets the right window if configured to do so. */
     @Nullable
     private ViewGroup getRightWindow() {
-        return mShowRight ? mCarSystemBarViewFactory.getRightWindow() : null;
+        return mShowRight ? mCarSystemBarViewFactory.getWindow(RIGHT) : null;
     }
 
     /** Toggles the right nav bar visibility. */
@@ -712,7 +712,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             return null;
         }
 
-        mTopView = mCarSystemBarViewFactory.getTopBar(isSetUp);
+        mTopView = mCarSystemBarViewFactory.getBar(TOP, isSetUp);
         setupBar(mTopView, mTopBarTouchListeners, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController,
                 mNotificationPanelViewController);
@@ -737,7 +737,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             return null;
         }
 
-        mBottomView = mCarSystemBarViewFactory.getBottomBar(isSetUp);
+        mBottomView = mCarSystemBarViewFactory.getBar(BOTTOM, isSetUp);
         setupBar(mBottomView, mBottomBarTouchListeners, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController,
                 mNotificationPanelViewController);
@@ -752,7 +752,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             return null;
         }
 
-        mLeftView = mCarSystemBarViewFactory.getLeftBar(isSetUp);
+        mLeftView = mCarSystemBarViewFactory.getBar(LEFT, isSetUp);
         setupBar(mLeftView, mLeftBarTouchListeners, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController,
                 mNotificationPanelViewController);
@@ -766,7 +766,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             return null;
         }
 
-        mRightView = mCarSystemBarViewFactory.getRightBar(isSetUp);
+        mRightView = mCarSystemBarViewFactory.getBar(RIGHT, isSetUp);
         setupBar(mRightView, mRightBarTouchListeners, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController,
                 mNotificationPanelViewController);

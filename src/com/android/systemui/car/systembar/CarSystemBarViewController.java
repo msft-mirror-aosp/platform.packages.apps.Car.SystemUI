@@ -27,10 +27,12 @@ import androidx.annotation.VisibleForTesting;
 import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.ViewUtils;
 import com.android.systemui.R;
+import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationsShadeController;
+import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 import com.android.systemui.car.systembar.CarSystemBarView.ButtonsType;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.settings.UserTracker;
@@ -53,17 +55,26 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
     private final Context mContext;
     private final UserTracker mUserTracker;
     private final CarSystemBarElementInitializer mCarSystemBarElementInitializer;
+    private final HvacController mHvacController;
+    private final SystemBarConfigs mSystemBarConfigs;
+    private final @SystemBarSide int mSide;
 
     @AssistedInject
     public CarSystemBarViewController(Context context,
             UserTracker userTracker,
             CarSystemBarElementInitializer elementInitializer,
+            HvacController hvacController,
+            SystemBarConfigs systemBarConfigs,
+            @Assisted @SystemBarSide int side,
             @Assisted CarSystemBarView systemBarView) {
         super(systemBarView);
 
         mContext = context;
         mUserTracker = userTracker;
         mCarSystemBarElementInitializer = elementInitializer;
+        mHvacController = hvacController;
+        mSystemBarConfigs = systemBarConfigs;
+        mSide = side;
     }
 
     @Override
@@ -86,9 +97,8 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
         // move focus back to the previously focused view after re-layout.
         outState.putInt(LAST_FOCUSED_VIEW_ID, cacheAndHideFocus(mView));
 
-        View profilePickerView = null;
         boolean isProfilePickerOpen = false;
-        profilePickerView = mView.findViewById(R.id.user_name);
+        View profilePickerView = mView.findViewById(R.id.user_name);
         if (profilePickerView != null) isProfilePickerOpen = profilePickerView.isSelected();
         if (isProfilePickerOpen) {
             profilePickerView.callOnClick();
@@ -212,16 +222,19 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
 
     @Override
     protected void onViewAttached() {
+        mSystemBarConfigs.insetSystemBar(mSide, mView);
+        mHvacController.registerHvacViews(mView);
     }
 
     @Override
     protected void onViewDetached() {
+        mHvacController.unregisterViews(mView);
     }
 
     @AssistedFactory
     public interface Factory {
         /** Create instance of CarSystemBarViewController for CarSystemBarView */
-        CarSystemBarViewController create(CarSystemBarView view);
+        CarSystemBarViewController create(@SystemBarSide int side, CarSystemBarView view);
     }
 
     @VisibleForTesting

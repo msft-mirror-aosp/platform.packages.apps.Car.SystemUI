@@ -161,7 +161,7 @@ public class SystemBarConfigs {
                 && mSystemBarConfigMap.get(side).getHideForKeyboard();
     }
 
-    protected void insetSystemBar(@SystemBarSide int side, CarSystemBarView view) {
+    protected void insetSystemBar(@SystemBarSide int side, ViewGroup view) {
         if (mSystemBarConfigMap.get(side) == null) return;
 
         int[] paddings = mSystemBarConfigMap.get(side).getPaddings();

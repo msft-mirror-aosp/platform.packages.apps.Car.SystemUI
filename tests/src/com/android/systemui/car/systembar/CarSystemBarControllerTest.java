@@ -30,11 +30,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assume.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
@@ -122,8 +119,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Mock
     private CameraPrivacyChipViewController mCameraPrivacyChipViewController;
     @Mock
-    private StatusIconPanelViewController.Builder mPanelControllerBuilder;
-    @Mock
     private StatusIconPanelViewController mPanelController;
     @Mock
     private LightBarController mLightBarController;
@@ -172,8 +167,11 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                     public CarSystemBarViewController create(@SystemBarSide int side,
                             CarSystemBarView view) {
                         return new CarSystemBarViewController(mSpiedContext, mUserTracker,
-                                mock(CarSystemBarElementInitializer.class), mHvacController,
-                                mSystemBarConfigs, side, view);
+                                mock(CarSystemBarElementInitializer.class), mSystemBarConfigs,
+                                mButtonRoleHolderController, mButtonSelectionStateController,
+                                () -> mCameraPrivacyChipViewController,
+                                () -> mMicPrivacyChipViewController,
+                                mHvacController, side, view);
                     }
                 };
         Map<@SystemBarSide Integer, CarSystemBarViewController.Factory> factoriesMap =
@@ -183,7 +181,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         factoriesMap.put(RIGHT, carSystemBarViewControllerFactory);
         factoriesMap.put(BOTTOM, carSystemBarViewControllerFactory);
         mCarSystemBarViewFactory = new CarSystemBarViewFactoryImpl(mSpiedContext, factoriesMap);
-        setupPanelControllerBuilderMocks();
 
         mRegisterStatusBarResult = new RegisterStatusBarResult(new ArrayMap<>(), 0, 0,
                 new AppearanceRegion[0], 0, 0, false, 0, false, 0, 0, "", 0,
@@ -211,12 +208,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBarController = new CarSystemBarControllerImpl(mSpiedContext,
                 mUserTracker,
                 mCarSystemBarViewFactory,
-                mButtonSelectionStateController,
-                () -> mMicPrivacyChipViewController,
-                () -> mCameraPrivacyChipViewController,
-                mButtonRoleHolderController,
                 mSystemBarConfigs,
-                () -> mPanelControllerBuilder,
                 mLightBarController,
                 mStatusBarIconController,
                 mWindowManager,
@@ -232,34 +224,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 mCarSystemBarRestartTracker,
                 displayTracker,
                 null);
-    }
-
-    @Test
-    public void testRemoveAll_callsButtonRoleHolderControllerRemoveAll() {
-        mCarSystemBarController.init();
-
-        mCarSystemBarController.removeAll();
-
-        verify(mButtonRoleHolderController).removeAll();
-    }
-
-    @Test
-    public void testRemoveAll_callsButtonSelectionStateControllerRemoveAll() {
-        mCarSystemBarController.init();
-
-        mCarSystemBarController.removeAll();
-
-        verify(mButtonSelectionStateController).removeAll();
-    }
-
-    @Test
-    public void testRemoveAll_callsPrivacyChipViewControllerRemoveAll() {
-        mCarSystemBarController.init();
-
-        mCarSystemBarController.removeAll();
-
-        verify(mMicPrivacyChipViewController).removeAll();
-        verify(mCameraPrivacyChipViewController).removeAll();
     }
 
     @Test
@@ -861,17 +825,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 ? ActivityManager.LOCK_TASK_MODE_LOCKED
                 : ActivityManager.LOCK_TASK_MODE_NONE);
         mCarSystemBarController.setSystemBarStates(/* state= */ 0, /* state2= */ 0);
-    }
-
-    private void setupPanelControllerBuilderMocks() {
-        when(mPanelControllerBuilder.setXOffset(anyInt())).thenReturn(mPanelControllerBuilder);
-        when(mPanelControllerBuilder.setYOffset(anyInt())).thenReturn(mPanelControllerBuilder);
-        when(mPanelControllerBuilder.setGravity(anyInt())).thenReturn(mPanelControllerBuilder);
-        when(mPanelControllerBuilder.setDisabledWhileDriving(anyBoolean())).thenReturn(
-                mPanelControllerBuilder);
-        when(mPanelControllerBuilder.setShowAsDropDown(anyBoolean())).thenReturn(
-                mPanelControllerBuilder);
-        when(mPanelControllerBuilder.build(any(), anyInt(), anyInt())).thenReturn(mPanelController);
     }
 
     private void enableSystemBarWithNotificationButton() {

@@ -16,8 +16,18 @@
 package com.android.systemui.car.systembar;
 
 import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.android.car.ui.FocusParkingView;
+import com.android.systemui.car.hvac.HvacPanelController;
+import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
+import com.android.systemui.car.notification.NotificationPanelViewController;
+import com.android.systemui.car.notification.NotificationsShadeController;
+import com.android.systemui.car.systembar.CarSystemBarView.ButtonsType;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.util.ViewController;
@@ -25,6 +35,8 @@ import com.android.systemui.util.ViewController;
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
+
+import java.util.Set;
 
 /**
  * A controller for initializing the CarSystemBarView instances.
@@ -55,6 +67,107 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
         // Include a FocusParkingView at the beginning. The rotary controller "parks" the focus here
         // when the user navigates to another window. This is also used to prevent wrap-around.
         mView.addView(new FocusParkingView(mContext), 0);
+    }
+
+    // TODO(b/372065319): will be removed
+    public ViewGroup getView() {
+        return mView;
+    }
+
+    /**
+     * Sets the system bar view's disabled state and runnable when disabled.
+     */
+    public void setDisabledSystemBarButton(int viewId, boolean disabled, Runnable runnable,
+                @Nullable String buttonName) {
+        mView.setDisabledSystemBarButton(viewId, disabled, runnable, buttonName);
+    }
+
+    /**
+     * Update home buttom visibility.
+     */
+    public void updateHomeButtonVisibility(boolean isPassenger) {
+        mView.updateHomeButtonVisibility(isPassenger);
+    }
+
+    /**
+     * Sets the touch listeners that will be called from onInterceptTouchEvent and onTouchEvent
+     *
+     * @param statusBarWindowTouchListeners List of listeners to call from touch and intercept touch
+     */
+    public void setStatusBarWindowTouchListeners(
+            Set<View.OnTouchListener> statusBarWindowTouchListeners) {
+        mView.setStatusBarWindowTouchListeners(statusBarWindowTouchListeners);
+    }
+
+    /** Sets the notifications panel controller. */
+    public void setNotificationsPanelController(NotificationsShadeController controller) {
+        mView.setNotificationsPanelController(controller);
+    }
+
+    /**
+     * Sets the NotificationPanelViewController and adds button listeners
+     */
+    public void registerNotificationPanelViewController(
+            NotificationPanelViewController controller) {
+        mView.registerNotificationPanelViewController(controller);
+    }
+
+    /** Sets the HVAC panel controller. */
+    public void setHvacPanelController(HvacPanelController controller) {
+        mView.setHvacPanelController(controller);
+    }
+
+    /**
+     * Sets the HvacPanelOverlayViewController and adds HVAC button listeners
+     */
+    public void registerHvacPanelOverlayViewController(HvacPanelOverlayViewController controller) {
+        mView.registerHvacPanelOverlayViewController(controller);
+    }
+
+    /**
+     * Update control center button visibility.
+     */
+    public void updateControlCenterButtonVisibility(boolean isMumd) {
+        mView.updateControlCenterButtonVisibility(isMumd);
+    }
+
+    /**
+     * Shows buttons of the specified {@link ButtonsType}.
+     *
+     * NOTE: Only one type of buttons can be shown at a time, so showing buttons of one type will
+     * hide all buttons of other types.
+     *
+     * @param buttonsType see {@link ButtonsType}
+     */
+    public void showButtonsOfType(@ButtonsType int buttonsType) {
+        mView.showButtonsOfType(buttonsType);
+    }
+
+    /**
+     * Toggles the notification unseen indicator on/off.
+     *
+     * @param hasUnseen true if the unseen notification count is great than 0.
+     */
+    public void toggleNotificationUnseenIndicator(boolean hasUnseen) {
+        mView.toggleNotificationUnseenIndicator(hasUnseen);
+    }
+
+    /** Gets the touch listeners that will be called from onInterceptTouchEvent and onTouchEvent. */
+    @VisibleForTesting
+    Set<View.OnTouchListener> getStatusBarWindowTouchListeners() {
+        return mView.getStatusBarWindowTouchListeners();
+    }
+
+    /** Gets the notifications panel controller. */
+    @VisibleForTesting
+    NotificationsShadeController getNotificationsPanelController() {
+        return mView.getNotificationsPanelController();
+    }
+
+    /** Gets the HVAC panel controller. */
+    @VisibleForTesting
+    HvacPanelController getHvacPanelController() {
+        return mView.getHvacPanelController();
     }
 
     @Override

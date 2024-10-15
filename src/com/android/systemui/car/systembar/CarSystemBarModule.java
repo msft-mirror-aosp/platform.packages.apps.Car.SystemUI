@@ -281,4 +281,10 @@ public abstract class CarSystemBarModule {
             return Optional.empty();
         }
     }
+
+    /** Injects CarSystemBarViewFactory */
+    @SysUISingleton
+    @Binds
+    public abstract CarSystemBarViewFactory bindCarSystemBarViewFactory(
+            CarSystemBarViewFactoryImpl impl);
 }

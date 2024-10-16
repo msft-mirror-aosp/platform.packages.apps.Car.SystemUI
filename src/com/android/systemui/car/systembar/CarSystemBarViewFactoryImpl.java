@@ -72,8 +72,8 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
     }
 
     private final Context mContext;
-    private final ArrayMap<Type, CarSystemBarView> mCachedViewMap = new ArrayMap<>(
-            Type.values().length);
+    private final ArrayMap<Type, CarSystemBarViewController> mCachedViewControllerMap =
+            new ArrayMap<>(Type.values().length);
     private final ArrayMap<Type, ViewGroup> mCachedContainerMap = new ArrayMap<>();
     private final Provider<CarSystemBarViewController.Factory>
             mCarSystemBarViewControllerFactoryProvider;
@@ -105,32 +105,24 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
 
     /** Gets the bar by side. */
     @Override
-    public CarSystemBarView getBar(@SystemBarSide int side, boolean isSetUp) {
-        CarSystemBarView view;
+    public CarSystemBarViewController getBar(@SystemBarSide int side, boolean isSetUp) {
         switch (side) {
             case TOP:
                 if (Flags.dockFeature()) {
-                    view = getBar(isSetUp, Type.TOP_WITH_DOCK, Type.TOP_UNPROVISIONED);
-                    break;
+                    return getBar(isSetUp, Type.TOP_WITH_DOCK, Type.TOP_UNPROVISIONED);
                 }
-                view = getBar(isSetUp, Type.TOP, Type.TOP_UNPROVISIONED);
-                break;
+                return getBar(isSetUp, Type.TOP, Type.TOP_UNPROVISIONED);
             case RIGHT:
-                view = getBar(isSetUp, Type.RIGHT, Type.RIGHT_UNPROVISIONED);
-                break;
+                return getBar(isSetUp, Type.RIGHT, Type.RIGHT_UNPROVISIONED);
             case BOTTOM:
                 if (Flags.dockFeature()) {
-                    view = getBar(isSetUp, Type.BOTTOM_WITH_DOCK, Type.BOTTOM_UNPROVISIONED);
-                    break;
+                    return getBar(isSetUp, Type.BOTTOM_WITH_DOCK, Type.BOTTOM_UNPROVISIONED);
                 }
-                view = getBar(isSetUp, Type.BOTTOM, Type.BOTTOM_UNPROVISIONED);
-                break;
+                return  getBar(isSetUp, Type.BOTTOM, Type.BOTTOM_UNPROVISIONED);
             case LEFT:
             default:
-                view = getBar(isSetUp, Type.LEFT, Type.LEFT_UNPROVISIONED);
-                break;
+                return getBar(isSetUp, Type.LEFT, Type.LEFT_UNPROVISIONED);
         }
-        return view;
     }
 
     private ViewGroup getWindowCached(Type type) {
@@ -156,22 +148,24 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
         };
     }
 
-    private CarSystemBarView getBar(boolean isSetUp, Type provisioned, Type unprovisioned) {
-        CarSystemBarView view = getBarCached(isSetUp, provisioned, unprovisioned);
+    private CarSystemBarViewController getBar(boolean isSetUp, Type provisioned,
+            Type unprovisioned) {
+        CarSystemBarViewController controller = getBarCached(isSetUp, provisioned, unprovisioned);
 
-        if (view == null) {
+        if (controller == null) {
             String name = isSetUp ? provisioned.name() : unprovisioned.name();
             Log.e(TAG, "CarStatusBar failed inflate for " + name);
             throw new RuntimeException(
                     "Unable to build " + name + " nav bar due to missing layout");
         }
-        return view;
+        return controller;
     }
 
-    private CarSystemBarView getBarCached(boolean isSetUp, Type provisioned, Type unprovisioned) {
+    private CarSystemBarViewController getBarCached(boolean isSetUp, Type provisioned,
+            Type unprovisioned) {
         Type type = isSetUp ? provisioned : unprovisioned;
-        if (mCachedViewMap.containsKey(type)) {
-            return mCachedViewMap.get(type);
+        if (mCachedViewControllerMap.containsKey(type)) {
+            return mCachedViewControllerMap.get(type);
         }
 
         Integer barLayoutInteger = sLayoutMap.get(type);
@@ -186,14 +180,14 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
                 .create(view);
         controller.init();
 
-        mCachedViewMap.put(type, view);
-        return mCachedViewMap.get(type);
+        mCachedViewControllerMap.put(type, controller);
+        return mCachedViewControllerMap.get(type);
     }
 
     /** Resets the cached system bar views. */
     @Override
     public void resetSystemBarViewCache() {
-        mCachedViewMap.clear();
+        mCachedViewControllerMap.clear();
     }
 
     /** Resets the cached system bar windows and system bar views. */

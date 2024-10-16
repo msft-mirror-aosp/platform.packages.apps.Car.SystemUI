@@ -16,13 +16,17 @@
 package com.android.systemui.car.systembar;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.ui.FocusParkingView;
+import com.android.car.ui.utils.ViewUtils;
+import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.notification.NotificationPanelViewController;
@@ -42,6 +46,9 @@ import java.util.Set;
  * A controller for initializing the CarSystemBarView instances.
  */
 public class CarSystemBarViewController extends ViewController<CarSystemBarView> {
+
+    private static final String LAST_FOCUSED_VIEW_ID = "last_focused_view_id";
+    private static final String IS_PROFILE_PICKER_OPEN = "is_profile_picker_open";
 
     private final Context mContext;
     private final UserTracker mUserTracker;
@@ -67,6 +74,39 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
         // Include a FocusParkingView at the beginning. The rotary controller "parks" the focus here
         // when the user navigates to another window. This is also used to prevent wrap-around.
         mView.addView(new FocusParkingView(mContext), 0);
+    }
+
+    /**
+     * Call to save the internal state.
+     */
+    public void onSaveInstanceState(Bundle outState) {
+        // The focused view will be destroyed during re-layout, causing the framework to adjust
+        // the focus unexpectedly. To avoid that, move focus to a view that won't be
+        // destroyed during re-layout and has no focus highlight (the FocusParkingView), then
+        // move focus back to the previously focused view after re-layout.
+        outState.putInt(LAST_FOCUSED_VIEW_ID, cacheAndHideFocus(mView));
+
+        View profilePickerView = null;
+        boolean isProfilePickerOpen = false;
+        profilePickerView = mView.findViewById(R.id.user_name);
+        if (profilePickerView != null) isProfilePickerOpen = profilePickerView.isSelected();
+        if (isProfilePickerOpen) {
+            profilePickerView.callOnClick();
+        }
+        outState.putBoolean(IS_PROFILE_PICKER_OPEN, isProfilePickerOpen);
+    }
+
+    /**
+     * Call to restore the internal state.
+     */
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        boolean isProfilePickerOpen = savedInstanceState.getBoolean(IS_PROFILE_PICKER_OPEN, false);
+        if (isProfilePickerOpen) {
+            View profilePickerView = mView.findViewById(R.id.user_name);
+            if (profilePickerView != null) profilePickerView.callOnClick();
+        }
+
+        restoreFocus(mView, savedInstanceState.getInt(LAST_FOCUSED_VIEW_ID, View.NO_ID));
     }
 
     // TODO(b/372065319): will be removed
@@ -182,5 +222,23 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
     public interface Factory {
         /** Create instance of CarSystemBarViewController for CarSystemBarView */
         CarSystemBarViewController create(CarSystemBarView view);
+    }
+
+    @VisibleForTesting
+    static int cacheAndHideFocus(@Nullable View rootView) {
+        if (rootView == null) return View.NO_ID;
+        View focusedView = rootView.findFocus();
+        if (focusedView == null || focusedView instanceof FocusParkingView) return View.NO_ID;
+        int focusedViewId = focusedView.getId();
+        ViewUtils.hideFocus(rootView);
+        return focusedViewId;
+    }
+
+    private static boolean restoreFocus(@Nullable View rootView, @IdRes int viewToFocusId) {
+        if (rootView == null || viewToFocusId == View.NO_ID) return false;
+        View focusedView = rootView.findViewById(viewToFocusId);
+        if (focusedView == null) return false;
+        focusedView.requestFocus();
+        return true;
     }
 }

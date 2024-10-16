@@ -802,7 +802,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         View mockContainerView = mock(View.class);
         when(mockContainerView.findFocus()).thenReturn(mockFocusParkingView);
 
-        int returnFocusedViewId = mCarSystemBarController.cacheAndHideFocus(mockContainerView);
+        int returnFocusedViewId = CarSystemBarViewController.cacheAndHideFocus(mockContainerView);
 
         assertThat(returnFocusedViewId).isEqualTo(View.NO_ID);
     }

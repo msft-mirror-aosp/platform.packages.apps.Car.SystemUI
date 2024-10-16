@@ -152,19 +152,19 @@ public class CarSystemBarTest extends SysuiTestCase {
     @Mock
     private CarSystemBarViewFactory mCarSystemBarViewFactory;
     @Mock
-    private CarSystemBarView mTopBar;
+    private CarSystemBarViewController mTopBar;
     @Mock
     private ViewGroup mTopWindow;
     @Mock
-    private CarSystemBarView mRigthBar;
+    private CarSystemBarViewController mRigthBar;
     @Mock
     private ViewGroup mRightWindow;
     @Mock
-    private CarSystemBarView mLeftBar;
+    private CarSystemBarViewController mLeftBar;
     @Mock
     private ViewGroup mLeftWindow;
     @Mock
-    private CarSystemBarView mBottomBar;
+    private CarSystemBarViewController mBottomBar;
     @Mock
     private ViewGroup mBottomWindow;
 
@@ -183,12 +183,16 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
         when(mStatusBarIconController.getTransitionsController()).thenReturn(
                 mLightBarTransitionsController);
+        when(mTopBar.getView()).thenReturn(mock(CarSystemBarView.class));
         when(mCarSystemBarViewFactory.getBar(eq(TOP), anyBoolean())).thenReturn(mTopBar);
         when(mCarSystemBarViewFactory.getWindow(eq(TOP))).thenReturn(mTopWindow);
+        when(mRigthBar.getView()).thenReturn(mock(CarSystemBarView.class));
         when(mCarSystemBarViewFactory.getBar(eq(RIGHT), anyBoolean())).thenReturn(mRigthBar);
         when(mCarSystemBarViewFactory.getWindow(eq(RIGHT))).thenReturn(mRightWindow);
+        when(mBottomBar.getView()).thenReturn(mock(CarSystemBarView.class));
         when(mCarSystemBarViewFactory.getBar(eq(BOTTOM), anyBoolean())).thenReturn(mBottomBar);
         when(mCarSystemBarViewFactory.getWindow(eq(BOTTOM))).thenReturn(mBottomWindow);
+        when(mLeftBar.getView()).thenReturn(mock(CarSystemBarView.class));
         when(mCarSystemBarViewFactory.getBar(eq(LEFT), anyBoolean())).thenReturn(mLeftBar);
         when(mCarSystemBarViewFactory.getWindow(eq(LEFT))).thenReturn(mLeftWindow);
         mAppearanceRegions = new AppearanceRegion[]{

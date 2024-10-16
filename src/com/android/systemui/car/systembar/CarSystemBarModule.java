@@ -284,9 +284,7 @@ public abstract class CarSystemBarModule {
 
     /** Injects CarSystemBarViewFactory */
     @SysUISingleton
-    @Provides
-    static CarSystemBarViewFactory provideCarSystemBarViewFactory(
-            CarSystemBarViewFactoryImpl impl) {
-        return impl;
-    }
+    @Binds
+    public abstract CarSystemBarViewFactory bindCarSystemBarViewFactory(
+            CarSystemBarViewFactoryImpl impl);
 }

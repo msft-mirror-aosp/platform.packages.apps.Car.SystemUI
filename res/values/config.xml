@@ -119,6 +119,7 @@
         <item>@string/config_notificationPanelViewMediator</item>
         <item>com.android.systemui.car.hvac.HvacPanelOverlayViewMediator</item>
         <item>com.android.systemui.car.keyguard.CarKeyguardOverlayViewMediator</item>
+        <item>com.android.systemui.car.keyguard.passenger.PassengerKeyguardOverlayViewMediator</item>
         <item>com.android.systemui.car.systemdialogs.SystemDialogsViewMediator</item>
         <item>com.android.systemui.car.userswitcher.FullscreenUserSwitcherViewMediator</item>
         <item>com.android.systemui.car.userswitcher.UserSwitchTransitionViewMediator</item>

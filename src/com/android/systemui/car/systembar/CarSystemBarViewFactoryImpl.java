@@ -33,8 +33,9 @@ import com.android.car.dockutil.Flags;
 import com.android.systemui.R;
 import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 
+import java.util.Map;
+
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 /** A factory that creates and caches views for navigation bars. */
 public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
@@ -75,16 +76,16 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
     private final ArrayMap<Type, CarSystemBarViewController> mCachedViewControllerMap =
             new ArrayMap<>(Type.values().length);
     private final ArrayMap<Type, ViewGroup> mCachedContainerMap = new ArrayMap<>();
-    private final Provider<CarSystemBarViewController.Factory>
-            mCarSystemBarViewControllerFactoryProvider;
+    private final Map<@SystemBarSide Integer, CarSystemBarViewController.Factory>
+            mFactoriesMap;
 
     @Inject
     public CarSystemBarViewFactoryImpl(
             Context context,
-            Provider<CarSystemBarViewController.Factory>
-                    carSystemBarViewControllerFactoryProvider) {
+            Map<@SystemBarSide Integer, CarSystemBarViewController.Factory>
+                    factoriesMap) {
         mContext = context;
-        mCarSystemBarViewControllerFactoryProvider = carSystemBarViewControllerFactoryProvider;
+        mFactoriesMap = factoriesMap;
     }
 
     /** Gets the top window by side. */
@@ -109,19 +110,19 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
         switch (side) {
             case TOP:
                 if (Flags.dockFeature()) {
-                    return getBar(isSetUp, Type.TOP_WITH_DOCK, Type.TOP_UNPROVISIONED);
+                    return getBar(side, isSetUp, Type.TOP_WITH_DOCK, Type.TOP_UNPROVISIONED);
                 }
-                return getBar(isSetUp, Type.TOP, Type.TOP_UNPROVISIONED);
+                return getBar(side, isSetUp, Type.TOP, Type.TOP_UNPROVISIONED);
             case RIGHT:
-                return getBar(isSetUp, Type.RIGHT, Type.RIGHT_UNPROVISIONED);
+                return getBar(side, isSetUp, Type.RIGHT, Type.RIGHT_UNPROVISIONED);
             case BOTTOM:
                 if (Flags.dockFeature()) {
-                    return getBar(isSetUp, Type.BOTTOM_WITH_DOCK, Type.BOTTOM_UNPROVISIONED);
+                    return getBar(side, isSetUp, Type.BOTTOM_WITH_DOCK, Type.BOTTOM_UNPROVISIONED);
                 }
-                return  getBar(isSetUp, Type.BOTTOM, Type.BOTTOM_UNPROVISIONED);
+                return  getBar(side, isSetUp, Type.BOTTOM, Type.BOTTOM_UNPROVISIONED);
             case LEFT:
             default:
-                return getBar(isSetUp, Type.LEFT, Type.LEFT_UNPROVISIONED);
+                return getBar(side, isSetUp, Type.LEFT, Type.LEFT_UNPROVISIONED);
         }
     }
 
@@ -148,9 +149,10 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
         };
     }
 
-    private CarSystemBarViewController getBar(boolean isSetUp, Type provisioned,
-            Type unprovisioned) {
-        CarSystemBarViewController controller = getBarCached(isSetUp, provisioned, unprovisioned);
+    private CarSystemBarViewController getBar(@SystemBarSide int side, boolean isSetUp,
+            Type provisioned, Type unprovisioned) {
+        CarSystemBarViewController controller =
+                getBarCached(side, isSetUp, provisioned, unprovisioned);
 
         if (controller == null) {
             String name = isSetUp ? provisioned.name() : unprovisioned.name();
@@ -161,8 +163,8 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
         return controller;
     }
 
-    private CarSystemBarViewController getBarCached(boolean isSetUp, Type provisioned,
-            Type unprovisioned) {
+    private CarSystemBarViewController getBarCached(@SystemBarSide int side, boolean isSetUp,
+            Type provisioned, Type unprovisioned) {
         Type type = isSetUp ? provisioned : unprovisioned;
         if (mCachedViewControllerMap.containsKey(type)) {
             return mCachedViewControllerMap.get(type);
@@ -176,8 +178,7 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
         CarSystemBarView view = (CarSystemBarView) View.inflate(mContext, barLayout,
                 /* root= */ null);
 
-        CarSystemBarViewController controller = mCarSystemBarViewControllerFactoryProvider.get()
-                .create(view);
+        CarSystemBarViewController controller = mFactoriesMap.get(side).create(side, view);
         controller.init();
 
         mCachedViewControllerMap.put(type, controller);

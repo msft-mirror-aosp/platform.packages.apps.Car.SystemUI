@@ -43,7 +43,6 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.displaycompat.ToolbarController;
-import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -119,7 +118,6 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
             IStatusBarService barService,
             Lazy<KeyguardStateController> keyguardStateControllerLazy,
             Lazy<PhoneStatusBarPolicy> iconPolicyLazy,
-            HvacController hvacController,
             ConfigurationController configurationController,
             CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
@@ -144,7 +142,6 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
                 barService,
                 keyguardStateControllerLazy,
                 iconPolicyLazy,
-                hvacController,
                 configurationController,
                 restartTracker,
                 displayTracker,

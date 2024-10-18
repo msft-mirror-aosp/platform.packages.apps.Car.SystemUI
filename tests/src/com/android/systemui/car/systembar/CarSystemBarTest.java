@@ -61,7 +61,6 @@ import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -143,8 +142,6 @@ public class CarSystemBarTest extends SysuiTestCase {
     private StatusBarIconController mIconController;
     @Mock
     private StatusBarSignalPolicy mSignalPolicy;
-    @Mock
-    private HvacController mHvacController;
     @Mock
     private ConfigurationController mConfigurationController;
     @Mock
@@ -251,7 +248,6 @@ public class CarSystemBarTest extends SysuiTestCase {
                 mBarService,
                 () -> mKeyguardStateController,
                 () -> mIconPolicy,
-                mHvacController,
                 mConfigurationController,
                 mCarSystemBarRestartTracker,
                 displayTracker,

@@ -67,7 +67,6 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.displaycompat.ToolbarController;
-import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.hvac.HvacSystemBarPresenter;
@@ -136,7 +135,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     private final DisplayTracker mDisplayTracker;
     private final Lazy<KeyguardStateController> mKeyguardStateControllerLazy;
     private final Lazy<PhoneStatusBarPolicy> mIconPolicyLazy;
-    private final HvacController mHvacController;
     private final ConfigurationController mConfigurationController;
     private final CarSystemBarRestartTracker mCarSystemBarRestartTracker;
     private final int mDisplayId;
@@ -234,7 +232,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             IStatusBarService barService,
             Lazy<KeyguardStateController> keyguardStateControllerLazy,
             Lazy<PhoneStatusBarPolicy> iconPolicyLazy,
-            HvacController hvacController,
             ConfigurationController configurationController,
             CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
@@ -258,7 +255,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mBarService = barService;
         mKeyguardStateControllerLazy = keyguardStateControllerLazy;
         mIconPolicyLazy = iconPolicyLazy;
-        mHvacController = hvacController;
         mDisplayId = context.getDisplayId();
         mDisplayTracker = displayTracker;
         mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
@@ -1142,29 +1138,21 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     private void buildNavBarContent() {
         mTopViewController = getTopBar(isDeviceSetupForUser());
         if (mTopViewController != null) {
-            mSystemBarConfigs.insetSystemBar(TOP, mTopViewController.getView());
-            mHvacController.registerHvacViews(mTopViewController.getView());
             mTopSystemBarWindow.addView(mTopViewController.getView());
         }
 
         mBottomViewController = getBottomBar(isDeviceSetupForUser());
         if (mBottomViewController != null) {
-            mSystemBarConfigs.insetSystemBar(BOTTOM, mBottomViewController.getView());
-            mHvacController.registerHvacViews(mBottomViewController.getView());
             mBottomSystemBarWindow.addView(mBottomViewController.getView());
         }
 
         mLeftViewController = getLeftBar(isDeviceSetupForUser());
         if (mLeftViewController != null) {
-            mSystemBarConfigs.insetSystemBar(LEFT, mLeftViewController.getView());
-            mHvacController.registerHvacViews(mLeftViewController.getView());
             mLeftSystemBarWindow.addView(mLeftViewController.getView());
         }
 
         mRightViewController = getRightBar(isDeviceSetupForUser());
         if (mRightViewController != null) {
-            mSystemBarConfigs.insetSystemBar(RIGHT, mRightViewController.getView());
-            mHvacController.registerHvacViews(mRightViewController.getView());
             mRightSystemBarWindow.addView(mRightViewController.getView());
         }
     }
@@ -1382,7 +1370,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     private void clearSystemBarWindow(boolean removeUnusedWindow) {
         if (mTopSystemBarWindow != null) {
             mTopSystemBarWindow.removeAllViews();
-            mHvacController.unregisterViews(mTopViewController.getView());
             if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mTopSystemBarWindow);
                 mTopSystemBarAttached = false;
@@ -1392,7 +1379,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
         if (mBottomSystemBarWindow != null) {
             mBottomSystemBarWindow.removeAllViews();
-            mHvacController.unregisterViews(mBottomViewController.getView());
             if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mBottomSystemBarWindow);
                 mBottomSystemBarAttached = false;
@@ -1402,7 +1388,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
         if (mLeftSystemBarWindow != null) {
             mLeftSystemBarWindow.removeAllViews();
-            mHvacController.unregisterViews(mLeftViewController.getView());
             if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mLeftSystemBarWindow);
                 mLeftSystemBarAttached = false;
@@ -1412,7 +1397,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
         if (mRightSystemBarWindow != null) {
             mRightSystemBarWindow.removeAllViews();
-            mHvacController.unregisterViews(mRightViewController.getView());
             if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mRightSystemBarWindow);
                 mRightSystemBarAttached = false;

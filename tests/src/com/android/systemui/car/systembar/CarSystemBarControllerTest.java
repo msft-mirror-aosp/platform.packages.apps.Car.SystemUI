@@ -64,6 +64,7 @@ import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.notification.NotificationsShadeController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
+import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -89,6 +90,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoSession;
 import org.mockito.quality.Strictness;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @CarSystemUiTest
@@ -150,7 +153,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     private ConfigurationController mConfigurationController;
     @Mock
     private CarSystemBarRestartTracker mCarSystemBarRestartTracker;
-    RegisterStatusBarResult mRegisterStatusBarResult;
+    private RegisterStatusBarResult mRegisterStatusBarResult;
+    private SystemBarConfigs mSystemBarConfigs;
 
     @Before
     public void setUp() throws Exception {
@@ -162,15 +166,23 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mTestableResources = mContext.getOrCreateTestableResources();
         mSpiedContext = spy(mContext);
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
+        mSystemBarConfigs = new SystemBarConfigs(mTestableResources.getResources());
         CarSystemBarViewController.Factory carSystemBarViewControllerFactory =
                 new CarSystemBarViewController.Factory() {
-                    public CarSystemBarViewController create(CarSystemBarView view) {
+                    public CarSystemBarViewController create(@SystemBarSide int side,
+                            CarSystemBarView view) {
                         return new CarSystemBarViewController(mSpiedContext, mUserTracker,
-                                mock(CarSystemBarElementInitializer.class), view);
+                                mock(CarSystemBarElementInitializer.class), mHvacController,
+                                mSystemBarConfigs, side, view);
                     }
                 };
-        mCarSystemBarViewFactory = new CarSystemBarViewFactoryImpl(mSpiedContext,
-                () -> carSystemBarViewControllerFactory);
+        Map<@SystemBarSide Integer, CarSystemBarViewController.Factory> factoriesMap =
+                new HashMap<>();
+        factoriesMap.put(LEFT, carSystemBarViewControllerFactory);
+        factoriesMap.put(TOP, carSystemBarViewControllerFactory);
+        factoriesMap.put(RIGHT, carSystemBarViewControllerFactory);
+        factoriesMap.put(BOTTOM, carSystemBarViewControllerFactory);
+        mCarSystemBarViewFactory = new CarSystemBarViewFactoryImpl(mSpiedContext, factoriesMap);
         setupPanelControllerBuilderMocks();
 
         mRegisterStatusBarResult = new RegisterStatusBarResult(new ArrayMap<>(), 0, 0,
@@ -193,7 +205,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     }
 
     private void initCarSystemBar() {
-        SystemBarConfigs systemBarConfigs = new SystemBarConfigs(mTestableResources.getResources());
         FakeDisplayTracker displayTracker = new FakeDisplayTracker(mContext);
         FakeExecutor executor = new FakeExecutor(new FakeSystemClock());
 
@@ -204,7 +215,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 () -> mMicPrivacyChipViewController,
                 () -> mCameraPrivacyChipViewController,
                 mButtonRoleHolderController,
-                systemBarConfigs,
+                mSystemBarConfigs,
                 () -> mPanelControllerBuilder,
                 mLightBarController,
                 mStatusBarIconController,
@@ -217,7 +228,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 mBarService,
                 () -> mKeyguardStateController,
                 () -> mIconPolicy,
-                mHvacController,
                 mConfigurationController,
                 mCarSystemBarRestartTracker,
                 displayTracker,

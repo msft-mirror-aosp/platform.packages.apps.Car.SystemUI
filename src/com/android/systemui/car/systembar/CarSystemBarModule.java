@@ -175,21 +175,16 @@ public abstract class CarSystemBarModule {
 
         if (isSecondaryMUMDSystemUI && isSecondaryUserRROsEnabled) {
             return new MDSystemBarsControllerImpl(iWindowManager, mainHandler, context, userTracker,
-                    carSystemBarViewFactory, buttonSelectionStateController,
-                    micPrivacyChipViewControllerLazy, cameraPrivacyChipViewControllerLazy,
-                    buttonRoleHolderController, systemBarConfigs, panelControllerBuilderProvider,
-                    lightBarController, darkIconDispatcher, windowManager,
-                    deviceProvisionedController, commandQueue, autoHideController,
-                    buttonSelectionStateListener, mainExecutor, barService,
+                    carSystemBarViewFactory, systemBarConfigs, lightBarController,
+                    darkIconDispatcher, windowManager, deviceProvisionedController, commandQueue,
+                    autoHideController, buttonSelectionStateListener, mainExecutor, barService,
                     keyguardStateControllerLazy, iconPolicyLazy, configurationController,
                     restartTracker, displayTracker, toolbarController);
         } else {
             return new CarSystemBarControllerImpl(context, userTracker, carSystemBarViewFactory,
-                    buttonSelectionStateController, micPrivacyChipViewControllerLazy,
-                    cameraPrivacyChipViewControllerLazy, buttonRoleHolderController,
-                    systemBarConfigs, panelControllerBuilderProvider, lightBarController,
-                    darkIconDispatcher, windowManager, deviceProvisionedController, commandQueue,
-                    autoHideController, buttonSelectionStateListener, mainExecutor, barService,
+                    systemBarConfigs, lightBarController, darkIconDispatcher, windowManager,
+                    deviceProvisionedController, commandQueue, autoHideController,
+                    buttonSelectionStateListener, mainExecutor, barService,
                     keyguardStateControllerLazy, iconPolicyLazy, configurationController,
                     restartTracker, displayTracker, toolbarController);
         }
@@ -304,7 +299,7 @@ public abstract class CarSystemBarModule {
     @IntoMap
     @IntKey(TOP)
     public abstract CarSystemBarViewController.Factory bindTopCarSystemBarViewFactory(
-            CarSystemBarViewController.Factory factory);
+            CarTopSystemBarViewController.Factory factory);
 
     /** Injects CarSystemBarViewController for @SystemBarSide RIGHT */
     @Binds

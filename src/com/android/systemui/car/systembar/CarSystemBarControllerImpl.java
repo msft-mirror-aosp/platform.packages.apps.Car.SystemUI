@@ -27,7 +27,6 @@ import static com.android.systemui.car.Flags.configAwareSystemui;
 import static com.android.systemui.shared.statusbar.phone.BarTransitions.MODE_SEMI_TRANSPARENT;
 import static com.android.systemui.shared.statusbar.phone.BarTransitions.MODE_TRANSPARENT;
 
-import android.annotation.LayoutRes;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.StatusBarManager;
@@ -46,7 +45,6 @@ import android.os.PatternMatcher;
 import android.os.RemoteException;
 import android.util.ArraySet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -74,7 +72,6 @@ import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationsShadeController;
-import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -103,8 +100,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Provider;
-
 /** A single class which controls the system bar views. */
 @SysUISingleton
 public class CarSystemBarControllerImpl implements CarSystemBarController,
@@ -118,11 +113,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     private final Context mContext;
     private final CarSystemBarViewFactory mCarSystemBarViewFactory;
-    private final ButtonSelectionStateController mButtonSelectionStateController;
-    private final ButtonRoleHolderController mButtonRoleHolderController;
-    private final Provider<StatusIconPanelViewController.Builder> mPanelControllerBuilderProvider;
-    private final Lazy<MicPrivacyChipViewController> mMicPrivacyChipViewControllerLazy;
-    private final Lazy<CameraPrivacyChipViewController> mCameraPrivacyChipViewControllerLazy;
     private final SystemBarConfigs mSystemBarConfigs;
     private final SysuiDarkIconDispatcher mStatusBarIconController;
     private final WindowManager mWindowManager;
@@ -149,13 +139,9 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     private NotificationsShadeController mNotificationsShadeController;
     private HvacPanelController mHvacPanelController;
-    private StatusIconPanelViewController mMicPanelController;
-    private StatusIconPanelViewController mCameraPanelController;
-    private StatusIconPanelViewController mProfilePanelController;
     private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
     private NotificationPanelViewController mNotificationPanelViewController;
 
-    private int mPrivacyChipXOffset;
     // Saved StatusBarManager.DisableFlags
     private int mStatusBarState;
     // Saved StatusBarManager.Disable2Flags
@@ -214,12 +200,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     public CarSystemBarControllerImpl(Context context,
             UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,
-            ButtonSelectionStateController buttonSelectionStateController,
-            Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
-            Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
-            ButtonRoleHolderController buttonRoleHolderController,
             SystemBarConfigs systemBarConfigs,
-            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider,
             // TODO(b/156052638): Should not need to inject LightBarController
             LightBarController lightBarController,
             DarkIconDispatcher darkIconDispatcher,
@@ -239,11 +220,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mContext = context;
         mUserTracker = userTracker;
         mCarSystemBarViewFactory = carSystemBarViewFactory;
-        mButtonSelectionStateController = buttonSelectionStateController;
-        mMicPrivacyChipViewControllerLazy = micPrivacyChipViewControllerLazy;
-        mCameraPrivacyChipViewControllerLazy = cameraPrivacyChipViewControllerLazy;
-        mButtonRoleHolderController = buttonRoleHolderController;
-        mPanelControllerBuilderProvider = panelControllerBuilderProvider;
         mSystemBarConfigs = systemBarConfigs;
         mStatusBarIconController = (SysuiDarkIconDispatcher) darkIconDispatcher;
         mWindowManager = windowManager;
@@ -270,9 +246,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     public void init() {
 
         resetSystemBarConfigs();
-
-        mPrivacyChipXOffset = -mContext.getResources()
-                .getDimensionPixelOffset(R.dimen.privacy_chip_horizontal_padding);
 
         // Set initial state.
         mHideTopBarForKeyboard = mSystemBarConfigs.getHideForKeyboardBySide(TOP);
@@ -492,19 +465,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mShowRight = mSystemBarConfigs.getEnabledStatusBySide(RIGHT);
     }
 
-    /** Clean up */
-    @VisibleForTesting
-    void removeAll() {
-        mButtonSelectionStateController.removeAll();
-        mButtonRoleHolderController.removeAll();
-        mMicPrivacyChipViewControllerLazy.get().removeAll();
-        mCameraPrivacyChipViewControllerLazy.get().removeAll();
-
-        mMicPanelController = null;
-        mCameraPanelController = null;
-        mProfilePanelController = null;
-    }
-
     /** Gets the top window if configured to do so. */
     @Nullable
     private ViewGroup getTopWindow() {
@@ -703,16 +663,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
                 mHvacPanelController, mHvacPanelOverlayViewController,
                 mNotificationPanelViewController);
 
-        if (isSetUp) {
-            // We do not want the privacy chips or the profile picker to be clickable in
-            // unprovisioned mode.
-            mMicPanelController = setupSensorQcPanel(mMicPanelController, R.id.mic_privacy_chip,
-                    R.layout.qc_mic_panel);
-            mCameraPanelController = setupSensorQcPanel(mCameraPanelController,
-                    R.id.camera_privacy_chip, R.layout.qc_camera_panel);
-            setupProfilePanel();
-        }
-
         return mTopViewController;
     }
 
@@ -772,40 +722,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         controller.setHvacPanelController(hvacPanelController);
         controller.registerHvacPanelOverlayViewController(hvacPanelOverlayViewController);
         controller.updateControlCenterButtonVisibility(CarSystemUIUserUtil.isMUMDSystemUI());
-        mButtonSelectionStateController.addAllButtonsWithSelectionState(controller.getView());
-        mButtonRoleHolderController.addAllButtonsWithRoleName(controller.getView());
-        mMicPrivacyChipViewControllerLazy.get().addPrivacyChipView(controller.getView());
-        mCameraPrivacyChipViewControllerLazy.get().addPrivacyChipView(controller.getView());
-    }
-
-    private StatusIconPanelViewController setupSensorQcPanel(
-            @Nullable StatusIconPanelViewController panelController, int chipId,
-            @LayoutRes int panelLayoutRes) {
-        if (panelController == null) {
-            View privacyChip = mTopViewController.getView().findViewById(chipId);
-            if (privacyChip != null) {
-                panelController = mPanelControllerBuilderProvider.get()
-                        .setXOffset(mPrivacyChipXOffset)
-                        .setGravity(Gravity.TOP | Gravity.END)
-                        .build(privacyChip, panelLayoutRes, R.dimen.car_sensor_qc_panel_width);
-                panelController.init();
-            }
-        }
-        return panelController;
-    }
-
-    private void setupProfilePanel() {
-        View profilePickerView = mTopViewController.getView().findViewById(R.id.user_name);
-        if (mProfilePanelController == null && profilePickerView != null) {
-            boolean profilePanelDisabledWhileDriving = mContext.getResources().getBoolean(
-                    R.bool.config_profile_panel_disabled_while_driving);
-            mProfilePanelController = mPanelControllerBuilderProvider.get()
-                    .setGravity(Gravity.TOP | Gravity.END)
-                    .setDisabledWhileDriving(profilePanelDisabledWhileDriving)
-                    .build(profilePickerView, R.layout.qc_profile_switcher,
-                            R.dimen.car_profile_quick_controls_panel_width);
-            mProfilePanelController.init();
-        }
     }
 
     /** Sets a touch listener for the top navigation bar. */
@@ -1268,9 +1184,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         if (!isProvisionedStateChange) {
             mCarSystemBarViewFactory.resetSystemBarViewCache();
         }
-        // remove and reattach all components such that we don't keep a reference to unused ui
-        // elements
-        removeAll();
         clearSystemBarWindow(/* removeUnusedWindow= */ false);
 
         buildNavBarContent();
@@ -1356,7 +1269,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mCarSystemBarRestartTracker.notifyPendingRestart(/* recreateWindows= */ true,
                 /* provisionedStateChanged= */ false);
 
-        removeAll();
         resetSystemBarConfigs();
         clearSystemBarWindow(/* removeUnusedWindow= */ true);
         buildNavBarWindows();

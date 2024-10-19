@@ -17,13 +17,13 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
-              android:gravity="center_vertical">
+              android:gravity="center_vertical|start">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/car_alert_dialog_padding"
+        android:layout_marginBottom="@dimen/car_alert_dialog_padding"
         android:orientation="horizontal"
-        android:gravity="center">
+        android:gravity="center_vertical|start">
         <ImageView
             android:layout_width="@dimen/car_alert_dialog_icon_size"
             android:layout_height="@dimen/car_alert_dialog_icon_size"
@@ -41,8 +41,7 @@
     </LinearLayout>
     <com.android.internal.widget.DialogTitle
         android:id="@+id/sensor_use_started_title_message"
-        style="@android:style/TextAppearance.DeviceDefault.WindowTitle"
+        style="@android:style/TextAppearance.DeviceDefault.DialogWindowTitle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center" />
+        android:layout_height="wrap_content"/>
 </LinearLayout>

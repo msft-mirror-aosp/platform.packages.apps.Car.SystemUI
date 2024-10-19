@@ -49,7 +49,7 @@ public class CarSystemBarView extends LinearLayout {
 
     @IntDef(value = {BUTTON_TYPE_NAVIGATION, BUTTON_TYPE_KEYGUARD, BUTTON_TYPE_OCCLUSION})
     @Target({ElementType.TYPE_PARAMETER, ElementType.TYPE_USE})
-    private @interface ButtonsType {
+    public @interface ButtonsType {
     }
 
     private static final String TAG = CarSystemBarView.class.getSimpleName();
@@ -356,7 +356,7 @@ public class CarSystemBarView extends LinearLayout {
      *
      * @param hasUnseen true if the unseen notification count is great than 0.
      */
-    public void toggleNotificationUnseenIndicator(Boolean hasUnseen) {
+    public void toggleNotificationUnseenIndicator(boolean hasUnseen) {
         if (mNotificationsButton == null) return;
 
         mNotificationsButton.setUnseen(hasUnseen);

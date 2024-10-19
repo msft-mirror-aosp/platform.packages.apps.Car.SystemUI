@@ -233,7 +233,6 @@
         <item name="android:maxLines">2</item>
     </style>
 
-
     <!-- Biometrics -->
     <style name="PinPadKey" parent="TextAppearance.Car.Headline.Medium">
         <item name="android:gravity">center</item>
@@ -241,5 +240,22 @@
         <item name="android:textColor">@*android:color/car_body3</item>
         <item name="android:tint">@*android:color/car_body3</item>
         <item name="android:clickable">true</item>
+    </style>
+
+    <!-- Passenger Keyguard -->
+    <style name="PassengerLockPattern">
+        <item name="*android:regularColor">@*android:color/car_body1</item>
+        <item name="*android:successColor">@*android:color/car_blue_500</item>
+        <item name="*android:errorColor">?android:attr/colorError</item>
+    </style>
+
+    <style name="PassengerPinPadKey">
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">@*android:dimen/car_body1_size</item>
+        <item name="android:textColor">@*android:color/car_body3</item>
+        <item name="android:tint">@*android:color/car_body3</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
 </resources>

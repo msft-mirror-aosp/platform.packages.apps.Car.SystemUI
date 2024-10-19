@@ -483,4 +483,8 @@
     <dimen name="data_subscription_pop_up_horizontal_margin">15dp</dimen>
     <dimen name="data_subscription_pop_up_horizontal_offset">92dp</dimen>
     <dimen name="data_subscription_pop_up_vertical_offset">6dp</dimen>
+
+    <!-- Dimensions for passenger keyguard -->
+    <dimen name="passenger_keyguard_lockpattern_width">350dp</dimen>
+    <dimen name="passenger_keyguard_lockpattern_height">350dp</dimen>
 </resources>

@@ -37,6 +37,11 @@
               android:layout_height="match_parent"
               android:layout="@layout/keyguard_container"/>
 
+    <ViewStub android:id="@+id/passenger_keyguard_stub"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout="@layout/passenger_keyguard_overlay_window"/>
+
     <ViewStub android:id="@+id/hvac_panel_stub"
               android:layout_width="match_parent"
               android:layout_height="@dimen/hvac_panel_full_expanded_height"

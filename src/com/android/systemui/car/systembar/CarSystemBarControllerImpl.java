@@ -27,7 +27,6 @@ import static com.android.systemui.car.Flags.configAwareSystemui;
 import static com.android.systemui.shared.statusbar.phone.BarTransitions.MODE_SEMI_TRANSPARENT;
 import static com.android.systemui.shared.statusbar.phone.BarTransitions.MODE_TRANSPARENT;
 
-import android.annotation.LayoutRes;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.StatusBarManager;
@@ -41,11 +40,11 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.inputmethodservice.InputMethodService;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.PatternMatcher;
 import android.os.RemoteException;
 import android.util.ArraySet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -58,8 +57,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.android.car.ui.FocusParkingView;
-import com.android.car.ui.utils.ViewUtils;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.LetterboxDetails;
 import com.android.internal.statusbar.RegisterStatusBarResult;
@@ -68,7 +65,6 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.displaycompat.ToolbarController;
-import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.hvac.HvacSystemBarPresenter;
@@ -76,7 +72,6 @@ import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationsShadeController;
-import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -99,11 +94,11 @@ import com.android.systemui.util.concurrency.DelayableExecutor;
 import dagger.Lazy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
-
-import javax.inject.Provider;
 
 /** A single class which controls the system bar views. */
 @SysUISingleton
@@ -118,11 +113,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     private final Context mContext;
     private final CarSystemBarViewFactory mCarSystemBarViewFactory;
-    private final ButtonSelectionStateController mButtonSelectionStateController;
-    private final ButtonRoleHolderController mButtonRoleHolderController;
-    private final Provider<StatusIconPanelViewController.Builder> mPanelControllerBuilderProvider;
-    private final Lazy<MicPrivacyChipViewController> mMicPrivacyChipViewControllerLazy;
-    private final Lazy<CameraPrivacyChipViewController> mCameraPrivacyChipViewControllerLazy;
     private final SystemBarConfigs mSystemBarConfigs;
     private final SysuiDarkIconDispatcher mStatusBarIconController;
     private final WindowManager mWindowManager;
@@ -135,7 +125,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     private final DisplayTracker mDisplayTracker;
     private final Lazy<KeyguardStateController> mKeyguardStateControllerLazy;
     private final Lazy<PhoneStatusBarPolicy> mIconPolicyLazy;
-    private final HvacController mHvacController;
     private final ConfigurationController mConfigurationController;
     private final CarSystemBarRestartTracker mCarSystemBarRestartTracker;
     private final int mDisplayId;
@@ -150,13 +139,9 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     private NotificationsShadeController mNotificationsShadeController;
     private HvacPanelController mHvacPanelController;
-    private StatusIconPanelViewController mMicPanelController;
-    private StatusIconPanelViewController mCameraPanelController;
-    private StatusIconPanelViewController mProfilePanelController;
     private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
     private NotificationPanelViewController mNotificationPanelViewController;
 
-    private int mPrivacyChipXOffset;
     // Saved StatusBarManager.DisableFlags
     private int mStatusBarState;
     // Saved StatusBarManager.Disable2Flags
@@ -174,10 +159,10 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     private ViewGroup mBottomSystemBarWindow;
     private ViewGroup mLeftSystemBarWindow;
     private ViewGroup mRightSystemBarWindow;
-    private CarSystemBarView mTopView;
-    private CarSystemBarView mBottomView;
-    private CarSystemBarView mLeftView;
-    private CarSystemBarView mRightView;
+    private CarSystemBarViewController mTopViewController;
+    private CarSystemBarViewController mBottomViewController;
+    private CarSystemBarViewController mLeftViewController;
+    private CarSystemBarViewController mRightViewController;
     private boolean mTopSystemBarAttached;
     private boolean mBottomSystemBarAttached;
     private boolean mLeftSystemBarAttached;
@@ -215,12 +200,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     public CarSystemBarControllerImpl(Context context,
             UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,
-            ButtonSelectionStateController buttonSelectionStateController,
-            Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
-            Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
-            ButtonRoleHolderController buttonRoleHolderController,
             SystemBarConfigs systemBarConfigs,
-            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider,
             // TODO(b/156052638): Should not need to inject LightBarController
             LightBarController lightBarController,
             DarkIconDispatcher darkIconDispatcher,
@@ -233,7 +213,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             IStatusBarService barService,
             Lazy<KeyguardStateController> keyguardStateControllerLazy,
             Lazy<PhoneStatusBarPolicy> iconPolicyLazy,
-            HvacController hvacController,
             ConfigurationController configurationController,
             CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
@@ -241,11 +220,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mContext = context;
         mUserTracker = userTracker;
         mCarSystemBarViewFactory = carSystemBarViewFactory;
-        mButtonSelectionStateController = buttonSelectionStateController;
-        mMicPrivacyChipViewControllerLazy = micPrivacyChipViewControllerLazy;
-        mCameraPrivacyChipViewControllerLazy = cameraPrivacyChipViewControllerLazy;
-        mButtonRoleHolderController = buttonRoleHolderController;
-        mPanelControllerBuilderProvider = panelControllerBuilderProvider;
         mSystemBarConfigs = systemBarConfigs;
         mStatusBarIconController = (SysuiDarkIconDispatcher) darkIconDispatcher;
         mWindowManager = windowManager;
@@ -257,7 +231,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mBarService = barService;
         mKeyguardStateControllerLazy = keyguardStateControllerLazy;
         mIconPolicyLazy = iconPolicyLazy;
-        mHvacController = hvacController;
         mDisplayId = context.getDisplayId();
         mDisplayTracker = displayTracker;
         mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
@@ -273,9 +246,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     public void init() {
 
         resetSystemBarConfigs();
-
-        mPrivacyChipXOffset = -mContext.getResources()
-                .getDimensionPixelOffset(R.dimen.privacy_chip_horizontal_padding);
 
         // Set initial state.
         mHideTopBarForKeyboard = mSystemBarConfigs.getHideForKeyboardBySide(TOP);
@@ -471,32 +441,21 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         }
 
         // cache the current state
-        // The focused view will be destroyed during re-layout, causing the framework to adjust
-        // the focus unexpectedly. To avoid that, move focus to a view that won't be
-        // destroyed during re-layout and has no focus highlight (the FocusParkingView), then
-        // move focus back to the previously focused view after re-layout.
-        cacheAndHideFocus();
-        View profilePickerView = null;
-        boolean isProfilePickerOpen = false;
-        if (mTopView != null) {
-            profilePickerView = mTopView.findViewById(R.id.user_name);
-        }
-        if (profilePickerView != null) isProfilePickerOpen = profilePickerView.isSelected();
-        if (isProfilePickerOpen) {
-            profilePickerView.callOnClick();
-        }
+        Map<Integer, Bundle> savedStates = mSystemBarConfigs.getSystemBarSidesByZOrder().stream()
+                .collect(HashMap::new,
+                        (map, side) -> {
+                            Bundle bundle = new Bundle();
+                            getBarView(side, isDeviceSetupForUser()).onSaveInstanceState(bundle);
+                            map.put(side, bundle);
+                        },
+                        HashMap::putAll);
 
         resetSystemBarContent(/* isProvisionedStateChange= */ false);
 
         // retrieve the previous state
-        if (isProfilePickerOpen) {
-            if (mTopView != null) {
-                profilePickerView = mTopView.findViewById(R.id.user_name);
-            }
-            if (profilePickerView != null) profilePickerView.callOnClick();
-        }
-
-        restoreFocus();
+        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
+            getBarView(side, isDeviceSetupForUser()).onRestoreInstanceState(savedStates.get(side));
+        });
     }
 
     private void readConfigs() {
@@ -504,19 +463,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mShowBottom = mSystemBarConfigs.getEnabledStatusBySide(BOTTOM);
         mShowLeft = mSystemBarConfigs.getEnabledStatusBySide(LEFT);
         mShowRight = mSystemBarConfigs.getEnabledStatusBySide(RIGHT);
-    }
-
-    /** Clean up */
-    @VisibleForTesting
-    void removeAll() {
-        mButtonSelectionStateController.removeAll();
-        mButtonRoleHolderController.removeAll();
-        mMicPrivacyChipViewControllerLazy.get().removeAll();
-        mCameraPrivacyChipViewControllerLazy.get().removeAll();
-
-        mMicPanelController = null;
-        mCameraPanelController = null;
-        mProfilePanelController = null;
     }
 
     /** Gets the top window if configured to do so. */
@@ -637,7 +583,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     private void setDisabledSystemBarButton(int viewId, boolean disabled,
                 @Nullable String buttonName) {
-        for (CarSystemBarView barView : getAllAvailableSystemBarViews()) {
+        for (CarSystemBarViewController barView : getAllAvailableSystemBarViews()) {
             barView.setDisabledSystemBarButton(viewId, disabled,
                     () -> showAdminSupportDetailsDialog(), buttonName);
         }
@@ -670,7 +616,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     @VisibleForTesting
     @Nullable
-    CarSystemBarView getBarView(@SystemBarSide int side, boolean isSetUp) {
+    CarSystemBarViewController getBarView(@SystemBarSide int side, boolean isSetUp) {
         switch (side) {
             case BOTTOM:
                 return getBottomBar(isSetUp);
@@ -707,149 +653,106 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     /** Gets the top navigation bar with the appropriate listeners set. */
     @Nullable
-    private CarSystemBarView getTopBar(boolean isSetUp) {
+    private CarSystemBarViewController getTopBar(boolean isSetUp) {
         if (!mShowTop) {
             return null;
         }
 
-        mTopView = mCarSystemBarViewFactory.getBar(TOP, isSetUp);
-        setupBar(mTopView, mTopBarTouchListeners, mNotificationsShadeController,
+        mTopViewController = mCarSystemBarViewFactory.getBar(TOP, isSetUp);
+        setupBar(mTopViewController, mTopBarTouchListeners, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController,
                 mNotificationPanelViewController);
 
-        if (isSetUp) {
-            // We do not want the privacy chips or the profile picker to be clickable in
-            // unprovisioned mode.
-            mMicPanelController = setupSensorQcPanel(mMicPanelController, R.id.mic_privacy_chip,
-                    R.layout.qc_mic_panel);
-            mCameraPanelController = setupSensorQcPanel(mCameraPanelController,
-                    R.id.camera_privacy_chip, R.layout.qc_camera_panel);
-            setupProfilePanel();
-        }
-
-        return mTopView;
+        return mTopViewController;
     }
 
     /** Gets the bottom navigation bar with the appropriate listeners set. */
     @Nullable
-    private CarSystemBarView getBottomBar(boolean isSetUp) {
+    private CarSystemBarViewController getBottomBar(boolean isSetUp) {
         if (!mShowBottom) {
             return null;
         }
 
-        mBottomView = mCarSystemBarViewFactory.getBar(BOTTOM, isSetUp);
-        setupBar(mBottomView, mBottomBarTouchListeners, mNotificationsShadeController,
+        mBottomViewController = mCarSystemBarViewFactory.getBar(BOTTOM, isSetUp);
+        setupBar(mBottomViewController, mBottomBarTouchListeners, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController,
                 mNotificationPanelViewController);
 
-        return mBottomView;
+        return mBottomViewController;
     }
 
     /** Gets the left navigation bar with the appropriate listeners set. */
     @Nullable
-    private CarSystemBarView getLeftBar(boolean isSetUp) {
+    private CarSystemBarViewController getLeftBar(boolean isSetUp) {
         if (!mShowLeft) {
             return null;
         }
 
-        mLeftView = mCarSystemBarViewFactory.getBar(LEFT, isSetUp);
-        setupBar(mLeftView, mLeftBarTouchListeners, mNotificationsShadeController,
+        mLeftViewController = mCarSystemBarViewFactory.getBar(LEFT, isSetUp);
+        setupBar(mLeftViewController, mLeftBarTouchListeners, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController,
                 mNotificationPanelViewController);
-        return mLeftView;
+        return mLeftViewController;
     }
 
     /** Gets the right navigation bar with the appropriate listeners set. */
     @Nullable
-    private CarSystemBarView getRightBar(boolean isSetUp) {
+    private CarSystemBarViewController getRightBar(boolean isSetUp) {
         if (!mShowRight) {
             return null;
         }
 
-        mRightView = mCarSystemBarViewFactory.getBar(RIGHT, isSetUp);
-        setupBar(mRightView, mRightBarTouchListeners, mNotificationsShadeController,
+        mRightViewController = mCarSystemBarViewFactory.getBar(RIGHT, isSetUp);
+        setupBar(mRightViewController, mRightBarTouchListeners, mNotificationsShadeController,
                 mHvacPanelController, mHvacPanelOverlayViewController,
                 mNotificationPanelViewController);
-        return mRightView;
+        return mRightViewController;
     }
 
-    private void setupBar(CarSystemBarView view, Set<View.OnTouchListener> statusBarTouchListeners,
+    private void setupBar(CarSystemBarViewController controller,
+            Set<View.OnTouchListener> statusBarTouchListeners,
             NotificationsShadeController notifShadeController,
             HvacPanelController hvacPanelController,
             HvacPanelOverlayViewController hvacPanelOverlayViewController,
             NotificationPanelViewController notificationPanelViewController) {
-        view.updateHomeButtonVisibility(CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
-        view.setStatusBarWindowTouchListeners(statusBarTouchListeners);
-        view.setNotificationsPanelController(notifShadeController);
-        view.registerNotificationPanelViewController(notificationPanelViewController);
-        view.setHvacPanelController(hvacPanelController);
-        view.registerHvacPanelOverlayViewController(hvacPanelOverlayViewController);
-        view.updateControlCenterButtonVisibility(CarSystemUIUserUtil.isMUMDSystemUI());
-        mButtonSelectionStateController.addAllButtonsWithSelectionState(view);
-        mButtonRoleHolderController.addAllButtonsWithRoleName(view);
-        mMicPrivacyChipViewControllerLazy.get().addPrivacyChipView(view);
-        mCameraPrivacyChipViewControllerLazy.get().addPrivacyChipView(view);
-    }
-
-    private StatusIconPanelViewController setupSensorQcPanel(
-            @Nullable StatusIconPanelViewController panelController, int chipId,
-            @LayoutRes int panelLayoutRes) {
-        if (panelController == null) {
-            View privacyChip = mTopView.findViewById(chipId);
-            if (privacyChip != null) {
-                panelController = mPanelControllerBuilderProvider.get()
-                        .setXOffset(mPrivacyChipXOffset)
-                        .setGravity(Gravity.TOP | Gravity.END)
-                        .build(privacyChip, panelLayoutRes, R.dimen.car_sensor_qc_panel_width);
-                panelController.init();
-            }
-        }
-        return panelController;
-    }
-
-    private void setupProfilePanel() {
-        View profilePickerView = mTopView.findViewById(R.id.user_name);
-        if (mProfilePanelController == null && profilePickerView != null) {
-            boolean profilePanelDisabledWhileDriving = mContext.getResources().getBoolean(
-                    R.bool.config_profile_panel_disabled_while_driving);
-            mProfilePanelController = mPanelControllerBuilderProvider.get()
-                    .setGravity(Gravity.TOP | Gravity.END)
-                    .setDisabledWhileDriving(profilePanelDisabledWhileDriving)
-                    .build(profilePickerView, R.layout.qc_profile_switcher,
-                            R.dimen.car_profile_quick_controls_panel_width);
-            mProfilePanelController.init();
-        }
+        controller.updateHomeButtonVisibility(CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
+        controller.setStatusBarWindowTouchListeners(statusBarTouchListeners);
+        controller.setNotificationsPanelController(notifShadeController);
+        controller.registerNotificationPanelViewController(notificationPanelViewController);
+        controller.setHvacPanelController(hvacPanelController);
+        controller.registerHvacPanelOverlayViewController(hvacPanelOverlayViewController);
+        controller.updateControlCenterButtonVisibility(CarSystemUIUserUtil.isMUMDSystemUI());
     }
 
     /** Sets a touch listener for the top navigation bar. */
     private void registerTopBarTouchListener(View.OnTouchListener listener) {
         boolean setModified = mTopBarTouchListeners.add(listener);
-        if (setModified && mTopView != null) {
-            mTopView.setStatusBarWindowTouchListeners(mTopBarTouchListeners);
+        if (setModified && mTopViewController != null) {
+            mTopViewController.setStatusBarWindowTouchListeners(mTopBarTouchListeners);
         }
     }
 
     /** Sets a touch listener for the bottom navigation bar. */
     private void registerBottomBarTouchListener(View.OnTouchListener listener) {
         boolean setModified = mBottomBarTouchListeners.add(listener);
-        if (setModified && mBottomView != null) {
-            mBottomView.setStatusBarWindowTouchListeners(mBottomBarTouchListeners);
+        if (setModified && mBottomViewController != null) {
+            mBottomViewController.setStatusBarWindowTouchListeners(mBottomBarTouchListeners);
         }
     }
 
     /** Sets a touch listener for the left navigation bar. */
     private void registerLeftBarTouchListener(View.OnTouchListener listener) {
         boolean setModified = mLeftBarTouchListeners.add(listener);
-        if (setModified && mLeftView != null) {
-            mLeftView.setStatusBarWindowTouchListeners(mLeftBarTouchListeners);
+        if (setModified && mLeftViewController != null) {
+            mLeftViewController.setStatusBarWindowTouchListeners(mLeftBarTouchListeners);
         }
     }
 
     /** Sets a touch listener for the right navigation bar. */
     private void registerRightBarTouchListener(View.OnTouchListener listener) {
         boolean setModified = mRightBarTouchListeners.add(listener);
-        if (setModified && mRightView != null) {
-            mRightView.setStatusBarWindowTouchListeners(mRightBarTouchListeners);
+        if (setModified && mRightViewController != null) {
+            mRightViewController.setStatusBarWindowTouchListeners(mRightBarTouchListeners);
         }
     }
 
@@ -858,17 +761,17 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     public void registerNotificationShadeController(
             NotificationsShadeController notificationsShadeController) {
         mNotificationsShadeController = notificationsShadeController;
-        if (mTopView != null) {
-            mTopView.setNotificationsPanelController(mNotificationsShadeController);
+        if (mTopViewController != null) {
+            mTopViewController.setNotificationsPanelController(mNotificationsShadeController);
         }
-        if (mBottomView != null) {
-            mBottomView.setNotificationsPanelController(mNotificationsShadeController);
+        if (mBottomViewController != null) {
+            mBottomViewController.setNotificationsPanelController(mNotificationsShadeController);
         }
-        if (mLeftView != null) {
-            mLeftView.setNotificationsPanelController(mNotificationsShadeController);
+        if (mLeftViewController != null) {
+            mLeftViewController.setNotificationsPanelController(mNotificationsShadeController);
         }
-        if (mRightView != null) {
-            mRightView.setNotificationsPanelController(mNotificationsShadeController);
+        if (mRightViewController != null) {
+            mRightViewController.setNotificationsPanelController(mNotificationsShadeController);
         }
     }
 
@@ -877,17 +780,21 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     public void registerNotificationPanelViewController(
             NotificationPanelViewController notificationPanelViewController) {
         mNotificationPanelViewController = notificationPanelViewController;
-        if (mTopView != null) {
-            mTopView.registerNotificationPanelViewController(mNotificationPanelViewController);
+        if (mTopViewController != null) {
+            mTopViewController
+                    .registerNotificationPanelViewController(mNotificationPanelViewController);
         }
-        if (mBottomView != null) {
-            mBottomView.registerNotificationPanelViewController(mNotificationPanelViewController);
+        if (mBottomViewController != null) {
+            mBottomViewController
+                    .registerNotificationPanelViewController(mNotificationPanelViewController);
         }
-        if (mLeftView != null) {
-            mLeftView.registerNotificationPanelViewController(mNotificationPanelViewController);
+        if (mLeftViewController != null) {
+            mLeftViewController
+                    .registerNotificationPanelViewController(mNotificationPanelViewController);
         }
-        if (mRightView != null) {
-            mRightView.registerNotificationPanelViewController(mNotificationPanelViewController);
+        if (mRightViewController != null) {
+            mRightViewController
+                    .registerNotificationPanelViewController(mNotificationPanelViewController);
         }
     }
 
@@ -895,17 +802,17 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     @Override
     public void registerHvacPanelController(HvacPanelController hvacPanelController) {
         mHvacPanelController = hvacPanelController;
-        if (mTopView != null) {
-            mTopView.setHvacPanelController(mHvacPanelController);
+        if (mTopViewController != null) {
+            mTopViewController.setHvacPanelController(mHvacPanelController);
         }
-        if (mBottomView != null) {
-            mBottomView.setHvacPanelController(mHvacPanelController);
+        if (mBottomViewController != null) {
+            mBottomViewController.setHvacPanelController(mHvacPanelController);
         }
-        if (mLeftView != null) {
-            mLeftView.setHvacPanelController(mHvacPanelController);
+        if (mLeftViewController != null) {
+            mLeftViewController.setHvacPanelController(mHvacPanelController);
         }
-        if (mRightView != null) {
-            mRightView.setHvacPanelController(mHvacPanelController);
+        if (mRightViewController != null) {
+            mRightViewController.setHvacPanelController(mHvacPanelController);
         }
     }
 
@@ -914,17 +821,21 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     public void registerHvacPanelOverlayViewController(
             HvacPanelOverlayViewController hvacPanelOverlayViewController) {
         mHvacPanelOverlayViewController = hvacPanelOverlayViewController;
-        if (mTopView != null) {
-            mTopView.registerHvacPanelOverlayViewController(mHvacPanelOverlayViewController);
+        if (mTopViewController != null) {
+            mTopViewController
+                    .registerHvacPanelOverlayViewController(mHvacPanelOverlayViewController);
         }
-        if (mBottomView != null) {
-            mBottomView.registerHvacPanelOverlayViewController(mHvacPanelOverlayViewController);
+        if (mBottomViewController != null) {
+            mBottomViewController
+                    .registerHvacPanelOverlayViewController(mHvacPanelOverlayViewController);
         }
-        if (mLeftView != null) {
-            mLeftView.registerHvacPanelOverlayViewController(mHvacPanelOverlayViewController);
+        if (mLeftViewController != null) {
+            mLeftViewController
+                    .registerHvacPanelOverlayViewController(mHvacPanelOverlayViewController);
         }
-        if (mRightView != null) {
-            mRightView.registerHvacPanelOverlayViewController(mHvacPanelOverlayViewController);
+        if (mRightViewController != null) {
+            mRightViewController
+                    .registerHvacPanelOverlayViewController(mHvacPanelOverlayViewController);
         }
     }
 
@@ -940,17 +851,17 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     @VisibleForTesting
     void showAllNavigationButtons(boolean isSetup) {
         checkAllBars(isSetup);
-        if (mTopView != null) {
-            mTopView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_NAVIGATION);
+        if (mTopViewController != null) {
+            mTopViewController.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_NAVIGATION);
         }
-        if (mBottomView != null) {
-            mBottomView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_NAVIGATION);
+        if (mBottomViewController != null) {
+            mBottomViewController.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_NAVIGATION);
         }
-        if (mLeftView != null) {
-            mLeftView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_NAVIGATION);
+        if (mLeftViewController != null) {
+            mLeftViewController.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_NAVIGATION);
         }
-        if (mRightView != null) {
-            mRightView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_NAVIGATION);
+        if (mRightViewController != null) {
+            mRightViewController.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_NAVIGATION);
         }
     }
 
@@ -967,17 +878,17 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     @VisibleForTesting
     void showAllKeyguardButtons(boolean isSetUp) {
         checkAllBars(isSetUp);
-        if (mTopView != null) {
-            mTopView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_KEYGUARD);
+        if (mTopViewController != null) {
+            mTopViewController.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_KEYGUARD);
         }
-        if (mBottomView != null) {
-            mBottomView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_KEYGUARD);
+        if (mBottomViewController != null) {
+            mBottomViewController.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_KEYGUARD);
         }
-        if (mLeftView != null) {
-            mLeftView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_KEYGUARD);
+        if (mLeftViewController != null) {
+            mLeftViewController.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_KEYGUARD);
         }
-        if (mRightView != null) {
-            mRightView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_KEYGUARD);
+        if (mRightViewController != null) {
+            mRightViewController.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_KEYGUARD);
         }
     }
 
@@ -994,17 +905,17 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     @VisibleForTesting
     void showAllOcclusionButtons(boolean isSetUp) {
         checkAllBars(isSetUp);
-        if (mTopView != null) {
-            mTopView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_OCCLUSION);
+        if (mTopViewController != null) {
+            mTopViewController.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_OCCLUSION);
         }
-        if (mBottomView != null) {
-            mBottomView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_OCCLUSION);
+        if (mBottomViewController != null) {
+            mBottomViewController.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_OCCLUSION);
         }
-        if (mLeftView != null) {
-            mLeftView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_OCCLUSION);
+        if (mLeftViewController != null) {
+            mLeftViewController.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_OCCLUSION);
         }
-        if (mRightView != null) {
-            mRightView.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_OCCLUSION);
+        if (mRightViewController != null) {
+            mRightViewController.showButtonsOfType(CarSystemBarView.BUTTON_TYPE_OCCLUSION);
         }
     }
 
@@ -1019,47 +930,42 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     @VisibleForTesting
     void toggleAllNotificationsUnseenIndicator(boolean isSetUp, boolean hasUnseen) {
         checkAllBars(isSetUp);
-        if (mTopView != null) {
-            mTopView.toggleNotificationUnseenIndicator(hasUnseen);
+        if (mTopViewController != null) {
+            mTopViewController.toggleNotificationUnseenIndicator(hasUnseen);
         }
-        if (mBottomView != null) {
-            mBottomView.toggleNotificationUnseenIndicator(hasUnseen);
+        if (mBottomViewController != null) {
+            mBottomViewController.toggleNotificationUnseenIndicator(hasUnseen);
         }
-        if (mLeftView != null) {
-            mLeftView.toggleNotificationUnseenIndicator(hasUnseen);
+        if (mLeftViewController != null) {
+            mLeftViewController.toggleNotificationUnseenIndicator(hasUnseen);
         }
-        if (mRightView != null) {
-            mRightView.toggleNotificationUnseenIndicator(hasUnseen);
+        if (mRightViewController != null) {
+            mRightViewController.toggleNotificationUnseenIndicator(hasUnseen);
         }
     }
 
     private void checkAllBars(boolean isSetUp) {
-        mTopView = getTopBar(isSetUp);
-        mBottomView = getBottomBar(isSetUp);
-        mLeftView = getLeftBar(isSetUp);
-        mRightView = getRightBar(isSetUp);
+        mTopViewController = getTopBar(isSetUp);
+        mBottomViewController = getBottomBar(isSetUp);
+        mLeftViewController = getLeftBar(isSetUp);
+        mRightViewController = getRightBar(isSetUp);
     }
 
-    private List<CarSystemBarView> getAllAvailableSystemBarViews() {
-        List<CarSystemBarView> barViews = new ArrayList<>();
-        if (mTopView != null) {
-            barViews.add(mTopView);
+    private List<CarSystemBarViewController> getAllAvailableSystemBarViews() {
+        List<CarSystemBarViewController> barViews = new ArrayList<>();
+        if (mTopViewController != null) {
+            barViews.add(mTopViewController);
         }
-        if (mBottomView != null) {
-            barViews.add(mBottomView);
+        if (mBottomViewController != null) {
+            barViews.add(mBottomViewController);
         }
-        if (mLeftView != null) {
-            barViews.add(mLeftView);
+        if (mLeftViewController != null) {
+            barViews.add(mLeftViewController);
         }
-        if (mRightView != null) {
-            barViews.add(mRightView);
+        if (mRightViewController != null) {
+            barViews.add(mRightViewController);
         }
         return barViews;
-    }
-
-    /** Resets the cached Views. */
-    protected void resetViewCache() {
-        mCarSystemBarViewFactory.resetSystemBarViewCache();
     }
 
     /**
@@ -1071,44 +977,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mSystemBarConfigs.resetSystemBarConfigs();
         mCarSystemBarViewFactory.resetSystemBarWindowCache();
         readConfigs();
-    }
-
-    /** Stores the ID of the View that is currently focused and hides the focus. */
-    @VisibleForTesting
-    void cacheAndHideFocus() {
-        mTopFocusedViewId = cacheAndHideFocus(mTopView);
-        if (mTopFocusedViewId != View.NO_ID) return;
-        mBottomFocusedViewId = cacheAndHideFocus(mBottomView);
-        if (mBottomFocusedViewId != View.NO_ID) return;
-        mLeftFocusedViewId = cacheAndHideFocus(mLeftView);
-        if (mLeftFocusedViewId != View.NO_ID) return;
-        mRightFocusedViewId = cacheAndHideFocus(mRightView);
-    }
-
-    @VisibleForTesting
-    int cacheAndHideFocus(@Nullable View rootView) {
-        if (rootView == null) return View.NO_ID;
-        View focusedView = rootView.findFocus();
-        if (focusedView == null || focusedView instanceof FocusParkingView) return View.NO_ID;
-        int focusedViewId = focusedView.getId();
-        ViewUtils.hideFocus(rootView);
-        return focusedViewId;
-    }
-
-    /** Requests focus on the View that matches the cached ID. */
-    private void restoreFocus() {
-        if (restoreFocus(mTopView, mTopFocusedViewId)) return;
-        if (restoreFocus(mBottomView, mBottomFocusedViewId)) return;
-        if (restoreFocus(mLeftView, mLeftFocusedViewId)) return;
-        restoreFocus(mRightView, mRightFocusedViewId);
-    }
-
-    private boolean restoreFocus(@Nullable View rootView, @IdRes int viewToFocusId) {
-        if (rootView == null || viewToFocusId == View.NO_ID) return false;
-        View focusedView = rootView.findViewById(viewToFocusId);
-        if (focusedView == null) return false;
-        focusedView.requestFocus();
-        return true;
     }
 
     protected void updateKeyboardVisibility(boolean isKeyboardVisible) {
@@ -1184,32 +1052,24 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     private void buildNavBarContent() {
-        mTopView = getTopBar(isDeviceSetupForUser());
-        if (mTopView != null) {
-            mSystemBarConfigs.insetSystemBar(TOP, mTopView);
-            mHvacController.registerHvacViews(mTopView);
-            mTopSystemBarWindow.addView(mTopView);
+        mTopViewController = getTopBar(isDeviceSetupForUser());
+        if (mTopViewController != null) {
+            mTopSystemBarWindow.addView(mTopViewController.getView());
         }
 
-        mBottomView = getBottomBar(isDeviceSetupForUser());
-        if (mBottomView != null) {
-            mSystemBarConfigs.insetSystemBar(BOTTOM, mBottomView);
-            mHvacController.registerHvacViews(mBottomView);
-            mBottomSystemBarWindow.addView(mBottomView);
+        mBottomViewController = getBottomBar(isDeviceSetupForUser());
+        if (mBottomViewController != null) {
+            mBottomSystemBarWindow.addView(mBottomViewController.getView());
         }
 
-        mLeftView = getLeftBar(isDeviceSetupForUser());
-        if (mLeftView != null) {
-            mSystemBarConfigs.insetSystemBar(LEFT, mLeftView);
-            mHvacController.registerHvacViews(mLeftView);
-            mLeftSystemBarWindow.addView(mLeftView);
+        mLeftViewController = getLeftBar(isDeviceSetupForUser());
+        if (mLeftViewController != null) {
+            mLeftSystemBarWindow.addView(mLeftViewController.getView());
         }
 
-        mRightView = getRightBar(isDeviceSetupForUser());
-        if (mRightView != null) {
-            mSystemBarConfigs.insetSystemBar(RIGHT, mRightView);
-            mHvacController.registerHvacViews(mRightView);
-            mRightSystemBarWindow.addView(mRightView);
+        mRightViewController = getRightBar(isDeviceSetupForUser());
+        if (mRightViewController != null) {
+            mRightSystemBarWindow.addView(mRightViewController.getView());
         }
     }
 
@@ -1322,11 +1182,8 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
                 isProvisionedStateChange);
 
         if (!isProvisionedStateChange) {
-            resetViewCache();
+            mCarSystemBarViewFactory.resetSystemBarViewCache();
         }
-        // remove and reattach all components such that we don't keep a reference to unused ui
-        // elements
-        removeAll();
         clearSystemBarWindow(/* removeUnusedWindow= */ false);
 
         buildNavBarContent();
@@ -1412,7 +1269,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mCarSystemBarRestartTracker.notifyPendingRestart(/* recreateWindows= */ true,
                 /* provisionedStateChanged= */ false);
 
-        removeAll();
         resetSystemBarConfigs();
         clearSystemBarWindow(/* removeUnusedWindow= */ true);
         buildNavBarWindows();
@@ -1426,42 +1282,38 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     private void clearSystemBarWindow(boolean removeUnusedWindow) {
         if (mTopSystemBarWindow != null) {
             mTopSystemBarWindow.removeAllViews();
-            mHvacController.unregisterViews(mTopView);
             if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mTopSystemBarWindow);
                 mTopSystemBarAttached = false;
             }
-            mTopView = null;
+            mTopViewController = null;
         }
 
         if (mBottomSystemBarWindow != null) {
             mBottomSystemBarWindow.removeAllViews();
-            mHvacController.unregisterViews(mBottomView);
             if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mBottomSystemBarWindow);
                 mBottomSystemBarAttached = false;
             }
-            mBottomView = null;
+            mBottomViewController = null;
         }
 
         if (mLeftSystemBarWindow != null) {
             mLeftSystemBarWindow.removeAllViews();
-            mHvacController.unregisterViews(mLeftView);
             if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mLeftSystemBarWindow);
                 mLeftSystemBarAttached = false;
             }
-            mLeftView = null;
+            mLeftViewController = null;
         }
 
         if (mRightSystemBarWindow != null) {
             mRightSystemBarWindow.removeAllViews();
-            mHvacController.unregisterViews(mRightView);
             if (removeUnusedWindow) {
                 mWindowManager.removeViewImmediate(mRightSystemBarWindow);
                 mRightSystemBarAttached = false;
             }
-            mRightView = null;
+            mRightViewController = null;
         }
     }
 

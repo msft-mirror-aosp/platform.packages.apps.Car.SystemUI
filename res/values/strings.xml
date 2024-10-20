@@ -232,6 +232,14 @@
     <!-- User Picker: snack bar message when clicking unavailable secure user -->
     <string name="unavailable_secure_user_message">Unable to start secure user on passenger display</string>
 
+    <!-- Passenger Keyguard -->
+    <!-- Passenger keyguard error message when the user-entered pattern doesn't match what is stored -->
+    <string name="passenger_keyguard_wrong_pattern">Wrong pattern</string>
+    <!-- Passenger keyguard error message when the user-entered PIN doesn't match what is stored -->
+    <string name="passenger_keyguard_wrong_pin">Wrong PIN</string>
+    <!-- Passenger keyguard error message when the user-entered password doesn't match what is stored -->
+    <string name="passenger_keyguard_wrong_password">Wrong password</string>
+
     <!-- User Picker: seat string -->
     <string name="seat_driver">driver</string>
     <string name="seat_front">front</string>

@@ -35,6 +35,7 @@ import com.android.systemui.plugins.statusbar.StatusBarStateController;
 import com.android.systemui.privacy.PrivacyType;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.events.PrivacyDotViewController;
+import com.android.systemui.statusbar.events.PrivacyDotViewControllerImpl;
 import com.android.systemui.statusbar.events.SystemStatusAnimationScheduler;
 import com.android.systemui.statusbar.events.ViewState;
 import com.android.systemui.statusbar.phone.StatusBarContentInsetsProvider;
@@ -53,7 +54,7 @@ import kotlinx.coroutines.CoroutineScope;
  * Subclass of {@link PrivacyDotViewController}.
  */
 @SysUISingleton
-public class CarPrivacyChipViewController extends PrivacyDotViewController
+public class CarPrivacyChipViewController extends PrivacyDotViewControllerImpl
         implements CommandQueue.Callbacks {
     private static final String TAG = CarPrivacyChipViewController.class.getSimpleName();
     private boolean mAreaVisible;

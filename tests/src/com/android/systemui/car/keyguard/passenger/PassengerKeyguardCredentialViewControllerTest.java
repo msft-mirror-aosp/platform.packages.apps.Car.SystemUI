@@ -67,6 +67,8 @@ public class PassengerKeyguardCredentialViewControllerTest extends SysuiTestCase
     @Mock
     private CarServiceProvider mCarServiceProvider;
     @Mock
+    private PassengerKeyguardLockoutHelper mLockoutHelper;
+    @Mock
     private PassengerKeyguardCredentialViewController.OnAuthSucceededCallback mCallback;
 
     @Before
@@ -78,7 +80,7 @@ public class PassengerKeyguardCredentialViewControllerTest extends SysuiTestCase
                 .startMocking();
         View view = new View(mContext);
         mController = new TestPassengerKeyguardCredentialViewController(view, mLockPatternUtils,
-                mUserTracker, mTrustManager, mMainHandler, mCarServiceProvider);
+                mUserTracker, mTrustManager, mMainHandler, mCarServiceProvider, mLockoutHelper);
         mController.setAuthSucceededCallback(mCallback);
     }
 
@@ -105,6 +107,24 @@ public class PassengerKeyguardCredentialViewControllerTest extends SysuiTestCase
     }
 
     @Test
+    public void verifyCredential_invalidCredential_timeout() {
+        int throttleTimeoutMs = 1000;
+        Runnable failureRunnable = mock(Runnable.class);
+        ArgumentCaptor<LockPatternChecker.OnVerifyCallback> captor = ArgumentCaptor.forClass(
+                LockPatternChecker.OnVerifyCallback.class);
+
+        mController.verifyCredential(failureRunnable);
+
+        ExtendedMockito.verify(() -> LockPatternChecker.verifyCredential(any(), any(), anyInt(),
+                anyInt(), captor.capture()));
+        captor.getValue().onVerified(VerifyCredentialResponse.ERROR, throttleTimeoutMs);
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mMainHandler).post(runnableCaptor.capture());
+        runnableCaptor.getValue().run();
+        verify(mLockoutHelper).onCheckCompletedWithTimeout(throttleTimeoutMs);
+    }
+
+    @Test
     public void verifyCredential_validCredential_authSucceeded() {
         Runnable failureRunnable = mock(Runnable.class);
         ArgumentCaptor<LockPatternChecker.OnVerifyCallback> captor = ArgumentCaptor.forClass(
@@ -114,7 +134,7 @@ public class PassengerKeyguardCredentialViewControllerTest extends SysuiTestCase
 
         ExtendedMockito.verify(() -> LockPatternChecker.verifyCredential(any(), any(), anyInt(),
                 anyInt(), captor.capture()));
-        captor.getValue().onVerified(VerifyCredentialResponse.OK, 0);
+        captor.getValue().onVerified(VerifyCredentialResponse.OK, /* throttleTimeoutMs= */ 0);
         verify(mMainHandler, never()).post(failureRunnable);
         verify(mTrustManager).reportEnabledTrustAgentsChanged(anyInt());
         verify(mCallback).onAuthSucceeded();
@@ -127,14 +147,20 @@ public class PassengerKeyguardCredentialViewControllerTest extends SysuiTestCase
                 LockPatternUtils lockPatternUtils,
                 UserTracker userTracker,
                 TrustManager trustManager, Handler mainHandler,
-                CarServiceProvider carServiceProvider) {
+                CarServiceProvider carServiceProvider,
+                PassengerKeyguardLockoutHelper lockoutHelper) {
             super(view, lockPatternUtils, userTracker, trustManager, mainHandler,
-                    carServiceProvider);
+                    carServiceProvider, lockoutHelper);
         }
 
         @Override
         protected LockscreenCredential getCurrentCredential() {
             return LockscreenCredential.createPin("1234");
+        }
+
+        @Override
+        protected void onLockedOutChanged(boolean isLockedOut) {
+            // no-op
         }
     }
 }

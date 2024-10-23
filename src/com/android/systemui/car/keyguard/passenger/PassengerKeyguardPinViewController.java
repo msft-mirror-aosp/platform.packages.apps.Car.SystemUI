@@ -39,8 +39,10 @@ public class PassengerKeyguardPinViewController extends PassengerKeyguardCredent
             LockPatternUtils lockPatternUtils,
             UserTracker userTracker,
             TrustManager trustManager, Handler mainHandler,
-            CarServiceProvider carServiceProvider) {
-        super(view, lockPatternUtils, userTracker, trustManager, mainHandler, carServiceProvider);
+            CarServiceProvider carServiceProvider,
+            PassengerKeyguardLockoutHelper lockoutHelper) {
+        super(view, lockPatternUtils, userTracker, trustManager, mainHandler, carServiceProvider,
+                lockoutHelper);
     }
 
     @Override
@@ -81,6 +83,12 @@ public class PassengerKeyguardPinViewController extends PassengerKeyguardCredent
     @Override
     protected LockscreenCredential getCurrentCredential() {
         return LockscreenCredential.createPinOrNone(mPasswordField.getText());
+    }
+
+    @Override
+    protected void onLockedOutChanged(boolean isLockedOut) {
+        mPinPad.setEnabled(!isLockedOut);
+        mPasswordField.setText("");
     }
 
     @Override

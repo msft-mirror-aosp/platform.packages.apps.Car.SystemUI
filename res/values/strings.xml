@@ -239,6 +239,13 @@
     <string name="passenger_keyguard_wrong_pin">Wrong PIN</string>
     <!-- Passenger keyguard error message when the user-entered password doesn't match what is stored -->
     <string name="passenger_keyguard_wrong_password">Wrong password</string>
+    <!-- Message shown after too many incorrect attempts to unlock passenger keyguard -->
+    <string name="passenger_keyguard_too_many_failed_attempts">
+        {count, plural,
+        =1    {Too many incorrect attempts. Try again in # second.}
+        other {Too many incorrect attempts. Try again in # seconds.}
+        }
+    </string>
 
     <!-- User Picker: seat string -->
     <string name="seat_driver">driver</string>

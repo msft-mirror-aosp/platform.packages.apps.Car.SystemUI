@@ -26,16 +26,18 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.ViewUtils;
-import com.android.systemui.R;
+import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationsShadeController;
+import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 import com.android.systemui.car.systembar.CarSystemBarView.ButtonsType;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.util.ViewController;
 
+import dagger.Lazy;
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
@@ -48,22 +50,43 @@ import java.util.Set;
 public class CarSystemBarViewController extends ViewController<CarSystemBarView> {
 
     private static final String LAST_FOCUSED_VIEW_ID = "last_focused_view_id";
-    private static final String IS_PROFILE_PICKER_OPEN = "is_profile_picker_open";
 
-    private final Context mContext;
+    protected final Context mContext;
+
     private final UserTracker mUserTracker;
     private final CarSystemBarElementInitializer mCarSystemBarElementInitializer;
+    private final SystemBarConfigs mSystemBarConfigs;
+    private final ButtonSelectionStateController mButtonSelectionStateController;
+    private final ButtonRoleHolderController mButtonRoleHolderController;
+    private final Lazy<MicPrivacyChipViewController> mMicPrivacyChipViewControllerLazy;
+    private final Lazy<CameraPrivacyChipViewController> mCameraPrivacyChipViewControllerLazy;
+    private final HvacController mHvacController;
+    private final @SystemBarSide int mSide;
 
     @AssistedInject
     public CarSystemBarViewController(Context context,
             UserTracker userTracker,
             CarSystemBarElementInitializer elementInitializer,
+            SystemBarConfigs systemBarConfigs,
+            ButtonRoleHolderController buttonRoleHolderController,
+            ButtonSelectionStateController buttonSelectionStateController,
+            Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
+            Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
+            HvacController hvacController,
+            @Assisted @SystemBarSide int side,
             @Assisted CarSystemBarView systemBarView) {
         super(systemBarView);
 
         mContext = context;
         mUserTracker = userTracker;
         mCarSystemBarElementInitializer = elementInitializer;
+        mSystemBarConfigs = systemBarConfigs;
+        mButtonRoleHolderController = buttonRoleHolderController;
+        mButtonSelectionStateController = buttonSelectionStateController;
+        mCameraPrivacyChipViewControllerLazy = cameraPrivacyChipViewControllerLazy;
+        mMicPrivacyChipViewControllerLazy = micPrivacyChipViewControllerLazy;
+        mHvacController = hvacController;
+        mSide = side;
     }
 
     @Override
@@ -85,32 +108,19 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
         // destroyed during re-layout and has no focus highlight (the FocusParkingView), then
         // move focus back to the previously focused view after re-layout.
         outState.putInt(LAST_FOCUSED_VIEW_ID, cacheAndHideFocus(mView));
-
-        View profilePickerView = null;
-        boolean isProfilePickerOpen = false;
-        profilePickerView = mView.findViewById(R.id.user_name);
-        if (profilePickerView != null) isProfilePickerOpen = profilePickerView.isSelected();
-        if (isProfilePickerOpen) {
-            profilePickerView.callOnClick();
-        }
-        outState.putBoolean(IS_PROFILE_PICKER_OPEN, isProfilePickerOpen);
     }
 
     /**
      * Call to restore the internal state.
      */
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        boolean isProfilePickerOpen = savedInstanceState.getBoolean(IS_PROFILE_PICKER_OPEN, false);
-        if (isProfilePickerOpen) {
-            View profilePickerView = mView.findViewById(R.id.user_name);
-            if (profilePickerView != null) profilePickerView.callOnClick();
-        }
-
         restoreFocus(mView, savedInstanceState.getInt(LAST_FOCUSED_VIEW_ID, View.NO_ID));
     }
 
-    // TODO(b/372065319): will be removed
-    public ViewGroup getView() {
+    /**
+     * Only visible so that this view can be attached to the window.
+     */
+    ViewGroup getView() {
         return mView;
     }
 
@@ -212,16 +222,29 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
 
     @Override
     protected void onViewAttached() {
+        mSystemBarConfigs.insetSystemBar(mSide, mView);
+        mHvacController.registerHvacViews(mView);
+
+        mButtonSelectionStateController.addAllButtonsWithSelectionState(mView);
+        mButtonRoleHolderController.addAllButtonsWithRoleName(mView);
+        mMicPrivacyChipViewControllerLazy.get().addPrivacyChipView(mView);
+        mCameraPrivacyChipViewControllerLazy.get().addPrivacyChipView(mView);
     }
 
     @Override
     protected void onViewDetached() {
+        mHvacController.unregisterViews(mView);
+
+        mButtonSelectionStateController.removeAll();
+        mButtonRoleHolderController.removeAll();
+        mMicPrivacyChipViewControllerLazy.get().removeAll();
+        mCameraPrivacyChipViewControllerLazy.get().removeAll();
     }
 
     @AssistedFactory
     public interface Factory {
         /** Create instance of CarSystemBarViewController for CarSystemBarView */
-        CarSystemBarViewController create(CarSystemBarView view);
+        CarSystemBarViewController create(@SystemBarSide int side, CarSystemBarView view);
     }
 
     @VisibleForTesting

@@ -117,6 +117,9 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> atsijungė. Vėliau bandykite dar kartą."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Naudotojas šiuo metu nepasiekiamas"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Nepavyko pasiekti saugaus naudotojo keleivio ekrane"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Netinkamas atrakinimo piešinys"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Netinkamas PIN kodas"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Netinkamas slaptažodis"</string>
     <string name="seat_driver" msgid="4502591979520445677">"vairuotojas"</string>
     <string name="seat_front" msgid="836133281052793377">"priekis"</string>
     <string name="seat_rear" msgid="403133444964528577">"galas"</string>

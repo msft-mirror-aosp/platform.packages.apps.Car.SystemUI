@@ -66,13 +66,16 @@ public class PassengerKeyguardCredentialViewControllerFactoryTest extends SysuiT
     private Handler mHandler;
     @Mock
     private CarServiceProvider mCarServiceProvider;
+    @Mock
+    private PassengerKeyguardLockoutHelper mLockoutHelper;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mLayoutInflater = LayoutInflater.from(mContext);
         mFactory = new PassengerKeyguardCredentialViewControllerFactory(mLayoutInflater,
-                mLockPatternUtils, mUserTracker, mTrustManager, mHandler, mCarServiceProvider);
+                mLockPatternUtils, mUserTracker, mTrustManager, mHandler, mCarServiceProvider,
+                mLockoutHelper);
         mViewGroup = new FrameLayout(mContext);
         when(mUserTracker.getUserId()).thenReturn(TEST_USER_ID);
     }

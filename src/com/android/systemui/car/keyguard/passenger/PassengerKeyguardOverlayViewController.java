@@ -51,7 +51,7 @@ public class PassengerKeyguardOverlayViewController extends OverlayViewControlle
     protected void hideInternal() {
         super.hideInternal();
         if (mCredentialViewController != null) {
-            mCredentialViewController.clearAllCredentials();
+            mCredentialViewController.onOverlayHidden();
         }
     }
 }

@@ -16,6 +16,10 @@
 
 package com.android.systemui.car.hvac;
 
+import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
+import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
+import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
+import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
 import static com.android.systemui.car.window.OverlayPanelViewController.OVERLAY_FROM_BOTTOM_BAR;
 
 import android.content.BroadcastReceiver;
@@ -32,6 +36,8 @@ import com.android.systemui.car.window.OverlayViewMediator;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;
 
+import java.util.Optional;
+
 import javax.inject.Inject;
 
 @SysUISingleton
@@ -44,6 +50,7 @@ public class HvacPanelOverlayViewMediator implements OverlayViewMediator {
     private final HvacPanelOverlayViewController mHvacPanelOverlayViewController;
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final UserTracker mUserTracker;
+    private final Optional<HvacSystemBarPresenter> mHvacSystemBarPresenter;
 
     @VisibleForTesting
     final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -75,40 +82,43 @@ public class HvacPanelOverlayViewMediator implements OverlayViewMediator {
             CarSystemBarController carSystemBarController,
             HvacPanelOverlayViewController hvacPanelOverlayViewController,
             BroadcastDispatcher broadcastDispatcher,
-            UserTracker userTracker) {
+            UserTracker userTracker,
+            Optional<HvacSystemBarPresenter> hvacSystemBarPresenter) {
         mContext = context;
         mCarSystemBarController = carSystemBarController;
         mHvacPanelOverlayViewController = hvacPanelOverlayViewController;
         mBroadcastDispatcher = broadcastDispatcher;
         mUserTracker = userTracker;
+        mHvacSystemBarPresenter = hvacSystemBarPresenter;
     }
 
     @Override
     public void registerListeners() {
-        mCarSystemBarController.registerTopBarTouchListener(
+        mCarSystemBarController.registerBarTouchListener(TOP,
                 mHvacPanelOverlayViewController.getDragCloseTouchListener());
-        mCarSystemBarController.registerBottomBarTouchListener(
+        mCarSystemBarController.registerBarTouchListener(BOTTOM,
                 mHvacPanelOverlayViewController.getDragCloseTouchListener());
-        mCarSystemBarController.registerLeftBarTouchListener(
+        mCarSystemBarController.registerBarTouchListener(LEFT,
                 mHvacPanelOverlayViewController.getDragCloseTouchListener());
-        mCarSystemBarController.registerRightBarTouchListener(
+        mCarSystemBarController.registerBarTouchListener(RIGHT,
                 mHvacPanelOverlayViewController.getDragCloseTouchListener());
 
-        mCarSystemBarController.registerHvacPanelController(
-                new CarSystemBarController.HvacPanelController() {
-                    @Override
-                    public void togglePanel() {
-                        mHvacPanelOverlayViewController.toggle();
-                    }
+        if (mHvacSystemBarPresenter.isPresent()) {
+            mHvacSystemBarPresenter.get().registerHvacPanelController(
+                    new HvacPanelController() {
+                        @Override
+                        public void togglePanel() {
+                            mHvacPanelOverlayViewController.toggle();
+                        }
 
-                    @Override
-                    public boolean isHvacPanelOpen() {
-                        return mHvacPanelOverlayViewController.isPanelExpanded();
-                    }
-                });
-
-        mCarSystemBarController.registerHvacPanelOverlayViewController(
-                mHvacPanelOverlayViewController);
+                        @Override
+                        public boolean isHvacPanelOpen() {
+                            return mHvacPanelOverlayViewController.isPanelExpanded();
+                        }
+                    });
+            mHvacSystemBarPresenter.get().registerHvacPanelOverlayViewController(
+                    mHvacPanelOverlayViewController);
+        }
 
         mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* executor= */ null,

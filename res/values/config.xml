@@ -119,6 +119,7 @@
         <item>@string/config_notificationPanelViewMediator</item>
         <item>com.android.systemui.car.hvac.HvacPanelOverlayViewMediator</item>
         <item>com.android.systemui.car.keyguard.CarKeyguardOverlayViewMediator</item>
+        <item>com.android.systemui.car.keyguard.passenger.PassengerKeyguardOverlayViewMediator</item>
         <item>com.android.systemui.car.systemdialogs.SystemDialogsViewMediator</item>
         <item>com.android.systemui.car.userswitcher.FullscreenUserSwitcherViewMediator</item>
         <item>com.android.systemui.car.userswitcher.UserSwitchTransitionViewMediator</item>
@@ -223,7 +224,7 @@
     <!-- 0 disabled -->
     <!-- 1 left -->
     <!-- 2 right -->
-    <integer name="config_showDisplayCompatToolbarOnSystemBar">0</integer>
+    <integer name="config_showDisplayCompatToolbarOnSystemBar">1</integer>
 
     <!-- Determines how to show navigation bar and status bar on app's immersive request, only
         works if config_remoteInsetsControllerControlsSystemBars is set to true-->

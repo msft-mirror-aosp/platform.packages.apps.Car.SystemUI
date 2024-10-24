@@ -62,6 +62,9 @@ public class CarHeadsUpNotificationSystemContainer extends CarHeadsUpNotificatio
                         | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                 PixelFormat.TRANSLUCENT);
 
+        // Needed for passing through touches through HUN's scrim to application content underneath
+        lp.privateFlags = WindowManager.LayoutParams.PRIVATE_FLAG_TRUSTED_OVERLAY;
+
         lp.gravity = getShowHunOnBottom() ? Gravity.BOTTOM : Gravity.TOP;
         lp.setTitle(WINDOW_TITLE);
 

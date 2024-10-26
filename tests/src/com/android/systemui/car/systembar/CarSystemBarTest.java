@@ -171,17 +171,21 @@ public class CarSystemBarTest extends SysuiTestCase {
         when(mStatusBarIconController.getTransitionsController()).thenReturn(
                 mLightBarTransitionsController);
         when(mTopBar.getView()).thenReturn(mock(CarSystemBarView.class));
-        when(mCarSystemBarViewFactory.getBar(eq(TOP), anyBoolean())).thenReturn(mTopBar);
-        when(mCarSystemBarViewFactory.getWindow(eq(TOP))).thenReturn(mTopWindow);
+        when(mCarSystemBarViewFactory.getSystemBarViewController(eq(TOP), anyBoolean()))
+                .thenReturn(mTopBar);
+        when(mCarSystemBarViewFactory.getSystemBarWindow(eq(TOP))).thenReturn(mTopWindow);
         when(mRigthBar.getView()).thenReturn(mock(CarSystemBarView.class));
-        when(mCarSystemBarViewFactory.getBar(eq(RIGHT), anyBoolean())).thenReturn(mRigthBar);
-        when(mCarSystemBarViewFactory.getWindow(eq(RIGHT))).thenReturn(mRightWindow);
+        when(mCarSystemBarViewFactory.getSystemBarViewController(eq(RIGHT), anyBoolean()))
+                .thenReturn(mRigthBar);
+        when(mCarSystemBarViewFactory.getSystemBarWindow(eq(RIGHT))).thenReturn(mRightWindow);
         when(mBottomBar.getView()).thenReturn(mock(CarSystemBarView.class));
-        when(mCarSystemBarViewFactory.getBar(eq(BOTTOM), anyBoolean())).thenReturn(mBottomBar);
-        when(mCarSystemBarViewFactory.getWindow(eq(BOTTOM))).thenReturn(mBottomWindow);
+        when(mCarSystemBarViewFactory.getSystemBarViewController(eq(BOTTOM), anyBoolean()))
+                .thenReturn(mBottomBar);
+        when(mCarSystemBarViewFactory.getSystemBarWindow(eq(BOTTOM))).thenReturn(mBottomWindow);
         when(mLeftBar.getView()).thenReturn(mock(CarSystemBarView.class));
-        when(mCarSystemBarViewFactory.getBar(eq(LEFT), anyBoolean())).thenReturn(mLeftBar);
-        when(mCarSystemBarViewFactory.getWindow(eq(LEFT))).thenReturn(mLeftWindow);
+        when(mCarSystemBarViewFactory.getSystemBarViewController(eq(LEFT), anyBoolean()))
+                .thenReturn(mLeftBar);
+        when(mCarSystemBarViewFactory.getSystemBarWindow(eq(LEFT))).thenReturn(mLeftWindow);
         mAppearanceRegions = new AppearanceRegion[]{
                 new AppearanceRegion(APPEARANCE_LIGHT_STATUS_BARS, new Rect())
         };

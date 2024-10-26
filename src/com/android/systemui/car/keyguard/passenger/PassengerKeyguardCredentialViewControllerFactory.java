@@ -46,17 +46,20 @@ public class PassengerKeyguardCredentialViewControllerFactory {
     private final TrustManager mTrustManager;
     private final Handler mMainHandler;
     private final CarServiceProvider mCarServiceProvider;
+    private final PassengerKeyguardLockoutHelper mLockoutHelper;
 
     @Inject
     public PassengerKeyguardCredentialViewControllerFactory(LayoutInflater inflater,
             LockPatternUtils lockPatternUtils, UserTracker userTracker, TrustManager trustManager,
-            @Main Handler mainHandler, CarServiceProvider carServiceProvider) {
+            @Main Handler mainHandler, CarServiceProvider carServiceProvider,
+            PassengerKeyguardLockoutHelper lockoutHelper) {
         mInflater = inflater;
         mLockPatternUtils = lockPatternUtils;
         mUserTracker = userTracker;
         mTrustManager = trustManager;
         mMainHandler = mainHandler;
         mCarServiceProvider = carServiceProvider;
+        mLockoutHelper = lockoutHelper;
     }
 
     /**
@@ -71,15 +74,15 @@ public class PassengerKeyguardCredentialViewControllerFactory {
         if (credentialType == CREDENTIAL_TYPE_PIN) {
             View v = mInflater.inflate(R.layout.passenger_keyguard_pin_view, root, true);
             controller = new PassengerKeyguardPinViewController(v, mLockPatternUtils, mUserTracker,
-                    mTrustManager, mMainHandler, mCarServiceProvider);
+                    mTrustManager, mMainHandler, mCarServiceProvider, mLockoutHelper);
         } else if (credentialType == CREDENTIAL_TYPE_PASSWORD) {
             View v = mInflater.inflate(R.layout.passenger_keyguard_password_view, root, true);
             controller = new PassengerKeyguardPasswordViewController(v, mLockPatternUtils,
-                    mUserTracker, mTrustManager, mMainHandler, mCarServiceProvider);
+                    mUserTracker, mTrustManager, mMainHandler, mCarServiceProvider, mLockoutHelper);
         } else if (credentialType == CREDENTIAL_TYPE_PATTERN) {
             View v = mInflater.inflate(R.layout.passenger_keyguard_pattern_view, root, true);
             controller = new PassengerKeyguardPatternViewController(v, mLockPatternUtils,
-                    mUserTracker, mTrustManager, mMainHandler, mCarServiceProvider);
+                    mUserTracker, mTrustManager, mMainHandler, mCarServiceProvider, mLockoutHelper);
         }
 
         if (controller != null) {

@@ -185,6 +185,14 @@ public class OverlayViewController {
     }
 
     /**
+     * Callback for the individual view controllers when the window focusable state has changed.
+     * This will only go to the highest z-order window and will be re-called when the window
+     * visibilities change.
+     */
+    public void onWindowFocusableChanged(boolean focusable) {
+    }
+
+    /**
      * Sets whether this view allows rotary focus. This should be set to {@code true} for the
      * topmost layer in the overlay window and {@code false} for the others.
      *

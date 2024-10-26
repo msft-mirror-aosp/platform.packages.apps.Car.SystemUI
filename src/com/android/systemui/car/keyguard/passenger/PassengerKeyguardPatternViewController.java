@@ -54,8 +54,10 @@ public class PassengerKeyguardPatternViewController extends
             LockPatternUtils lockPatternUtils,
             UserTracker userTracker,
             TrustManager trustManager, Handler mainHandler,
-            CarServiceProvider carServiceProvider) {
-        super(view, lockPatternUtils, userTracker, trustManager, mainHandler, carServiceProvider);
+            CarServiceProvider carServiceProvider,
+            PassengerKeyguardLockoutHelper lockoutHelper) {
+        super(view, lockPatternUtils, userTracker, trustManager, mainHandler, carServiceProvider,
+                lockoutHelper);
         mLockPatternUtils = lockPatternUtils;
         mUserTracker = userTracker;
     }
@@ -107,6 +109,12 @@ public class PassengerKeyguardPatternViewController extends
             return LockscreenCredential.createPattern(mPattern);
         }
         return LockscreenCredential.createNone();
+    }
+
+    @Override
+    protected void onLockedOutChanged(boolean isLockedOut) {
+        mLockPatternView.setEnabled(!isLockedOut);
+        mLockPatternView.clearPattern();
     }
 
     @Override

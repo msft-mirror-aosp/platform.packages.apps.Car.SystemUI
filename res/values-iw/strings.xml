@@ -117,6 +117,9 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"מתבצעת יציאה מהמערכת של <xliff:g id="USER_NAME">%s</xliff:g>. צריך לנסות שוב מאוחר יותר."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"המשתמש לא זמין כרגע"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"אי אפשר להציג פרופיל של משתמש מאובטח במסך של הנוסע"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"קו ביטול הנעילה שגוי"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"קוד האימות שגוי"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"הסיסמה שגויה"</string>
     <string name="seat_driver" msgid="4502591979520445677">"נהג/ת"</string>
     <string name="seat_front" msgid="836133281052793377">"חלק קדמי"</string>
     <string name="seat_rear" msgid="403133444964528577">"חלק אחורי"</string>

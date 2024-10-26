@@ -17,6 +17,7 @@
 package com.android.systemui.car.qc;
 
 import static android.car.test.mocks.AndroidMockitoHelper.mockUmGetVisibleUsers;
+import static android.car.user.UserSwitchResult.STATUS_SUCCESSFUL;
 import static android.os.UserManager.SWITCHABILITY_STATUS_OK;
 import static android.os.UserManager.SWITCHABILITY_STATUS_USER_SWITCH_DISALLOWED;
 
@@ -342,6 +343,12 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         // Expect four rows - one for each user, one for the guest user, and one for add user
         assertThat(rows).hasSize(4);
         QCRow otherUserRow = rows.get(1);
+        // When switch user is invoked, mock the UserSwitchResult so it won't wait for timeout
+        doAnswer((inv) -> {
+            SyncResultCallback<UserSwitchResult> callback = inv.getArgument(2);
+            callback.onResult(new UserSwitchResult(STATUS_SUCCESSFUL, null));
+            return null;
+        }).when(mCarUserManager).switchUser(any(), any(), any());
         otherUserRow.getActionHandler().onAction(otherUserRow, mContext, new Intent());
 
         mProfileSwitcher.mHandler.post(() -> {
@@ -372,6 +379,12 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         // Expect 3 rows - one for the user, one for the guest user, and one for add user
         assertThat(rows).hasSize(3);
         QCRow guestRow = rows.get(1);
+        // When switch user is invoked, mock the UserSwitchResult so it won't wait for timeout
+        doAnswer((inv) -> {
+            SyncResultCallback<UserSwitchResult> callback = inv.getArgument(2);
+            callback.onResult(new UserSwitchResult(STATUS_SUCCESSFUL, null));
+            return null;
+        }).when(mCarUserManager).switchUser(any(), any(), any());
         guestRow.getActionHandler().onAction(guestRow, mContext, new Intent());
         verify(mCarUserManager).createGuest(any());
 

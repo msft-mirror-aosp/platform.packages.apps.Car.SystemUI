@@ -117,6 +117,9 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> กำลังออกจากระบบ ลองอีกครั้งในภายหลัง"</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"ผู้ใช้ไม่พร้อมใช้งานในขณะนี้"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"เปิดใช้งานผู้ใช้ที่ปลอดภัยบนจอแสดงผลสำหรับผู้โดยสารไม่ได้"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"รูปแบบไม่ถูกต้อง"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"PIN ไม่ถูกต้อง"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"รหัสผ่านไม่ถูกต้อง"</string>
     <string name="seat_driver" msgid="4502591979520445677">"คนขับ"</string>
     <string name="seat_front" msgid="836133281052793377">"ด้านหน้า"</string>
     <string name="seat_rear" msgid="403133444964528577">"ด้านหลัง"</string>

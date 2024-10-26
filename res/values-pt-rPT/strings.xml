@@ -117,6 +117,9 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"A sessão de <xliff:g id="USER_NAME">%s</xliff:g> está a ser terminada. Tente mais tarde."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Utilizador atualmente indisponível"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Não é possível iniciar o utilizador seguro no ecrã do passageiro"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Padrão incorreto"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"PIN incorreto"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Palavra-passe incorreta"</string>
     <string name="seat_driver" msgid="4502591979520445677">"condutor"</string>
     <string name="seat_front" msgid="836133281052793377">"frente"</string>
     <string name="seat_rear" msgid="403133444964528577">"traseira"</string>

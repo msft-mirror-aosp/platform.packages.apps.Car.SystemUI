@@ -171,7 +171,7 @@ public class SystemBarConfigs {
         view.setPadding(paddings[LEFT], paddings[TOP], paddings[RIGHT], paddings[BOTTOM]);
     }
 
-    protected List<Integer> getSystemBarSidesByZOrder() {
+    protected List<@SystemBarSide Integer> getSystemBarSidesByZOrder() {
         return mSystemBarSidesByZOrder;
     }
 

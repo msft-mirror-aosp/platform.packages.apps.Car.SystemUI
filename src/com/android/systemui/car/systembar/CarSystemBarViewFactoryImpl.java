@@ -90,7 +90,7 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
 
     /** Gets the top window by side. */
     @Override
-    public ViewGroup getWindow(@SystemBarSide int side) {
+    public ViewGroup getSystemBarWindow(@SystemBarSide int side) {
         switch (side) {
             case TOP:
                 return getWindowCached(Type.TOP);
@@ -106,7 +106,8 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
 
     /** Gets the bar by side. */
     @Override
-    public CarSystemBarViewController getBar(@SystemBarSide int side, boolean isSetUp) {
+    public CarSystemBarViewController getSystemBarViewController(@SystemBarSide int side,
+            boolean isSetUp) {
         switch (side) {
             case TOP:
                 if (Flags.dockFeature()) {

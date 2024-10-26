@@ -49,6 +49,7 @@ public abstract class PassengerKeyguardCredentialViewController extends ViewCont
     private final TrustManager mTrustManager;
     private final Handler mMainHandler;
     private final CarServiceProvider mCarServiceProvider;
+    private final PassengerKeyguardLockoutHelper mLockoutHelper;
 
     private OnAuthSucceededCallback mCallback;
     private LockscreenCredential mEnteredPassword;
@@ -66,15 +67,18 @@ public abstract class PassengerKeyguardCredentialViewController extends ViewCont
 
     protected PassengerKeyguardCredentialViewController(View view,
             LockPatternUtils lockPatternUtils, UserTracker userTracker, TrustManager trustManager,
-            Handler mainHandler, CarServiceProvider carServiceProvider) {
+            Handler mainHandler, CarServiceProvider carServiceProvider,
+            PassengerKeyguardLockoutHelper lockoutHelper) {
         super(view);
         mLockPatternUtils = lockPatternUtils;
         mUserTracker = userTracker;
         mTrustManager = trustManager;
         mMainHandler = mainHandler;
         mCarServiceProvider = carServiceProvider;
+        mLockoutHelper = lockoutHelper;
     }
 
+    @CallSuper
     @Override
     protected void onInit() {
         super.onInit();
@@ -88,15 +92,30 @@ public abstract class PassengerKeyguardCredentialViewController extends ViewCont
     @Override
     protected void onViewAttached() {
         mCarServiceProvider.addListener(mCarConnectedListener);
+        mLockoutHelper.setCallback(new PassengerKeyguardLockoutHelper.Callback() {
+            @Override
+            public void setErrorText(String text) {
+                mMainHandler.post(() -> setErrorMessage(text));
+            }
+
+            @Override
+            public void refreshUI(boolean isLockedOut) {
+                mMainHandler.post(() -> onLockedOutChanged(isLockedOut));
+            }
+        });
+        mLockoutHelper.onUIShown();
     }
 
     @Override
     protected void onViewDetached() {
         mCarServiceProvider.removeListener(mCarConnectedListener);
+        mLockoutHelper.setCallback(null);
         mCarUserManager = null;
     }
 
     protected abstract LockscreenCredential getCurrentCredential();
+
+    protected abstract void onLockedOutChanged(boolean isLockedOut);
 
     protected final void verifyCredential(Runnable onFailureUiRunnable) {
         mEnteredPassword = getCurrentCredential();
@@ -113,7 +132,12 @@ public abstract class PassengerKeyguardCredentialViewController extends ViewCont
                             mCallback.onAuthSucceeded();
                         }
                     } else {
-                        mMainHandler.post(onFailureUiRunnable);
+                        if (throttleTimeoutMs > 0) {
+                            mMainHandler.post(() -> mLockoutHelper.onCheckCompletedWithTimeout(
+                                    throttleTimeoutMs));
+                        } else {
+                            mMainHandler.post(onFailureUiRunnable);
+                        }
                     }
                 });
     }
@@ -135,7 +159,7 @@ public abstract class PassengerKeyguardCredentialViewController extends ViewCont
      * fields and then call super.
      */
     @CallSuper
-    public void clearAllCredentials() {
+    protected void clearAllCredentials() {
         if (mEnteredPassword != null) {
             mEnteredPassword.zeroize();
         }
@@ -154,6 +178,15 @@ public abstract class PassengerKeyguardCredentialViewController extends ViewCont
         mCarUserManager.stopUser(
                 new UserStopRequest.Builder(mUserTracker.getUserHandle()).withDelayedLocking(
                         false).build(), getContext().getMainExecutor(), userStopCallback);
+    }
+
+    /**
+     * Notify the controller that the hosting overlay has been hidden. This is needed because the
+     * View may not always be detached on hide since the window is still present (just not visible).
+     */
+    public final void onOverlayHidden() {
+        mLockoutHelper.onUIHidden();
+        clearAllCredentials();
     }
 
     /**

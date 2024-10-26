@@ -117,6 +117,9 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g>님이 로그아웃 중입니다. 나중에 다시 시도해 주세요."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"사용자를 현재 선택할 수 없음"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"승객 디스플레이에서 보안 사용자를 선택할 수 없음"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"잘못된 패턴"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"잘못된 PIN"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"잘못된 비밀번호"</string>
     <string name="seat_driver" msgid="4502591979520445677">"드라이버"</string>
     <string name="seat_front" msgid="836133281052793377">"전면"</string>
     <string name="seat_rear" msgid="403133444964528577">"후면"</string>

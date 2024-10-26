@@ -202,24 +202,6 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
         mView.toggleNotificationUnseenIndicator(hasUnseen);
     }
 
-    /** Gets the touch listeners that will be called from onInterceptTouchEvent and onTouchEvent. */
-    @VisibleForTesting
-    Set<View.OnTouchListener> getStatusBarWindowTouchListeners() {
-        return mView.getStatusBarWindowTouchListeners();
-    }
-
-    /** Gets the notifications panel controller. */
-    @VisibleForTesting
-    NotificationsShadeController getNotificationsPanelController() {
-        return mView.getNotificationsPanelController();
-    }
-
-    /** Gets the HVAC panel controller. */
-    @VisibleForTesting
-    HvacPanelController getHvacPanelController() {
-        return mView.getHvacPanelController();
-    }
-
     @Override
     protected void onViewAttached() {
         mSystemBarConfigs.insetSystemBar(mSide, mView);

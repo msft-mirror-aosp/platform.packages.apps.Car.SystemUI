@@ -27,11 +27,11 @@ public interface CarSystemBarViewFactory {
 
     /** Gets the window by side. */
     @NonNull
-    ViewGroup getWindow(@SystemBarSide int side);
+    ViewGroup getSystemBarWindow(@SystemBarSide int side);
 
     /** Gets the bar view by side. */
     @NonNull
-    CarSystemBarViewController getBar(@SystemBarSide int side, boolean isSetUp);
+    CarSystemBarViewController getSystemBarViewController(@SystemBarSide int side, boolean isSetUp);
 
     /** Resets the cached system bar views. */
     void resetSystemBarViewCache();

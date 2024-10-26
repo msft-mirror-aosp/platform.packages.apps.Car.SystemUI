@@ -46,8 +46,10 @@ public class PassengerKeyguardPasswordViewController extends
             LockPatternUtils lockPatternUtils,
             UserTracker userTracker,
             TrustManager trustManager, Handler mainHandler,
-            CarServiceProvider carServiceProvider) {
-        super(view, lockPatternUtils, userTracker, trustManager, mainHandler, carServiceProvider);
+            CarServiceProvider carServiceProvider,
+            PassengerKeyguardLockoutHelper lockoutHelper) {
+        super(view, lockPatternUtils, userTracker, trustManager, mainHandler, carServiceProvider,
+                lockoutHelper);
     }
 
     @Override
@@ -102,6 +104,12 @@ public class PassengerKeyguardPasswordViewController extends
     @Override
     protected LockscreenCredential getCurrentCredential() {
         return LockscreenCredential.createPasswordOrNone(mPasswordField.getText());
+    }
+
+    @Override
+    protected void onLockedOutChanged(boolean isLockedOut) {
+        mPasswordField.setEnabled(!isLockedOut);
+        mPasswordField.setText("");
     }
 
     @Override

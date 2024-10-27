@@ -188,16 +188,6 @@ public class CarSystemBarView extends LinearLayout {
         mHvacPanelController = controller;
     }
 
-    /** Gets the notifications panel controller. */
-    public NotificationsShadeController getNotificationsPanelController() {
-        return mNotificationsShadeController;
-    }
-
-    /** Gets the HVAC panel controller. */
-    public HvacPanelController getHvacPanelController() {
-        return mHvacPanelController;
-    }
-
     /**
      * Sets the touch listeners that will be called from onInterceptTouchEvent and onTouchEvent
      *
@@ -206,11 +196,6 @@ public class CarSystemBarView extends LinearLayout {
     public void setStatusBarWindowTouchListeners(
             Set<OnTouchListener> statusBarWindowTouchListeners) {
         mStatusBarWindowTouchListeners = statusBarWindowTouchListeners;
-    }
-
-    /** Gets the touch listeners that will be called from onInterceptTouchEvent and onTouchEvent. */
-    public Set<OnTouchListener> getStatusBarWindowTouchListeners() {
-        return mStatusBarWindowTouchListeners;
     }
 
     @Override

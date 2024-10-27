@@ -52,6 +52,7 @@ import androidx.annotation.VisibleForTesting;
 import com.android.car.datasubscription.DataSubscription;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.R;
+import com.android.systemui.car.qc.DataSubscriptionStatsLogHelper.DataSubscriptionMessageType;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Background;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -93,6 +94,7 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
     private Set<String> mPackagesBlocklist;
     private CountDownLatch mLatch;
     private boolean mIsNetworkCallbackRegistered;
+    private final DataSubscriptionStatsLogHelper mDataSubscriptionStatsLogHelper;
     private final TaskStackListener mTaskStackListener = new TaskStackListener() {
         @SuppressLint("MissingPermission")
         @Override
@@ -152,9 +154,6 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
                         if (mNetworkCallback.mNetwork == null) {
                             mNetworkCapabilities = null;
                             updateShouldDisplayReactiveMsg();
-                            if (mShouldDisplayReactiveMsg) {
-                                showPopUpWindow();
-                            }
                         }
                     }
                 });
@@ -176,6 +175,7 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
                                 && mPopupWindow != null
                                 && mPopupWindow.isShowing()) {
                             mPopupWindow.dismiss();
+                            mDataSubscriptionStatsLogHelper.logSessionFinished();
                         }
                     } else {
                         if (mIsDistractionOptimizationRequired && mPopupWindow != null) {
@@ -210,12 +210,14 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
     public DataSubscriptionController(Context context,
             UserTracker userTracker,
             @Main Handler mainHandler,
-            @Background Executor backgroundExecutor) {
+            @Background Executor backgroundExecutor,
+            DataSubscriptionStatsLogHelper dataSubscriptionStatsLogHelper) {
         mContext = context;
         mSubscription = new DataSubscription(context);
         mUserTracker = userTracker;
         mMainHandler = mainHandler;
         mBackGroundExecutor = backgroundExecutor;
+        mDataSubscriptionStatsLogHelper = dataSubscriptionStatsLogHelper;
         mIntent = new Intent(DATA_SUBSCRIPTION_ACTION);
         mIntent.setPackage(mContext.getString(
                 R.string.connectivity_flow_app));
@@ -239,6 +241,7 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
                     if (!mWasProactiveMsgDisplayed) {
                         mWasProactiveMsgDisplayed = true;
                     }
+                    mDataSubscriptionStatsLogHelper.logSessionFinished();
                 }
                 return true;
             }
@@ -247,8 +250,9 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
         mExplorationButton = mPopupView.findViewById(
                 R.id.data_subscription_explore_options_button);
         mExplorationButton.setOnClickListener(v -> {
-            mContext.startActivityAsUser(mIntent, mUserTracker.getUserHandle());
             mPopupWindow.dismiss();
+            mContext.startActivityAsUser(mIntent, mUserTracker.getUserHandle());
+            mDataSubscriptionStatsLogHelper.logButtonClicked();
         });
         mConnectivityManager = mContext.getSystemService(ConnectivityManager.class);
         mNetworkCallback = new DataSubscriptionNetworkCallback();
@@ -273,6 +277,7 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
         if (mIsDistractionOptimizationRequired) {
             if (mPopupWindow != null && mPopupWindow.isShowing()) {
                 mPopupWindow.dismiss();
+                mDataSubscriptionStatsLogHelper.logSessionFinished();
             }
         } else {
             // Determines whether a proactive message should be displayed
@@ -304,6 +309,7 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
             } else {
                 if (mPopupWindow != null && mPopupWindow.isShowing()) {
                     mPopupWindow.dismiss();
+                    mDataSubscriptionStatsLogHelper.logSessionFinished();
                 }
             }
         }
@@ -319,8 +325,12 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
                     if (popUpPrompt != null) {
                         if (mIsProactiveMsg) {
                             popUpPrompt.setText(R.string.data_subscription_proactive_msg_prompt);
+                            mDataSubscriptionStatsLogHelper.logSessionStarted(
+                                    DataSubscriptionMessageType.PROACTIVE);
                         } else {
                             popUpPrompt.setText(getReactiveMsg());
+                            mDataSubscriptionStatsLogHelper.logSessionStarted(
+                                    DataSubscriptionMessageType.REACTIVE);
                         }
                     }
                     int xOffsetInPx = mContext.getResources().getDimensionPixelSize(
@@ -331,11 +341,14 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
                     mAnchorView.getHandler().postDelayed(new Runnable() {
 
                         public void run() {
-                            mPopupWindow.dismiss();
-                            mWasProactiveMsgDisplayed = true;
-                            // after the proactive msg dismisses, it won't get displayed again hence
-                            // the msg from now on will just be reactive
-                            mIsProactiveMsg = false;
+                            if (mPopupWindow.isShowing()) {
+                                mPopupWindow.dismiss();
+                                mWasProactiveMsgDisplayed = true;
+                                // after the proactive msg dismisses, it won't get displayed again
+                                // hence the msg from now on will just be reactive
+                                mIsProactiveMsg = false;
+                                mDataSubscriptionStatsLogHelper.logSessionFinished();
+                            }
                         }
                     }, mPopUpTimeOut);
                 }
@@ -409,9 +422,6 @@ public class DataSubscriptionController implements DataSubscription.DataSubscrip
             mNetwork = network;
             mNetworkCapabilities = networkCapabilities;
             updateShouldDisplayReactiveMsg();
-            if (mShouldDisplayReactiveMsg) {
-                showPopUpWindow();
-            }
         }
     }
 

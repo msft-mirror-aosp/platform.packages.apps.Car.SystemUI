@@ -117,6 +117,12 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"يتم الآن تسجيل خروج \"<xliff:g id="USER_NAME">%s</xliff:g>\". يُرجى إعادة المحاولة لاحقًا."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"المستخدم غير متاح حاليًا"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"يتعذّر بدء تشغيل مستخدم آمن على شاشة الراكب"</string>
+    <!-- no translation found for passenger_keyguard_wrong_pattern (2581060250152895646) -->
+    <skip />
+    <!-- no translation found for passenger_keyguard_wrong_pin (8061593500590667531) -->
+    <skip />
+    <!-- no translation found for passenger_keyguard_wrong_password (3742711889441714581) -->
+    <skip />
     <string name="seat_driver" msgid="4502591979520445677">"السائق"</string>
     <string name="seat_front" msgid="836133281052793377">"المقعد الأمامي"</string>
     <string name="seat_rear" msgid="403133444964528577">"المقعد الخلفي"</string>

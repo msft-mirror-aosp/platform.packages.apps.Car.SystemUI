@@ -117,6 +117,9 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> సైన్ అవుట్ చేయబడుతున్నారు. తర్వాత మళ్లీ ట్రై చేయండి."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"యూజర్ ప్రస్తుతం అందుబాటులో లేరు"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"ప్యాసింజర్ డిస్‌ప్లేలో సురక్షిత యూజర్‌ను ప్రారంభించడం సాధ్యం కాలేదు"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"ఆకృతిని తప్పుగా ఎంటర్ చేశారు"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"PINను తప్పుగా ఎంటర్ చేశారు"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"పాస్‌వర్డ్‌ను తప్పుగా ఎంటర్ చేశారు"</string>
     <string name="seat_driver" msgid="4502591979520445677">"డ్రైవర్"</string>
     <string name="seat_front" msgid="836133281052793377">"ముందువైపు"</string>
     <string name="seat_rear" msgid="403133444964528577">"వెనుక భాగం"</string>

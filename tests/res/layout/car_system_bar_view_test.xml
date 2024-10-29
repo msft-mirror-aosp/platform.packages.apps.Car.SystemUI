@@ -40,7 +40,7 @@
             systemui:intent="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;launchFlags=0x14000000;end"
             systemui:selectedIcon="@drawable/car_ic_overview_selected"
             systemui:highlightWhenSelected="true"
-        />
+            systemui:controller="com.android.systemui.car.systembar.HomeButtonController"/>
 
     </LinearLayout>
 

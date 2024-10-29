@@ -26,8 +26,6 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.ViewUtils;
-import com.android.systemui.car.hvac.HvacController;
-import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 import com.android.systemui.car.systembar.CarSystemBarView.ButtonsType;
@@ -59,7 +57,6 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
     private final ButtonRoleHolderController mButtonRoleHolderController;
     private final Lazy<MicPrivacyChipViewController> mMicPrivacyChipViewControllerLazy;
     private final Lazy<CameraPrivacyChipViewController> mCameraPrivacyChipViewControllerLazy;
-    private final HvacController mHvacController;
     private final @SystemBarSide int mSide;
 
     @AssistedInject
@@ -71,7 +68,6 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
             ButtonSelectionStateController buttonSelectionStateController,
             Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
             Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
-            HvacController hvacController,
             @Assisted @SystemBarSide int side,
             @Assisted CarSystemBarView systemBarView) {
         super(systemBarView);
@@ -84,7 +80,6 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
         mButtonSelectionStateController = buttonSelectionStateController;
         mCameraPrivacyChipViewControllerLazy = cameraPrivacyChipViewControllerLazy;
         mMicPrivacyChipViewControllerLazy = micPrivacyChipViewControllerLazy;
-        mHvacController = hvacController;
         mSide = side;
     }
 
@@ -153,13 +148,6 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
     }
 
     /**
-     * Sets the HvacPanelOverlayViewController and adds HVAC button listeners
-     */
-    public void registerHvacPanelOverlayViewController(HvacPanelOverlayViewController controller) {
-        mView.registerHvacPanelOverlayViewController(controller);
-    }
-
-    /**
      * Shows buttons of the specified {@link ButtonsType}.
      *
      * NOTE: Only one type of buttons can be shown at a time, so showing buttons of one type will
@@ -174,7 +162,6 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
     @Override
     protected void onViewAttached() {
         mSystemBarConfigs.insetSystemBar(mSide, mView);
-        mHvacController.registerHvacViews(mView);
 
         mButtonSelectionStateController.addAllButtonsWithSelectionState(mView);
         mButtonRoleHolderController.addAllButtonsWithRoleName(mView);
@@ -184,8 +171,6 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
 
     @Override
     protected void onViewDetached() {
-        mHvacController.unregisterViews(mView);
-
         mButtonSelectionStateController.removeAll();
         mButtonRoleHolderController.removeAll();
         mMicPrivacyChipViewControllerLazy.get().removeAll();

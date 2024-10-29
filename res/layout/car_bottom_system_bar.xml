@@ -35,7 +35,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            systemui:hvacAreaId="49">
+            systemui:hvacAreaId="49"
+            systemui:controller="com.android.systemui.car.hvac.TemperatureControlViewController">
             <include layout="@layout/adjustable_temperature_view"/>
         </com.android.systemui.car.hvac.TemperatureControlView>
 
@@ -98,7 +99,8 @@
                 style="@style/SystemBarButton"
                 systemui:highlightWhenSelected="true"
                 systemui:icon="@drawable/car_ic_hvac"
-                systemui:broadcast="true"/>
+                systemui:broadcast="true"
+                systemui:controller="com.android.systemui.car.hvac.HvacButtonController"/>
 
             <com.android.systemui.car.systembar.CarSystemBarButton
                 android:id="@+id/control_center_nav"
@@ -139,7 +141,8 @@
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:gravity="center_vertical"
-            systemui:hvacAreaId="68">
+            systemui:hvacAreaId="68"
+            systemui:controller="com.android.systemui.car.hvac.TemperatureControlViewController">
             <include layout="@layout/adjustable_temperature_view"/>
         </com.android.systemui.car.hvac.TemperatureControlView>
 

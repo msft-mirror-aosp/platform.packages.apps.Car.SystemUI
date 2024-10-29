@@ -38,6 +38,7 @@ import com.android.keyguard.mediator.ScreenOnCoordinator;
 import com.android.systemui.CoreStartable;
 import com.android.systemui.animation.ActivityTransitionAnimator;
 import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.keyguard.passenger.PassengerKeyguardLoadingDialog;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.classifier.FalsingModule;
@@ -253,4 +254,10 @@ public interface CarKeyguardModule {
     @IntoMap
     @ClassKey(KeyguardUpdateMonitor.class)
     CoreStartable bindsKeyguardUpdateMonitor(KeyguardUpdateMonitor keyguardUpdateMonitor);
+
+    /** Binds {@link PassengerKeyguardLoadingDialog} as a {@link CoreStartable}. */
+    @Binds
+    @IntoMap
+    @ClassKey(PassengerKeyguardLoadingDialog.class)
+    CoreStartable bindsPassengerKeyguardLoadingDialog(PassengerKeyguardLoadingDialog dialog);
 }

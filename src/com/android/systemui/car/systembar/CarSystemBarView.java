@@ -196,27 +196,11 @@ public class CarSystemBarView extends LinearLayout {
             mNotificationsButton.runOnClickWhileDisabled();
             return;
         }
-        if (mNotificationPanelViewController != null) {
-            // If the notification shade is about to open, close the hvac panel
-            if (!mNotificationPanelViewController.isPanelExpanded()
-                    && mHvacPanelOverlayViewController != null
-                    && mHvacPanelOverlayViewController.isPanelExpanded()) {
-                mHvacPanelOverlayViewController.toggle();
-            }
-            mNotificationPanelViewController.toggle();
-        }
+        mNotificationPanelViewController.toggle();
     }
 
     protected void onHvacClick(View v) {
-        if (mHvacPanelOverlayViewController != null) {
-            // If the hvac panel is about to open, close the notification shade
-            if (!mHvacPanelOverlayViewController.isPanelExpanded()
-                    && mNotificationPanelViewController != null
-                    && mNotificationPanelViewController.isPanelExpanded()) {
-                mNotificationPanelViewController.toggle();
-            }
-            mHvacPanelOverlayViewController.toggle();
-        }
+        mHvacPanelOverlayViewController.toggle();
     }
 
     /**

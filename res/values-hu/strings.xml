@@ -120,8 +120,7 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Helytelen minta"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Helytelen PIN-kód"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Helytelen jelszó"</string>
-    <!-- no translation found for passenger_keyguard_too_many_failed_attempts (2948335020152945468) -->
-    <skip />
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{Túl sok helytelen próbálkozás. Próbálja újra # másodperc múlva.}other{Túl sok helytelen próbálkozás. Próbálja újra # másodperc múlva.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"sofőr"</string>
     <string name="seat_front" msgid="836133281052793377">"elöl"</string>
     <string name="seat_rear" msgid="403133444964528577">"hátul"</string>

@@ -27,6 +27,7 @@ import androidx.annotation.UiThread;
 import com.android.internal.statusbar.LetterboxDetails;
 import com.android.internal.view.AppearanceRegion;
 import com.android.systemui.R;
+import com.android.systemui.ScreenDecorationsThread;
 import com.android.systemui.car.systembar.SystemBarConfigs;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Application;
@@ -71,9 +72,10 @@ public class CarPrivacyChipViewController extends PrivacyDotViewControllerImpl
             @NotNull ConfigurationController configurationController,
             @NotNull StatusBarContentInsetsProvider contentInsetsProvider,
             @NotNull SystemStatusAnimationScheduler animationScheduler,
+            @NotNull @ScreenDecorationsThread DelayableExecutor uiExecutor,
             CommandQueue commandQueue) {
         super(mainExecutor, scope, stateController, configurationController, contentInsetsProvider,
-                animationScheduler, null);
+                animationScheduler, null, uiExecutor);
         commandQueue.addCallback(this);
         mAnimationHelper = new CarPrivacyChipAnimationHelper(context);
         mBarType = SystemBarConfigs.BAR_PROVIDER_MAP[context.getResources().getInteger(

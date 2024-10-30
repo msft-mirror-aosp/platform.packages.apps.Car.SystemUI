@@ -120,6 +120,8 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"പാറ്റേൺ തെറ്റാണ്"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"പിൻ തെറ്റാണ്"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"പാസ്‌വേഡ് തെറ്റാണ്"</string>
+    <!-- no translation found for passenger_keyguard_too_many_failed_attempts (2948335020152945468) -->
+    <skip />
     <string name="seat_driver" msgid="4502591979520445677">"ഡ്രൈവർ"</string>
     <string name="seat_front" msgid="836133281052793377">"മുൻവശം"</string>
     <string name="seat_rear" msgid="403133444964528577">"പിൻഭാഗം"</string>

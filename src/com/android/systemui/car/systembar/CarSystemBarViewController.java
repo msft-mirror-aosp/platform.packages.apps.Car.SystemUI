@@ -27,13 +27,12 @@ import androidx.annotation.VisibleForTesting;
 import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.ViewUtils;
 import com.android.systemui.car.hvac.HvacController;
-import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.notification.NotificationPanelViewController;
-import com.android.systemui.car.notification.NotificationsShadeController;
 import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 import com.android.systemui.car.systembar.CarSystemBarView.ButtonsType;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.util.ViewController;
 
@@ -97,6 +96,9 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
         // Include a FocusParkingView at the beginning. The rotary controller "parks" the focus here
         // when the user navigates to another window. This is also used to prevent wrap-around.
         mView.addView(new FocusParkingView(mContext), 0);
+
+        mView.updateHomeButtonVisibility(CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
+        mView.updateControlCenterButtonVisibility(CarSystemUIUserUtil.isMUMDSystemUI());
     }
 
     /**
@@ -133,13 +135,6 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
     }
 
     /**
-     * Update home buttom visibility.
-     */
-    public void updateHomeButtonVisibility(boolean isPassenger) {
-        mView.updateHomeButtonVisibility(isPassenger);
-    }
-
-    /**
      * Sets the touch listeners that will be called from onInterceptTouchEvent and onTouchEvent
      *
      * @param statusBarWindowTouchListeners List of listeners to call from touch and intercept touch
@@ -147,11 +142,6 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
     public void setStatusBarWindowTouchListeners(
             Set<View.OnTouchListener> statusBarWindowTouchListeners) {
         mView.setStatusBarWindowTouchListeners(statusBarWindowTouchListeners);
-    }
-
-    /** Sets the notifications panel controller. */
-    public void setNotificationsPanelController(NotificationsShadeController controller) {
-        mView.setNotificationsPanelController(controller);
     }
 
     /**
@@ -162,9 +152,13 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
         mView.registerNotificationPanelViewController(controller);
     }
 
-    /** Sets the HVAC panel controller. */
-    public void setHvacPanelController(HvacPanelController controller) {
-        mView.setHvacPanelController(controller);
+    /**
+     * Toggles the notification unseen indicator on/off.
+     *
+     * @param hasUnseen true if the unseen notification count is great than 0.
+     */
+    public void toggleNotificationUnseenIndicator(boolean hasUnseen) {
+        mView.toggleNotificationUnseenIndicator(hasUnseen);
     }
 
     /**
@@ -172,13 +166,6 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
      */
     public void registerHvacPanelOverlayViewController(HvacPanelOverlayViewController controller) {
         mView.registerHvacPanelOverlayViewController(controller);
-    }
-
-    /**
-     * Update control center button visibility.
-     */
-    public void updateControlCenterButtonVisibility(boolean isMumd) {
-        mView.updateControlCenterButtonVisibility(isMumd);
     }
 
     /**
@@ -191,15 +178,6 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
      */
     public void showButtonsOfType(@ButtonsType int buttonsType) {
         mView.showButtonsOfType(buttonsType);
-    }
-
-    /**
-     * Toggles the notification unseen indicator on/off.
-     *
-     * @param hasUnseen true if the unseen notification count is great than 0.
-     */
-    public void toggleNotificationUnseenIndicator(boolean hasUnseen) {
-        mView.toggleNotificationUnseenIndicator(hasUnseen);
     }
 
     @Override

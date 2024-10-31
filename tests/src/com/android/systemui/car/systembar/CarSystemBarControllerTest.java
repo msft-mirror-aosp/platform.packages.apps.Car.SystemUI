@@ -18,7 +18,6 @@ package com.android.systemui.car.systembar;
 
 import static android.app.StatusBarManager.DISABLE2_QUICK_SETTINGS;
 import static android.app.StatusBarManager.DISABLE_HOME;
-import static android.app.StatusBarManager.DISABLE_NOTIFICATION_ICONS;
 
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
@@ -28,7 +27,6 @@ import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assume.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -719,66 +717,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void testRefreshSystemBar_homeDisabled() {
-        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
-        mCarSystemBarController.init();
-        CarSystemBarViewController bottomBar = mCarSystemBarController.getBarViewController(BOTTOM,
-                /* isSetUp= */ true);
-        clearSystemBarStates();
-        CarSystemBarButton button = bottomBar.getView().findViewById(R.id.home);
-        assertThat(button.getDisabled()).isFalse();
-
-        mCarSystemBarController.setSystemBarStates(DISABLE_HOME, /* state2= */ 0);
-
-        assertThat(button.getDisabled()).isTrue();
-    }
-
-    @Test
-    public void testRefreshSystemBar_phoneNavDisabled() {
-        assumeFalse("Phone nav button is removed when Dock is enabled", Flags.dockFeature());
-
-        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
-        mCarSystemBarController.init();
-        CarSystemBarViewController bottomBar = mCarSystemBarController.getBarViewController(BOTTOM,
-                /* isSetUp= */ true);
-        clearSystemBarStates();
-        CarSystemBarButton button = bottomBar.getView().findViewById(R.id.phone_nav);
-        assertThat(button.getDisabled()).isFalse();
-
-        setLockTaskModeLocked(/* locked= */true);
-
-        assertThat(button.getDisabled()).isTrue();
-    }
-
-    @Test
-    public void testRefreshSystemBar_appGridisabled() {
-        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
-        mCarSystemBarController.init();
-        CarSystemBarViewController bottomBar = mCarSystemBarController.getBarViewController(BOTTOM,
-                /* isSetUp= */ true);
-        clearSystemBarStates();
-        CarSystemBarButton button = bottomBar.getView().findViewById(R.id.grid_nav);
-        assertThat(button.getDisabled()).isFalse();
-
-        mCarSystemBarController.setSystemBarStates(DISABLE_HOME, /* state2= */ 0);
-
-        assertThat(button.getDisabled()).isTrue();
-    }
-
-    @Test
-    public void testRefreshSystemBar_notificationDisabled() {
-        enableSystemBarWithNotificationButton();
-        mCarSystemBarController.init();
-        clearSystemBarStates();
-        CarSystemBarButton button = getNotificationCarSystemBarButton();
-        assertThat(button.getDisabled()).isFalse();
-
-        mCarSystemBarController.setSystemBarStates(DISABLE_NOTIFICATION_ICONS, /* state2= */ 0);
-
-        assertThat(button.getDisabled()).isTrue();
-    }
-
-    @Test
     public void cacheAndHideFocus_doesntCallHideFocus_if_focusParkingViewIsFocused() {
         mCarSystemBarController.init();
         View mockFocusParkingView = mock(FocusParkingView.class);
@@ -841,18 +779,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
             mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);
         } else {
             mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
-        }
-    }
-
-    private CarSystemBarButton getNotificationCarSystemBarButton() {
-        if (Flags.dockFeature()) {
-            CarSystemBarViewController topBar = mCarSystemBarController
-                    .getBarViewController(TOP, /* isSetUp= */ true);
-            return topBar.getView().findViewById(R.id.notifications);
-        } else {
-            CarSystemBarViewController bottomBar = mCarSystemBarController
-                    .getBarViewController(BOTTOM, /* isSetUp= */ true);
-            return bottomBar.getView().findViewById(R.id.notifications);
         }
     }
 }

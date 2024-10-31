@@ -25,7 +25,6 @@ import static com.android.systemui.shared.statusbar.phone.BarTransitions.MODE_TR
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
-import android.app.StatusBarManager;
 import android.app.StatusBarManager.Disable2Flags;
 import android.app.StatusBarManager.DisableFlags;
 import android.content.BroadcastReceiver;
@@ -58,7 +57,6 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.LetterboxDetails;
 import com.android.internal.statusbar.RegisterStatusBarResult;
 import com.android.internal.view.AppearanceRegion;
-import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.displaycompat.ToolbarController;
@@ -291,11 +289,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         TaskStackChangeListeners.getInstance().registerTaskStackListener(
                 new TaskStackChangeListener() {
                     @Override
-                    public void onLockTaskModeChanged(int mode) {
-                        refreshSystemBar();
-                    }
-
-                    @Override
                     public void onTaskMovedToFront(RunningTaskInfo taskInfo) {
                         if (mDisplayCompatToolbarController != null) {
                             mDisplayCompatToolbarController.update(taskInfo);
@@ -352,7 +345,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             mAppearanceRegions = appearanceRegions;
             updateStatusBarAppearance();
         }
-        refreshSystemBar();
     }
 
     @Override
@@ -474,7 +466,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mStatusBarState = state;
         mStatusBarState2 = state2;
         mLockTaskMode = lockTaskMode;
-        refreshSystemBar();
     }
 
     @VisibleForTesting
@@ -487,54 +478,8 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         return mStatusBarState2;
     }
 
-    /**
-     * Refreshes system bar views and sets the visibility of certain components based on
-     * {@link StatusBarManager} flags and lock task mode.
-     * <ul>
-     * <li>Home button will be disabled when {@code StatusBarManager.DISABLE_HOME} is set.
-     * <li>Phone call button will be disable in lock task mode.
-     * <li>App grid button will be disable when {@code StatusBarManager.DISABLE_HOME} is set.
-     * <li>Notification button will be disable when
-     * {@code StatusBarManager.DISABLE_NOTIFICATION_ICONS} is set.
-     * <li>Quick settings and user switcher will be hidden when in lock task mode or when
-     * {@code StatusBarManager.DISABLE2_QUICK_SETTINGS} is set.
-     * </ul>
-     */
-    private void refreshSystemBar() {
-        boolean homeDisabled = ((mStatusBarState & StatusBarManager.DISABLE_HOME) > 0);
-        boolean notificationDisabled =
-                ((mStatusBarState & StatusBarManager.DISABLE_NOTIFICATION_ICONS) > 0);
-        boolean locked = (mLockTaskMode == ActivityManager.LOCK_TASK_MODE_LOCKED);
-        boolean qcDisabled =
-                ((mStatusBarState2 & StatusBarManager.DISABLE2_QUICK_SETTINGS) > 0) || locked;
-        boolean systemIconsDisabled =
-                ((mStatusBarState2 & StatusBarManager.DISABLE2_SYSTEM_ICONS) > 0) || locked;
-
-        setDisabledSystemBarButton(R.id.home, homeDisabled, "home");
-        setDisabledSystemBarButton(R.id.passenger_home, homeDisabled, "passenger_home");
-        setDisabledSystemBarButton(R.id.phone_nav, locked, "phone_nav");
-        setDisabledSystemBarButton(R.id.grid_nav, homeDisabled, "grid_nav");
-        setDisabledSystemBarButton(R.id.notifications, notificationDisabled, "notifications");
-
-        if (DEBUG) {
-            Log.d(TAG, "refreshSystemBar: locked?: " + locked
-                    + " homeDisabled: " + homeDisabled
-                    + " notificationDisabled: " + notificationDisabled
-                    + " qcDisabled: " + qcDisabled
-                    + " systemIconsDisabled: " + systemIconsDisabled);
-        }
-    }
-
     private int getLockTaskModeState() {
         return mContext.getSystemService(ActivityManager.class).getLockTaskModeState();
-    }
-
-    private void setDisabledSystemBarButton(int viewId, boolean disabled,
-                @Nullable String buttonName) {
-        for (int i = 0; i < mSystemBarViewControllerMap.size(); i++) {
-            mSystemBarViewControllerMap.valueAt(i).setDisabledSystemBarButton(viewId, disabled,
-                    () -> showAdminSupportDetailsDialog(), buttonName);
-        }
     }
 
     private void showAdminSupportDetailsDialog() {

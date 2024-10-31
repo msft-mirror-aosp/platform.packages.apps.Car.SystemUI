@@ -17,7 +17,6 @@
 package com.android.systemui.car.systembar;
 
 import android.annotation.IntDef;
-import android.annotation.Nullable;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -141,20 +140,6 @@ public class CarSystemBarView extends LinearLayout {
                 setKeyguardButtonsVisibility(View.GONE);
                 setOcclusionButtonsVisibility(View.VISIBLE);
                 break;
-        }
-    }
-
-    /**
-     * Sets the system bar view's disabled state and runnable when disabled.
-     */
-    public void setDisabledSystemBarButton(int viewId, boolean disabled, Runnable runnable,
-                @Nullable String buttonName) {
-        CarSystemBarButton button = findViewById(viewId);
-        if (button != null) {
-            if (DEBUG) {
-                Log.d(TAG, "setDisabledSystemBarButton for: " + buttonName + " to: " + disabled);
-            }
-            button.setDisabled(disabled, runnable);
         }
     }
 

@@ -18,14 +18,25 @@ package {
     default_team: "trendy_team_system_experience",
 }
 
+genrule {
+    name: "statslog-carsystemui-java-gen",
+    tools: ["stats-log-api-gen"],
+    cmd: "$(location stats-log-api-gen) --java $(out) --module carsystemui" +
+        " --javaPackage com.android.systemui --javaClass CarSystemUIStatsLog",
+    out: ["com/android/systemui/car/CarSystemUIStatsLog.java"],
+}
+
+carsystemui_srcs = [
+    "src/**/*.java",
+    "src/**/*.kt",
+    "src/**/I*.aidl",
+    ":statslog-carsystemui-java-gen",
+]
+
 android_library {
     name: "CarSystemUI-core",
 
-    srcs: [
-        "src/**/*.java",
-        "src/**/*.kt",
-        "src/**/I*.aidl",
-    ],
+    srcs: carsystemui_srcs,
 
     resource_dirs: [
         "res-keyguard",
@@ -90,6 +101,10 @@ android_library {
 
 android_app {
     name: "CarSystemUI",
+
+    defaults: [
+        "wmshell_defaults",
+    ],
 
     static_libs: [
         "CarSystemUI-core",
@@ -199,14 +214,15 @@ android_library {
         "src/**/*.java",
         "src/**/*.kt",
         "src/**/I*.aidl",
+        ":statslog-carsystemui-java-gen",
     ],
     static_libs: [
         "SystemUI-tests",
         "CarSystemUI-tests-base",
     ],
     libs: [
-        "android.test.runner",
-        "android.test.base",
+        "android.test.runner.stubs.system",
+        "android.test.base.stubs.system",
         "android.car",
     ],
 
@@ -234,6 +250,7 @@ android_app {
     defaults: [
         "platform_app_defaults",
         "SystemUI_optimized_defaults",
+        "wmshell_defaults",
     ],
     manifest: "tests/AndroidManifest-base.xml",
 
@@ -286,9 +303,9 @@ android_robolectric_test {
     ],
     libs: [
         "android.car",
-        "android.test.runner",
-        "android.test.base",
-        "android.test.mock",
+        "android.test.runner.stubs.system",
+        "android.test.base.stubs.system",
+        "android.test.mock.stubs.system",
         "truth",
     ],
 
@@ -321,9 +338,9 @@ android_ravenwood_test {
     ],
     libs: [
         "android.car",
-        "android.test.runner",
-        "android.test.base",
-        "android.test.mock",
+        "android.test.runner.stubs.system",
+        "android.test.base.stubs.system",
+        "android.test.mock.stubs.system",
     ],
     auto_gen_config: true,
     plugins: [

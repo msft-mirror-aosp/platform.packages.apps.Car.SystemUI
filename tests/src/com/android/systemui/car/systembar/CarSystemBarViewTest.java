@@ -31,6 +31,7 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.notification.NotificationPanelViewController;
 
 import org.junit.After;
 import org.junit.Before;
@@ -50,7 +51,7 @@ public class CarSystemBarViewTest extends SysuiTestCase {
     private CarSystemBarView mNavBarView;
 
     @Mock
-    private CarSystemBarController.NotificationsShadeController mNotificationsShadeController;
+    private NotificationPanelViewController mNotificationPanelViewController;
 
     @Mock
     private View.OnTouchListener mNavBarTouchListener;
@@ -72,10 +73,10 @@ public class CarSystemBarViewTest extends SysuiTestCase {
     public void dispatchTouch_shadeOpen_flagOff_doesNotConsumeTouch() {
         getContext().getOrCreateTestableResources().addOverride(
                 R.bool.config_consumeSystemBarTouchWhenNotificationPanelOpen, false);
-        when(mNotificationsShadeController.isNotificationPanelOpen()).thenReturn(true);
+        when(mNotificationPanelViewController.isPanelExpanded()).thenReturn(true);
         mNavBarView = (CarSystemBarView) LayoutInflater.from(getContext()).inflate(
                 R.layout.car_system_bar_view_test, /* root= */ null);
-        mNavBarView.setNotificationsPanelController(mNotificationsShadeController);
+        mNavBarView.registerNotificationPanelViewController(mNotificationPanelViewController);
         mNavBarView.setStatusBarWindowTouchListeners(
                 Collections.singleton(mNavBarTouchListener));
 
@@ -94,10 +95,10 @@ public class CarSystemBarViewTest extends SysuiTestCase {
         // Prevent the test from failing due to buttons on the system bar not being draggable.
         getContext().getOrCreateTestableResources().addOverride(
                 R.bool.config_systemBarButtonsDraggable, true);
-        when(mNotificationsShadeController.isNotificationPanelOpen()).thenReturn(true);
+        when(mNotificationPanelViewController.isPanelExpanded()).thenReturn(true);
         mNavBarView = (CarSystemBarView) LayoutInflater.from(getContext()).inflate(
                 R.layout.car_system_bar_view_test, /* root= */ null);
-        mNavBarView.setNotificationsPanelController(mNotificationsShadeController);
+        mNavBarView.registerNotificationPanelViewController(mNotificationPanelViewController);
         mNavBarView.setStatusBarWindowTouchListeners(
                 Collections.singleton(mNavBarTouchListener));
 

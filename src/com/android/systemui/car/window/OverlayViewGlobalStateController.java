@@ -354,6 +354,9 @@ public class OverlayViewGlobalStateController {
     /** Sets the focusable flag of the sysui overlawy window. */
     public void setWindowFocusable(boolean focusable) {
         mSystemUIOverlayWindowController.setWindowFocusable(focusable);
+        if (mHighestZOrder != null) {
+            mHighestZOrder.onWindowFocusableChanged(focusable);
+        }
     }
 
     /** Inflates the view controlled by the given view controller. */

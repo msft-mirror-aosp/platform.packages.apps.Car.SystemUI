@@ -47,26 +47,6 @@ public class InCallLiveData extends MediatorLiveData<Call> implements
         mBlockedActivity = packageName;
     }
 
-    private final Call.Callback mCallStateChangedCallback = new Call.Callback() {
-        @Override
-        public void onStateChanged(Call call, int state) {
-            Slog.d(TAG, "onStateChanged: " + call);
-            update();
-        }
-
-        @Override
-        public void onParentChanged(Call call, Call parent) {
-            Slog.d(TAG, "onParentChanged: " + call);
-            update();
-        }
-
-        @Override
-        public void onChildrenChanged(Call call, List<Call> children) {
-            Slog.d(TAG, "onChildrenChanged: " + call);
-            update();
-        }
-    };
-
     @Override
     protected void onActive() {
         super.onActive();
@@ -87,14 +67,30 @@ public class InCallLiveData extends MediatorLiveData<Call> implements
     @Override
     public void onCallAdded(Call call) {
         Slog.d(TAG, "Call added: " + call);
-        call.registerCallback(mCallStateChangedCallback);
         update();
     }
 
     @Override
     public void onCallRemoved(Call call) {
         Slog.d(TAG, "Call removed: " + call);
-        call.unregisterCallback(mCallStateChangedCallback);
+        update();
+    }
+
+    @Override
+    public void onStateChanged(Call call, int state) {
+        Slog.d(TAG, "onStateChanged: " + call + " state: " + state);
+        update();
+    }
+
+    @Override
+    public void onParentChanged(Call call, Call parent) {
+        Slog.d(TAG, "onParentChanged: " + call);
+        update();
+    }
+
+    @Override
+    public void onChildrenChanged(Call call, List<Call> children) {
+        Slog.d(TAG, "onChildrenChanged: " + call);
         update();
     }
 

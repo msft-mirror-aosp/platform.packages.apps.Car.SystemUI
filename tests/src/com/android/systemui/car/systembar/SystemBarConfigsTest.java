@@ -18,6 +18,11 @@ package com.android.systemui.car.systembar;
 
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
 
+import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
+import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
+import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
+import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -37,10 +42,10 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationPanelViewMediator;
+import com.android.systemui.car.notification.NotificationSystemBarPresenter;
 import com.android.systemui.car.notification.PowerManagerHelper;
 import com.android.systemui.car.notification.TopNotificationPanelViewMediator;
 import com.android.systemui.settings.UserTracker;
@@ -55,6 +60,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -87,14 +93,14 @@ public class SystemBarConfigsTest extends SysuiTestCase {
     }
 
     @Test
-    public void onInit_allSystemBarsEnabled_systemBarSidesSortedByZOrder() {
+    public void onInit_allSystemBarsEnabled_systemBarTypesSortedByZOrder() {
         mSystemBarConfigs = new SystemBarConfigs(mResources);
         List<Integer> actualOrder = mSystemBarConfigs.getSystemBarSidesByZOrder();
         List<Integer> expectedOrder = new ArrayList<>();
-        expectedOrder.add(SystemBarConfigs.LEFT);
-        expectedOrder.add(SystemBarConfigs.RIGHT);
-        expectedOrder.add(SystemBarConfigs.TOP);
-        expectedOrder.add(SystemBarConfigs.BOTTOM);
+        expectedOrder.add(LEFT);
+        expectedOrder.add(RIGHT);
+        expectedOrder.add(TOP);
+        expectedOrder.add(BOTTOM);
 
         assertTrue(actualOrder.equals(expectedOrder));
     }
@@ -148,7 +154,7 @@ public class SystemBarConfigsTest extends SysuiTestCase {
     public void getTopSystemBarLayoutParams_topBarEnabled_returnsTopSystemBarLayoutParams() {
         mSystemBarConfigs = new SystemBarConfigs(mResources);
         WindowManager.LayoutParams lp = mSystemBarConfigs.getLayoutParamsBySide(
-                SystemBarConfigs.TOP);
+                TOP);
 
         assertNotNull(lp);
     }
@@ -157,7 +163,7 @@ public class SystemBarConfigsTest extends SysuiTestCase {
     public void getTopSystemBarLayoutParams_containsLayoutInDisplayCutoutMode() {
         mSystemBarConfigs = new SystemBarConfigs(mResources);
         WindowManager.LayoutParams lp = mSystemBarConfigs.getLayoutParamsBySide(
-                SystemBarConfigs.TOP);
+                TOP);
 
         assertNotNull(lp);
         assertEquals(lp.layoutInDisplayCutoutMode, LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS);
@@ -168,7 +174,7 @@ public class SystemBarConfigsTest extends SysuiTestCase {
         when(mResources.getBoolean(R.bool.config_enableTopSystemBar)).thenReturn(false);
         mSystemBarConfigs = new SystemBarConfigs(mResources);
         WindowManager.LayoutParams lp = mSystemBarConfigs.getLayoutParamsBySide(
-                SystemBarConfigs.TOP);
+                TOP);
 
         assertNull(lp);
     }
@@ -178,7 +184,7 @@ public class SystemBarConfigsTest extends SysuiTestCase {
         when(mResources.getBoolean(R.bool.config_hideTopSystemBarForKeyboard)).thenReturn(true);
         mSystemBarConfigs = new SystemBarConfigs(mResources);
 
-        boolean hideKeyboard = mSystemBarConfigs.getHideForKeyboardBySide(SystemBarConfigs.TOP);
+        boolean hideKeyboard = mSystemBarConfigs.getHideForKeyboardBySide(TOP);
 
         assertTrue(hideKeyboard);
     }
@@ -188,7 +194,7 @@ public class SystemBarConfigsTest extends SysuiTestCase {
         when(mResources.getBoolean(R.bool.config_enableTopSystemBar)).thenReturn(false);
         mSystemBarConfigs = new SystemBarConfigs(mResources);
 
-        boolean hideKeyboard = mSystemBarConfigs.getHideForKeyboardBySide(SystemBarConfigs.TOP);
+        boolean hideKeyboard = mSystemBarConfigs.getHideForKeyboardBySide(TOP);
 
         assertFalse(hideKeyboard);
     }
@@ -199,7 +205,7 @@ public class SystemBarConfigsTest extends SysuiTestCase {
                 SystemBarConfigs.getHunZOrder() + 1);
         mSystemBarConfigs = new SystemBarConfigs(mResources);
         WindowManager.LayoutParams lp = mSystemBarConfigs.getLayoutParamsBySide(
-                SystemBarConfigs.TOP);
+                TOP);
 
         assertEquals(lp.type, WindowManager.LayoutParams.TYPE_NAVIGATION_BAR_PANEL);
     }
@@ -210,7 +216,7 @@ public class SystemBarConfigsTest extends SysuiTestCase {
                 SystemBarConfigs.getHunZOrder() - 1);
         mSystemBarConfigs = new SystemBarConfigs(mResources);
         WindowManager.LayoutParams lp = mSystemBarConfigs.getLayoutParamsBySide(
-                SystemBarConfigs.TOP);
+                TOP);
 
         assertEquals(lp.type, WindowManager.LayoutParams.TYPE_STATUS_BAR_ADDITIONAL);
     }
@@ -220,13 +226,13 @@ public class SystemBarConfigsTest extends SysuiTestCase {
         mSystemBarConfigs = new SystemBarConfigs(mResources);
         CarSystemBarView leftBar = new CarSystemBarView(mContext, /* attrs= */ null);
         Map<Integer, Boolean> visibilities = new ArrayMap<>();
-        visibilities.put(SystemBarConfigs.TOP, false);
-        visibilities.put(SystemBarConfigs.BOTTOM, true);
-        visibilities.put(SystemBarConfigs.LEFT, true);
-        visibilities.put(SystemBarConfigs.RIGHT, true);
+        visibilities.put(TOP, false);
+        visibilities.put(BOTTOM, true);
+        visibilities.put(LEFT, true);
+        visibilities.put(RIGHT, true);
 
-        mSystemBarConfigs.updateInsetPaddings(SystemBarConfigs.LEFT, visibilities);
-        mSystemBarConfigs.insetSystemBar(SystemBarConfigs.LEFT, leftBar);
+        mSystemBarConfigs.updateInsetPaddings(LEFT, visibilities);
+        mSystemBarConfigs.insetSystemBar(LEFT, leftBar);
 
         assertEquals(0, leftBar.getPaddingTop());
     }
@@ -236,16 +242,16 @@ public class SystemBarConfigsTest extends SysuiTestCase {
         mSystemBarConfigs = new SystemBarConfigs(mResources);
         CarSystemBarView leftBar = new CarSystemBarView(mContext, /* attrs= */ null);
         Map<Integer, Boolean> visibilities = new ArrayMap<>();
-        visibilities.put(SystemBarConfigs.TOP, false);
-        visibilities.put(SystemBarConfigs.BOTTOM, true);
-        visibilities.put(SystemBarConfigs.LEFT, true);
-        visibilities.put(SystemBarConfigs.RIGHT, true);
+        visibilities.put(TOP, false);
+        visibilities.put(BOTTOM, true);
+        visibilities.put(LEFT, true);
+        visibilities.put(RIGHT, true);
 
-        mSystemBarConfigs.updateInsetPaddings(SystemBarConfigs.LEFT, visibilities);
-        mSystemBarConfigs.insetSystemBar(SystemBarConfigs.LEFT, leftBar);
-        visibilities.put(SystemBarConfigs.TOP, true);
-        mSystemBarConfigs.updateInsetPaddings(SystemBarConfigs.LEFT, visibilities);
-        mSystemBarConfigs.insetSystemBar(SystemBarConfigs.LEFT, leftBar);
+        mSystemBarConfigs.updateInsetPaddings(LEFT, visibilities);
+        mSystemBarConfigs.insetSystemBar(LEFT, leftBar);
+        visibilities.put(TOP, true);
+        mSystemBarConfigs.updateInsetPaddings(LEFT, visibilities);
+        mSystemBarConfigs.insetSystemBar(LEFT, leftBar);
 
         assertEquals(SYSTEM_BAR_GIRTH, leftBar.getPaddingTop());
     }
@@ -304,19 +310,19 @@ public class SystemBarConfigsTest extends SysuiTestCase {
         CarSystemBarView rightBar = new CarSystemBarView(mContext, /* attrs= */ null);
 
         Map<Integer, Boolean> visibilities = new ArrayMap<>();
-        visibilities.put(SystemBarConfigs.TOP, true);
-        visibilities.put(SystemBarConfigs.BOTTOM, true);
-        visibilities.put(SystemBarConfigs.LEFT, true);
-        visibilities.put(SystemBarConfigs.RIGHT, true);
+        visibilities.put(TOP, true);
+        visibilities.put(BOTTOM, true);
+        visibilities.put(LEFT, true);
+        visibilities.put(RIGHT, true);
 
-        mSystemBarConfigs.updateInsetPaddings(SystemBarConfigs.TOP, visibilities);
-        mSystemBarConfigs.insetSystemBar(SystemBarConfigs.TOP, topBar);
-        mSystemBarConfigs.updateInsetPaddings(SystemBarConfigs.BOTTOM, visibilities);
-        mSystemBarConfigs.insetSystemBar(SystemBarConfigs.BOTTOM, bottomBar);
-        mSystemBarConfigs.updateInsetPaddings(SystemBarConfigs.LEFT, visibilities);
-        mSystemBarConfigs.insetSystemBar(SystemBarConfigs.LEFT, leftBar);
-        mSystemBarConfigs.updateInsetPaddings(SystemBarConfigs.RIGHT, visibilities);
-        mSystemBarConfigs.insetSystemBar(SystemBarConfigs.RIGHT, rightBar);
+        mSystemBarConfigs.updateInsetPaddings(TOP, visibilities);
+        mSystemBarConfigs.insetSystemBar(TOP, topBar);
+        mSystemBarConfigs.updateInsetPaddings(BOTTOM, visibilities);
+        mSystemBarConfigs.insetSystemBar(BOTTOM, bottomBar);
+        mSystemBarConfigs.updateInsetPaddings(LEFT, visibilities);
+        mSystemBarConfigs.insetSystemBar(LEFT, leftBar);
+        mSystemBarConfigs.updateInsetPaddings(RIGHT, visibilities);
+        mSystemBarConfigs.insetSystemBar(RIGHT, rightBar);
 
         assertEquals(horizontalBarHorizontalPadding, bottomBar.getPaddingLeft());
         assertEquals(horizontalBarHorizontalPadding, bottomBar.getPaddingRight());
@@ -375,11 +381,11 @@ public class SystemBarConfigsTest extends SysuiTestCase {
                 PowerManagerHelper powerManagerHelper,
                 BroadcastDispatcher broadcastDispatcher,
                 UserTracker userTracker,
-                CarDeviceProvisionedController carDeviceProvisionedController,
-                ConfigurationController configurationController) {
+                ConfigurationController configurationController,
+                Optional<NotificationSystemBarPresenter> presenter) {
             super(context, carSystemBarController, notificationPanelViewController,
                     powerManagerHelper, broadcastDispatcher, userTracker,
-                    carDeviceProvisionedController, configurationController);
+                    configurationController, presenter);
         }
     }
 }

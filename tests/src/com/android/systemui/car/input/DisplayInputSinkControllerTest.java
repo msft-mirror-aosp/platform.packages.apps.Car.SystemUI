@@ -137,6 +137,7 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
         }).when(mCarServiceProvider).addListener(any(CarServiceOnConnectedListener.class));
         doReturn(mCarPowerManager).when(mCar).getCarManager(CarPowerManager.class);
         doReturn(mCarOccupantZoneManager).when(mCar).getCarManager(CarOccupantZoneManager.class);
+        doReturn(true).when(() -> UserManager.isVisibleBackgroundUsersEnabled());
         // Initialize two displays as passenger displays.
         setUpDisplay(mPassengerDisplay1, mPassengerDisplayId1, mPassengerDisplayUniqueId1);
         setUpDisplay(mPassengerDisplay2, mPassengerDisplayId2, mPassengerDisplayUniqueId2);
@@ -145,6 +146,21 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
     @After
     public void tearDown() {
         mMockingSession.finishMocking();
+    }
+
+    @Test
+    public void start_nonMUMDSystem_controllerNotStarted() {
+        doReturn(UserHandle.USER_SYSTEM).when(() -> UserHandle.myUserId());
+        doReturn(true).when(() -> UserManager.isHeadlessSystemUserMode());
+        doReturn(false).when(() -> UserManager.isVisibleBackgroundUsersEnabled());
+
+        mDisplayInputSinkController.start();
+
+        verify(mContentResolver, never())
+                .registerContentObserver(any(Uri.class), anyBoolean(), any(ContentObserver.class));
+        verify(mDisplayManager, never()).registerDisplayListener(
+                any(DisplayManager.DisplayListener.class),
+                any());
     }
 
     @Test

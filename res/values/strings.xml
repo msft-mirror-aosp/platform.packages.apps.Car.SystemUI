@@ -146,6 +146,8 @@
     <string name="status_icon_signal_hotspot">Signal Settings: Hotspot On</string>
     <!-- Status icon for display settings in status bar-->
     <string name="status_icon_display_status">Display Settings</string>
+    <!-- Status icon for debug settings in status bar-->
+    <string name="status_icon_debug_status">Debug Settings</string>
     <string name="status_icon_sound_status">Sound Settings</string>
     <!-- Status icon for drive mode settings in status bar -->
     <string name="status_icon_drive_mode">Drive Mode</string>
@@ -177,6 +179,8 @@
     <string name="qc_footer_network_sound_settings">Sound settings</string>
     <!-- Quick Controls: Message to be displayed as the footer button to launch profiles and accounts settings [CHAR LIMIT=45] -->
     <string name="qc_footer_profiles_accounts_settings">Profiles &amp; accounts settings</string>
+    <!-- Quick Controls: Message to be displayed as the footer button to launch developer options settings [CHAR LIMIT=45] -->
+    <string name="qc_footer_debug_settings">Developer options</string>
 
     <!-- Message shown when the lock pattern is focused. [CHAR LIMIT=40] -->
     <string name="lockpattern_does_not_support_rotary">Pattern does not support rotary; please use touch</string>
@@ -227,6 +231,21 @@
     <string name="unavailable_secure_user_text">User currently unavailable</string>
     <!-- User Picker: snack bar message when clicking unavailable secure user -->
     <string name="unavailable_secure_user_message">Unable to start secure user on passenger display</string>
+
+    <!-- Passenger Keyguard -->
+    <!-- Passenger keyguard error message when the user-entered pattern doesn't match what is stored -->
+    <string name="passenger_keyguard_wrong_pattern">Wrong pattern</string>
+    <!-- Passenger keyguard error message when the user-entered PIN doesn't match what is stored -->
+    <string name="passenger_keyguard_wrong_pin">Wrong PIN</string>
+    <!-- Passenger keyguard error message when the user-entered password doesn't match what is stored -->
+    <string name="passenger_keyguard_wrong_password">Wrong password</string>
+    <!-- Message shown after too many incorrect attempts to unlock passenger keyguard -->
+    <string name="passenger_keyguard_too_many_failed_attempts">
+        {count, plural,
+        =1    {Too many incorrect attempts. Try again in # second.}
+        other {Too many incorrect attempts. Try again in # seconds.}
+        }
+    </string>
 
     <!-- User Picker: seat string -->
     <string name="seat_driver">driver</string>

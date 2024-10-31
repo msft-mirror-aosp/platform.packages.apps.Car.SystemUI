@@ -17,6 +17,9 @@ package com.android.systemui.car.telecom;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+
 import android.telecom.Call;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
@@ -32,6 +35,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.List;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -51,6 +56,7 @@ public class InCallServiceImplTest extends SysuiTestCase {
         mInCallServiceManager = new InCallServiceManager();
         mInCallService = new InCallServiceImpl(mInCallServiceManager);
         mCallListener = new CallListener();
+        mInCallService.addListener(mCallListener);
     }
 
     @Test
@@ -67,22 +73,37 @@ public class InCallServiceImplTest extends SysuiTestCase {
 
     @Test
     public void testOnCallAdded() {
-        mInCallService.addListener(mCallListener);
         mInCallService.onCallAdded(mMockCall);
 
+        verify(mMockCall).registerCallback(any());
         assertThat(mCallListener.mCall).isEqualTo(mMockCall);
     }
 
     @Test
     public void testOnCallRemoved() {
-        mInCallService.addListener(mCallListener);
+        mInCallService.onCallRemoved(mMockCall);
+
+        verify(mMockCall).unregisterCallback(any());
+        assertThat(mCallListener.mCall).isEqualTo(mMockCall);
+    }
+
+    @Test
+    public void testOnStateChanged() {
         mInCallService.onCallAdded(mMockCall);
 
+        verify(mMockCall).registerCallback(any());
         assertThat(mCallListener.mCall).isEqualTo(mMockCall);
+
+        mInCallService.mCallStateChangedCallback.onStateChanged(mMockCall, Call.STATE_ACTIVE);
+        assertThat(mCallListener.mCall).isEqualTo(mMockCall);
+        assertThat(mCallListener.mState).isEqualTo(Call.STATE_ACTIVE);
     }
 
     private static class CallListener implements InCallServiceImpl.InCallListener {
         public Call mCall;
+        public int mState;
+        public Call mParent;
+        public List<Call> mChildren;
 
         @Override
         public void onCallAdded(Call call) {
@@ -92,6 +113,24 @@ public class InCallServiceImplTest extends SysuiTestCase {
         @Override
         public void onCallRemoved(Call call) {
             mCall = call;
+        }
+
+        @Override
+        public void onStateChanged(Call call, int state) {
+            mCall = call;
+            mState = state;
+        }
+
+        @Override
+        public void onParentChanged(Call call, Call parent) {
+            mCall = call;
+            mParent = parent;
+        }
+
+        @Override
+        public void onChildrenChanged(Call call, List<Call> children) {
+            mCall = call;
+            mChildren = children;
         }
     }
 }

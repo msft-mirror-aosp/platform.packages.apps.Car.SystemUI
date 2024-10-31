@@ -26,8 +26,9 @@ import com.android.systemui.car.systembar.element.CarSystemBarElement;
 import com.android.systemui.car.systembar.element.CarSystemBarElementFlags;
 import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
 
-/** Implementation of ImageView  that supports {@link CarSystemBarElement} attributes */
+/** Implementation of ImageView that supports {@link CarSystemBarElement} attributes */
 public class CarSystemBarImageView extends ImageView implements CarSystemBarElement {
+    @Nullable
     private Class<?> mElementControllerClassAttr;
     private int mSystemBarDisableFlags;
     private int mSystemBarDisable2Flags;

@@ -21,7 +21,6 @@ import com.android.systemui.dagger.SysUIComponent;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.SystemUIModule;
 import com.android.systemui.scene.ShadelessSceneContainerFrameworkModule;
-import com.android.systemui.wm.MDSystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
 
 import dagger.BindsInstance;
@@ -50,9 +49,6 @@ public interface CarSysUIComponent extends SysUIComponent {
     interface Builder extends SysUIComponent.Builder {
         @BindsInstance
         Builder setRootTaskDisplayAreaOrganizer(Optional<RootTaskDisplayAreaOrganizer> r);
-
-        @BindsInstance
-        Builder setMDSystemBarsController(Optional<MDSystemBarsController> m);
 
         CarSysUIComponent build();
     }

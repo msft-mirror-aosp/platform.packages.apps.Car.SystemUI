@@ -15,6 +15,8 @@
  */
 package com.android.systemui.car.userpicker;
 
+import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_INVISIBLE;
+
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.mock;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;
@@ -28,11 +30,15 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.after;
+import static org.mockito.Mockito.doAnswer;
 
 import android.app.ActivityManager;
+import android.car.SyncResultCallback;
 import android.car.user.CarUserManager;
 import android.car.user.CarUserManager.UserLifecycleEvent;
 import android.car.user.UserCreationResult;
+import android.car.user.UserStartResponse;
+import android.car.user.UserStopResponse;
 import android.car.util.concurrent.AsyncFuture;
 import android.content.Intent;
 import android.os.UserManager;
@@ -130,14 +136,31 @@ public class UserEventManagerTest extends UserPickerTestCase {
 
     @Test
     public void checkStartUser_requestStartUser_startUser() {
+        // When start user is invoked, mock the UserStartResponse so it won't wait for timeout
+        doAnswer((inv) -> {
+            SyncResultCallback<UserStartResponse> callback = inv.getArgument(2);
+            callback.onResult(new UserStartResponse(UserStartResponse.STATUS_SUCCESSFUL));
+            return null;
+        }).when(mMockCarUserManager).startUser(any(), any(), any());
+
         mUserEventManager.startUserForDisplay(/* prevCurrentUser= */ -1,
                 /* userId= */ USER_ID_FRONT, /* displayId= */ FRONT_PASSENGER_DISPLAY_ID,
                 /* isFgUserStart= */ false);
+
         verify(mMockCarUserManager).startUser(any(), any(), any());
     }
 
     @Test
-    public void checkStopUser_requestStopUser_StopUser() {
+    public void checkStopUser_requestStopUser_stopUser() {
+        // When stop user is invoked, mock the UserStopResponse so it won't wait for timeout
+        doAnswer((inv) -> {
+            SyncResultCallback<UserStopResponse> callback = inv.getArgument(2);
+            callback.onResult(new UserStopResponse(UserStopResponse.STATUS_SUCCESSFUL));
+            mUserEventManager.mUserLifecycleListener.onEvent(
+                    new UserLifecycleEvent(USER_LIFECYCLE_EVENT_TYPE_INVISIBLE, USER_ID_FRONT));
+            return null;
+        }).when(mMockCarUserManager).stopUser(any(), any(), any());
+
         mUserEventManager.stopUserUnchecked(/* userId= */ USER_ID_FRONT,
                 /* displayId= */ FRONT_PASSENGER_DISPLAY_ID);
 

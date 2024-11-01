@@ -120,8 +120,7 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"ఆకృతిని తప్పుగా ఎంటర్ చేశారు"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"PINను తప్పుగా ఎంటర్ చేశారు"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"పాస్‌వర్డ్‌ను తప్పుగా ఎంటర్ చేశారు"</string>
-    <!-- no translation found for passenger_keyguard_too_many_failed_attempts (2948335020152945468) -->
-    <skip />
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{చాలా సార్లు తప్పుగా ప్రయత్నించారు. # సెకనులో మళ్లీ ట్రై చేయండి.}other{చాలా సార్లు తప్పుగా ప్రయత్నించారు. # సెకన్లలో మళ్లీ ట్రై చేయండి.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"డ్రైవర్"</string>
     <string name="seat_front" msgid="836133281052793377">"ముందువైపు"</string>
     <string name="seat_rear" msgid="403133444964528577">"వెనుక భాగం"</string>

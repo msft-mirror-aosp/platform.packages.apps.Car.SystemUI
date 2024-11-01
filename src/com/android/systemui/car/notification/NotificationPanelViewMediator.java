@@ -39,8 +39,6 @@ import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
-import java.util.Optional;
-
 import javax.inject.Inject;
 
 /**
@@ -61,7 +59,6 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final UserTracker mUserTracker;
     private final ConfigurationController mConfigurationController;
-    private final Optional<NotificationSystemBarPresenter> mNotificationSystemBarPresenter;
 
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -101,9 +98,7 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
             PowerManagerHelper powerManagerHelper,
             BroadcastDispatcher broadcastDispatcher,
             UserTracker userTracker,
-            ConfigurationController configurationController,
-            Optional<NotificationSystemBarPresenter> notificationSystemBarPresenter
-    ) {
+            ConfigurationController configurationController) {
         mContext = context;
         mCarSystemBarController = carSystemBarController;
         mNotificationPanelViewController = notificationPanelViewController;
@@ -111,7 +106,6 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         mBroadcastDispatcher = broadcastDispatcher;
         mUserTracker = userTracker;
         mConfigurationController = configurationController;
-        mNotificationSystemBarPresenter = notificationSystemBarPresenter;
     }
 
     @Override
@@ -121,11 +115,6 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         registerBottomBarTouchListener();
         registerLeftBarTouchListener();
         registerRightBarTouchListener();
-
-        if (mNotificationSystemBarPresenter.isPresent()) {
-            mNotificationSystemBarPresenter.get().registerNotificationPanelViewController(
-                    mNotificationPanelViewController);
-        }
 
         mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), null,

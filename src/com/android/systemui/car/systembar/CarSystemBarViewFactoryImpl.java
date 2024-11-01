@@ -77,14 +77,14 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
     private final ArrayMap<Type, CarSystemBarViewController> mCachedViewControllerMap =
             new ArrayMap<>(Type.values().length);
     private final ArrayMap<Type, ViewGroup> mCachedContainerMap = new ArrayMap<>();
-    private final Map<@SystemBarSide Integer, CarSystemBarViewController.Factory>
-            mFactoriesMap;
+    private final Map<@SystemBarSide Integer,
+            CarSystemBarViewControllerFactory> mFactoriesMap;
 
     @Inject
     public CarSystemBarViewFactoryImpl(
             Context context,
             SystemBarConfigs configs,
-            Map<@SystemBarSide Integer, CarSystemBarViewController.Factory>
+            Map<@SystemBarSide Integer, CarSystemBarViewControllerFactory>
                     factoriesMap) {
         mContext = context;
         mSystemBarConfigs = configs;
@@ -187,8 +187,7 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
             return null;
         }
         @LayoutRes int barLayout = barLayoutInteger;
-        CarSystemBarView view = (CarSystemBarView) View.inflate(windowContext, barLayout,
-                /* root= */ null);
+        ViewGroup view = (ViewGroup) View.inflate(mContext, barLayout, /* root= */ null);
 
         CarSystemBarViewController controller = mFactoriesMap.get(side).create(side, view);
         controller.init();

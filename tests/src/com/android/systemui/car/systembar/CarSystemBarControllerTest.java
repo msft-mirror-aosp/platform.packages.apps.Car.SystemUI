@@ -61,8 +61,8 @@ import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.hvac.HvacController;
-import com.android.systemui.car.hvac.HvacPanelController;
-import com.android.systemui.car.notification.NotificationsShadeController;
+import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
+import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
@@ -495,46 +495,47 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void testRegisterNotificationShadeController_createViewFirst_registrationSuccessful() {
+    public void
+            testRegisterNotificationPanelViewController_createViewFirst_registrationSuccessful() {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         mCarSystemBarController.init();
 
         CarSystemBarViewController bottomBar = mCarSystemBarController.getBarViewController(BOTTOM,
                 /* isSetUp= */ true);
 
-        NotificationsShadeController mockNotificationsShadeController =
-                mock(NotificationsShadeController.class);
-        mCarSystemBarController.registerNotificationShadeController(
-                mockNotificationsShadeController);
+        NotificationPanelViewController mockNotificationPanelViewController =
+                mock(NotificationPanelViewController.class);
+        mCarSystemBarController.registerNotificationPanelViewController(
+                mockNotificationPanelViewController);
 
-        ArgumentCaptor<NotificationsShadeController> captor =
-                ArgumentCaptor.forClass(NotificationsShadeController.class);
-        verify(bottomBar, times(2)).setNotificationsPanelController(captor.capture());
+        ArgumentCaptor<NotificationPanelViewController> captor =
+                ArgumentCaptor.forClass(NotificationPanelViewController.class);
+        verify(bottomBar, times(2)).registerNotificationPanelViewController(captor.capture());
 
-        List<NotificationsShadeController> allValues = captor.getAllValues();
+        List<NotificationPanelViewController> allValues = captor.getAllValues();
         assertThat(allValues.contains(null));
-        assertThat(allValues.contains(mockNotificationsShadeController));
+        assertThat(allValues.contains(mockNotificationPanelViewController));
     }
 
     @Test
-    public void testRegisterNotificationShadeController_registerFirst_registrationSuccessful() {
+    public void testRegisterNotificationPanelViewController_registerFirst_registrationSuccessful() {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         mCarSystemBarController.init();
 
-        NotificationsShadeController mockNotificationsShadeController =
-                mock(NotificationsShadeController.class);
-        mCarSystemBarController.registerNotificationShadeController(
-                mockNotificationsShadeController);
+        NotificationPanelViewController mockNotificationPanelViewController =
+                mock(NotificationPanelViewController.class);
+        mCarSystemBarController.registerNotificationPanelViewController(
+                mockNotificationPanelViewController);
         CarSystemBarViewController bottomBar = mCarSystemBarController.getBarViewController(BOTTOM,
                 /* isSetUp= */ true);
 
 
-        ArgumentCaptor<NotificationsShadeController> captor =
-                ArgumentCaptor.forClass(NotificationsShadeController.class);
-        verify(bottomBar, times(1)).setNotificationsPanelController(captor.capture());
+        ArgumentCaptor<NotificationPanelViewController> captor =
+                ArgumentCaptor.forClass(NotificationPanelViewController.class);
+        verify(bottomBar, times(1)).registerNotificationPanelViewController(captor.capture());
 
-        List<NotificationsShadeController> allValues = captor.getAllValues();
-        assertThat(allValues.contains(mockNotificationsShadeController));
+        List<NotificationPanelViewController> allValues = captor.getAllValues();
+        assertThat(allValues.contains(mockNotificationPanelViewController));
     }
 
     @Test
@@ -545,18 +546,18 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         CarSystemBarViewController bottomBar = mCarSystemBarController.getBarViewController(BOTTOM,
                 /* isSetUp= */ true);
 
-        HvacPanelController mockHvacPanelController =
-                mock(HvacPanelController.class);
-        mCarSystemBarController.registerHvacPanelController(
-                mockHvacPanelController);
+        HvacPanelOverlayViewController mockHvacPanelOverlayViewController =
+                mock(HvacPanelOverlayViewController.class);
+        mCarSystemBarController.registerHvacPanelOverlayViewController(
+                mockHvacPanelOverlayViewController);
 
-        ArgumentCaptor<HvacPanelController> captor =
-                ArgumentCaptor.forClass(HvacPanelController.class);
-        verify(bottomBar, times(2)).setHvacPanelController(captor.capture());
+        ArgumentCaptor<HvacPanelOverlayViewController> captor =
+                ArgumentCaptor.forClass(HvacPanelOverlayViewController.class);
+        verify(bottomBar, times(2)).registerHvacPanelOverlayViewController(captor.capture());
 
-        List<HvacPanelController> allValues = captor.getAllValues();
+        List<HvacPanelOverlayViewController> allValues = captor.getAllValues();
         assertThat(allValues.contains(null));
-        assertThat(allValues.contains(mockHvacPanelController));
+        assertThat(allValues.contains(mockHvacPanelOverlayViewController));
     }
 
     @Test
@@ -564,20 +565,20 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         mCarSystemBarController.init();
 
-        HvacPanelController mockHvacPanelController =
-                mock(HvacPanelController.class);
-        mCarSystemBarController.registerHvacPanelController(
-                mockHvacPanelController);
+        HvacPanelOverlayViewController mockHvacPanelOverlayViewController =
+                mock(HvacPanelOverlayViewController.class);
+        mCarSystemBarController.registerHvacPanelOverlayViewController(
+                mockHvacPanelOverlayViewController);
 
         CarSystemBarViewController bottomBar = mCarSystemBarController.getBarViewController(BOTTOM,
                 /* isSetUp= */ true);
 
-        ArgumentCaptor<HvacPanelController> captor =
-                ArgumentCaptor.forClass(HvacPanelController.class);
-        verify(bottomBar, times(1)).setHvacPanelController(captor.capture());
+        ArgumentCaptor<HvacPanelOverlayViewController> captor =
+                ArgumentCaptor.forClass(HvacPanelOverlayViewController.class);
+        verify(bottomBar, times(1)).registerHvacPanelOverlayViewController(captor.capture());
 
-        List<HvacPanelController> allValues = captor.getAllValues();
-        assertThat(allValues.contains(mockHvacPanelController));
+        List<HvacPanelOverlayViewController> allValues = captor.getAllValues();
+        assertThat(allValues.contains(mockHvacPanelOverlayViewController));
     }
 
     @Test

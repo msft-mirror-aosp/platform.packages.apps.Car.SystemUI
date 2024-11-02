@@ -23,7 +23,7 @@
     <string name="fan_speed_off" msgid="3860115181014880798">"ISKLJUČENO"</string>
     <string name="hvac_temperature_off" msgid="8370977023494579242">"ISKLJUČENO"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Prepoznavanjem glasa sada upravlja povezani Bluetooth uređaj"</string>
-    <string name="car_add_user" msgid="6182764665687382136">"Dodaj profil"</string>
+    <string name="car_add_user" msgid="6182764665687382136">"Dodajte profil"</string>
     <string name="end_session" msgid="2765206020435441421">"Završi sesiju"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Novi profil"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Dodati novi profil?"</string>
@@ -120,6 +120,7 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Pogrešan uzorak"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Pogrešan PIN"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Pogrešna lozinka"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{Previše netočnih pokušaja. Pokušajte ponovno za # s.}one{Previše netočnih pokušaja. Pokušajte ponovno za # s.}few{Previše netočnih pokušaja. Pokušajte ponovno za # s.}other{Previše netočnih pokušaja. Pokušajte ponovno za # s.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"vozačevom"</string>
     <string name="seat_front" msgid="836133281052793377">"prednjem"</string>
     <string name="seat_rear" msgid="403133444964528577">"stražnjem"</string>

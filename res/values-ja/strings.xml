@@ -23,9 +23,9 @@
     <string name="fan_speed_off" msgid="3860115181014880798">"OFF"</string>
     <string name="hvac_temperature_off" msgid="8370977023494579242">"OFF"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Bluetooth 接続デバイスで音声認識が処理されるようになりました"</string>
-    <string name="car_add_user" msgid="6182764665687382136">"プロファイルを追加"</string>
+    <string name="car_add_user" msgid="6182764665687382136">"プロフィールを追加"</string>
     <string name="end_session" msgid="2765206020435441421">"セッションを終了"</string>
-    <string name="car_new_user" msgid="6766334721724989964">"新しいプロファイル"</string>
+    <string name="car_new_user" msgid="6766334721724989964">"新しいプロフィール"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"新しいプロファイルの追加"</string>
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"新しいプロファイルを追加すると、アカウント所有者がそのプロファイルをカスタマイズできます。"</string>
     <string name="user_add_user_message_update" msgid="4507063398890966360">"どのプロファイルでもアプリ アップデートをインストールでき、すべてのプロファイルに適用されます。"</string>
@@ -120,6 +120,8 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"パターンが間違っています"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"PIN が正しくありません"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"パスワードが正しくありません"</string>
+    <!-- no translation found for passenger_keyguard_too_many_failed_attempts (2948335020152945468) -->
+    <skip />
     <string name="seat_driver" msgid="4502591979520445677">"ドライバー"</string>
     <string name="seat_front" msgid="836133281052793377">"前"</string>
     <string name="seat_rear" msgid="403133444964528577">"後"</string>

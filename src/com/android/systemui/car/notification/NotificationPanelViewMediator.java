@@ -123,19 +123,6 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         registerRightBarTouchListener();
 
         if (mNotificationSystemBarPresenter.isPresent()) {
-            mNotificationSystemBarPresenter.get().registerNotificationShadeController(
-                    new NotificationsShadeController() {
-                        @Override
-                        public void togglePanel() {
-                            mNotificationPanelViewController.toggle();
-                        }
-
-                        @Override
-                        public boolean isNotificationPanelOpen() {
-                            return mNotificationPanelViewController.isPanelExpanded();
-                        }
-                    });
-
             mNotificationSystemBarPresenter.get().registerNotificationPanelViewController(
                     mNotificationPanelViewController);
         }

@@ -62,14 +62,11 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.displaycompat.ToolbarController;
-import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.hvac.HvacSystemBarPresenter;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationSystemBarPresenter;
-import com.android.systemui.car.notification.NotificationsShadeController;
-import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -129,8 +126,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     protected final UserTracker mUserTracker;
 
-    private NotificationsShadeController mNotificationsShadeController;
-    private HvacPanelController mHvacPanelController;
     private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
     private NotificationPanelViewController mNotificationPanelViewController;
 
@@ -570,8 +565,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
         CarSystemBarViewController viewController = mCarSystemBarViewFactory
                 .getSystemBarViewController(side, isSetUp);
-        setupBar(viewController, mBarTouchListenersMap.get(side), mNotificationsShadeController,
-                mHvacPanelController, mHvacPanelOverlayViewController,
+        setupBar(viewController, mBarTouchListenersMap.get(side), mHvacPanelOverlayViewController,
                 mNotificationPanelViewController);
 
         mSystemBarViewControllerMap.put(side, viewController);
@@ -592,31 +586,12 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     private void setupBar(CarSystemBarViewController controller,
             Set<View.OnTouchListener> statusBarTouchListeners,
-            NotificationsShadeController notifShadeController,
-            HvacPanelController hvacPanelController,
             HvacPanelOverlayViewController hvacPanelOverlayViewController,
             NotificationPanelViewController notificationPanelViewController) {
-        controller.updateHomeButtonVisibility(CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
         controller.setStatusBarWindowTouchListeners(
                 statusBarTouchListeners != null ? statusBarTouchListeners : new ArraySet<>());
-        controller.setNotificationsPanelController(notifShadeController);
         controller.registerNotificationPanelViewController(notificationPanelViewController);
-        controller.setHvacPanelController(hvacPanelController);
         controller.registerHvacPanelOverlayViewController(hvacPanelOverlayViewController);
-        controller.updateControlCenterButtonVisibility(CarSystemUIUserUtil.isMUMDSystemUI());
-    }
-
-    /** Sets a notification controller which toggles the notification panel. */
-    @Override
-    public void registerNotificationShadeController(
-            NotificationsShadeController notificationsShadeController) {
-        mNotificationsShadeController = notificationsShadeController;
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            if (mSystemBarViewControllerMap.get(side) != null) {
-                mSystemBarViewControllerMap.get(side)
-                        .setNotificationsPanelController(mNotificationsShadeController);
-            }
-        });
     }
 
     /** Sets the NotificationPanelViewController for views to listen to the panel's state. */
@@ -628,18 +603,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             if (mSystemBarViewControllerMap.get(side) != null) {
                 mSystemBarViewControllerMap.get(side)
                         .registerNotificationPanelViewController(mNotificationPanelViewController);
-            }
-        });
-    }
-
-    /** Sets an HVAC controller which toggles the HVAC panel. */
-    @Override
-    public void registerHvacPanelController(HvacPanelController hvacPanelController) {
-        mHvacPanelController = hvacPanelController;
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            if (mSystemBarViewControllerMap.get(side) != null) {
-                mSystemBarViewControllerMap.get(side)
-                        .setHvacPanelController(mHvacPanelController);
             }
         });
     }

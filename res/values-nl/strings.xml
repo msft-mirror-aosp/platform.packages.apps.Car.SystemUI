@@ -120,6 +120,7 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Onjuist patroon"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Onjuiste pincode"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Onjuist wachtwoord"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{Te veel onjuiste pogingen. Probeer het over # seconde opnieuw.}other{Te veel onjuiste pogingen. Probeer het over # seconden opnieuw.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"bestuurder"</string>
     <string name="seat_front" msgid="836133281052793377">"voor"</string>
     <string name="seat_rear" msgid="403133444964528577">"achter"</string>

@@ -102,6 +102,10 @@ android_library {
 android_app {
     name: "CarSystemUI",
 
+    defaults: [
+        "wmshell_defaults",
+    ],
+
     static_libs: [
         "CarSystemUI-core",
     ],
@@ -246,6 +250,7 @@ android_app {
     defaults: [
         "platform_app_defaults",
         "SystemUI_optimized_defaults",
+        "wmshell_defaults",
     ],
     manifest: "tests/AndroidManifest-base.xml",
 

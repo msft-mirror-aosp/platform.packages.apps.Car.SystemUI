@@ -25,12 +25,6 @@ public interface NotificationSystemBarPresenter {
     void toggleAllNotificationsUnseenIndicator(boolean hasUnseen);
 
     /**
-     * Registers a {@link NotificationsShadeController}
-     */
-    void registerNotificationShadeController(
-            NotificationsShadeController notificationsShadeController);
-
-    /**
      * Registers a {@link NotificationPanelViewController}
      */
     void registerNotificationPanelViewController(

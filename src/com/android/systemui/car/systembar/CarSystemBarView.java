@@ -27,12 +27,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.android.systemui.R;
-import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.hvac.HvacView;
 import com.android.systemui.car.hvac.TemperatureControlView;
 import com.android.systemui.car.notification.NotificationPanelViewController;
-import com.android.systemui.car.notification.NotificationsShadeController;
 import com.android.systemui.settings.UserTracker;
 
 import java.lang.annotation.ElementType;
@@ -68,8 +66,6 @@ public class CarSystemBarView extends LinearLayout {
     private CarSystemBarButton mHvacButton;
     private HvacView mDriverHvacView;
     private HvacView mPassengerHvacView;
-    private NotificationsShadeController mNotificationsShadeController;
-    private HvacPanelController mHvacPanelController;
     private View mLockScreenButtons;
     private View mOcclusionButtons;
     // used to wire in open/close gestures for overlay panels
@@ -164,8 +160,8 @@ public class CarSystemBarView extends LinearLayout {
             if (!mButtonsDraggable) {
                 return false;
             }
-            boolean shouldConsumeEvent = mNotificationsShadeController == null ? false
-                    : mNotificationsShadeController.isNotificationPanelOpen();
+            boolean shouldConsumeEvent = mNotificationPanelViewController == null ? false
+                    : mNotificationPanelViewController.isPanelExpanded();
 
             // Forward touch events to the status bar window so it can drag
             // windows if required (ex. Notification shade)
@@ -176,16 +172,6 @@ public class CarSystemBarView extends LinearLayout {
             }
         }
         return super.onInterceptTouchEvent(ev);
-    }
-
-    /** Sets the notifications panel controller. */
-    public void setNotificationsPanelController(NotificationsShadeController controller) {
-        mNotificationsShadeController = controller;
-    }
-
-    /** Sets the HVAC panel controller. */
-    public void setHvacPanelController(HvacPanelController controller) {
-        mHvacPanelController = controller;
     }
 
     /**
@@ -210,26 +196,26 @@ public class CarSystemBarView extends LinearLayout {
             mNotificationsButton.runOnClickWhileDisabled();
             return;
         }
-        if (mNotificationsShadeController != null) {
+        if (mNotificationPanelViewController != null) {
             // If the notification shade is about to open, close the hvac panel
-            if (!mNotificationsShadeController.isNotificationPanelOpen()
-                    && mHvacPanelController != null
-                    && mHvacPanelController.isHvacPanelOpen()) {
-                mHvacPanelController.togglePanel();
+            if (!mNotificationPanelViewController.isPanelExpanded()
+                    && mHvacPanelOverlayViewController != null
+                    && mHvacPanelOverlayViewController.isPanelExpanded()) {
+                mHvacPanelOverlayViewController.toggle();
             }
-            mNotificationsShadeController.togglePanel();
+            mNotificationPanelViewController.toggle();
         }
     }
 
     protected void onHvacClick(View v) {
-        if (mHvacPanelController != null) {
+        if (mHvacPanelOverlayViewController != null) {
             // If the hvac panel is about to open, close the notification shade
-            if (!mHvacPanelController.isHvacPanelOpen()
-                    && mNotificationsShadeController != null
-                    && mNotificationsShadeController.isNotificationPanelOpen()) {
-                mNotificationsShadeController.togglePanel();
+            if (!mHvacPanelOverlayViewController.isPanelExpanded()
+                    && mNotificationPanelViewController != null
+                    && mNotificationPanelViewController.isPanelExpanded()) {
+                mNotificationPanelViewController.toggle();
             }
-            mHvacPanelController.togglePanel();
+            mHvacPanelOverlayViewController.toggle();
         }
     }
 

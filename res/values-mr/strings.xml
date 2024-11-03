@@ -120,6 +120,7 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"चुकीचा पॅटर्न"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"चुकीचा पिन"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"चुकीचा पासवर्ड"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{खूप जास्त चुकीचे प्रयत्न. # सेकंदाने पुन्हा प्रयत्न करा.}other{खूप जास्त चुकीचे प्रयत्न. # सेकंदांनी पुन्हा प्रयत्न करा.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"ड्रायव्हर"</string>
     <string name="seat_front" msgid="836133281052793377">"समोरचा"</string>
     <string name="seat_rear" msgid="403133444964528577">"मागचा डबा"</string>

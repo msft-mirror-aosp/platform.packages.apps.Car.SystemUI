@@ -26,7 +26,7 @@
     <string name="car_add_user" msgid="6182764665687382136">"कुनै प्रोफाइल थप्नुहोस्"</string>
     <string name="end_session" msgid="2765206020435441421">"सत्र अन्त्य गर्नुहोस्"</string>
     <string name="car_new_user" msgid="6766334721724989964">"नयाँ प्रोफाइल"</string>
-    <string name="user_add_profile_title" msgid="828371911076521952">"नयाँ प्रोफाइल थप्ने हो?"</string>
+    <string name="user_add_profile_title" msgid="828371911076521952">"नयाँ प्रोफाइल हाल्ने हो?"</string>
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"तपाईंले नयाँ प्रोफाइल हालेपछि खातावाला उक्त प्रोफाइल कस्टमाइज गर्न सक्नुहुन्छ।"</string>
     <string name="user_add_user_message_update" msgid="4507063398890966360">"जुनसुकै प्रोफाइलबाट एपको अपडेट इन्स्टल गर्न मिल्छ र अपडेट गरिएको एप सबै प्रोफाइलमा उपलब्ध हुन्छ।"</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"योभन्दा बढी प्रोफाइल थप्न मिल्दैन"</string>
@@ -120,6 +120,8 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"गलत प्याटर्न"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"गलत PIN"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"गलत पासवर्ड"</string>
+    <!-- no translation found for passenger_keyguard_too_many_failed_attempts (2948335020152945468) -->
+    <skip />
     <string name="seat_driver" msgid="4502591979520445677">"चालकको सिट"</string>
     <string name="seat_front" msgid="836133281052793377">"अगाडिको सिट"</string>
     <string name="seat_rear" msgid="403133444964528577">"पछाडिको सिट"</string>

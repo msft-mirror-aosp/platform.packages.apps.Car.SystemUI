@@ -20,11 +20,6 @@ package com.android.systemui.car.hvac;
  */
 public interface HvacSystemBarPresenter {
     /**
-     * Registers a {@link HvacPanelController}
-     */
-    void registerHvacPanelController(HvacPanelController hvacPanelController);
-
-    /**
      * Registers a {@link HvacPanelOverlayViewController}
      */
     void registerHvacPanelOverlayViewController(

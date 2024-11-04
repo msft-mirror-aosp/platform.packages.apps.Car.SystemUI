@@ -77,6 +77,7 @@
     <string name="status_icon_signal_wifi" msgid="1257569337648058522">"การตั้งค่าสัญญาณ: Wi-Fi เปิดอยู่"</string>
     <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"การตั้งค่าสัญญาณ: ฮอตสปอตเปิดอยู่"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"การตั้งค่าการแสดงผล"</string>
+    <string name="status_icon_debug_status" msgid="2503944482699701492">"การตั้งค่าการแก้ไขข้อบกพร่อง"</string>
     <string name="status_icon_sound_status" msgid="4923149230650995670">"การตั้งค่าเสียง"</string>
     <string name="status_icon_drive_mode" msgid="3938622431486261076">"โหมดขับรถ"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"คุณใช้ฟีเจอร์นี้ขณะขับรถไม่ได้"</string>
@@ -92,6 +93,7 @@
     <string name="qc_footer_display_settings" msgid="2950539240110437704">"การตั้งค่าการแสดงผล"</string>
     <string name="qc_footer_network_sound_settings" msgid="5117011034908775097">"การตั้งค่าเสียง"</string>
     <string name="qc_footer_profiles_accounts_settings" msgid="4456419248123950232">"การตั้งค่าโปรไฟล์และบัญชี"</string>
+    <string name="qc_footer_debug_settings" msgid="7670720389183515925">"ตัวเลือกสำหรับนักพัฒนาแอป"</string>
     <string name="lockpattern_does_not_support_rotary" msgid="4605787900312103476">"รูปแบบไม่รองรับปุ่มหมุน โปรดใช้หน้าจอสัมผัส"</string>
     <string name="display_input_lock_text" msgid="1671197665816822205">"หน้าจอล็อกอยู่"</string>
     <string name="display_input_lock_started_text" msgid="2434054522800802134">"หน้าจอล็อกอยู่"</string>
@@ -115,6 +117,10 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> กำลังออกจากระบบ ลองอีกครั้งในภายหลัง"</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"ผู้ใช้ไม่พร้อมใช้งานในขณะนี้"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"เปิดใช้งานผู้ใช้ที่ปลอดภัยบนจอแสดงผลสำหรับผู้โดยสารไม่ได้"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"รูปแบบไม่ถูกต้อง"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"PIN ไม่ถูกต้อง"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"รหัสผ่านไม่ถูกต้อง"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{ลองผิดหลายครั้งมากเกินไป ลองใหม่ในอีก # วินาที}other{ลองผิดหลายครั้งมากเกินไป ลองใหม่ในอีก # วินาที}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"คนขับ"</string>
     <string name="seat_front" msgid="836133281052793377">"ด้านหน้า"</string>
     <string name="seat_rear" msgid="403133444964528577">"ด้านหลัง"</string>

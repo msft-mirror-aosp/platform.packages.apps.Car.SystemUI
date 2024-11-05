@@ -26,7 +26,7 @@
     <string name="car_add_user" msgid="6182764665687382136">"إضافة ملف شخصي"</string>
     <string name="end_session" msgid="2765206020435441421">"إنهاء الجلسة"</string>
     <string name="car_new_user" msgid="6766334721724989964">"ملف شخصي جديد"</string>
-    <string name="user_add_profile_title" msgid="828371911076521952">"هل تريد إضافة ملف شخصي جديد؟"</string>
+    <string name="user_add_profile_title" msgid="828371911076521952">"هل المطلوب إنشاء ملف شخصي جديد؟"</string>
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"بعد إضافة ملف شخصي جديد، يمكن لصاحب الحساب تخصيصه."</string>
     <string name="user_add_user_message_update" msgid="4507063398890966360">"يمكن لأي ملف شخصي تثبيت تحديثات التطبيقات، والتي تكون متاحة لاحقًا لجميع الملفات الشخصية."</string>
     <string name="profile_limit_reached_title" msgid="7891779218496729653">"تم بلوغ أقصى عدد للملفات الشخصية"</string>
@@ -106,7 +106,7 @@
     <string name="user_adding_message" msgid="4700853604381151415">"جارٍ إضافة ملف شخصي جديد…"</string>
     <string name="max_user_limit_reached_title" msgid="7319012467112549458"></string>
     <string name="max_user_limit_reached_message" msgid="1445188223628919167">"يمكنك إضافة ما يصل إلى <xliff:g id="USER_LIMIT">%d</xliff:g> ملف شخصي."</string>
-    <string name="confirm_add_user_title" msgid="75853419607883551">"هل تريد إضافة ملف شخصي جديد؟"</string>
+    <string name="confirm_add_user_title" msgid="75853419607883551">"هل المطلوب إضافة ملف شخصي جديد؟"</string>
     <string name="already_logged_in_message" msgid="3657131706472825219">"للمتابعة، على \"<xliff:g id="USER_NAME">%1$s</xliff:g>\" تسجيل الخروج من شاشة <xliff:g id="SEAT_LOCATION">%2$s</xliff:g>."</string>
     <string name="header_bar_text_in_logged_out_state" msgid="3903097856063608991">"اختَر ملفًا شخصيًا للبدء"</string>
     <string name="logged_in_text" msgid="742324514947999718">"مسجّلٌ الدخول"</string>
@@ -117,6 +117,11 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"يتم الآن تسجيل خروج \"<xliff:g id="USER_NAME">%s</xliff:g>\". يُرجى إعادة المحاولة لاحقًا."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"المستخدم غير متاح حاليًا"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"يتعذّر بدء تشغيل مستخدم آمن على شاشة الراكب"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"النقش غير صحيح"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"رقم التعريف الشخصي غير صحيح"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"كلمة المرور غير صحيحة"</string>
+    <!-- no translation found for passenger_keyguard_too_many_failed_attempts (2948335020152945468) -->
+    <skip />
     <string name="seat_driver" msgid="4502591979520445677">"السائق"</string>
     <string name="seat_front" msgid="836133281052793377">"المقعد الأمامي"</string>
     <string name="seat_rear" msgid="403133444964528577">"المقعد الخلفي"</string>

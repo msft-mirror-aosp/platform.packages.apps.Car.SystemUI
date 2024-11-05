@@ -28,6 +28,8 @@ import com.android.systemui.process.ProcessWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -96,7 +98,8 @@ class FakeDisplayRepository(
     private val fakePendingDisplayFlow: Flow<PendingDisplay?>,
     override val displayChangeEvent: Flow<Int> = emptyFlow(),
     override val displayAdditionEvent: Flow<Display?> = emptyFlow(),
-    override val displays: Flow<Set<Display>> = emptyFlow(),
+    override val displayRemovalEvent: Flow<Int> = emptyFlow(),
+    override val displays: StateFlow<Set<Display>> = MutableStateFlow(emptySet()),
     override val defaultDisplayOff: Flow<Boolean> = emptyFlow(),
     override val pendingDisplay: Flow<PendingDisplay?> = fakePendingDisplayFlow
 ) : DisplayRepository

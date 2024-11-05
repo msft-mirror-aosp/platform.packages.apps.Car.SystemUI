@@ -117,6 +117,11 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> está cerrando sesión. Inténtalo de nuevo más tarde."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Usuario no disponible actualmente"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"No se puede iniciar el modo de usuario seguro en la pantalla del pasajero"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Patrón incorrecto"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"PIN incorrecto"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Contraseña incorrecta"</string>
+    <!-- no translation found for passenger_keyguard_too_many_failed_attempts (2948335020152945468) -->
+    <skip />
     <string name="seat_driver" msgid="4502591979520445677">"del conductor"</string>
     <string name="seat_front" msgid="836133281052793377">"delantero"</string>
     <string name="seat_rear" msgid="403133444964528577">"trasero"</string>

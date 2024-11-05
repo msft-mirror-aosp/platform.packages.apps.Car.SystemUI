@@ -23,7 +23,7 @@
     <string name="fan_speed_off" msgid="3860115181014880798">"ಆಫ್"</string>
     <string name="hvac_temperature_off" msgid="8370977023494579242">"ಆಫ್"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"ಇದೀಗ ಕನೆಕ್ಟ್ ಆದ ಬ್ಲೂಟೂತ್ ಸಾಧನ ಧ್ವನಿ ಗುರುತಿಸುವಿಕೆ ನಿರ್ವಹಿಸಿದೆ"</string>
-    <string name="car_add_user" msgid="6182764665687382136">"ಒಂದು ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಿ"</string>
+    <string name="car_add_user" msgid="6182764665687382136">"ಒಂದು ಪ್ರೊಫೈಲ್ ಸೇರಿಸಿ"</string>
     <string name="end_session" msgid="2765206020435441421">"ಸೆಷನ್ ಅಂತ್ಯಗೊಳಿಸಿ"</string>
     <string name="car_new_user" msgid="6766334721724989964">"ಹೊಸ ಪ್ರೊಫೈಲ್"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"ಹೊಸ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಬೇಕೇ?"</string>
@@ -117,6 +117,10 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> ಅವರ ಸೈನ್ ಔಟ್ ಆಗುತ್ತಿದ್ದಾರೆ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"ಬಳಕೆದಾರರು ಪ್ರಸ್ತುತ ಲಭ್ಯವಿಲ್ಲ"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"ಪ್ರಯಾಣಿಕರ ಡಿಸ್‌ಪ್ಲೇನಲ್ಲಿ ಸುರಕ್ಷಿತ ಬಳಕೆದಾರರನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"ಪ್ಯಾಟರ್ನ್ ತಪ್ಪಾಗಿದೆ"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"ಪಿನ್‌ ತಪ್ಪಾಗಿದೆ"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"ಪಾಸ್‌ವರ್ಡ್ ತಪ್ಪಾಗಿದೆ"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{ಹಲವು ಬಾರಿ ತಪ್ಪಾಗಿ ಪ್ರಯತ್ನಿಸಲಾಗಿದೆ. # ಸೆಕೆಂಡ್‌ನಲ್ಲಿ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.}one{ಹಲವು ಬಾರಿ ತಪ್ಪಾಗಿ ಪ್ರಯತ್ನಿಸಲಾಗಿದೆ. # ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.}other{ಹಲವು ಬಾರಿ ತಪ್ಪಾಗಿ ಪ್ರಯತ್ನಿಸಲಾಗಿದೆ. # ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"ಡ್ರೈವರ್"</string>
     <string name="seat_front" msgid="836133281052793377">"ಮುಂದೆ"</string>
     <string name="seat_rear" msgid="403133444964528577">"ಹಿಂಭಾಗ"</string>

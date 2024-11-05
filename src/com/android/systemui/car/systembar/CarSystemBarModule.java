@@ -16,6 +16,11 @@
 
 package com.android.systemui.car.systembar;
 
+import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
+import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
+import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
+import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
+
 import android.annotation.Nullable;
 import android.content.Context;
 import android.os.Handler;
@@ -28,7 +33,6 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.car.displaycompat.ToolbarController;
-import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacSystemBarPresenter;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationSystemBarPresenter;
@@ -55,6 +59,7 @@ import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.ClassKey;
+import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.IntoSet;
 import dagger.multibindings.Multibinds;
@@ -154,7 +159,6 @@ public abstract class CarSystemBarModule {
             IStatusBarService barService,
             Lazy<KeyguardStateController> keyguardStateControllerLazy,
             Lazy<PhoneStatusBarPolicy> iconPolicyLazy,
-            HvacController hvacController,
             ConfigurationController configurationController,
             CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
@@ -171,23 +175,18 @@ public abstract class CarSystemBarModule {
 
         if (isSecondaryMUMDSystemUI && isSecondaryUserRROsEnabled) {
             return new MDSystemBarsControllerImpl(iWindowManager, mainHandler, context, userTracker,
-                    carSystemBarViewFactory, buttonSelectionStateController,
-                    micPrivacyChipViewControllerLazy, cameraPrivacyChipViewControllerLazy,
-                    buttonRoleHolderController, systemBarConfigs, panelControllerBuilderProvider,
-                    lightBarController, darkIconDispatcher, windowManager,
-                    deviceProvisionedController, commandQueue, autoHideController,
-                    buttonSelectionStateListener, mainExecutor, barService,
-                    keyguardStateControllerLazy, iconPolicyLazy, hvacController,
-                    configurationController, restartTracker, displayTracker, toolbarController);
-        } else {
-            return new CarSystemBarControllerImpl(context, userTracker, carSystemBarViewFactory,
-                    buttonSelectionStateController, micPrivacyChipViewControllerLazy,
-                    cameraPrivacyChipViewControllerLazy, buttonRoleHolderController,
-                    systemBarConfigs, panelControllerBuilderProvider, lightBarController,
+                    carSystemBarViewFactory, systemBarConfigs, lightBarController,
                     darkIconDispatcher, windowManager, deviceProvisionedController, commandQueue,
                     autoHideController, buttonSelectionStateListener, mainExecutor, barService,
-                    keyguardStateControllerLazy, iconPolicyLazy, hvacController,
-                    configurationController, restartTracker, displayTracker, toolbarController);
+                    keyguardStateControllerLazy, iconPolicyLazy, configurationController,
+                    restartTracker, displayTracker, toolbarController);
+        } else {
+            return new CarSystemBarControllerImpl(context, userTracker, carSystemBarViewFactory,
+                    systemBarConfigs, lightBarController, darkIconDispatcher, windowManager,
+                    deviceProvisionedController, commandQueue, autoHideController,
+                    buttonSelectionStateListener, mainExecutor, barService,
+                    keyguardStateControllerLazy, iconPolicyLazy, configurationController,
+                    restartTracker, displayTracker, toolbarController);
         }
     }
 
@@ -281,4 +280,38 @@ public abstract class CarSystemBarModule {
             return Optional.empty();
         }
     }
+
+    /** Injects CarSystemBarViewFactory */
+    @SysUISingleton
+    @Binds
+    public abstract CarSystemBarViewFactory bindCarSystemBarViewFactory(
+            CarSystemBarViewFactoryImpl impl);
+
+    /** Injects CarSystemBarViewController for @SystemBarSide LEFT */
+    @Binds
+    @IntoMap
+    @IntKey(LEFT)
+    public abstract CarSystemBarViewController.Factory bindLeftCarSystemBarViewFactory(
+            CarSystemBarViewController.Factory factory);
+
+    /** Injects CarSystemBarViewController for @SystemBarSide TOP */
+    @Binds
+    @IntoMap
+    @IntKey(TOP)
+    public abstract CarSystemBarViewController.Factory bindTopCarSystemBarViewFactory(
+            CarTopSystemBarViewController.Factory factory);
+
+    /** Injects CarSystemBarViewController for @SystemBarSide RIGHT */
+    @Binds
+    @IntoMap
+    @IntKey(RIGHT)
+    public abstract CarSystemBarViewController.Factory bindRightCarSystemBarViewFactory(
+            CarSystemBarViewController.Factory factory);
+
+    /** Injects CarSystemBarViewController for @SystemBarSide BOTTOM */
+    @Binds
+    @IntoMap
+    @IntKey(BOTTOM)
+    public abstract CarSystemBarViewController.Factory bindBottomCarSystemBarViewFactory(
+            CarSystemBarViewController.Factory factory);
 }

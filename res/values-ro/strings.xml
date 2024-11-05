@@ -117,6 +117,11 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> se deconectează. Încearcă din nou mai târziu."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Utilizator indisponibil momentan"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Nu se poate porni utilizatorul securizat pe ecranul pentru pasageri"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Model greșit"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Cod PIN greșit"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Parolă greșită"</string>
+    <!-- no translation found for passenger_keyguard_too_many_failed_attempts (2948335020152945468) -->
+    <skip />
     <string name="seat_driver" msgid="4502591979520445677">"locul șoferului"</string>
     <string name="seat_front" msgid="836133281052793377">"locul din față"</string>
     <string name="seat_rear" msgid="403133444964528577">"locul din spate"</string>

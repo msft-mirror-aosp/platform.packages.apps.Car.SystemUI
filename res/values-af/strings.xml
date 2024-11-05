@@ -117,6 +117,11 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> word tans afgemeld. Probeer later weer."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Gebruiker is nie tans beskikbaar nie"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Kan nie veilige gebruiker op passasierskerm begin nie"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Verkeerde patroon"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Verkeerde PIN"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Verkeerde wagwoord"</string>
+    <!-- no translation found for passenger_keyguard_too_many_failed_attempts (2948335020152945468) -->
+    <skip />
     <string name="seat_driver" msgid="4502591979520445677">"bestuurder"</string>
     <string name="seat_front" msgid="836133281052793377">"voor"</string>
     <string name="seat_rear" msgid="403133444964528577">"agter"</string>

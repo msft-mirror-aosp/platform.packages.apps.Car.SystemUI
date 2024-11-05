@@ -38,6 +38,7 @@ import com.android.keyguard.mediator.ScreenOnCoordinator;
 import com.android.systemui.CoreStartable;
 import com.android.systemui.animation.ActivityTransitionAnimator;
 import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.keyguard.passenger.PassengerKeyguardLoadingDialog;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.classifier.FalsingModule;
@@ -58,6 +59,8 @@ import com.android.systemui.keyguard.WindowManagerOcclusionManager;
 import com.android.systemui.keyguard.dagger.KeyguardFaceAuthNotSupportedModule;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
 import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
+import com.android.systemui.keyguard.domain.interactor.KeyguardTransitionBootInteractor;
+import com.android.systemui.keyguard.domain.interactor.StartKeyguardTransitionModule;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationBarController;
 import com.android.systemui.navigationbar.NavigationModeController;
@@ -106,6 +109,7 @@ import java.util.concurrent.Executor;
                 FalsingModule.class,
                 KeyguardFaceAuthNotSupportedModule.class,
                 KeyguardRepositoryModule.class,
+                StartKeyguardTransitionModule.class,
         })
 public interface CarKeyguardModule {
 
@@ -163,6 +167,7 @@ public interface CarKeyguardModule {
             Lazy<WindowManagerLockscreenVisibilityManager> wmLockscreenVisibilityManager,
             SelectedUserInteractor selectedUserInteractor,
             KeyguardInteractor keyguardInteractor,
+            KeyguardTransitionBootInteractor transitionBootInteractor,
             WindowManagerOcclusionManager wmOcclusionManager) {
         return new CarKeyguardViewMediator(
                 context,
@@ -213,6 +218,7 @@ public interface CarKeyguardModule {
                 wmLockscreenVisibilityManager,
                 selectedUserInteractor,
                 keyguardInteractor,
+                transitionBootInteractor,
                 wmOcclusionManager);
     }
 
@@ -248,4 +254,10 @@ public interface CarKeyguardModule {
     @IntoMap
     @ClassKey(KeyguardUpdateMonitor.class)
     CoreStartable bindsKeyguardUpdateMonitor(KeyguardUpdateMonitor keyguardUpdateMonitor);
+
+    /** Binds {@link PassengerKeyguardLoadingDialog} as a {@link CoreStartable}. */
+    @Binds
+    @IntoMap
+    @ClassKey(PassengerKeyguardLoadingDialog.class)
+    CoreStartable bindsPassengerKeyguardLoadingDialog(PassengerKeyguardLoadingDialog dialog);
 }

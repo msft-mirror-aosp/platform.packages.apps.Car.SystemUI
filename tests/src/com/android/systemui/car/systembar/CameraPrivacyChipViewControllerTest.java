@@ -66,6 +66,7 @@ import java.util.concurrent.Executor;
 @TestableLooper.RunWithLooper
 @SmallTest
 public class CameraPrivacyChipViewControllerTest extends SysuiTestCase {
+    private static final int TEST_USER_ID = 1001;
 
     private CameraPrivacyChipViewController mCameraPrivacyChipViewController;
     private FrameLayout mFrameLayout;
@@ -106,6 +107,7 @@ public class CameraPrivacyChipViewControllerTest extends SysuiTestCase {
 
         when(mContext.getMainExecutor()).thenReturn(mExecutor);
         when(mCar.isConnected()).thenReturn(true);
+        when(mUserTracker.getUserId()).thenReturn(TEST_USER_ID);
 
         mCameraPrivacyChipViewController = new CameraPrivacyChipViewController(mContext,
                 mPrivacyItemController, mSensorPrivacyManager, mUserTracker);
@@ -311,7 +313,8 @@ public class CameraPrivacyChipViewControllerTest extends SysuiTestCase {
 
         mCameraPrivacyChipViewController.toggleSensor();
 
-        verify(mSensorPrivacyManager).setSensorPrivacy(eq(QS_TILE), eq(CAMERA), eq(true));
+        verify(mSensorPrivacyManager).setSensorPrivacy(eq(QS_TILE), eq(CAMERA), eq(true),
+                eq(TEST_USER_ID));
     }
 
     @Test
@@ -321,6 +324,7 @@ public class CameraPrivacyChipViewControllerTest extends SysuiTestCase {
 
         mCameraPrivacyChipViewController.toggleSensor();
 
-        verify(mSensorPrivacyManager).setSensorPrivacy(eq(QS_TILE), eq(CAMERA), eq(false));
+        verify(mSensorPrivacyManager).setSensorPrivacy(eq(QS_TILE), eq(CAMERA), eq(false),
+                eq(TEST_USER_ID));
     }
 }

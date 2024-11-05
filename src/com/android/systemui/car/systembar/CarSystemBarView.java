@@ -16,8 +16,6 @@
 
 package com.android.systemui.car.systembar;
 
-import static com.android.systemui.car.systembar.CarSystemBar.DEBUG;
-
 import android.annotation.IntDef;
 import android.annotation.Nullable;
 import android.content.Context;
@@ -33,9 +31,6 @@ import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.hvac.HvacView;
 import com.android.systemui.car.hvac.TemperatureControlView;
 import com.android.systemui.car.notification.NotificationPanelViewController;
-import com.android.systemui.car.statusicon.StatusIconView;
-import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
-import com.android.systemui.car.systembar.CarSystemBarController.NotificationsShadeController;
 import com.android.systemui.settings.UserTracker;
 
 import java.lang.annotation.ElementType;
@@ -52,10 +47,11 @@ public class CarSystemBarView extends LinearLayout {
 
     @IntDef(value = {BUTTON_TYPE_NAVIGATION, BUTTON_TYPE_KEYGUARD, BUTTON_TYPE_OCCLUSION})
     @Target({ElementType.TYPE_PARAMETER, ElementType.TYPE_USE})
-    private @interface ButtonsType {
+    public @interface ButtonsType {
     }
 
     private static final String TAG = CarSystemBarView.class.getSimpleName();
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     public static final int BUTTON_TYPE_NAVIGATION = 0;
     public static final int BUTTON_TYPE_KEYGUARD = 1;
@@ -66,15 +62,9 @@ public class CarSystemBarView extends LinearLayout {
     private CarSystemBarButton mHomeButton;
     private CarSystemBarButton mPassengerHomeButton;
     private View mNavButtons;
-    private CarSystemBarButton mNotificationsButton;
     private CarSystemBarButton mHvacButton;
     private HvacView mDriverHvacView;
     private HvacView mPassengerHvacView;
-    private VolumeButton mVolumeButton;
-    private CarSystemBarPanelButtonView mVolumePanelView;
-    private StatusIconView mVolumeStatusIcon;
-    private NotificationsShadeController mNotificationsShadeController;
-    private HvacPanelController mHvacPanelController;
     private View mLockScreenButtons;
     private View mOcclusionButtons;
     // used to wire in open/close gestures for overlay panels
@@ -97,14 +87,10 @@ public class CarSystemBarView extends LinearLayout {
         mNavButtons = findViewById(R.id.nav_buttons);
         mLockScreenButtons = findViewById(R.id.lock_screen_nav_buttons);
         mOcclusionButtons = findViewById(R.id.occlusion_buttons);
-        mNotificationsButton = findViewById(R.id.notifications);
         mHvacButton = findViewById(R.id.hvac);
         mDriverHvacView = findViewById(R.id.driver_hvac);
         mPassengerHvacView = findViewById(R.id.passenger_hvac);
         mControlCenterButton = findViewById(R.id.control_center_nav);
-        if (mNotificationsButton != null) {
-            mNotificationsButton.setOnClickListener(this::onNotificationsClick);
-        }
         setupHvacButton();
         // Needs to be clickable so that it will receive ACTION_MOVE events.
         setClickable(true);
@@ -169,8 +155,8 @@ public class CarSystemBarView extends LinearLayout {
             if (!mButtonsDraggable) {
                 return false;
             }
-            boolean shouldConsumeEvent = mNotificationsShadeController == null ? false
-                    : mNotificationsShadeController.isNotificationPanelOpen();
+            boolean shouldConsumeEvent = mNotificationPanelViewController == null ? false
+                    : mNotificationPanelViewController.isPanelExpanded();
 
             // Forward touch events to the status bar window so it can drag
             // windows if required (ex. Notification shade)
@@ -183,26 +169,6 @@ public class CarSystemBarView extends LinearLayout {
         return super.onInterceptTouchEvent(ev);
     }
 
-    /** Sets the notifications panel controller. */
-    public void setNotificationsPanelController(NotificationsShadeController controller) {
-        mNotificationsShadeController = controller;
-    }
-
-    /** Sets the HVAC panel controller. */
-    public void setHvacPanelController(HvacPanelController controller) {
-        mHvacPanelController = controller;
-    }
-
-    /** Gets the notifications panel controller. */
-    public NotificationsShadeController getNotificationsPanelController() {
-        return mNotificationsShadeController;
-    }
-
-    /** Gets the HVAC panel controller. */
-    public HvacPanelController getHvacPanelController() {
-        return mHvacPanelController;
-    }
-
     /**
      * Sets the touch listeners that will be called from onInterceptTouchEvent and onTouchEvent
      *
@@ -213,44 +179,14 @@ public class CarSystemBarView extends LinearLayout {
         mStatusBarWindowTouchListeners = statusBarWindowTouchListeners;
     }
 
-    /** Gets the touch listeners that will be called from onInterceptTouchEvent and onTouchEvent. */
-    public Set<OnTouchListener> getStatusBarWindowTouchListeners() {
-        return mStatusBarWindowTouchListeners;
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         triggerAllTouchListeners(this, event);
         return super.onTouchEvent(event);
     }
 
-    protected void onNotificationsClick(View v) {
-        if (mNotificationsButton != null
-                && mNotificationsButton.getDisabled()) {
-            mNotificationsButton.runOnClickWhileDisabled();
-            return;
-        }
-        if (mNotificationsShadeController != null) {
-            // If the notification shade is about to open, close the hvac panel
-            if (!mNotificationsShadeController.isNotificationPanelOpen()
-                    && mHvacPanelController != null
-                    && mHvacPanelController.isHvacPanelOpen()) {
-                mHvacPanelController.togglePanel();
-            }
-            mNotificationsShadeController.togglePanel();
-        }
-    }
-
     protected void onHvacClick(View v) {
-        if (mHvacPanelController != null) {
-            // If the hvac panel is about to open, close the notification shade
-            if (!mHvacPanelController.isHvacPanelOpen()
-                    && mNotificationsShadeController != null
-                    && mNotificationsShadeController.isNotificationPanelOpen()) {
-                mNotificationsShadeController.togglePanel();
-            }
-            mHvacPanelController.togglePanel();
-        }
+        mHvacPanelOverlayViewController.toggle();
     }
 
     /**
@@ -324,9 +260,6 @@ public class CarSystemBarView extends LinearLayout {
     public void registerNotificationPanelViewController(
             NotificationPanelViewController controller) {
         mNotificationPanelViewController = controller;
-        if (mNotificationPanelViewController != null && mNotificationsButton != null) {
-            mNotificationPanelViewController.registerViewStateListener(mNotificationsButton);
-        }
     }
 
     private void setNavigationButtonsVisibility(@View.Visibility int visibility) {
@@ -354,16 +287,5 @@ public class CarSystemBarView extends LinearLayout {
         for (OnTouchListener listener : mStatusBarWindowTouchListeners) {
             listener.onTouch(view, event);
         }
-    }
-
-    /**
-     * Toggles the notification unseen indicator on/off.
-     *
-     * @param hasUnseen true if the unseen notification count is great than 0.
-     */
-    public void toggleNotificationUnseenIndicator(Boolean hasUnseen) {
-        if (mNotificationsButton == null) return;
-
-        mNotificationsButton.setUnseen(hasUnseen);
     }
 }

@@ -245,4 +245,10 @@
             <enum name="right" value="2"/>
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="DisplayAreaView">
+        <attr name="displayAreaFeatureId" format="integer" />
+        <attr name="launchTaskDisplayAreaFeatureId" format="integer" />
+        <attr name="cornerRadius" format="integer" />
+    </declare-styleable>
 </resources>

@@ -625,7 +625,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      */
     @Override
     public void showAllNavigationButtons() {
-        showAllNavigationButtons(true);
+        showAllNavigationButtons(isDeviceSetupForUser());
     }
 
     // TODO(b/368407601): can we remove this?
@@ -646,7 +646,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      */
     @Override
     public void showAllKeyguardButtons() {
-        showAllKeyguardButtons(true);
+        showAllKeyguardButtons(isDeviceSetupForUser());
     }
 
     // TODO(b/368407601): can we remove this?
@@ -667,7 +667,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      */
     @Override
     public void showAllOcclusionButtons() {
-        showAllOcclusionButtons(true);
+        showAllOcclusionButtons(isDeviceSetupForUser());
     }
 
     // TODO(b/368407601): can we remove this?

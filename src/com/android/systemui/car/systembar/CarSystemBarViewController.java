@@ -153,15 +153,6 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
     }
 
     /**
-     * Toggles the notification unseen indicator on/off.
-     *
-     * @param hasUnseen true if the unseen notification count is great than 0.
-     */
-    public void toggleNotificationUnseenIndicator(boolean hasUnseen) {
-        mView.toggleNotificationUnseenIndicator(hasUnseen);
-    }
-
-    /**
      * Sets the HvacPanelOverlayViewController and adds HVAC button listeners
      */
     public void registerHvacPanelOverlayViewController(HvacPanelOverlayViewController controller) {

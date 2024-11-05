@@ -116,7 +116,9 @@
                 style="@style/SystemBarButton"
                 systemui:highlightWhenSelected="true"
                 systemui:icon="@drawable/car_ic_notification"
-                systemui:longIntent="intent:#Intent;action=com.android.car.bugreport.action.START_BUG_REPORT;end"/>
+                systemui:longIntent="intent:#Intent;action=com.android.car.bugreport.action.START_BUG_REPORT;end"
+                systemui:systemBarDisableFlags="notificationIcons"
+                systemui:controller="com.android.systemui.car.notification.NotificationButtonController"/>
 
             <com.android.systemui.car.systembar.AssistantButton
                 android:id="@+id/assistant"

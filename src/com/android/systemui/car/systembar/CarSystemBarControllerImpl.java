@@ -682,25 +682,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         });
     }
 
-    /** Toggles whether the notifications icon has an unseen indicator or not. */
-    @Override
-    public void toggleAllNotificationsUnseenIndicator(boolean hasUnseen) {
-        toggleAllNotificationsUnseenIndicator(
-                mCarDeviceProvisionedController.isCurrentUserFullySetup(), hasUnseen);
-    }
-
-    // TODO(b/368407601): can we remove this?
-    @VisibleForTesting
-    void toggleAllNotificationsUnseenIndicator(boolean isSetUp, boolean hasUnseen) {
-        checkAllBars(isSetUp);
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            if (mSystemBarViewControllerMap.get(side) != null) {
-                mSystemBarViewControllerMap.get(side)
-                        .toggleNotificationUnseenIndicator(hasUnseen);
-            }
-        });
-    }
-
     private void checkAllBars(boolean isSetUp) {
         mSystemBarViewControllerMap.clear();
         mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {

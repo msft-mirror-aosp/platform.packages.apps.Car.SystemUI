@@ -35,6 +35,7 @@ import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.hvac.HvacSystemBarPresenter;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
+import com.android.systemui.car.notification.NotificationButtonController;
 import com.android.systemui.car.notification.NotificationSystemBarPresenter;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
@@ -314,4 +315,18 @@ public abstract class CarSystemBarModule {
     @IntKey(BOTTOM)
     public abstract CarSystemBarViewController.Factory bindBottomCarSystemBarViewFactory(
             CarSystemBarViewController.Factory factory);
+
+    /** Injects CarSystemBarButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(CarSystemBarButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindCarSystemBarButtonControllerFactory(
+            CarSystemBarButtonController.Factory factory);
+
+    /** Injects NotificationButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(NotificationButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindNotificationButtonControllerFactory(
+            NotificationButtonController.Factory factory);
 }

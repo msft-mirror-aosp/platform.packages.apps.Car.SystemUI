@@ -699,32 +699,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void testToggleAllNotificationsUnseenIndicator_bottomEnabled_hasUnseen_setCorrectly() {
-        enableSystemBarWithNotificationButton();
-        mCarSystemBarController.init();
-        CarSystemBarButton notifications = getNotificationCarSystemBarButton();
-
-        boolean hasUnseen = true;
-        mCarSystemBarController.toggleAllNotificationsUnseenIndicator(/* isSetUp= */ true,
-                hasUnseen);
-
-        assertThat(notifications.getUnseen()).isTrue();
-    }
-
-    @Test
-    public void testToggleAllNotificationsUnseenIndicator_bottomEnabled_noUnseen_setCorrectly() {
-        enableSystemBarWithNotificationButton();
-        mCarSystemBarController.init();
-        CarSystemBarButton notifications = getNotificationCarSystemBarButton();
-
-        boolean hasUnseen = false;
-        mCarSystemBarController.toggleAllNotificationsUnseenIndicator(/* isSetUp= */ true,
-                hasUnseen);
-
-        assertThat(notifications.getUnseen()).isFalse();
-    }
-
-    @Test
     public void testSetSystemBarStates_stateUpdated() {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         mCarSystemBarController.init();

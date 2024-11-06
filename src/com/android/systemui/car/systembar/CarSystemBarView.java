@@ -62,7 +62,6 @@ public class CarSystemBarView extends LinearLayout {
     private CarSystemBarButton mHomeButton;
     private CarSystemBarButton mPassengerHomeButton;
     private View mNavButtons;
-    private CarSystemBarButton mNotificationsButton;
     private CarSystemBarButton mHvacButton;
     private HvacView mDriverHvacView;
     private HvacView mPassengerHvacView;
@@ -88,14 +87,10 @@ public class CarSystemBarView extends LinearLayout {
         mNavButtons = findViewById(R.id.nav_buttons);
         mLockScreenButtons = findViewById(R.id.lock_screen_nav_buttons);
         mOcclusionButtons = findViewById(R.id.occlusion_buttons);
-        mNotificationsButton = findViewById(R.id.notifications);
         mHvacButton = findViewById(R.id.hvac);
         mDriverHvacView = findViewById(R.id.driver_hvac);
         mPassengerHvacView = findViewById(R.id.passenger_hvac);
         mControlCenterButton = findViewById(R.id.control_center_nav);
-        if (mNotificationsButton != null) {
-            mNotificationsButton.setOnClickListener(this::onNotificationsClick);
-        }
         setupHvacButton();
         // Needs to be clickable so that it will receive ACTION_MOVE events.
         setClickable(true);
@@ -190,33 +185,8 @@ public class CarSystemBarView extends LinearLayout {
         return super.onTouchEvent(event);
     }
 
-    protected void onNotificationsClick(View v) {
-        if (mNotificationsButton != null
-                && mNotificationsButton.getDisabled()) {
-            mNotificationsButton.runOnClickWhileDisabled();
-            return;
-        }
-        if (mNotificationPanelViewController != null) {
-            // If the notification shade is about to open, close the hvac panel
-            if (!mNotificationPanelViewController.isPanelExpanded()
-                    && mHvacPanelOverlayViewController != null
-                    && mHvacPanelOverlayViewController.isPanelExpanded()) {
-                mHvacPanelOverlayViewController.toggle();
-            }
-            mNotificationPanelViewController.toggle();
-        }
-    }
-
     protected void onHvacClick(View v) {
-        if (mHvacPanelOverlayViewController != null) {
-            // If the hvac panel is about to open, close the notification shade
-            if (!mHvacPanelOverlayViewController.isPanelExpanded()
-                    && mNotificationPanelViewController != null
-                    && mNotificationPanelViewController.isPanelExpanded()) {
-                mNotificationPanelViewController.toggle();
-            }
-            mHvacPanelOverlayViewController.toggle();
-        }
+        mHvacPanelOverlayViewController.toggle();
     }
 
     /**
@@ -290,9 +260,6 @@ public class CarSystemBarView extends LinearLayout {
     public void registerNotificationPanelViewController(
             NotificationPanelViewController controller) {
         mNotificationPanelViewController = controller;
-        if (mNotificationPanelViewController != null && mNotificationsButton != null) {
-            mNotificationPanelViewController.registerViewStateListener(mNotificationsButton);
-        }
     }
 
     private void setNavigationButtonsVisibility(@View.Visibility int visibility) {
@@ -320,16 +287,5 @@ public class CarSystemBarView extends LinearLayout {
         for (OnTouchListener listener : mStatusBarWindowTouchListeners) {
             listener.onTouch(view, event);
         }
-    }
-
-    /**
-     * Toggles the notification unseen indicator on/off.
-     *
-     * @param hasUnseen true if the unseen notification count is great than 0.
-     */
-    public void toggleNotificationUnseenIndicator(boolean hasUnseen) {
-        if (mNotificationsButton == null) return;
-
-        mNotificationsButton.setUnseen(hasUnseen);
     }
 }

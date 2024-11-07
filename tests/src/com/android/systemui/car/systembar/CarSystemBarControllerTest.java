@@ -218,8 +218,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         factoriesMap.put(TOP, carSystemBarViewControllerFactory);
         factoriesMap.put(RIGHT, carSystemBarViewControllerFactory);
         factoriesMap.put(BOTTOM, carSystemBarViewControllerFactory);
-        mCarSystemBarViewFactory = new CarSystemBarViewFactoryImpl(mSpiedContext,
-                mSystemBarConfigs, factoriesMap);
+        mCarSystemBarViewFactory =
+                new CarSystemBarViewFactoryImpl(mSpiedContext, factoriesMap, mSystemBarConfigs);
 
         mRegisterStatusBarResult = new RegisterStatusBarResult(new ArrayMap<>(), 0, 0,
                 new AppearanceRegion[0], 0, 0, false, 0, false, 0, 0, "", 0,

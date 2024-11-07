@@ -25,6 +25,7 @@ import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
 import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
 import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
 
+import android.annotation.IdRes;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
@@ -38,6 +39,9 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
+import androidx.annotation.LayoutRes;
+
+import com.android.car.dockutil.Flags;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.car.notification.BottomNotificationPanelViewMediator;
@@ -151,6 +155,70 @@ public class SystemBarConfigs {
         Context context = mContext.createWindowContext(windowType, /* options= */ null);
         mWindowContexts.put(windowType, context);
         return context;
+    }
+
+    /**
+     * Returns layout id to be inflated for the given side.
+     * 0 means the side is unknown.
+     */
+    @LayoutRes
+    public int getSystemBarLayoutBySide(@SystemBarSide int side, boolean isSetUp) {
+        switch (side) {
+            case LEFT:
+                if (!isSetUp) {
+                    return R.layout.car_left_system_bar_unprovisioned;
+                } else {
+                    return R.layout.car_left_system_bar;
+                }
+            case TOP:
+                if (!isSetUp) {
+                    return R.layout.car_top_system_bar_unprovisioned;
+                } else if (Flags.dockFeature()) {
+                    return R.layout.car_top_system_bar_dock;
+                } else {
+                    return R.layout.car_top_system_bar;
+                }
+            case RIGHT:
+                if (!isSetUp) {
+                    return R.layout.car_right_system_bar_unprovisioned;
+                } else {
+                    return R.layout.car_right_system_bar;
+                }
+            case BOTTOM:
+                if (!isSetUp) {
+                    return R.layout.car_bottom_system_bar_unprovisioned;
+                } else if (Flags.dockFeature()) {
+                    return R.layout.car_bottom_system_bar_dock;
+                } else {
+                    return R.layout.car_bottom_system_bar;
+                }
+            default:
+                return 0;
+        }
+    }
+
+    /**
+     * Returns an layout for the given side that represents the root view of the window.
+     * 0 means the side is unknown.
+     */
+    @LayoutRes
+    public int getWindowLayoutBySide(@SystemBarSide int side) {
+        return R.layout.navigation_bar_window;
+    }
+
+    /**
+     * Returns an id for the given side that can be set on the system bar window.
+     * Throws IllegalArgumentException if side is unknown.
+     */
+    @IdRes
+    public int getWindowIdBySide(@SystemBarSide int side) {
+        return switch (side) {
+            case TOP -> R.id.car_top_bar_window;
+            case BOTTOM -> R.id.car_bottom_bar_window;
+            case LEFT -> R.id.car_left_bar_window;
+            case RIGHT -> R.id.car_right_bar_window;
+            default -> throw new IllegalArgumentException("unknown system bar window side " + side);
+        };
     }
 
     protected WindowManager.LayoutParams getLayoutParamsBySide(@SystemBarSide int side) {

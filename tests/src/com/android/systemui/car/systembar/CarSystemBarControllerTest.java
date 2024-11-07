@@ -166,6 +166,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mTestableResources = mContext.getOrCreateTestableResources();
         mSpiedContext = spy(mContext);
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
+        when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
+        when(mDeviceProvisionedController.isCurrentUserSetupInProgress()).thenReturn(false);
         mSystemBarConfigs = new SystemBarConfigs(mTestableResources.getResources());
         CarSystemBarViewController.Factory carSystemBarViewControllerFactory =
                 new CarSystemBarViewController.Factory() {
@@ -469,7 +471,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBarController.registerBarTouchListener(BOTTOM, mockOnTouchListener);
 
         ArgumentCaptor<Set<View.OnTouchListener>> captor = ArgumentCaptor.forClass(Set.class);
-        verify(bottomBar, times(2)).setStatusBarWindowTouchListeners(captor.capture());
+        // called 3 times - once for init, once for test getBarViewController call, and once for
+        // test registerBarTouchListener call
+        verify(bottomBar, times(3)).setStatusBarWindowTouchListeners(captor.capture());
 
         List<Set<View.OnTouchListener>> allValues = captor.getAllValues();
         assertThat(allValues.contains(listeners));
@@ -488,7 +492,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 /* isSetUp= */ true);
 
         ArgumentCaptor<Set<View.OnTouchListener>> captor = ArgumentCaptor.forClass(Set.class);
-        verify(bottomBar, times(1)).setStatusBarWindowTouchListeners(captor.capture());
+        // called 3 times - once for init, once for test registerBarTouchListener
+        // call, and once for test getBarViewController call
+        verify(bottomBar, times(3)).setStatusBarWindowTouchListeners(captor.capture());
 
         List<Set<View.OnTouchListener>> allValues = captor.getAllValues();
         assertThat(allValues.contains(listeners));
@@ -510,7 +516,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
         ArgumentCaptor<NotificationPanelViewController> captor =
                 ArgumentCaptor.forClass(NotificationPanelViewController.class);
-        verify(bottomBar, times(2)).registerNotificationPanelViewController(captor.capture());
+        // called 3 times - once for init, once for test getBarViewController call, and once for
+        // test registerNotificationPanelViewController call
+        verify(bottomBar, times(3)).registerNotificationPanelViewController(captor.capture());
 
         List<NotificationPanelViewController> allValues = captor.getAllValues();
         assertThat(allValues.contains(null));
@@ -532,7 +540,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
         ArgumentCaptor<NotificationPanelViewController> captor =
                 ArgumentCaptor.forClass(NotificationPanelViewController.class);
-        verify(bottomBar, times(1)).registerNotificationPanelViewController(captor.capture());
+        // called 3 times - once for init, once for test registerNotificationPanelViewController
+        // call, and once for test getBarViewController call
+        verify(bottomBar, times(3)).registerNotificationPanelViewController(captor.capture());
 
         List<NotificationPanelViewController> allValues = captor.getAllValues();
         assertThat(allValues.contains(mockNotificationPanelViewController));
@@ -553,7 +563,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
         ArgumentCaptor<HvacPanelOverlayViewController> captor =
                 ArgumentCaptor.forClass(HvacPanelOverlayViewController.class);
-        verify(bottomBar, times(2)).registerHvacPanelOverlayViewController(captor.capture());
+        // called 3 times - once for init, once for test getBarViewController call, and once for
+        // test registerHvacPanelOverlayViewController call
+        verify(bottomBar, times(3)).registerHvacPanelOverlayViewController(captor.capture());
 
         List<HvacPanelOverlayViewController> allValues = captor.getAllValues();
         assertThat(allValues.contains(null));
@@ -575,7 +587,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
         ArgumentCaptor<HvacPanelOverlayViewController> captor =
                 ArgumentCaptor.forClass(HvacPanelOverlayViewController.class);
-        verify(bottomBar, times(1)).registerHvacPanelOverlayViewController(captor.capture());
+        // called 3 times - once for init, once for test registerHvacPanelOverlayViewController
+        // call, and once for test getBarViewController call
+        verify(bottomBar, times(3)).registerHvacPanelOverlayViewController(captor.capture());
 
         List<HvacPanelOverlayViewController> allValues = captor.getAllValues();
         assertThat(allValues.contains(mockHvacPanelOverlayViewController));

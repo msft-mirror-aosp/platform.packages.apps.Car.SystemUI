@@ -54,7 +54,7 @@ public class OverlayVisibilityMediatorImpl implements OverlayVisibilityMediator 
         if (controller instanceof OverlayPanelViewController
                 && ((OverlayPanelViewController) controller).isExclusive()) {
             for (OverlayViewController value : mZOrderVisibleSortedMap.values()) {
-                if (value instanceof OverlayPanelViewController) {
+                if (value instanceof OverlayPanelViewController && controller != value) {
                     ((OverlayPanelViewController) value).toggle();
                 }
             }

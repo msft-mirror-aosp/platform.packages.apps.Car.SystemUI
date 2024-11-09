@@ -135,7 +135,7 @@ public class CarSystemBarViewTest extends SysuiTestCase {
     }
 
     private CarSystemBarViewControllerImpl getSystemBarViewController(CarSystemBarView view) {
-        SystemBarConfigs systemBarConfigs = new SystemBarConfigs(getContext(),
+        SystemBarConfigs systemBarConfigs = new SystemBarConfigsImpl(getContext(),
                 getContext().getOrCreateTestableResources().getResources());
         return new CarSystemBarViewControllerImpl(getContext(),
                 mUserTracker,

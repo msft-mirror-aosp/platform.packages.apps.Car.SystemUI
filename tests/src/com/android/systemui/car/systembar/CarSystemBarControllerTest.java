@@ -199,7 +199,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 passengerHomeButtonControllerProvider);
         CarSystemBarElementInitializer carSystemBarElementInitializer =
                 new CarSystemBarElementInitializer(controllerFactoryMap);
-        mSystemBarConfigs = new SystemBarConfigs(mSpiedContext, mTestableResources.getResources());
+        mSystemBarConfigs =
+                new SystemBarConfigsImpl(mSpiedContext, mTestableResources.getResources());
         CarSystemBarViewControllerFactory carSystemBarViewControllerFactory =
                 new CarSystemBarViewControllerImpl.Factory() {
                     public CarSystemBarViewControllerImpl create(@SystemBarSide int side,

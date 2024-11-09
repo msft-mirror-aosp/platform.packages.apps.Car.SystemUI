@@ -39,8 +39,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Optional;
-
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
@@ -59,8 +57,6 @@ public class HvacPanelOverlayViewMediatorTest extends SysuiTestCase {
     private BroadcastDispatcher mBroadcastDispatcher;
     @Mock
     private UserTracker mUserTracker;
-    @Mock
-    private HvacSystemBarPresenter mHvacSystemBarPresenter;
 
     @Before
     public void setUp() {
@@ -71,8 +67,7 @@ public class HvacPanelOverlayViewMediatorTest extends SysuiTestCase {
                 mCarSystemBarController,
                 mHvacPanelOverlayViewController,
                 mBroadcastDispatcher,
-                mUserTracker,
-                Optional.of(mHvacSystemBarPresenter));
+                mUserTracker);
     }
 
     @Test

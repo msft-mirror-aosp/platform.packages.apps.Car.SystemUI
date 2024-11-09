@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 
 import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
-import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
@@ -61,7 +60,6 @@ public class CarTopSystemBarViewController extends CarSystemBarViewController {
             ButtonSelectionStateController buttonSelectionStateController,
             Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
             Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
-            HvacController hvacController,
             CarDeviceProvisionedController deviceProvisionedController,
             Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider,
             @Assisted CarSystemBarView systemBarView) {
@@ -73,7 +71,6 @@ public class CarTopSystemBarViewController extends CarSystemBarViewController {
                 buttonSelectionStateController,
                 cameraPrivacyChipViewControllerLazy,
                 micPrivacyChipViewControllerLazy,
-                hvacController,
                 TOP,
                 systemBarView);
         mCarDeviceProvisionedController = deviceProvisionedController;

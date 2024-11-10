@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.hvac;
 
-import androidx.annotation.CallSuper;
+import android.view.View;
 
+import com.android.systemui.car.systembar.CarSystemBarButton;
+import com.android.systemui.car.systembar.CarSystemBarButtonController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
@@ -27,32 +29,32 @@ import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
 /**
- * A generic CarSystemBarElementController for handling CarSystemBarButton button interactions.
+ * A CarSystemBarElementController for handling notification button interactions.
  */
-public class CarSystemBarButtonController
-        extends CarSystemBarElementController<CarSystemBarButton> {
+public class HvacButtonController extends CarSystemBarButtonController {
 
-    private final UserTracker mUserTracker;
+    private final HvacPanelOverlayViewController mHvacPanelOverlayViewController;
 
     @AssistedInject
-    public CarSystemBarButtonController(@Assisted CarSystemBarButton barButton,
+    public HvacButtonController(@Assisted CarSystemBarButton hvacButton,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
+            HvacPanelOverlayViewController hvacPanelOverlayViewController,
             UserTracker userTracker) {
-        super(barButton, disableController, stateController);
+        super(hvacButton, disableController, stateController, userTracker);
 
-        mUserTracker = userTracker;
-    }
-
-    @Override
-    @CallSuper
-    protected void onInit() {
-        mView.setUserTracker(mUserTracker);
+        mHvacPanelOverlayViewController = hvacPanelOverlayViewController;
+        mHvacPanelOverlayViewController.registerViewStateListener(hvacButton);
+        hvacButton.setOnClickListener(this::onHvacClick);
     }
 
     @AssistedFactory
     public interface Factory extends
             CarSystemBarElementController.Factory<CarSystemBarButton,
-                    CarSystemBarButtonController> {
+                    HvacButtonController> {
+    }
+
+    private void onHvacClick(View v) {
+        mHvacPanelOverlayViewController.toggle();
     }
 }

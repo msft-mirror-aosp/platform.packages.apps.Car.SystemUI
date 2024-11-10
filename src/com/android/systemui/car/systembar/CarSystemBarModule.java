@@ -33,8 +33,10 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.car.displaycompat.ToolbarController;
-import com.android.systemui.car.hvac.HvacSystemBarPresenter;
+import com.android.systemui.car.hvac.HvacButtonController;
+import com.android.systemui.car.hvac.TemperatureControlViewController;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
+import com.android.systemui.car.notification.NotificationButtonController;
 import com.android.systemui.car.notification.NotificationSystemBarPresenter;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
@@ -269,18 +271,6 @@ public abstract class CarSystemBarModule {
         }
     }
 
-    /** Injects HvacSystemBarPresenter */
-    @SysUISingleton
-    @Provides
-    static Optional<HvacSystemBarPresenter> provideHvacSystemBarPresenter(
-             CarSystemBarController controller) {
-        if (controller instanceof HvacSystemBarPresenter) {
-            return Optional.of((HvacSystemBarPresenter) controller);
-        } else {
-            return Optional.empty();
-        }
-    }
-
     /** Injects CarSystemBarViewFactory */
     @SysUISingleton
     @Binds
@@ -314,4 +304,33 @@ public abstract class CarSystemBarModule {
     @IntKey(BOTTOM)
     public abstract CarSystemBarViewController.Factory bindBottomCarSystemBarViewFactory(
             CarSystemBarViewController.Factory factory);
+
+    /** Injects CarSystemBarButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(CarSystemBarButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindCarSystemBarButtonControllerFactory(
+            CarSystemBarButtonController.Factory factory);
+
+    /** Injects NotificationButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(NotificationButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindNotificationButtonControllerFactory(
+            NotificationButtonController.Factory factory);
+
+    /** Injects HvacButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(HvacButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindHvacButtonControllerFactory(
+            HvacButtonController.Factory factory);
+
+    /** Injects TemperatureControlViewController */
+    @Binds
+    @IntoMap
+    @ClassKey(TemperatureControlViewController.class)
+    public abstract CarSystemBarElementController.Factory
+            bindTemperatureControlViewControllerFactory(
+                    TemperatureControlViewController.Factory factory);
 }

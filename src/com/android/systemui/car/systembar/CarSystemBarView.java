@@ -27,9 +27,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.android.systemui.R;
-import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
-import com.android.systemui.car.hvac.HvacView;
-import com.android.systemui.car.hvac.TemperatureControlView;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.settings.UserTracker;
 
@@ -62,15 +59,10 @@ public class CarSystemBarView extends LinearLayout {
     private CarSystemBarButton mHomeButton;
     private CarSystemBarButton mPassengerHomeButton;
     private View mNavButtons;
-    private CarSystemBarButton mNotificationsButton;
-    private CarSystemBarButton mHvacButton;
-    private HvacView mDriverHvacView;
-    private HvacView mPassengerHvacView;
     private View mLockScreenButtons;
     private View mOcclusionButtons;
     // used to wire in open/close gestures for overlay panels
     private Set<OnTouchListener> mStatusBarWindowTouchListeners;
-    private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
     private NotificationPanelViewController mNotificationPanelViewController;
     private CarSystemBarButton mControlCenterButton;
 
@@ -88,15 +80,7 @@ public class CarSystemBarView extends LinearLayout {
         mNavButtons = findViewById(R.id.nav_buttons);
         mLockScreenButtons = findViewById(R.id.lock_screen_nav_buttons);
         mOcclusionButtons = findViewById(R.id.occlusion_buttons);
-        mNotificationsButton = findViewById(R.id.notifications);
-        mHvacButton = findViewById(R.id.hvac);
-        mDriverHvacView = findViewById(R.id.driver_hvac);
-        mPassengerHvacView = findViewById(R.id.passenger_hvac);
         mControlCenterButton = findViewById(R.id.control_center_nav);
-        if (mNotificationsButton != null) {
-            mNotificationsButton.setOnClickListener(this::onNotificationsClick);
-        }
-        setupHvacButton();
         // Needs to be clickable so that it will receive ACTION_MOVE events.
         setClickable(true);
         // Needs to not be focusable so rotary won't highlight the entire nav bar.
@@ -112,23 +96,6 @@ public class CarSystemBarView extends LinearLayout {
                 mHomeButton.setVisibility(GONE);
             }
             mPassengerHomeButton.setVisibility(VISIBLE);
-        }
-    }
-
-    void setupHvacButton() {
-        if (mHvacButton != null) {
-            mHvacButton.setOnClickListener(this::onHvacClick);
-        }
-
-        if (com.android.car.dockutil.Flags.dockFeature()) {
-            if (mDriverHvacView instanceof TemperatureControlView) {
-                ((TemperatureControlView) mDriverHvacView).setTemperatureTextClickListener(
-                        this::onHvacClick);
-            }
-            if (mPassengerHvacView instanceof TemperatureControlView) {
-                ((TemperatureControlView) mPassengerHvacView).setTemperatureTextClickListener(
-                        this::onHvacClick);
-            }
         }
     }
 
@@ -190,35 +157,6 @@ public class CarSystemBarView extends LinearLayout {
         return super.onTouchEvent(event);
     }
 
-    protected void onNotificationsClick(View v) {
-        if (mNotificationsButton != null
-                && mNotificationsButton.getDisabled()) {
-            mNotificationsButton.runOnClickWhileDisabled();
-            return;
-        }
-        if (mNotificationPanelViewController != null) {
-            // If the notification shade is about to open, close the hvac panel
-            if (!mNotificationPanelViewController.isPanelExpanded()
-                    && mHvacPanelOverlayViewController != null
-                    && mHvacPanelOverlayViewController.isPanelExpanded()) {
-                mHvacPanelOverlayViewController.toggle();
-            }
-            mNotificationPanelViewController.toggle();
-        }
-    }
-
-    protected void onHvacClick(View v) {
-        if (mHvacPanelOverlayViewController != null) {
-            // If the hvac panel is about to open, close the notification shade
-            if (!mHvacPanelOverlayViewController.isPanelExpanded()
-                    && mNotificationPanelViewController != null
-                    && mNotificationPanelViewController.isPanelExpanded()) {
-                mNotificationPanelViewController.toggle();
-            }
-            mHvacPanelOverlayViewController.toggle();
-        }
-    }
-
     /**
      * Shows buttons of the specified {@link ButtonsType}.
      *
@@ -275,24 +213,11 @@ public class CarSystemBarView extends LinearLayout {
     }
 
     /**
-     * Sets the HvacPanelOverlayViewController and adds HVAC button listeners
-     */
-    public void registerHvacPanelOverlayViewController(HvacPanelOverlayViewController controller) {
-        mHvacPanelOverlayViewController = controller;
-        if (mHvacPanelOverlayViewController != null && mHvacButton != null) {
-            mHvacPanelOverlayViewController.registerViewStateListener(mHvacButton);
-        }
-    }
-
-    /**
      * Sets the NotificationPanelViewController and adds button listeners
      */
     public void registerNotificationPanelViewController(
             NotificationPanelViewController controller) {
         mNotificationPanelViewController = controller;
-        if (mNotificationPanelViewController != null && mNotificationsButton != null) {
-            mNotificationPanelViewController.registerViewStateListener(mNotificationsButton);
-        }
     }
 
     private void setNavigationButtonsVisibility(@View.Visibility int visibility) {
@@ -320,16 +245,5 @@ public class CarSystemBarView extends LinearLayout {
         for (OnTouchListener listener : mStatusBarWindowTouchListeners) {
             listener.onTouch(view, event);
         }
-    }
-
-    /**
-     * Toggles the notification unseen indicator on/off.
-     *
-     * @param hasUnseen true if the unseen notification count is great than 0.
-     */
-    public void toggleNotificationUnseenIndicator(boolean hasUnseen) {
-        if (mNotificationsButton == null) return;
-
-        mNotificationsButton.setUnseen(hasUnseen);
     }
 }

@@ -60,8 +60,6 @@ import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.hvac.HvacController;
-import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
@@ -148,8 +146,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Mock
     private StatusBarSignalPolicy mSignalPolicy;
     @Mock
-    private HvacController mHvacController;
-    @Mock
     private ConfigurationController mConfigurationController;
     @Mock
     private CarSystemBarRestartTracker mCarSystemBarRestartTracker;
@@ -166,6 +162,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mTestableResources = mContext.getOrCreateTestableResources();
         mSpiedContext = spy(mContext);
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
+        when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
+        when(mDeviceProvisionedController.isCurrentUserSetupInProgress()).thenReturn(false);
         mSystemBarConfigs = new SystemBarConfigs(mTestableResources.getResources());
         CarSystemBarViewController.Factory carSystemBarViewControllerFactory =
                 new CarSystemBarViewController.Factory() {
@@ -175,8 +173,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                                 mock(CarSystemBarElementInitializer.class), mSystemBarConfigs,
                                 mButtonRoleHolderController, mButtonSelectionStateController,
                                 () -> mCameraPrivacyChipViewController,
-                                () -> mMicPrivacyChipViewController,
-                                mHvacController, side, view));
+                                () -> mMicPrivacyChipViewController, side, view));
                     }
                 };
         Map<@SystemBarSide Integer, CarSystemBarViewController.Factory> factoriesMap =
@@ -469,7 +466,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBarController.registerBarTouchListener(BOTTOM, mockOnTouchListener);
 
         ArgumentCaptor<Set<View.OnTouchListener>> captor = ArgumentCaptor.forClass(Set.class);
-        verify(bottomBar, times(2)).setStatusBarWindowTouchListeners(captor.capture());
+        // called 3 times - once for init, once for test getBarViewController call, and once for
+        // test registerBarTouchListener call
+        verify(bottomBar, times(3)).setStatusBarWindowTouchListeners(captor.capture());
 
         List<Set<View.OnTouchListener>> allValues = captor.getAllValues();
         assertThat(allValues.contains(listeners));
@@ -488,7 +487,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 /* isSetUp= */ true);
 
         ArgumentCaptor<Set<View.OnTouchListener>> captor = ArgumentCaptor.forClass(Set.class);
-        verify(bottomBar, times(1)).setStatusBarWindowTouchListeners(captor.capture());
+        // called 3 times - once for init, once for test registerBarTouchListener
+        // call, and once for test getBarViewController call
+        verify(bottomBar, times(3)).setStatusBarWindowTouchListeners(captor.capture());
 
         List<Set<View.OnTouchListener>> allValues = captor.getAllValues();
         assertThat(allValues.contains(listeners));
@@ -510,7 +511,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
         ArgumentCaptor<NotificationPanelViewController> captor =
                 ArgumentCaptor.forClass(NotificationPanelViewController.class);
-        verify(bottomBar, times(2)).registerNotificationPanelViewController(captor.capture());
+        // called 3 times - once for init, once for test getBarViewController call, and once for
+        // test registerNotificationPanelViewController call
+        verify(bottomBar, times(3)).registerNotificationPanelViewController(captor.capture());
 
         List<NotificationPanelViewController> allValues = captor.getAllValues();
         assertThat(allValues.contains(null));
@@ -532,53 +535,12 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
         ArgumentCaptor<NotificationPanelViewController> captor =
                 ArgumentCaptor.forClass(NotificationPanelViewController.class);
-        verify(bottomBar, times(1)).registerNotificationPanelViewController(captor.capture());
+        // called 3 times - once for init, once for test registerNotificationPanelViewController
+        // call, and once for test getBarViewController call
+        verify(bottomBar, times(3)).registerNotificationPanelViewController(captor.capture());
 
         List<NotificationPanelViewController> allValues = captor.getAllValues();
         assertThat(allValues.contains(mockNotificationPanelViewController));
-    }
-
-    @Test
-    public void testRegisterHvacController_createViewFirst_registrationSuccessful() {
-        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
-        mCarSystemBarController.init();
-
-        CarSystemBarViewController bottomBar = mCarSystemBarController.getBarViewController(BOTTOM,
-                /* isSetUp= */ true);
-
-        HvacPanelOverlayViewController mockHvacPanelOverlayViewController =
-                mock(HvacPanelOverlayViewController.class);
-        mCarSystemBarController.registerHvacPanelOverlayViewController(
-                mockHvacPanelOverlayViewController);
-
-        ArgumentCaptor<HvacPanelOverlayViewController> captor =
-                ArgumentCaptor.forClass(HvacPanelOverlayViewController.class);
-        verify(bottomBar, times(2)).registerHvacPanelOverlayViewController(captor.capture());
-
-        List<HvacPanelOverlayViewController> allValues = captor.getAllValues();
-        assertThat(allValues.contains(null));
-        assertThat(allValues.contains(mockHvacPanelOverlayViewController));
-    }
-
-    @Test
-    public void testRegisterHvacController_registerFirst_registrationSuccessful() {
-        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
-        mCarSystemBarController.init();
-
-        HvacPanelOverlayViewController mockHvacPanelOverlayViewController =
-                mock(HvacPanelOverlayViewController.class);
-        mCarSystemBarController.registerHvacPanelOverlayViewController(
-                mockHvacPanelOverlayViewController);
-
-        CarSystemBarViewController bottomBar = mCarSystemBarController.getBarViewController(BOTTOM,
-                /* isSetUp= */ true);
-
-        ArgumentCaptor<HvacPanelOverlayViewController> captor =
-                ArgumentCaptor.forClass(HvacPanelOverlayViewController.class);
-        verify(bottomBar, times(1)).registerHvacPanelOverlayViewController(captor.capture());
-
-        List<HvacPanelOverlayViewController> allValues = captor.getAllValues();
-        assertThat(allValues.contains(mockHvacPanelOverlayViewController));
     }
 
     @Test
@@ -696,32 +658,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBarController.showAllOcclusionButtons();
 
         assertThat(keyguardButtons.getVisibility()).isEqualTo(View.GONE);
-    }
-
-    @Test
-    public void testToggleAllNotificationsUnseenIndicator_bottomEnabled_hasUnseen_setCorrectly() {
-        enableSystemBarWithNotificationButton();
-        mCarSystemBarController.init();
-        CarSystemBarButton notifications = getNotificationCarSystemBarButton();
-
-        boolean hasUnseen = true;
-        mCarSystemBarController.toggleAllNotificationsUnseenIndicator(/* isSetUp= */ true,
-                hasUnseen);
-
-        assertThat(notifications.getUnseen()).isTrue();
-    }
-
-    @Test
-    public void testToggleAllNotificationsUnseenIndicator_bottomEnabled_noUnseen_setCorrectly() {
-        enableSystemBarWithNotificationButton();
-        mCarSystemBarController.init();
-        CarSystemBarButton notifications = getNotificationCarSystemBarButton();
-
-        boolean hasUnseen = false;
-        mCarSystemBarController.toggleAllNotificationsUnseenIndicator(/* isSetUp= */ true,
-                hasUnseen);
-
-        assertThat(notifications.getUnseen()).isFalse();
     }
 
     @Test

@@ -63,7 +63,6 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
-import com.android.systemui.car.hvac.HvacSystemBarPresenter;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationSystemBarPresenter;
@@ -97,7 +96,7 @@ import java.util.Set;
 @SysUISingleton
 public class CarSystemBarControllerImpl implements CarSystemBarController,
         CommandQueue.Callbacks, ConfigurationController.ConfigurationListener,
-        KeyguardSystemBarPresenter, NotificationSystemBarPresenter, HvacSystemBarPresenter {
+        KeyguardSystemBarPresenter, NotificationSystemBarPresenter {
     private static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;
 
     private static final String TAG = CarSystemBarController.class.getSimpleName();
@@ -591,7 +590,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         controller.setStatusBarWindowTouchListeners(
                 statusBarTouchListeners != null ? statusBarTouchListeners : new ArraySet<>());
         controller.registerNotificationPanelViewController(notificationPanelViewController);
-        controller.registerHvacPanelOverlayViewController(hvacPanelOverlayViewController);
     }
 
     /** Sets the NotificationPanelViewController for views to listen to the panel's state. */
@@ -607,25 +605,12 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         });
     }
 
-    /** Sets the HVACPanelOverlayViewController for views to listen to the panel's state. */
-    @Override
-    public void registerHvacPanelOverlayViewController(
-            HvacPanelOverlayViewController hvacPanelOverlayViewController) {
-        mHvacPanelOverlayViewController = hvacPanelOverlayViewController;
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            if (mSystemBarViewControllerMap.get(side) != null) {
-                mSystemBarViewControllerMap.get(side)
-                        .registerHvacPanelOverlayViewController(mHvacPanelOverlayViewController);
-            }
-        });
-    }
-
     /**
      * Shows all of the navigation buttons on the valid instances of {@link CarSystemBarView}.
      */
     @Override
     public void showAllNavigationButtons() {
-        showAllNavigationButtons(true);
+        showAllNavigationButtons(isDeviceSetupForUser());
     }
 
     // TODO(b/368407601): can we remove this?
@@ -646,7 +631,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      */
     @Override
     public void showAllKeyguardButtons() {
-        showAllKeyguardButtons(true);
+        showAllKeyguardButtons(isDeviceSetupForUser());
     }
 
     // TODO(b/368407601): can we remove this?
@@ -667,7 +652,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      */
     @Override
     public void showAllOcclusionButtons() {
-        showAllOcclusionButtons(true);
+        showAllOcclusionButtons(isDeviceSetupForUser());
     }
 
     // TODO(b/368407601): can we remove this?
@@ -678,25 +663,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             if (mSystemBarViewControllerMap.get(side) != null) {
                 mSystemBarViewControllerMap.get(side)
                         .showButtonsOfType(CarSystemBarView.BUTTON_TYPE_OCCLUSION);
-            }
-        });
-    }
-
-    /** Toggles whether the notifications icon has an unseen indicator or not. */
-    @Override
-    public void toggleAllNotificationsUnseenIndicator(boolean hasUnseen) {
-        toggleAllNotificationsUnseenIndicator(
-                mCarDeviceProvisionedController.isCurrentUserFullySetup(), hasUnseen);
-    }
-
-    // TODO(b/368407601): can we remove this?
-    @VisibleForTesting
-    void toggleAllNotificationsUnseenIndicator(boolean isSetUp, boolean hasUnseen) {
-        checkAllBars(isSetUp);
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            if (mSystemBarViewControllerMap.get(side) != null) {
-                mSystemBarViewControllerMap.get(side)
-                        .toggleNotificationUnseenIndicator(hasUnseen);
             }
         });
     }

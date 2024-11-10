@@ -208,6 +208,13 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
         }
     }
 
+    /**
+     * Returning true from this method will make other panels to become hidden.
+     */
+    public boolean isExclusive() {
+        return true;
+    }
+
     /** Checks if a {@link MotionEvent} is an action to open the panel.
      * @param e {@link MotionEvent} to check.
      * @return true only if opening action.

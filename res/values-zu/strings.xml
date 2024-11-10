@@ -120,8 +120,7 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Iphethini engalungile"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Iphinikhodi engalungile"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Iphasiwedi engalungile"</string>
-    <!-- no translation found for passenger_keyguard_too_many_failed_attempts (2948335020152945468) -->
-    <skip />
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{Kunemizamo eminingi kakhulu engalungile. Zama futhi ngomzuzwana ongu-#.}one{Kunemizamo eminingi kakhulu engalungile. Zama futhi emizuzwaneni engu-#.}other{Kunemizamo eminingi kakhulu engalungile. Zama futhi emizuzwaneni engu-#.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"umshayeli"</string>
     <string name="seat_front" msgid="836133281052793377">"phambili"</string>
     <string name="seat_rear" msgid="403133444964528577">"ingemuva"</string>

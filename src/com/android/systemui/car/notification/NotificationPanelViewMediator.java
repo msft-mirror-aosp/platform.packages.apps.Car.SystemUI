@@ -135,14 +135,6 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
 
     @Override
     public void setUpOverlayContentViewControllers() {
-        mNotificationPanelViewController.setOnUnseenCountUpdateListener(unseenNotificationCount -> {
-            boolean hasUnseen = unseenNotificationCount > 0;
-            if (mNotificationSystemBarPresenter.isPresent()) {
-                mNotificationSystemBarPresenter.get()
-                        .toggleAllNotificationsUnseenIndicator(hasUnseen);
-            }
-        });
-
         mPowerManagerHelper.setCarPowerStateListener(state -> {
             if (state == CarPowerManager.STATE_ON) {
                 mNotificationPanelViewController.onCarPowerStateOn();

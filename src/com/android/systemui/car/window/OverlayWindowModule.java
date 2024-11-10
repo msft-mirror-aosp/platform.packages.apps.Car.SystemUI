@@ -107,4 +107,9 @@ public abstract class OverlayWindowModule {
     @IntoSet
     public abstract ConfigurationListener bindSystemUIOverlayWindowManagerConfigChanges(
             SystemUIOverlayWindowManager systemUIOverlayWindowManager);
+
+    /** Injects OverlayVisibilityMediator. */
+    @Binds
+    public abstract OverlayVisibilityMediator bindOverlayVisibilityMediator(
+            OverlayVisibilityMediatorImpl overlayVisibilityMediatorImpl);
 }

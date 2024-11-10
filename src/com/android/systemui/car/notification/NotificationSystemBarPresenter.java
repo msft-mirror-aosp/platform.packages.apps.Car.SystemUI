@@ -19,10 +19,6 @@ package com.android.systemui.car.notification;
  * An interface to handle the UI needed for notifications on systembars.
  */
 public interface NotificationSystemBarPresenter {
-    /**
-     * Toggles all notification unseen indicator.
-     */
-    void toggleAllNotificationsUnseenIndicator(boolean hasUnseen);
 
     /**
      * Registers a {@link NotificationPanelViewController}

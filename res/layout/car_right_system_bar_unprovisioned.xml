@@ -55,6 +55,7 @@
             android:paddingTop="30dp"
             android:paddingBottom="30dp"
             android:contentDescription="@string/system_bar_climate_control_label"
-            systemui:broadcast="true"/>
+            systemui:broadcast="true"
+            systemui:controller="com.android.systemui.car.hvac.HvacButtonController"/>
     </LinearLayout>
 </com.android.systemui.car.systembar.CarSystemBarView>

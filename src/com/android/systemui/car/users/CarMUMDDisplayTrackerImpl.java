@@ -17,7 +17,7 @@
 package com.android.systemui.car.users;
 
 import static android.car.CarOccupantZoneManager.DISPLAY_TYPE_MAIN;
-import static android.hardware.display.DisplayManager.EVENT_FLAG_DISPLAY_BRIGHTNESS;
+import static android.hardware.display.DisplayManager.PRIVATE_EVENT_FLAG_DISPLAY_BRIGHTNESS;
 
 import static com.android.systemui.car.users.CarSystemUIUserUtil.isCurrentSystemUIDisplay;
 import static com.android.systemui.car.users.CarSystemUIUserUtil.isMUMDSystemUI;
@@ -174,7 +174,7 @@ public class CarMUMDDisplayTrackerImpl implements DisplayTracker {
         synchronized (mBrightnessCallbacks) {
             if (mBrightnessCallbacks.isEmpty()) {
                 mDisplayManager.registerDisplayListener(mBrightnessChangedListener, mHandler,
-                        EVENT_FLAG_DISPLAY_BRIGHTNESS);
+                        0, PRIVATE_EVENT_FLAG_DISPLAY_BRIGHTNESS);
             }
             mBrightnessCallbacks.add(new DisplayTrackerCallbackData(callback, executor));
         }

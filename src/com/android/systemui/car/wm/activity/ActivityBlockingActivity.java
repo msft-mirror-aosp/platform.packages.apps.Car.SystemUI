@@ -32,6 +32,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Insets;
+import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.opengl.GLSurfaceView;
@@ -265,6 +266,8 @@ public class ActivityBlockingActivity extends FragmentActivity {
         mGLSurfaceView = findViewById(R.id.blurred_surface_view);
         mGLSurfaceView.setEGLContextClientVersion(EGL_CONTEXT_VERSION);
 
+        // Sets up the surface so that we can make it translucent if needed
+        mGLSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
         mGLSurfaceView.setEGLConfigChooser(EGL_CONFIG_SIZE, EGL_CONFIG_SIZE, EGL_CONFIG_SIZE,
                 EGL_CONFIG_SIZE, EGL_CONFIG_SIZE, EGL_CONFIG_SIZE);
 
@@ -272,6 +275,11 @@ public class ActivityBlockingActivity extends FragmentActivity {
 
         // We only want to render the screen once
         mGLSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+
+        // Activity is set to translucent via its Theme. After taking a screenshot of the
+        // blocked app, disable translucency so the Activity lifecycle state is STOPPED
+        // instead of PAUSED
+        this.setTranslucent(false);
 
         mIsGLSurfaceSetup = true;
     }

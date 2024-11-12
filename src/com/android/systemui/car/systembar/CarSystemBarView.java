@@ -16,8 +16,6 @@
 
 package com.android.systemui.car.systembar;
 
-import static com.android.systemui.car.systembar.CarSystemBar.DEBUG;
-
 import android.annotation.IntDef;
 import android.annotation.Nullable;
 import android.content.Context;
@@ -28,14 +26,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.android.car.dockutil.Flags;
 import com.android.systemui.R;
+import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.hvac.HvacView;
 import com.android.systemui.car.hvac.TemperatureControlView;
 import com.android.systemui.car.notification.NotificationPanelViewController;
-import com.android.systemui.car.systembar.CarSystemBarController.HvacPanelController;
-import com.android.systemui.car.systembar.CarSystemBarController.NotificationsShadeController;
+import com.android.systemui.car.notification.NotificationsShadeController;
 import com.android.systemui.settings.UserTracker;
 
 import java.lang.annotation.ElementType;
@@ -56,6 +53,7 @@ public class CarSystemBarView extends LinearLayout {
     }
 
     private static final String TAG = CarSystemBarView.class.getSimpleName();
+    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
     public static final int BUTTON_TYPE_NAVIGATION = 0;
     public static final int BUTTON_TYPE_KEYGUARD = 1;
@@ -126,7 +124,7 @@ public class CarSystemBarView extends LinearLayout {
             mHvacButton.setOnClickListener(this::onHvacClick);
         }
 
-        if (Flags.dockFeature()) {
+        if (com.android.car.dockutil.Flags.dockFeature()) {
             if (mDriverHvacView instanceof TemperatureControlView) {
                 ((TemperatureControlView) mDriverHvacView).setTemperatureTextClickListener(
                         this::onHvacClick);

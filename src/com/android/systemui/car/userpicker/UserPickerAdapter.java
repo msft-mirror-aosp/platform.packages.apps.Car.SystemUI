@@ -16,7 +16,9 @@
 
 package com.android.systemui.car.userpicker;
 
+import android.car.feature.Flags;
 import android.content.Context;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +52,7 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapter.UserPickerAdapte
     private String mLoggedInText;
     private String mPrefixOtherSeatLoggedInInfo;
     private String mStoppingUserText;
+    private String mUnavailableSecureUserText;
 
     UserPickerAdapter(Context context) {
         mContext = context;
@@ -73,6 +76,13 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapter.UserPickerAdapte
 
     private void setUserLoggedInInfo(UserPickerAdapterViewHolder holder, UserRecord userRecord) {
         if (!userRecord.mIsStopping && !userRecord.mIsLoggedIn) {
+            if (userRecord.mIsSecure && mDisplayId != Display.DEFAULT_DISPLAY
+                    && !Flags.supportsSecurePassengerUsers()) {
+                holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
+                holder.mLoggedInTextView.setText(mUnavailableSecureUserText);
+                updateAlpha(holder, /* disabled= */ true);
+                return;
+            }
             holder.mUserBorderImageView.setVisibility(View.INVISIBLE);
             holder.mLoggedInTextView.setText("");
             updateAlpha(holder, /* disabled= */ false);
@@ -141,6 +151,7 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapter.UserPickerAdapte
         mPrefixOtherSeatLoggedInInfo = mContext
                 .getString(R.string.prefix_logged_in_info_for_other_seat);
         mStoppingUserText = mContext.getString(R.string.stopping_user_text);
+        mUnavailableSecureUserText = mContext.getString(R.string.unavailable_secure_user_text);
     }
 
     // TODO(b/281729191) use RecyclerView.ItemDecoration when supported by CarUiRecyclerView

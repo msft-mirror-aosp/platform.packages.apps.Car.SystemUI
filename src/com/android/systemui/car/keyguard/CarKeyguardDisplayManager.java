@@ -24,7 +24,7 @@ import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Application;
 import com.android.systemui.navigationbar.NavigationBarController;
 import com.android.systemui.settings.DisplayTracker;
-import com.android.systemui.shade.data.repository.ShadePositionRepository;
+import com.android.systemui.shade.data.repository.ShadeDisplaysRepository;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 
 import dagger.Lazy;
@@ -54,11 +54,11 @@ public class CarKeyguardDisplayManager extends KeyguardDisplayManager {
             KeyguardStateController keyguardStateController,
             ConnectedDisplayKeyguardPresentation.Factory
                     connectedDisplayKeyguardPresentationFactory,
-            Provider<ShadePositionRepository> shadePositionRepositoryProvider,
+            Provider<ShadeDisplaysRepository> shadeDisplaysRepositoryProvider,
             @Application CoroutineScope appScope) {
         super(context, navigationBarControllerLazy, displayTracker, mainExecutor, uiBgExecutor,
                 deviceStateHelper, keyguardStateController,
-                connectedDisplayKeyguardPresentationFactory, shadePositionRepositoryProvider,
+                connectedDisplayKeyguardPresentationFactory, shadeDisplaysRepositoryProvider,
                 appScope);
     }
 }

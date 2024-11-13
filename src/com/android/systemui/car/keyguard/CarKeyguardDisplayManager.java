@@ -21,13 +21,19 @@ import android.content.Context;
 import com.android.keyguard.ConnectedDisplayKeyguardPresentation;
 import com.android.keyguard.KeyguardDisplayManager;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.dagger.qualifiers.Application;
 import com.android.systemui.navigationbar.NavigationBarController;
 import com.android.systemui.settings.DisplayTracker;
+import com.android.systemui.shade.data.repository.ShadePositionRepository;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 
 import dagger.Lazy;
 
 import java.util.concurrent.Executor;
+
+import javax.inject.Provider;
+
+import kotlinx.coroutines.CoroutineScope;
 
 /**
  * Implementation of the {@link KeyguardDisplayManager} that provides different display tracker
@@ -47,9 +53,12 @@ public class CarKeyguardDisplayManager extends KeyguardDisplayManager {
             KeyguardDisplayManager.DeviceStateHelper deviceStateHelper,
             KeyguardStateController keyguardStateController,
             ConnectedDisplayKeyguardPresentation.Factory
-                    connectedDisplayKeyguardPresentationFactory) {
+                    connectedDisplayKeyguardPresentationFactory,
+            Provider<ShadePositionRepository> shadePositionRepositoryProvider,
+            @Application CoroutineScope appScope) {
         super(context, navigationBarControllerLazy, displayTracker, mainExecutor, uiBgExecutor,
                 deviceStateHelper, keyguardStateController,
-                connectedDisplayKeyguardPresentationFactory);
+                connectedDisplayKeyguardPresentationFactory, shadePositionRepositoryProvider,
+                appScope);
     }
 }

@@ -60,12 +60,13 @@ import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.hvac.HvacController;
-import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
+import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.settings.FakeDisplayTracker;
@@ -95,6 +96,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.inject.Provider;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -148,8 +151,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Mock
     private StatusBarSignalPolicy mSignalPolicy;
     @Mock
-    private HvacController mHvacController;
-    @Mock
     private ConfigurationController mConfigurationController;
     @Mock
     private CarSystemBarRestartTracker mCarSystemBarRestartTracker;
@@ -168,17 +169,43 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         when(mDeviceProvisionedController.isCurrentUserSetupInProgress()).thenReturn(false);
+        Map<Class<?>, Provider<CarSystemBarElementController.Factory>> controllerFactoryMap =
+                new ArrayMap<>();
+        Provider<CarSystemBarElementController.Factory> homeButtonControllerProvider =
+                () -> new HomeButtonController.Factory() {
+                    @Override
+                    public HomeButtonController create(CarSystemBarButton view) {
+                        return new HomeButtonController(view,
+                                mock(CarSystemBarElementStatusBarDisableController.class),
+                                mock(CarSystemBarElementStateController.class),
+                                mUserTracker);
+                    }
+                };
+        controllerFactoryMap.put(HomeButtonController.class, homeButtonControllerProvider);
+        Provider<CarSystemBarElementController.Factory> passengerHomeButtonControllerProvider =
+                () -> new PassengerHomeButtonController.Factory() {
+                    @Override
+                    public PassengerHomeButtonController create(CarSystemBarButton view) {
+                        return new PassengerHomeButtonController(view,
+                                mock(CarSystemBarElementStatusBarDisableController.class),
+                                mock(CarSystemBarElementStateController.class),
+                                mUserTracker);
+                    }
+                };
+        controllerFactoryMap.put(PassengerHomeButtonController.class,
+                passengerHomeButtonControllerProvider);
+        CarSystemBarElementInitializer carSystemBarElementInitializer =
+                new CarSystemBarElementInitializer(controllerFactoryMap);
         mSystemBarConfigs = new SystemBarConfigs(mTestableResources.getResources());
         CarSystemBarViewController.Factory carSystemBarViewControllerFactory =
                 new CarSystemBarViewController.Factory() {
                     public CarSystemBarViewController create(@SystemBarSide int side,
                             CarSystemBarView view) {
                         return spy(new CarSystemBarViewController(mSpiedContext, mUserTracker,
-                                mock(CarSystemBarElementInitializer.class), mSystemBarConfigs,
+                                carSystemBarElementInitializer, mSystemBarConfigs,
                                 mButtonRoleHolderController, mButtonSelectionStateController,
                                 () -> mCameraPrivacyChipViewController,
-                                () -> mMicPrivacyChipViewController,
-                                mHvacController, side, view));
+                                () -> mMicPrivacyChipViewController, side, view));
                     }
                 };
         Map<@SystemBarSide Integer, CarSystemBarViewController.Factory> factoriesMap =
@@ -546,53 +573,6 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
 
         List<NotificationPanelViewController> allValues = captor.getAllValues();
         assertThat(allValues.contains(mockNotificationPanelViewController));
-    }
-
-    @Test
-    public void testRegisterHvacController_createViewFirst_registrationSuccessful() {
-        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
-        mCarSystemBarController.init();
-
-        CarSystemBarViewController bottomBar = mCarSystemBarController.getBarViewController(BOTTOM,
-                /* isSetUp= */ true);
-
-        HvacPanelOverlayViewController mockHvacPanelOverlayViewController =
-                mock(HvacPanelOverlayViewController.class);
-        mCarSystemBarController.registerHvacPanelOverlayViewController(
-                mockHvacPanelOverlayViewController);
-
-        ArgumentCaptor<HvacPanelOverlayViewController> captor =
-                ArgumentCaptor.forClass(HvacPanelOverlayViewController.class);
-        // called 3 times - once for init, once for test getBarViewController call, and once for
-        // test registerHvacPanelOverlayViewController call
-        verify(bottomBar, times(3)).registerHvacPanelOverlayViewController(captor.capture());
-
-        List<HvacPanelOverlayViewController> allValues = captor.getAllValues();
-        assertThat(allValues.contains(null));
-        assertThat(allValues.contains(mockHvacPanelOverlayViewController));
-    }
-
-    @Test
-    public void testRegisterHvacController_registerFirst_registrationSuccessful() {
-        mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
-        mCarSystemBarController.init();
-
-        HvacPanelOverlayViewController mockHvacPanelOverlayViewController =
-                mock(HvacPanelOverlayViewController.class);
-        mCarSystemBarController.registerHvacPanelOverlayViewController(
-                mockHvacPanelOverlayViewController);
-
-        CarSystemBarViewController bottomBar = mCarSystemBarController.getBarViewController(BOTTOM,
-                /* isSetUp= */ true);
-
-        ArgumentCaptor<HvacPanelOverlayViewController> captor =
-                ArgumentCaptor.forClass(HvacPanelOverlayViewController.class);
-        // called 3 times - once for init, once for test registerHvacPanelOverlayViewController
-        // call, and once for test getBarViewController call
-        verify(bottomBar, times(3)).registerHvacPanelOverlayViewController(captor.capture());
-
-        List<HvacPanelOverlayViewController> allValues = captor.getAllValues();
-        assertThat(allValues.contains(mockHvacPanelOverlayViewController));
     }
 
     @Test

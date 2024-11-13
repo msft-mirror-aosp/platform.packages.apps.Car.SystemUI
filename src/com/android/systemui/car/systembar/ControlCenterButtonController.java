@@ -15,11 +15,12 @@
  */
 package com.android.systemui.car.systembar;
 
-import androidx.annotation.CallSuper;
+import android.view.View;
 
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.settings.UserTracker;
 
 import dagger.assisted.Assisted;
@@ -27,32 +28,29 @@ import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
 /**
- * A generic CarSystemBarElementController for handling CarSystemBarButton button interactions.
+ * A CarSystemBarElementController for handling ControlCenter button interactions.
  */
-public class CarSystemBarButtonController
-        extends CarSystemBarElementController<CarSystemBarButton> {
-
-    private final UserTracker mUserTracker;
+public class ControlCenterButtonController extends CarSystemBarButtonController {
 
     @AssistedInject
-    public CarSystemBarButtonController(@Assisted CarSystemBarButton barButton,
+    public ControlCenterButtonController(@Assisted CarSystemBarButton ccButton,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
             UserTracker userTracker) {
-        super(barButton, disableController, stateController);
+        super(ccButton, disableController, stateController, userTracker);
 
-        mUserTracker = userTracker;
-    }
-
-    @Override
-    @CallSuper
-    protected void onInit() {
-        mView.setUserTracker(mUserTracker);
+        ccButton.setVisibility(
+                CarSystemUIUserUtil.isMUMDSystemUI() ? View.VISIBLE : View.GONE);
     }
 
     @AssistedFactory
     public interface Factory extends
             CarSystemBarElementController.Factory<CarSystemBarButton,
-                    CarSystemBarButtonController> {
+                    ControlCenterButtonController> {
+    }
+
+    @Override
+    protected boolean shouldBeVisible() {
+        return CarSystemUIUserUtil.isMUMDSystemUI();
     }
 }

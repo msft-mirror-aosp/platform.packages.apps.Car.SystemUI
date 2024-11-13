@@ -23,15 +23,10 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.android.systemui.R;
-import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
-import com.android.systemui.car.hvac.HvacView;
-import com.android.systemui.car.hvac.TemperatureControlView;
 import com.android.systemui.car.notification.NotificationPanelViewController;
-import com.android.systemui.settings.UserTracker;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
@@ -59,19 +54,12 @@ public class CarSystemBarView extends LinearLayout {
 
     private final boolean mConsumeTouchWhenPanelOpen;
     private final boolean mButtonsDraggable;
-    private CarSystemBarButton mHomeButton;
-    private CarSystemBarButton mPassengerHomeButton;
     private View mNavButtons;
-    private CarSystemBarButton mHvacButton;
-    private HvacView mDriverHvacView;
-    private HvacView mPassengerHvacView;
     private View mLockScreenButtons;
     private View mOcclusionButtons;
     // used to wire in open/close gestures for overlay panels
     private Set<OnTouchListener> mStatusBarWindowTouchListeners;
-    private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
     private NotificationPanelViewController mNotificationPanelViewController;
-    private CarSystemBarButton mControlCenterButton;
 
     public CarSystemBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -82,70 +70,13 @@ public class CarSystemBarView extends LinearLayout {
 
     @Override
     public void onFinishInflate() {
-        mHomeButton = findViewById(R.id.home);
-        mPassengerHomeButton = findViewById(R.id.passenger_home);
         mNavButtons = findViewById(R.id.nav_buttons);
         mLockScreenButtons = findViewById(R.id.lock_screen_nav_buttons);
         mOcclusionButtons = findViewById(R.id.occlusion_buttons);
-        mHvacButton = findViewById(R.id.hvac);
-        mDriverHvacView = findViewById(R.id.driver_hvac);
-        mPassengerHvacView = findViewById(R.id.passenger_hvac);
-        mControlCenterButton = findViewById(R.id.control_center_nav);
-        setupHvacButton();
         // Needs to be clickable so that it will receive ACTION_MOVE events.
         setClickable(true);
         // Needs to not be focusable so rotary won't highlight the entire nav bar.
         setFocusable(false);
-    }
-
-    void updateHomeButtonVisibility(boolean isPassenger) {
-        if (!isPassenger) {
-            return;
-        }
-        if (mPassengerHomeButton != null) {
-            if (mHomeButton != null) {
-                mHomeButton.setVisibility(GONE);
-            }
-            mPassengerHomeButton.setVisibility(VISIBLE);
-        }
-    }
-
-    void setupHvacButton() {
-        if (mHvacButton != null) {
-            mHvacButton.setOnClickListener(this::onHvacClick);
-        }
-
-        if (com.android.car.dockutil.Flags.dockFeature()) {
-            if (mDriverHvacView instanceof TemperatureControlView) {
-                ((TemperatureControlView) mDriverHvacView).setTemperatureTextClickListener(
-                        this::onHvacClick);
-            }
-            if (mPassengerHvacView instanceof TemperatureControlView) {
-                ((TemperatureControlView) mPassengerHvacView).setTemperatureTextClickListener(
-                        this::onHvacClick);
-            }
-        }
-    }
-
-    void setupSystemBarButtons(UserTracker userTracker) {
-        setupSystemBarButtons(this, userTracker);
-    }
-
-    private void setupSystemBarButtons(View v, UserTracker userTracker) {
-        if (v instanceof CarSystemBarButton) {
-            ((CarSystemBarButton) v).setUserTracker(userTracker);
-        } else if (v instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) v;
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                setupSystemBarButtons(viewGroup.getChildAt(i), userTracker);
-            }
-        }
-    }
-
-    void updateControlCenterButtonVisibility(boolean isMumd) {
-        if (mControlCenterButton != null) {
-            mControlCenterButton.setVisibility(isMumd ? VISIBLE : GONE);
-        }
     }
 
     // Used to forward touch events even if the touch was initiated from a child component
@@ -183,10 +114,6 @@ public class CarSystemBarView extends LinearLayout {
     public boolean onTouchEvent(MotionEvent event) {
         triggerAllTouchListeners(this, event);
         return super.onTouchEvent(event);
-    }
-
-    protected void onHvacClick(View v) {
-        mHvacPanelOverlayViewController.toggle();
     }
 
     /**
@@ -228,29 +155,6 @@ public class CarSystemBarView extends LinearLayout {
                 Log.d(TAG, "setDisabledSystemBarButton for: " + buttonName + " to: " + disabled);
             }
             button.setDisabled(disabled, runnable);
-        }
-    }
-
-    /**
-     * Sets the system bar specific View container's visibility. ViewName is used just for
-     * debugging.
-     */
-    public void setVisibilityByViewId(int viewId, @Nullable String viewName,
-                @View.Visibility int visibility) {
-        View v = findViewById(viewId);
-        if (v != null) {
-            if (DEBUG) Log.d(TAG, "setVisibilityByViewId for: " + viewName + " to: " + visibility);
-            v.setVisibility(visibility);
-        }
-    }
-
-    /**
-     * Sets the HvacPanelOverlayViewController and adds HVAC button listeners
-     */
-    public void registerHvacPanelOverlayViewController(HvacPanelOverlayViewController controller) {
-        mHvacPanelOverlayViewController = controller;
-        if (mHvacPanelOverlayViewController != null && mHvacButton != null) {
-            mHvacPanelOverlayViewController.registerViewStateListener(mHvacButton);
         }
     }
 

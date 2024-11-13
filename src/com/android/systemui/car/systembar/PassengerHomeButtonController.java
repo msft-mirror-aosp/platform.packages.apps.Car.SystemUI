@@ -15,11 +15,12 @@
  */
 package com.android.systemui.car.systembar;
 
-import androidx.annotation.CallSuper;
+import android.view.View;
 
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.settings.UserTracker;
 
 import dagger.assisted.Assisted;
@@ -27,32 +28,29 @@ import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
 /**
- * A generic CarSystemBarElementController for handling CarSystemBarButton button interactions.
+ * A CarSystemBarElementController for handling passenger Home button interactions.
  */
-public class CarSystemBarButtonController
-        extends CarSystemBarElementController<CarSystemBarButton> {
-
-    private final UserTracker mUserTracker;
+public class PassengerHomeButtonController extends CarSystemBarButtonController {
 
     @AssistedInject
-    public CarSystemBarButtonController(@Assisted CarSystemBarButton barButton,
+    public PassengerHomeButtonController(@Assisted CarSystemBarButton homeButton,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
             UserTracker userTracker) {
-        super(barButton, disableController, stateController);
+        super(homeButton, disableController, stateController, userTracker);
 
-        mUserTracker = userTracker;
-    }
-
-    @Override
-    @CallSuper
-    protected void onInit() {
-        mView.setUserTracker(mUserTracker);
+        homeButton.setVisibility(
+                CarSystemUIUserUtil.isSecondaryMUMDSystemUI() ? View.VISIBLE : View.GONE);
     }
 
     @AssistedFactory
     public interface Factory extends
             CarSystemBarElementController.Factory<CarSystemBarButton,
-                    CarSystemBarButtonController> {
+                    PassengerHomeButtonController> {
+    }
+
+    @Override
+    protected boolean shouldBeVisible() {
+        return CarSystemUIUserUtil.isSecondaryMUMDSystemUI();
     }
 }

@@ -63,7 +63,10 @@ import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
+import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.settings.FakeDisplayTracker;
@@ -93,6 +96,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.inject.Provider;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -164,13 +169,40 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         when(mDeviceProvisionedController.isCurrentUserSetupInProgress()).thenReturn(false);
+        Map<Class<?>, Provider<CarSystemBarElementController.Factory>> controllerFactoryMap =
+                new ArrayMap<>();
+        Provider<CarSystemBarElementController.Factory> homeButtonControllerProvider =
+                () -> new HomeButtonController.Factory() {
+                    @Override
+                    public HomeButtonController create(CarSystemBarButton view) {
+                        return new HomeButtonController(view,
+                                mock(CarSystemBarElementStatusBarDisableController.class),
+                                mock(CarSystemBarElementStateController.class),
+                                mUserTracker);
+                    }
+                };
+        controllerFactoryMap.put(HomeButtonController.class, homeButtonControllerProvider);
+        Provider<CarSystemBarElementController.Factory> passengerHomeButtonControllerProvider =
+                () -> new PassengerHomeButtonController.Factory() {
+                    @Override
+                    public PassengerHomeButtonController create(CarSystemBarButton view) {
+                        return new PassengerHomeButtonController(view,
+                                mock(CarSystemBarElementStatusBarDisableController.class),
+                                mock(CarSystemBarElementStateController.class),
+                                mUserTracker);
+                    }
+                };
+        controllerFactoryMap.put(PassengerHomeButtonController.class,
+                passengerHomeButtonControllerProvider);
+        CarSystemBarElementInitializer carSystemBarElementInitializer =
+                new CarSystemBarElementInitializer(controllerFactoryMap);
         mSystemBarConfigs = new SystemBarConfigs(mTestableResources.getResources());
         CarSystemBarViewController.Factory carSystemBarViewControllerFactory =
                 new CarSystemBarViewController.Factory() {
                     public CarSystemBarViewController create(@SystemBarSide int side,
                             CarSystemBarView view) {
                         return spy(new CarSystemBarViewController(mSpiedContext, mUserTracker,
-                                mock(CarSystemBarElementInitializer.class), mSystemBarConfigs,
+                                carSystemBarElementInitializer, mSystemBarConfigs,
                                 mButtonRoleHolderController, mButtonSelectionStateController,
                                 () -> mCameraPrivacyChipViewController,
                                 () -> mMicPrivacyChipViewController, side, view));

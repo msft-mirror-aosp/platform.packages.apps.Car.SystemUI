@@ -23,12 +23,10 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.android.systemui.R;
 import com.android.systemui.car.notification.NotificationPanelViewController;
-import com.android.systemui.settings.UserTracker;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
@@ -56,15 +54,12 @@ public class CarSystemBarView extends LinearLayout {
 
     private final boolean mConsumeTouchWhenPanelOpen;
     private final boolean mButtonsDraggable;
-    private CarSystemBarButton mHomeButton;
-    private CarSystemBarButton mPassengerHomeButton;
     private View mNavButtons;
     private View mLockScreenButtons;
     private View mOcclusionButtons;
     // used to wire in open/close gestures for overlay panels
     private Set<OnTouchListener> mStatusBarWindowTouchListeners;
     private NotificationPanelViewController mNotificationPanelViewController;
-    private CarSystemBarButton mControlCenterButton;
 
     public CarSystemBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -75,49 +70,13 @@ public class CarSystemBarView extends LinearLayout {
 
     @Override
     public void onFinishInflate() {
-        mHomeButton = findViewById(R.id.home);
-        mPassengerHomeButton = findViewById(R.id.passenger_home);
         mNavButtons = findViewById(R.id.nav_buttons);
         mLockScreenButtons = findViewById(R.id.lock_screen_nav_buttons);
         mOcclusionButtons = findViewById(R.id.occlusion_buttons);
-        mControlCenterButton = findViewById(R.id.control_center_nav);
         // Needs to be clickable so that it will receive ACTION_MOVE events.
         setClickable(true);
         // Needs to not be focusable so rotary won't highlight the entire nav bar.
         setFocusable(false);
-    }
-
-    void updateHomeButtonVisibility(boolean isPassenger) {
-        if (!isPassenger) {
-            return;
-        }
-        if (mPassengerHomeButton != null) {
-            if (mHomeButton != null) {
-                mHomeButton.setVisibility(GONE);
-            }
-            mPassengerHomeButton.setVisibility(VISIBLE);
-        }
-    }
-
-    void setupSystemBarButtons(UserTracker userTracker) {
-        setupSystemBarButtons(this, userTracker);
-    }
-
-    private void setupSystemBarButtons(View v, UserTracker userTracker) {
-        if (v instanceof CarSystemBarButton) {
-            ((CarSystemBarButton) v).setUserTracker(userTracker);
-        } else if (v instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) v;
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                setupSystemBarButtons(viewGroup.getChildAt(i), userTracker);
-            }
-        }
-    }
-
-    void updateControlCenterButtonVisibility(boolean isMumd) {
-        if (mControlCenterButton != null) {
-            mControlCenterButton.setVisibility(isMumd ? VISIBLE : GONE);
-        }
     }
 
     // Used to forward touch events even if the touch was initiated from a child component
@@ -196,19 +155,6 @@ public class CarSystemBarView extends LinearLayout {
                 Log.d(TAG, "setDisabledSystemBarButton for: " + buttonName + " to: " + disabled);
             }
             button.setDisabled(disabled, runnable);
-        }
-    }
-
-    /**
-     * Sets the system bar specific View container's visibility. ViewName is used just for
-     * debugging.
-     */
-    public void setVisibilityByViewId(int viewId, @Nullable String viewName,
-                @View.Visibility int visibility) {
-        View v = findViewById(viewId);
-        if (v != null) {
-            if (DEBUG) Log.d(TAG, "setVisibilityByViewId for: " + viewName + " to: " + visibility);
-            v.setVisibility(visibility);
         }
     }
 

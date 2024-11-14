@@ -333,4 +333,18 @@ public abstract class CarSystemBarModule {
     public abstract CarSystemBarElementController.Factory
             bindTemperatureControlViewControllerFactory(
                     TemperatureControlViewController.Factory factory);
+
+    /** Injects HomeButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(HomeButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindHomeButtonControllerFactory(
+            HomeButtonController.Factory factory);
+
+    /** Injects PassengerHomeButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(PassengerHomeButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindPassengerHomeButtonControllerFactory(
+            PassengerHomeButtonController.Factory factory);
 }

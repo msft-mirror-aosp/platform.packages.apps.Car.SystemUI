@@ -30,7 +30,6 @@ import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 import com.android.systemui.car.systembar.CarSystemBarView.ButtonsType;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
-import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.util.ViewController;
 
@@ -85,15 +84,12 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
 
     @Override
     protected void onInit() {
-        mView.setupSystemBarButtons(mUserTracker);
+        setupSystemBarButtons(mView, mUserTracker);
         mCarSystemBarElementInitializer.initializeCarSystemBarElements(mView);
 
         // Include a FocusParkingView at the beginning. The rotary controller "parks" the focus here
         // when the user navigates to another window. This is also used to prevent wrap-around.
         mView.addView(new FocusParkingView(mContext), 0);
-
-        mView.updateHomeButtonVisibility(CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
-        mView.updateControlCenterButtonVisibility(CarSystemUIUserUtil.isMUMDSystemUI());
     }
 
     /**
@@ -181,6 +177,17 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
     public interface Factory {
         /** Create instance of CarSystemBarViewController for CarSystemBarView */
         CarSystemBarViewController create(@SystemBarSide int side, CarSystemBarView view);
+    }
+
+    private void setupSystemBarButtons(View v, UserTracker userTracker) {
+        if (v instanceof CarSystemBarButton) {
+            ((CarSystemBarButton) v).setUserTracker(userTracker);
+        } else if (v instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) v;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                setupSystemBarButtons(viewGroup.getChildAt(i), userTracker);
+            }
+        }
     }
 
     @VisibleForTesting

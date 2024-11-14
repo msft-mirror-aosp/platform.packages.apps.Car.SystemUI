@@ -20,16 +20,17 @@ import static android.app.StatusBarManager.DISABLE2_QUICK_SETTINGS;
 import static android.app.StatusBarManager.DISABLE_HOME;
 import static android.app.StatusBarManager.DISABLE_NOTIFICATION_ICONS;
 
+import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
 import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
 import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
 import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
-import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assume.assumeFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -37,7 +38,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
-import android.content.Context;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.testing.TestableResources;
@@ -58,6 +58,7 @@ import com.android.internal.statusbar.RegisterStatusBarResult;
 import com.android.internal.view.AppearanceRegion;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
+import com.android.systemui.SysuiTestableContext;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.notification.NotificationPanelViewController;
@@ -111,7 +112,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     private CarSystemBarControllerImpl mCarSystemBarController;
     private CarSystemBarViewFactory mCarSystemBarViewFactory;
     private TestableResources mTestableResources;
-    private Context mSpiedContext;
+    private SysuiTestableContext mSpiedContext;
     private MockitoSession mSession;
 
     @Mock
@@ -166,7 +167,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
             .startMocking();
         mTestableResources = mContext.getOrCreateTestableResources();
         mSpiedContext = spy(mContext);
-        when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
+        mSpiedContext.addMockSystemService(ActivityManager.class, mActivityManager);
+        mSpiedContext.addMockSystemService(WindowManager.class, mWindowManager);
+        when(mSpiedContext.createWindowContext(anyInt(), any())).thenReturn(mSpiedContext);
         when(mDeviceProvisionedController.isCurrentUserSetup()).thenReturn(true);
         when(mDeviceProvisionedController.isCurrentUserSetupInProgress()).thenReturn(false);
         Map<Class<?>, Provider<CarSystemBarElementController.Factory>> controllerFactoryMap =
@@ -196,7 +199,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 passengerHomeButtonControllerProvider);
         CarSystemBarElementInitializer carSystemBarElementInitializer =
                 new CarSystemBarElementInitializer(controllerFactoryMap);
-        mSystemBarConfigs = new SystemBarConfigs(mTestableResources.getResources());
+        mSystemBarConfigs = new SystemBarConfigs(mSpiedContext, mTestableResources.getResources());
         CarSystemBarViewController.Factory carSystemBarViewControllerFactory =
                 new CarSystemBarViewController.Factory() {
                     public CarSystemBarViewController create(@SystemBarSide int side,
@@ -214,7 +217,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         factoriesMap.put(TOP, carSystemBarViewControllerFactory);
         factoriesMap.put(RIGHT, carSystemBarViewControllerFactory);
         factoriesMap.put(BOTTOM, carSystemBarViewControllerFactory);
-        mCarSystemBarViewFactory = new CarSystemBarViewFactoryImpl(mSpiedContext, factoriesMap);
+        mCarSystemBarViewFactory = new CarSystemBarViewFactoryImpl(mSpiedContext,
+                mSystemBarConfigs, factoriesMap);
 
         mRegisterStatusBarResult = new RegisterStatusBarResult(new ArrayMap<>(), 0, 0,
                 new AppearanceRegion[0], 0, 0, false, 0, false, 0, 0, "", 0,
@@ -236,7 +240,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     }
 
     private void initCarSystemBar() {
-        FakeDisplayTracker displayTracker = new FakeDisplayTracker(mContext);
+        FakeDisplayTracker displayTracker = new FakeDisplayTracker(mSpiedContext);
         FakeExecutor executor = new FakeExecutor(new FakeSystemClock());
 
         mCarSystemBarController = new CarSystemBarControllerImpl(mSpiedContext,
@@ -247,7 +251,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 mStatusBarIconController,
                 mWindowManager,
                 mDeviceProvisionedController,
-                new CommandQueue(mContext, displayTracker),
+                new CommandQueue(mSpiedContext, displayTracker),
                 mAutoHideController,
                 mButtonSelectionStateListener,
                 executor,

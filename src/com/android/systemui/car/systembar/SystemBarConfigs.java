@@ -25,6 +25,7 @@ import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
 import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
 import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.Binder;
@@ -89,10 +90,13 @@ public class SystemBarConfigs {
     private static final Map<@SystemBarSide Integer, InsetsFrameProvider> BAR_GESTURE_MAP =
             new ArrayMap<>();
 
+    private final Context mContext;
     private final Resources mResources;
     private final Map<@SystemBarSide Integer, SystemBarConfig> mSystemBarConfigMap =
             new ArrayMap<>();
     private final List<@SystemBarSide Integer> mSystemBarSidesByZOrder = new ArrayList<>();
+    /** Maps @WindowManager.LayoutParams.WindowType to window contexts for that type. */
+    private final Map<Integer, Context> mWindowContexts = new ArrayMap<>();
 
     private boolean mTopNavBarEnabled;
     private boolean mBottomNavBarEnabled;
@@ -101,7 +105,8 @@ public class SystemBarConfigs {
     private int mDisplayCompatToolbarState = 0;
 
     @Inject
-    public SystemBarConfigs(@Main Resources resources) {
+    public SystemBarConfigs(Context context, @Main Resources resources) {
+        mContext = context;
         mResources = resources;
         init();
     }
@@ -132,6 +137,20 @@ public class SystemBarConfigs {
      */
     void resetSystemBarConfigs() {
         init();
+    }
+
+    protected Context getWindowContextBySide(@SystemBarSide int side) {
+        SystemBarConfig config = mSystemBarConfigMap.get(side);
+        if (config == null) {
+            return null;
+        }
+        int windowType = config.mapZOrderToBarType(config.getZOrder());
+        if (mWindowContexts.containsKey(windowType)) {
+            return mWindowContexts.get(windowType);
+        }
+        Context context = mContext.createWindowContext(windowType, /* options= */ null);
+        mWindowContexts.put(windowType, context);
+        return context;
     }
 
     protected WindowManager.LayoutParams getLayoutParamsBySide(@SystemBarSide int side) {

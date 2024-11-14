@@ -107,7 +107,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     private final CarSystemBarViewFactory mCarSystemBarViewFactory;
     private final SystemBarConfigs mSystemBarConfigs;
     private final SysuiDarkIconDispatcher mStatusBarIconController;
-    private final WindowManager mWindowManager;
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final CommandQueue mCommandQueue;
     private final AutoHideController mAutoHideController;
@@ -196,7 +195,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mCarSystemBarViewFactory = carSystemBarViewFactory;
         mSystemBarConfigs = systemBarConfigs;
         mStatusBarIconController = (SysuiDarkIconDispatcher) darkIconDispatcher;
-        mWindowManager = windowManager;
         mCarDeviceProvisionedController = deviceProvisionedController;
         mCommandQueue = commandQueue;
         mAutoHideController = autoHideController;
@@ -771,10 +769,22 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
                         + ", enabled=" + isBarEnabled);
             }
             if (barWindow != null && !isBarAttached && isBarEnabled) {
-                mWindowManager.addView(barWindow, mSystemBarConfigs.getLayoutParamsBySide(side));
-                mSystemBarAttachedMap.put(side, true);
+                WindowManager wm = getWindowManagerForSide(side);
+                if (wm != null) {
+                    wm.addView(barWindow, mSystemBarConfigs.getLayoutParamsBySide(side));
+                    mSystemBarAttachedMap.put(side, true);
+                }
+
             }
         });
+    }
+
+    private WindowManager getWindowManagerForSide(@SystemBarSide int side) {
+        Context windowContext = mSystemBarConfigs.getWindowContextBySide(side);
+        if (windowContext == null) {
+            return null;
+        }
+        return windowContext.getSystemService(WindowManager.class);
     }
 
     private void registerOverlayChangeBroadcastReceiver() {
@@ -927,7 +937,10 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             if (barWindow != null) {
                 barWindow.removeAllViews();
                 if (removeUnusedWindow) {
-                    mWindowManager.removeViewImmediate(barWindow);
+                    WindowManager wm = getWindowManagerForSide(side);
+                    if (wm != null) {
+                        wm.removeViewImmediate(barWindow);
+                    }
                     mSystemBarAttachedMap.put(side, false);
                 }
                 mSystemBarViewControllerMap.remove(side);

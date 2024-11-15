@@ -15,20 +15,27 @@
  */
 package com.android.systemui.car.systembar;
 
+import static android.view.Display.DEFAULT_DISPLAY;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
-import android.animation.ValueAnimator;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.hardware.input.InputManager;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.InputChannel;
+import android.view.InputEvent;
+import android.view.InputEventReceiver;
+import android.view.InputMonitor;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -46,24 +53,34 @@ import com.android.systemui.R;
 public class CarAppFloatingButtonManager {
 
     private static final String TAG = "CarAppFloatingButtonManager";
+    private static final String TOUCH_INPUT_CHANNEL_NAME = "TouchMonitor";
     private static final int LONG_CLICK_DURATION_MS = 1000;
     private static final int ANIMATION_DURATION_MS = 1000;
     private static final int ANIMATION_DELAY_MS = 300;
     private static final int DRAG_DELAY_MS = 300;
+    private static final long INPUT_IDLE_TIMEOUT = 10000;
+    private static final long INACTIVITY_TIMEOUT_MS = 12000;
 
     private Context mContext;
     private WindowManager windowManager;
     private View appFloatingButtonView;
     private WindowManager.LayoutParams params;
     private ImageButton backButton;
+    private InputEventReceiver inputEventReceiver;
+    private InputChannel inputChannel;
+    private InputManager inputManager;
+    private InputMonitor inputMonitor;
     private TextView btnText;
 
     private boolean initialAnimationShown = false;
     private boolean isFadingIn = false;
+    private boolean isInputMonitorActive = false;
+    private boolean isSystemFade = false;
     private int screenHeight;
     private int tapThreshold;
 
-    private static final long INACTIVITY_TIMEOUT_MS = 12000;
+    private Handler inputMonitorHandler;
+    private Runnable inputMonitorRunnable;
     private Handler inactivityHandler;
     private Runnable inactivityRunnable;
 
@@ -123,7 +140,18 @@ public class CarAppFloatingButtonManager {
         inactivityRunnable = new Runnable() {
             @Override
             public void run() {
-                btnFadeOut();
+                if(!isSystemFade) {
+                    btnFadeOut(0.25f);
+                }
+            }
+        };
+
+        inputMonitorHandler = new Handler();
+        inputMonitorRunnable = new Runnable() {
+            @Override
+            public void run() {
+                btnFadeOut(0.0f);
+                isSystemFade = true;
             }
         };
     }
@@ -152,6 +180,11 @@ public class CarAppFloatingButtonManager {
             windowManager.removeView(appFloatingButtonView);
         }
         windowManager.addView(appFloatingButtonView, params);
+        activateInputMonitor();
+        inputMonitorHandler.removeCallbacks(inputMonitorRunnable);
+        inputMonitorHandler.postDelayed(inputMonitorRunnable, INPUT_IDLE_TIMEOUT);
+        inactivityHandler.removeCallbacks(inactivityRunnable);
+        inactivityHandler.postDelayed(inactivityRunnable, INACTIVITY_TIMEOUT_MS);
     }
 
     /**
@@ -160,6 +193,7 @@ public class CarAppFloatingButtonManager {
     public void removeAppFloatingButton() {
         if (appFloatingButtonView != null && appFloatingButtonView.isAttachedToWindow()) {
             windowManager.removeView(appFloatingButtonView);
+            deactivateInputMonitor();
         }
     }
 
@@ -211,8 +245,6 @@ public class CarAppFloatingButtonManager {
         backButton.setPressed(true);
         backButton.postDelayed(() -> backButton.setPressed(false), ANIMATION_DELAY_MS);
         animateBackLongPressText();
-        inactivityHandler.removeCallbacks(inactivityRunnable);
-        inactivityHandler.postDelayed(inactivityRunnable, INACTIVITY_TIMEOUT_MS);
     }
 
     private void animateText(String firstText, String secondText) {
@@ -276,9 +308,8 @@ public class CarAppFloatingButtonManager {
     }
 
     // Fade out animation
-    private void btnFadeOut() {
-        // Fade out the back button to 0.25 opacity
-        ObjectAnimator fadeOut = ObjectAnimator.ofFloat(backButton, "alpha", 1f, 0.25f);
+    private void btnFadeOut(float level) {
+        ObjectAnimator fadeOut = ObjectAnimator.ofFloat(backButton, "alpha", 1f, level);
         fadeOut.setDuration(ANIMATION_DURATION_MS);
         fadeOut.start();
     }
@@ -293,6 +324,56 @@ public class CarAppFloatingButtonManager {
         windowManager.updateViewLayout(appFloatingButtonView, params);
     }
 
+    // Activates InputMonitor only when needed
+    private void activateInputMonitor() {
+        if (!isInputMonitorActive) {
+            inputManager = mContext.getSystemService(InputManager.class);
+            inputMonitor = inputManager.monitorGestureInput(TOUCH_INPUT_CHANNEL_NAME,
+                DEFAULT_DISPLAY);
+            inputChannel = inputMonitor.getInputChannel();
+
+            inputEventReceiver = new InputEventReceiver(inputChannel, Looper.getMainLooper()) {
+                @Override
+                public void onInputEvent(InputEvent event) {
+                    if (event instanceof MotionEvent) {
+                        MotionEvent motionEvent = (MotionEvent) event;
+                        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                            resetInputMonitor();
+                        }
+                    }
+                    finishInputEvent(event, true);
+                }
+            };
+            isInputMonitorActive = true;
+        }
+    }
+
+    // Method to reset the input monitor timer
+    private void resetInputMonitor() {
+        inputMonitorHandler.removeCallbacks(inputMonitorRunnable);
+        inputMonitorHandler.postDelayed(inputMonitorRunnable, INPUT_IDLE_TIMEOUT);
+        if (backButton.getAlpha() == 0) {
+            btnFadeIn();
+            isSystemFade = false;
+            inactivityHandler.postDelayed(inactivityRunnable, INACTIVITY_TIMEOUT_MS);
+        }
+    }
+
+    // Deactivates InputMonitor to save resources
+    private void deactivateInputMonitor() {
+        inputMonitorHandler.removeCallbacks(inputMonitorRunnable);
+        if (isInputMonitorActive) {
+            if (inputEventReceiver != null) {
+                inputEventReceiver.dispose();
+                inputEventReceiver = null;
+            }
+            if (inputMonitor != null) {
+                inputMonitor.dispose();
+                inputMonitor = null;
+            }
+            isInputMonitorActive = false;
+        }
+    }
 
     // Inner class for handling touch events on the back button
     private class TouchListener implements View.OnTouchListener {

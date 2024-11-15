@@ -87,7 +87,8 @@
             systemui:intent="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.android.car.dialer;launchFlags=0x10000000;end"
             systemui:packages="com.android.car.dialer"
             systemui:selectedIcon="@drawable/car_ic_phone_selected"
-            systemui:highlightWhenSelected="true"/>
+            systemui:highlightWhenSelected="true"
+            systemui:disableForLockTaskModeLocked="true"/>
     </LinearLayout>
     <LinearLayout
         android:id="@+id/extra_nav_buttons"
@@ -117,6 +118,7 @@
             systemui:icon="@drawable/car_ic_apps"
             systemui:intent="intent:#Intent;action=com.android.car.carlauncher.ACTION_APP_GRID;package=com.android.car.carlauncher;launchFlags=0x24000000;end"
             systemui:selectedIcon="@drawable/car_ic_apps_selected"
-            systemui:highlightWhenSelected="true"/>
+            systemui:highlightWhenSelected="true"
+            systemui:systemBarDisableFlags="home"/>
     </LinearLayout>
 </com.android.systemui.car.systembar.CarSystemBarView>

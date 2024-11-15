@@ -118,14 +118,6 @@ public class CarSystemBarViewController extends ViewController<CarSystemBarView>
     }
 
     /**
-     * Sets the system bar view's disabled state and runnable when disabled.
-     */
-    public void setDisabledSystemBarButton(int viewId, boolean disabled, Runnable runnable,
-                @Nullable String buttonName) {
-        mView.setDisabledSystemBarButton(viewId, disabled, runnable, buttonName);
-    }
-
-    /**
      * Sets the touch listeners that will be called from onInterceptTouchEvent and onTouchEvent
      *
      * @param statusBarWindowTouchListeners List of listeners to call from touch and intercept touch

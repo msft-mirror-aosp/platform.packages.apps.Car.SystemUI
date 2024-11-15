@@ -73,6 +73,7 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
     }
 
     private final Context mContext;
+    private final SystemBarConfigs mSystemBarConfigs;
     private final ArrayMap<Type, CarSystemBarViewController> mCachedViewControllerMap =
             new ArrayMap<>(Type.values().length);
     private final ArrayMap<Type, ViewGroup> mCachedContainerMap = new ArrayMap<>();
@@ -82,25 +83,31 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
     @Inject
     public CarSystemBarViewFactoryImpl(
             Context context,
+            SystemBarConfigs configs,
             Map<@SystemBarSide Integer, CarSystemBarViewController.Factory>
                     factoriesMap) {
         mContext = context;
+        mSystemBarConfigs = configs;
         mFactoriesMap = factoriesMap;
     }
 
     /** Gets the top window by side. */
     @Override
     public ViewGroup getSystemBarWindow(@SystemBarSide int side) {
+        Context windowContext = mSystemBarConfigs.getWindowContextBySide(side);
+        if (windowContext == null) {
+            throw new IllegalStateException("Cannot have null window context for side=" + side);
+        }
         switch (side) {
             case TOP:
-                return getWindowCached(Type.TOP);
+                return getWindowCached(Type.TOP, windowContext);
             case RIGHT:
-                return getWindowCached(Type.RIGHT);
+                return getWindowCached(Type.RIGHT, windowContext);
             case BOTTOM:
-                return getWindowCached(Type.BOTTOM);
+                return getWindowCached(Type.BOTTOM, windowContext);
             case LEFT:
             default:
-                return getWindowCached(Type.LEFT);
+                return getWindowCached(Type.LEFT, windowContext);
         }
     }
 
@@ -127,12 +134,12 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
         }
     }
 
-    private ViewGroup getWindowCached(Type type) {
+    private ViewGroup getWindowCached(Type type, Context windowContext) {
         if (mCachedContainerMap.containsKey(type)) {
             return mCachedContainerMap.get(type);
         }
 
-        ViewGroup window = (ViewGroup) View.inflate(mContext,
+        ViewGroup window = (ViewGroup) View.inflate(windowContext,
                 R.layout.navigation_bar_window, /* root= */ null);
         window.setId(getWindowId(type));
         mCachedContainerMap.put(type, window);
@@ -175,8 +182,12 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
         if (barLayoutInteger == null) {
             return null;
         }
+        Context windowContext = mSystemBarConfigs.getWindowContextBySide(side);
+        if (windowContext == null) {
+            return null;
+        }
         @LayoutRes int barLayout = barLayoutInteger;
-        CarSystemBarView view = (CarSystemBarView) View.inflate(mContext, barLayout,
+        CarSystemBarView view = (CarSystemBarView) View.inflate(windowContext, barLayout,
                 /* root= */ null);
 
         CarSystemBarViewController controller = mFactoriesMap.get(side).create(side, view);

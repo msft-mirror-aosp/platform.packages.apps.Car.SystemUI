@@ -220,8 +220,8 @@ public class CarSystemBarTest extends SysuiTestCase {
     }
 
     private void initCarSystemBar() {
-        SystemBarConfigs systemBarConfigs = new SystemBarConfigs(mSpiedContext,
-                mTestableResources.getResources());
+        SystemBarConfigs systemBarConfigs =
+                new SystemBarConfigsImpl(mSpiedContext, mTestableResources.getResources());
         FakeDisplayTracker displayTracker = new FakeDisplayTracker(mContext);
         mCarSystemBarController = spy(new CarSystemBarControllerImpl(mSpiedContext,
                 mUserTracker,
@@ -531,7 +531,8 @@ public class CarSystemBarTest extends SysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, false);
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, true);
         mTestableResources.addOverride(R.bool.config_enableRightSystemBar, true);
-        mSystemBarConfigs = new SystemBarConfigs(mContext, mTestableResources.getResources());
+        mSystemBarConfigs =
+                new SystemBarConfigsImpl(mSpiedContext, mTestableResources.getResources());
         when(mCarSystemBarController.getBarWindow(TOP)).thenReturn(mock(ViewGroup.class));
         when(mCarSystemBarController.getBarWindow(BOTTOM)).thenReturn(null);
         when(mCarSystemBarController.getBarWindow(LEFT)).thenReturn(mock(ViewGroup.class));

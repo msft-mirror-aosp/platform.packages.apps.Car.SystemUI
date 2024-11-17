@@ -27,8 +27,6 @@ import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
-import java.util.Optional;
-
 import javax.inject.Inject;
 
 /**
@@ -46,17 +44,14 @@ public class BottomNotificationPanelViewMediator extends NotificationPanelViewMe
             PowerManagerHelper powerManagerHelper,
             BroadcastDispatcher broadcastDispatcher,
             UserTracker userTracker,
-            ConfigurationController configurationController,
-            Optional<NotificationSystemBarPresenter> notificationSystemBarPresenter
-    ) {
+            ConfigurationController configurationController) {
         super(context,
                 carSystemBarController,
                 notificationPanelViewController,
                 powerManagerHelper,
                 broadcastDispatcher,
                 userTracker,
-                configurationController,
-                notificationSystemBarPresenter);
+                configurationController);
         notificationPanelViewController.setOverlayDirection(
                 OverlayPanelViewController.OVERLAY_FROM_BOTTOM_BAR);
     }

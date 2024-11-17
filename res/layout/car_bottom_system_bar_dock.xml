@@ -39,7 +39,9 @@
             systemui:componentNames="com.android.car.carlauncher/.CarLauncher"
             systemui:highlightWhenSelected="true"
             systemui:icon="@drawable/car_ic_home"
-            systemui:intent="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;launchFlags=0x14000000;end"/>
+            systemui:intent="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;launchFlags=0x14000000;end"
+            systemui:systemBarDisableFlags="home"
+            systemui:controller="com.android.systemui.car.systembar.HomeButtonController"/>
 
         <com.android.systemui.car.systembar.CarSystemBarButton
             android:id="@+id/passenger_home"
@@ -48,7 +50,9 @@
             style="@style/SystemBarButtonWithDock"
             systemui:highlightWhenSelected="true"
             systemui:icon="@drawable/car_ic_home"
-            systemui:intent="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;launchFlags=0x14000000;end"/>
+            systemui:intent="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;launchFlags=0x14000000;end"
+            systemui:systemBarDisableFlags="home"
+            systemui:controller="com.android.systemui.car.systembar.PassengerHomeButtonController"/>
 
         <Space
             android:layout_width="0dp"
@@ -76,7 +80,8 @@
             systemui:highlightWhenSelected="true"
             systemui:icon="@drawable/car_ic_apps"
             systemui:intent="@string/system_bar_app_drawer_intent"
-            systemui:clearBackStack="true"/>
+            systemui:clearBackStack="true"
+            systemui:systemBarDisableFlags="home"/>
 
         <com.android.systemui.car.systembar.element.layout.CarSystemBarFrameLayout
             android:layout_width="wrap_content"
@@ -97,7 +102,8 @@
             systemui:highlightWhenSelected="true"
             systemui:icon="@drawable/car_ic_control_center"
             systemui:intent="intent:#Intent;action=android.intent.action.MAIN;package=com.android.car.multidisplay.controlcenter;component=com.android.car.multidisplay.controlcenter/.ControlCenterActivity;B.BOTTOM_BAR_LAUNCH=true;end"
-            systemui:componentNames="com.android.car.multidisplay.controlcenter/.ControlCenterActivity"/>
+            systemui:componentNames="com.android.car.multidisplay.controlcenter/.ControlCenterActivity"
+            systemui:controller="com.android.systemui.car.systembar.ControlCenterButtonController"/>
 
         <Space
             android:layout_width="0dp"
@@ -154,6 +160,8 @@
             systemui:componentNames="com.android.car.carlauncher/.CarLauncher"
             systemui:highlightWhenSelected="true"
             systemui:icon="@drawable/car_ic_home"
-            systemui:intent="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;launchFlags=0x14000000;end"/>
+            systemui:intent="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;launchFlags=0x14000000;end"
+            systemui:systemBarDisableFlags="home"
+            systemui:controller="com.android.systemui.car.systembar.HomeButtonController"/>
     </LinearLayout>
 </com.android.systemui.car.systembar.CarSystemBarView>

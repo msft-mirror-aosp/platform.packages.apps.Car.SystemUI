@@ -242,6 +242,11 @@ public class NotificationPanelViewController extends OverlayPanelViewController
     // OverlayViewController
 
     @Override
+    public boolean shouldPanelConsumeSystemBarTouch() {
+        return true;
+    }
+
+    @Override
     protected void onFinishInflate() {
         reinflate();
     }

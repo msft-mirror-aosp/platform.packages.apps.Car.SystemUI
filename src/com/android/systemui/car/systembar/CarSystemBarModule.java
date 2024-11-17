@@ -37,7 +37,6 @@ import com.android.systemui.car.hvac.HvacButtonController;
 import com.android.systemui.car.hvac.TemperatureControlViewController;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationButtonController;
-import com.android.systemui.car.notification.NotificationSystemBarPresenter;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
@@ -259,18 +258,6 @@ public abstract class CarSystemBarModule {
     public abstract CarSystemBarElementController.Factory bindDebugPanelButtonViewController(
             DebugPanelButtonViewController.Factory factory);
 
-    /** Injects NotificationSystemBarPresenter */
-    @SysUISingleton
-    @Provides
-    static Optional<NotificationSystemBarPresenter> provideNotificationSystemBarPresenter(
-             CarSystemBarController controller) {
-        if (controller instanceof NotificationSystemBarPresenter) {
-            return Optional.of((NotificationSystemBarPresenter) controller);
-        } else {
-            return Optional.empty();
-        }
-    }
-
     /** Injects CarSystemBarViewFactory */
     @SysUISingleton
     @Binds
@@ -281,29 +268,29 @@ public abstract class CarSystemBarModule {
     @Binds
     @IntoMap
     @IntKey(LEFT)
-    public abstract CarSystemBarViewController.Factory bindLeftCarSystemBarViewFactory(
-            CarSystemBarViewController.Factory factory);
+    public abstract CarSystemBarViewControllerFactory bindLeftCarSystemBarViewFactory(
+            CarSystemBarViewControllerImpl.Factory factory);
 
     /** Injects CarSystemBarViewController for @SystemBarSide TOP */
     @Binds
     @IntoMap
     @IntKey(TOP)
-    public abstract CarSystemBarViewController.Factory bindTopCarSystemBarViewFactory(
+    public abstract CarSystemBarViewControllerFactory bindTopCarSystemBarViewFactory(
             CarTopSystemBarViewController.Factory factory);
 
     /** Injects CarSystemBarViewController for @SystemBarSide RIGHT */
     @Binds
     @IntoMap
     @IntKey(RIGHT)
-    public abstract CarSystemBarViewController.Factory bindRightCarSystemBarViewFactory(
-            CarSystemBarViewController.Factory factory);
+    public abstract CarSystemBarViewControllerFactory bindRightCarSystemBarViewFactory(
+            CarSystemBarViewControllerImpl.Factory factory);
 
     /** Injects CarSystemBarViewController for @SystemBarSide BOTTOM */
     @Binds
     @IntoMap
     @IntKey(BOTTOM)
-    public abstract CarSystemBarViewController.Factory bindBottomCarSystemBarViewFactory(
-            CarSystemBarViewController.Factory factory);
+    public abstract CarSystemBarViewControllerFactory bindBottomCarSystemBarViewFactory(
+            CarSystemBarViewControllerImpl.Factory factory);
 
     /** Injects CarSystemBarButtonController */
     @Binds
@@ -333,4 +320,23 @@ public abstract class CarSystemBarModule {
     public abstract CarSystemBarElementController.Factory
             bindTemperatureControlViewControllerFactory(
                     TemperatureControlViewController.Factory factory);
+
+    /** Injects HomeButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(HomeButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindHomeButtonControllerFactory(
+            HomeButtonController.Factory factory);
+
+    /** Injects PassengerHomeButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(PassengerHomeButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindPassengerHomeButtonControllerFactory(
+            PassengerHomeButtonController.Factory factory);
+
+    /** Injects SystemBarConfigs */
+    @SysUISingleton
+    @Binds
+    public abstract SystemBarConfigs bindSystemBarConfigs(SystemBarConfigsImpl impl);
 }

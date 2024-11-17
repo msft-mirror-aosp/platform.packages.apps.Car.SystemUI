@@ -72,13 +72,13 @@ public class SystemUIOverlayWindowController implements
     @Inject
     public SystemUIOverlayWindowController(
             Context context,
-            WindowManager windowManager,
             ConfigurationController configurationController) {
-        mContext = context;
-        mWindowManager = windowManager;
+        mContext = context.createWindowContext(WindowManager.LayoutParams.TYPE_NOTIFICATION_SHADE,
+                /* options= */ null);
+        mWindowManager = mContext.getSystemService(WindowManager.class);
 
         mLpChanged = new WindowManager.LayoutParams();
-        mBaseLayout = (ViewGroup) LayoutInflater.from(context)
+        mBaseLayout = (ViewGroup) LayoutInflater.from(mContext)
                 .inflate(R.layout.sysui_overlay_window, /* root= */ null, false);
         configurationController.addCallback(this);
     }

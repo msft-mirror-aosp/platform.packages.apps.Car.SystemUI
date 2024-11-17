@@ -560,7 +560,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private void makeOverlayToast(int stringId) {
         Resources res = mContext.getResources();
 
-        SystemUIToast systemUIToast = mToastFactory.createToast(mContext,
+        SystemUIToast systemUIToast = mToastFactory.createToast(mContext, mContext,
                 res.getString(stringId), mContext.getPackageName(), UserHandle.myUserId(),
                 res.getConfiguration().orientation);
 

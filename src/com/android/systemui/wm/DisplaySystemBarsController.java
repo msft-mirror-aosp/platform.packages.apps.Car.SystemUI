@@ -329,9 +329,13 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
                     /* fromIme= */ false, /* statsToken= */ null);
             hideInsets(barVisibilities[INVISIBLE_BAR_VISIBILITIES_TYPES_INDEX],
                     /* fromIme= */ false, /* statsToken = */ null);
+
+            int insetMask = barVisibilities[VISIBLE_BAR_VISIBILITIES_TYPES_INDEX]
+                    | barVisibilities[INVISIBLE_BAR_VISIBILITIES_TYPES_INDEX];
             try {
                 mWmService.updateDisplayWindowRequestedVisibleTypes(mDisplayId,
-                        mRequestedVisibleTypes, null /* TODO(b/380891919) pass IME statsToken */);
+                        barVisibilities[VISIBLE_BAR_VISIBILITIES_TYPES_INDEX], insetMask,
+                        null /* TODO(b/380891919) pass IME statsToken */);
             } catch (RemoteException e) {
                 Slog.w(TAG, "Unable to update window manager service.");
             }

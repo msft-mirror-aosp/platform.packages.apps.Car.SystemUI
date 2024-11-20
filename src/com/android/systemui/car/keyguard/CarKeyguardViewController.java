@@ -242,7 +242,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
                 mMessageAreaControllerFactory,
                 mBouncerMessageInteractor,
                 mBouncerLogger,
-                mSelectedUserInteractor);
+                mSelectedUserInteractor, null /* plugins */);
         mBiometricUnlockControllerLazy.get().setKeyguardViewController(this);
     }
 

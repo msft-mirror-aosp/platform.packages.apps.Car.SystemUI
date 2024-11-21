@@ -70,7 +70,7 @@ import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.DisplayTrackerImpl;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.ShadeController;
-import com.android.systemui.shade.data.repository.ShadePositionRepository;
+import com.android.systemui.shade.data.repository.ShadeDisplaysRepository;
 import com.android.systemui.statusbar.NotificationShadeDepthController;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
 import com.android.systemui.statusbar.SysuiStatusBarStateController;
@@ -246,7 +246,7 @@ public interface CarKeyguardModule {
             KeyguardStateController keyguardStateController,
             ConnectedDisplayKeyguardPresentation.Factory
                     connectedDisplayKeyguardPresentationFactory,
-            Provider<ShadePositionRepository> shadePositionRepositoryProvider,
+            Provider<ShadeDisplaysRepository> shadeDisplaysRepositoryProvider,
             @Application CoroutineScope appScope) {
         DisplayTracker finalDisplayTracker =
                 CarSystemUIUserUtil.isDriverMUMDSystemUI() ? displayTrackerImpl.get()
@@ -254,7 +254,7 @@ public interface CarKeyguardModule {
         return new CarKeyguardDisplayManager(context, navigationBarControllerLazy,
                 finalDisplayTracker, mainExecutor, uiBgExecutor, deviceStateHelper,
                 keyguardStateController, connectedDisplayKeyguardPresentationFactory,
-                shadePositionRepositoryProvider, appScope);
+                shadeDisplaysRepositoryProvider, appScope);
     }
 
     /** Binds {@link KeyguardUpdateMonitor} as a {@link CoreStartable}. */

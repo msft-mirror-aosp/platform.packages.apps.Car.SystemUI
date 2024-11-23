@@ -48,14 +48,15 @@ public class BlockerViewModel extends ViewModel implements PropertyChangeListene
     @VisibleForTesting
     InCallLiveData mInCallLiveData;
     private final InCallServiceManager mServiceManager;
-    @VisibleForTesting
-    MediaSessionHelper mMediaSessionHelper;
+    private final MediaSessionHelper mMediaSessionHelper;
     private final MediatorLiveData<BlockingType> mBlockingTypeLiveData = new MediatorLiveData<>();
 
     @Inject
-    public BlockerViewModel(Context context, InCallServiceManager serviceManager) {
+    public BlockerViewModel(Context context, InCallServiceManager serviceManager,
+            MediaSessionHelper mediaSessionHelper) {
         mContext = context;
         mServiceManager = serviceManager;
+        mMediaSessionHelper = mediaSessionHelper;
     }
 
     /** Initialize data sources **/
@@ -69,7 +70,7 @@ public class BlockerViewModel extends ViewModel implements PropertyChangeListene
             onInCallServiceConnected();
         }
 
-        mMediaSessionHelper = new MediaSessionHelper(mContext, userHandle);
+        mMediaSessionHelper.init(userHandle);
 
         // Set initial liveData value
         onUpdate();

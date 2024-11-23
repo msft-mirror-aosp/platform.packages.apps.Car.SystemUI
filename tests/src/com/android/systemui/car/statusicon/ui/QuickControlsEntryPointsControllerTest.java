@@ -28,6 +28,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.os.Handler;
 import android.testing.AndroidTestingRunner;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,6 +46,7 @@ import com.android.systemui.lifecycle.InstantTaskExecutorRule;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.tests.R;
+import com.android.systemui.util.settings.GlobalSettings;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -81,6 +83,10 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
     Provider<StatusIconController> mProvider;
     @Mock
     private StatusIconController mStatusIconController;
+    @Mock
+    private Handler mHandler;
+    @Mock
+    private GlobalSettings mGlobalSettings;
     @Rule
     public final InstantTaskExecutorRule mTaskExecutorRule = new InstantTaskExecutorRule();
 
@@ -97,7 +103,8 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
                 mConfigurationController,
                 () -> mSystemUIQCViewController,
                 mIconControllerCreators,
-                mQCPanelReadOnlyIconsController);
+                mQCPanelReadOnlyIconsController,
+                mHandler, mGlobalSettings);
     }
 
     @Test

@@ -93,6 +93,8 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
     private Executor mExecutor;
     @Mock
     private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
+    @Mock
+    private DataSubscriptionStatsLogHelper mDataSubscriptionStatsLogHelper;
     private MockitoSession mMockingSession;
     private ActivityManager.RunningTaskInfo mRunningTaskInfoMock;
     private DataSubscriptionController mController;
@@ -107,7 +109,8 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
 
         mContext = spy(mContext);
         when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(1000));
-        mController = new DataSubscriptionController(mContext, mUserTracker, mHandler, mExecutor);
+        mController = new DataSubscriptionController(mContext, mUserTracker, mHandler, mExecutor,
+                mDataSubscriptionStatsLogHelper);
         mController.setSubscription(mDataSubscription);
         mController.setPopupWindow(mPopupWindow);
         mController.setConnectivityManager(mConnectivityManager);

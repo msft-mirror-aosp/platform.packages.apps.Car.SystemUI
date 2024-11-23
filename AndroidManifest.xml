@@ -31,6 +31,7 @@
     <uses-permission android:name="android.car.permission.CAR_INSTRUMENT_CLUSTER_CONTROL" />
     <!-- This permission is required to use CarOccupantZoneManager. -->
     <uses-permission android:name="android.car.permission.CAR_CONTROL_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.car.permission.CAR_IDENTIFICATION"/>
     <!-- This permission is required to get bluetooth broadcast. -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -58,6 +59,8 @@
     <uses-permission android:name="android.permission.MANAGE_ONGOING_CALLS"/>
     <!-- System permission to control media playback of the active session -->
     <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/>
+    <!-- Permission to read notifications -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATIONS"/>
 
     <application
         tools:replace="android:name,android:appComponentFactory"

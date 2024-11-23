@@ -17,14 +17,25 @@ package {
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
+genrule {
+    name: "statslog-carsystemui-java-gen",
+    tools: ["stats-log-api-gen"],
+    cmd: "$(location stats-log-api-gen) --java $(out) --module carsystemui" +
+        " --javaPackage com.android.systemui --javaClass CarSystemUIStatsLog",
+    out: ["com/android/systemui/car/CarSystemUIStatsLog.java"],
+}
+
+carsystemui_srcs = [
+    "src/**/*.java",
+    "src/**/*.kt",
+    "src/**/I*.aidl",
+    ":statslog-carsystemui-java-gen",
+]
+
 android_library {
     name: "CarSystemUI-core",
 
-    srcs: [
-        "src/**/*.java",
-        "src/**/*.kt",
-        "src/**/I*.aidl",
-    ],
+    srcs: carsystemui_srcs,
 
     resource_dirs: [
         "res-keyguard",
@@ -94,6 +105,7 @@ android_library {
         "src/**/*.java",
         "src/**/*.kt",
         "src/**/I*.aidl",
+        ":statslog-carsystemui-java-gen",
     ],
     static_libs: [
         "SystemUI-tests",

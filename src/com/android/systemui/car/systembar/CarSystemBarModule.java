@@ -335,6 +335,13 @@ public abstract class CarSystemBarModule {
     public abstract CarSystemBarElementController.Factory bindPassengerHomeButtonControllerFactory(
             PassengerHomeButtonController.Factory factory);
 
+    /** Injects ControlCenterButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(ControlCenterButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindControlCenterButtonControllerFactory(
+            ControlCenterButtonController.Factory factory);
+
     /** Injects SystemBarConfigs */
     @SysUISingleton
     @Binds

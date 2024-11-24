@@ -21,6 +21,7 @@ import static android.content.DialogInterface.BUTTON_POSITIVE;
 import static android.os.UserManager.DISALLOW_ADD_USER;
 import static android.os.UserManager.SWITCHABILITY_STATUS_OK;
 import static android.view.WindowInsets.Type.statusBars;
+import static android.view.WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG;
 
 import static com.android.systemui.car.users.CarSystemUIUserUtil.getCurrentUserHandle;
 
@@ -253,6 +254,7 @@ public class UserGridRecyclerView extends RecyclerView {
             implements Dialog.OnClickListener, Dialog.OnCancelListener {
 
         private final Context mContext;
+        private Context mKeyguardDialogWindowContext;
         private List<UserRecord> mUsers;
         private final Resources mRes;
         private final String mGuestName;
@@ -397,7 +399,7 @@ public class UserGridRecyclerView extends RecyclerView {
                     .concat(System.getProperty("line.separator"))
                     .concat(mRes.getString(R.string.user_add_user_message_update));
 
-            AlertDialog addUserDialog = new Builder(mContext,
+            AlertDialog addUserDialog = new Builder(getKeyguardDialogWindowContext(),
                     com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
                     .setTitle(R.string.user_add_profile_title)
                     .setMessage(message)
@@ -412,11 +414,19 @@ public class UserGridRecyclerView extends RecyclerView {
 
         private void applyCarSysUIDialogFlags(AlertDialog dialog) {
             final Window window = dialog.getWindow();
-            window.setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+            window.setType(TYPE_KEYGUARD_DIALOG);
             window.addFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
                     | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
             window.getAttributes().setFitInsetsTypes(
                     window.getAttributes().getFitInsetsTypes() & ~statusBars());
+        }
+
+        private Context getKeyguardDialogWindowContext() {
+            if (mKeyguardDialogWindowContext == null) {
+                mKeyguardDialogWindowContext = mContext.createWindowContext(TYPE_KEYGUARD_DIALOG,
+                        /* options= */ null);
+            }
+            return mKeyguardDialogWindowContext;
         }
 
         private void notifyUserSelected(UserRecord userRecord) {

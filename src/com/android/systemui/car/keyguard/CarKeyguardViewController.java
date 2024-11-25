@@ -319,6 +319,11 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
     @Override
     public void hideAlternateBouncer(boolean forceUpdateScrim) {
+        hideAlternateBouncer(forceUpdateScrim, true);
+    }
+
+    @Override
+    public void hideAlternateBouncer(boolean forceUpdateScrim, boolean clearDismissAction) {
         // no-op
     }
 

@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.systemui.car.notification;
+package com.android.systemui.car.systembar;
+
+import android.view.ViewGroup;
+
+import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 
 /**
- * An interface to handle the UI needed for notifications on systembars.
+ * A controller for initializing the system bar views.
+ *
+ * @param <T> type of the controller that will be created by this factory. needs to conform to
+ * {@link CarSystemBarViewController} interface.
  */
-public interface NotificationSystemBarPresenter {
-    /**
-     * Toggles all notification unseen indicator.
-     */
-    void toggleAllNotificationsUnseenIndicator(boolean hasUnseen);
-
-    /**
-     * Registers a {@link NotificationPanelViewController}
-     */
-    void registerNotificationPanelViewController(
-            NotificationPanelViewController notificationPanelViewController);
+public interface CarSystemBarViewControllerFactory<T extends CarSystemBarViewController> {
+    /** Create instance of CarSystemBarViewController for the system bar view */
+    T create(@SystemBarSide int side, ViewGroup view);
 }

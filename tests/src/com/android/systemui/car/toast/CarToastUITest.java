@@ -96,7 +96,8 @@ public class CarToastUITest extends SysuiTestCase {
         when(mSystemUIToast.getYOffset()).thenReturn(0);
         when(mSystemUIToast.getHorizontalMargin()).thenReturn(0);
         when(mSystemUIToast.getVerticalMargin()).thenReturn(0);
-        when(mToastFactory.createToast(any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt()))
+        when(mToastFactory.createToast(
+                any(), any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt()))
                 .thenReturn(mSystemUIToast);
     }
 
@@ -116,8 +117,8 @@ public class CarToastUITest extends SysuiTestCase {
         mCarToastUI.showToast(UID, PACKAGE_NAME, mIBinder, TEXT, mIBinder, DURATION,
                 mITransientNotificationCallback, Display.DEFAULT_DISPLAY);
 
-        verify(mToastFactory, never()).createToast(any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(),
-                anyInt());
+        verify(mToastFactory, never()).createToast(any(), any(), eq(TEXT), eq(PACKAGE_NAME),
+                anyInt(), anyInt());
     }
 
     @Test
@@ -129,7 +130,8 @@ public class CarToastUITest extends SysuiTestCase {
         mCarToastUI.showToast(UID, PACKAGE_NAME, mIBinder, TEXT, mIBinder, DURATION,
                 mITransientNotificationCallback, Display.DEFAULT_DISPLAY);
 
-        verify(mToastFactory).createToast(any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt());
+        verify(mToastFactory).createToast(
+                any(), any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt());
     }
 
     @Test
@@ -141,8 +143,8 @@ public class CarToastUITest extends SysuiTestCase {
         mCarToastUI.showToast(UID, PACKAGE_NAME, mIBinder, TEXT, mIBinder, DURATION,
                 mITransientNotificationCallback, Display.DEFAULT_DISPLAY);
 
-        verify(mToastFactory, never()).createToast(any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(),
-                anyInt());
+        verify(mToastFactory, never()).createToast(
+                any(), any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(),anyInt());
     }
 
     @Test
@@ -154,7 +156,8 @@ public class CarToastUITest extends SysuiTestCase {
         mCarToastUI.showToast(UID, PACKAGE_NAME, mIBinder, TEXT, mIBinder, DURATION,
                 mITransientNotificationCallback, Display.DEFAULT_DISPLAY);
 
-        verify(mToastFactory).createToast(any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt());
+        verify(mToastFactory).createToast(
+                any(), any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt());
     }
 
     @Test
@@ -166,8 +169,8 @@ public class CarToastUITest extends SysuiTestCase {
         mCarToastUI.showToast(UID, PACKAGE_NAME, mIBinder, TEXT, mIBinder, DURATION,
                 mITransientNotificationCallback, Display.DEFAULT_DISPLAY);
 
-        verify(mToastFactory, never()).createToast(any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(),
-                anyInt());
+        verify(mToastFactory, never()).createToast(
+                any(), any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt());
     }
 
     @Test
@@ -185,7 +188,8 @@ public class CarToastUITest extends SysuiTestCase {
         carToastUI.showToast(UID, PACKAGE_NAME, mIBinder, TEXT, mIBinder, DURATION,
                 mITransientNotificationCallback, Display.DEFAULT_DISPLAY);
 
-        verify(mToastFactory).createToast(any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt());
+        verify(mToastFactory).createToast(
+                any(), any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt());
     }
 
     @Test
@@ -197,7 +201,8 @@ public class CarToastUITest extends SysuiTestCase {
         mCarToastUI.showToast(UID, PACKAGE_NAME, mIBinder, TEXT, mIBinder, DURATION,
                 mITransientNotificationCallback, Display.DEFAULT_DISPLAY);
 
-        verify(mToastFactory).createToast(any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt());
+        verify(mToastFactory).createToast(
+                any(), any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt());
     }
 
     @Test
@@ -209,7 +214,8 @@ public class CarToastUITest extends SysuiTestCase {
         mCarToastUI.showToast(UID, PACKAGE_NAME, mIBinder, TEXT, mIBinder, DURATION,
                 mITransientNotificationCallback, Display.DEFAULT_DISPLAY);
 
-        verify(mToastFactory).createToast(any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt());
+        verify(mToastFactory).createToast(
+                any(), any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt());
     }
 
     @Test
@@ -221,7 +227,8 @@ public class CarToastUITest extends SysuiTestCase {
         mCarToastUI.showToast(UID, PACKAGE_NAME, mIBinder, TEXT, mIBinder, DURATION,
                 mITransientNotificationCallback, Display.DEFAULT_DISPLAY);
 
-        verify(mToastFactory).createToast(any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt());
+        verify(mToastFactory).createToast(
+                any(), any(), eq(TEXT), eq(PACKAGE_NAME), anyInt(), anyInt());
     }
 
     private void setupPackageInfo(boolean isSystem, boolean isPrivileged,

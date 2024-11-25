@@ -16,12 +16,11 @@
 package com.android.systemui.car.systembar;
 
 import android.content.Context;
+import android.util.ArrayMap;
 import android.util.Log;
+import android.util.Pair;
 import android.util.SparseArray;
-import android.view.View;
 import android.view.ViewGroup;
-
-import androidx.annotation.LayoutRes;
 
 import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 
@@ -35,9 +34,9 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
     private static final String TAG = CarSystemBarViewFactory.class.getSimpleName();
 
     private final Context mContext;
-    // Map<@LayoutRes Integer, CarSystemBarViewController>
-    private final SparseArray<CarSystemBarViewController> mCachedViewControllerMap =
-            new SparseArray<>();
+    // Map<Pair<@SystemBarSide Integer, Boolean>, CarSystemBarViewController>
+    private final Map<Pair<Integer, Boolean>, CarSystemBarViewController>
+            mCachedViewControllerMap = new ArrayMap<>();
     // Map<@SystemBarSide Integer, ViewGroup>
     private final SparseArray<ViewGroup> mCachedWindowMap = new SparseArray<>();
     private final Map<@SystemBarSide Integer,
@@ -81,28 +80,22 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
             return mCachedWindowMap.get(side);
         }
 
-        ViewGroup window = (ViewGroup) View.inflate(mContext,
-                mSystemBarConfigs.getWindowLayoutBySide(side), /* root= */ null);
-        window.setId(mSystemBarConfigs.getWindowIdBySide(side));
+        ViewGroup window = mSystemBarConfigs.getWindowLayoutBySide(side);
         mCachedWindowMap.put(side, window);
         return window;
     }
 
     private CarSystemBarViewController getBarCached(@SystemBarSide int side, boolean isSetUp) {
-        @LayoutRes int barLayout = mSystemBarConfigs.getSystemBarLayoutBySide(side, isSetUp);
-        if (barLayout == 0) {
-            return null;
-        }
-        if (mCachedViewControllerMap.get(barLayout) != null) {
-            return mCachedViewControllerMap.get(barLayout);
+        Pair key = new Pair<>(side, isSetUp);
+        if (mCachedViewControllerMap.get(key) != null) {
+            return mCachedViewControllerMap.get(key);
         }
 
-        ViewGroup view = (ViewGroup) View.inflate(mContext, barLayout, /* root= */ null);
-
-        CarSystemBarViewController controller = mFactoriesMap.get(side).create(side, view);
+        ViewGroup barView = mSystemBarConfigs.getSystemBarLayoutBySide(side, isSetUp);
+        CarSystemBarViewController controller = mFactoriesMap.get(side).create(side, barView);
         controller.init();
 
-        mCachedViewControllerMap.put(barLayout, controller);
+        mCachedViewControllerMap.put(key, controller);
         return controller;
     }
 

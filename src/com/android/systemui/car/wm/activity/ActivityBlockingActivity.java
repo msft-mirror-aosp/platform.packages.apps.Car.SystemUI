@@ -259,9 +259,11 @@ public class ActivityBlockingActivity extends FragmentActivity {
         }
         display.getDisplayInfo(displayInfo);
 
-        Rect windowRect = getAppWindowRect();
+        Rect windowRectRelativeToTaskDisplayArea = getAppWindowRect();
+        Rect screenshotRectRelativeToDisplay = getScreenshotRect();
 
-        mSurfaceRenderer = new BlurredSurfaceRenderer(this, windowRect, getDisplayId());
+        mSurfaceRenderer = new BlurredSurfaceRenderer(this, windowRectRelativeToTaskDisplayArea,
+                getDisplayId(), screenshotRectRelativeToDisplay);
 
         mGLSurfaceView = findViewById(R.id.blurred_surface_view);
         mGLSurfaceView.setEGLContextClientVersion(EGL_CONTEXT_VERSION);
@@ -284,24 +286,48 @@ public class ActivityBlockingActivity extends FragmentActivity {
         mIsGLSurfaceSetup = true;
     }
 
+    private Insets getSystemBarInsets() {
+        return getWindowManager()
+                .getCurrentWindowMetrics()
+                .getWindowInsets()
+                .getInsets(WindowInsets.Type.systemBars());
+    }
+
     /**
      * Computes a Rect that represents the portion of the screen that contains the activity that is
-     * being blocked.
+     * being blocked and is relative to the default task display area.
      *
      * @return Rect that represents the application window
      */
     private Rect getAppWindowRect() {
-        Insets systemBarInsets = getWindowManager()
-                .getCurrentWindowMetrics()
-                .getWindowInsets()
-                .getInsets(WindowInsets.Type.systemBars());
+        Insets systemBarInsets = getSystemBarInsets();
 
-        Rect displayBounds = getWindowManager().getCurrentWindowMetrics().getBounds();
+        Rect windowBounds = getWindowManager().getCurrentWindowMetrics().getBounds();
 
         int leftX = systemBarInsets.left;
-        int rightX = displayBounds.width() - systemBarInsets.right;
+        int rightX = windowBounds.width() - systemBarInsets.right;
         int topY = systemBarInsets.top;
-        int bottomY = displayBounds.height() - systemBarInsets.bottom;
+        int bottomY = windowBounds.height() - systemBarInsets.bottom;
+
+        return new Rect(leftX, topY, rightX, bottomY);
+    }
+
+    /**
+     * Computes a Rect that represents the portion of the screen for which screenshot needs to be
+     * taken and is relative to the display.
+     *
+     * @return Rect that represents the application window for which the screenshot needs to be
+     * taken
+     */
+    private Rect getScreenshotRect() {
+        Insets systemBarInsets = getSystemBarInsets();
+
+        Rect windowBounds = getWindowManager().getCurrentWindowMetrics().getBounds();
+
+        int leftX = systemBarInsets.left + windowBounds.left;
+        int rightX = windowBounds.width() - systemBarInsets.right;
+        int topY = systemBarInsets.top + windowBounds.top;
+        int bottomY = windowBounds.height() - systemBarInsets.bottom;
 
         return new Rect(leftX, topY, rightX, bottomY);
     }

@@ -15,13 +15,12 @@
  */
 package com.android.systemui.car.systembar;
 
-import android.annotation.IdRes;
 import android.content.Context;
 import android.view.InsetsFrameProvider;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import androidx.annotation.LayoutRes;
+import androidx.annotation.Nullable;
 
 import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 
@@ -49,22 +48,16 @@ public interface SystemBarConfigs {
     Context getWindowContextBySide(@SystemBarSide int side);
 
     /**
-     * @return The layout resource ID, or 0 if the side is unknown.
+     * @return The system bar view for the given side. {@code null} if side is unknown.
      */
-    @LayoutRes
-    int getSystemBarLayoutBySide(@SystemBarSide int side, boolean isSetUp);
+    @Nullable
+    ViewGroup getSystemBarLayoutBySide(@SystemBarSide int side, boolean isSetUp);
 
     /**
-     * @return The layout resource ID, or 0 if the side is unknown.
+     * @return the systembar window for the given side. {@code null} if side is unknown.
      */
-    @LayoutRes
-    int getWindowLayoutBySide(@SystemBarSide int side);
-
-    /**
-     * @return The window ID, or 0 if the side is unknown.
-     */
-    @IdRes
-    int getWindowIdBySide(@SystemBarSide int side);
+    @Nullable
+    ViewGroup getWindowLayoutBySide(@SystemBarSide int side);
 
     /**
      * @return The {@link WindowManager.LayoutParams}, or {@code null} if the side is unknown

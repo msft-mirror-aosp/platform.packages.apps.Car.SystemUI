@@ -120,6 +120,7 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"الگو اشتباه است"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"پین اشتباه است"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"گذرواژه اشتباه است"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{به سقف تلاش‌های اشتباه رسیده‌اید. ‫# ثانیه دیگر دوباره امتحان کنید.}one{به سقف تلاش‌های اشتباه رسیده‌اید. ‫# ثانیه دیگر دوباره امتحان کنید.}other{به سقف تلاش‌های اشتباه رسیده‌اید. ‫# ثانیه دیگر دوباره امتحان کنید.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"راننده"</string>
     <string name="seat_front" msgid="836133281052793377">"جلو"</string>
     <string name="seat_rear" msgid="403133444964528577">"عقب"</string>

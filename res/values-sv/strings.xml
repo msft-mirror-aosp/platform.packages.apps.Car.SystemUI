@@ -120,6 +120,7 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Fel mönster"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Fel pinkod"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Fel lösenord"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{För många felaktiga försök. Försök igen om # sekund.}other{För många felaktiga försök. Försök igen om # sekunder.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"förarsätet"</string>
     <string name="seat_front" msgid="836133281052793377">"framsätet"</string>
     <string name="seat_rear" msgid="403133444964528577">"baksätet"</string>

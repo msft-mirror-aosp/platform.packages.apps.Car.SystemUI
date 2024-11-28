@@ -120,6 +120,7 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Nepareiza kombinācija"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Nepareizs PIN"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Nepareiza parole"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{Pārāk daudz nepareizu mēģinājumu. Mēģiniet vēlreiz pēc # sekundes.}zero{Pārāk daudz nepareizu mēģinājumu. Mēģiniet vēlreiz pēc # sekundēm.}one{Pārāk daudz nepareizu mēģinājumu. Mēģiniet vēlreiz pēc # sekundes.}other{Pārāk daudz nepareizu mēģinājumu. Mēģiniet vēlreiz pēc # sekundēm.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"vadītāja sēdeklī"</string>
     <string name="seat_front" msgid="836133281052793377">"priekšējā sēdeklī"</string>
     <string name="seat_rear" msgid="403133444964528577">"aizmugurējā sēdeklī"</string>

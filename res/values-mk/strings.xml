@@ -117,12 +117,10 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> се одјавува. Обидете се повторно подоцна."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Корисникот е недостапен во моментов"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Не може да се вклучи безбеден корисник на екранот на патниците"</string>
-    <!-- no translation found for passenger_keyguard_wrong_pattern (2581060250152895646) -->
-    <skip />
-    <!-- no translation found for passenger_keyguard_wrong_pin (8061593500590667531) -->
-    <skip />
-    <!-- no translation found for passenger_keyguard_wrong_password (3742711889441714581) -->
-    <skip />
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Погрешна шема"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Погрешен PIN"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Погрешна лозинка"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{Премногу неточни обиди. Обидете се повторно по # секунда.}one{Премногу неточни обиди. Обидете се повторно по # секунда.}other{Премногу неточни обиди. Обидете се повторно по # секунди.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"возачкото"</string>
     <string name="seat_front" msgid="836133281052793377">"предното"</string>
     <string name="seat_rear" msgid="403133444964528577">"задното"</string>

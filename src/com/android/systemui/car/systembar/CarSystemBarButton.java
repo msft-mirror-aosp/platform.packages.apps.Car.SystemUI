@@ -44,6 +44,9 @@ import androidx.annotation.Nullable;
 
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
+import com.android.systemui.car.systembar.element.CarSystemBarElement;
+import com.android.systemui.car.systembar.element.CarSystemBarElementFlags;
+import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
 import com.android.systemui.car.window.OverlayViewController;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
@@ -56,7 +59,7 @@ import java.net.URISyntaxException;
  * code.
  */
 public class CarSystemBarButton extends LinearLayout implements
-        OverlayViewController.OverlayViewStateListener {
+        OverlayViewController.OverlayViewStateListener, CarSystemBarElement {
 
     private static final String TAG = "CarSystemBarButton";
     private static final String BUTTON_FILTER_DELIMITER = ";";
@@ -70,6 +73,10 @@ public class CarSystemBarButton extends LinearLayout implements
 
     private final Context mContext;
     private final ActivityManager mActivityManager;
+    private final Class<?> mElementControllerClassAttr;
+    private final int mSystemBarDisableFlags;
+    private final int mSystemBarDisable2Flags;
+    private final boolean mDisableForLockTaskModeLocked;
     @Nullable
     private UserTracker mUserTracker;
     private ViewGroup mIconContainer;
@@ -114,6 +121,18 @@ public class CarSystemBarButton extends LinearLayout implements
         // CarSystemBarButton attrs
         TypedArray typedArray = context.obtainStyledAttributes(attrs,
                 R.styleable.CarSystemBarButton);
+
+        mElementControllerClassAttr =
+                CarSystemBarElementResolver.getElementControllerClassFromAttributes(context, attrs);
+        mSystemBarDisableFlags =
+                CarSystemBarElementFlags.getStatusBarManagerDisableFlagsFromAttributes(context,
+                        attrs);
+        mSystemBarDisable2Flags =
+                CarSystemBarElementFlags.getStatusBarManagerDisable2FlagsFromAttributes(context,
+                        attrs);
+        mDisableForLockTaskModeLocked =
+                CarSystemBarElementFlags.getDisableForLockTaskModeLockedFromAttributes(context,
+                        attrs);
 
         setUpIntents(typedArray);
         setUpIcons(typedArray);
@@ -401,7 +420,7 @@ public class CarSystemBarButton extends LinearLayout implements
         };
     }
 
-    void setUserTracker(UserTracker userTracker) {
+    public void setUserTracker(UserTracker userTracker) {
         mUserTracker = userTracker;
     }
 
@@ -467,5 +486,28 @@ public class CarSystemBarButton extends LinearLayout implements
     @Nullable
     protected UserTracker getUserTracker() {
         return mUserTracker;
+    }
+
+    @Override
+    public Class<?> getElementControllerClass() {
+        if (mElementControllerClassAttr != null) {
+            return mElementControllerClassAttr;
+        }
+        return CarSystemBarButtonController.class;
+    }
+
+    @Override
+    public int getSystemBarDisableFlags() {
+        return mSystemBarDisableFlags;
+    }
+
+    @Override
+    public int getSystemBarDisable2Flags() {
+        return mSystemBarDisable2Flags;
+    }
+
+    @Override
+    public boolean disableForLockTaskModeLocked() {
+        return mDisableForLockTaskModeLocked;
     }
 }

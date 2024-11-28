@@ -120,6 +120,7 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"غلط پیٹرن"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"غلط PIN"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"غلط پاس ورڈ"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{کافی زیادہ غلط کوششیں کی گئیں۔ ‫# سیکنڈ میں دوبارہ کوشش کریں۔}other{کافی زیادہ غلط کوششیں کی گئیں۔ ‫# سیکنڈ میں دوبارہ کوشش کریں۔}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"ڈرائیور"</string>
     <string name="seat_front" msgid="836133281052793377">"فرنٹ"</string>
     <string name="seat_rear" msgid="403133444964528577">"پیچھے"</string>

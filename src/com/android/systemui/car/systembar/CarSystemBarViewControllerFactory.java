@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.systemui.car.hvac;
+package com.android.systemui.car.systembar;
+
+import android.view.ViewGroup;
+
+import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 
 /**
- * An interface to handle the UI needed for hvac on systembars.
+ * A controller for initializing the system bar views.
+ *
+ * @param <T> type of the controller that will be created by this factory. needs to conform to
+ * {@link CarSystemBarViewController} interface.
  */
-public interface HvacSystemBarPresenter {
-    /**
-     * Registers a {@link HvacPanelController}
-     */
-    void registerHvacPanelController(HvacPanelController hvacPanelController);
-
-    /**
-     * Registers a {@link HvacPanelOverlayViewController}
-     */
-    void registerHvacPanelOverlayViewController(
-            HvacPanelOverlayViewController hvacPanelOverlayViewController);
+public interface CarSystemBarViewControllerFactory<T extends CarSystemBarViewController> {
+    /** Create instance of CarSystemBarViewController for the system bar view */
+    T create(@SystemBarSide int side, ViewGroup view);
 }

@@ -117,12 +117,10 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"U-<xliff:g id="USER_NAME">%s</xliff:g> ukhishiwe. Zama futhi ngemuva kwesikhathi."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Umsebenzisi akatholakali okwamanje"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Ayikwazi ukuqala umsebenzisi ovikelekile esibonisini somgibeli"</string>
-    <!-- no translation found for passenger_keyguard_wrong_pattern (2581060250152895646) -->
-    <skip />
-    <!-- no translation found for passenger_keyguard_wrong_pin (8061593500590667531) -->
-    <skip />
-    <!-- no translation found for passenger_keyguard_wrong_password (3742711889441714581) -->
-    <skip />
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Iphethini engalungile"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Iphinikhodi engalungile"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Iphasiwedi engalungile"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{Kunemizamo eminingi kakhulu engalungile. Zama futhi ngomzuzwana ongu-#.}one{Kunemizamo eminingi kakhulu engalungile. Zama futhi emizuzwaneni engu-#.}other{Kunemizamo eminingi kakhulu engalungile. Zama futhi emizuzwaneni engu-#.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"umshayeli"</string>
     <string name="seat_front" msgid="836133281052793377">"phambili"</string>
     <string name="seat_rear" msgid="403133444964528577">"ingemuva"</string>

@@ -46,14 +46,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 @CarSystemUiTest
 @SmallTest
 public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
-    private static final int OVERLAY_VIEW_CONTROLLER_1_Z_ORDER = 0;
-    private static final int OVERLAY_VIEW_CONTROLLER_2_Z_ORDER = 1;
-    private static final int OVERLAY_PANEL_VIEW_CONTROLLER_Z_ORDER = 2;
 
     private OverlayViewGlobalStateController mOverlayViewGlobalStateController;
     private ViewGroup mBaseLayout;
@@ -72,6 +70,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
     private Runnable mRunnable;
     @Mock
     private WindowInsetsController mWindowInsetsController;
+    private OverlayVisibilityMediator mOverlayVisibilityMediator;
 
     @Before
     public void setUp() {
@@ -84,8 +83,10 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         when(mSystemUIOverlayWindowController.getBaseLayout()).thenReturn(mBaseLayout);
 
+        mOverlayVisibilityMediator =
+                new OverlayVisibilityMediatorImpl(mSystemUIOverlayWindowController);
         mOverlayViewGlobalStateController = new OverlayViewGlobalStateController(
-                mSystemUIOverlayWindowController);
+                mSystemUIOverlayWindowController, mOverlayVisibilityMediator);
 
         verify(mSystemUIOverlayWindowController).attach();
     }
@@ -217,7 +218,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         mOverlayViewGlobalStateController.showView(mOverlayViewController1, mRunnable);
 
-        assertThat(mOverlayViewGlobalStateController.mHighestZOrder).isEqualTo(
+        assertThat(mOverlayVisibilityMediator.getHighestZOrderOverlayViewController()).isEqualTo(
                 mOverlayViewController1);
     }
 
@@ -227,8 +228,8 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         mOverlayViewGlobalStateController.showView(mOverlayViewController1, mRunnable);
 
-        assertThat(mOverlayViewGlobalStateController.mZOrderVisibleSortedMap.containsKey(
-                OVERLAY_VIEW_CONTROLLER_1_Z_ORDER)).isTrue();
+        assertThat(mOverlayVisibilityMediator
+                .isOverlayViewVisible(mOverlayViewController1)).isTrue();
     }
 
     @Test
@@ -248,7 +249,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         mOverlayViewGlobalStateController.showView(mOverlayViewController2, mRunnable);
 
-        assertThat(mOverlayViewGlobalStateController.mHighestZOrder).isEqualTo(
+        assertThat(mOverlayVisibilityMediator.getHighestZOrderOverlayViewController()).isEqualTo(
                 mOverlayViewController2);
     }
 
@@ -332,9 +333,8 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         mOverlayViewGlobalStateController.showView(mOverlayViewController2, mRunnable);
 
-        assertThat(mOverlayViewGlobalStateController.mZOrderVisibleSortedMap.keySet().toArray())
-                .isEqualTo(Arrays.asList(OVERLAY_VIEW_CONTROLLER_1_Z_ORDER,
-                        OVERLAY_VIEW_CONTROLLER_2_Z_ORDER).toArray());
+        assertThat(new ArrayList(mOverlayVisibilityMediator.getVisibleOverlayViewsByZOrder()))
+                .isEqualTo(Arrays.asList(mOverlayViewController1, mOverlayViewController2));
     }
 
     @Test
@@ -383,7 +383,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         mOverlayViewGlobalStateController.showView(mOverlayViewController1, mRunnable);
 
-        assertThat(mOverlayViewGlobalStateController.mHighestZOrder).isEqualTo(
+        assertThat(mOverlayVisibilityMediator.getHighestZOrderOverlayViewController()).isEqualTo(
                 mOverlayViewController2);
     }
 
@@ -471,9 +471,8 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         mOverlayViewGlobalStateController.showView(mOverlayViewController1, mRunnable);
 
-        assertThat(mOverlayViewGlobalStateController.mZOrderVisibleSortedMap.keySet().toArray())
-                .isEqualTo(Arrays.asList(OVERLAY_VIEW_CONTROLLER_1_Z_ORDER,
-                        OVERLAY_VIEW_CONTROLLER_2_Z_ORDER).toArray());
+        assertThat(new ArrayList(mOverlayVisibilityMediator.getVisibleOverlayViewsByZOrder()))
+                .isEqualTo(Arrays.asList(mOverlayViewController1, mOverlayViewController2));
     }
 
     @Test
@@ -578,7 +577,6 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
     @Test
     public void hideView_nothingShown_hideRunnableNotCalled() {
         when(mOverlayViewController2.isInflated()).thenReturn(true);
-        mOverlayViewGlobalStateController.mZOrderMap.clear();
 
         mOverlayViewGlobalStateController.hideView(mOverlayViewController2, mRunnable);
 
@@ -613,7 +611,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         mOverlayViewGlobalStateController.hideView(mOverlayViewController1, mRunnable);
 
-        assertThat(mOverlayViewGlobalStateController.mHighestZOrder).isNull();
+        assertThat(mOverlayVisibilityMediator.getHighestZOrderOverlayViewController()).isNull();
     }
 
     @Test
@@ -623,18 +621,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         mOverlayViewGlobalStateController.hideView(mOverlayViewController1, mRunnable);
 
-        assertThat(mOverlayViewGlobalStateController.mZOrderVisibleSortedMap.isEmpty()).isTrue();
-    }
-
-    @Test
-    public void hideView_viewControllerOnlyShown_viewControllerNotShown() {
-        setupOverlayViewController1();
-        setOverlayViewControllerAsShowing(mOverlayViewController1);
-
-        mOverlayViewGlobalStateController.hideView(mOverlayViewController1, mRunnable);
-
-        assertThat(mOverlayViewGlobalStateController.mZOrderVisibleSortedMap.containsKey(
-                OVERLAY_VIEW_CONTROLLER_1_Z_ORDER)).isFalse();
+        assertThat(mOverlayVisibilityMediator.isAnyOverlayViewVisible()).isFalse();
     }
 
     @Test
@@ -646,7 +633,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         mOverlayViewGlobalStateController.hideView(mOverlayViewController2, mRunnable);
 
-        assertThat(mOverlayViewGlobalStateController.mHighestZOrder).isEqualTo(
+        assertThat(mOverlayVisibilityMediator.getHighestZOrderOverlayViewController()).isEqualTo(
                 mOverlayViewController1);
     }
 
@@ -661,7 +648,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         mOverlayViewGlobalStateController.hideView(mOverlayPanelViewController, mRunnable);
 
-        assertThat(mOverlayViewGlobalStateController.mHighestZOrder).isEqualTo(
+        assertThat(mOverlayVisibilityMediator.getHighestZOrderOverlayViewController()).isEqualTo(
                 mOverlayViewController2);
     }
 
@@ -756,7 +743,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         mOverlayViewGlobalStateController.hideView(mOverlayViewController1, mRunnable);
 
-        assertThat(mOverlayViewGlobalStateController.mHighestZOrder).isEqualTo(
+        assertThat(mOverlayVisibilityMediator.getHighestZOrderOverlayViewController()).isEqualTo(
                 mOverlayViewController2);
     }
 
@@ -904,7 +891,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         mOverlayViewGlobalStateController.setOccluded(true);
 
-        assertThat(mOverlayViewGlobalStateController.mZOrderVisibleSortedMap.containsValue(
+        assertThat(mOverlayVisibilityMediator.getVisibleOverlayViewsByZOrder().contains(
                 mOverlayViewController1)).isFalse();
     }
 
@@ -916,7 +903,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         mOverlayViewGlobalStateController.setOccluded(true);
 
-        assertThat(mOverlayViewGlobalStateController.mZOrderVisibleSortedMap.containsValue(
+        assertThat(mOverlayVisibilityMediator.getVisibleOverlayViewsByZOrder().contains(
                 mOverlayViewController1)).isTrue();
     }
 
@@ -930,7 +917,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
         mOverlayViewGlobalStateController.hideView(mOverlayViewController1, /* runnable= */ null);
         mOverlayViewGlobalStateController.setOccluded(false);
 
-        assertThat(mOverlayViewGlobalStateController.mZOrderVisibleSortedMap.containsValue(
+        assertThat(mOverlayVisibilityMediator.getVisibleOverlayViewsByZOrder().contains(
                 mOverlayViewController1)).isFalse();
     }
 
@@ -942,7 +929,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
         mOverlayViewGlobalStateController.setOccluded(true);
         setOverlayViewControllerAsShowing(mOverlayViewController1);
 
-        assertThat(mOverlayViewGlobalStateController.mZOrderVisibleSortedMap.containsValue(
+        assertThat(mOverlayVisibilityMediator.getVisibleOverlayViewsByZOrder().contains(
                 mOverlayViewController1)).isTrue();
     }
 
@@ -954,7 +941,7 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
         mOverlayViewGlobalStateController.setOccluded(true);
         setOverlayViewControllerAsShowing(mOverlayViewController1);
 
-        assertThat(mOverlayViewGlobalStateController.mZOrderVisibleSortedMap.containsValue(
+        assertThat(mOverlayVisibilityMediator.getVisibleOverlayViewsByZOrder().contains(
                 mOverlayViewController1)).isFalse();
     }
 
@@ -967,8 +954,8 @@ public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
 
         mOverlayViewGlobalStateController.setOccluded(false);
 
-        assertThat(mOverlayViewGlobalStateController.mZOrderVisibleSortedMap.containsValue(
-                mOverlayViewController1)).isTrue();
+        assertThat(mOverlayVisibilityMediator.getVisibleOverlayViewsByZOrder()
+                .contains(mOverlayViewController1)).isTrue();
     }
 
     @Test

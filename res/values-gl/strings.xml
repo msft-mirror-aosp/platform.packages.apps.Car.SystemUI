@@ -120,6 +120,7 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"O padrón é incorrecto"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"O PIN é incorrecto"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"O contrasinal é incorrecto"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{Demasiados intentos incorrectos. Téntao de novo dentro de # segundo.}other{Demasiados intentos incorrectos. Téntao de novo dentro de # segundos.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"asento de conducir"</string>
     <string name="seat_front" msgid="836133281052793377">"diante"</string>
     <string name="seat_rear" msgid="403133444964528577">"detrás"</string>

@@ -29,6 +29,7 @@ import static com.android.systemui.car.systembar.SystemBarUtil.VISIBLE_BAR_VISIB
 import static com.android.systemui.car.systembar.SystemBarUtil.INVISIBLE_BAR_VISIBILITIES_TYPES_INDEX;
 import static com.android.systemui.car.users.CarSystemUIUserUtil.isSecondaryMUMDSystemUI;
 
+import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -275,7 +276,8 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         }
 
         @Override
-        public void setImeInputTargetRequestedVisibility(boolean visible) {
+        public void setImeInputTargetRequestedVisibility(boolean visible,
+                @NonNull ImeTracker.Token statsToken) {
             // TODO
         }
 
@@ -329,7 +331,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
                     /* fromIme= */ false, /* statsToken = */ null);
             try {
                 mWmService.updateDisplayWindowRequestedVisibleTypes(mDisplayId,
-                        mRequestedVisibleTypes);
+                        mRequestedVisibleTypes, null /* TODO(b/380891919) pass IME statsToken */);
             } catch (RemoteException e) {
                 Slog.w(TAG, "Unable to update window manager service.");
             }

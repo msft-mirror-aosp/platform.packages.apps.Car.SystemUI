@@ -12,16 +12,6 @@
       ]
     }
   ],
-  "auto-end-to-end-postsubmit": [
-    {
-      "name": "AndroidAutomotiveNotificationsTests",
-      "options" : [
-        {
-          "include-filter": "android.platform.tests.NotificationTest"
-        }
-      ]
-    }
-  ],
   "carsysui-presubmit": [
     {
       "name": "CarSystemUITests",

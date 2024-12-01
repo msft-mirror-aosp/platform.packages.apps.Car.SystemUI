@@ -25,6 +25,7 @@ import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
 import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
 
 import android.annotation.IdRes;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
@@ -34,11 +35,10 @@ import android.util.ArraySet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.InsetsFrameProvider;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowManager;
-
-import androidx.annotation.LayoutRes;
 
 import com.android.car.dockutil.Flags;
 import com.android.internal.annotations.VisibleForTesting;
@@ -158,12 +158,19 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
     }
 
     /**
-     * Returns layout id to be inflated for the given side.
-     * 0 means the side is unknown.
+     * Returns the system bar layout for the given side. {@code null} if side is unknown.
      */
     @Override
-    @LayoutRes
-    public int getSystemBarLayoutBySide(@SystemBarSide int side, boolean isSetUp) {
+    public ViewGroup getSystemBarLayoutBySide(@SystemBarSide int side, boolean isSetUp) {
+        int layoutId = getSystemBarLayoutResBySide(side, isSetUp);
+        if (layoutId == 0) {
+            return null;
+        }
+
+        return (ViewGroup) View.inflate(getWindowContextBySide(side), layoutId, /* root= */ null);
+    }
+
+    private int getSystemBarLayoutResBySide(@SystemBarSide int side, boolean isSetUp) {
         switch (side) {
             case LEFT:
                 if (!isSetUp) {
@@ -199,22 +206,28 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
     }
 
     /**
-     * Returns an layout for the given side that represents the root view of the window.
-     * 0 means the side is unknown.
+     * Returns the system bar window for the given side.
      */
     @Override
-    @LayoutRes
-    public int getWindowLayoutBySide(@SystemBarSide int side) {
-        return R.layout.navigation_bar_window;
+    public ViewGroup getWindowLayoutBySide(@SystemBarSide int side) {
+        int windowId = getWindowIdBySide(side);
+        if (windowId == 0) {
+            return null;
+        }
+        ViewGroup window = (ViewGroup) View.inflate(getWindowContextBySide(side),
+                R.layout.navigation_bar_window, /* root= */ null);
+        // Setting a new id to each window because we're inflating the same layout and that layout
+        // already has an id. and we don't want to have the same id on all the system bar windows.
+        window.setId(windowId);
+        return window;
     }
 
     /**
      * Returns an id for the given side that can be set on the system bar window.
      * 0 means the side is unknown.
      */
-    @Override
     @IdRes
-    public int getWindowIdBySide(@SystemBarSide int side) {
+    private int getWindowIdBySide(@SystemBarSide int side) {
         return switch (side) {
             case TOP -> R.id.car_top_bar_window;
             case BOTTOM -> R.id.car_bottom_bar_window;
@@ -385,6 +398,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
         }
     }
 
+    @SuppressLint("RtlHardcoded")
     private static void populateMaps() {
         BAR_GRAVITY_MAP.put(TOP, Gravity.TOP);
         BAR_GRAVITY_MAP.put(BOTTOM, Gravity.BOTTOM);
@@ -532,7 +546,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
         try {
             notificationPanelMediatorUsed = Class.forName(notificationPanelMediatorName);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            Log.e(TAG, "notification panel mediator class not found", e);
         }
 
         if (!mTopNavBarEnabled && TopNotificationPanelViewMediator.class.isAssignableFrom(

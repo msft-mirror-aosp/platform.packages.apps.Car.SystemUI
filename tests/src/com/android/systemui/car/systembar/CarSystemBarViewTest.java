@@ -32,6 +32,9 @@ import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.notification.NotificationPanelViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
+import com.android.systemui.car.window.OverlayVisibilityMediator;
+import com.android.systemui.settings.UserTracker;
 
 import org.junit.After;
 import org.junit.Before;
@@ -56,6 +59,21 @@ public class CarSystemBarViewTest extends SysuiTestCase {
     @Mock
     private View.OnTouchListener mNavBarTouchListener;
 
+    @Mock
+    private UserTracker mUserTracker;
+    @Mock
+    private CarSystemBarElementInitializer mCarSystemBarElementInitializer;
+    @Mock
+    private ButtonRoleHolderController mButtonRoleHolderController;
+    @Mock
+    private ButtonSelectionStateController mButtonSelectionStateController;
+    @Mock
+    private MicPrivacyChipViewController mMicPrivacyChipViewController;
+    @Mock
+    private CameraPrivacyChipViewController mCameraPrivacyChipViewController;
+    @Mock
+    private OverlayVisibilityMediator mOverlayVisibilityMediator;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -73,14 +91,17 @@ public class CarSystemBarViewTest extends SysuiTestCase {
     public void dispatchTouch_shadeOpen_flagOff_doesNotConsumeTouch() {
         getContext().getOrCreateTestableResources().addOverride(
                 R.bool.config_consumeSystemBarTouchWhenNotificationPanelOpen, false);
-        when(mNotificationPanelViewController.isPanelExpanded()).thenReturn(true);
+        when(mOverlayVisibilityMediator.getHighestZOrderOverlayViewController())
+                .thenReturn(mNotificationPanelViewController);
+        when(mNotificationPanelViewController.shouldPanelConsumeSystemBarTouch())
+                .thenReturn(true);
         mNavBarView = (CarSystemBarView) LayoutInflater.from(getContext()).inflate(
                 R.layout.car_system_bar_view_test, /* root= */ null);
-        mNavBarView.registerNotificationPanelViewController(mNotificationPanelViewController);
-        mNavBarView.setStatusBarWindowTouchListeners(
+        CarSystemBarViewControllerImpl controller = getSystemBarViewController(mNavBarView);
+        controller.setSystemBarTouchListeners(
                 Collections.singleton(mNavBarTouchListener));
 
-        boolean consume = mNavBarView.onInterceptTouchEvent(
+        boolean consume = controller.onInterceptTouchEvent(
                 MotionEvent.obtain(/* downTime= */ 200, /* eventTime= */ 300,
                         MotionEvent.ACTION_MOVE, mNavBarView.getX(),
                         mNavBarView.getY(), /* metaState= */ 0));
@@ -95,18 +116,37 @@ public class CarSystemBarViewTest extends SysuiTestCase {
         // Prevent the test from failing due to buttons on the system bar not being draggable.
         getContext().getOrCreateTestableResources().addOverride(
                 R.bool.config_systemBarButtonsDraggable, true);
-        when(mNotificationPanelViewController.isPanelExpanded()).thenReturn(true);
+        when(mOverlayVisibilityMediator.getHighestZOrderOverlayViewController())
+                .thenReturn(mNotificationPanelViewController);
+        when(mNotificationPanelViewController.shouldPanelConsumeSystemBarTouch())
+                .thenReturn(true);
         mNavBarView = (CarSystemBarView) LayoutInflater.from(getContext()).inflate(
                 R.layout.car_system_bar_view_test, /* root= */ null);
-        mNavBarView.registerNotificationPanelViewController(mNotificationPanelViewController);
-        mNavBarView.setStatusBarWindowTouchListeners(
+        CarSystemBarViewControllerImpl controller = getSystemBarViewController(mNavBarView);
+        controller.setSystemBarTouchListeners(
                 Collections.singleton(mNavBarTouchListener));
 
-        boolean consume = mNavBarView.onInterceptTouchEvent(
+        boolean consume = controller.onInterceptTouchEvent(
                 MotionEvent.obtain(/* downTime= */ 200, /* eventTime= */ 300,
                         MotionEvent.ACTION_MOVE, mNavBarView.getX(),
                         mNavBarView.getY(), /* metaState= */ 0));
 
         assertThat(consume).isTrue();
+    }
+
+    private CarSystemBarViewControllerImpl getSystemBarViewController(CarSystemBarView view) {
+        SystemBarConfigs systemBarConfigs = new SystemBarConfigsImpl(getContext(),
+                getContext().getOrCreateTestableResources().getResources());
+        return new CarSystemBarViewControllerImpl(getContext(),
+                mUserTracker,
+                mCarSystemBarElementInitializer,
+                systemBarConfigs,
+                mButtonRoleHolderController,
+                mButtonSelectionStateController,
+                () -> mCameraPrivacyChipViewController,
+                () -> mMicPrivacyChipViewController,
+                mOverlayVisibilityMediator,
+                0,
+                view);
     }
 }

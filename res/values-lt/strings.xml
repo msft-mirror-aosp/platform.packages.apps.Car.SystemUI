@@ -120,8 +120,7 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Netinkamas atrakinimo piešinys"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Netinkamas PIN kodas"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Netinkamas slaptažodis"</string>
-    <!-- no translation found for passenger_keyguard_too_many_failed_attempts (2948335020152945468) -->
-    <skip />
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{Per daug klaidingų bandymų. Bandykite dar kartą po # sekundės.}one{Per daug klaidingų bandymų. Bandykite dar kartą po # sekundės.}few{Per daug klaidingų bandymų. Bandykite dar kartą po # sekundžių.}many{Per daug klaidingų bandymų. Bandykite dar kartą po # sekundės.}other{Per daug klaidingų bandymų. Bandykite dar kartą po # sekundžių.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"vairuotojas"</string>
     <string name="seat_front" msgid="836133281052793377">"priekis"</string>
     <string name="seat_rear" msgid="403133444964528577">"galas"</string>

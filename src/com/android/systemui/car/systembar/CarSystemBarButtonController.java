@@ -15,6 +15,8 @@
  */
 package com.android.systemui.car.systembar;
 
+import androidx.annotation.CallSuper;
+
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
@@ -43,6 +45,7 @@ public class CarSystemBarButtonController
     }
 
     @Override
+    @CallSuper
     protected void onInit() {
         mView.setUserTracker(mUserTracker);
     }

@@ -15,22 +15,13 @@
  */
 package com.android.systemui.car.systembar;
 
-import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
-import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
-import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
-import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
-
-import android.annotation.IdRes;
 import android.content.Context;
 import android.util.ArrayMap;
 import android.util.Log;
-import android.view.View;
+import android.util.Pair;
+import android.util.SparseArray;
 import android.view.ViewGroup;
 
-import androidx.annotation.LayoutRes;
-
-import com.android.car.dockutil.Flags;
-import com.android.systemui.R;
 import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 
 import java.util.Map;
@@ -41,149 +32,71 @@ import javax.inject.Inject;
 public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
 
     private static final String TAG = CarSystemBarViewFactory.class.getSimpleName();
-    private static final ArrayMap<Type, Integer> sLayoutMap = setupLayoutMapping();
-
-    private static ArrayMap<Type, Integer> setupLayoutMapping() {
-        ArrayMap<Type, Integer> map = new ArrayMap<>();
-        map.put(Type.TOP, R.layout.car_top_system_bar);
-        map.put(Type.TOP_WITH_DOCK, R.layout.car_top_system_bar_dock);
-        map.put(Type.TOP_UNPROVISIONED, R.layout.car_top_system_bar_unprovisioned);
-        map.put(Type.BOTTOM, R.layout.car_bottom_system_bar);
-        map.put(Type.BOTTOM_WITH_DOCK, R.layout.car_bottom_system_bar_dock);
-        map.put(Type.BOTTOM_UNPROVISIONED, R.layout.car_bottom_system_bar_unprovisioned);
-        map.put(Type.LEFT, R.layout.car_left_system_bar);
-        map.put(Type.LEFT_UNPROVISIONED, R.layout.car_left_system_bar_unprovisioned);
-        map.put(Type.RIGHT, R.layout.car_right_system_bar);
-        map.put(Type.RIGHT_UNPROVISIONED, R.layout.car_right_system_bar_unprovisioned);
-        return map;
-    }
-
-    /** Type of navigation bar to be created. */
-    private enum Type {
-        TOP,
-        TOP_WITH_DOCK,
-        TOP_UNPROVISIONED,
-        BOTTOM,
-        BOTTOM_WITH_DOCK,
-        BOTTOM_UNPROVISIONED,
-        LEFT,
-        LEFT_UNPROVISIONED,
-        RIGHT,
-        RIGHT_UNPROVISIONED
-    }
 
     private final Context mContext;
-    private final ArrayMap<Type, CarSystemBarViewController> mCachedViewControllerMap =
-            new ArrayMap<>(Type.values().length);
-    private final ArrayMap<Type, ViewGroup> mCachedContainerMap = new ArrayMap<>();
-    private final Map<@SystemBarSide Integer, CarSystemBarViewController.Factory>
-            mFactoriesMap;
+    // Map<Pair<@SystemBarSide Integer, Boolean>, CarSystemBarViewController>
+    private final Map<Pair<Integer, Boolean>, CarSystemBarViewController>
+            mCachedViewControllerMap = new ArrayMap<>();
+    // Map<@SystemBarSide Integer, ViewGroup>
+    private final SparseArray<ViewGroup> mCachedWindowMap = new SparseArray<>();
+    private final Map<@SystemBarSide Integer,
+            CarSystemBarViewControllerFactory> mFactoriesMap;
+    private final SystemBarConfigs mSystemBarConfigs;
 
     @Inject
     public CarSystemBarViewFactoryImpl(
             Context context,
-            Map<@SystemBarSide Integer, CarSystemBarViewController.Factory>
-                    factoriesMap) {
+            Map<@SystemBarSide Integer,
+                    CarSystemBarViewControllerFactory> factoriesMap,
+            SystemBarConfigs systemBarConfigs) {
         mContext = context;
         mFactoriesMap = factoriesMap;
+        mSystemBarConfigs = systemBarConfigs;
     }
 
     /** Gets the top window by side. */
     @Override
     public ViewGroup getSystemBarWindow(@SystemBarSide int side) {
-        switch (side) {
-            case TOP:
-                return getWindowCached(Type.TOP);
-            case RIGHT:
-                return getWindowCached(Type.RIGHT);
-            case BOTTOM:
-                return getWindowCached(Type.BOTTOM);
-            case LEFT:
-            default:
-                return getWindowCached(Type.LEFT);
-        }
+        return getWindowCached(side);
     }
 
     /** Gets the bar by side. */
     @Override
     public CarSystemBarViewController getSystemBarViewController(@SystemBarSide int side,
             boolean isSetUp) {
-        switch (side) {
-            case TOP:
-                if (Flags.dockFeature()) {
-                    return getBar(side, isSetUp, Type.TOP_WITH_DOCK, Type.TOP_UNPROVISIONED);
-                }
-                return getBar(side, isSetUp, Type.TOP, Type.TOP_UNPROVISIONED);
-            case RIGHT:
-                return getBar(side, isSetUp, Type.RIGHT, Type.RIGHT_UNPROVISIONED);
-            case BOTTOM:
-                if (Flags.dockFeature()) {
-                    return getBar(side, isSetUp, Type.BOTTOM_WITH_DOCK, Type.BOTTOM_UNPROVISIONED);
-                }
-                return  getBar(side, isSetUp, Type.BOTTOM, Type.BOTTOM_UNPROVISIONED);
-            case LEFT:
-            default:
-                return getBar(side, isSetUp, Type.LEFT, Type.LEFT_UNPROVISIONED);
-        }
-    }
-
-    private ViewGroup getWindowCached(Type type) {
-        if (mCachedContainerMap.containsKey(type)) {
-            return mCachedContainerMap.get(type);
-        }
-
-        ViewGroup window = (ViewGroup) View.inflate(mContext,
-                R.layout.navigation_bar_window, /* root= */ null);
-        window.setId(getWindowId(type));
-        mCachedContainerMap.put(type, window);
-        return mCachedContainerMap.get(type);
-    }
-
-    @IdRes
-    private int getWindowId(Type type) {
-        return switch (type) {
-            case TOP -> R.id.car_top_bar_window;
-            case BOTTOM -> R.id.car_bottom_bar_window;
-            case LEFT -> R.id.car_left_bar_window;
-            case RIGHT -> R.id.car_right_bar_window;
-            default -> throw new IllegalArgumentException("unknown system bar window type " + type);
-        };
-    }
-
-    private CarSystemBarViewController getBar(@SystemBarSide int side, boolean isSetUp,
-            Type provisioned, Type unprovisioned) {
-        CarSystemBarViewController controller =
-                getBarCached(side, isSetUp, provisioned, unprovisioned);
+        CarSystemBarViewController controller = getBarCached(side, isSetUp);
 
         if (controller == null) {
-            String name = isSetUp ? provisioned.name() : unprovisioned.name();
-            Log.e(TAG, "CarStatusBar failed inflate for " + name);
+            Log.e(TAG, "system bar failed inflate for side " + side + " setup " + isSetUp);
             throw new RuntimeException(
-                    "Unable to build " + name + " nav bar due to missing layout");
+                    "Unable to inflate system bar for side " + side + " setup " + isSetUp
+                    + " due to missing layout");
         }
         return controller;
     }
 
-    private CarSystemBarViewController getBarCached(@SystemBarSide int side, boolean isSetUp,
-            Type provisioned, Type unprovisioned) {
-        Type type = isSetUp ? provisioned : unprovisioned;
-        if (mCachedViewControllerMap.containsKey(type)) {
-            return mCachedViewControllerMap.get(type);
+    private ViewGroup getWindowCached(@SystemBarSide int side) {
+        if (mCachedWindowMap.get(side) != null) {
+            return mCachedWindowMap.get(side);
         }
 
-        Integer barLayoutInteger = sLayoutMap.get(type);
-        if (barLayoutInteger == null) {
-            return null;
-        }
-        @LayoutRes int barLayout = barLayoutInteger;
-        CarSystemBarView view = (CarSystemBarView) View.inflate(mContext, barLayout,
-                /* root= */ null);
+        ViewGroup window = mSystemBarConfigs.getWindowLayoutBySide(side);
+        mCachedWindowMap.put(side, window);
+        return window;
+    }
 
-        CarSystemBarViewController controller = mFactoriesMap.get(side).create(side, view);
+    private CarSystemBarViewController getBarCached(@SystemBarSide int side, boolean isSetUp) {
+        Pair key = new Pair<>(side, isSetUp);
+        if (mCachedViewControllerMap.get(key) != null) {
+            return mCachedViewControllerMap.get(key);
+        }
+
+        ViewGroup barView = mSystemBarConfigs.getSystemBarLayoutBySide(side, isSetUp);
+        CarSystemBarViewController controller = mFactoriesMap.get(side).create(side, barView);
         controller.init();
 
-        mCachedViewControllerMap.put(type, controller);
-        return mCachedViewControllerMap.get(type);
+        mCachedViewControllerMap.put(key, controller);
+        return controller;
     }
 
     /** Resets the cached system bar views. */
@@ -196,6 +109,6 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
     @Override
     public void resetSystemBarWindowCache() {
         resetSystemBarViewCache();
-        mCachedContainerMap.clear();
+        mCachedWindowMap.clear();
     }
 }

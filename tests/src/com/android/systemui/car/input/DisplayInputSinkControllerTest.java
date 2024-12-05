@@ -236,6 +236,7 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
     public void onDisplayAdded_withValidDisplay_callsStartDisplayInputLock() {
         doReturn(UserHandle.USER_SYSTEM).when(() -> UserHandle.myUserId());
         mDisplayInputSinkController.start();
+        writeDisplayInputLockSetting(mContentResolver, mPassengerDisplayUniqueId2);
         mDisplayInputLockSetting.add(mPassengerDisplayUniqueId2);
 
         mDisplayInputSinkController.mDisplayListener.onDisplayAdded(mPassengerDisplayId2);
@@ -256,6 +257,19 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
         assertThat(isInputMonitorStarted(mPassengerDisplayId1)).isFalse();
         assertThat(isInputLockStarted(mPassengerDisplayId2)).isFalse();
         assertThat(isInputMonitorStarted(mPassengerDisplayId2)).isFalse();
+    }
+
+    @Test
+    public void onDisplayAdded_updatesDisplayInputLockFromCurrentSetting() {
+        // Initially display 2 is not locked.
+        assertThat(isInputLockStarted(mPassengerDisplayId2)).isFalse();
+        // In the settings, display 2 is set to be locked.
+        writeDisplayInputLockSetting(mContentResolver, mPassengerDisplayUniqueId2);
+
+        // onDisplayAdded() updates display input locking from the current settings value.
+        mDisplayInputSinkController.mDisplayListener.onDisplayAdded(mPassengerDisplayId2);
+
+        assertThat(isInputLockStarted(mPassengerDisplayId2)).isTrue();
     }
 
     @Test

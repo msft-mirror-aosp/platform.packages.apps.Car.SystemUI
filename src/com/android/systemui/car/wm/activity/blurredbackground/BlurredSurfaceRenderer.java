@@ -51,7 +51,8 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
     private final String mVertexShader;
     private final String mHorizontalBlurShader;
     private final String mVerticalBlurShader;
-    private final Rect mWindowRect;
+    private final Rect mWindowRectRelativeToTaskDisplayArea;
+    private final Rect mScreenshotRectRelativeToDisplay;
 
     private BlurTextureProgram mProgram;
     private SurfaceTexture mSurfaceTexture;
@@ -69,9 +70,12 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
      * Constructs a new {@link BlurredSurfaceRenderer} and loads the shaders needed for rendering a
      * blurred texture
      *
-     * @param windowRect Rect that represents the application window
+     * @param windowRectRelativeToTaskDisplayArea Rect that represents the application window
+     * @param displayId Display id on which the blurred surface needs to be drawn
+     * @param screenshotRectRelativeToDisplay Rect that represents the screenshot window
      */
-    public BlurredSurfaceRenderer(Context context, Rect windowRect, int displayId) {
+    public BlurredSurfaceRenderer(Context context, Rect windowRectRelativeToTaskDisplayArea,
+            int displayId, Rect screenshotRectRelativeToDisplay) {
         mDisplayId = displayId;
 
         mVertexShader = GLHelper.getShaderFromRaw(context, R.raw.vertex_shader);
@@ -84,7 +88,12 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
                 && mHorizontalBlurShader != null
                 && mVerticalBlurShader != null;
 
-        mWindowRect = windowRect;
+        // windowRectRelativeToTaskDisplayArea corresponds to the area on which the blurred
+        // surface will be drawn relative to the default task display area
+        mWindowRectRelativeToTaskDisplayArea = windowRectRelativeToTaskDisplayArea;
+        // screenshotRectRelativeToDisplay corresponds to the area of which the screenshot needs
+        // to be taken which is relative to the display
+        mScreenshotRectRelativeToDisplay = screenshotRectRelativeToDisplay;
     }
 
     @Override
@@ -110,7 +119,7 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
                     mVertexShader,
                     mHorizontalBlurShader,
                     mVerticalBlurShader,
-                    mWindowRect
+                    mWindowRectRelativeToTaskDisplayArea
             );
             mProgram.render();
         } else {
@@ -144,7 +153,7 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
 
         try {
             final CaptureArgs captureArgs = new CaptureArgs.Builder<>()
-                    .setSourceCrop(mWindowRect)
+                    .setSourceCrop(mScreenshotRectRelativeToDisplay)
                     .build();
             SynchronousScreenCaptureListener syncScreenCapture =
                     ScreenCapture.createSyncCaptureListener();
@@ -193,4 +202,3 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
                 && mShadersLoadedSuccessfully;
     }
 }
-

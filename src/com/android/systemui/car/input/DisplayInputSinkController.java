@@ -100,6 +100,8 @@ public final class DisplayInputSinkController implements CoreStartable {
     private CarOccupantZoneManager mOccupantZoneManager;
     private CarPowerManager mCarPowerManager;
 
+    private final SparseArray<Toast> mDisplayInputLockToasts = new SparseArray<>();
+
     @VisibleForTesting
     final DisplayManager.DisplayListener mDisplayListener =
             new DisplayManager.DisplayListener() {
@@ -107,6 +109,7 @@ public final class DisplayInputSinkController implements CoreStartable {
         @MainThread
         public void onDisplayAdded(int displayId) {
             mayUpdatePassengerDisplayOnAdded(displayId);
+            fetchCurrentDisplayInputLockSetting();
             refreshDisplayInputSink(displayId, "onDisplayAdded");
         }
 
@@ -249,13 +252,17 @@ public final class DisplayInputSinkController implements CoreStartable {
     // Start/stop display input locks from the current global setting.
     @VisibleForTesting
     void refreshDisplayInputLockSetting() {
+        fetchCurrentDisplayInputLockSetting();
+        for (int i = mPassengerDisplays.size() - 1; i >= 0; --i) {
+            decideDisplayInputSink(i);
+        }
+    }
+
+    private void fetchCurrentDisplayInputLockSetting() {
         String settingValue = getDisplayInputLockSettingValue();
         parseDisplayInputLockSettingValue(CarSettings.Global.DISPLAY_INPUT_LOCK, settingValue);
         if (DBG) {
-            Slog.d(TAG, "refreshDisplayInputLock: settingValue=" + settingValue);
-        }
-        for (int i = mPassengerDisplays.size() - 1; i >= 0; --i) {
-            decideDisplayInputSink(i);
+            Slog.d(TAG, "Display input lock: settingValue=" + settingValue);
         }
     }
 
@@ -359,9 +366,8 @@ public final class DisplayInputSinkController implements CoreStartable {
         };
         mDisplayInputSinks.put(displayId, new DisplayInputSink(display, callback));
         // Now that the display input lock is started, let's inform the user of it.
-        mHandler.post(() -> Toast.makeText(displayContext, R.string.display_input_lock_started_text,
-                Toast.LENGTH_SHORT).show());
-
+        showDisplayInputLockToast(displayId, displayContext,
+                R.string.display_input_lock_started_text);
     }
 
     private void mayStartDisplayInputMonitor(Display display) {
@@ -393,10 +399,41 @@ public final class DisplayInputSinkController implements CoreStartable {
             return;
         }
         Slog.i(TAG, "Stop input lock for display#" + displayId);
-        mHandler.post(() -> Toast.makeText(mContext.createDisplayContext(display),
-                R.string.display_input_lock_stopped_text, Toast.LENGTH_SHORT).show());
+        showDisplayInputLockToast(displayId, mContext.createDisplayContext(display),
+                R.string.display_input_lock_stopped_text);
         removeDisplayInputSink(displayId);
         mDisplayInputLockedDisplays.remove(displayId);
+    }
+
+    /**
+     * Shows a toast message for display input lock events.
+     * <p>
+     * This method ensures that only one toast is displayed at a time for each display.
+     * If a toast is already showing for the given displayId, it will be canceled before
+     * the new toast is shown.
+     *
+     * @param displayId    The ID of the display for which to show the toast.
+     * @param context      The Context object associated with the display.
+     * @param messageResId The resource ID of the toast message to display.
+     */
+    private void showDisplayInputLockToast(int displayId, Context context, int messageResId) {
+        mHandler.post(() -> {
+            // Check if a Toast already exists for this displayId
+            int index = mDisplayInputLockToasts.indexOfKey(displayId);
+            if (index >= 0) {
+                // If a Toast exists, cancel it before showing a new one
+                Toast previousToast = mDisplayInputLockToasts.valueAt(index);
+                Slog.d(TAG, "Cancel previous displayInput lock message");
+                previousToast.cancel();
+                mDisplayInputLockToasts.removeAt(index);
+            }
+
+            Toast newToast = Toast.makeText(context,
+                    messageResId,
+                    Toast.LENGTH_SHORT);
+            mDisplayInputLockToasts.put(displayId, newToast);
+            newToast.show();
+        });
     }
 
     private void mayStopDisplayInputMonitor(int displayId) {

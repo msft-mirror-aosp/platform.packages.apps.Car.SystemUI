@@ -2,13 +2,6 @@ package: "com.android.systemui.car"
 container: "system"
 
 flag {
-    name: "example_flag"
-    namespace: "car_sys_exp"
-    description: "An Example Flag"
-    bug: "304307370"
-}
-
-flag {
     name: "config_aware_systemui"
     namespace: "car_sys_exp"
     description: "Flag to make car system ui react to runtime resource overlay change at the runtime."
@@ -55,4 +48,11 @@ flag {
     namespace: "car_sys_exp"
     description: "This flag controls v2 development to enable display compatibility feature."
     bug: "364382110"
+}
+
+flag {
+    name: "scalable_ui"
+    namespace: "car_sys_exp"
+    description: "This flag controls the development to enable scalable UI feature."
+    bug: "382109339"
 }

@@ -20,12 +20,14 @@ import static android.content.Intent.ACTION_OVERLAY_CHANGED;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
 
 import static com.android.systemui.car.Flags.configAwareSystemui;
+import static com.android.systemui.car.systembar.CarSystemBarViewController.BUTTON_TYPE_KEYGUARD;
+import static com.android.systemui.car.systembar.CarSystemBarViewController.BUTTON_TYPE_NAVIGATION;
+import static com.android.systemui.car.systembar.CarSystemBarViewController.BUTTON_TYPE_OCCLUSION;
 import static com.android.systemui.shared.statusbar.phone.BarTransitions.MODE_SEMI_TRANSPARENT;
 import static com.android.systemui.shared.statusbar.phone.BarTransitions.MODE_TRANSPARENT;
 
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
-import android.app.StatusBarManager;
 import android.app.StatusBarManager.Disable2Flags;
 import android.app.StatusBarManager.DisableFlags;
 import android.content.BroadcastReceiver;
@@ -58,15 +60,12 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.LetterboxDetails;
 import com.android.internal.statusbar.RegisterStatusBarResult;
 import com.android.internal.view.AppearanceRegion;
-import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
-import com.android.systemui.car.hvac.HvacSystemBarPresenter;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationPanelViewController;
-import com.android.systemui.car.notification.NotificationSystemBarPresenter;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -97,7 +96,7 @@ import java.util.Set;
 @SysUISingleton
 public class CarSystemBarControllerImpl implements CarSystemBarController,
         CommandQueue.Callbacks, ConfigurationController.ConfigurationListener,
-        KeyguardSystemBarPresenter, NotificationSystemBarPresenter, HvacSystemBarPresenter {
+        KeyguardSystemBarPresenter {
     private static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;
 
     private static final String TAG = CarSystemBarController.class.getSimpleName();
@@ -108,7 +107,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     private final CarSystemBarViewFactory mCarSystemBarViewFactory;
     private final SystemBarConfigs mSystemBarConfigs;
     private final SysuiDarkIconDispatcher mStatusBarIconController;
-    private final WindowManager mWindowManager;
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final CommandQueue mCommandQueue;
     private final AutoHideController mAutoHideController;
@@ -197,7 +195,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mCarSystemBarViewFactory = carSystemBarViewFactory;
         mSystemBarConfigs = systemBarConfigs;
         mStatusBarIconController = (SysuiDarkIconDispatcher) darkIconDispatcher;
-        mWindowManager = windowManager;
         mCarDeviceProvisionedController = deviceProvisionedController;
         mCommandQueue = commandQueue;
         mAutoHideController = autoHideController;
@@ -294,11 +291,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         TaskStackChangeListeners.getInstance().registerTaskStackListener(
                 new TaskStackChangeListener() {
                     @Override
-                    public void onLockTaskModeChanged(int mode) {
-                        refreshSystemBar();
-                    }
-
-                    @Override
                     public void onTaskMovedToFront(RunningTaskInfo taskInfo) {
                         if (mDisplayCompatToolbarController != null) {
                             mDisplayCompatToolbarController.update(taskInfo);
@@ -355,7 +347,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             mAppearanceRegions = appearanceRegions;
             updateStatusBarAppearance();
         }
-        refreshSystemBar();
     }
 
     @Override
@@ -477,7 +468,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mStatusBarState = state;
         mStatusBarState2 = state2;
         mLockTaskMode = lockTaskMode;
-        refreshSystemBar();
     }
 
     @VisibleForTesting
@@ -490,54 +480,8 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         return mStatusBarState2;
     }
 
-    /**
-     * Refreshes system bar views and sets the visibility of certain components based on
-     * {@link StatusBarManager} flags and lock task mode.
-     * <ul>
-     * <li>Home button will be disabled when {@code StatusBarManager.DISABLE_HOME} is set.
-     * <li>Phone call button will be disable in lock task mode.
-     * <li>App grid button will be disable when {@code StatusBarManager.DISABLE_HOME} is set.
-     * <li>Notification button will be disable when
-     * {@code StatusBarManager.DISABLE_NOTIFICATION_ICONS} is set.
-     * <li>Quick settings and user switcher will be hidden when in lock task mode or when
-     * {@code StatusBarManager.DISABLE2_QUICK_SETTINGS} is set.
-     * </ul>
-     */
-    private void refreshSystemBar() {
-        boolean homeDisabled = ((mStatusBarState & StatusBarManager.DISABLE_HOME) > 0);
-        boolean notificationDisabled =
-                ((mStatusBarState & StatusBarManager.DISABLE_NOTIFICATION_ICONS) > 0);
-        boolean locked = (mLockTaskMode == ActivityManager.LOCK_TASK_MODE_LOCKED);
-        boolean qcDisabled =
-                ((mStatusBarState2 & StatusBarManager.DISABLE2_QUICK_SETTINGS) > 0) || locked;
-        boolean systemIconsDisabled =
-                ((mStatusBarState2 & StatusBarManager.DISABLE2_SYSTEM_ICONS) > 0) || locked;
-
-        setDisabledSystemBarButton(R.id.home, homeDisabled, "home");
-        setDisabledSystemBarButton(R.id.passenger_home, homeDisabled, "passenger_home");
-        setDisabledSystemBarButton(R.id.phone_nav, locked, "phone_nav");
-        setDisabledSystemBarButton(R.id.grid_nav, homeDisabled, "grid_nav");
-        setDisabledSystemBarButton(R.id.notifications, notificationDisabled, "notifications");
-
-        if (DEBUG) {
-            Log.d(TAG, "refreshSystemBar: locked?: " + locked
-                    + " homeDisabled: " + homeDisabled
-                    + " notificationDisabled: " + notificationDisabled
-                    + " qcDisabled: " + qcDisabled
-                    + " systemIconsDisabled: " + systemIconsDisabled);
-        }
-    }
-
     private int getLockTaskModeState() {
         return mContext.getSystemService(ActivityManager.class).getLockTaskModeState();
-    }
-
-    private void setDisabledSystemBarButton(int viewId, boolean disabled,
-                @Nullable String buttonName) {
-        for (int i = 0; i < mSystemBarViewControllerMap.size(); i++) {
-            mSystemBarViewControllerMap.valueAt(i).setDisabledSystemBarButton(viewId, disabled,
-                    () -> showAdminSupportDetailsDialog(), buttonName);
-        }
     }
 
     private void showAdminSupportDetailsDialog() {
@@ -565,8 +509,9 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
         CarSystemBarViewController viewController = mCarSystemBarViewFactory
                 .getSystemBarViewController(side, isSetUp);
-        setupBar(viewController, mBarTouchListenersMap.get(side), mHvacPanelOverlayViewController,
-                mNotificationPanelViewController);
+        Set<View.OnTouchListener> statusBarTouchListeners = mBarTouchListenersMap.get(side);
+        viewController.setSystemBarTouchListeners(
+                statusBarTouchListeners != null ? statusBarTouchListeners : new ArraySet<>());
 
         mSystemBarViewControllerMap.put(side, viewController);
         return viewController;
@@ -580,44 +525,8 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         boolean setModified = mBarTouchListenersMap.get(side).add(listener);
         if (setModified && mSystemBarViewControllerMap.get(side) != null) {
             mSystemBarViewControllerMap.get(side)
-                    .setStatusBarWindowTouchListeners(mBarTouchListenersMap.get(side));
+                    .setSystemBarTouchListeners(mBarTouchListenersMap.get(side));
         }
-    }
-
-    private void setupBar(CarSystemBarViewController controller,
-            Set<View.OnTouchListener> statusBarTouchListeners,
-            HvacPanelOverlayViewController hvacPanelOverlayViewController,
-            NotificationPanelViewController notificationPanelViewController) {
-        controller.setStatusBarWindowTouchListeners(
-                statusBarTouchListeners != null ? statusBarTouchListeners : new ArraySet<>());
-        controller.registerNotificationPanelViewController(notificationPanelViewController);
-        controller.registerHvacPanelOverlayViewController(hvacPanelOverlayViewController);
-    }
-
-    /** Sets the NotificationPanelViewController for views to listen to the panel's state. */
-    @Override
-    public void registerNotificationPanelViewController(
-            NotificationPanelViewController notificationPanelViewController) {
-        mNotificationPanelViewController = notificationPanelViewController;
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            if (mSystemBarViewControllerMap.get(side) != null) {
-                mSystemBarViewControllerMap.get(side)
-                        .registerNotificationPanelViewController(mNotificationPanelViewController);
-            }
-        });
-    }
-
-    /** Sets the HVACPanelOverlayViewController for views to listen to the panel's state. */
-    @Override
-    public void registerHvacPanelOverlayViewController(
-            HvacPanelOverlayViewController hvacPanelOverlayViewController) {
-        mHvacPanelOverlayViewController = hvacPanelOverlayViewController;
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            if (mSystemBarViewControllerMap.get(side) != null) {
-                mSystemBarViewControllerMap.get(side)
-                        .registerHvacPanelOverlayViewController(mHvacPanelOverlayViewController);
-            }
-        });
     }
 
     /**
@@ -625,7 +534,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      */
     @Override
     public void showAllNavigationButtons() {
-        showAllNavigationButtons(true);
+        showAllNavigationButtons(isDeviceSetupForUser());
     }
 
     // TODO(b/368407601): can we remove this?
@@ -635,7 +544,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
             if (mSystemBarViewControllerMap.get(side) != null) {
                 mSystemBarViewControllerMap.get(side)
-                        .showButtonsOfType(CarSystemBarView.BUTTON_TYPE_NAVIGATION);
+                        .showButtonsOfType(BUTTON_TYPE_NAVIGATION);
             }
         });
     }
@@ -646,7 +555,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      */
     @Override
     public void showAllKeyguardButtons() {
-        showAllKeyguardButtons(true);
+        showAllKeyguardButtons(isDeviceSetupForUser());
     }
 
     // TODO(b/368407601): can we remove this?
@@ -656,7 +565,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
             if (mSystemBarViewControllerMap.get(side) != null) {
                 mSystemBarViewControllerMap.get(side)
-                        .showButtonsOfType(CarSystemBarView.BUTTON_TYPE_KEYGUARD);
+                        .showButtonsOfType(BUTTON_TYPE_KEYGUARD);
             }
         });
     }
@@ -667,7 +576,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      */
     @Override
     public void showAllOcclusionButtons() {
-        showAllOcclusionButtons(true);
+        showAllOcclusionButtons(isDeviceSetupForUser());
     }
 
     // TODO(b/368407601): can we remove this?
@@ -677,26 +586,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
             if (mSystemBarViewControllerMap.get(side) != null) {
                 mSystemBarViewControllerMap.get(side)
-                        .showButtonsOfType(CarSystemBarView.BUTTON_TYPE_OCCLUSION);
-            }
-        });
-    }
-
-    /** Toggles whether the notifications icon has an unseen indicator or not. */
-    @Override
-    public void toggleAllNotificationsUnseenIndicator(boolean hasUnseen) {
-        toggleAllNotificationsUnseenIndicator(
-                mCarDeviceProvisionedController.isCurrentUserFullySetup(), hasUnseen);
-    }
-
-    // TODO(b/368407601): can we remove this?
-    @VisibleForTesting
-    void toggleAllNotificationsUnseenIndicator(boolean isSetUp, boolean hasUnseen) {
-        checkAllBars(isSetUp);
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            if (mSystemBarViewControllerMap.get(side) != null) {
-                mSystemBarViewControllerMap.get(side)
-                        .toggleNotificationUnseenIndicator(hasUnseen);
+                        .showButtonsOfType(BUTTON_TYPE_OCCLUSION);
             }
         });
     }
@@ -805,10 +695,22 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
                         + ", enabled=" + isBarEnabled);
             }
             if (barWindow != null && !isBarAttached && isBarEnabled) {
-                mWindowManager.addView(barWindow, mSystemBarConfigs.getLayoutParamsBySide(side));
-                mSystemBarAttachedMap.put(side, true);
+                WindowManager wm = getWindowManagerForSide(side);
+                if (wm != null) {
+                    wm.addView(barWindow, mSystemBarConfigs.getLayoutParamsBySide(side));
+                    mSystemBarAttachedMap.put(side, true);
+                }
+
             }
         });
+    }
+
+    private WindowManager getWindowManagerForSide(@SystemBarSide int side) {
+        Context windowContext = mSystemBarConfigs.getWindowContextBySide(side);
+        if (windowContext == null) {
+            return null;
+        }
+        return windowContext.getSystemService(WindowManager.class);
     }
 
     private void registerOverlayChangeBroadcastReceiver() {
@@ -961,7 +863,10 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             if (barWindow != null) {
                 barWindow.removeAllViews();
                 if (removeUnusedWindow) {
-                    mWindowManager.removeViewImmediate(barWindow);
+                    WindowManager wm = getWindowManagerForSide(side);
+                    if (wm != null) {
+                        wm.removeViewImmediate(barWindow);
+                    }
                     mSystemBarAttachedMap.put(side, false);
                 }
                 mSystemBarViewControllerMap.remove(side);

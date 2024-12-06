@@ -21,15 +21,16 @@ import android.annotation.LayoutRes;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
 import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
-import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
+import com.android.systemui.car.window.OverlayVisibilityMediator;
 import com.android.systemui.settings.UserTracker;
 
 import dagger.Lazy;
@@ -43,7 +44,7 @@ import javax.inject.Provider;
  * A controller for initializing the TOP CarSystemBarView.
  * TODO(b/373710798): remove privacy chip related code when they are migrated to flexible ui.
  */
-public class CarTopSystemBarViewController extends CarSystemBarViewController {
+public class CarTopSystemBarViewController extends CarSystemBarViewControllerImpl {
 
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final Provider<StatusIconPanelViewController.Builder> mPanelControllerBuilderProvider;
@@ -61,10 +62,10 @@ public class CarTopSystemBarViewController extends CarSystemBarViewController {
             ButtonSelectionStateController buttonSelectionStateController,
             Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
             Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
-            HvacController hvacController,
             CarDeviceProvisionedController deviceProvisionedController,
             Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider,
-            @Assisted CarSystemBarView systemBarView) {
+            OverlayVisibilityMediator overlayVisibilityMediator,
+            @Assisted ViewGroup systemBarView) {
         super(context,
                 userTracker,
                 elementInitializer,
@@ -73,7 +74,7 @@ public class CarTopSystemBarViewController extends CarSystemBarViewController {
                 buttonSelectionStateController,
                 cameraPrivacyChipViewControllerLazy,
                 micPrivacyChipViewControllerLazy,
-                hvacController,
+                overlayVisibilityMediator,
                 TOP,
                 systemBarView);
         mCarDeviceProvisionedController = deviceProvisionedController;
@@ -119,16 +120,16 @@ public class CarTopSystemBarViewController extends CarSystemBarViewController {
     }
 
     @AssistedFactory
-    public interface Factory extends CarSystemBarViewController.Factory {
+    public interface Factory extends CarSystemBarViewControllerImpl.Factory {
         @Override
-        default CarSystemBarViewController create(@SystemBarSide int side, CarSystemBarView view) {
+        default CarSystemBarViewControllerImpl create(@SystemBarSide int side, ViewGroup view) {
             if (side == TOP) {
                 return create(view);
             }
             throw new UnsupportedOperationException("Side not supported");
         }
 
-        /** Create instance of CarTopSystemBarViewController for CarSystemBarView */
-        CarTopSystemBarViewController create(CarSystemBarView view);
+        /** Create instance of CarTopSystemBarViewController for system bar views */
+        CarTopSystemBarViewController create(ViewGroup view);
     }
 }

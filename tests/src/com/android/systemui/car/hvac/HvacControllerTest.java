@@ -118,6 +118,8 @@ public class HvacControllerTest extends SysuiTestCase {
         when(mTestHvacView1.getHvacPropertyToView()).thenReturn(HVAC_TEMPERATURE_SET);
 
         mHvacController.registerHvacViews(mTestHvacView1);
+        mExecutor.advanceClockToLast();
+        mExecutor.runAllReady();
 
         assertThat(mHvacController.getHvacPropertyViewMap().get(HVAC_TEMPERATURE_SET).get(
                 AREA_1)).contains(mTestHvacView1);
@@ -131,6 +133,8 @@ public class HvacControllerTest extends SysuiTestCase {
                 .thenReturn(VEHICLE_AREA_TYPE_GLOBAL);
 
         mHvacController.registerHvacViews(mTestHvacView1);
+        mExecutor.advanceClockToLast();
+        mExecutor.runAllReady();
 
         assertThat(mHvacController.getHvacPropertyViewMap().get(HVAC_TEMPERATURE_SET).get(
                 AREA_1)).contains(mTestHvacView1);
@@ -156,6 +160,8 @@ public class HvacControllerTest extends SysuiTestCase {
                 .thenReturn(mCarPropertyValue);
 
         mHvacController.registerHvacViews(mTestHvacView1);
+        mExecutor.advanceClockToLast();
+        mExecutor.runAllReady();
 
         assertThat(mHvacController.getHvacPropertyViewMap().get(HVAC_TEMPERATURE_SET).get(
                 AREA_1)).contains(mTestHvacView1);
@@ -172,6 +178,9 @@ public class HvacControllerTest extends SysuiTestCase {
         when(mCarPropertyManager.getCarPropertyConfig(anyInt())).thenReturn(null);
 
         mHvacController.registerHvacViews(mTestHvacView1);
+        mExecutor.advanceClockToLast();
+        mExecutor.runAllReady();
+
         assertThat(mHvacController.getHvacPropertyViewMap()).isEmpty();
     }
 
@@ -179,9 +188,11 @@ public class HvacControllerTest extends SysuiTestCase {
     public void unregisterHvacView_viewNotRegisteredInMap() {
         when(mTestHvacView1.getAreaId()).thenReturn(AREA_1);
         when(mTestHvacView1.getHvacPropertyToView()).thenReturn(HVAC_TEMPERATURE_SET);
-        mHvacController.registerHvacViews(mTestHvacView1);
 
+        mHvacController.registerHvacViews(mTestHvacView1);
         mHvacController.unregisterViews(mTestHvacView1);
+        mExecutor.advanceClockToLast();
+        mExecutor.runAllReady();
 
         assertThat(mHvacController.getHvacPropertyViewMap().get(HVAC_TEMPERATURE_SET)).isNull();
     }

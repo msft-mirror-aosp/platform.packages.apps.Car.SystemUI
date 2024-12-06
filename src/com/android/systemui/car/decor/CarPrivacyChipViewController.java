@@ -43,13 +43,13 @@ import com.android.systemui.statusbar.phone.StatusBarContentInsetsProvider;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 
+import kotlinx.coroutines.CoroutineScope;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
-
-import kotlinx.coroutines.CoroutineScope;
 
 /**
  * Subclass of {@link PrivacyDotViewController}.
@@ -73,13 +73,14 @@ public class CarPrivacyChipViewController extends PrivacyDotViewControllerImpl
             @NotNull StatusBarContentInsetsProvider contentInsetsProvider,
             @NotNull SystemStatusAnimationScheduler animationScheduler,
             @NotNull @ScreenDecorationsThread DelayableExecutor uiExecutor,
-            CommandQueue commandQueue) {
+            CommandQueue commandQueue,
+            SystemBarConfigs systemBarConfigs) {
         super(mainExecutor, scope, stateController, configurationController, contentInsetsProvider,
                 animationScheduler, null, uiExecutor);
         commandQueue.addCallback(this);
         mAnimationHelper = new CarPrivacyChipAnimationHelper(context);
-        mBarType = SystemBarConfigs.BAR_PROVIDER_MAP[context.getResources().getInteger(
-                R.integer.config_privacyIndicatorLocation)].getType();
+        mBarType = systemBarConfigs.getInsetsFrameProvider(context.getResources().getInteger(
+                R.integer.config_privacyIndicatorLocation)).getType();
     }
 
     @Override

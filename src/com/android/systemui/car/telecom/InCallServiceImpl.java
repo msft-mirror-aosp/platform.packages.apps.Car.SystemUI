@@ -19,9 +19,12 @@ import android.telecom.Call;
 import android.telecom.InCallService;
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.car.telephony.calling.InCallServiceManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -36,6 +39,33 @@ public class InCallServiceImpl extends InCallService {
 
     private final InCallServiceManager mServiceManager;
     private final ArrayList<InCallListener> mInCallListeners = new ArrayList<>();
+
+    @VisibleForTesting
+    final Call.Callback mCallStateChangedCallback = new Call.Callback() {
+        @Override
+        public void onStateChanged(Call call, int state) {
+            Log.d(TAG, "onStateChanged: " + call);
+            for (InCallListener listener : mInCallListeners) {
+                listener.onStateChanged(call, state);
+            }
+        }
+
+        @Override
+        public void onParentChanged(Call call, Call parent) {
+            Log.d(TAG, "onParentChanged: " + call);
+            for (InCallListener listener : mInCallListeners) {
+                listener.onParentChanged(call, parent);
+            }
+        }
+
+        @Override
+        public void onChildrenChanged(Call call, List<Call> children) {
+            Log.d(TAG, "onChildrenChanged: " + call);
+            for (InCallListener listener : mInCallListeners) {
+                listener.onChildrenChanged(call, children);
+            }
+        }
+    };
 
     @Inject
     public InCallServiceImpl(InCallServiceManager serviceManager) {
@@ -58,7 +88,8 @@ public class InCallServiceImpl extends InCallService {
 
     @Override
     public void onCallAdded(Call call) {
-        if (DEBUG) Log.d(TAG, "onCallAdded: " + call);
+        Log.d(TAG, "onCallAdded: " + call);
+        call.registerCallback(mCallStateChangedCallback);
         for (InCallListener listener : mInCallListeners) {
             listener.onCallAdded(call);
         }
@@ -66,7 +97,8 @@ public class InCallServiceImpl extends InCallService {
 
     @Override
     public void onCallRemoved(Call call) {
-        if (DEBUG) Log.d(TAG, "onCallRemoved: " + call);
+        Log.d(TAG, "onCallRemoved: " + call);
+        call.unregisterCallback(mCallStateChangedCallback);
         for (InCallListener listener : mInCallListeners) {
             listener.onCallRemoved(call);
         }
@@ -101,5 +133,20 @@ public class InCallServiceImpl extends InCallService {
          * indicating that the call has ended.
          */
         void onCallRemoved(Call call);
+
+        /**
+         * Called when the state of a {@link Call} has changed.
+         */
+        void onStateChanged(Call call, int state);
+
+        /**
+         * Called when a {@link Call} has been added to a conference.
+         */
+        void onParentChanged(Call call, Call parent);
+
+        /**
+         * Called when a conference {@link Call} has children calls added or removed.
+         */
+        void onChildrenChanged(Call call, List<Call> children);
     }
 }

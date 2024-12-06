@@ -17,7 +17,6 @@
 package com.android.systemui.car.userpicker;
 
 import static android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
-import static android.view.WindowManager.LayoutParams.SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS;
 import static android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT;
 
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_CHANGE_USER;
@@ -38,7 +37,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
-import android.view.WindowManager;
 import android.window.OnBackInvokedCallback;
 
 import androidx.annotation.NonNull;
@@ -188,12 +186,6 @@ public class UserPickerActivity extends Activity implements Dumpable {
         mDumpManager.registerNormalDumpable(dumpableName, /* module= */ this);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        getWindow().addSystemFlags(SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS);
-    }
-
     private void initViews() {
         View powerBtn = mRootView.findViewById(R.id.power_button_icon_view);
         powerBtn.setOnClickListener(v -> mController.screenOffDisplay());
@@ -278,16 +270,6 @@ public class UserPickerActivity extends Activity implements Dumpable {
     @VisibleForTesting
     boolean getIsDriver() {
         return !isMUPANDSystemUI() && getDisplayId() == mDisplayTracker.getDefaultDisplayId();
-    }
-
-    @Override
-    protected void onStop() {
-        Window window = getWindow();
-        WindowManager.LayoutParams attrs = window.getAttributes();
-        attrs.privateFlags &= ~SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS;
-        window.setAttributes(attrs);
-
-        super.onStop();
     }
 
     @Override

@@ -278,7 +278,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         @Override
         public void setImeInputTargetRequestedVisibility(boolean visible,
                 @NonNull ImeTracker.Token statsToken) {
-            // TODO
+            // no-op - IME visibility is handled by the DisplayImeController
         }
 
         private void registerOverlayChangeBroadcastReceiver() {
@@ -335,7 +335,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             try {
                 mWmService.updateDisplayWindowRequestedVisibleTypes(mDisplayId,
                         barVisibilities[VISIBLE_BAR_VISIBILITIES_TYPES_INDEX], insetMask,
-                        null /* TODO(b/380891919) pass IME statsToken */);
+                        /* imeStatsToken= */ null);
             } catch (RemoteException e) {
                 Slog.w(TAG, "Unable to update window manager service.");
             }

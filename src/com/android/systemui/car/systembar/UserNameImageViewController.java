@@ -17,9 +17,7 @@
 package com.android.systemui.car.systembar;
 
 import android.content.Context;
-import android.content.pm.UserInfo;
 import android.graphics.drawable.Drawable;
-import android.os.UserManager;
 
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
@@ -44,7 +42,6 @@ public final class UserNameImageViewController extends
     private final Context mContext;
     private final Executor mMainExecutor;
     private final UserTracker mUserTracker;
-    private final UserManager mUserManager;
     private final CarProfileIconUpdater mCarProfileIconUpdater;
     private final UserIconProvider mUserIconProvider;
     private boolean mUserLifecycleListenerRegistered;
@@ -63,13 +60,12 @@ public final class UserNameImageViewController extends
     protected UserNameImageViewController(@Assisted CarSystemBarImageView view,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController, Context context,
-            @Main Executor mainExecutor, UserTracker userTracker, UserManager userManager,
+            @Main Executor mainExecutor, UserTracker userTracker,
             CarProfileIconUpdater carProfileIconUpdater, UserIconProvider userIconProvider) {
         super(view, disableController, stateController);
         mContext = context;
         mMainExecutor = mainExecutor;
         mUserTracker = userTracker;
-        mUserManager = userManager;
         mCarProfileIconUpdater = carProfileIconUpdater;
         mUserIconProvider = userIconProvider;
     }
@@ -109,9 +105,7 @@ public final class UserNameImageViewController extends
     }
 
     private void updateUser(int userId) {
-        UserInfo currentUserInfo = mUserManager.getUserInfo(userId);
-
-        Drawable circleIcon = mUserIconProvider.getRoundedUserIcon(currentUserInfo, mContext);
-        mView.setImageDrawable(circleIcon);
+        Drawable roundedUserIcon = mUserIconProvider.getRoundedUserIcon(userId);
+        mView.setImageDrawable(roundedUserIcon);
     }
 }

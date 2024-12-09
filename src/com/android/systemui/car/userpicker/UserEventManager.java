@@ -138,12 +138,12 @@ public final class UserEventManager {
 
     @Inject
     UserEventManager(Context context, CarServiceMediator carServiceMediator,
-            UserPickerSharedState userPickerSharedState) {
+            UserPickerSharedState userPickerSharedState, UserManager userManager) {
         mUpdateListeners = new SparseArray<>();
         mContext = context.getApplicationContext();
         mUserLifecycleReceiver = Executors.newSingleThreadExecutor();
         mMainHandler = new Handler(Looper.getMainLooper());
-        mUserManager = mContext.getSystemService(UserManager.class);
+        mUserManager = userManager;
         mUserPickerSharedState = userPickerSharedState;
         mCarServiceMediator = carServiceMediator;
         mCarServiceMediator.registerUserChangeEventsListener(mUserLifecycleReceiver, mFilter,

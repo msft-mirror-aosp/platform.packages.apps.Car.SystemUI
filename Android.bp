@@ -33,8 +33,8 @@ carsystemui_srcs = [
     ":statslog-carsystemui-java-gen",
 ]
 
-android_library {
-    name: "CarSystemUI-core",
+java_defaults {
+    name: "CarSystemUI-core-defaults",
 
     srcs: carsystemui_srcs,
 
@@ -85,6 +85,17 @@ android_library {
         "android.car",
     ],
 
+    // TODO(b/319708040): re-enable use_resource_processor
+    use_resource_processor: false,
+}
+
+android_library {
+    name: "CarSystemUI-core",
+
+    defaults: [
+        "CarSystemUI-core-defaults",
+    ],
+
     aaptflags: [
         "--no-resource-deduping",
     ],
@@ -96,7 +107,6 @@ android_library {
     plugins: ["dagger2-compiler"],
     // TODO(b/319708040): re-enable use_resource_processor
     use_resource_processor: false,
-
 }
 
 android_app {
@@ -155,6 +165,40 @@ android_app {
     // TODO(b/319708040): re-enable use_resource_processor
     use_resource_processor: false,
 }
+
+// Begin daggervis
+
+// Dropped from google3/java/com/google/android/libraries/docs/inject/daggerplugin/dot
+java_import_host {
+    name: "car-systemui-binding-graph-plugin-jar",
+    jars: ["daggervis/libdagger_binding_graph_plugin_lib.jar"],
+}
+
+// A java SPI plugin to visualize dagger dependency graph.
+java_plugin {
+    name: "car-systemui-binding-graph-plugin",
+    static_libs: [
+        "car-systemui-binding-graph-plugin-jar",
+        "dagger2-compiler-lib",
+        "auto_service_annotations",
+        "auto_value_annotations",
+        "auto_value_memoized_extension_annotations",
+    ],
+    processor_class: "dagger.internal.codegen.ComponentProcessor",
+}
+
+android_library {
+    name: "CarSystemUI-core-daggervis",
+    defaults: [
+        "CarSystemUI-core-defaults",
+    ],
+    plugins: [
+        "car-systemui-binding-graph-plugin",
+        "dagger2-compiler",
+    ],
+}
+
+// End daggervis
 
 // Resource lib
 // To be used ONLY for RROs of CarSystemUI

@@ -86,6 +86,8 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
     @Mock
     private UserManager mMockUserManager;
     @Mock
+    private UserIconProvider mUserIconProvider;
+    @Mock
     private KeyguardManager mKeyguardManager;
 
     @Before
@@ -102,6 +104,7 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
                 mExecutor,
                 mMockActivityManager,
                 mMockUserManager,
+                mUserIconProvider,
                 mWindowManagerService,
                 mOverlayViewGlobalStateController
         );

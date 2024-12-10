@@ -30,7 +30,6 @@ import android.content.Context;
 import android.content.pm.UserInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.UserManager;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
@@ -68,8 +67,6 @@ public class UserIconProviderTest extends SysuiTestCase {
     @Mock
     private UserManager mUserManager;
     @Mock
-    private Drawable mDrawable;
-    @Mock
     private Bitmap mBitmap;
 
     @Before
@@ -81,11 +78,10 @@ public class UserIconProviderTest extends SysuiTestCase {
                 .strictness(Strictness.WARN)
                 .startMocking();
 
-        mContext.addMockSystemService(UserManager.class, mUserManager);
         when(mUserManager.getUserInfo(mUserInfo.id)).thenReturn(mUserInfo);
         when(mUserManager.getUserInfo(mGuestUserInfo.id)).thenReturn(mGuestUserInfo);
 
-        mUserIconProvider = new UserIconProvider();
+        mUserIconProvider = new UserIconProvider(mContext, mUserManager);
         spyOn(mUserIconProvider);
 
         mResources = mContext.getResources();
@@ -101,16 +97,16 @@ public class UserIconProviderTest extends SysuiTestCase {
 
     @Test
     public void setRoundedUserIcon_existRoundedUserIcon() {
-        mUserIconProvider.setRoundedUserIcon(mUserInfo, mContext);
+        mUserIconProvider.setRoundedUserIcon(mUserInfo.id);
 
-        assertThat(mUserIconProvider.getRoundedUserIcon(mUserInfo, mContext)).isNotNull();
+        assertThat(mUserIconProvider.getRoundedUserIcon(mUserInfo.id)).isNotNull();
     }
 
     @Test
     public void getRoundedUserIcon_notExistUserIcon_assignDefaultIcon() {
         when(mUserManager.getUserIcon(mUserInfo.id)).thenReturn(null);
 
-        mUserIconProvider.getRoundedUserIcon(mUserInfo, mContext);
+        mUserIconProvider.getRoundedUserIcon(mUserInfo.id);
 
         ExtendedMockito.verify(() -> UserHelper.assignDefaultIcon(any(Context.class),
                 eq(mUserInfo.getUserHandle())));
@@ -120,7 +116,7 @@ public class UserIconProviderTest extends SysuiTestCase {
     public void getRoundedUserIcon_existUserIcon_notAssignDefaultIcon() {
         when(mUserManager.getUserIcon(mUserInfo.id)).thenReturn(mBitmap);
 
-        mUserIconProvider.getRoundedUserIcon(mUserInfo, mContext);
+        mUserIconProvider.getRoundedUserIcon(mUserInfo.id);
 
         ExtendedMockito.verify(() -> UserHelper.assignDefaultIcon(any(Context.class),
                 eq(mUserInfo.getUserHandle())), never());

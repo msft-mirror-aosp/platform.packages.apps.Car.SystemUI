@@ -68,7 +68,7 @@ public class UserSwitchTransitionViewController extends OverlayViewController {
     private final UserManager mUserManager;
     private final IWindowManager mWindowManagerService;
     private final KeyguardManager mKeyguardManager;
-    private final UserIconProvider mUserIconProvider = new UserIconProvider();
+    private final UserIconProvider mUserIconProvider;
     private final int mWindowShownTimeoutMs;
     private final Runnable mWindowShownTimeoutCallback = () -> {
         if (DEBUG) {
@@ -100,6 +100,7 @@ public class UserSwitchTransitionViewController extends OverlayViewController {
             @Main DelayableExecutor delayableExecutor,
             ActivityManager activityManager,
             UserManager userManager,
+            UserIconProvider userIconProvider,
             IWindowManager windowManagerService,
             OverlayViewGlobalStateController overlayViewGlobalStateController) {
 
@@ -110,6 +111,7 @@ public class UserSwitchTransitionViewController extends OverlayViewController {
         mMainExecutor = delayableExecutor;
         mActivityManager = activityManager;
         mUserManager = userManager;
+        mUserIconProvider = userIconProvider;
         mWindowManagerService = windowManagerService;
         mKeyguardManager = context.getSystemService(KeyguardManager.class);
         mWindowShownTimeoutMs = mResources.getInteger(
@@ -213,8 +215,7 @@ public class UserSwitchTransitionViewController extends OverlayViewController {
     }
 
     private void drawUserIcon(int newUserId) {
-        Drawable userIcon = mUserIconProvider.getDrawableWithBadge(mContext,
-                mUserManager.getUserInfo(newUserId));
+        Drawable userIcon = mUserIconProvider.getDrawableWithBadge(newUserId);
         ((ImageView) getLayout().findViewById(R.id.user_loading_avatar))
                 .setImageDrawable(userIcon);
     }

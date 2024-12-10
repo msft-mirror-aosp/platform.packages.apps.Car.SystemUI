@@ -44,6 +44,7 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.userpicker.UserPickerController.Callbacks;
+import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.settings.DisplayTracker;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -141,7 +142,7 @@ public class UserPickerControllerTest extends UserPickerTestCase {
 
         mUserPickerController = new UserPickerController(mContext, mMockUserEventManager,
                 mMockCarServiceMediator, mMockDialogManager, mSnackbarManager,
-                mMockDisplayTracker, mUserPickerSharedState);
+                mMockDisplayTracker, mUserPickerSharedState, mock(UserIconProvider.class));
         mUserPickerController.init(mMockCallbacks, displayId);
         mUserPickerController.onConfigurationChanged();
         AndroidMockitoHelper.mockAmGetCurrentUser(USER_ID_DRIVER);

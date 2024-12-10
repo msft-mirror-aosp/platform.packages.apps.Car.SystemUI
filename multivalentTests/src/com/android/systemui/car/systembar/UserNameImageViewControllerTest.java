@@ -19,12 +19,12 @@ package com.android.systemui.car.systembar;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.pm.UserInfo;
 import android.graphics.drawable.Drawable;
-import android.os.UserManager;
 import android.testing.TestableLooper;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -67,8 +67,6 @@ public class UserNameImageViewControllerTest extends SysuiTestCase {
     @Mock
     private UserTracker mUserTracker;
     @Mock
-    private UserManager mUserManager;
-    @Mock
     private CarProfileIconUpdater mIconUpdater;
     @Mock
     private UserIconProvider mUserIconProvider;
@@ -84,14 +82,12 @@ public class UserNameImageViewControllerTest extends SysuiTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(mUserManager.getUserInfo(mUserInfo1.id)).thenReturn(mUserInfo1);
-        when(mUserManager.getUserInfo(mUserInfo2.id)).thenReturn(mUserInfo2);
         when(mUserTracker.getUserId()).thenReturn(mUserInfo1.id);
-        when(mUserIconProvider.getRoundedUserIcon(any(), any())).thenReturn(mTestDrawable1);
+        when(mUserIconProvider.getRoundedUserIcon(anyInt())).thenReturn(mTestDrawable1);
 
         mView = new CarSystemBarImageView(mContext);
         mController = new UserNameImageViewController(mView, mDisableController,
-                mStateController, mContext, mExecutor, mUserTracker, mUserManager, mIconUpdater,
+                mStateController, mContext, mExecutor, mUserTracker, mIconUpdater,
                 mUserIconProvider);
     }
 
@@ -128,7 +124,7 @@ public class UserNameImageViewControllerTest extends SysuiTestCase {
         assertThat(captor.getValue()).isNotNull();
 
         when(mUserTracker.getUserId()).thenReturn(mUserInfo2.id);
-        when(mUserIconProvider.getRoundedUserIcon(any(), any())).thenReturn(mTestDrawable2);
+        when(mUserIconProvider.getRoundedUserIcon(anyInt())).thenReturn(mTestDrawable2);
         captor.getValue().onUserChanged(mUserInfo2.id, mContext);
 
         assertThat(mView.getDrawable()).isEqualTo(mTestDrawable2);
@@ -143,7 +139,7 @@ public class UserNameImageViewControllerTest extends SysuiTestCase {
         assertThat(captor.getValue()).isNotNull();
 
         when(mUserTracker.getUserId()).thenReturn(mUserInfo2.id);
-        when(mUserIconProvider.getRoundedUserIcon(any(), any())).thenReturn(mTestDrawable2);
+        when(mUserIconProvider.getRoundedUserIcon(anyInt())).thenReturn(mTestDrawable2);
         captor.getValue().onUserIconUpdated(mUserInfo2.id);
 
         assertThat(mView.getDrawable()).isEqualTo(mTestDrawable2);

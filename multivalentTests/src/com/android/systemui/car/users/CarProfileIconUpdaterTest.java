@@ -111,7 +111,7 @@ public class CarProfileIconUpdaterTest extends SysuiTestCase {
         captor.getValue().onReceive(getContext(),
                 new Intent(Intent.ACTION_USER_INFO_CHANGED));
 
-        verify(mUserIconProvider).setRoundedUserIcon(any(), any());
+        verify(mUserIconProvider).setRoundedUserIcon(anyInt());
         verify(mTestCallback).onUserIconUpdated(anyInt());
     }
 
@@ -125,7 +125,7 @@ public class CarProfileIconUpdaterTest extends SysuiTestCase {
         captor.getValue().onReceive(getContext(),
                 new Intent(Intent.ACTION_USER_INFO_CHANGED));
 
-        verify(mUserIconProvider, never()).setRoundedUserIcon(any(), any());
+        verify(mUserIconProvider, never()).setRoundedUserIcon(anyInt());
         verify(mTestCallback, never()).onUserIconUpdated(anyInt());
     }
 

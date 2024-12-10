@@ -52,15 +52,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.graphics.drawable.RoundedBitmapDrawable;
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import com.android.car.internal.user.UserHelper;
 import com.android.car.qc.QCItem;
 import com.android.car.qc.QCList;
 import com.android.car.qc.QCRow;
 import com.android.car.qc.provider.BaseLocalQCProvider;
-import com.android.internal.util.UserIcons;
 import com.android.settingslib.utils.StringUtil;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
@@ -107,12 +104,13 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
 
     @Inject
     public ProfileSwitcher(Context context, UserTracker userTracker,
-            CarServiceProvider carServiceProvider, @Background Handler handler) {
+            CarServiceProvider carServiceProvider, @Background Handler handler,
+            UserIconProvider userIconProvider) {
         super(context);
         mUserTracker = userTracker;
         mUserManager = context.getSystemService(UserManager.class);
         mDevicePolicyManager = context.getSystemService(DevicePolicyManager.class);
-        mUserIconProvider = new UserIconProvider();
+        mUserIconProvider = userIconProvider;
         mHandler = handler;
         mCarServiceProvider = carServiceProvider;
         mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
@@ -223,7 +221,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         boolean isCurrentProfile = userInfo.id == mUserTracker.getUserId();
 
         return createProfileRow(userInfo.name,
-                mUserIconProvider.getDrawableWithBadge(mContext, userInfo), actionHandler,
+                mUserIconProvider.getDrawableWithBadge(userInfo.id), actionHandler,
                 isCurrentProfile);
     }
 
@@ -241,7 +239,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 && mUserTracker.getUserInfo().isGuest();
 
         return createProfileRow(mContext.getString(com.android.internal.R.string.guest_name),
-                mUserIconProvider.getRoundedGuestDefaultIcon(mContext),
+                mUserIconProvider.getRoundedGuestDefaultIcon(),
                 actionHandler, isCurrentProfile);
     }
 
@@ -258,7 +256,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
         };
 
         return createProfileRow(mContext.getString(R.string.car_add_user),
-                mUserIconProvider.getDrawableWithBadge(mContext, getCircularAddUserIcon()),
+                mUserIconProvider.getDrawableWithBadge(mUserIconProvider.getRoundedAddUserIcon()),
                 actionHandler);
     }
 
@@ -428,14 +426,6 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             return null;
         }
         return mUserManager.getUserInfo(userCreationResult.getUser().getIdentifier());
-    }
-
-    private RoundedBitmapDrawable getCircularAddUserIcon() {
-        RoundedBitmapDrawable circleIcon = RoundedBitmapDrawableFactory.create(
-                mContext.getResources(),
-                UserIcons.convertToBitmap(mContext.getDrawable(R.drawable.car_add_circle_round)));
-        circleIcon.setCircular(true);
-        return circleIcon;
     }
 
     private boolean hasAddUserRestriction(UserHandle userHandle) {

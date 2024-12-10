@@ -18,7 +18,6 @@ package com.android.systemui.car.userswitcher;
 
 import android.annotation.UserIdInt;
 import android.content.Context;
-import android.content.pm.UserInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -27,48 +26,63 @@ import android.os.UserHandle;
 import android.os.UserManager;
 
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import com.android.car.admin.ui.UserAvatarView;
 import com.android.car.internal.user.UserHelper;
+import com.android.internal.util.UserIcons;
 import com.android.systemui.R;
+import com.android.systemui.dagger.SysUISingleton;
 
 import javax.inject.Inject;
 
 /**
  * Simple class for providing icons for users.
  */
+@SysUISingleton
 public class UserIconProvider {
+    private final Context mContext;
+    private final UserManager mUserManager;
+
+    private final float mBadgeToIconSizeRatio;
+    private final float mBadgePadding;
 
     @Inject
-    public UserIconProvider() {
+    public UserIconProvider(Context context, UserManager userManager) {
+        mContext = context;
+        mUserManager = userManager;
+
+        mBadgeToIconSizeRatio =
+                mContext.getResources().getDimension(R.dimen.car_user_switcher_managed_badge_size)
+                        / mContext.getResources().getDimension(
+                        R.dimen.car_user_switcher_image_avatar_size);
+        mBadgePadding = mContext.getResources().getDimension(
+                R.dimen.car_user_switcher_managed_badge_margin);
     }
 
     /**
      * Sets a rounded icon with the first letter of the given user name.
      * This method will update UserManager to use that icon.
      *
-     * @param userInfo User for which the icon is requested.
-     * @param context Context to use for resources
+     * @param userId User for which the icon is requested.
      */
-    public void setRoundedUserIcon(UserInfo userInfo, Context context) {
-        UserHelper.assignDefaultIcon(context, userInfo.getUserHandle());
+    public void setRoundedUserIcon(@UserIdInt int userId) {
+        UserHelper.assignDefaultIcon(mContext, UserHandle.of(userId));
     }
 
     /**
      * Gets a scaled rounded icon for the given user.  If a user does not have an icon saved, this
      * method will default to a generic icon and update UserManager to use that icon.
      *
-     * @param userInfo User for which the icon is requested.
-     * @param context Context to use for resources
+     * @param userId User for which the icon is requested.
      * @return {@link RoundedBitmapDrawable} representing the icon for the user.
      */
-    public Drawable getRoundedUserIcon(UserInfo userInfo, Context context) {
-        UserManager userManager = context.getSystemService(UserManager.class);
-        Resources res = context.getResources();
-        Bitmap icon = userManager.getUserIcon(userInfo.id);
+    public Drawable getRoundedUserIcon(@UserIdInt int userId) {
+        Resources res = mContext.getResources();
+        Bitmap icon = mUserManager.getUserIcon(userId);
 
         if (icon == null) {
-            icon = UserHelper.assignDefaultIcon(context, userInfo.getUserHandle());
+            icon = UserHelper.assignDefaultIcon(mContext, UserHandle.of(userId));
         }
 
         return new BitmapDrawable(res, icon);
@@ -77,36 +91,28 @@ public class UserIconProvider {
     /**
      * Gets a user icon with badge if the user profile is managed.
      *
-     * @param context to use for the avatar view
-     * @param userInfo User for which the icon is requested and badge is set
+     * @param userId User for which the icon is requested and badge is set
      * @return {@link Drawable} with badge
      */
-    public Drawable getDrawableWithBadge(Context context, UserInfo userInfo) {
-        return addBadge(context, getRoundedUserIcon(userInfo, context), userInfo.id);
+    public Drawable getDrawableWithBadge(@UserIdInt int userId) {
+        return addBadge(getRoundedUserIcon(userId), userId);
     }
 
     /**
      * Gets an icon with badge if the device is managed.
      *
-     * @param context context
      * @param drawable icon without badge
      * @return {@link Drawable} with badge
      */
-    public Drawable getDrawableWithBadge(Context context, Drawable drawable) {
-        return addBadge(context, drawable, UserHandle.USER_NULL);
+    public Drawable getDrawableWithBadge(Drawable drawable) {
+        return addBadge(drawable, UserHandle.USER_NULL);
     }
 
-    private static Drawable addBadge(Context context, Drawable drawable, @UserIdInt int userId) {
+    private Drawable addBadge(Drawable drawable, @UserIdInt int userId) {
         int iconSize = drawable.getIntrinsicWidth();
-        UserAvatarView userAvatarView = new UserAvatarView(context);
-        float badgeToIconSizeRatio =
-                context.getResources().getDimension(R.dimen.car_user_switcher_managed_badge_size)
-                        / context.getResources().getDimension(
-                        R.dimen.car_user_switcher_image_avatar_size);
-        userAvatarView.setBadgeDiameter(iconSize * badgeToIconSizeRatio);
-        float badgePadding = context.getResources().getDimension(
-                R.dimen.car_user_switcher_managed_badge_margin);
-        userAvatarView.setBadgeMargin(badgePadding);
+        UserAvatarView userAvatarView = new UserAvatarView(mContext);
+        userAvatarView.setBadgeDiameter(iconSize * mBadgeToIconSizeRatio);
+        userAvatarView.setBadgeMargin(mBadgePadding);
         if (userId != UserHandle.USER_NULL) {
             // When the userId is valid, add badge if the user is managed.
             userAvatarView.setDrawableWithBadge(drawable, userId);
@@ -120,8 +126,17 @@ public class UserIconProvider {
     }
 
     /** Returns a scaled, rounded, default icon for the Guest user */
-    public Drawable getRoundedGuestDefaultIcon(Context context) {
-        Bitmap icon = UserHelper.getGuestDefaultIcon(context);
-        return new BitmapDrawable(context.getResources(), icon);
+    public Drawable getRoundedGuestDefaultIcon() {
+        Bitmap icon = UserHelper.getGuestDefaultIcon(mContext);
+        return new BitmapDrawable(mContext.getResources(), icon);
+    }
+
+    /** Returns a scaled, rounded, default icon for the add user entry. */
+    public Drawable getRoundedAddUserIcon() {
+        RoundedBitmapDrawable roundedIcon = RoundedBitmapDrawableFactory.create(
+                mContext.getResources(),
+                UserIcons.convertToBitmap(mContext.getDrawable(R.drawable.car_add_circle_round)));
+        roundedIcon.setCircular(true);
+        return roundedIcon;
     }
 }

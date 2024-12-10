@@ -51,6 +51,7 @@ public class FullScreenUserSwitcherViewController extends OverlayViewController
         implements ConfigurationController.ConfigurationListener {
     private final Context mContext;
     private final UserTracker mUserTracker;
+    private final UserIconProvider mUserIconProvider;
     private final Resources mResources;
     private final CarServiceProvider mCarServiceProvider;
     private final int mShortAnimationDuration;
@@ -65,6 +66,7 @@ public class FullScreenUserSwitcherViewController extends OverlayViewController
     public FullScreenUserSwitcherViewController(
             Context context,
             UserTracker userTracker,
+            UserIconProvider userIconProvider,
             @Main Resources resources,
             ConfigurationController configurationController,
             CarServiceProvider carServiceProvider,
@@ -72,6 +74,7 @@ public class FullScreenUserSwitcherViewController extends OverlayViewController
         super(R.id.fullscreen_user_switcher_stub, overlayViewGlobalStateController);
         mContext = context;
         mUserTracker = userTracker;
+        mUserIconProvider = userIconProvider;
         mResources = resources;
         mCarServiceProvider = carServiceProvider;
         mCarServiceProvider.addListener(car -> {
@@ -151,6 +154,7 @@ public class FullScreenUserSwitcherViewController extends OverlayViewController
                 mResources.getInteger(R.integer.user_fullscreen_switcher_num_col));
         mUserGridView.setLayoutManager(layoutManager);
         mUserGridView.setUserTracker(mUserTracker);
+        mUserGridView.setUserIconProvider(mUserIconProvider);
         mUserGridView.buildAdapter();
         mUserGridView.setUserSelectionListener(mUserSelectionListener);
         registerCarUserManagerIfPossible();

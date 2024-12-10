@@ -110,7 +110,7 @@ public class CarProfileIconUpdater implements CoreStartable {
         // Update user icon with the first letter of the user name
         if (mLastUserName == null || !mLastUserName.equals(currentUserInfo.name)) {
             mLastUserName = currentUserInfo.name;
-            mUserIconProvider.setRoundedUserIcon(currentUserInfo, mContext);
+            mUserIconProvider.setRoundedUserIcon(userId);
             notifyCallbacks(userId);
         }
     }

@@ -29,6 +29,7 @@ import android.content.res.Configuration;
 import android.graphics.Insets;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.UserManager;
 import android.util.Log;
 import android.util.Slog;
 import android.view.LayoutInflater;
@@ -50,6 +51,7 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.systembar.SystemBarUtil;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.userpicker.UserPickerController.Callbacks;
+import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.settings.DisplayTracker;
 
@@ -105,16 +107,20 @@ public class UserPickerActivity extends Activity implements Dumpable {
     @Inject
     UserPickerActivity(
             Context context, //application context
+            UserManager userManager,
             DisplayTracker displayTracker,
             CarServiceProvider carServiceProvider,
-            UserPickerSharedState userPickerSharedState
+            UserPickerSharedState userPickerSharedState,
+            UserIconProvider userIconProvider
     ) {
         this();
         mUserPickerActivityComponent = DaggerUserPickerActivityComponent.builder()
                 .context(context)
+                .userManager(userManager)
                 .carServiceProvider(carServiceProvider)
                 .displayTracker(displayTracker)
                 .userPickerSharedState(userPickerSharedState)
+                .userIconProvider(userIconProvider)
                 .build();
         //Component.inject(this) is not working because constructor and activity itself is
         //scoped to SystemUiScope but the deps below are scoped to UserPickerScope

@@ -96,7 +96,8 @@ public class UserEventManagerTest extends UserPickerTestCase {
         doReturn(mMockCarUserManager).when(mMockCarServiceMediator).getCarUserManager();
 
         mUserEventManager =
-                new UserEventManager(mContext, mMockCarServiceMediator, mMockUserPickerSharedState);
+                new UserEventManager(mContext, mMockCarServiceMediator, mMockUserPickerSharedState,
+                        mMockUserManager);
         mUserEventManager.registerOnUpdateUsersListener(mMockOnUpdateUsersListener,
                 MAIN_DISPLAY_ID);
         spyOn(mUserEventManager);

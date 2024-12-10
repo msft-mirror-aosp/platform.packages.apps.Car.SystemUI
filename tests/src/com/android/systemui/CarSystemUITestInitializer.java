@@ -21,8 +21,8 @@ import static org.mockito.Mockito.mock;
 import android.content.Context;
 
 import com.android.systemui.dagger.SysUIComponent;
-import com.android.systemui.dagger.WMComponent;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
+import com.android.wm.shell.dagger.WMComponent;
 
 import java.util.Optional;
 

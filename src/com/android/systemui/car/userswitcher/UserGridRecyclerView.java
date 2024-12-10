@@ -57,14 +57,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import androidx.core.graphics.drawable.RoundedBitmapDrawable;
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.admin.ui.UserAvatarView;
 import com.android.car.internal.user.UserHelper;
-import com.android.internal.util.UserIcons;
 import com.android.settingslib.utils.StringUtil;
 import com.android.systemui.R;
 import com.android.systemui.settings.UserTracker;
@@ -108,7 +105,6 @@ public class UserGridRecyclerView extends RecyclerView {
         super(context, attrs);
         mContext = context;
         mUserManager = UserManager.get(mContext);
-        mUserIconProvider = new UserIconProvider();
         mWorker = Executors.newSingleThreadExecutor();
 
         addItemDecoration(new ItemSpacingDecoration(mContext.getResources().getDimensionPixelSize(
@@ -207,6 +203,10 @@ public class UserGridRecyclerView extends RecyclerView {
         mUserTracker = userTracker;
     }
 
+    public void setUserIconProvider(UserIconProvider userIconProvider) {
+        mUserIconProvider = userIconProvider;
+    }
+
     public void setUserSelectionListener(UserSelectionListener userSelectionListener) {
         mUserSelectionListener = userSelectionListener;
     }
@@ -300,15 +300,20 @@ public class UserGridRecyclerView extends RecyclerView {
         public void onBindViewHolder(UserAdapterViewHolder holder, int position) {
             UserRecord userRecord = mUsers.get(position);
 
-            Drawable circleIcon = getCircularUserRecordIcon(userRecord);
-
-            if (userRecord.mInfo != null) {
-                // User might have badges (like managed user)
-                holder.mUserAvatarImageView.setDrawableWithBadge(circleIcon, userRecord.mInfo.id);
+            Drawable roundedIcon = getRoundedUserRecordIcon(userRecord);
+            if (roundedIcon != null) {
+                if (userRecord.mInfo != null) {
+                    // User might have badges (like managed user)
+                    holder.mUserAvatarImageView.setDrawableWithBadge(roundedIcon,
+                            userRecord.mInfo.id);
+                } else {
+                    // Guest or "Add User" don't have badges
+                    holder.mUserAvatarImageView.setDrawable(roundedIcon);
+                }
             } else {
-                // Guest or "Add User" don't have badges
-                holder.mUserAvatarImageView.setDrawable(circleIcon);
+                Log.e(TAG, "Unable to get user icon");
             }
+
             holder.mUserNameTextView.setText(getUserRecordName(userRecord));
 
             holder.mView.setOnClickListener(v -> {
@@ -436,29 +441,24 @@ public class UserGridRecyclerView extends RecyclerView {
             }
         }
 
-        private Drawable getCircularUserRecordIcon(UserRecord userRecord) {
-            Drawable circleIcon;
+        private Drawable getRoundedUserRecordIcon(UserRecord userRecord) {
+            if (mUserIconProvider == null) {
+                return null;
+            }
+
+            Drawable roundedIcon;
             switch (userRecord.mType) {
                 case UserRecord.START_GUEST:
-                    circleIcon = mUserIconProvider
-                            .getRoundedGuestDefaultIcon(mContext);
+                    roundedIcon = mUserIconProvider.getRoundedGuestDefaultIcon();
                     break;
                 case UserRecord.ADD_USER:
-                    circleIcon = getCircularAddUserIcon();
+                    roundedIcon = mUserIconProvider.getRoundedAddUserIcon();
                     break;
                 default:
-                    circleIcon = mUserIconProvider.getRoundedUserIcon(userRecord.mInfo, mContext);
+                    roundedIcon = mUserIconProvider.getRoundedUserIcon(userRecord.mInfo.id);
                     break;
             }
-            return circleIcon;
-        }
-
-        private RoundedBitmapDrawable getCircularAddUserIcon() {
-            RoundedBitmapDrawable circleIcon =
-                    RoundedBitmapDrawableFactory.create(mRes, UserIcons.convertToBitmap(
-                    mContext.getDrawable(R.drawable.car_add_circle_round)));
-            circleIcon.setCircular(true);
-            return circleIcon;
+            return roundedIcon;
         }
 
         private String getUserRecordName(UserRecord userRecord) {

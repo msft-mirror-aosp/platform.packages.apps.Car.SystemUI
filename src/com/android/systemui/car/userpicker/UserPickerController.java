@@ -143,11 +143,12 @@ final class UserPickerController {
         runOnMainHandler(REQ_DISMISS_ADDING_DIALOG);
 
         if (result != null && result.isSuccess()) {
-            UserInfo newUserInfo = mUserEventManager.getUserInfo(result.getUser().getIdentifier());
+            int userId = result.getUser().getIdentifier();
+            UserInfo newUserInfo = mUserEventManager.getUserInfo(userId);
             UserRecord userRecord = UserRecord.create(newUserInfo, newUserInfo.name,
                     /* isStartGuestSession= */ false, /* isAddUser= */ false,
                     /* isForeground= */ false,
-                    /* icon= */ mUserIconProvider.getRoundedUserIcon(newUserInfo, mContext),
+                    /* icon= */ mUserIconProvider.getRoundedUserIcon(userId),
                     /* listenerMaker */ new OnClickListenerCreator());
             mIsUserPickerClickable = false;
             handleUserSelected(userRecord);
@@ -163,14 +164,14 @@ final class UserPickerController {
     UserPickerController(Context context, UserEventManager userEventManager,
             CarServiceMediator carServiceMediator, DialogManager dialogManager,
             SnackbarManager snackbarManager, DisplayTracker displayTracker,
-            UserPickerSharedState userPickerSharedState) {
+            UserPickerSharedState userPickerSharedState, UserIconProvider userIconProvider) {
         mContext = context;
         mUserEventManager = userEventManager;
         mCarServiceMediator = carServiceMediator;
         mDialogManager = dialogManager;
         mSnackbarManager = snackbarManager;
         mLockPatternUtils = new LockPatternUtils(mContext);
-        mUserIconProvider = new UserIconProvider();
+        mUserIconProvider = userIconProvider;
         mDisplayTracker = displayTracker;
         mUserPickerSharedState = userPickerSharedState;
         mWorker = Executors.newSingleThreadExecutor();
@@ -313,7 +314,7 @@ final class UserPickerController {
                 userRecords.add(UserRecord.create(foregroundUser, /* name= */ foregroundUser.name,
                         /* isStartGuestSession= */ false, /* isAddUser= */ false,
                         /* isForeground= */ true,
-                        /* icon= */ mUserIconProvider.getRoundedUserIcon(foregroundUser, mContext),
+                        /* icon= */ mUserIconProvider.getRoundedUserIcon(foregroundUser.id),
                         /* listenerMaker */ new OnClickListenerCreator(),
                         mLockPatternUtils.isSecure(foregroundUser.id),
                         /* isLoggedIn= */ true, /* loggedInDisplay= */ mDisplayId,
@@ -333,7 +334,7 @@ final class UserPickerController {
             UserRecord record = UserRecord.create(userInfo, /* name= */ userInfo.name,
                     /* isStartGuestSession= */ false, /* isAddUser= */ false,
                     /* isForeground= */ userInfo.id == foregroundUser.id,
-                    /* icon= */ mUserIconProvider.getRoundedUserIcon(userInfo, mContext),
+                    /* icon= */ mUserIconProvider.getRoundedUserIcon(userInfo.id),
                     /* listenerMaker */ new OnClickListenerCreator(),
                     /* isSecure= */ mLockPatternUtils.isSecure(userInfo.id),
                     /* isLoggedIn= */ loggedInDisplayId != INVALID_DISPLAY,
@@ -370,7 +371,7 @@ final class UserPickerController {
         return UserRecord.create(/* info= */ null, /* name= */ mDefaultGuestName,
                 /* isStartGuestSession= */ true, /* isAddUser= */ false,
                 /* isForeground= */ false,
-                /* icon= */ mUserIconProvider.getRoundedGuestDefaultIcon(mContext),
+                /* icon= */ mUserIconProvider.getRoundedGuestDefaultIcon(),
                 /* listenerMaker */ new OnClickListenerCreator(),
                 /* isSecure */ false,
                 loggedIn, loggedInDisplay,

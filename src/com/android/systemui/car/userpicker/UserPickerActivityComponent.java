@@ -17,8 +17,10 @@
 package com.android.systemui.car.userpicker;
 
 import android.content.Context;
+import android.os.UserManager;
 
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.settings.DisplayTracker;
 
 import dagger.BindsInstance;
@@ -40,6 +42,9 @@ public interface UserPickerActivityComponent {
         Builder context(Context context);
 
         @BindsInstance
+        Builder userManager(UserManager userManager);
+
+        @BindsInstance
         Builder carServiceProvider(CarServiceProvider carServiceProvider);
 
         @BindsInstance
@@ -47,6 +52,9 @@ public interface UserPickerActivityComponent {
 
         @BindsInstance
         Builder userPickerSharedState(UserPickerSharedState userPickerSharedState);
+
+        @BindsInstance
+        Builder userIconProvider(UserIconProvider userIconProvider);
 
         UserPickerActivityComponent build();
     }

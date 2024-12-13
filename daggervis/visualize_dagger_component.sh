@@ -46,4 +46,6 @@ if [[ $? -ne 0 ]]; then
 fi
 
 echo "Visualizing $PARSED_DOT_FILE"
-dot -v -T svg $PARSED_DOT_FILE > $1
+# dot -v -T svg $PARSED_DOT_FILE > $1
+dot -v -T svg -Ktwopi -Goverlap=prism -Gsplines=true $PARSED_DOT_FILE > $1
+

@@ -60,6 +60,7 @@ import com.android.systemui.recents.RecentsImplementation;
 import com.android.systemui.recents.RecentsModule;
 import com.android.systemui.screenshot.ReferenceScreenshotModule;
 import com.android.systemui.settings.UserTracker;
+import com.android.systemui.settings.brightness.dagger.BrightnessSliderModule;
 import com.android.systemui.shade.ShadeEmptyImplModule;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.NotificationLockscreenUserManager;
@@ -91,6 +92,7 @@ import javax.inject.Named;
                 ActivityWindowModule.class,
                 AospPolicyModule.class,
                 BiometricsModule.class,
+                BrightnessSliderModule.class,
                 CarMultiUserUtilsModule.class,
                 CarVolumeModule.class,
                 ExternalDisplayController.StartableModule.class,

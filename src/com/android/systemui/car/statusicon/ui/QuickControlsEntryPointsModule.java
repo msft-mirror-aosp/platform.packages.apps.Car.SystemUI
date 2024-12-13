@@ -44,13 +44,6 @@ public abstract class QuickControlsEntryPointsModule {
     public abstract CarSystemBarElementController.Factory bindSignalStatusIconController(
             SignalStatusIconController.Factory signalStatusIconController);
 
-    /** Injects DisplayStatusIconController. */
-    @Binds
-    @IntoMap
-    @ClassKey(DisplayStatusIconController.class)
-    public abstract CarSystemBarElementController.Factory bindDisplayStatusIconController(
-            DisplayStatusIconController.Factory displayStatusIconController);
-
     /** Injects LocationStatusIconController. */
     @Binds
     @IntoMap

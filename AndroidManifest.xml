@@ -40,6 +40,8 @@
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS"/>
     <!-- This permission is required to check the foreground user id. -->
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
+    <!-- System permission to use internal system windows -->
+    <uses-permission android:name="android.permission.INTERNAL_SYSTEM_WINDOW"/>
     <!-- This permission is required to get the tasks from CarActivityService. -->
     <uses-permission android:name="android.permission.MANAGE_ACTIVITY_TASKS" />
     <!-- These permissions are required to implement icons based on role holders. -->
@@ -79,7 +81,7 @@
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"
             android:showForAllUsers="true"
-            android:theme="@android:style/Theme.NoTitleBar">
+            android:theme="@style/Theme.NoTitleBar.NoSplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>

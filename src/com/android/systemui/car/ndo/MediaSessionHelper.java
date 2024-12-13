@@ -16,11 +16,16 @@
 
 package com.android.systemui.car.ndo;
 
+import android.app.INotificationManager;
+import android.app.Notification;
 import android.content.Context;
 import android.media.session.MediaController;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
+import android.os.RemoteException;
 import android.os.UserHandle;
+import android.service.notification.StatusBarNotification;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -28,32 +33,40 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
+
+import javax.inject.Inject;
 
 /**
  * Class that handles listening to and returning active media sessions.
  */
 public class MediaSessionHelper extends MediaController.Callback {
-
+    private static final String TAG = "MediaSessionHelper";
     private final MutableLiveData<List<MediaController>> mLiveData = new MutableLiveData<>();
     private final MediaSessionManager mMediaSessionManager;
-    private final UserHandle mUserHandle;
+    private UserHandle mUserHandle;
     @VisibleForTesting
     final List<MediaController> mMediaControllersList = new ArrayList<>();
     private final Executor mExecutor;
+    private final Context mContext;
+    private final INotificationManager mINotificationManager;
 
     private final MediaSessionManager.OnActiveSessionsChangedListener mChangedListener =
             this::onMediaSessionChange;
 
-    public MediaSessionHelper(Context context, UserHandle userHandle) {
+    @Inject
+    public MediaSessionHelper(Context context, INotificationManager iNotificationManager) {
         mMediaSessionManager = context.getSystemService(MediaSessionManager.class);
-        mUserHandle = userHandle;
         mExecutor = context.getMainExecutor();
-        init();
+        mContext = context;
+        mINotificationManager = iNotificationManager;
     }
 
-    private void init() {
+    /** Performs initialization */
+    public void init(UserHandle userHandle) {
+        mUserHandle = userHandle;
         // Set initial data
         onMediaSessionChange(mMediaSessionManager
                 .getActiveSessionsForUser(/* notificationListener= */ null, mUserHandle));
@@ -88,9 +101,11 @@ public class MediaSessionHelper extends MediaController.Callback {
         }
 
         List<MediaController> activeMediaControllers = new ArrayList<>();
+        List<String> mediaNotificationPackages = getActiveMediaNotificationPackages();
 
         for (MediaController mediaController : mediaControllers) {
-            if (isPausedOrActive(mediaController.getPlaybackState())) {
+            if (isPausedOrActive(mediaController.getPlaybackState())
+                    && mediaNotificationPackages.contains(mediaController.getPackageName())) {
                 activeMediaControllers.add(mediaController);
             } else {
                 // Since playback state changes don't trigger an active media session change, we
@@ -125,5 +140,29 @@ public class MediaSessionHelper extends MediaController.Callback {
             }
         }
         mMediaControllersList.clear();
+    }
+
+    // We only want to detect media sessions with an associated media notification
+    private List<String> getActiveMediaNotificationPackages() {
+        try {
+            List<StatusBarNotification> activeNotifications = List.of(
+                    mINotificationManager.getActiveNotificationsWithAttribution(
+                            mContext.getPackageName(), /* callingAttributionTag= */ null
+                    ));
+
+            List<String> packageNames = new ArrayList<>();
+            for (StatusBarNotification statusBarNotification : activeNotifications) {
+                Notification notification = statusBarNotification.getNotification();
+                if (notification.extras != null
+                        && notification.isMediaNotification()) {
+                    packageNames.add(statusBarNotification.getPackageName());
+                }
+            }
+
+            return packageNames;
+        } catch (RemoteException e) {
+            Log.e(TAG, "Exception trying to get active notifications " + e);
+            return Collections.emptyList();
+        }
     }
 }

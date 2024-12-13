@@ -17,9 +17,6 @@
 package com.android.systemui.car.userswitcher;
 
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;
-import static com.android.dx.mockito.inline.extended.ExtendedMockito.spyOn;
-
-import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
@@ -28,7 +25,6 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.pm.UserInfo;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.UserManager;
 import android.testing.AndroidTestingRunner;
@@ -62,7 +58,6 @@ public class UserIconProviderTest extends SysuiTestCase {
 
     private UserIconProvider mUserIconProvider;
     private MockitoSession mMockingSession;
-    private Resources mResources;
 
     @Mock
     private UserManager mUserManager;
@@ -73,8 +68,7 @@ public class UserIconProviderTest extends SysuiTestCase {
     public void setUp() {
         mMockingSession = mockitoSession()
                 .initMocks(this)
-                .spyStatic(UserManager.class)
-                .spyStatic(UserHelper.class)
+                .mockStatic(UserHelper.class)
                 .strictness(Strictness.WARN)
                 .startMocking();
 
@@ -82,10 +76,6 @@ public class UserIconProviderTest extends SysuiTestCase {
         when(mUserManager.getUserInfo(mGuestUserInfo.id)).thenReturn(mGuestUserInfo);
 
         mUserIconProvider = new UserIconProvider(mContext, mUserManager);
-        spyOn(mUserIconProvider);
-
-        mResources = mContext.getResources();
-        spyOn(mResources);
     }
 
     @After
@@ -96,10 +86,11 @@ public class UserIconProviderTest extends SysuiTestCase {
     }
 
     @Test
-    public void setRoundedUserIcon_existRoundedUserIcon() {
+    public void setRoundedUserIcon_assignDefaultIcon() {
         mUserIconProvider.setRoundedUserIcon(mUserInfo.id);
 
-        assertThat(mUserIconProvider.getRoundedUserIcon(mUserInfo.id)).isNotNull();
+        ExtendedMockito.verify(() -> UserHelper.assignDefaultIcon(any(Context.class),
+                eq(mUserInfo.getUserHandle())));
     }
 
     @Test

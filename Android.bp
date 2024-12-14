@@ -200,36 +200,15 @@ android_library {
 
 // End daggervis
 
-// Resource lib
-// To be used ONLY for RROs of CarSystemUI
-android_library {
-    name: "CarSystemUI-res",
-    sdk_version: "system_current",
-    resource_dirs: [
-        "res-keyguard",
-        "res",
-    ],
-    manifest: "AndroidManifest-res.xml",
-    use_resource_processor: true,
-    static_libs: [
-        "SystemUI-res",
-        "CarNotification-res",
-        "car-resource-common",
-        "car-ui-lib-no-overlayable",
-    ],
-    lint: {
-        disabled_checks: ["MissingClass"],
-    },
-}
-
 android_library {
     name: "CarSystemUI-tests-base",
     manifest: "tests/AndroidManifest-base.xml",
     resource_dirs: [
         "tests/res",
+        "res-keyguard",
+        "res",
     ],
     static_libs: [
-        "CarSystemUI-res",
         "SystemUI-tests-base",
         "CarNotificationLib",
         "android.car.test.utils",
@@ -372,7 +351,6 @@ android_ravenwood_test {
     ],
     static_libs: [
         "CarSystemUI-core",
-        "CarSystemUI-res",
         "CarSystemUI-tests-base",
         "androidx.test.uiautomator_uiautomator",
         "androidx.core_core-animation-testing",

@@ -56,3 +56,10 @@ flag {
     description: "This flag controls the development to enable scalable UI feature."
     bug: "382109339"
 }
+
+flag {
+    name: "auto_task_stack_windowing"
+    namespace: "car_framework"
+    description: "Flag to enable the AutoTaskStackController in WmShell."
+    bug: "384082238"
+}

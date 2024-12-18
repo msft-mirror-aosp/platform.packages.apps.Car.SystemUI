@@ -14,8 +14,8 @@
   ~ limitations under the License.
   -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-        android:width="@dimen/car_quick_controls_icon_drawable_width"
-        android:height="@dimen/car_quick_controls_icon_drawable_height"
+        android:width="@dimen/system_bar_icon_drawing_size"
+        android:height="@dimen/system_bar_icon_drawing_size"
         android:viewportWidth="36"
         android:viewportHeight="36">
     <path

@@ -15,6 +15,8 @@
  */
 package com.android.systemui.car.wm.activity;
 
+import static android.app.WindowConfiguration.WINDOWING_MODE_MULTI_WINDOW;
+
 import static com.android.systemui.car.Flags.configAppBlockingActivities;
 
 import android.app.ActivityManager;
@@ -28,6 +30,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Insets;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
@@ -46,6 +49,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.FragmentActivity;
@@ -154,9 +158,11 @@ public class ActivityBlockingActivity extends FragmentActivity {
 
         setupGLSurface();
 
-        if (!configAppBlockingActivities()) {
+        if (!configAppBlockingActivities()
+                || !getResources().getBoolean(R.bool.config_enableAppBlockingActivities)) {
             Slog.d(TAG, "Ignoring app blocking activity feature");
-        } else if (getResources().getBoolean(R.bool.config_enableAppBlockingActivities)) {
+            displayBlockingContent();
+        } else {
             mBlockedActivityName = getIntent().getStringExtra(
                     CarPackageManager.BLOCKING_INTENT_EXTRA_BLOCKED_ACTIVITY_NAME);
             BlockerViewModel blockerViewModel = new ViewModelProvider(this, mViewModelFactory)
@@ -174,7 +180,7 @@ public class ActivityBlockingActivity extends FragmentActivity {
                             getString(R.string.config_dialerBlockingActivity));
                     case MEDIA -> startBlockingActivity(
                             getString(R.string.config_mediaBlockingActivity));
-                    case NONE -> { /* no-op */ }
+                    case NONE -> displayBlockingContent();
                 }
             });
         }
@@ -292,6 +298,14 @@ public class ActivityBlockingActivity extends FragmentActivity {
         return new Rect(leftX, topY, rightX, bottomY);
     }
 
+    private void displayBlockingContent() {
+        LinearLayout blockingContent = findViewById(R.id.activity_blocking_content);
+
+        if (blockingContent != null) {
+            blockingContent.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void displayExitButton() {
         String exitButtonText = getExitButtonText();
 
@@ -331,6 +345,17 @@ public class ActivityBlockingActivity extends FragmentActivity {
             ActivityManager.RunningTaskInfo taskInfo = taskInfosTopToBottom.get(i);
             if (taskInfo.displayId != getDisplayId()) {
                 // ignore stacks on other displays
+                continue;
+            }
+
+            // TODO(b/359583186): Remove this check when targets with splitscreen multitasking
+            // feature are moved to DaViews.
+            if (getApplicationContext().getPackageManager().hasSystemFeature(
+                    PackageManager.FEATURE_CAR_SPLITSCREEN_MULTITASKING)
+                    && taskInfo.getWindowingMode() != WINDOWING_MODE_MULTI_WINDOW) {
+                // targets which have splitscreen multitasking feature, can have other visible
+                // tasks such as home which are not blocked. Only consider tasks with multi
+                // window windowing mode.
                 continue;
             }
 
@@ -494,6 +519,10 @@ public class ActivityBlockingActivity extends FragmentActivity {
     }
 
     private void startBlockingActivity(String blockingActivity) {
+        if (isFinishing()) {
+            return;
+        }
+
         int userOnDisplay = getUserForCurrentDisplay();
         if (userOnDisplay == CarOccupantZoneManager.INVALID_USER_ID) {
             Slog.w(TAG, "Can't find user on display " + getDisplayId()
@@ -507,6 +536,7 @@ public class ActivityBlockingActivity extends FragmentActivity {
         intent.putExtra(Intent.EXTRA_COMPONENT_NAME, mBlockedActivityName);
         try {
             startActivityAsUser(intent, UserHandle.of(userOnDisplay));
+            finish();
         } catch (ActivityNotFoundException ex) {
             Slog.e(TAG, "Unable to resolve blocking activity " + blockingActivity, ex);
         } catch (RuntimeException ex) {

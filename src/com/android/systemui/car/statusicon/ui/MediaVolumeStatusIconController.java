@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.statusicon.ui;
 
+import static android.car.media.CarAudioManager.INVALID_AUDIO_ZONE;
 import static android.car.media.CarAudioManager.PRIMARY_AUDIO_ZONE;
 import static android.media.AudioAttributes.USAGE_MEDIA;
 
@@ -31,16 +32,21 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
-import com.android.systemui.car.statusicon.StatusIconController;
+import com.android.systemui.car.statusicon.StatusIconView;
+import com.android.systemui.car.statusicon.StatusIconViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
 
-import javax.inject.Inject;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * A controller for media volume status icon in the QC entry point area.
  */
-public class MediaVolumeStatusIconController extends StatusIconController {
+public class MediaVolumeStatusIconController extends StatusIconViewController {
 
     private final Context mContext;
     private final Resources mResources;
@@ -72,8 +78,14 @@ public class MediaVolumeStatusIconController extends StatusIconController {
                     if (carOccupantZoneManager != null) {
                         occupantZoneInfo = carOccupantZoneManager.getMyOccupantZone();
                     }
-                    mZoneId =
-                            occupantZoneInfo != null ? occupantZoneInfo.zoneId : PRIMARY_AUDIO_ZONE;
+                    mZoneId = PRIMARY_AUDIO_ZONE;
+                    if (occupantZoneInfo != null) {
+                        int occupantAudioId = carOccupantZoneManager
+                                .getAudioZoneIdForOccupant(occupantZoneInfo);
+                        if (occupantAudioId != INVALID_AUDIO_ZONE) {
+                            mZoneId = occupantAudioId;
+                        }
+                    }
 
                     mCarAudioManager = (CarAudioManager) car.getCarManager(Car.AUDIO_SERVICE);
 
@@ -85,21 +97,37 @@ public class MediaVolumeStatusIconController extends StatusIconController {
                 }
             };
 
-    @Inject
-    MediaVolumeStatusIconController(Context context,
+    @AssistedInject
+    MediaVolumeStatusIconController(
+            @Assisted StatusIconView view,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
+            Context context,
             UserTracker userTracker,
             @Main Resources resources,
             CarServiceProvider carServiceProvider) {
+        super(view, disableController, stateController);
         mContext = context;
         mResources = resources;
         mUserTracker = userTracker;
         mCarServiceProvider = carServiceProvider;
+    }
+
+    @AssistedFactory
+    public interface Factory extends
+            StatusIconViewController.Factory<MediaVolumeStatusIconController> {
+    }
+
+    @Override
+    protected void onViewAttached() {
+        super.onViewAttached();
         mUserTracker.addCallback(mUserTrackerCallback, mContext.getMainExecutor());
         mCarServiceProvider.addListener(mCarOnConnectedListener);
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onViewDetached() {
+        super.onViewDetached();
         mCarServiceProvider.removeListener(mCarOnConnectedListener);
         mUserTracker.removeCallback(mUserTrackerCallback);
         mCarAudioManager.unregisterCarVolumeCallback(mVolumeChangeCallback);
@@ -129,11 +157,6 @@ public class MediaVolumeStatusIconController extends StatusIconController {
             }
             updateStatus();
         }
-    }
-
-    @Override
-    protected int getId() {
-        return R.id.qc_media_volume_status_icon;
     }
 
     private final CarAudioManager.CarVolumeCallback mVolumeChangeCallback =

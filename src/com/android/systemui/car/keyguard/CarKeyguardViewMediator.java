@@ -28,6 +28,7 @@ import android.view.RemoteAnimationTarget;
 
 import com.android.internal.jank.InteractionJankMonitor;
 import com.android.internal.logging.UiEventLogger;
+import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardDisplayManager;
 import com.android.keyguard.KeyguardUpdateMonitor;
@@ -37,8 +38,10 @@ import com.android.systemui.animation.ActivityTransitionAnimator;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
+import com.android.systemui.communal.ui.viewmodel.CommunalTransitionViewModel;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dreams.DreamOverlayStateController;
+import com.android.systemui.dreams.ui.viewmodel.DreamViewModel;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.flags.SystemPropertiesHelper;
@@ -46,10 +49,11 @@ import com.android.systemui.keyguard.DismissCallbackRegistry;
 import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.keyguard.WindowManagerLockscreenVisibilityManager;
+import com.android.systemui.keyguard.WindowManagerOcclusionManager;
 import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
-import com.android.systemui.keyguard.ui.viewmodel.DreamingToLockscreenTransitionViewModel;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationModeController;
+import com.android.systemui.process.ProcessWrapper;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.ShadeController;
 import com.android.systemui.statusbar.NotificationShadeDepthController;
@@ -82,6 +86,8 @@ import kotlinx.coroutines.CoroutineDispatcher;
 public class CarKeyguardViewMediator extends KeyguardViewMediator {
     private static final String TAG = "CarKeyguardViewMediator";
     private final Context mContext;
+    private final TrustManager mTrustManager;
+    private final UserTracker mUserTracker;
     private final Object mOcclusionLock = new Object();
     private final IRemoteAnimationRunner mOccludeAnimationRunner =
             new CarOcclusionAnimationRunner(/* occlude= */ true);
@@ -125,16 +131,20 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             Lazy<ActivityTransitionAnimator> activityTransitionAnimator,
             Lazy<ScrimController> scrimControllerLazy,
             IActivityTaskManager activityTaskManagerService,
+            IStatusBarService statusBarService,
             FeatureFlags featureFlags,
             SecureSettings secureSettings,
             SystemSettings systemSettings,
             SystemClock systemClock,
+            ProcessWrapper processWrapper,
             @Main CoroutineDispatcher mainDispatcher,
-            Lazy<DreamingToLockscreenTransitionViewModel> dreamingToLockscreenTransitionViewModel,
+            Lazy<DreamViewModel> dreamViewModel,
+            Lazy<CommunalTransitionViewModel> communalTransitionViewModel,
             SystemPropertiesHelper systemPropertiesHelper,
             Lazy<WindowManagerLockscreenVisibilityManager> wmLockscreenVisibilityManager,
             SelectedUserInteractor selectedUserInteractor,
-            KeyguardInteractor keyguardInteractor) {
+            KeyguardInteractor keyguardInteractor,
+            WindowManagerOcclusionManager wmOcclusionManager) {
         super(context, uiEventLogger, sessionTracker,
                 userTracker, falsingCollector, lockPatternUtils, broadcastDispatcher,
                 statusBarKeyguardViewManagerLazy, dismissCallbackRegistry, keyguardUpdateMonitor,
@@ -151,14 +161,19 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 activityTransitionAnimator,
                 scrimControllerLazy,
                 activityTaskManagerService,
-                featureFlags, secureSettings, systemSettings, systemClock,
+                statusBarService,
+                featureFlags, secureSettings, systemSettings, systemClock, processWrapper,
                 mainDispatcher,
-                dreamingToLockscreenTransitionViewModel,
+                dreamViewModel,
+                communalTransitionViewModel,
                 systemPropertiesHelper,
                 wmLockscreenVisibilityManager,
                 selectedUserInteractor,
-                keyguardInteractor);
+                keyguardInteractor,
+                wmOcclusionManager);
         mContext = context;
+        mTrustManager = trustManager;
+        mUserTracker = userTracker;
     }
 
     @Override
@@ -166,6 +181,11 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
         if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
             // Currently keyguard is not functional for the secondary users in a MUMD configuration
             // TODO_MD: make keyguard functional for secondary users
+
+            // Until keyguard for secondary users is supported, the secondary user's lock status
+            // must be manually updated instead of relying on keyguard hooks.
+            mTrustManager.reportEnabledTrustAgentsChanged(mUserTracker.getUserId());
+
             return;
         }
         super.start();

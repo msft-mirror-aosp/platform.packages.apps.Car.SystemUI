@@ -21,11 +21,9 @@ import android.os.Handler;
 import android.view.IWindowManager;
 
 import com.android.systemui.car.CarServiceProvider;
-import com.android.systemui.car.taskview.CarFullscreenTaskMonitorListener;
-import com.android.systemui.car.users.CarSystemUIUserUtil;
+import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
-import com.android.systemui.wm.MDSystemBarsController;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
@@ -37,13 +35,14 @@ import com.android.wm.shell.fullscreen.FullscreenTaskListener;
 import com.android.wm.shell.pip.Pip;
 import com.android.wm.shell.recents.RecentTasksController;
 import com.android.wm.shell.sysui.ShellInit;
+import com.android.wm.shell.taskview.TaskViewTransitions;
 import com.android.wm.shell.windowdecor.WindowDecorViewModel;
-
-import java.util.Optional;
 
 import dagger.BindsOptionalOf;
 import dagger.Module;
 import dagger.Provides;
+
+import java.util.Optional;
 
 /** Provides dependencies from {@link com.android.wm.shell} for CarSystemUI. */
 @Module(includes = WMShellBaseModule.class)
@@ -59,19 +58,6 @@ public abstract class CarWMShellModule {
                 displayInsetsController, mainHandler);
     }
 
-    @WMSingleton
-    @Provides
-    static Optional<MDSystemBarsController> provideMUMDPerDisplayInsetsChangeController(
-            IWindowManager windowManager,
-            @Main Handler mainHandler,
-            Context context) {
-        if (CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
-            return Optional.of(
-                    new MDSystemBarsController(windowManager, mainHandler, context));
-        }
-        return Optional.empty();
-    }
-
     @BindsOptionalOf
     abstract Pip optionalPip();
 
@@ -84,13 +70,15 @@ public abstract class CarWMShellModule {
             ShellTaskOrganizer shellTaskOrganizer,
             SyncTransactionQueue syncQueue,
             Optional<RecentTasksController> recentTasksOptional,
-            Optional<WindowDecorViewModel> windowDecorViewModelOptional) {
+            Optional<WindowDecorViewModel> windowDecorViewModelOptional,
+            TaskViewTransitions taskViewTransitions) {
         return new CarFullscreenTaskMonitorListener(context,
                 carServiceProvider,
                 shellInit,
                 shellTaskOrganizer,
                 syncQueue,
                 recentTasksOptional,
-                windowDecorViewModelOptional);
+                windowDecorViewModelOptional,
+                taskViewTransitions);
     }
 }

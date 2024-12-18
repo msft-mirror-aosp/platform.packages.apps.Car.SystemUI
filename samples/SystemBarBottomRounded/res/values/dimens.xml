@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (C) 2018 The Android Open Source Project
+  ~ Copyright (C) 2023 The Android Open Source Project
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,5 +15,6 @@
   ~ limitations under the License
   -->
 <resources>
-    <dimen name="car_right_system_bar_width">280dp</dimen>
+     <dimen name="car_bottom_system_bar_left_padding">50dp</dimen>
+     <dimen name="car_bottom_system_bar_right_padding">50dp</dimen>
 </resources>

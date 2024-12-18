@@ -16,20 +16,18 @@
 
 package com.android.systemui.car.userswitcher;
 
-import static org.mockito.Mockito.never;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import android.car.user.CarUserManager;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.SysuiTestCase;
-import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.settings.UserTracker;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,51 +46,51 @@ public class UserSwitchTransitionViewMediatorTest extends SysuiTestCase {
     @Mock
     private CarServiceProvider mCarServiceProvider;
     @Mock
-    private CarDeviceProvisionedController mCarDeviceProvisionedController;
+    private UserTracker mUserTracker;
     @Mock
     private UserSwitchTransitionViewController mUserSwitchTransitionViewController;
-    @Mock
-    private CarUserManager.UserLifecycleEvent mUserLifecycleEvent;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         mUserSwitchTransitionViewMediator = new UserSwitchTransitionViewMediator(mContext,
-                mCarServiceProvider, mCarDeviceProvisionedController,
+                mCarServiceProvider, mUserTracker,
                 mUserSwitchTransitionViewController);
-        when(mCarDeviceProvisionedController.getCurrentUser()).thenReturn(TEST_USER);
     }
 
     @Test
-    public void onUserLifecycleEvent_userStarting_isCurrentUser_callsHandleShow() {
-        when(mUserLifecycleEvent.getEventType()).thenReturn(
-                CarUserManager.USER_LIFECYCLE_EVENT_TYPE_STARTING);
-        when(mUserLifecycleEvent.getUserId()).thenReturn(TEST_USER);
+    public void registerListeners_addsUserTrackerCallback() {
+        mUserSwitchTransitionViewMediator.registerListeners();
 
-        mUserSwitchTransitionViewMediator.handleUserLifecycleEvent(mUserLifecycleEvent);
+        verify(mUserTracker).addCallback(any(), any());
+    }
+
+    @Test
+    public void onUserLifecycleEvent_beforeUserSwitching_callsHandleShow() {
+        mUserSwitchTransitionViewMediator.mUserChangedCallback.onBeforeUserSwitching(TEST_USER);
 
         verify(mUserSwitchTransitionViewController).handleShow(TEST_USER);
     }
 
     @Test
-    public void onUserLifecycleEvent_userStarting_isNotCurrentUser_doesNotCallHandleShow() {
-        when(mUserLifecycleEvent.getEventType()).thenReturn(
-                CarUserManager.USER_LIFECYCLE_EVENT_TYPE_STARTING);
-        when(mUserLifecycleEvent.getUserId()).thenReturn(TEST_USER);
-        when(mCarDeviceProvisionedController.getCurrentUser()).thenReturn(TEST_USER + 1);
+    public void onUserLifecycleEvent_onUserChanging_callsHandleSwitching() {
+        mUserSwitchTransitionViewMediator.mUserChangedCallback.onUserChanging(TEST_USER, mContext);
 
-        mUserSwitchTransitionViewMediator.handleUserLifecycleEvent(mUserLifecycleEvent);
-
-        verify(mUserSwitchTransitionViewController, never()).handleShow(TEST_USER);
+        verify(mUserSwitchTransitionViewController).handleSwitching(TEST_USER);
     }
 
     @Test
-    public void onUserLifecycleEvent_userSwitching_callsHandleHide() {
-        when(mUserLifecycleEvent.getEventType()).thenReturn(
-                CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING);
-        mUserSwitchTransitionViewMediator.handleUserLifecycleEvent(mUserLifecycleEvent);
+    public void onUserLifecycleEvent_onUserChanged_callsHandleHide() {
+        mUserSwitchTransitionViewMediator.mUserChangedCallback.onUserChanged(TEST_USER, mContext);
 
         verify(mUserSwitchTransitionViewController).handleHide();
+    }
+
+    @Test
+    public void onShowUserSwitchDialog_callsHandleShow() {
+        mUserSwitchTransitionViewMediator.showUserSwitchDialog(TEST_USER);
+
+        verify(mUserSwitchTransitionViewController).handleShow(TEST_USER);
     }
 }

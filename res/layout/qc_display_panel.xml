@@ -48,7 +48,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        app:remoteQCProvider="content://com.android.car.settings.qc/brightness_slider"/>
+                        app:remoteQCProvider="content://com.android.car.settings.qc/brightness_slider_with_icon"/>
                     <com.android.systemui.car.qc.SystemUIQCView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 style="@style/QCFooterButtonStyle"
                 android:text="@string/qc_footer_display_settings"
-                app:intent="intent:#Intent;action=android.settings.DISPLAY_SETTINGS;launchFlags=0x14008000;end"/>
+                app:intent="intent:#Intent;action=android.settings.DISPLAY_SETTINGS;launchFlags=0x14000000;end"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.android.car.ui.FocusArea>
 </FrameLayout>

@@ -25,27 +25,28 @@ import android.window.DisplayAreaOrganizer;
 
 import com.android.keyguard.KeyguardViewController;
 import com.android.keyguard.dagger.KeyguardDisplayModule;
+import com.android.systemui.accessibility.AccessibilityModule;
+import com.android.systemui.accessibility.data.repository.AccessibilityRepositoryModule;
 import com.android.systemui.biometrics.dagger.BiometricsModule;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
-import com.android.systemui.car.activity.window.ActivityWindowModule;
 import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
+import com.android.systemui.car.displayconfig.ExternalDisplayController;
 import com.android.systemui.car.drivemode.DriveModeModule;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
 import com.android.systemui.car.statusbar.DozeServiceHost;
 import com.android.systemui.car.users.CarMultiUserUtilsModule;
 import com.android.systemui.car.volume.CarVolumeModule;
+import com.android.systemui.car.wm.activity.window.ActivityWindowModule;
 import com.android.systemui.dagger.GlobalRootComponent;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.decor.PrivacyDotDecorProviderFactory;
-import com.android.systemui.display.ui.viewmodel.ConnectingDisplayViewModel;
 import com.android.systemui.dock.DockManager;
 import com.android.systemui.dock.DockManagerImpl;
 import com.android.systemui.doze.DozeHost;
-import com.android.systemui.globalactions.ShutdownUiModule;
 import com.android.systemui.media.muteawait.MediaMuteAwaitConnectionCli;
 import com.android.systemui.media.nearby.NearbyMediaDevicesManager;
 import com.android.systemui.navigationbar.NoopNavigationBarControllerModule;
@@ -58,6 +59,7 @@ import com.android.systemui.recents.Recents;
 import com.android.systemui.recents.RecentsImplementation;
 import com.android.systemui.recents.RecentsModule;
 import com.android.systemui.screenshot.ReferenceScreenshotModule;
+import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.ShadeEmptyImplModule;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.NotificationLockscreenUserManager;
@@ -84,12 +86,14 @@ import javax.inject.Named;
 
 @Module(
         includes = {
+                AccessibilityModule.class,
+                AccessibilityRepositoryModule.class,
                 ActivityWindowModule.class,
                 AospPolicyModule.class,
                 BiometricsModule.class,
                 CarMultiUserUtilsModule.class,
                 CarVolumeModule.class,
-                ConnectingDisplayViewModel.StartableModule.class,
+                ExternalDisplayController.StartableModule.class,
                 DriveModeModule.class,
                 GestureModule.class,
                 HeadsUpEmptyImplModule.class,
@@ -105,7 +109,6 @@ import javax.inject.Named;
                 ScreenDecorationsModule.class,
                 ShadeEmptyImplModule.class,
                 SysUIUnfoldStartableModule.class,
-                ShutdownUiModule.class,
         }
 )
 abstract class CarSystemUIModule {
@@ -153,9 +156,9 @@ abstract class CarSystemUIModule {
     @Provides
     @SysUISingleton
     static IndividualSensorPrivacyController provideIndividualSensorPrivacyController(
-            SensorPrivacyManager sensorPrivacyManager) {
+            SensorPrivacyManager sensorPrivacyManager, UserTracker userTracker) {
         IndividualSensorPrivacyController spC = new IndividualSensorPrivacyControllerImpl(
-                sensorPrivacyManager);
+                sensorPrivacyManager, userTracker);
         spC.init();
         return spC;
     }

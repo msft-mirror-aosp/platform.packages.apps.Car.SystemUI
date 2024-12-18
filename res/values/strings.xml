@@ -16,12 +16,10 @@
   -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- Format for HVAC temperature in fahrenheit (No decimal place and the degree symbol) -->
-    <string name="hvac_temperature_format_fahrenheit" translatable="false">%.0f\u00B0</string>
-    <!-- Format for HVAC temperature in celsius (One decimal place and the degree symbol) -->
-    <string name="hvac_temperature_format_celsius" translatable="false">%.1f\u00B0</string>
-    <!-- Tag to use to identify the icon view within the quick controls entry point button -->
-    <string name="qc_icon_tag" translatable="false">TAG_QC_ICON</string>
+    <!-- Format for HVAC temperature in fahrenheit (No decimal place) -->
+    <string name="hvac_temperature_format_fahrenheit" translatable="false">%.0f</string>
+    <!-- Format for HVAC temperature in celsius (One decimal place) -->
+    <string name="hvac_temperature_format_celsius" translatable="false">%.1f</string>
     <!-- String to represent lowest setting of an HVAC system [CHAR LIMIT=10]-->
     <string name="hvac_min_text">Min</string>
     <!-- String to represent the highest setting of an HVAC system [CHAR LIMIT=10]-->
@@ -61,6 +59,8 @@
     <string name="car_loading_profile">Loading</string>
     <!-- Message to inform user that the new user profile is loading with additional information on the previous and the next user. [CHAR LIMIT=100] -->
     <string name="car_loading_profile_developer_message">Loading user (from <xliff:g id="from_user" example="10">%1$d</xliff:g> to <xliff:g id="to_user" example="12">%2$d</xliff:g>)</string>
+    <!-- Subtitle for current profile in profile switch panel [CHAR LIMIT=20]-->
+    <string name="current_profile_subtitle">Current profile</string>
 
     <!-- Accessibility content description for microphone/camera off state of privacy chip. [CHAR LIMIT=40]-->
     <string name="privacy_chip_off_content"><xliff:g id="sensor" example="Microphone">%1$s</xliff:g> is off.</string>
@@ -146,6 +146,9 @@
     <string name="status_icon_signal_hotspot">Signal Settings: Hotspot On</string>
     <!-- Status icon for display settings in status bar-->
     <string name="status_icon_display_status">Display Settings</string>
+    <!-- Status icon for debug settings in status bar-->
+    <string name="status_icon_debug_status">Debug Settings</string>
+    <string name="status_icon_sound_status">Sound Settings</string>
     <!-- Status icon for drive mode settings in status bar -->
     <string name="status_icon_drive_mode">Drive Mode</string>
 
@@ -176,6 +179,8 @@
     <string name="qc_footer_network_sound_settings">Sound settings</string>
     <!-- Quick Controls: Message to be displayed as the footer button to launch profiles and accounts settings [CHAR LIMIT=45] -->
     <string name="qc_footer_profiles_accounts_settings">Profiles &amp; accounts settings</string>
+    <!-- Quick Controls: Message to be displayed as the footer button to launch developer options settings [CHAR LIMIT=45] -->
+    <string name="qc_footer_debug_settings">Developer options</string>
 
     <!-- Message shown when the lock pattern is focused. [CHAR LIMIT=40] -->
     <string name="lockpattern_does_not_support_rotary">Pattern does not support rotary; please use touch</string>
@@ -222,6 +227,10 @@
     <string name="stopping_user_text">Signing out…</string>
     <!-- User Picker: snack bar message when clicking stopping user -->
     <string name="wait_for_until_stopped_message"><xliff:g id="user_name" example="Peter">%s</xliff:g> is being signed out. Try again later.</string>
+    <!-- User Picker: text when user is unavailable because they're secure -->
+    <string name="unavailable_secure_user_text">User currently unavailable</string>
+    <!-- User Picker: snack bar message when clicking unavailable secure user -->
+    <string name="unavailable_secure_user_message">Unable to start secure user on passenger display</string>
 
     <!-- User Picker: seat string -->
     <string name="seat_driver">driver</string>
@@ -274,5 +283,12 @@
 
     <!-- Intent binding to long press action of user profile icon in car top system bar. -->
     <string name="user_profile_long_press_intent" translatable="false"></string>
+
+    <!-- Data subscription button text [CHAR LIMIT=30]-->
+    <string name="data_subscription_button_text">See plans</string>
+    <!-- Data subscription proactive message prompt-->
+    <string name="data_subscription_proactive_msg_prompt">Your internet plan expired</string>
+    <string name="data_subscription_reactive_msg_prompt">%s needs an internet connection</string>
+    <string name="data_subscription_reactive_generic_app_label">This app</string>
 
 </resources>

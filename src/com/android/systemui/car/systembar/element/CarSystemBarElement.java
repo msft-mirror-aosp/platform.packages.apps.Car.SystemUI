@@ -18,9 +18,12 @@ package com.android.systemui.car.systembar.element;
 
 import android.app.StatusBarManager;
 
+import androidx.annotation.Nullable;
+
 /** Generic interface for CarSystemBar UI elements */
 public interface CarSystemBarElement {
     /** Returns the class to be instantiated to control this element */
+    @Nullable
     Class<?> getElementControllerClass();
 
     /** Return the system bar disable flag for this element */

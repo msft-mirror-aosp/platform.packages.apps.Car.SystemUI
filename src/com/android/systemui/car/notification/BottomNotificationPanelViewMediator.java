@@ -16,10 +16,11 @@
 
 package com.android.systemui.car.notification;
 
+import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
+
 import android.content.Context;
 
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.systembar.CarSystemBarController;
 import com.android.systemui.car.window.OverlayPanelViewController;
 import com.android.systemui.dagger.SysUISingleton;
@@ -43,16 +44,13 @@ public class BottomNotificationPanelViewMediator extends NotificationPanelViewMe
             PowerManagerHelper powerManagerHelper,
             BroadcastDispatcher broadcastDispatcher,
             UserTracker userTracker,
-            CarDeviceProvisionedController carDeviceProvisionedController,
-            ConfigurationController configurationController
-    ) {
+            ConfigurationController configurationController) {
         super(context,
                 carSystemBarController,
                 notificationPanelViewController,
                 powerManagerHelper,
                 broadcastDispatcher,
                 userTracker,
-                carDeviceProvisionedController,
                 configurationController);
         notificationPanelViewController.setOverlayDirection(
                 OverlayPanelViewController.OVERLAY_FROM_BOTTOM_BAR);
@@ -60,7 +58,7 @@ public class BottomNotificationPanelViewMediator extends NotificationPanelViewMe
 
     @Override
     protected void registerBottomBarTouchListener() {
-        getCarSystemBarController().registerBottomBarTouchListener(
+        getCarSystemBarController().registerBarTouchListener(BOTTOM,
                 getNotificationPanelViewController().getDragOpenTouchListener());
     }
 }

@@ -17,6 +17,7 @@
 package com.android.systemui.car.qc;
 
 import static android.car.test.mocks.AndroidMockitoHelper.mockUmGetVisibleUsers;
+import static android.car.user.UserSwitchResult.STATUS_SUCCESSFUL;
 import static android.os.UserManager.SWITCHABILITY_STATUS_OK;
 import static android.os.UserManager.SWITCHABILITY_STATUS_USER_SWITCH_DISALLOWED;
 
@@ -44,7 +45,6 @@ import android.car.user.UserStopResponse;
 import android.car.user.UserSwitchRequest;
 import android.car.user.UserSwitchResult;
 import android.car.util.concurrent.AsyncFuture;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.UserInfo;
 import android.graphics.drawable.Drawable;
@@ -86,6 +86,8 @@ import java.util.concurrent.TimeoutException;
 @TestableLooper.RunWithLooper(setAsMainLooper = true)
 @SmallTest
 public class ProfileSwitcherTest extends SysuiTestCase {
+    private static final int TEST_USER_ID_1 = 1000;
+    private static final int TEST_USER_ID_2 = 1001;
 
     private MockitoSession mSession;
     private ProfileSwitcher mProfileSwitcher;
@@ -110,21 +112,20 @@ public class ProfileSwitcherTest extends SysuiTestCase {
                 .strictness(Strictness.LENIENT)
                 .startMocking();
 
-        when(mUserTracker.getUserId()).thenReturn(1000);
-        when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(1000));
+        when(mUserTracker.getUserId()).thenReturn(TEST_USER_ID_1);
+        when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(TEST_USER_ID_1));
         when(mUserManager.getAliveUsers()).thenReturn(mAliveUsers);
         when(mUserManager.getUserSwitchability(any())).thenReturn(SWITCHABILITY_STATUS_OK);
         when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(false);
-        mockUmGetVisibleUsers(mUserManager, 1000);
+        mockUmGetVisibleUsers(mUserManager, TEST_USER_ID_1);
         when(mDevicePolicyManager.isDeviceManaged()).thenReturn(false);
         when(mDevicePolicyManager.isOrganizationOwnedDeviceWithManagedProfile()).thenReturn(false);
         doReturn(false).when(() -> CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
         Drawable testDrawable = mContext.getDrawable(R.drawable.ic_android);
-        when(mUserIconProvider.getDrawableWithBadge(any(Context.class), any(UserInfo.class)))
-                .thenReturn(testDrawable);
-        when(mUserIconProvider.getDrawableWithBadge(any(Context.class), any(Drawable.class)))
-                .thenReturn(testDrawable);
-        when(mUserIconProvider.getRoundedGuestDefaultIcon(any())).thenReturn(testDrawable);
+        when(mUserIconProvider.getDrawableWithBadge(anyInt())).thenReturn(testDrawable);
+        when(mUserIconProvider.getDrawableWithBadge(any(Drawable.class))).thenReturn(testDrawable);
+        when(mUserIconProvider.getRoundedGuestDefaultIcon()).thenReturn(testDrawable);
+        when(mUserIconProvider.getRoundedAddUserIcon()).thenReturn(testDrawable);
 
         AsyncFuture<UserSwitchResult> switchResultFuture = mock(AsyncFuture.class);
         UserSwitchResult switchResult = mock(UserSwitchResult.class);
@@ -145,8 +146,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     }
 
     private void setUpLogout() {
-        UserInfo user1 = generateUser(1000, "User1");
-        UserInfo user2 = generateUser(1001, "User2");
+        UserInfo user1 = generateUser(TEST_USER_ID_1, "User1");
+        UserInfo user2 = generateUser(TEST_USER_ID_2, "User2");
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
         when(mDevicePolicyManager.isDeviceManaged()).thenReturn(true);
@@ -193,7 +194,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         UserInfo currentUser = generateUser(mUserTracker.getUserId(), "Current User");
         mAliveUsers.add(currentUser);
         when(mUserManager.getUserInfo(mUserTracker.getUserId())).thenReturn(currentUser);
-        UserInfo otherUser = generateUser(1001, "Other User");
+        UserInfo otherUser = generateUser(TEST_USER_ID_2, "Other User");
         mAliveUsers.add(otherUser);
         List<QCRow> rows = getProfileRows();
         assertThat(rows).hasSize(1);
@@ -202,8 +203,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
     @Test
     public void switchAllowed_usersSwitchable_returnsAllRows() {
-        UserInfo user1 = generateUser(1000, "User1");
-        UserInfo user2 = generateUser(1001, "User2");
+        UserInfo user1 = generateUser(TEST_USER_ID_1, "User1");
+        UserInfo user2 = generateUser(TEST_USER_ID_2, "User2");
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
         List<QCRow> rows = getProfileRows();
@@ -219,8 +220,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
     @Test
     public void switchAllowed_orderUsersByCreationTime() {
-        UserInfo user1 = generateUser(1001, "User2");
-        UserInfo user2 = generateUser(1000, "User1");
+        UserInfo user1 = generateUser(TEST_USER_ID_2, "User2");
+        UserInfo user2 = generateUser(TEST_USER_ID_1, "User1");
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
         List<QCRow> rows = getProfileRows();
@@ -236,8 +237,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
     @Test
     public void switchAllowed_userNotSwitchable_returnsValidRows() {
-        UserInfo user1 = generateUser(1000, "User1");
-        UserInfo user2 = generateUser(1001, "User2", /* supportsSwitch= */ false,
+        UserInfo user1 = generateUser(TEST_USER_ID_1, "User1");
+        UserInfo user2 = generateUser(TEST_USER_ID_2, "User2", /* supportsSwitch= */ false,
                 /* isFull= */ true, /* isGuest= */ false);
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
@@ -253,8 +254,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
     @Test
     public void switchAllowed_userGuest_returnsValidRows() {
-        UserInfo user1 = generateUser(1000, "User1");
-        UserInfo user2 = generateUser(1001, "User2", /* supportsSwitch= */ true,
+        UserInfo user1 = generateUser(TEST_USER_ID_1, "User1");
+        UserInfo user2 = generateUser(TEST_USER_ID_2, "User2", /* supportsSwitch= */ true,
                 /* isFull= */ true, /* isGuest= */ true);
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
@@ -270,8 +271,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
     @Test
     public void switchAllowed_userNotFull_returnsValidRows() {
-        UserInfo user1 = generateUser(1000, "User1");
-        UserInfo user2 = generateUser(1001, "User2", /* supportsSwitch= */ true,
+        UserInfo user1 = generateUser(TEST_USER_ID_1, "User1");
+        UserInfo user2 = generateUser(TEST_USER_ID_2, "User2", /* supportsSwitch= */ true,
                 /* isFull= */ false, /* isGuest= */ false);
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
@@ -289,8 +290,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     public void switchAllowed_addUserDisallowed_returnsValidRows() {
         when(mUserManager.hasUserRestrictionForUser(eq(UserManager.DISALLOW_ADD_USER),
                 any())).thenReturn(true);
-        UserInfo user1 = generateUser(1000, "User1");
-        UserInfo user2 = generateUser(1001, "User2");
+        UserInfo user1 = generateUser(TEST_USER_ID_1, "User1");
+        UserInfo user2 = generateUser(TEST_USER_ID_2, "User2");
         mAliveUsers.add(user1);
         mAliveUsers.add(user2);
         List<QCRow> rows = getProfileRows();
@@ -305,7 +306,7 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     @Test
     public void switchAllowed_deviceManaged_returnsValidRows() {
         when(mDevicePolicyManager.isDeviceManaged()).thenReturn(true);
-        UserInfo user1 = generateUser(1000, "User1");
+        UserInfo user1 = generateUser(TEST_USER_ID_1, "User1");
         mAliveUsers.add(user1);
         List<QCRow> rows = getProfileRows();
         // Expect four rows - one for the device owner message, one for the user,
@@ -332,8 +333,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
     @Test
     public void onUserPressed_triggersSwitch() {
-        int currentUserId = 1000;
-        int otherUserId = 1001;
+        int currentUserId = TEST_USER_ID_1;
+        int otherUserId = TEST_USER_ID_2;
         UserInfo user1 = generateUser(currentUserId, "User1");
         UserInfo user2 = generateUser(otherUserId, "User2");
         mAliveUsers.add(user1);
@@ -342,6 +343,12 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         // Expect four rows - one for each user, one for the guest user, and one for add user
         assertThat(rows).hasSize(4);
         QCRow otherUserRow = rows.get(1);
+        // When switch user is invoked, mock the UserSwitchResult so it won't wait for timeout
+        doAnswer((inv) -> {
+            SyncResultCallback<UserSwitchResult> callback = inv.getArgument(2);
+            callback.onResult(new UserSwitchResult(STATUS_SUCCESSFUL, null));
+            return null;
+        }).when(mCarUserManager).switchUser(any(), any(), any());
         otherUserRow.getActionHandler().onAction(otherUserRow, mContext, new Intent());
 
         mProfileSwitcher.mHandler.post(() -> {
@@ -356,8 +363,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     @Test
     public void onGuestPressed_createsAndSwitches()
             throws ExecutionException, InterruptedException, TimeoutException {
-        int currentUserId = 1000;
-        int guestUserId = 1001;
+        int currentUserId = TEST_USER_ID_1;
+        int guestUserId = TEST_USER_ID_2;
         AsyncFuture<UserCreationResult> createResultFuture = mock(AsyncFuture.class);
         when(createResultFuture.get(anyLong(), any())).thenReturn(null);
         when(mCarUserManager.createGuest(any())).thenReturn(createResultFuture);
@@ -372,6 +379,12 @@ public class ProfileSwitcherTest extends SysuiTestCase {
         // Expect 3 rows - one for the user, one for the guest user, and one for add user
         assertThat(rows).hasSize(3);
         QCRow guestRow = rows.get(1);
+        // When switch user is invoked, mock the UserSwitchResult so it won't wait for timeout
+        doAnswer((inv) -> {
+            SyncResultCallback<UserSwitchResult> callback = inv.getArgument(2);
+            callback.onResult(new UserSwitchResult(STATUS_SUCCESSFUL, null));
+            return null;
+        }).when(mCarUserManager).switchUser(any(), any(), any());
         guestRow.getActionHandler().onAction(guestRow, mContext, new Intent());
         verify(mCarUserManager).createGuest(any());
 
@@ -387,8 +400,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
     @Test
     public void onUserPressed_alreadyStartedUser_doesNothing() {
         when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(true);
-        int currentUserId = 1000;
-        int secondaryUserId = 1001;
+        int currentUserId = TEST_USER_ID_1;
+        int secondaryUserId = TEST_USER_ID_2;
         UserInfo user1 = generateUser(currentUserId, "User1");
         UserInfo user2 = generateUser(secondaryUserId, "User2");
         mAliveUsers.add(user1);
@@ -409,8 +422,8 @@ public class ProfileSwitcherTest extends SysuiTestCase {
 
     @Test
     public void onUserPressed_secondaryUser_stopsAndStartsNewUser() {
-        int currentUserId = 1000;
-        int secondaryUserId = 1001;
+        int currentUserId = TEST_USER_ID_1;
+        int secondaryUserId = TEST_USER_ID_2;
         int newUserId = 1002;
         doReturn(true).when(() -> CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
         when(mUserManager.isVisibleBackgroundUsersSupported()).thenReturn(true);

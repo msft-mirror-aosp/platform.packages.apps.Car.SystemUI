@@ -2,13 +2,6 @@ package: "com.android.systemui.car"
 container: "system"
 
 flag {
-    name: "example_flag"
-    namespace: "car_sys_exp"
-    description: "An Example Flag"
-    bug: "304307370"
-}
-
-flag {
     name: "config_aware_systemui"
     namespace: "car_sys_exp"
     description: "Flag to make car system ui react to runtime resource overlay change at the runtime."
@@ -48,4 +41,25 @@ flag {
     namespace: "car_sys_exp"
     description: "Flag that shows the quick controls panel for sound."
     bug: "344677470"
+}
+
+flag {
+    name: "display_compatibility_v2"
+    namespace: "car_sys_exp"
+    description: "This flag controls v2 development to enable display compatibility feature."
+    bug: "364382110"
+}
+
+flag {
+    name: "scalable_ui"
+    namespace: "car_sys_exp"
+    description: "This flag controls the development to enable scalable UI feature."
+    bug: "382109339"
+}
+
+flag {
+    name: "auto_task_stack_windowing"
+    namespace: "car_framework"
+    description: "Flag to enable the AutoTaskStackController in WmShell."
+    bug: "384082238"
 }

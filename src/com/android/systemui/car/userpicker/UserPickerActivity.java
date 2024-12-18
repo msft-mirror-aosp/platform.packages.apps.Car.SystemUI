@@ -17,7 +17,6 @@
 package com.android.systemui.car.userpicker;
 
 import static android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
-import static android.view.WindowManager.LayoutParams.SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS;
 import static android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT;
 
 import static com.android.systemui.car.userpicker.HeaderState.HEADER_STATE_CHANGE_USER;
@@ -30,6 +29,7 @@ import android.content.res.Configuration;
 import android.graphics.Insets;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.UserManager;
 import android.util.Log;
 import android.util.Slog;
 import android.view.LayoutInflater;
@@ -38,7 +38,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
-import android.view.WindowManager;
 import android.window.OnBackInvokedCallback;
 
 import androidx.annotation.NonNull;
@@ -52,6 +51,7 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.systembar.SystemBarUtil;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.userpicker.UserPickerController.Callbacks;
+import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.settings.DisplayTracker;
 
@@ -107,16 +107,20 @@ public class UserPickerActivity extends Activity implements Dumpable {
     @Inject
     UserPickerActivity(
             Context context, //application context
+            UserManager userManager,
             DisplayTracker displayTracker,
             CarServiceProvider carServiceProvider,
-            UserPickerSharedState userPickerSharedState
+            UserPickerSharedState userPickerSharedState,
+            UserIconProvider userIconProvider
     ) {
         this();
         mUserPickerActivityComponent = DaggerUserPickerActivityComponent.builder()
                 .context(context)
+                .userManager(userManager)
                 .carServiceProvider(carServiceProvider)
                 .displayTracker(displayTracker)
                 .userPickerSharedState(userPickerSharedState)
+                .userIconProvider(userIconProvider)
                 .build();
         //Component.inject(this) is not working because constructor and activity itself is
         //scoped to SystemUiScope but the deps below are scoped to UserPickerScope
@@ -186,12 +190,6 @@ public class UserPickerActivity extends Activity implements Dumpable {
         String dumpableName = TAG + "#" + getDisplayId();
         mDumpManager.unregisterDumpable(dumpableName);
         mDumpManager.registerNormalDumpable(dumpableName, /* module= */ this);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        getWindow().addSystemFlags(SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS);
     }
 
     private void initViews() {
@@ -278,16 +276,6 @@ public class UserPickerActivity extends Activity implements Dumpable {
     @VisibleForTesting
     boolean getIsDriver() {
         return !isMUPANDSystemUI() && getDisplayId() == mDisplayTracker.getDefaultDisplayId();
-    }
-
-    @Override
-    protected void onStop() {
-        Window window = getWindow();
-        WindowManager.LayoutParams attrs = window.getAttributes();
-        attrs.privateFlags &= ~SYSTEM_FLAG_HIDE_NON_SYSTEM_OVERLAY_WINDOWS;
-        window.setAttributes(attrs);
-
-        super.onStop();
     }
 
     @Override

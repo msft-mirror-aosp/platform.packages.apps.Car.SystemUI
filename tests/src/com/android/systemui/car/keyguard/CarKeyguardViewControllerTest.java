@@ -49,17 +49,18 @@ import com.android.systemui.bouncer.domain.interactor.PrimaryBouncerInteractor;
 import com.android.systemui.bouncer.ui.BouncerView;
 import com.android.systemui.bouncer.ui.viewmodel.KeyguardBouncerViewModel;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.systembar.CarSystemBarController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.keyguard.ui.viewmodel.PrimaryBouncerToGoneTransitionViewModel;
 import com.android.systemui.log.BouncerLogger;
 import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.domain.interactor.StatusBarKeyguardViewManagerInteractor;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.toast.ToastFactory;
 import com.android.systemui.user.domain.interactor.SelectedUserInteractor;
 import com.android.systemui.util.concurrency.FakeExecutor;
+import com.android.systemui.util.kotlin.JavaAdapter;
 import com.android.systemui.util.time.FakeSystemClock;
 
 import org.junit.Before;
@@ -69,6 +70,8 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -102,9 +105,9 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
     @Mock
     private PrimaryBouncerToGoneTransitionViewModel mPrimaryBouncerToGoneTransitionViewModel;
     @Mock
-    private CarSystemBarController mCarSystemBarController;
-    @Mock
     private BouncerView mBouncerView;
+    @Mock
+    private KeyguardSystemBarPresenter mKeyguardSystemBarPresenter;
 
     @Before
     public void setUp() {
@@ -135,7 +138,6 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
                 mock(KeyguardUpdateMonitor.class),
                 () -> mock(BiometricUnlockController.class),
                 mock(ViewMediatorCallback.class),
-                mCarSystemBarController,
                 mPrimaryBouncerCallbackInteractor,
                 mPrimaryBouncerInteractor,
                 mKeyguardSecurityModel,
@@ -146,7 +148,10 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
                 mock(KeyguardMessageAreaController.Factory.class),
                 mock(BouncerLogger.class),
                 mock(BouncerMessageInteractor.class),
-                mock(SelectedUserInteractor.class)
+                mock(SelectedUserInteractor.class),
+                Optional.of(mKeyguardSystemBarPresenter),
+                mock(StatusBarKeyguardViewManagerInteractor.class),
+                mock(JavaAdapter.class)
         );
         mCarKeyguardViewController.inflate((ViewGroup) LayoutInflater.from(mContext).inflate(
                 R.layout.sysui_overlay_window, /* root= */ null));
@@ -246,11 +251,11 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
 
         when(mKeyguardStateController.isUnlocked()).thenReturn(true);
         mCarKeyguardViewController.setOccluded(/* occluded= */ true, /* animate= */ false);
-        verify(mCarSystemBarController, never()).showAllOcclusionButtons(true);
+        verify(mKeyguardSystemBarPresenter, never()).showAllOcclusionButtons();
 
         when(mKeyguardStateController.isUnlocked()).thenReturn(false);
         mCarKeyguardViewController.setOccluded(/* occluded= */ true, /* animate= */ false);
-        verify(mCarSystemBarController).showAllOcclusionButtons(true);
+        verify(mKeyguardSystemBarPresenter).showAllOcclusionButtons();
     }
 
     @Test

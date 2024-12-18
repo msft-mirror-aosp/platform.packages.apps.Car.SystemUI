@@ -21,9 +21,8 @@ import static org.mockito.Mockito.mock;
 import android.content.Context;
 
 import com.android.systemui.dagger.SysUIComponent;
-import com.android.systemui.dagger.WMComponent;
-import com.android.systemui.wm.MDSystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
+import com.android.wm.shell.dagger.WMComponent;
 
 import java.util.Optional;
 
@@ -36,7 +35,6 @@ public class CarSystemUITestInitializer extends CarSystemUIInitializer {
     protected SysUIComponent.Builder prepareSysUIComponentBuilder(
             SysUIComponent.Builder sysUIBuilder, WMComponent wm) {
         return ((CarSysUIComponent.Builder) sysUIBuilder).setRootTaskDisplayAreaOrganizer(
-                Optional.of(mock(RootTaskDisplayAreaOrganizer.class)))
-                .setMDSystemBarsController(Optional.of(mock(MDSystemBarsController.class)));
+                Optional.of(mock(RootTaskDisplayAreaOrganizer.class)));
     }
 }

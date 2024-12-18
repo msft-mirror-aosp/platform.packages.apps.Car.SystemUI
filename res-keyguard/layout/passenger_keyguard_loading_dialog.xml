@@ -14,6 +14,17 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<manifest package= "com.android.systemui.car.res">
-    <application/>
-</manifest>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/car_surface">
+    <ProgressBar
+        android:layout_width="350dp"
+        android:layout_height="50dp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/car_on_surface"
+        android:layout_gravity="center"/>
+</FrameLayout>

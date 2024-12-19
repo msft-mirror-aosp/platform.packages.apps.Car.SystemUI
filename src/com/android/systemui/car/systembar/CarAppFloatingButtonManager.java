@@ -61,6 +61,7 @@ public class CarAppFloatingButtonManager {
     private static final long INPUT_IDLE_TIMEOUT = 10000;
     private static final long INACTIVITY_TIMEOUT_MS = 12000;
 
+    private AnimatorSet initialAnimSet;
     private Context mContext;
     private WindowManager windowManager;
     private View appFloatingButtonView;
@@ -219,7 +220,7 @@ public class CarAppFloatingButtonManager {
         moveDownAnimator.addUpdateListener(
             animation -> updateViewLayout((int) animation.getAnimatedValue()));
 
-        AnimatorSet initialAnimSet = new AnimatorSet();
+        initialAnimSet = new AnimatorSet();
         initialAnimSet.playSequentially(moveUpAnimator, moveDownAnimator);
         initialAnimSet.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -320,8 +321,23 @@ public class CarAppFloatingButtonManager {
      * @param newY The new Y position.
      */
     private void updateViewLayout(int newY) {
-        params.y = newY;
-        windowManager.updateViewLayout(appFloatingButtonView, params);
+        if (appFloatingButtonView.isAttachedToWindow()) {
+            try {
+                params.y = newY;
+                windowManager.updateViewLayout(appFloatingButtonView, params);
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG, "Failed to update view layout. View not attached to window.", e);
+            }
+        } else {
+            Log.w(TAG, "Skipped updateViewLayout. View not attached, clearning animations");
+            if (initialAnimSet != null && initialAnimSet.isRunning()) {
+                initialAnimSet.removeAllListeners();
+                initialAnimSet.cancel();
+                initialAnimSet = null;
+            }
+            initialAnimationShown = true;
+            backButton.setClickable(true);
+        }
     }
 
     // Activates InputMonitor only when needed

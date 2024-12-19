@@ -45,9 +45,11 @@ import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.dagger.WMSingleton;
 import com.android.wm.shell.taskview.TaskViewTransitions;
+import com.android.wm.shell.windowdecor.WindowDecorViewModel;
 
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -67,6 +69,7 @@ public final class CarSystemUIProxyImpl
     private final ArraySet<RemoteCarTaskViewServerImpl> mRemoteCarTaskViewServerSet =
             new ArraySet<>();
     private final DisplayManager mDisplayManager;
+    private final Optional<WindowDecorViewModel> mWindowDecorViewModelOptional;
 
     private boolean mConnected;
     private CarActivityManager mCarActivityManager;
@@ -92,17 +95,19 @@ public final class CarSystemUIProxyImpl
     }
 
     @Inject
-    CarSystemUIProxyImpl(
+    public CarSystemUIProxyImpl(
             Context context,
             CarServiceProvider carServiceProvider,
             SyncTransactionQueue syncTransactionQueue,
             ShellTaskOrganizer taskOrganizer,
             TaskViewTransitions taskViewTransitions,
-            DumpManager dumpManager) {
+            DumpManager dumpManager,
+            Optional<WindowDecorViewModel> windowDecorViewModelOptional) {
         mContext = context;
         mTaskOrganizer = taskOrganizer;
         mSyncQueue = syncTransactionQueue;
         mTaskViewTransitions = taskViewTransitions;
+        mWindowDecorViewModelOptional = windowDecorViewModelOptional;
         mDisplayManager = mContext.getSystemService(DisplayManager.class);
         dumpManager.registerDumpable(this);
 
@@ -143,7 +148,9 @@ public final class CarSystemUIProxyImpl
                         mSyncQueue,
                         carTaskViewClient,
                         this,
-                        mTaskViewTransitions, mCarActivityManager);
+                        mTaskViewTransitions,
+                        mCarActivityManager,
+                        mWindowDecorViewModelOptional);
         mRemoteCarTaskViewServerSet.add(remoteCarTaskViewServerImpl);
         return remoteCarTaskViewServerImpl.getHostImpl();
     }

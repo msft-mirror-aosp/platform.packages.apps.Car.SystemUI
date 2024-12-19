@@ -62,6 +62,7 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
     private final ArraySet<OnTaskChangeListener> mTaskListeners = new ArraySet<>();
     private final Object mLock = new Object();
 
+    private final Optional<WindowDecorViewModel> mWindowDecorViewModelOptional;
     private final ShellTaskOrganizer.TaskListener mMultiWindowTaskListener =
             new ShellTaskOrganizer.TaskListener() {
                 @Override
@@ -116,6 +117,7 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
                 () -> mShellTaskOrganizer.addListenerForType(mMultiWindowTaskListener,
                         ShellTaskOrganizer.TASK_LISTENER_TYPE_MULTI_WINDOW),
                 this);
+        mWindowDecorViewModelOptional = windowDecorViewModelOptional;
     }
 
     @Override
@@ -127,6 +129,13 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
             for (OnTaskChangeListener listener : mTaskListeners) {
                 listener.onTaskAppeared(taskInfo);
             }
+        }
+
+        // Show WindowDecor for display compat apps
+        if (mWindowDecorViewModelOptional.isPresent()) {
+            SurfaceControl.Transaction t = new SurfaceControl.Transaction();
+            mWindowDecorViewModelOptional.get().onTaskOpening(taskInfo, leash, t, t);
+            t.apply();
         }
     }
 
@@ -149,6 +158,9 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
             for (OnTaskChangeListener listener : mTaskListeners) {
                 listener.onTaskVanished(taskInfo);
             }
+        }
+        if (mWindowDecorViewModelOptional.isPresent()) {
+            mWindowDecorViewModelOptional.get().destroyWindowDecoration(taskInfo);
         }
     }
 
@@ -183,6 +195,7 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
          * Gives the information of the task that just changed
          */
         void onTaskInfoChanged(ActivityManager.RunningTaskInfo taskInfo);
+
         /**
          * Gives the information of the task that just vanished
          */

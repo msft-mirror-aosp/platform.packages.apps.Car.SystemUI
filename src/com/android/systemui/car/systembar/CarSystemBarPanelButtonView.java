@@ -85,7 +85,7 @@ public class CarSystemBarPanelButtonView extends LinearLayout implements CarSyst
                 CarSystemBarElementFlags.getStatusBarManagerDisableFlagsFromAttributes(context,
                         attrs);
         mSystemBarDisable2Flags =
-                CarSystemBarElementFlags.getStatusBarManagerDisableFlagsFromAttributes(context,
+                CarSystemBarElementFlags.getStatusBarManagerDisable2FlagsFromAttributes(context,
                         attrs);
         mDisableForLockTaskModeLocked =
                 CarSystemBarElementFlags.getDisableForLockTaskModeLockedFromAttributes(context,

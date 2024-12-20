@@ -25,7 +25,10 @@ package {
 android_test {
     name: "CarSystemUITests",
 
-    dxflags: ["--multi-dex"],
+    dxflags: [
+        "--multi-dex",
+        "-JXmx8192M", // TODO(b/301283770): Compiling CarSystemUI should not require -J-Xmx8192M
+    ],
     platform_apis: true,
     test_suites: [
         "device-tests",

@@ -51,6 +51,13 @@ flag {
 }
 
 flag {
+    name: "display_compatibility_caption_bar"
+    namespace: "car_sys_exp"
+    description: "This flag controls enabling the back button for display compatibility using caption bar."
+    bug: "370104463"
+}
+
+flag {
     name: "scalable_ui"
     namespace: "car_sys_exp"
     description: "This flag controls the development to enable scalable UI feature."

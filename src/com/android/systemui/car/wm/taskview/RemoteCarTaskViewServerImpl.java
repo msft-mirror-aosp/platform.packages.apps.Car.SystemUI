@@ -48,6 +48,9 @@ import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.taskview.TaskViewBase;
 import com.android.wm.shell.taskview.TaskViewTaskController;
 import com.android.wm.shell.taskview.TaskViewTransitions;
+import com.android.wm.shell.windowdecor.WindowDecorViewModel;
+
+import java.util.Optional;
 
 /** Server side implementation for {@code RemoteCarTaskView}. */
 public class RemoteCarTaskViewServerImpl implements TaskViewBase {
@@ -62,6 +65,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     private final ShellTaskOrganizer mShellTaskOrganizer;
     private final CarActivityManager mCarActivityManager;
     private final TaskViewTransitions mTaskViewTransitions;
+    private final Optional<WindowDecorViewModel> mWindowDecorViewModelOptional;
 
     private RootTaskMediator mRootTaskMediator;
     private boolean mReleased;
@@ -141,10 +145,18 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             if (mRootTaskMediator != null) {
                 throw new IllegalStateException("Root task is already created for this task view.");
             }
-            mRootTaskMediator = new RootTaskMediator(displayId, /* isLaunchRoot= */ false,
-                    false, false, false, mShellTaskOrganizer,
-                    mTaskViewTaskController, RemoteCarTaskViewServerImpl.this,
-                    mCarActivityManager, mTaskViewTransitions);
+            mRootTaskMediator = new RootTaskMediator(
+                    displayId,
+                    /* isLaunchRoot= */ false,
+                    /* embedHomeTask= */ false,
+                    /* embedRecentsTask= */ false,
+                    /* embedAssistantTask= */ false,
+                    mShellTaskOrganizer,
+                    mTaskViewTaskController,
+                    RemoteCarTaskViewServerImpl.this,
+                    mCarActivityManager,
+                    mTaskViewTransitions,
+                    mWindowDecorViewModelOptional);
         }
 
         /**
@@ -168,10 +180,18 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             //  tasks are moved to an always visible window (surface) in SystemUI.
             mTaskViewTaskController.setHideTaskWithSurface(false);
 
-            mRootTaskMediator = new RootTaskMediator(displayId, /* isLaunchRoot= */ true,
-                    embedHomeTask, embedRecentsTask, embedAssistantTask, mShellTaskOrganizer,
-                    mTaskViewTaskController, RemoteCarTaskViewServerImpl.this,
-                    mCarActivityManager, mTaskViewTransitions);
+            mRootTaskMediator = new RootTaskMediator(
+                    displayId,
+                    /* isLaunchRoot= */ true,
+                    embedHomeTask,
+                    embedRecentsTask,
+                    embedAssistantTask,
+                    mShellTaskOrganizer,
+                    mTaskViewTaskController,
+                    RemoteCarTaskViewServerImpl.this,
+                    mCarActivityManager,
+                    mTaskViewTransitions,
+                    mWindowDecorViewModelOptional);
         }
 
         @Override
@@ -287,13 +307,15 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             CarTaskViewClient carTaskViewClient,
             CarSystemUIProxyImpl carSystemUIProxy,
             TaskViewTransitions taskViewTransitions,
-            CarActivityManager carActivityManager) {
+            CarActivityManager carActivityManager,
+            Optional<WindowDecorViewModel> windowDecorViewModelOptional) {
         mContext = context;
         mCarTaskViewClient = carTaskViewClient;
         mCarSystemUIProxy = carSystemUIProxy;
         mShellTaskOrganizer = organizer;
         mCarActivityManager = carActivityManager;
         mTaskViewTransitions = taskViewTransitions;
+        mWindowDecorViewModelOptional = windowDecorViewModelOptional;
 
         mTaskViewTaskController =
                 new TaskViewTaskController(context, organizer, taskViewTransitions, syncQueue);

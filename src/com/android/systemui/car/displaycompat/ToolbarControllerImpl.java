@@ -20,11 +20,13 @@ import static android.view.Display.DEFAULT_DISPLAY;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import static com.android.systemui.car.displaycompat.CarDisplayCompatUtils.getPackageName;
+import static com.android.systemui.car.displaycompat.CarDisplayCompatUtils.requiresDisplayCompat;
+
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.car.content.pm.CarPackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.hardware.input.InputManager;
 import android.hardware.input.InputManagerGlobal;
 import android.os.Handler;
@@ -72,8 +74,10 @@ public class ToolbarControllerImpl implements ToolbarController {
     private ImageButton mBackButton;
 
     @Inject
-    public ToolbarControllerImpl(@NonNull @Main Handler mainHandler,
-            CarServiceProvider carServiceProvider) {
+    public ToolbarControllerImpl(
+            @NonNull @Main Handler mainHandler,
+            CarServiceProvider carServiceProvider
+    ) {
         mMainHandler = mainHandler;
         mCarServiceProvider = carServiceProvider;
     }
@@ -133,34 +137,13 @@ public class ToolbarControllerImpl implements ToolbarController {
             Log.w(TAG, "init was not called");
             return;
         }
-        if (requiresDisplayCompat(getPackageName(taskInfo))
+        if (requiresDisplayCompat(
+                getPackageName(taskInfo), taskInfo.userId, mCarPackageManager)
                 && taskInfo.displayId == DEFAULT_DISPLAY) {
             mMainHandler.post(() -> show());
             return;
         }
         mMainHandler.post(() -> hide());
-    }
-
-    private String getPackageName(RunningTaskInfo taskInfo) {
-        if (taskInfo.topActivity != null) {
-            return taskInfo.topActivity.getPackageName();
-        }
-        return taskInfo.baseIntent.getComponent().getPackageName();
-    }
-
-    @RequiresPermission(allOf = {PERMISSION_MANAGE_DISPLAY_COMPATIBILITY,
-            android.Manifest.permission.QUERY_ALL_PACKAGES})
-    private boolean requiresDisplayCompat(String packageName) {
-        boolean result = false;
-        if (mCarPackageManager != null) {
-            try {
-                result = mCarPackageManager.requiresDisplayCompat(packageName);
-            } catch (NameNotFoundException e) {
-            }
-        } else {
-            Log.w(TAG, "CarPackageManager is not set.");
-        }
-        return result;
     }
 
     /**

@@ -89,10 +89,12 @@ public class MediaVolumeStatusIconController extends StatusIconViewController {
 
                     mCarAudioManager = (CarAudioManager) car.getCarManager(Car.AUDIO_SERVICE);
 
-                    mCarAudioManager.registerCarVolumeCallback(mVolumeChangeCallback);
-                    mGroupId = mCarAudioManager.getVolumeGroupIdForUsage(mZoneId, USAGE_MEDIA);
-                    mMaxMediaVolume = mCarAudioManager.getGroupMaxVolume(mZoneId, mGroupId);
-                    mMinMediaVolume = mCarAudioManager.getGroupMinVolume(mZoneId, mGroupId);
+                    if (mCarAudioManager != null) {
+                        mCarAudioManager.registerCarVolumeCallback(mVolumeChangeCallback);
+                        mGroupId = mCarAudioManager.getVolumeGroupIdForUsage(mZoneId, USAGE_MEDIA);
+                        mMaxMediaVolume = mCarAudioManager.getGroupMaxVolume(mZoneId, mGroupId);
+                        mMinMediaVolume = mCarAudioManager.getGroupMinVolume(mZoneId, mGroupId);
+                    }
                     updateStatus(mZoneId, mGroupId);
                 }
             };
@@ -130,7 +132,9 @@ public class MediaVolumeStatusIconController extends StatusIconViewController {
         super.onViewDetached();
         mCarServiceProvider.removeListener(mCarOnConnectedListener);
         mUserTracker.removeCallback(mUserTrackerCallback);
-        mCarAudioManager.unregisterCarVolumeCallback(mVolumeChangeCallback);
+        if (mCarAudioManager != null) {
+            mCarAudioManager.unregisterCarVolumeCallback(mVolumeChangeCallback);
+        }
     }
 
     @Override

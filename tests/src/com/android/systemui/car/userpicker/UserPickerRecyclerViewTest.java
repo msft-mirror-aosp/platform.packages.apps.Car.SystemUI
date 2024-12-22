@@ -36,6 +36,8 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.userswitcher.UserIconProvider;
+import com.android.systemui.settings.UserTracker;
+import com.android.systemui.tuner.TunerService;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -78,6 +80,9 @@ public class UserPickerRecyclerViewTest extends UserPickerTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        mDependency.injectMockDependency(TunerService.class);
+        mDependency.injectMockDependency(UserTracker.class);
+
         doReturn(mDriverUserInfo).when(mMockUserManager).getUserInfo(USER_ID_DRIVER);
         doReturn(mFrontUserInfo).when(mMockUserManager).getUserInfo(USER_ID_FRONT);
         doReturn(mRearUserInfo).when(mMockUserManager).getUserInfo(USER_ID_REAR);
@@ -88,22 +93,22 @@ public class UserPickerRecyclerViewTest extends UserPickerTestCase {
                 /* mIsStartGuestSession= */ false, /* mIsAddUser= */ false,
                 /* mIsForeground= */ true,
                 /* mIcon= */ mMockUserIconProvider.getRoundedUserIcon(mDriverUserInfo, mContext),
-                /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsLoggedIn= */ true,
-                /* mLoggedInDisplay= */ MAIN_DISPLAY_ID,
+                /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsSecure= */ false,
+                /* mIsLoggedIn= */ true, /* mLoggedInDisplay= */ MAIN_DISPLAY_ID,
                 /* mSeatLocationName= */ USER_NAME_DRIVER, /* mIsStopping= */ false);
         mFront = UserRecord.create(mFrontUserInfo, /* mName= */ mFrontUserInfo.name,
                 /* mIsStartGuestSession= */ false, /* mIsAddUser= */ false,
                 /* mIsForeground= */ false,
                 /* mIcon= */ mMockUserIconProvider.getRoundedUserIcon(mFrontUserInfo, mContext),
-                /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsLoggedIn= */ true,
-                /* mLoggedInDisplay= */ FRONT_PASSENGER_DISPLAY_ID,
+                /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsSecure= */ false,
+                /* mIsLoggedIn= */ true, /* mLoggedInDisplay= */ FRONT_PASSENGER_DISPLAY_ID,
                 /* mSeatLocationName= */ USER_NAME_FRONT, /* mIsStopping= */ false);
         mRear = UserRecord.create(mRearUserInfo, /* mName= */ mRearUserInfo.name,
                 /* mIsStartGuestSession= */ false, /* mIsAddUser= */ false,
                 /* mIsForeground= */ false,
                 /* mIcon= */ mMockUserIconProvider.getRoundedUserIcon(mRearUserInfo, mContext),
-                /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsLoggedIn= */ false,
-                /* mLoggedInDisplay= */ INVALID_DISPLAY,
+                /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsSecure= */ false,
+                /* mIsLoggedIn= */ false, /* mLoggedInDisplay= */ INVALID_DISPLAY,
                 /* mSeatLocationName= */ "", /* mIsStopping= */ false);
     }
 
@@ -152,8 +157,8 @@ public class UserPickerRecyclerViewTest extends UserPickerTestCase {
                 /* mIsStartGuestSession= */ true, /* mIsAddUser= */ false,
                 /* mIsForeground= */ false,
                 mMockUserIconProvider.getRoundedGuestDefaultIcon(mContext),
-                /* OnClickListenerMaker */ new OnClickListenerCreator(), false, INVALID_DISPLAY,
-                /* mSeatLocationName= */"", /* mIsStopping= */ false);
+                /* OnClickListenerMaker */ new OnClickListenerCreator(), false, false,
+                INVALID_DISPLAY, /* mSeatLocationName= */"", /* mIsStopping= */ false);
         UserRecord mAddUser = UserRecord.create(/* mInfo= */ null, /* mName= */ mAddLabel,
                 /* mIsStartGuestSession= */ false, /* mIsAddUser= */ true,
                 /* mIsForeground= */ false,
@@ -196,15 +201,16 @@ public class UserPickerRecyclerViewTest extends UserPickerTestCase {
                 /* mIsStartGuestSession= */ false, /* mIsAddUser= */ false,
                 /* mIsForeground= */ false,
                 /* mIcon= */ mMockUserIconProvider.getRoundedUserIcon(mFrontUserInfo, mContext),
-                /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsLoggedIn= */ false,
+                /* OnClickListenerMaker */ new OnClickListenerCreator(),
+                /* mIsSecure= */ false, /* mIsLoggedIn= */ false,
                 /* mLoggedInDisplay= */ -1,
                 /* mSeatLocationName= */ "Test", /* mIsStopping= */ false);
         UserRecord mGuest = UserRecord.create(/* mInfo= */ null, /* mName= */ mGuestLabel,
                 /* mIsStartGuestSession= */ true, /* mIsAddUser= */ false,
                 /* mIsForeground= */ false,
                 mMockUserIconProvider.getRoundedGuestDefaultIcon(mContext),
-                /* OnClickListenerMaker */ new OnClickListenerCreator(), false, INVALID_DISPLAY,
-                /* mSeatLocationName= */"", /* mIsStopping= */ false);
+                /* OnClickListenerMaker */ new OnClickListenerCreator(), false, false,
+                INVALID_DISPLAY, /* mSeatLocationName= */"", /* mIsStopping= */ false);
         UserRecord mAddUser = UserRecord.create(/* mInfo= */ null, /* mName= */ mAddLabel,
                 /* mIsStartGuestSession= */ false, /* mIsAddUser= */ true,
                 /* mIsForeground= */ false,
@@ -250,8 +256,8 @@ public class UserPickerRecyclerViewTest extends UserPickerTestCase {
                     /* mIsStartGuestSession= */ false, /* mIsAddUser= */ false,
                     /* mIsForeground= */ false,
                     /* mIcon= */ mMockUserIconProvider.getRoundedUserIcon(newUserInfo, mContext),
-                    /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsLoggedIn= */
-                    false,
+                    /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsSecure= */ false,
+                    /* mIsLoggedIn= */ false,
                     /* mLoggedInDisplay= */ INVALID_DISPLAY,
                     /* mSeatLocationName= */ "", /* mIsStopping= */ false);
             mUserList = List.of(mDriver, mFront, mNew, mRear);
@@ -296,8 +302,8 @@ public class UserPickerRecyclerViewTest extends UserPickerTestCase {
                     /* mIsStartGuestSession= */ false, /* mIsAddUser= */ false,
                     /* mIsForeground= */ false,
                     /* mIcon= */ mMockUserIconProvider.getRoundedUserIcon(mRearUserInfo, mContext),
-                    /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsLoggedIn= */
-                    true,
+                    /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsSecure= */ false,
+                    /* mIsLoggedIn= */ true,
                     /* mLoggedInDisplay= */ REAR_PASSENGER_DISPLAY_ID,
                     /* mSeatLocationName= */ USER_NAME_REAR, /* mIsStopping= */ false);
             mUserList = List.of(mDriver, mFront, mRear);
@@ -318,7 +324,8 @@ public class UserPickerRecyclerViewTest extends UserPickerTestCase {
                 /* mIsStartGuestSession= */ false, /* mIsAddUser= */ false,
                 /* mIsForeground= */ false,
                 /* mIcon= */ mMockUserIconProvider.getRoundedUserIcon(mRearUserInfo, mContext),
-                /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsLoggedIn= */ true,
+                /* OnClickListenerMaker */ new OnClickListenerCreator(),
+                /* mIsSecure= */ false, /* mIsLoggedIn= */ true,
                 /* mLoggedInDisplay= */ REAR_PASSENGER_DISPLAY_ID,
                 /* mSeatLocationName= */ USER_NAME_REAR, /* mIsStopping= */ false);
         mUserList = List.of(mDriver, mFront, mRear);
@@ -334,8 +341,8 @@ public class UserPickerRecyclerViewTest extends UserPickerTestCase {
                     /* mIsStartGuestSession= */ false, /* mIsAddUser= */ false,
                     /* mIsForeground= */ false,
                     /* mIcon= */ mMockUserIconProvider.getRoundedUserIcon(mRearUserInfo, mContext),
-                    /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsLoggedIn= */
-                    false,
+                    /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsSecure= */ false,
+                    /* mIsLoggedIn= */ false,
                     /* mLoggedInDisplay= */ INVALID_DISPLAY,
                     /* mSeatLocationName= */ "", /* mIsStopping= */ false);
             mUserList = List.of(mDriver, mFront, mRear);
@@ -364,8 +371,8 @@ public class UserPickerRecyclerViewTest extends UserPickerTestCase {
                     /* mIsStartGuestSession= */ false, /* mIsAddUser= */ false,
                     /* mIsForeground= */ false,
                     /* mIcon= */ mMockUserIconProvider.getRoundedUserIcon(mRearUserInfo, mContext),
-                    /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsLoggedIn= */
-                    false,
+                    /* OnClickListenerMaker */ new OnClickListenerCreator(), /* mIsSecure= */ false,
+                    /* mIsLoggedIn= */ false,
                     /* mLoggedInDisplay= */ INVALID_DISPLAY,
                     /* mSeatLocationName= */ "", /* mIsStopping= */ false);
             mUserList = List.of(mDriver, mFront, mRear);

@@ -16,9 +16,12 @@
 
 package com.android.systemui.car.users;
 
+import static com.android.systemui.car.users.CarSystemUIUserUtil.isMUMDSystemUI;
+
 import android.app.ActivityManager;
 import android.app.IActivityManager;
 import android.content.Context;
+import android.hardware.display.DisplayManager;
 import android.os.Handler;
 import android.os.Process;
 import android.os.UserHandle;
@@ -33,6 +36,7 @@ import com.android.systemui.dagger.qualifiers.Background;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.flags.FeatureFlagsClassic;
 import com.android.systemui.settings.DisplayTracker;
+import com.android.systemui.settings.DisplayTrackerImpl;
 import com.android.systemui.settings.UserContentResolverProvider;
 import com.android.systemui.settings.UserContextProvider;
 import com.android.systemui.settings.UserFileManager;
@@ -40,15 +44,16 @@ import com.android.systemui.settings.UserFileManagerImpl;
 import com.android.systemui.settings.UserTracker;
 
 import dagger.Binds;
+import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
 
-import javax.inject.Provider;
-
 import kotlinx.coroutines.CoroutineDispatcher;
 import kotlinx.coroutines.CoroutineScope;
+
+import javax.inject.Provider;
 
 /**
  * Car-specific dagger Module for classes found within the com.android.systemui.settings package.
@@ -101,12 +106,23 @@ public abstract class CarMultiUserUtilsModule {
     @SysUISingleton
     @Provides
     static DisplayTracker provideDisplayTracker(
+            Lazy<DisplayTrackerImpl> defaultImpl,
             Context context,
             UserTracker userTracker,
             CarServiceProvider carServiceProvider,
             @Background Handler handler
     ) {
-        return new CarDisplayTrackerImpl(context, userTracker, carServiceProvider, handler);
+        if (!isMUMDSystemUI()) {
+            return defaultImpl.get();
+        }
+        return new CarMUMDDisplayTrackerImpl(context, userTracker, carServiceProvider, handler);
+    }
+
+    @SysUISingleton
+    @Provides
+    static DisplayTrackerImpl provideDefaultDisplayTrackerImpl(DisplayManager displayManager,
+            @Background Handler handler) {
+        return new DisplayTrackerImpl(displayManager, handler);
     }
 
     @Binds
@@ -117,5 +133,8 @@ public abstract class CarMultiUserUtilsModule {
     @Binds
     abstract UserFileManager bindUserFileManager(UserFileManagerImpl impl);
 
-
+    @Binds
+    @IntoMap
+    @ClassKey(CarProfileIconUpdater.class)
+    abstract CoreStartable bindCarProfileIconUpdaterStartable(CarProfileIconUpdater iconUpdater);
 }

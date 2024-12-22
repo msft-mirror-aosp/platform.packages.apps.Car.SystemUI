@@ -18,11 +18,11 @@ package com.android.systemui.car.statusicon;
 
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
+import static android.widget.PopupWindow.INPUT_METHOD_NOT_NEEDED;
 
 import android.annotation.DimenRes;
 import android.annotation.LayoutRes;
 import android.app.PendingIntent;
-import android.car.app.CarActivityManager;
 import android.car.drivingstate.CarUxRestrictions;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -50,11 +50,9 @@ import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarDeviceProvisionedController;
-import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.qc.SystemUIQCViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
-import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.util.ViewController;
@@ -70,7 +68,6 @@ import javax.inject.Inject;
 public class StatusIconPanelViewController extends ViewController<View> {
     private final Context mContext;
     private final UserTracker mUserTracker;
-    private final CarServiceProvider mCarServiceProvider;
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final ConfigurationController mConfigurationController;
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
@@ -91,7 +88,6 @@ public class StatusIconPanelViewController extends ViewController<View> {
     private PopupWindow mPanel;
     private ViewGroup mPanelContent;
     private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
-    private CarActivityManager mCarActivityManager;
     private float mDimValue = -1.0f;
     private View.OnClickListener mOnClickListener;
 
@@ -125,11 +121,6 @@ public class StatusIconPanelViewController extends ViewController<View> {
                         mPanel.dismiss();
                     }
                 }
-            };
-
-    private final CarServiceProvider.CarServiceOnConnectedListener mCarServiceOnConnectedListener =
-            car -> {
-                mCarActivityManager = car.getCarManager(CarActivityManager.class);
             };
 
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -183,7 +174,6 @@ public class StatusIconPanelViewController extends ViewController<View> {
 
     private StatusIconPanelViewController(Context context,
             UserTracker userTracker,
-            CarServiceProvider carServiceProvider,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             CarDeviceProvisionedController deviceProvisionedController,
@@ -194,7 +184,6 @@ public class StatusIconPanelViewController extends ViewController<View> {
         super(anchorView);
         mContext = context;
         mUserTracker = userTracker;
-        mCarServiceProvider = carServiceProvider;
         mBroadcastDispatcher = broadcastDispatcher;
         mConfigurationController = configurationController;
         mCarDeviceProvisionedController = deviceProvisionedController;
@@ -238,28 +227,20 @@ public class StatusIconPanelViewController extends ViewController<View> {
 
             registerFocusListener(true);
 
-            if (CarSystemUIUserUtil.isMUMDSystemUI()
-                    && mPanelLayoutRes == R.layout.qc_profile_switcher) {
-                // TODO(b/269490856): consider removal of UserPicker carve-outs
-                if (mCarActivityManager != null) {
-                    mCarActivityManager.startUserPickerOnDisplay(mContext.getDisplayId());
-                }
+            if (mShowAsDropDown) {
+                // TODO(b/202563671): remove yOffsetPixel when the PopupWindow API is updated.
+                mPanel.showAsDropDown(mView, mXOffsetPixel, mYOffsetPixel, mPanelGravity);
             } else {
-                if (mShowAsDropDown) {
-                    // TODO(b/202563671): remove yOffsetPixel when the PopupWindow API is updated.
-                    mPanel.showAsDropDown(mView, mXOffsetPixel, mYOffsetPixel, mPanelGravity);
-                } else {
-                    int verticalGravity = mPanelGravity & Gravity.VERTICAL_GRAVITY_MASK;
-                    int animationStyle = verticalGravity == Gravity.BOTTOM
-                            ? com.android.internal.R.style.Animation_DropDownUp
-                            : com.android.internal.R.style.Animation_DropDownDown;
-                    mPanel.setAnimationStyle(animationStyle);
-                    mPanel.showAtLocation(mView, mPanelGravity, mXOffsetPixel, mYOffsetPixel);
-                }
-                mView.setSelected(true);
-                setAnimatedStatusIconHighlightedStatus(true);
-                dimBehind(mPanel);
+                int verticalGravity = mPanelGravity & Gravity.VERTICAL_GRAVITY_MASK;
+                int animationStyle = verticalGravity == Gravity.BOTTOM
+                        ? com.android.internal.R.style.Animation_DropDownUp
+                        : com.android.internal.R.style.Animation_DropDownDown;
+                mPanel.setAnimationStyle(animationStyle);
+                mPanel.showAtLocation(mView, mPanelGravity, mXOffsetPixel, mYOffsetPixel);
             }
+            mView.setSelected(true);
+            setAnimatedStatusIconHighlightedStatus(true);
+            dimBehind(mPanel);
         };
 
         mView.setOnClickListener(mOnClickListener);
@@ -280,7 +261,6 @@ public class StatusIconPanelViewController extends ViewController<View> {
             mCarUxRestrictionsUtil = CarUxRestrictionsUtil.getInstance(mContext);
             mCarUxRestrictionsUtil.register(mUxRestrictionsChangedListener);
         }
-        mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
     }
 
     @Override
@@ -289,7 +269,6 @@ public class StatusIconPanelViewController extends ViewController<View> {
         if (mCarUxRestrictionsUtil != null) {
             mCarUxRestrictionsUtil.unregister(mUxRestrictionsChangedListener);
         }
-        mCarServiceProvider.removeListener(mCarServiceOnConnectedListener);
         mConfigurationController.removeCallback(mConfigurationListener);
         mUserTracker.removeCallback(mUserTrackerCallback);
         mBroadcastDispatcher.unregisterReceiver(mBroadcastReceiver);
@@ -362,6 +341,7 @@ public class StatusIconPanelViewController extends ViewController<View> {
         mPanel.setBackgroundDrawable(panelBackgroundDrawable);
         mPanel.setWindowLayoutType(TYPE_SYSTEM_DIALOG);
         mPanel.setFocusable(true);
+        mPanel.setInputMethodMode(INPUT_METHOD_NOT_NEEDED);
         mPanel.setOutsideTouchable(false);
         mPanel.setOnDismissListener(() -> {
             setAnimatedStatusIconHighlightedStatus(false);
@@ -487,7 +467,6 @@ public class StatusIconPanelViewController extends ViewController<View> {
     public static class Builder {
         private final Context mContext;
         private final UserTracker mUserTracker;
-        private final CarServiceProvider mCarServiceProvider;
         private final BroadcastDispatcher mBroadcastDispatcher;
         private final ConfigurationController mConfigurationController;
         private final CarDeviceProvisionedController mCarDeviceProvisionedController;
@@ -504,14 +483,12 @@ public class StatusIconPanelViewController extends ViewController<View> {
         public Builder(
                 Context context,
                 UserTracker userTracker,
-                CarServiceProvider carServiceProvider,
                 BroadcastDispatcher broadcastDispatcher,
                 ConfigurationController configurationController,
                 CarDeviceProvisionedController deviceProvisionedController,
                 CarSystemBarElementInitializer elementInitializer) {
             mContext = context;
             mUserTracker = userTracker;
-            mCarServiceProvider = carServiceProvider;
             mBroadcastDispatcher = broadcastDispatcher;
             mConfigurationController = configurationController;
             mCarDeviceProvisionedController = deviceProvisionedController;
@@ -573,8 +550,8 @@ public class StatusIconPanelViewController extends ViewController<View> {
          */
         public StatusIconPanelViewController build(View anchorView, @LayoutRes int layoutRes,
                 @DimenRes int widthRes) {
-            return new StatusIconPanelViewController(mContext, mUserTracker, mCarServiceProvider,
-                    mBroadcastDispatcher, mConfigurationController, mCarDeviceProvisionedController,
+            return new StatusIconPanelViewController(mContext, mUserTracker, mBroadcastDispatcher,
+                    mConfigurationController, mCarDeviceProvisionedController,
                     mCarSystemBarElementInitializer, anchorView, layoutRes, widthRes, mXOffset,
                     mYOffset, mGravity, mIsDisabledWhileDriving, mIsDisabledWhileUnprovisioned,
                     mShowAsDropDown);

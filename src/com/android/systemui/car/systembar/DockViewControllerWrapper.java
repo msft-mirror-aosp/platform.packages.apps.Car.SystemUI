@@ -78,7 +78,6 @@ public class DockViewControllerWrapper extends
                     switch (event.getEventType()) {
                         case USER_LIFECYCLE_EVENT_TYPE_UNLOCKED -> {
                             if (event.getUserId() == mUserTracker.getUserId()) {
-                                mActiveUnlockedUserId = event.getUserId();
                                 setupDock();
                             }
                         }
@@ -151,10 +150,20 @@ public class DockViewControllerWrapper extends
             return;
         }
         if (mDockViewController != null) {
-            if (DEBUG) {
-                Log.d(TAG, "Dock already initialized");
+            if (mDockViewController.getUserContext().getUserId() == mUserTracker.getUserId()) {
+                if (DEBUG) {
+                    Log.d(TAG, "Dock already initialized for user: " + mUserTracker.getUserId());
+                }
+                return;
             }
-            return;
+            if (DEBUG) {
+                // This is unexpected. We should not have a leaked instance of
+                // DockViewController for a different user. This indicates a potential
+                // issue with how we're managing the DockViewController lifecycle.
+                Log.w(TAG, "DockViewController: Leaked instance detected for user "
+                        + mDockViewController.getUserContext().getUserId() + ". Destroying now.");
+            }
+            mDockViewController.destroy();
         }
         int currentDisplayId = mView.getDisplay() != null ? mView.getDisplay().getDisplayId()
                 : INVALID_DISPLAY;
@@ -184,6 +193,7 @@ public class DockViewControllerWrapper extends
                         mUserTracker.getUserId()
                 )
         );
+        mActiveUnlockedUserId = mUserTracker.getUserId();
     }
 
     private void destroyDock() {

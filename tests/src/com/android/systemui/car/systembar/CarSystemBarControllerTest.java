@@ -36,6 +36,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.testing.TestableResources;
@@ -157,6 +159,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     private OverlayVisibilityMediator mOverlayVisibilityMediator;
     private RegisterStatusBarResult mRegisterStatusBarResult;
     private SystemBarConfigs mSystemBarConfigs;
+    private HandlerThread mThread;
+    private Handler mHandler;
 
     @Before
     public void setUp() throws Exception {
@@ -201,6 +205,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 new CarSystemBarElementInitializer(controllerFactoryMap);
         mSystemBarConfigs =
                 new SystemBarConfigsImpl(mSpiedContext, mTestableResources.getResources());
+        mThread = new HandlerThread("TestThread");
+        mThread.start();
+        mHandler = Handler.createAsync(mThread.getLooper());
         CarSystemBarViewControllerFactory carSystemBarViewControllerFactory =
                 new CarSystemBarViewControllerImpl.Factory() {
                     public CarSystemBarViewControllerImpl create(@SystemBarSide int side,
@@ -239,6 +246,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         if (mSession != null) {
             mSession.finishMocking();
         }
+        if (mThread != null) {
+            mThread.quit();
+        }
     }
 
     private void initCarSystemBar() {
@@ -263,7 +273,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 mConfigurationController,
                 mCarSystemBarRestartTracker,
                 displayTracker,
-                null);
+                null,
+                mHandler);
     }
 
     @Test

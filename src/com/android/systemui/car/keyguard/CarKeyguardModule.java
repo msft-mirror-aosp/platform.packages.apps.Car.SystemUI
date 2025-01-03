@@ -58,6 +58,7 @@ import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.keyguard.WindowManagerLockscreenVisibilityManager;
 import com.android.systemui.keyguard.WindowManagerOcclusionManager;
 import com.android.systemui.keyguard.dagger.KeyguardFaceAuthNotSupportedModule;
+import com.android.systemui.keyguard.dagger.PrimaryBouncerTransitionModule;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
 import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
 import com.android.systemui.keyguard.domain.interactor.KeyguardTransitionBootInteractor;
@@ -114,6 +115,7 @@ import javax.inject.Provider;
                 FalsingModule.class,
                 KeyguardFaceAuthNotSupportedModule.class,
                 KeyguardRepositoryModule.class,
+                PrimaryBouncerTransitionModule.class,
                 StartKeyguardTransitionModule.class,
         })
 public interface CarKeyguardModule {

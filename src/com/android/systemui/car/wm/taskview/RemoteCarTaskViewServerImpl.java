@@ -104,7 +104,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         @Override
         public void setWindowBounds(Rect bounds) {
             ensureManageSystemUIPermission(mContext);
-            mTaskViewTaskController.setWindowBounds(bounds);
+            mTaskViewTransitions.setTaskBounds(mTaskViewTaskController, bounds);
         }
 
         @Override
@@ -124,7 +124,8 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             // Need this for the pending intent to work under BAL hardening.
             opt.setPendingIntentBackgroundActivityStartMode(
                     ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOW_ALWAYS);
-            mTaskViewTaskController.startActivity(
+            mTaskViewTransitions.startActivity(
+                    mTaskViewTaskController,
                     pendingIntent,
                     fillInIntent,
                     opt,
@@ -201,7 +202,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             if (taskInfo == null) {
                 return;
             }
-            if (mTaskViewTaskController.isUsingShellTransitions() && mTaskViewTransitions != null) {
+            if (mTaskViewTransitions.isUsingShellTransitions() && mTaskViewTransitions != null) {
                 mTaskViewTransitions.setTaskViewVisible(mTaskViewTaskController, /* visible= */
                         true, /* reorder= */ true);
                 return;
@@ -226,7 +227,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             if (taskInfo == null) {
                 return;
             }
-            if (mTaskViewTaskController.isUsingShellTransitions()) {
+            if (mTaskViewTransitions.isUsingShellTransitions()) {
                 mTaskViewTransitions.setTaskViewVisible(mTaskViewTaskController, visibility);
                 return;
             }
@@ -248,7 +249,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
                 return;
             }
 
-            if (mTaskViewTaskController.isUsingShellTransitions()) {
+            if (mTaskViewTransitions.isUsingShellTransitions()) {
                 mTaskViewTransitions.reorderTaskViewTask(mTaskViewTaskController, onTop);
                 return;
             }

@@ -30,10 +30,7 @@ import com.android.keyguard.KeyguardDisplayManager;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardViewController;
 import com.android.keyguard.ViewMediatorCallback;
-import com.android.keyguard.dagger.KeyguardQsUserSwitchComponent;
 import com.android.keyguard.dagger.KeyguardStatusBarViewComponent;
-import com.android.keyguard.dagger.KeyguardStatusViewComponent;
-import com.android.keyguard.dagger.KeyguardUserSwitcherComponent;
 import com.android.keyguard.mediator.ScreenOnCoordinator;
 import com.android.systemui.CoreStartable;
 import com.android.systemui.animation.ActivityTransitionAnimator;
@@ -44,6 +41,7 @@ import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.classifier.FalsingModule;
 import com.android.systemui.communal.ui.viewmodel.CommunalTransitionViewModel;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.dagger.qualifiers.Application;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.systemui.dreams.DreamOverlayStateController;
@@ -57,6 +55,7 @@ import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.keyguard.WindowManagerLockscreenVisibilityManager;
 import com.android.systemui.keyguard.WindowManagerOcclusionManager;
 import com.android.systemui.keyguard.dagger.KeyguardFaceAuthNotSupportedModule;
+import com.android.systemui.keyguard.dagger.PrimaryBouncerTransitionModule;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
 import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
 import com.android.systemui.keyguard.domain.interactor.KeyguardTransitionBootInteractor;
@@ -69,6 +68,7 @@ import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.DisplayTrackerImpl;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.ShadeController;
+import com.android.systemui.shade.data.repository.ShadeDisplaysRepository;
 import com.android.systemui.statusbar.NotificationShadeDepthController;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
 import com.android.systemui.statusbar.SysuiStatusBarStateController;
@@ -94,21 +94,23 @@ import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
 
 import kotlinx.coroutines.CoroutineDispatcher;
+import kotlinx.coroutines.CoroutineScope;
 
 import java.util.concurrent.Executor;
+
+import javax.inject.Provider;
 
 /**
  * Dagger Module providing keyguard.
  */
 @Module(subcomponents = {
-        KeyguardQsUserSwitchComponent.class,
-        KeyguardStatusBarViewComponent.class,
-        KeyguardStatusViewComponent.class,
-        KeyguardUserSwitcherComponent.class},
+        KeyguardStatusBarViewComponent.class
+        },
         includes = {
                 FalsingModule.class,
                 KeyguardFaceAuthNotSupportedModule.class,
                 KeyguardRepositoryModule.class,
+                PrimaryBouncerTransitionModule.class,
                 StartKeyguardTransitionModule.class,
         })
 public interface CarKeyguardModule {
@@ -240,13 +242,16 @@ public interface CarKeyguardModule {
             KeyguardDisplayManager.DeviceStateHelper deviceStateHelper,
             KeyguardStateController keyguardStateController,
             ConnectedDisplayKeyguardPresentation.Factory
-                    connectedDisplayKeyguardPresentationFactory) {
+                    connectedDisplayKeyguardPresentationFactory,
+            Provider<ShadeDisplaysRepository> shadeDisplaysRepositoryProvider,
+            @Application CoroutineScope appScope) {
         DisplayTracker finalDisplayTracker =
                 CarSystemUIUserUtil.isDriverMUMDSystemUI() ? displayTrackerImpl.get()
                         : defaultDisplayTracker;
         return new CarKeyguardDisplayManager(context, navigationBarControllerLazy,
                 finalDisplayTracker, mainExecutor, uiBgExecutor, deviceStateHelper,
-                keyguardStateController, connectedDisplayKeyguardPresentationFactory);
+                keyguardStateController, connectedDisplayKeyguardPresentationFactory,
+                shadeDisplaysRepositoryProvider, appScope);
     }
 
     /** Binds {@link KeyguardUpdateMonitor} as a {@link CoreStartable}. */

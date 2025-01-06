@@ -33,8 +33,8 @@ carsystemui_srcs = [
     ":statslog-carsystemui-java-gen",
 ]
 
-android_library {
-    name: "CarSystemUI-core",
+java_defaults {
+    name: "CarSystemUI-core-defaults",
 
     srcs: carsystemui_srcs,
 
@@ -85,6 +85,17 @@ android_library {
         "android.car",
     ],
 
+    // TODO(b/319708040): re-enable use_resource_processor
+    use_resource_processor: false,
+}
+
+android_library {
+    name: "CarSystemUI-core",
+
+    defaults: [
+        "CarSystemUI-core-defaults",
+    ],
+
     aaptflags: [
         "--no-resource-deduping",
     ],
@@ -96,7 +107,6 @@ android_library {
     plugins: ["dagger2-compiler"],
     // TODO(b/319708040): re-enable use_resource_processor
     use_resource_processor: false,
-
 }
 
 android_app {
@@ -156,36 +166,49 @@ android_app {
     use_resource_processor: false,
 }
 
-// Resource lib
-// To be used ONLY for RROs of CarSystemUI
-android_library {
-    name: "CarSystemUI-res",
-    sdk_version: "system_current",
-    resource_dirs: [
-        "res-keyguard",
-        "res",
-    ],
-    manifest: "AndroidManifest-res.xml",
-    use_resource_processor: true,
-    static_libs: [
-        "SystemUI-res",
-        "CarNotification-res",
-        "car-resource-common",
-        "car-ui-lib-no-overlayable",
-    ],
-    lint: {
-        disabled_checks: ["MissingClass"],
-    },
+// Begin daggervis
+
+// Dropped from google3/java/com/google/android/libraries/docs/inject/daggerplugin/dot
+java_import_host {
+    name: "car-systemui-binding-graph-plugin-jar",
+    jars: ["daggervis/libdagger_binding_graph_plugin_lib.jar"],
 }
+
+// A java SPI plugin to visualize dagger dependency graph.
+java_plugin {
+    name: "car-systemui-binding-graph-plugin",
+    static_libs: [
+        "car-systemui-binding-graph-plugin-jar",
+        "dagger2-compiler-lib",
+        "auto_service_annotations",
+        "auto_value_annotations",
+        "auto_value_memoized_extension_annotations",
+    ],
+    processor_class: "dagger.internal.codegen.ComponentProcessor",
+}
+
+android_library {
+    name: "CarSystemUI-core-daggervis",
+    defaults: [
+        "CarSystemUI-core-defaults",
+    ],
+    plugins: [
+        "car-systemui-binding-graph-plugin",
+        "dagger2-compiler",
+    ],
+}
+
+// End daggervis
 
 android_library {
     name: "CarSystemUI-tests-base",
     manifest: "tests/AndroidManifest-base.xml",
     resource_dirs: [
         "tests/res",
+        "res-keyguard",
+        "res",
     ],
     static_libs: [
-        "CarSystemUI-res",
         "SystemUI-tests-base",
         "CarNotificationLib",
         "android.car.test.utils",
@@ -328,7 +351,6 @@ android_ravenwood_test {
     ],
     static_libs: [
         "CarSystemUI-core",
-        "CarSystemUI-res",
         "CarSystemUI-tests-base",
         "androidx.test.uiautomator_uiautomator",
         "androidx.core_core-animation-testing",

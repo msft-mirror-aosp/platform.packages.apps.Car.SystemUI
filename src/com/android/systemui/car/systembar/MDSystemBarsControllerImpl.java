@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.systembar;
 
+import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.content.ComponentName;
 import android.content.Context;
@@ -290,7 +291,8 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
         }
 
         @Override
-        public void setImeInputTargetRequestedVisibility(boolean visible) {
+        public void setImeInputTargetRequestedVisibility(boolean visible,
+                @NonNull ImeTracker.Token statsToken) {
             //no-op
         }
     }

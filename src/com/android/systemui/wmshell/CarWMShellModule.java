@@ -37,6 +37,7 @@ import com.android.wm.shell.recents.RecentTasksController;
 import com.android.wm.shell.sysui.ShellInit;
 import com.android.wm.shell.taskview.TaskViewTransitions;
 import com.android.wm.shell.windowdecor.WindowDecorViewModel;
+import com.android.wm.shell.automotive.AutoShellModule;
 
 import dagger.BindsOptionalOf;
 import dagger.Module;
@@ -45,7 +46,7 @@ import dagger.Provides;
 import java.util.Optional;
 
 /** Provides dependencies from {@link com.android.wm.shell} for CarSystemUI. */
-@Module(includes = WMShellBaseModule.class)
+@Module(includes = {WMShellBaseModule.class, AutoShellModule.class})
 public abstract class CarWMShellModule {
 
     @WMSingleton

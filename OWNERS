@@ -12,3 +12,10 @@ mankoff@google.com
 pixel@google.com
 dsandler@android.com
 adamcohen@google.com
+
+include platform/packages/apps/Car/SystemUI:main:/OWNERS
+
+# AAOS Partner Engineering Approvers
+per-file res/*=alainv@google.com,chriselliott@google.com,nirajdesai@google.com
+per-file src/com/android/systemui/car/displaycompat/*=alainv@google.com,chriselliott@google.com,nirajdesai@google.com
+per-file src/com/android/systemui/car/systembar/CarAppFloatingButtonManager.java=alainv@google.com,chriselliott@google.com,nirajdesai@google.com

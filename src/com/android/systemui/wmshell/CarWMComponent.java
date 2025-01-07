@@ -21,6 +21,7 @@ import com.android.systemui.car.wm.displayarea.DaViewTransitions;
 import com.android.systemui.car.wm.taskview.RemoteCarTaskViewTransitions;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
+import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.dagger.WMComponent;
 import com.android.wm.shell.dagger.WMSingleton;
 
@@ -60,10 +61,14 @@ public interface CarWMComponent extends WMComponent {
     @WMSingleton
     RemoteCarTaskViewTransitions getRemoteCarTaskViewTransitions();
 
-    /**
-     * Provides the {@link DaViewTransitions}
-     * used to animate DaViews.
-     */
+    /** Provides the {@link DaViewTransitions} used to animate DaViews. */
     @WMSingleton
     DaViewTransitions getDaViewTransitions();
+
+    /**
+     * Provides the {@link AutoTaskStackController} used to implement custom
+     * windowing behavior.
+     */
+    @WMSingleton
+    AutoTaskStackController getAutoTaskStackController();
 }

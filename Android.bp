@@ -332,7 +332,6 @@ android_robolectric_test {
         "truth",
     ],
 
-    upstream: true,
 
     instrumentation_for: "CarSystemUIRobo-stub",
     java_resource_dirs: ["tests/robolectric/config"],

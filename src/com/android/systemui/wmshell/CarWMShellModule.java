@@ -47,6 +47,7 @@ import com.android.wm.shell.windowdecor.WindowDecorViewModel;
 import com.android.wm.shell.windowdecor.common.viewhost.DefaultWindowDecorViewHostSupplier;
 import com.android.wm.shell.windowdecor.common.viewhost.WindowDecorViewHost;
 import com.android.wm.shell.windowdecor.common.viewhost.WindowDecorViewHostSupplier;
+import com.android.wm.shell.automotive.AutoShellModule;
 
 import dagger.BindsOptionalOf;
 import dagger.Module;
@@ -57,7 +58,7 @@ import kotlinx.coroutines.CoroutineScope;
 import java.util.Optional;
 
 /** Provides dependencies from {@link com.android.wm.shell} for CarSystemUI. */
-@Module(includes = WMShellBaseModule.class)
+@Module(includes = {WMShellBaseModule.class, AutoShellModule.class})
 public abstract class CarWMShellModule {
 
     @WMSingleton

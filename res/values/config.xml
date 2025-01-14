@@ -293,4 +293,15 @@
     -->
     <string-array name="config_debug_support_devices_exclude_car">
     </string-array>
+
+    <!-- Determines whether to show the display compatibility toolbar. -->
+    <!-- 0 disabled -->
+    <!-- 1 enabled -->
+    <integer name="config_showDisplayCompatToolbar">1</integer>
+
+    <!-- Determines whether to show the display compatibility toolbar on System Bar -->
+    <!-- 0 disabled -->
+    <!-- 1 enabled -->
+    <integer name="config_showDisplayCompatToolbarOnSystemBar">0</integer>
+
 </resources>

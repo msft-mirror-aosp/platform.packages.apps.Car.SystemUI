@@ -487,4 +487,6 @@
     <!-- Dimensions for passenger keyguard -->
     <dimen name="passenger_keyguard_lockpattern_width">350dp</dimen>
     <dimen name="passenger_keyguard_lockpattern_height">350dp</dimen>
+
+    <dimen name="freeform_decor_caption_height">68dp</dimen>
 </resources>

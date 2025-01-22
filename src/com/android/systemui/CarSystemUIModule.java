@@ -40,6 +40,7 @@ import com.android.systemui.car.statusbar.DozeServiceHost;
 import com.android.systemui.car.users.CarMultiUserUtilsModule;
 import com.android.systemui.car.volume.CarVolumeModule;
 import com.android.systemui.car.wm.activity.window.ActivityWindowModule;
+import com.android.systemui.communal.posturing.dagger.NoopPosturingModule;
 import com.android.systemui.dagger.GlobalRootComponent;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -103,6 +104,7 @@ import javax.inject.Named;
                 MediaMuteAwaitConnectionCli.StartableModule.class,
                 NearbyMediaDevicesManager.StartableModule.class,
                 NoopNavigationBarControllerModule.class,
+                NoopPosturingModule.class,
                 NoopWallpaperModule.class,
                 PowerModule.class,
                 QSModule.class,

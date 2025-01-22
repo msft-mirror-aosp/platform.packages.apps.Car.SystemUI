@@ -28,6 +28,7 @@ import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.ShellTaskOrganizer;
+import com.android.wm.shell.automotive.AutoShellModule;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.common.ShellExecutor;
@@ -47,7 +48,6 @@ import com.android.wm.shell.windowdecor.WindowDecorViewModel;
 import com.android.wm.shell.windowdecor.common.viewhost.DefaultWindowDecorViewHostSupplier;
 import com.android.wm.shell.windowdecor.common.viewhost.WindowDecorViewHost;
 import com.android.wm.shell.windowdecor.common.viewhost.WindowDecorViewHostSupplier;
-import com.android.wm.shell.automotive.AutoShellModule;
 
 import dagger.BindsOptionalOf;
 import dagger.Module;
@@ -111,6 +111,7 @@ public abstract class CarWMShellModule {
             ShellInit shellInit,
             ShellTaskOrganizer taskOrganizer,
             DisplayController displayController,
+            DisplayInsetsController displayInsetsController,
             SyncTransactionQueue syncQueue,
             FocusTransitionObserver focusTransitionObserver,
             WindowDecorViewHostSupplier<WindowDecorViewHost> windowDecorViewHostSupplier,
@@ -123,6 +124,7 @@ public abstract class CarWMShellModule {
                 shellInit,
                 taskOrganizer,
                 displayController,
+                displayInsetsController,
                 syncQueue,
                 focusTransitionObserver,
                 windowDecorViewHostSupplier,

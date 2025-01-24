@@ -20,16 +20,21 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.IWindowManager;
 
+import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.taskview.CarFullscreenTaskMonitorListener;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
+import com.android.systemui.car.wm.AutoDisplayCompatWindowDecorViewModel;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.systemui.wm.MDSystemBarsController;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
+import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.common.SyncTransactionQueue;
+import com.android.wm.shell.common.annotations.ShellBackgroundThread;
+import com.android.wm.shell.common.annotations.ShellMainThread;
 import com.android.wm.shell.dagger.DynamicOverride;
 import com.android.wm.shell.dagger.WMShellBaseModule;
 import com.android.wm.shell.dagger.WMSingleton;
@@ -39,13 +44,15 @@ import com.android.wm.shell.recents.RecentTasksController;
 import com.android.wm.shell.sysui.ShellInit;
 import com.android.wm.shell.windowdecor.WindowDecorViewModel;
 
-import java.util.Optional;
-
 import dagger.BindsOptionalOf;
 import dagger.Module;
 import dagger.Provides;
 
-/** Provides dependencies from {@link com.android.wm.shell} for CarSystemUI. */
+import java.util.Optional;
+
+/**
+ * Provides dependencies from {@link com.android.wm.shell} for CarSystemUI.
+ */
 @Module(includes = WMShellBaseModule.class)
 public abstract class CarWMShellModule {
 
@@ -92,5 +99,32 @@ public abstract class CarWMShellModule {
                 syncQueue,
                 recentTasksOptional,
                 windowDecorViewModelOptional);
+    }
+
+    @WMSingleton
+    @Provides
+    static WindowDecorViewModel provideWindowDecorViewModel(
+            Context context,
+            @ShellMainThread ShellExecutor mainExecutor,
+            @ShellBackgroundThread ShellExecutor bgExecutor,
+            ShellTaskOrganizer taskOrganizer,
+            DisplayController displayController,
+            DisplayInsetsController displayInsetsController,
+            SyncTransactionQueue syncQueue,
+            CarServiceProvider carServiceProvider) {
+        if (context.getResources()
+                .getInteger(R.integer.config_showDisplayCompatWindowDecoration) == 0) {
+            return null;
+        } else {
+            return new AutoDisplayCompatWindowDecorViewModel(
+                    context,
+                    mainExecutor,
+                    bgExecutor,
+                    taskOrganizer,
+                    displayController,
+                    displayInsetsController,
+                    syncQueue,
+                    carServiceProvider);
+        }
     }
 }

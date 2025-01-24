@@ -23,14 +23,16 @@ import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
 import android.car.app.CarActivityManager;
-import android.content.Context;
 import android.graphics.Rect;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.SmallTest;
 
+import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
 import com.android.wm.shell.automotive.RootTaskStack;
@@ -38,32 +40,38 @@ import com.android.wm.shell.automotive.RootTaskStack;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
+@CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
-public class TaskPanelTest {
+@SmallTest
+public class TaskPanelTest extends SysuiTestCase {
     private static final String TASK_PANEL_ID = "TASK_PANEL_ID";
 
-    private Context mContext;
-    private AutoTaskStackController mAutoTaskStackController;
-    private CarServiceProvider mCarServiceProvider;
-    private AutoTaskStackHelper mAutoTaskStackHelper;
-    private TaskPanel.Factory mFactory;
     private TaskPanel mTaskPanel;
+
+    @Mock
+    private AutoTaskStackController mAutoTaskStackController;
+    @Mock
+    private CarServiceProvider mCarServiceProvider;
+    @Mock
+    private AutoTaskStackHelper mAutoTaskStackHelper;
+    @Mock
+    private EventDispatcher mEventDispatcher;
+    @Mock
+    private TaskPanel.Factory mFactory;
+    @Mock
     private RootTaskStack mRootTaskStack;
+    @Mock
     private CarActivityManager mCarActivityManager;
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
-        mAutoTaskStackController = mock(AutoTaskStackController.class);
-        mCarServiceProvider = mock(CarServiceProvider.class);
-        mAutoTaskStackHelper = mock(AutoTaskStackHelper.class);
-        mFactory = mock(TaskPanel.Factory.class);
+        MockitoAnnotations.initMocks(this);
         mTaskPanel = new TaskPanel(mAutoTaskStackController, mContext, mCarServiceProvider,
-                mAutoTaskStackHelper, TASK_PANEL_ID);
+                mAutoTaskStackHelper, mEventDispatcher, TASK_PANEL_ID);
         when(mFactory.create(any())).thenReturn(mTaskPanel);
-        mRootTaskStack = mock(RootTaskStack.class);
-        mCarActivityManager = mock(CarActivityManager.class);
     }
 
     @Test

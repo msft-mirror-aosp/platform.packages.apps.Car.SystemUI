@@ -35,6 +35,7 @@ import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -77,6 +78,7 @@ public class TaskPanel implements Panel {
     public TaskPanel(AutoTaskStackController autoTaskStackController, @NonNull Context context,
             CarServiceProvider carServiceProvider,
             AutoTaskStackHelper autoTaskStackHelper,
+            EventDispatcher dispatcher,
             @Assisted String id) {
         mAutoTaskStackController = autoTaskStackController;
         mCarServiceProvider = carServiceProvider;
@@ -220,6 +222,24 @@ public class TaskPanel implements Panel {
 
     public void setLeash(SurfaceControl leash) {
         mLeash = leash;
+    }
+
+    /**
+     * Return the Role task string associated with this panel
+     * TODO: finalize role API and potentially remove
+     */
+    public String getRoleTask() {
+        if (mRole == 0) {
+            return null;
+        }
+        return mContext.getResources().getString(mRole);
+    }
+
+    /**
+     * Return whether this panel is the launch root panel.
+     */
+    public boolean getIsLaunchRoot() {
+        return mIsLaunchRoot;
     }
 
     public List<ComponentName> getPersistedActivities() {

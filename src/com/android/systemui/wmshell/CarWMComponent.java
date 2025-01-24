@@ -17,6 +17,7 @@
 package com.android.systemui.wmshell;
 
 import com.android.systemui.car.wm.CarSystemUIProxyImpl;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.taskview.RemoteCarTaskViewTransitions;
 import com.android.systemui.dagger.WMComponent;
@@ -75,4 +76,8 @@ public interface CarWMComponent extends WMComponent {
      */
     @WMSingleton
     Optional<ScalableUIWMInitializer> getScalableUIWMInitializer();
+
+    /** Provides the {@link EventDispatcher} used to dispatch ScalableUI events. */
+    @WMSingleton
+    EventDispatcher getScalableUIEventDispatcher();
 }

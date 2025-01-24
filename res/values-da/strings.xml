@@ -120,7 +120,7 @@
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Forkert mønster"</string>
     <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Forkert pinkode"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Forkert adgangskode"</string>
-    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{For mange forkerte forsøg. Prøv igen om # sekund.}one{For mange forkerte forsøg. Prøv igen om # sekund.}other{For mange forkerte forsøg. Prøv igen om # sekunder.}}"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{For mange mislykkede forsøg. Prøv igen om # sekund.}one{For mange mislykkede forsøg. Prøv igen om # sekund.}other{For mange mislykkede forsøg. Prøv igen om # sekunder.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"chauffør"</string>
     <string name="seat_front" msgid="836133281052793377">"forside"</string>
     <string name="seat_rear" msgid="403133444964528577">"bagside"</string>

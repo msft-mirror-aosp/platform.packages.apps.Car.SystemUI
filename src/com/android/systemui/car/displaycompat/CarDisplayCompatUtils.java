@@ -52,18 +52,20 @@ public class CarDisplayCompatUtils {
     @RequiresPermission(allOf = {PERMISSION_MANAGE_DISPLAY_COMPATIBILITY,
             android.Manifest.permission.QUERY_ALL_PACKAGES})
     public static boolean requiresDisplayCompat(
-            String packageName, int userId, @Nullable CarPackageManager carPackageManager) {
+            @Nullable String packageName, int userId,
+            @Nullable CarPackageManager carPackageManager) {
+        if (packageName == null) {
+            return false;
+        }
+        if (carPackageManager == null) {
+            return false;
+        }
         boolean result = false;
-        if (carPackageManager != null) {
-            try {
-                result = carPackageManager.requiresDisplayCompatForUser(packageName, userId);
-            } catch (PackageManager.NameNotFoundException e) {
-                Log.v(TAG, e.toString());
-            }
-        } else {
-            Log.w(TAG, "CarPackageManager is not set");
+        try {
+            result = carPackageManager.requiresDisplayCompatForUser(packageName, userId);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.v(TAG, e.toString());
         }
         return result;
     }
-
 }

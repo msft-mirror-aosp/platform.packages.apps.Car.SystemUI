@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 
 import android.animation.Animator;
 import android.app.ActivityManager;
-import android.content.Context;
+import android.content.Intent;
 import android.os.IBinder;
 import android.view.SurfaceControl;
 import android.window.TransitionInfo;
@@ -47,6 +47,8 @@ import com.android.wm.shell.transition.Transitions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,20 +58,24 @@ import java.util.Map;
 @SmallTest
 public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCase {
 
-    private Context mContext;
-    private AutoTaskStackController mAutoTaskStackController;
-    private TaskPanelAnimationRunner mTaskPanelAnimationRunner;
     private PanelAutoTaskStackTransitionHandlerDelegate mDelegate;
+
+    @Mock
+    private AutoTaskStackController mAutoTaskStackController;
+    @Mock
+    private TaskPanelAnimationRunner mTaskPanelAnimationRunner;
+    @Mock
+    private AutoTaskStackHelper mAutoTaskStackHelper;
+    @Mock
     private Transitions.TransitionFinishCallback mFinishCallback;
 
     @Before
     public void setUp() {
-        mContext = getContext();
-        mAutoTaskStackController = mock(AutoTaskStackController.class);
-        mTaskPanelAnimationRunner = mock(TaskPanelAnimationRunner.class);
-        mDelegate = new PanelAutoTaskStackTransitionHandlerDelegate(
-                mContext, mAutoTaskStackController, mTaskPanelAnimationRunner);
-        mFinishCallback = mock(Transitions.TransitionFinishCallback.class);
+        MockitoAnnotations.initMocks(this);
+        when(mAutoTaskStackHelper.getAutoTaskStackTransaction(any())).thenReturn(
+                new AutoTaskStackTransaction());
+        mDelegate = new PanelAutoTaskStackTransitionHandlerDelegate(mContext,
+                mAutoTaskStackController, mAutoTaskStackHelper, mTaskPanelAnimationRunner);
     }
 
     @Test
@@ -77,6 +83,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
         TransitionRequestInfo request = mock(TransitionRequestInfo.class);
         ActivityManager.RunningTaskInfo taskInfo = new ActivityManager.RunningTaskInfo();
         taskInfo.topActivityType = ACTIVITY_TYPE_HOME;
+        taskInfo.baseIntent = new Intent();
+        taskInfo.baseIntent.addCategory(Intent.CATEGORY_HOME);
         when(request.getType()).thenReturn(TRANSIT_OPEN);
         when(request.getTriggerTask()).thenReturn(taskInfo);
 
@@ -104,7 +112,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
         SurfaceControl.Transaction finishTransaction = mock(SurfaceControl.Transaction.class);
         Map<String, Animator> pendingAnimators = new HashMap<>();
         pendingAnimators.put("testAnimator", mock(Animator.class));
-        mDelegate.mPendingAnimators.putAll(pendingAnimators);
+        when(mAutoTaskStackHelper.getPendingAnimators()).thenReturn(pendingAnimators);
 
         boolean result = mDelegate.startAnimation(
                 mock(IBinder.class),

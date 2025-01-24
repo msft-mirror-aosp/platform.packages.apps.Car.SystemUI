@@ -16,6 +16,7 @@
 
 package com.android.systemui;
 
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.dagger.DependencyProvider;
 import com.android.systemui.dagger.SysUIComponent;
@@ -56,6 +57,12 @@ public interface CarSysUIComponent extends SysUIComponent {
          */
         @BindsInstance
         Builder setScalableUIWMInitializer(Optional<ScalableUIWMInitializer> initializer);
+
+        /**
+         * Sets the ScalableUI {@link EventDispatcher} for the builder.
+         */
+        @BindsInstance
+        Builder setScalableUIEventDispatcher(EventDispatcher dispatcher);
 
         CarSysUIComponent build();
     }

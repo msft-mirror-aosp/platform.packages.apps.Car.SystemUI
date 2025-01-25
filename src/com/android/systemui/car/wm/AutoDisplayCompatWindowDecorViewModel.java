@@ -29,8 +29,11 @@ import android.content.Context;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.common.DisplayController;
+import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.common.SyncTransactionQueue;
+import com.android.wm.shell.shared.annotations.ShellBackgroundThread;
+import com.android.wm.shell.shared.annotations.ShellMainThread;
 import com.android.wm.shell.sysui.ShellInit;
 import com.android.wm.shell.transition.FocusTransitionObserver;
 import com.android.wm.shell.windowdecor.CarWindowDecorViewModel;
@@ -42,24 +45,25 @@ public class AutoDisplayCompatWindowDecorViewModel extends CarWindowDecorViewMod
     private CarPackageManager mCarPackageManager;
 
     public AutoDisplayCompatWindowDecorViewModel(Context context,
-            ShellExecutor bgExecutor,
-            ShellExecutor shellExecutor,
+            @ShellMainThread ShellExecutor mainExecutor,
+            @ShellBackgroundThread ShellExecutor bgExecutor,
             ShellInit shellInit,
             ShellTaskOrganizer taskOrganizer,
             DisplayController displayController,
+            DisplayInsetsController displayInsetsController,
             SyncTransactionQueue syncQueue,
             FocusTransitionObserver focusTransitionObserver,
             WindowDecorViewHostSupplier<WindowDecorViewHost> windowDecorViewHostSupplier,
             CarServiceProvider carServiceProvider) {
-        super(context, bgExecutor, shellExecutor, shellInit, taskOrganizer, displayController,
-                syncQueue, focusTransitionObserver, windowDecorViewHostSupplier);
+        super(context, mainExecutor, bgExecutor, shellInit, taskOrganizer, displayController,
+                displayInsetsController, syncQueue, focusTransitionObserver,
+                windowDecorViewHostSupplier);
         carServiceProvider.addListener(
                 car -> mCarPackageManager = car.getCarManager(CarPackageManager.class));
     }
 
     @Override
     protected boolean shouldShowWindowDecor(ActivityManager.RunningTaskInfo taskInfo) {
-        // TODO(b/382070861): check if the top activity belongs to AE app
         return displayCompatibilityCaptionBar()
                 && requiresDisplayCompat(
                 getPackageName(taskInfo), taskInfo.userId, mCarPackageManager)

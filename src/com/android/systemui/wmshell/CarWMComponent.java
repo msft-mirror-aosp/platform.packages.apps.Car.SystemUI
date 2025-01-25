@@ -18,6 +18,7 @@ package com.android.systemui.wmshell;
 
 import com.android.systemui.car.wm.CarSystemUIProxyImpl;
 import com.android.systemui.car.wm.displayarea.DaViewTransitions;
+import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.taskview.RemoteCarTaskViewTransitions;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
@@ -26,6 +27,8 @@ import com.android.wm.shell.dagger.WMComponent;
 import com.android.wm.shell.dagger.WMSingleton;
 
 import dagger.Subcomponent;
+
+import java.util.Optional;
 
 /**
  * Dagger Subcomponent for WindowManager.
@@ -71,4 +74,10 @@ public interface CarWMComponent extends WMComponent {
      */
     @WMSingleton
     AutoTaskStackController getAutoTaskStackController();
+
+    /**
+     * Optional {@link ScalableUIWMInitializer} component for initializing scalable ui
+     */
+    @WMSingleton
+    Optional<ScalableUIWMInitializer> getScalableUIWMInitializer();
 }

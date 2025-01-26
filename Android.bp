@@ -200,6 +200,9 @@ android_library {
         "src/**/*.kt",
         "src/**/I*.aidl",
     ],
+
+    kotlin_lang_version: "1.9",
+
     static_libs: [
         "SystemUI-tests",
         "CarSystemUI-tests-base",

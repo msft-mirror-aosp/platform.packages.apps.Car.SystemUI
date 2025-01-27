@@ -17,6 +17,7 @@
 package com.android.systemui.wmshell;
 
 import static com.android.systemui.car.Flags.scalableUi;
+import static com.android.wm.shell.Flags.enableAutoTaskStackController;
 
 import android.content.Context;
 import android.os.Handler;
@@ -57,6 +58,7 @@ import com.android.wm.shell.windowdecor.common.viewhost.WindowDecorViewHost;
 import com.android.wm.shell.windowdecor.common.viewhost.WindowDecorViewHostSupplier;
 
 import dagger.BindsOptionalOf;
+import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 
@@ -157,16 +159,17 @@ public abstract class CarWMShellModule {
     static Optional<ScalableUIWMInitializer> provideScalableUIInitializer(ShellInit shellInit,
             Context context,
             Optional<PanelConfigReader> panelConfigReaderOptional,
-            PanelAutoTaskStackTransitionHandlerDelegate delegate) {
+            Lazy<PanelAutoTaskStackTransitionHandlerDelegate> delegate) {
         if (isScalableUIEnabled(context) && panelConfigReaderOptional.isPresent()) {
             return Optional.of(
                     new ScalableUIWMInitializer(shellInit, panelConfigReaderOptional.get(),
-                            delegate));
+                            delegate.get()));
         }
         return Optional.empty();
     }
 
     private static boolean isScalableUIEnabled(Context context) {
-        return scalableUi() && context.getResources().getBoolean(R.bool.config_enableScalableUI);
+        return scalableUi() && enableAutoTaskStackController()
+                && context.getResources().getBoolean(R.bool.config_enableScalableUI);
     }
 }

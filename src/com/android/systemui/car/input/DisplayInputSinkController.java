@@ -107,6 +107,7 @@ public final class DisplayInputSinkController implements CoreStartable {
         @MainThread
         public void onDisplayAdded(int displayId) {
             mayUpdatePassengerDisplayOnAdded(displayId);
+            fetchCurrentDisplayInputLockSetting();
             refreshDisplayInputSink(displayId, "onDisplayAdded");
         }
 
@@ -241,13 +242,17 @@ public final class DisplayInputSinkController implements CoreStartable {
     // Start/stop display input locks from the current global setting.
     @VisibleForTesting
     void refreshDisplayInputLockSetting() {
+        fetchCurrentDisplayInputLockSetting();
+        for (int i = mPassengerDisplays.size() - 1; i >= 0; --i) {
+            decideDisplayInputSink(i);
+        }
+    }
+
+    private void fetchCurrentDisplayInputLockSetting() {
         String settingValue = getDisplayInputLockSettingValue();
         parseDisplayInputLockSettingValue(CarSettings.Global.DISPLAY_INPUT_LOCK, settingValue);
         if (DBG) {
-            Slog.d(TAG, "refreshDisplayInputLock: settingValue=" + settingValue);
-        }
-        for (int i = mPassengerDisplays.size() - 1; i >= 0; --i) {
-            decideDisplayInputSink(i);
+            Slog.d(TAG, "Display input lock: settingValue=" + settingValue);
         }
     }
 

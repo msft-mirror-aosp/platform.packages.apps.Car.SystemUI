@@ -68,6 +68,7 @@ android_library {
         "CarDockLib",
         "androidx.test.rules",
         "car-data-subscription-lib",
+        "Car-WindowManager-Shell",
     ],
 
     libs: [
@@ -185,6 +186,7 @@ android_library {
         "car-data-subscription-lib",
         "testng",
         "//external/kotlinc:kotlin-annotations",
+        "Car-WindowManager-Shell",
     ],
 }
 

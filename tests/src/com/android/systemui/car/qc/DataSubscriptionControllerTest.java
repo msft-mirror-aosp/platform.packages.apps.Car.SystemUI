@@ -23,6 +23,8 @@ import static com.android.car.datasubscription.Flags.FLAG_DATA_SUBSCRIPTION_POP_
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -55,10 +57,13 @@ import android.widget.PopupWindow;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.datasubscription.DataSubscription;
+import com.android.car.datasubscription.DataSubscriptionStatus;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
+import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.settings.UserTracker;
+import com.android.systemui.util.FakeSharedPreferences;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -101,6 +106,7 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
     private Executor mExecutor;
     @Mock
     private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
+    private final FakeSharedPreferences mSharedPreferences = new FakeSharedPreferences();
     private MockitoSession mMockingSession;
     private ActivityManager.RunningTaskInfo mRunningTaskInfoMock;
     private DataSubscriptionController mController;
@@ -121,6 +127,7 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
         mController.setSubscription(mDataSubscription);
         mController.setPopupWindow(mPopupWindow);
         mController.setConnectivityManager(mConnectivityManager);
+        mController.setSharedPreference(mSharedPreferences);
         mRunningTaskInfoMock = new ActivityManager.RunningTaskInfo();
         mRunningTaskInfoMock.topActivity = new ComponentName("testPkgName", "testClassName");
         mRunningTaskInfoMock.taskId = 1;
@@ -137,15 +144,128 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
 
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
     @Test
-    public void setAnchorView_viewNotNull_popUpDisplay() {
+    public void updateShouldDisplayProactiveMsg_noCachedTimeInterval_popUpDisplay() {
+        mSharedPreferences.edit().putString(DataSubscriptionController.KEY_PREV_POPUP_DATE,
+                "2025-01-15");
         when(mPopupWindow.isShowing()).thenReturn(false);
         when(mDataSubscription.isDataSubscriptionInactive()).thenReturn(true);
 
-        mController.setAnchorView(mAnchorView);
+        mController.setWasProactiveMsgDisplayed(false);
+        mController.setCurrentInterval(mContext.getResources()
+                .getInteger(R.integer.data_subscription_pop_up_frequency) + 1);
 
-        verify(mDataSubscription).addDataSubscriptionListener(any());
-        verify(mCarUxRestrictionsUtil).register(any());
-        verify(mAnchorView).post(any());
+        mController.updateShouldDisplayProactiveMsg();
+
+        assertTrue(mController.getShouldDisplayProactiveMsg());
+    }
+
+    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
+    @Test
+    public void updateShouldDisplayProactiveMsg_allConfigsAreValid_popUpDisplay() {
+        mSharedPreferences.edit().putString(DataSubscriptionController.KEY_PREV_POPUP_DATE,
+                "2025-01-15");
+        when(mPopupWindow.isShowing()).thenReturn(false);
+        when(mDataSubscription.isDataSubscriptionInactive()).thenReturn(true);
+
+        mController.setWasProactiveMsgDisplayed(false);
+        mController.setCurrentInterval(mContext.getResources()
+                .getInteger(R.integer.data_subscription_pop_up_frequency));
+        mController.setCurrentCycle(mContext.getResources()
+                .getInteger(R.integer.data_subscription_pop_up_startup_cycle_limit));
+        mController.setCurrentActiveDays(mContext.getResources()
+                .getInteger(R.integer.data_subscription_pop_up_active_days_limit));
+
+        mController.updateShouldDisplayProactiveMsg();
+
+        assertTrue(mController.getShouldDisplayProactiveMsg());
+    }
+
+    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
+    @Test
+    public void updateShouldDisplayProactiveMsg_invalidTimeInterval_popUpNotDisplay() {
+        mSharedPreferences.edit().putString(DataSubscriptionController.KEY_PREV_POPUP_DATE,
+                "2025-01-15");
+        when(mPopupWindow.isShowing()).thenReturn(false);
+        when(mDataSubscription.isDataSubscriptionInactive()).thenReturn(true);
+
+        mController.setWasProactiveMsgDisplayed(false);
+        mController.setCurrentInterval(mContext.getResources()
+                .getInteger(R.integer.data_subscription_pop_up_frequency) - 1);
+        mController.setCurrentCycle(mContext.getResources()
+                .getInteger(R.integer.data_subscription_pop_up_startup_cycle_limit));
+
+        mController.updateShouldDisplayProactiveMsg();
+
+        assertFalse(mController.getShouldDisplayProactiveMsg());
+    }
+
+    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
+    @Test
+    public void updateShouldDisplayProactiveMsg_invalidCycle_popUpNotDisplay() {
+        mSharedPreferences.edit().putString(DataSubscriptionController.KEY_PREV_POPUP_DATE,
+                "2025-01-15");
+        when(mPopupWindow.isShowing()).thenReturn(false);
+        when(mDataSubscription.isDataSubscriptionInactive()).thenReturn(true);
+
+        mController.setWasProactiveMsgDisplayed(false);
+        mController.setCurrentInterval(mContext.getResources()
+                .getInteger(R.integer.data_subscription_pop_up_frequency));
+        mController.setCurrentCycle(mContext.getResources()
+                .getInteger(R.integer.data_subscription_pop_up_startup_cycle_limit));
+        mController.setCurrentCycle(mContext.getResources()
+                .getInteger(R.integer.data_subscription_pop_up_startup_cycle_limit) + 1);
+
+        mController.updateShouldDisplayProactiveMsg();
+
+        assertFalse(mController.getShouldDisplayProactiveMsg());
+    }
+
+    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
+    @Test
+    public void updateShouldDisplayProactiveMsg_invalidActiveDays_popUpNotDisplay() {
+        mSharedPreferences.edit().putString(DataSubscriptionController.KEY_PREV_POPUP_DATE,
+                "2025-01-15");
+        when(mPopupWindow.isShowing()).thenReturn(false);
+        when(mDataSubscription.isDataSubscriptionInactive()).thenReturn(true);
+        mController.setWasProactiveMsgDisplayed(false);
+        mController.setCurrentInterval(mContext.getResources()
+                .getInteger(R.integer.data_subscription_pop_up_frequency));
+        mController.setCurrentCycle(mContext.getResources()
+                .getInteger(R.integer.data_subscription_pop_up_startup_cycle_limit) + 1);
+
+        mController.updateShouldDisplayProactiveMsg();
+
+        assertFalse(mController.getShouldDisplayProactiveMsg());
+    }
+
+    @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
+    @Test
+    public void updateShouldDisplayProactiveMsg_resetStatus_popUpDisplay() {
+        mSharedPreferences.edit().putString(DataSubscriptionController.KEY_PREV_POPUP_DATE,
+                "2025-01-15");
+        when(mPopupWindow.isShowing()).thenReturn(false);
+        when(mDataSubscription.isDataSubscriptionInactive()).thenReturn(true);
+        mSharedPreferences.edit().putInt(DataSubscriptionController.KEY_PREV_POPUP_STATUS,
+                DataSubscriptionStatus.INACTIVE);
+
+        mController.setWasProactiveMsgDisplayed(false);
+        mController.setCurrentInterval(mContext.getResources()
+                .getInteger(R.integer.data_subscription_pop_up_frequency));
+        mController.setCurrentCycle(mContext.getResources()
+                .getInteger(R.integer.data_subscription_pop_up_startup_cycle_limit));
+        mController.setCurrentActiveDays(mContext.getResources()
+                .getInteger(R.integer.data_subscription_pop_up_active_days_limit) + 1);
+
+        mController.updateShouldDisplayProactiveMsg();
+
+        assertFalse(mController.getShouldDisplayProactiveMsg());
+
+        mSharedPreferences.edit().putInt(DataSubscriptionController.KEY_PREV_POPUP_STATUS,
+                DataSubscriptionStatus.PAID);
+
+        mController.setAnchorView(mAnchorView);
+        mController.updateShouldDisplayProactiveMsg();
+        assertTrue(mController.getShouldDisplayProactiveMsg());
     }
 
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
@@ -271,6 +391,8 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
         doReturn(mCarUxRestrictionsUtil).when(() -> CarUxRestrictionsUtil.getInstance(any()));
 
         when(mPopupWindow.isShowing()).thenReturn(true);
+        mSharedPreferences.edit().putString(DataSubscriptionController.KEY_PREV_POPUP_DATE,
+                "2025-01-15");
         ArgumentCaptor<CarUxRestrictionsUtil.OnUxRestrictionsChangedListener> captor =
                 ArgumentCaptor.forClass(
                         CarUxRestrictionsUtil.OnUxRestrictionsChangedListener.class);
@@ -292,6 +414,8 @@ public class DataSubscriptionControllerTest extends SysuiTestCase {
         doReturn(mCarUxRestrictionsUtil).when(() -> CarUxRestrictionsUtil.getInstance(any()));
 
         when(mPopupWindow.isShowing()).thenReturn(true);
+        mSharedPreferences.edit().putString(DataSubscriptionController.KEY_PREV_POPUP_DATE,
+                "2025-01-15");
         ArgumentCaptor<CarUxRestrictionsUtil.OnUxRestrictionsChangedListener> captor =
                 ArgumentCaptor.forClass(
                         CarUxRestrictionsUtil.OnUxRestrictionsChangedListener.class);

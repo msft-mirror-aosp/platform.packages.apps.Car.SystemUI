@@ -29,6 +29,7 @@ import android.window.TransitionRequestInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.manager.Event;
@@ -67,8 +68,10 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
 
     private final AutoTaskStackController mAutoTaskStackController;
     private final TaskPanelAnimationRunner mTaskPanelAnimationRunner;
-    private final HashMap<String, Animator> mPendingAnimators;
     private final Context mContext;
+
+    @VisibleForTesting
+    final HashMap<String, Animator> mPendingAnimators;
 
     @Inject
     public PanelAutoTaskStackTransitionHandlerDelegate(

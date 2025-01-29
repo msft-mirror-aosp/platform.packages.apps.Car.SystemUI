@@ -34,11 +34,13 @@ import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.taskview.TaskViewBase;
 import com.android.wm.shell.taskview.TaskViewTaskController;
+import com.android.wm.shell.windowdecor.WindowDecorViewModel;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A mediator to {@link RemoteCarTaskViewServerImpl} that encapsulates the root task related logic.
@@ -55,6 +57,7 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
     private final TaskViewBase mTaskViewClientPart;
     private final CarActivityManager mCarActivityManager;
     private final LinkedHashMap<Integer, TaskRecord> mTaskStack = new LinkedHashMap<>();
+    private final Optional<WindowDecorViewModel> mWindowDecorViewModelOptional;
 
     private static class TaskRecord {
         private ActivityManager.RunningTaskInfo mTaskInfo;
@@ -75,7 +78,8 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             TaskViewTaskController taskViewTaskShellPart,
             TaskViewBase taskViewClientPart,
             SyncTransactionQueue syncQueue,
-            CarActivityManager carActivityManager) {
+            CarActivityManager carActivityManager,
+            Optional<WindowDecorViewModel> windowDecorViewModelOptional) {
         mDisplayId = displayId;
         mIsLaunchRoot = isLaunchRoot;
         mActivityTypes = createActivityArray(embedHomeTask, embedRecentsTask, embedAssistantTask);
@@ -84,6 +88,7 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         mTaskViewClientPart = taskViewClientPart;
         mSyncQueue = syncQueue;
         mCarActivityManager = carActivityManager;
+        mWindowDecorViewModelOptional = windowDecorViewModelOptional;
 
         mShellTaskOrganizer.createRootTask(displayId,
                 WINDOWING_MODE_MULTI_WINDOW,
@@ -152,6 +157,13 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         if (mIsLaunchRoot) {
             mCarActivityManager.onTaskAppeared(taskInfo, leash);
         }
+
+        // Show WindowDecor for display compat apps
+        if (mWindowDecorViewModelOptional.isPresent()) {
+            SurfaceControl.Transaction t = new SurfaceControl.Transaction();
+            mWindowDecorViewModelOptional.get().onTaskOpening(taskInfo, leash, t, t);
+            t.apply();
+        }
     }
 
     @Override
@@ -175,6 +187,10 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             task.mTaskInfo = taskInfo;
             mTaskStack.put(taskInfo.taskId, task);
         }
+
+        if (mWindowDecorViewModelOptional.isPresent()) {
+            mWindowDecorViewModelOptional.get().onTaskInfoChanged(taskInfo);
+        }
     }
 
     @Override
@@ -192,6 +208,9 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             mCarActivityManager.onTaskVanished(taskInfo);
         }
         mTaskStack.remove(taskInfo.taskId);
+        if (mWindowDecorViewModelOptional.isPresent()) {
+            mWindowDecorViewModelOptional.get().destroyWindowDecoration(taskInfo);
+        }
     }
 
     @Override

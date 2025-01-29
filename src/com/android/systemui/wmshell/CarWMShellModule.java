@@ -20,11 +20,19 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.IWindowManager;
 
+import androidx.annotation.NonNull;
+
+import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
+import com.android.systemui.car.wm.scalableui.PanelAutoTaskStackTransitionHandlerDelegate;
+import com.android.systemui.car.wm.scalableui.PanelConfigReader;
+import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
+import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.ShellTaskOrganizer;
+import com.android.wm.shell.automotive.AutoShellModule;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.common.SyncTransactionQueue;
@@ -81,5 +89,37 @@ public abstract class CarWMShellModule {
                 recentTasksOptional,
                 windowDecorViewModelOptional,
                 taskViewTransitions);
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<PanelConfigReader> providesPanelConfigReader(
+            Context context,
+            TaskPanel.Factory taskPanelFactory
+    ) {
+        if (isScalableUIEnabled(context)) {
+            return Optional.of(new PanelConfigReader(
+                    context,
+                    taskPanelFactory));
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<ScalableUIWMInitializer> provideScalableUIInitializer(ShellInit shellInit,
+            Context context,
+            Optional<PanelConfigReader> panelConfigReaderOptional,
+            PanelAutoTaskStackTransitionHandlerDelegate delegate) {
+        if (isScalableUIEnabled(context) && panelConfigReaderOptional.isPresent()) {
+            return Optional.of(
+                    new ScalableUIWMInitializer(shellInit, panelConfigReaderOptional.get(),
+                            delegate));
+        }
+        return Optional.empty();
+    }
+
+    private static boolean isScalableUIEnabled(Context context) {
+        return context.getResources().getBoolean(R.bool.config_enableScalableUI);
     }
 }

@@ -16,6 +16,7 @@
 
 package com.android.systemui;
 
+import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.dagger.DependencyProvider;
 import com.android.systemui.dagger.SysUIComponent;
 import com.android.systemui.dagger.SysUISingleton;
@@ -49,6 +50,12 @@ public interface CarSysUIComponent extends SysUIComponent {
     interface Builder extends SysUIComponent.Builder {
         @BindsInstance
         Builder setRootTaskDisplayAreaOrganizer(Optional<RootTaskDisplayAreaOrganizer> r);
+
+        /**
+         * Sets an optional {@link ScalableUIWMInitializer} for the builder.
+         */
+        @BindsInstance
+        Builder setScalableUIWMInitializer(Optional<ScalableUIWMInitializer> initializer);
 
         CarSysUIComponent build();
     }

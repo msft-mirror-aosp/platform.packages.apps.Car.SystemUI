@@ -39,6 +39,7 @@ import com.android.systemui.car.keyguard.passenger.PassengerKeyguardLoadingDialo
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.classifier.FalsingModule;
+import com.android.systemui.communal.domain.interactor.CommunalSceneInteractor;
 import com.android.systemui.communal.ui.viewmodel.CommunalTransitionViewModel;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Application;
@@ -170,6 +171,7 @@ public interface CarKeyguardModule {
             SelectedUserInteractor selectedUserInteractor,
             KeyguardInteractor keyguardInteractor,
             KeyguardTransitionBootInteractor transitionBootInteractor,
+            Lazy<CommunalSceneInteractor> communalSceneInteractor,
             WindowManagerOcclusionManager wmOcclusionManager) {
         return new CarKeyguardViewMediator(
                 context,
@@ -221,6 +223,7 @@ public interface CarKeyguardModule {
                 selectedUserInteractor,
                 keyguardInteractor,
                 transitionBootInteractor,
+                communalSceneInteractor,
                 wmOcclusionManager);
     }
 

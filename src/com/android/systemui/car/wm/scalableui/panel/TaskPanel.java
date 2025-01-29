@@ -28,6 +28,7 @@ import android.view.SurfaceControl;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.model.PanelState;
@@ -331,6 +332,11 @@ public class TaskPanel implements Panel {
                     mRootTaskStack.getRootTaskInfo().token.asBinder());
         }
         mPersistedActivities.add(componentName);
+    }
+
+    @VisibleForTesting
+    void setRootTaskStack(RootTaskStack rootTaskStack) {
+        mRootTaskStack = rootTaskStack;
     }
 
     @Override

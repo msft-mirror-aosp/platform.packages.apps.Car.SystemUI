@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.SurfaceControl;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.android.car.internal.dep.Trace;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
@@ -102,11 +103,16 @@ public class TaskPanelAnimationRunner {
         Trace.endSection();
     }
 
+    @VisibleForTesting
+    boolean isAnimationRunning() {
+        return mAnimatorSet != null && mAnimatorSet.isRunning();
+    }
+
     /**
      * Ends any running animations associated with this instance.
      */
     void stopRunningAnimations() {
-        if (mAnimatorSet != null && mAnimatorSet.isRunning()) {
+        if (isAnimationRunning()) {
             if (DEBUG) {
                 Log.d(TAG, "stopRunningAnimations: has running animatorSet "
                         + mAnimatorSet.getCurrentPlayTime());
@@ -115,12 +121,14 @@ public class TaskPanelAnimationRunner {
         }
     }
 
-    private ValueAnimator createSurfaceAnimator(long duration, TaskPanel taskPanel) {
+    private ValueAnimator createSurfaceAnimator(long duration, @Nullable TaskPanel taskPanel) {
         Trace.beginSection(TAG + "#createSurfaceAnimator");
         ValueAnimator surfaceAnimator = ValueAnimator.ofFloat(0, 1f);
         surfaceAnimator.setDuration(duration);
         surfaceAnimator.addUpdateListener(animation -> {
-            updatePanelSurface(taskPanel);
+            if (taskPanel != null) {
+                updatePanelSurface(taskPanel);
+            }
         });
         Trace.endSection();
         return surfaceAnimator;

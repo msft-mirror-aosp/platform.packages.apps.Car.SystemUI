@@ -94,6 +94,9 @@ public class TaskPanelAnimationRunner {
                     Log.d(TAG, "Animation set finished " + finishCallback);
                 }
                 if (finishCallback != null) {
+                    if (DEBUG) {
+                        Log.d(TAG, "Finish the transition");
+                    }
                     finishCallback.onTransitionFinished(/* wct= */ null);
                 }
                 Trace.endSection();

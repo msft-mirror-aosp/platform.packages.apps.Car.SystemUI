@@ -26,10 +26,12 @@ import android.car.app.CarActivityManager;
 import android.content.Context;
 import android.graphics.Rect;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.SmallTest;
 
+import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -39,8 +41,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+@CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
-public class TaskPanelTest {
+@SmallTest
+public class TaskPanelTest extends SysuiTestCase{
     private static final String TASK_PANEL_ID = "TASK_PANEL_ID";
 
     private Context mContext;
@@ -54,7 +58,7 @@ public class TaskPanelTest {
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
+        mContext = getContext();
         mAutoTaskStackController = mock(AutoTaskStackController.class);
         mCarServiceProvider = mock(CarServiceProvider.class);
         mAutoTaskStackHelper = mock(AutoTaskStackHelper.class);

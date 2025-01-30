@@ -34,9 +34,11 @@ import android.view.SurfaceControl;
 import android.window.TransitionInfo;
 import android.window.TransitionRequestInfo;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.filters.SmallTest;
 
+import com.android.systemui.SysuiTestCase;
+import com.android.systemui.car.CarSystemUiTest;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -49,8 +51,10 @@ import org.junit.runner.RunWith;
 import java.util.HashMap;
 import java.util.Map;
 
+@CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
-public class PanelAutoTaskStackTransitionHandlerDelegateTest {
+@SmallTest
+public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCase {
 
     private Context mContext;
     private AutoTaskStackController mAutoTaskStackController;
@@ -60,7 +64,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest {
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
+        mContext = getContext();
         mAutoTaskStackController = mock(AutoTaskStackController.class);
         mTaskPanelAnimationRunner = mock(TaskPanelAnimationRunner.class);
         mDelegate = new PanelAutoTaskStackTransitionHandlerDelegate(

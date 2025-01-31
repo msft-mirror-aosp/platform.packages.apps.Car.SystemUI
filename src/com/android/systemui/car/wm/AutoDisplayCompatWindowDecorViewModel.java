@@ -32,6 +32,7 @@ import android.os.UserHandle;
 
 import androidx.annotation.NonNull;
 
+import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.common.DisplayController;
@@ -74,7 +75,8 @@ public class AutoDisplayCompatWindowDecorViewModel extends CarWindowDecorViewMod
     @Override
     protected boolean shouldShowWindowDecor(ActivityManager.RunningTaskInfo taskInfo) {
         String packageName = getPackageName(taskInfo);
-        if (packageName == null) {
+        if (packageName == null || mContext.getResources()
+                .getInteger(R.integer.config_showDisplayCompatWindowDecoration) == 0) {
             return false;
         }
         Context userContext = mContext.createContextAsUser(

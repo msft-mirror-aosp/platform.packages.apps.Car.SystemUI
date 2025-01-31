@@ -46,6 +46,9 @@ import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.taskview.TaskViewBase;
 import com.android.wm.shell.taskview.TaskViewTaskController;
 import com.android.wm.shell.taskview.TaskViewTransitions;
+import com.android.wm.shell.windowdecor.WindowDecorViewModel;
+
+import java.util.Optional;
 
 /** Server side implementation for {@code RemoteCarTaskView}. */
 public class RemoteCarTaskViewServerImpl implements TaskViewBase {
@@ -63,6 +66,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
 
     private RootTaskMediator mRootTaskMediator;
     private boolean mReleased;
+    private final Optional<WindowDecorViewModel> mWindowDecorViewModelOptional;
 
     private final CarTaskViewHost mHostImpl = new CarTaskViewHost() {
         @Override
@@ -138,7 +142,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             mRootTaskMediator = new RootTaskMediator(displayId, /* isLaunchRoot= */ false,
                     false, false, false, mShellTaskOrganizer,
                     mTaskViewTaskController, RemoteCarTaskViewServerImpl.this, mSyncQueue,
-                    mCarActivityManager);
+                    mCarActivityManager, mWindowDecorViewModelOptional);
         }
 
         /**
@@ -165,7 +169,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             mRootTaskMediator = new RootTaskMediator(displayId, /* isLaunchRoot= */ true,
                     embedHomeTask, embedRecentsTask, embedAssistantTask, mShellTaskOrganizer,
                     mTaskViewTaskController, RemoteCarTaskViewServerImpl.this, mSyncQueue,
-                    mCarActivityManager);
+                    mCarActivityManager, mWindowDecorViewModelOptional);
         }
 
         @Override
@@ -265,13 +269,15 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             CarTaskViewClient carTaskViewClient,
             CarSystemUIProxyImpl carSystemUIProxy,
             TaskViewTransitions taskViewTransitions,
-            CarActivityManager carActivityManager) {
+            CarActivityManager carActivityManager,
+            Optional<WindowDecorViewModel> windowDecorViewModelOptional) {
         mContext = context;
         mSyncQueue = syncQueue;
         mCarTaskViewClient = carTaskViewClient;
         mCarSystemUIProxy = carSystemUIProxy;
         mShellTaskOrganizer = organizer;
         mCarActivityManager = carActivityManager;
+        mWindowDecorViewModelOptional = windowDecorViewModelOptional;
 
         mTaskViewTaskController =
                 new TaskViewTaskController(context, organizer, taskViewTransitions, syncQueue);

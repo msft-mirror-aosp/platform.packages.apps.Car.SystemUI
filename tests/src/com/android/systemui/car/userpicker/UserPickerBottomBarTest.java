@@ -53,11 +53,11 @@ public class UserPickerBottomBarTest extends UserPickerTestCase {
 
     @Test
     public void checkBottomBarHeight_validDimension() {
-        float target_height = mContext.getResources()
-                .getDimension(R.dimen.car_bottom_system_bar_height);
+        int target_height = mContext.getResources()
+                .getDimensionPixelSize(R.dimen.car_bottom_system_bar_height);
         mActivityRule.getScenario().onActivity(activity -> {
             ConstraintLayout bottombar = activity.findViewById(R.id.user_picker_bottom_bar);
-            float height = bottombar.getLayoutParams().height;
+            int height = bottombar.getLayoutParams().height;
 
             assertThat(height).isEqualTo(target_height);
         });

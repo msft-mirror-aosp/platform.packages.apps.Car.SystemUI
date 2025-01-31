@@ -60,7 +60,7 @@ public class TaskPanelAnimationRunnerTest extends SysuiTestCase {
         CountDownLatch latch = new CountDownLatch(1); // Latch for waiting
         Map<String, Animator> pendingAnimators = new HashMap<>();
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
-        animator.setDuration(2000L);
+        animator.setDuration(1000L);
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -74,7 +74,7 @@ public class TaskPanelAnimationRunnerTest extends SysuiTestCase {
             mTaskPanelAnimationRunner.playPendingAnimations(pendingAnimators, mFinishCallback);
         });
 
-        latch.await(3, TimeUnit.SECONDS);
+        assertThat(latch.await(/* timeout= */ 5, TimeUnit.SECONDS)).isTrue();
         assertThat(latch.getCount()).isEqualTo(0);
         assertThat(mTaskPanelAnimationRunner.isAnimationRunning()).isFalse();
         verify(mFinishCallback).onTransitionFinished(null);

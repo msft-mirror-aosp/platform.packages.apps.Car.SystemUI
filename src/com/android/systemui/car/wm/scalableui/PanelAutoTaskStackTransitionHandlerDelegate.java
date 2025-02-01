@@ -19,8 +19,9 @@ import static android.app.WindowConfiguration.ACTIVITY_TYPE_HOME;
 
 import static com.android.systemui.car.Flags.scalableUi;
 
-import android.animation.Animator;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.IBinder;
@@ -31,16 +32,11 @@ import android.window.TransitionRequestInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.manager.Event;
 import com.android.car.scalableui.manager.PanelTransaction;
-import com.android.car.scalableui.manager.StateManager;
-import com.android.car.scalableui.model.Transition;
-import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.Panel;
-import com.android.car.scalableui.panel.PanelPool;
 import com.android.systemui.R;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelPool;
@@ -51,7 +47,6 @@ import com.android.wm.shell.automotive.AutoTaskStackTransitionHandlerDelegate;
 import com.android.wm.shell.shared.TransitionUtil;
 import com.android.wm.shell.transition.Transitions;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -69,20 +64,19 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
 
     private final AutoTaskStackController mAutoTaskStackController;
+    private final AutoTaskStackHelper mAutoTaskStackHelper;
     private final TaskPanelAnimationRunner mTaskPanelAnimationRunner;
     private final Context mContext;
-
-    @VisibleForTesting
-    final HashMap<String, Animator> mPendingAnimators;
 
     @Inject
     public PanelAutoTaskStackTransitionHandlerDelegate(
             Context context,
             AutoTaskStackController autoTaskStackController,
+            AutoTaskStackHelper autoTaskStackHelper,
             TaskPanelAnimationRunner taskPanelAnimationRunner) {
         mAutoTaskStackController = autoTaskStackController;
+        mAutoTaskStackHelper = autoTaskStackHelper;
         mTaskPanelAnimationRunner = taskPanelAnimationRunner;
-        mPendingAnimators = new HashMap<>();
         mContext = context;
     }
 
@@ -107,8 +101,9 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
 
         if (shouldHandleByPanels(request)) {
             Event event = calculateEvent(request);
-            PanelTransaction panelTransaction = StateManager.handleEvent(event);
-            AutoTaskStackTransaction wct = getAutoTaskStackTransaction(panelTransaction);
+            PanelTransaction panelTransaction = EventDispatcher.getTransaction(event);
+            AutoTaskStackTransaction wct = mAutoTaskStackHelper.getAutoTaskStackTransaction(
+                    panelTransaction);
             if (DEBUG) {
                 Log.d(TAG, "handleRequest: COMPLETED " + wct);
             }
@@ -117,34 +112,6 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         }
         Trace.endSection();
         return null;
-    }
-
-    private AutoTaskStackTransaction getAutoTaskStackTransaction(
-            PanelTransaction panelTransaction) {
-        mPendingAnimators.clear();
-        AutoTaskStackTransaction wct = new AutoTaskStackTransaction();
-
-        for (Map.Entry<String, Transition> entry :
-                panelTransaction.getPanelTransactionStates()) {
-            Transition transition = entry.getValue();
-            Variant toVariant = transition.getToVariant();
-            TaskPanel taskPanel = TaskPanelPool.getTaskPanel(
-                    p -> p.getRootStack() != null && p.getId().equals(entry.getKey()));
-            if (taskPanel == null) {
-                continue;
-            }
-            AutoTaskStackState autoTaskStackState = new AutoTaskStackState(
-                    toVariant.getBounds(),
-                    toVariant.isVisible(),
-                    toVariant.getLayer());
-            wct.setTaskStackState(taskPanel.getRootStack().getId(), autoTaskStackState);
-        }
-        for (Map.Entry<String, Animator> entry : panelTransaction.getAnimators()) {
-            //TODO(b/391726254): use a HashMap from IBinder to PanelTransaction.
-            mPendingAnimators.put(entry.getKey(), entry.getValue());
-        }
-
-        return wct;
     }
 
     private boolean shouldHandleByPanels(@NonNull TransitionRequestInfo request) {
@@ -168,7 +135,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                     + ", changedTaskStacks" + changedTaskStacks
                     + ", start transaction" + startTransaction.getId()
                     + ", finishTransaction" + finishTransaction.getId()
-                    + ", animation count=" + mPendingAnimators.size());
+                    + ", animation count=" + mAutoTaskStackHelper.getPendingAnimators().size());
         }
 
         Trace.beginSection(TAG + "#startAnimation");
@@ -177,8 +144,9 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         calculateTransaction(finishTransaction, info, /* isFinish= */ true);
         startTransaction.apply();
 
-        if (!mPendingAnimators.isEmpty()) {
-            mTaskPanelAnimationRunner.playPendingAnimations(mPendingAnimators, finishCallback);
+        if (!mAutoTaskStackHelper.getPendingAnimators().isEmpty()) {
+            mTaskPanelAnimationRunner.playPendingAnimations(
+                    mAutoTaskStackHelper.getPendingAnimators(), finishCallback);
             Trace.endSection();
             return true;
         } else {
@@ -215,35 +183,44 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     }
 
     private Event calculateEvent(TransitionRequestInfo request) {
-        // TODO(b/383910785): find a way to use config to describe following logic.
         if (request.getTriggerTask() == null) {
             return EMPTY_EVENT;
-        } else if (TransitionUtil.isClosingType(request.getType())) {
-            // For assistant closing
-            return EMPTY_EVENT;
-        } else if (isTriggered(request, /* identifier= */ "carlauncher.AppGridActivity")) {
-            // make these blocking calls and return a wct from here
-            return new Event("open_app_grid_drawer_event");
-        } else if (isTriggered(request, /* identifier= */ "activity.AutoAssistantActivity")) {
-            // activity.AutoAssistantActivity
-            return new Event("open_assistant_event");
-        } else if (isTriggered(request, /* identifier= */ "google.android.maps.MapsActivity")) {
-            return EMPTY_EVENT;
-        } else if (isTriggered(request, /* identifier= */ "com.android.systemui")) {
-            return EMPTY_EVENT;
-        } else if (isTriggered(request, /* identifier= */ "StubHome")) {
-            Panel panel = PanelPool.getInstance().getPanel("widget_bar_panel");
-            Log.d(TAG, "calculate home state " + panel);
-            return panel.isVisible() ? new Event("home_event") : new Event("home_2_event");
-        } else {
-            return new Event("open_app_drawer_event", request.getTriggerTask());
         }
-    }
 
-    private boolean isTriggered(TransitionRequestInfo request, String identifier) {
-        return request.getTriggerTask() != null
-                && request.getTriggerTask().baseActivity != null
-                && request.getTriggerTask().baseActivity.toString().contains(identifier);
+        if (request.getTriggerTask().baseIntent.getCategories() != null
+                && request.getTriggerTask().baseIntent.getCategories().contains(
+                Intent.CATEGORY_HOME)) {
+            return new Event("_System_OnHomeEvent");
+        }
+
+        ComponentName component = request.getTriggerTask().baseActivity;
+        String componentString = component != null ? component.flattenToString() : null;
+        String panelId;
+        TaskPanel panel = null;
+        if (componentString != null) {
+            panel = TaskPanelPool.getTaskPanel(
+                    tp -> tp.getRoleTask() != null && tp.getRoleTask().equals(componentString));
+        }
+        if (panel == null) {
+            panel = TaskPanelPool.getTaskPanel(TaskPanel::getIsLaunchRoot);
+        }
+        if (panel != null) {
+            panelId = panel.getId();
+        } else {
+            // There is no panel ready to handle this event
+            // TODO(b/392694590): determine if/how this case should be handled
+            Log.e(TAG, "No panel present to handle component " + component);
+            return EMPTY_EVENT;
+        }
+
+        if (TransitionUtil.isClosingType(request.getType())) {
+            return new Event("_System_TaskCloseEvent")
+                    .addToken("panelId", panelId)
+                    .addToken("component", componentString);
+        }
+        return new Event("_System_TaskOpenEvent")
+                .addToken("panelId", panelId)
+                .addToken("component", componentString);
     }
 
     @Override

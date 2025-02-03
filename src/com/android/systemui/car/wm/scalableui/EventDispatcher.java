@@ -38,16 +38,16 @@ import javax.inject.Inject;
 public class EventDispatcher {
 
     private final Context mContext;
-    private final AutoTaskStackHelper mAutoTaskStackHelper;
+    private final TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
 
     @Inject
     public EventDispatcher(Context context,
-            Lazy<AutoTaskStackHelper> autoTaskStackHelper) {
+            Lazy<TaskPanelTransitionCoordinator> taskPanelTransitionCoordinator) {
         mContext = context;
         if (isScalableUIEnabled()) {
-            mAutoTaskStackHelper = autoTaskStackHelper.get();
+            mTaskPanelTransitionCoordinator = taskPanelTransitionCoordinator.get();
         } else {
-            mAutoTaskStackHelper = null;
+            mTaskPanelTransitionCoordinator = null;
         }
     }
 
@@ -80,7 +80,7 @@ public class EventDispatcher {
         if (!isScalableUIEnabled()) {
             throw new IllegalStateException("ScalableUI disabled - cannot execute transaction");
         }
-        mAutoTaskStackHelper.startTransition(getTransaction(event));
+        mTaskPanelTransitionCoordinator.startTransition(getTransaction(event));
     }
 
     private boolean isScalableUIEnabled() {

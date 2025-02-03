@@ -64,19 +64,16 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
 
     private final AutoTaskStackController mAutoTaskStackController;
-    private final AutoTaskStackHelper mAutoTaskStackHelper;
-    private final TaskPanelAnimationRunner mTaskPanelAnimationRunner;
+    private final TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
     private final Context mContext;
 
     @Inject
     public PanelAutoTaskStackTransitionHandlerDelegate(
             Context context,
             AutoTaskStackController autoTaskStackController,
-            AutoTaskStackHelper autoTaskStackHelper,
-            TaskPanelAnimationRunner taskPanelAnimationRunner) {
+            TaskPanelTransitionCoordinator taskPanelTransitionCoordinator) {
         mAutoTaskStackController = autoTaskStackController;
-        mAutoTaskStackHelper = autoTaskStackHelper;
-        mTaskPanelAnimationRunner = taskPanelAnimationRunner;
+        mTaskPanelTransitionCoordinator = taskPanelTransitionCoordinator;
         mContext = context;
     }
 
@@ -102,8 +99,9 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         if (shouldHandleByPanels(request)) {
             Event event = calculateEvent(request);
             PanelTransaction panelTransaction = EventDispatcher.getTransaction(event);
-            AutoTaskStackTransaction wct = mAutoTaskStackHelper.getAutoTaskStackTransaction(
-                    panelTransaction);
+            AutoTaskStackTransaction wct =
+                    mTaskPanelTransitionCoordinator.createAutoTaskStackTransaction(transition,
+                            panelTransaction);
             if (DEBUG) {
                 Log.d(TAG, "handleRequest: COMPLETED " + wct);
             }
@@ -118,9 +116,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         if (request.getTriggerTask() == null) {
             return false;
         }
-        return TransitionUtil.isOpeningType(request.getType())
-                && (TaskPanelPool.handles(request.getTriggerTask().parentTaskId)
-                || request.getTriggerTask().topActivityType == ACTIVITY_TYPE_HOME);
+        return TaskPanelPool.handles(request.getTriggerTask().parentTaskId)
+                || request.getTriggerTask().topActivityType == ACTIVITY_TYPE_HOME;
     }
 
     @Override
@@ -134,8 +131,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             Log.d(TAG, "startAnimation INFO = " + info
                     + ", changedTaskStacks" + changedTaskStacks
                     + ", start transaction" + startTransaction.getId()
-                    + ", finishTransaction" + finishTransaction.getId()
-                    + ", animation count=" + mAutoTaskStackHelper.getPendingAnimators().size());
+                    + ", finishTransaction" + finishTransaction.getId());
         }
 
         Trace.beginSection(TAG + "#startAnimation");
@@ -144,15 +140,10 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         calculateTransaction(finishTransaction, info, /* isFinish= */ true);
         startTransaction.apply();
 
-        if (!mAutoTaskStackHelper.getPendingAnimators().isEmpty()) {
-            mTaskPanelAnimationRunner.playPendingAnimations(
-                    mAutoTaskStackHelper.getPendingAnimators(), finishCallback);
-            Trace.endSection();
-            return true;
-        } else {
-            Trace.endSection();
-            return false;
-        }
+        boolean animationStarted = mTaskPanelTransitionCoordinator.playPendingAnimations(transition,
+                finishCallback);
+        Trace.endSection();
+        return animationStarted;
     }
 
     private void calculateTransaction(SurfaceControl.Transaction transaction,
@@ -193,7 +184,20 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             return new Event("_System_OnHomeEvent");
         }
 
-        ComponentName component = request.getTriggerTask().baseActivity;
+        ComponentName component;
+        if (TransitionUtil.isClosingType(request.getType())) {
+            // On a closing event, the baseActivity may be null but the realActivity will still
+            // return the component being closed.
+            component = request.getTriggerTask().realActivity;
+            if (DEBUG) {
+                Log.d(TAG, "Closing transition - using realActivity component=" + component);
+            }
+        } else {
+            component = request.getTriggerTask().baseActivity;
+            if (DEBUG) {
+                Log.d(TAG, "Open transition - using baseActivity component=" + component);
+            }
+        }
         String componentString = component != null ? component.flattenToString() : null;
         String panelId;
         TaskPanel panel = null;
@@ -231,7 +235,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             Log.d(TAG, "onTransitionConsumed" + aborted);
         }
         Trace.beginSection(TAG + "#onTransitionConsumed");
-        mTaskPanelAnimationRunner.stopRunningAnimations();
+        mTaskPanelTransitionCoordinator.stopRunningAnimations();
         Trace.endSection();
     }
 
@@ -245,7 +249,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             Log.d(TAG, "mergeAnimation");
         }
         Trace.beginSection(TAG + "#mergeAnimation");
-        mTaskPanelAnimationRunner.stopRunningAnimations();
+        mTaskPanelTransitionCoordinator.stopRunningAnimations();
         Trace.endSection();
     }
 }

@@ -15,10 +15,18 @@
  */
 package com.android.systemui.car.wm.scalableui;
 
+import static com.android.systemui.car.Flags.scalableUi;
+import static com.android.wm.shell.Flags.enableAutoTaskStackController;
+
+import android.content.Context;
+
 import com.android.car.scalableui.manager.Event;
 import com.android.car.scalableui.manager.PanelTransaction;
 import com.android.car.scalableui.manager.StateManager;
+import com.android.systemui.R;
 import com.android.wm.shell.dagger.WMSingleton;
+
+import dagger.Lazy;
 
 import javax.inject.Inject;
 
@@ -29,11 +37,18 @@ import javax.inject.Inject;
 @WMSingleton
 public class EventDispatcher {
 
+    private final Context mContext;
     private final AutoTaskStackHelper mAutoTaskStackHelper;
 
     @Inject
-    public EventDispatcher(AutoTaskStackHelper autoTaskStackHelper) {
-        mAutoTaskStackHelper = autoTaskStackHelper;
+    public EventDispatcher(Context context,
+            Lazy<AutoTaskStackHelper> autoTaskStackHelper) {
+        mContext = context;
+        if (isScalableUIEnabled()) {
+            mAutoTaskStackHelper = autoTaskStackHelper.get();
+        } else {
+            mAutoTaskStackHelper = null;
+        }
     }
 
     /**
@@ -62,6 +77,14 @@ public class EventDispatcher {
      * transaction.
      */
     public void executeTransaction(Event event) {
+        if (!isScalableUIEnabled()) {
+            throw new IllegalStateException("ScalableUI disabled - cannot execute transaction");
+        }
         mAutoTaskStackHelper.startTransition(getTransaction(event));
+    }
+
+    private boolean isScalableUIEnabled() {
+        return scalableUi() && enableAutoTaskStackController()
+                && mContext.getResources().getBoolean(R.bool.config_enableScalableUI);
     }
 }

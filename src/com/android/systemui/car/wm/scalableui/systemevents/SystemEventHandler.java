@@ -17,7 +17,11 @@ package com.android.systemui.car.wm.scalableui.systemevents;
 
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKED;
 
+import static com.android.systemui.car.Flags.scalableUi;
+import static com.android.wm.shell.Flags.enableAutoTaskStackController;
+
 import android.car.user.CarUserManager;
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
@@ -25,6 +29,7 @@ import androidx.annotation.NonNull;
 
 import com.android.car.scalableui.manager.StateManager;
 import com.android.systemui.CoreStartable;
+import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.CarServiceProvider;
@@ -50,6 +55,7 @@ public class SystemEventHandler implements CoreStartable {
     private static final String TAG = SystemEventHandler.class.getSimpleName();
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
 
+    private final Context mContext;
     private final CarServiceProvider mCarServiceProvider;
     private final UserTracker mUserTracker;
     private final Executor mBackgroundExecutor;
@@ -92,12 +98,14 @@ public class SystemEventHandler implements CoreStartable {
 
     @Inject
     public SystemEventHandler(
+            Context context,
             @Background Executor bgExecutor,
             CarServiceProvider carServiceProvider,
             UserTracker userTracker,
             CarDeviceProvisionedController carDeviceProvisionedController,
             EventDispatcher dispatcher
     ) {
+        mContext = context;
         mBackgroundExecutor = bgExecutor;
         mCarServiceProvider = carServiceProvider;
         mUserTracker = userTracker;
@@ -121,8 +129,10 @@ public class SystemEventHandler implements CoreStartable {
 
     @Override
     public void start() {
-        registerUserEventListener();
-        registerProvisionedStateListener();
+        if (isScalableUIEnabled()) {
+            registerUserEventListener();
+            registerProvisionedStateListener();
+        }
     }
 
     private void registerProvisionedStateListener() {
@@ -136,5 +146,10 @@ public class SystemEventHandler implements CoreStartable {
                 mCarUserManager.addListener(mBackgroundExecutor, mUserLifecycleListener);
             }
         });
+    }
+
+    private boolean isScalableUIEnabled() {
+        return scalableUi() && enableAutoTaskStackController()
+                && mContext.getResources().getBoolean(R.bool.config_enableScalableUI);
     }
 }

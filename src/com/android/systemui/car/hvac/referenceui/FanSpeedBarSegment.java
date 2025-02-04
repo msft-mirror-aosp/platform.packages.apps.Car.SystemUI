@@ -114,7 +114,7 @@ public class FanSpeedBarSegment extends ImageView {
         mDotWidthExpandAnimator.addUpdateListener(mExpandListener);
 
         GradientDrawable dot = new GradientDrawable();
-        dot.setColor(res.getColor(R.color.hvac_fanspeed_segment_color));
+        dot.setColor(res.getColor(R.color.hvac_fanspeed_segment_color, getContext().getTheme()));
         dot.setSize(mDotSize, mDotSize);
         dot.setCornerRadius(mDotSize / 2);
         setImageDrawable(dot);

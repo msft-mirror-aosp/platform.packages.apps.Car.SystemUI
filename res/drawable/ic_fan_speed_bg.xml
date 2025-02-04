@@ -16,5 +16,5 @@
   -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/hvac_fanspeed_bg_color"/>
-    <corners android:radius="@dimen/hvac_fan_speed_bar_corner_radius"/>
+    <corners android:radius="?hvacFanSpeedBarCornerRadius"/>
 </shape>

@@ -251,4 +251,24 @@
         <attr name="launchTaskDisplayAreaFeatureId" format="integer" />
         <attr name="cornerRadius" format="integer" />
     </declare-styleable>
+
+    <attr name="carControlHighlight" format="color|reference"/>
+    <attr name="systemBarPillRadius" format="dimension"/>
+    <attr name="systemBarPillSelectedRadius" format="dimension"/>
+    <attr name="hvacPanelBackgroundRadius" format="dimension"/>
+    <attr name="carVolumeItemCornerRadius" format="dimension"/>
+    <attr name="notificationShadeHandleBarRadius" format="dimension"/>
+    <attr name="notificationShadowRadius" format="dimension"/>
+    <attr name="carStatusIconPanelBorderRadius" format="dimension"/>
+    <attr name="carNavBarButtonSelectedCornerRadius" format="dimension"/>
+    <attr name="hvacPanelHandleBarRadius" format="dimension"/>
+    <attr name="temperatureBarBgRadius" format="dimension"/>
+    <attr name="hvacPanelButtonRadius" format="dimension"/>
+    <attr name="hvacFanSpeedBarCornerRadius" format="dimension"/>
+    <attr name="activityBlockingActionButtonCornerRadius" format="dimension"/>
+    <attr name="displayInputLockBackgroundRadius" format="dimension"/>
+    <attr name="userPickerPillRadius" format="dimension"/>
+    <attr name="pinPadKeyRadius" format="dimension"/>
+    <attr name="dataSubscriptionPopUpRadius" format="dimension"/>
+    <attr name="dataSubscriptionPopUpArrowRadius" format="dimension"/>
 </resources>

@@ -18,5 +18,5 @@
     <solid android:color="@color/hvac_background_color"/>
 
     <corners
-        android:radius="@dimen/hvac_panel_background_radius"/>
+        android:radius="?hvacPanelBackgroundRadius"/>
 </shape>

@@ -18,7 +18,7 @@
     <solid android:color="@color/status_icon_panel_bg_color"/>
 
     <corners
-        android:radius="@dimen/car_status_icon_panel_border_radius"/>
+        android:radius="?carStatusIconPanelBorderRadius"/>
 
     <padding
         android:bottom="@dimen/car_status_icon_panel_padding_bottom"

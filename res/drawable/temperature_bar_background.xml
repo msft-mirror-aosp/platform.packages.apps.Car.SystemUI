@@ -15,5 +15,5 @@
   -->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <corners android:radius="@dimen/temperature_bar_bg_radius"/>
+    <corners android:radius="?temperatureBarBgRadius"/>
 </shape>

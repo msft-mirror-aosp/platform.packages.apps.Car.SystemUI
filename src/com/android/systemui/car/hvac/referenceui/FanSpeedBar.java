@@ -102,11 +102,15 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
         int insetHeight = res.getDimensionPixelSize(R.dimen.hvac_fan_speed_bar_vertical_inset);
         mCornerRadius = (float) (barHeight - 2 * insetHeight) / 2;
 
-        mFanOffActiveBgColor = res.getColor(R.color.hvac_fanspeed_off_active_bg);
+        mFanOffActiveBgColor = res.getColor(R.color.hvac_fanspeed_off_active_bg,
+                getContext().getTheme());
 
-        mButtonActiveTextColor = res.getColor(R.color.hvac_fanspeed_off_active_text_color);
-        mButtonInactiveTextColor = res.getColor(R.color.hvac_fanspeed_off_inactive_text_color);
-        mFanMaxActiveBgColor = res.getColor(R.color.hvac_fanspeed_segment_color);
+        mButtonActiveTextColor = res.getColor(R.color.hvac_fanspeed_off_active_text_color,
+                getContext().getTheme());
+        mButtonInactiveTextColor = res.getColor(R.color.hvac_fanspeed_off_inactive_text_color,
+                getContext().getTheme());
+        mFanMaxActiveBgColor = res.getColor(R.color.hvac_fanspeed_segment_color,
+                getContext().getTheme());
         mHvacGlobalAreaId = res.getInteger(R.integer.hvac_global_area_id);
         mMinFanSpeedSupportedByUi = res.getInteger(R.integer.hvac_min_fan_speed);
         mMaxFanSpeedSupportedByUi = res.getInteger(R.integer.hvac_max_fan_speed);

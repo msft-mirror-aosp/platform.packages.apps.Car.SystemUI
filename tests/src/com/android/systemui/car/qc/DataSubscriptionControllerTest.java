@@ -59,8 +59,8 @@ import androidx.test.filters.SmallTest;
 import com.android.car.datasubscription.DataSubscription;
 import com.android.car.datasubscription.DataSubscriptionStatus;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.util.FakeSharedPreferences;
@@ -83,7 +83,7 @@ import java.util.concurrent.Executor;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class DataSubscriptionControllerTest extends SysuiTestCase {
+public class DataSubscriptionControllerTest extends CarSysuiTestCase {
     @Mock
     private UserTracker mUserTracker;
     @Mock

@@ -23,7 +23,7 @@
                 <stroke android:width="@dimen/privacy_chip_indicator_outside_stroke_width"
                         android:color="@color/privacy_chip_indicator_outside_stroke_color"/>
                 <solid android:color="@color/privacy_chip_indicator_color"/>
-                <corners android:radius="@dimen/system_bar_pill_radius"/>
+                <corners android:radius="?systemBarPillRadius"/>
             </shape>
         </aapt:attr>
     </item>

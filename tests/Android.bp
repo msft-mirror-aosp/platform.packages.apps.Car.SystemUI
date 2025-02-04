@@ -46,7 +46,9 @@ android_test {
         "android.test.runner.stubs.system",
         "telephony-common",
         "android.test.base.stubs.system",
+        "token-shared-lib-prebuilt",
     ],
+    enforce_uses_libs: false,
     aaptflags: [
         "--extra-packages com.android.systemui",
     ],

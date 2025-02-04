@@ -29,13 +29,14 @@
         tools:node="remove" />
 
     <application
-        android:name="com.android.systemui.SystemUIApplication"
+        android:name="com.android.systemui.CarSystemUIApplication"
         android:debuggable="true"
         android:largeHeap="true"
         tools:replace="android:appComponentFactory"
         android:appComponentFactory="com.android.systemui.CarSystemUITestAppComponentFactory"
         android:testOnly="true">
         <uses-library android:name="android.test.runner"/>
+        <uses-library android:name="com.android.oem.tokens" android:required="false"/>
 
         <activity android:name="com.android.systemui.car.userpicker.UserPickerDriverTestActivity"
                   android:exported="false"

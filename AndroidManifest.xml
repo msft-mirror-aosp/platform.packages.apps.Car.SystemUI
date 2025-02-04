@@ -77,6 +77,7 @@
         tools:replace="android:name,android:appComponentFactory"
         android:name=".CarSystemUIApplication"
         android:appComponentFactory="com.android.systemui.CarSystemUIAppComponentFactory">
+        <uses-library android:name="com.android.oem.tokens" android:required="false"/>
         <activity
             android:name=".car.wm.activity.ActivityBlockingActivity"
             android:documentLaunchMode="always"
@@ -92,7 +93,7 @@
         <activity
             android:name=".car.wm.activity.ContinuousBlankActivity"
             android:excludeFromRecents="true"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:theme="@style/Theme.ContinuousBlankActivity"
             android:exported="false"
             android:launchMode="singleTask">
         </activity>
@@ -104,7 +105,7 @@
             android:launchMode="singleInstance"
             android:noHistory="true"
             android:permission="android.car.permission.ACCESS_PRIVATE_DISPLAY_ID"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+            android:theme="@style/Theme.LaunchOnPrivateDisplayRouterActivity"/>
         <activity
             android:name=".car.userpicker.UserPickerActivity"
             android:label="UserPicker"

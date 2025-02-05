@@ -22,11 +22,9 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.animation.Animator;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.os.IBinder;
@@ -63,19 +61,17 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
     @Mock
     private AutoTaskStackController mAutoTaskStackController;
     @Mock
-    private TaskPanelAnimationRunner mTaskPanelAnimationRunner;
-    @Mock
-    private AutoTaskStackHelper mAutoTaskStackHelper;
+    private TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
     @Mock
     private Transitions.TransitionFinishCallback mFinishCallback;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        when(mAutoTaskStackHelper.getAutoTaskStackTransaction(any())).thenReturn(
-                new AutoTaskStackTransaction());
+        when(mTaskPanelTransitionCoordinator.createAutoTaskStackTransaction(any(),
+                any())).thenReturn(new AutoTaskStackTransaction());
         mDelegate = new PanelAutoTaskStackTransitionHandlerDelegate(mContext,
-                mAutoTaskStackController, mAutoTaskStackHelper, mTaskPanelAnimationRunner);
+                mAutoTaskStackController, mTaskPanelTransitionCoordinator);
     }
 
     @Test
@@ -110,9 +106,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
         TransitionInfo info = mock(TransitionInfo.class);
         SurfaceControl.Transaction startTransaction = mock(SurfaceControl.Transaction.class);
         SurfaceControl.Transaction finishTransaction = mock(SurfaceControl.Transaction.class);
-        Map<String, Animator> pendingAnimators = new HashMap<>();
-        pendingAnimators.put("testAnimator", mock(Animator.class));
-        when(mAutoTaskStackHelper.getPendingAnimators()).thenReturn(pendingAnimators);
+        when(mTaskPanelTransitionCoordinator.playPendingAnimations(any(), any())).thenReturn(true);
 
         boolean result = mDelegate.startAnimation(
                 mock(IBinder.class),
@@ -123,8 +117,6 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
                 mFinishCallback);
 
         assertThat(result).isTrue();
-        verify(mTaskPanelAnimationRunner).playPendingAnimations(
-                pendingAnimators, mFinishCallback);
     }
 
     @Test
@@ -133,6 +125,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
         TransitionInfo info = mock(TransitionInfo.class);
         SurfaceControl.Transaction startTransaction = mock(SurfaceControl.Transaction.class);
         SurfaceControl.Transaction finishTransaction = mock(SurfaceControl.Transaction.class);
+        when(mTaskPanelTransitionCoordinator.playPendingAnimations(any(), any())).thenReturn(false);
 
         boolean result = mDelegate.startAnimation(
                 mock(IBinder.class),
@@ -143,8 +136,6 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
                 mFinishCallback);
 
         assertThat(result).isFalse();
-        verify(mTaskPanelAnimationRunner, never()).playPendingAnimations(
-                any(), any());
     }
 
     @Test
@@ -155,7 +146,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
                 false,
                 mock(SurfaceControl.Transaction.class));
 
-        verify(mTaskPanelAnimationRunner).stopRunningAnimations();
+        verify(mTaskPanelTransitionCoordinator).stopRunningAnimations();
     }
 
     @Test
@@ -168,6 +159,6 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
                 mock(IBinder.class),
                 mock(Transitions.TransitionFinishCallback.class));
 
-        verify(mTaskPanelAnimationRunner).stopRunningAnimations();
+        verify(mTaskPanelTransitionCoordinator).stopRunningAnimations();
     }
 }

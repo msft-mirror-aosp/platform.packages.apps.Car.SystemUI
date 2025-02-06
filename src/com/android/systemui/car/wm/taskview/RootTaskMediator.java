@@ -157,11 +157,11 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             }
 
             // Attach the root task with the taskview shell part.
-            if (mTaskViewTaskShellPart.isUsingShellTransitions()) {
+            if (mTransitions.isUsingShellTransitions()) {
                 // Do not trigger onTaskAppeared on shell part directly as it is no longer the
                 // correct entry point for a new task in the task view.
                 // Shell part will eventually trigger onTaskAppeared on the client as well.
-                mTaskViewTaskShellPart.startRootTask(taskInfo, leash, wct);
+                mTransitions.startRootTask(mTaskViewTaskShellPart, taskInfo, leash, wct);
             } else {
                 if (wct != null) {
                     mShellTaskOrganizer.applyTransaction(wct);
@@ -256,7 +256,7 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         // from mLaunchRootStack
         wct.removeTask(topTask.token);
 
-        if (mTaskViewTaskShellPart.isUsingShellTransitions()) {
+        if (mTransitions.isUsingShellTransitions()) {
             mTransitions.startInstantTransition(TRANSIT_CLOSE, wct);
         } else {
             mShellTaskOrganizer.applyTransaction(wct);
@@ -308,7 +308,7 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         if (mIsLaunchRoot) {
             WindowContainerTransaction wct = new WindowContainerTransaction();
             wct.setLaunchRoot(mRootTask.token, null, null);
-            if (mTaskViewTaskShellPart.isUsingShellTransitions()) {
+            if (mTransitions.isUsingShellTransitions()) {
                 mTransitions.startInstantTransition(TRANSIT_CHANGE, wct);
             } else {
                 mShellTaskOrganizer.applyTransaction(wct);

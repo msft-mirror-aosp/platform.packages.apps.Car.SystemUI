@@ -39,6 +39,7 @@ import com.android.systemui.car.keyguard.passenger.PassengerKeyguardLoadingDialo
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.classifier.FalsingModule;
+import com.android.systemui.communal.domain.interactor.CommunalSceneInteractor;
 import com.android.systemui.communal.ui.viewmodel.CommunalTransitionViewModel;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Application;
@@ -54,6 +55,7 @@ import com.android.systemui.keyguard.KeyguardUnlockAnimationController;
 import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.keyguard.WindowManagerLockscreenVisibilityManager;
 import com.android.systemui.keyguard.WindowManagerOcclusionManager;
+import com.android.systemui.keyguard.dagger.GlanceableHubTransitionModule;
 import com.android.systemui.keyguard.dagger.KeyguardFaceAuthNotSupportedModule;
 import com.android.systemui.keyguard.dagger.PrimaryBouncerTransitionModule;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
@@ -108,6 +110,7 @@ import javax.inject.Provider;
         },
         includes = {
                 FalsingModule.class,
+                GlanceableHubTransitionModule.class,
                 KeyguardFaceAuthNotSupportedModule.class,
                 KeyguardRepositoryModule.class,
                 PrimaryBouncerTransitionModule.class,
@@ -170,6 +173,7 @@ public interface CarKeyguardModule {
             SelectedUserInteractor selectedUserInteractor,
             KeyguardInteractor keyguardInteractor,
             KeyguardTransitionBootInteractor transitionBootInteractor,
+            Lazy<CommunalSceneInteractor> communalSceneInteractor,
             WindowManagerOcclusionManager wmOcclusionManager) {
         return new CarKeyguardViewMediator(
                 context,
@@ -221,6 +225,7 @@ public interface CarKeyguardModule {
                 selectedUserInteractor,
                 keyguardInteractor,
                 transitionBootInteractor,
+                communalSceneInteractor,
                 wmOcclusionManager);
     }
 

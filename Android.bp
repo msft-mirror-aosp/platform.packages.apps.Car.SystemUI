@@ -55,6 +55,7 @@ java_defaults {
         "car-ui-lib-no-overlayable",
         "car-qc-lib",
         "car-resource-common",
+        "car-scalable-ui-lib",
         "com_android_systemui_car_flags_lib",
         "androidx.annotation_annotation",
         "androidx.legacy_legacy-support-v4",
@@ -79,6 +80,7 @@ java_defaults {
         "CarDockLib",
         "androidx.test.rules",
         "car-data-subscription-lib",
+        "Car-WindowManager-Shell",
     ],
 
     libs: [
@@ -218,11 +220,13 @@ android_library {
         "car-ui-lib-no-overlayable",
         "car-qc-lib",
         "car-resource-common",
+        "car-scalable-ui-lib",
         "com_android_systemui_car_flags_lib",
         "CarDockLib",
         "car-data-subscription-lib",
         "testng",
         "//external/kotlinc:kotlin-annotations",
+        "Car-WindowManager-Shell",
     ],
 }
 
@@ -239,6 +243,9 @@ android_library {
         "src/**/I*.aidl",
         ":statslog-carsystemui-java-gen",
     ],
+
+    kotlin_lang_version: "1.9",
+
     static_libs: [
         "SystemUI-tests",
         "CarSystemUI-tests-base",
@@ -331,8 +338,6 @@ android_robolectric_test {
         "android.test.mock.stubs.system",
         "truth",
     ],
-
-    upstream: true,
 
     instrumentation_for: "CarSystemUIRobo-stub",
     java_resource_dirs: ["tests/robolectric/config"],

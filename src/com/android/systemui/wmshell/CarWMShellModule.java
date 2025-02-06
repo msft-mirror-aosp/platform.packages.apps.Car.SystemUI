@@ -16,18 +16,27 @@
 
 package com.android.systemui.wmshell;
 
+import static com.android.systemui.car.Flags.scalableUi;
+import static com.android.wm.shell.Flags.enableAutoTaskStackController;
+
 import android.content.Context;
 import android.os.Handler;
 import android.view.IWindowManager;
 
 import androidx.annotation.NonNull;
 
+import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.wm.AutoDisplayCompatWindowDecorViewModel;
 import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
+import com.android.systemui.car.wm.scalableui.PanelAutoTaskStackTransitionHandlerDelegate;
+import com.android.systemui.car.wm.scalableui.PanelConfigReader;
+import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
+import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.ShellTaskOrganizer;
+import com.android.wm.shell.automotive.AutoShellModule;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.common.ShellExecutor;
@@ -49,6 +58,7 @@ import com.android.wm.shell.windowdecor.common.viewhost.WindowDecorViewHost;
 import com.android.wm.shell.windowdecor.common.viewhost.WindowDecorViewHostSupplier;
 
 import dagger.BindsOptionalOf;
+import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 
@@ -57,7 +67,7 @@ import kotlinx.coroutines.CoroutineScope;
 import java.util.Optional;
 
 /** Provides dependencies from {@link com.android.wm.shell} for CarSystemUI. */
-@Module(includes = WMShellBaseModule.class)
+@Module(includes = {WMShellBaseModule.class, AutoShellModule.class})
 public abstract class CarWMShellModule {
 
     @WMSingleton
@@ -110,6 +120,7 @@ public abstract class CarWMShellModule {
             ShellInit shellInit,
             ShellTaskOrganizer taskOrganizer,
             DisplayController displayController,
+            DisplayInsetsController displayInsetsController,
             SyncTransactionQueue syncQueue,
             FocusTransitionObserver focusTransitionObserver,
             WindowDecorViewHostSupplier<WindowDecorViewHost> windowDecorViewHostSupplier,
@@ -122,9 +133,43 @@ public abstract class CarWMShellModule {
                 shellInit,
                 taskOrganizer,
                 displayController,
+                displayInsetsController,
                 syncQueue,
                 focusTransitionObserver,
                 windowDecorViewHostSupplier,
                 carServiceProvider);
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<PanelConfigReader> providesPanelConfigReader(
+            Context context,
+            TaskPanel.Factory taskPanelFactory
+    ) {
+        if (isScalableUIEnabled(context)) {
+            return Optional.of(new PanelConfigReader(
+                    context,
+                    taskPanelFactory));
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<ScalableUIWMInitializer> provideScalableUIInitializer(ShellInit shellInit,
+            Context context,
+            Optional<PanelConfigReader> panelConfigReaderOptional,
+            Lazy<PanelAutoTaskStackTransitionHandlerDelegate> delegate) {
+        if (isScalableUIEnabled(context) && panelConfigReaderOptional.isPresent()) {
+            return Optional.of(
+                    new ScalableUIWMInitializer(shellInit, panelConfigReaderOptional.get(),
+                            delegate.get()));
+        }
+        return Optional.empty();
+    }
+
+    private static boolean isScalableUIEnabled(Context context) {
+        return scalableUi() && enableAutoTaskStackController()
+                && context.getResources().getBoolean(R.bool.config_enableScalableUI);
     }
 }

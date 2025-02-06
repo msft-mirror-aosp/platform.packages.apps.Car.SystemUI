@@ -74,6 +74,11 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
                             listener.onTaskAppeared(taskInfo);
                         }
                     }
+                    if (mWindowDecorViewModelOptional.isPresent()) {
+                        SurfaceControl.Transaction t = new SurfaceControl.Transaction();
+                        mWindowDecorViewModelOptional.get().onTaskOpening(taskInfo, leash, t, t);
+                        t.apply();
+                    }
                 }
 
                 @Override
@@ -84,6 +89,10 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
                             listener.onTaskInfoChanged(taskInfo);
                         }
                     }
+
+                    if (mWindowDecorViewModelOptional.isPresent()) {
+                        mWindowDecorViewModelOptional.get().onTaskInfoChanged(taskInfo);
+                    }
                 }
 
                 @Override
@@ -93,6 +102,10 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
                         for (OnTaskChangeListener listener : mTaskListeners) {
                             listener.onTaskVanished(taskInfo);
                         }
+                    }
+
+                    if (mWindowDecorViewModelOptional.isPresent()) {
+                        mWindowDecorViewModelOptional.get().destroyWindowDecoration(taskInfo);
                     }
                 }
             };
@@ -107,7 +120,7 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
             Optional<WindowDecorViewModel> windowDecorViewModelOptional,
             TaskViewTransitions taskViewTransitions) {
         super(shellInit, shellTaskOrganizer, syncQueue, recentTasksOptional,
-                windowDecorViewModelOptional);
+                windowDecorViewModelOptional, Optional.empty());
         mShellTaskOrganizer = shellTaskOrganizer;
         mCarServiceTaskReporter = new CarServiceTaskReporter(context, carServiceProvider,
                 taskViewTransitions,

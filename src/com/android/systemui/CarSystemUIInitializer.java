@@ -50,7 +50,9 @@ public class CarSystemUIInitializer extends SystemUIInitializer {
         boolean isSystemUser = UserHandle.myUserId() == UserHandle.USER_SYSTEM;
         return ((CarSysUIComponent.Builder) sysUIBuilder).setRootTaskDisplayAreaOrganizer(
                         isSystemUser ? Optional.of(carWm.getRootTaskDisplayAreaOrganizer())
-                                : Optional.empty());
+                                : Optional.empty())
+                .setScalableUIWMInitializer(carWm.getScalableUIWMInitializer())
+                .setScalableUIEventDispatcher(carWm.getScalableUIEventDispatcher());
     }
 
     private void initWmComponents(CarWMComponent carWm) {

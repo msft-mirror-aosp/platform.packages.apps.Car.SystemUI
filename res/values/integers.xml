@@ -63,4 +63,10 @@
 
     <!-- Timeout value for data subscription pop up in ms -->
     <integer name="data_subscription_pop_up_timeout">30000</integer>
+    <!-- The interval between 2 popup appearance in days-->
+    <integer name="data_subscription_pop_up_frequency">7</integer>
+    <!-- The number of startup cycles after which the popup is not shown anymore -->
+    <integer name="data_subscription_pop_up_startup_cycle_limit">3</integer>
+    <!-- The number of active days after which the popup is not shown anymore -->
+    <integer name="data_subscription_pop_up_active_days_limit">5</integer>
 </resources>

@@ -1,5 +1,5 @@
 package: "com.android.systemui.car"
-container: "system"
+container: "system_ext"
 
 flag {
     name: "config_aware_systemui"

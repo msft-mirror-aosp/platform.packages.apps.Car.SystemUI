@@ -36,6 +36,7 @@ import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.wm.CarServiceTaskReporter;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.wm.shell.automotive.AutoTaskStackController;
@@ -63,6 +64,7 @@ public class TaskPanel implements Panel {
     private final Set<ComponentName> mPersistedActivities;
     private final Context mContext;
     private final AutoTaskStackHelper mAutoTaskStackHelper;
+    private final CarServiceTaskReporter mCarServiceTaskReporter;
     private int mLayer = -1;
     private int mRole = 0;
     private CarActivityManager mCarActivityManager;
@@ -81,11 +83,13 @@ public class TaskPanel implements Panel {
             CarServiceProvider carServiceProvider,
             AutoTaskStackHelper autoTaskStackHelper,
             EventDispatcher dispatcher,
+            CarServiceTaskReporter carServiceTaskReporter,
             @Assisted String id) {
         mAutoTaskStackController = autoTaskStackController;
         mCarServiceProvider = carServiceProvider;
         mContext = context;
         mAutoTaskStackHelper = autoTaskStackHelper;
+        mCarServiceTaskReporter = carServiceTaskReporter;
         mId = id;
         mPersistedActivities = new ArraySet<>();
     }
@@ -126,12 +130,18 @@ public class TaskPanel implements Panel {
                     @Override
                     public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo,
                             SurfaceControl leash) {
+                        mCarServiceTaskReporter.reportTaskAppeared(taskInfo, leash);
                         mAutoTaskStackHelper.setTaskUntrimmableIfNeeded(taskInfo);
                     }
 
                     @Override
                     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
-                        // no-op
+                        mCarServiceTaskReporter.reportTaskVanished(taskInfo);
+                    }
+
+                    @Override
+                    public void onTaskInfoChanged(ActivityManager.RunningTaskInfo taskInfo) {
+                        mCarServiceTaskReporter.reportTaskInfoChanged(taskInfo);
                     }
                 });
     }

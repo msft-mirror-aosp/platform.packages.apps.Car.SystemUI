@@ -129,9 +129,9 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             @NonNull Transitions.TransitionFinishCallback finishCallback) {
         if (DEBUG) {
             Log.d(TAG, "startAnimation INFO = " + info
-                    + ", changedTaskStacks" + changedTaskStacks
-                    + ", start transaction" + startTransaction.getId()
-                    + ", finishTransaction" + finishTransaction.getId());
+                    + ", changedTaskStacks=" + changedTaskStacks
+                    + ", start transaction=" + startTransaction.getId()
+                    + ", finishTransaction=" + finishTransaction.getId());
         }
 
         Trace.beginSection(TAG + "#startAnimation");
@@ -232,7 +232,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             @NonNull Map<Integer, AutoTaskStackState> changedTaskStacks, boolean aborted,
             @Nullable SurfaceControl.Transaction finishTransaction) {
         if (DEBUG) {
-            Log.d(TAG, "onTransitionConsumed" + aborted);
+            Log.d(TAG, "onTransitionConsumed=" + aborted);
         }
         Trace.beginSection(TAG + "#onTransitionConsumed");
         mTaskPanelTransitionCoordinator.stopRunningAnimations();

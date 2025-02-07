@@ -120,7 +120,7 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
             Optional<WindowDecorViewModel> windowDecorViewModelOptional,
             TaskViewTransitions taskViewTransitions) {
         super(shellInit, shellTaskOrganizer, syncQueue, recentTasksOptional,
-                windowDecorViewModelOptional);
+                windowDecorViewModelOptional, Optional.empty());
         mShellTaskOrganizer = shellTaskOrganizer;
         mCarServiceTaskReporter = new CarServiceTaskReporter(context, carServiceProvider,
                 taskViewTransitions,

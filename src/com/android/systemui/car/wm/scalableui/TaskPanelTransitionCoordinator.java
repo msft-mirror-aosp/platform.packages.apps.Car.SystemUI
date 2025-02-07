@@ -234,7 +234,7 @@ public class TaskPanelTransitionCoordinator {
         }
 
         if (DEBUG) {
-            Log.d(TAG, "With transaction id " + tx.getId() + " with panel" + taskPanel.getId()
+            Log.d(TAG, "With transaction id=" + tx.getId() + " with panel=" + taskPanel.getId()
                     + ", bounds="
                     + taskPanel.getBounds());
         }

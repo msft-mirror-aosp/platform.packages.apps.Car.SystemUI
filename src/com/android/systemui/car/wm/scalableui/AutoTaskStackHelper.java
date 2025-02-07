@@ -16,30 +16,121 @@
 
 package com.android.systemui.car.wm.scalableui;
 
-import android.annotation.NonNull;
 import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.util.Log;
 import android.window.WindowContainerTransaction;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.android.systemui.R;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.dagger.WMSingleton;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 @WMSingleton
 public final class AutoTaskStackHelper {
+    private static final String TAG = AutoTaskStackHelper.class.getSimpleName();
+    private static final String DELIMITER = ";";
     private final ShellTaskOrganizer mShellTaskOrganizer;
+    private final Context mContext;
+    private final Set<ComponentName> mNonTrimmableComponentSet;
+    private final Map<String, ComponentName> mDefaultComponentsMap;
 
     @Inject
-    public AutoTaskStackHelper(ShellTaskOrganizer shellTaskOrganizer) {
+    public AutoTaskStackHelper(Context context, ShellTaskOrganizer shellTaskOrganizer) {
         mShellTaskOrganizer = shellTaskOrganizer;
+        mContext = context;
+        mNonTrimmableComponentSet = new HashSet<>();
+        mDefaultComponentsMap = new HashMap<>();
+        initUntrimmableTaskSet();
+        initDefaultTaskMap();
+    }
+
+    /**
+     * Checks if a given running task is trimmable.
+     *
+     * <p> A task is trimmable if it's configured in config_untrimmable_activities
+     */
+    private boolean isTrimmable(@NonNull ActivityManager.RunningTaskInfo task) {
+        return !mNonTrimmableComponentSet.contains(task.baseActivity);
     }
 
     /**
      * Sets a task as trimmable or not - by default this will be true for tasks.
      */
-    public void setTaskTrimmable(@NonNull ActivityManager.RunningTaskInfo task, boolean trimmable) {
+    private void setTaskTrimmable(@NonNull ActivityManager.RunningTaskInfo task,
+            boolean trimmable) {
         WindowContainerTransaction wct = new WindowContainerTransaction();
         wct.setTaskTrimmableFromRecents(task.token, trimmable);
         mShellTaskOrganizer.applyTransaction(wct);
+    }
+
+    /**
+     * Retrieves the default {@link ComponentName} associated with a given ID.
+     *
+     * <p> The relationship is defined in config_default_activities.
+     */
+    @Nullable
+    public ComponentName getDefaultIntent(String id) {
+        return mDefaultComponentsMap.get(id);
+    }
+
+    /**
+     * Initializes the default task map from the config_default_activities array.
+     *
+     * <p> The format of the array is as follows:
+     * 1. panel_id;componentname
+     * 2. panel_id;com.example.app/.activity
+     */
+    private void initDefaultTaskMap() {
+        String[] configStrings = mContext.getResources().getStringArray(
+                R.array.config_default_activities);
+        for (int i = configStrings.length - 1; i >= 0; i--) {
+            String[] parts = configStrings[i].split(DELIMITER);
+            if (parts.length == 2) {
+                String key = parts[0].trim(); // Trim whitespace
+                String value = parts[1].trim(); // Trim whitespace
+                mDefaultComponentsMap.put(key, ComponentName.unflattenFromString(value));
+            } else {
+                // Handle cases where the split doesn't result in two parts (e.g., malformed input)
+                Log.e(TAG, "Skipping malformed pair: " + configStrings[i]);
+                // You could choose to throw an exception here, or just continue.
+            }
+        }
+    }
+
+    /**
+     * Initializes the {@code mNonTrimmableComponentSet} tasks from the
+     * config_untrimmable_activities string array resource.
+     */
+    private void initUntrimmableTaskSet() {
+        String[] componentNameStrings = mContext.getResources().getStringArray(
+                R.array.config_untrimmable_activities);
+        for (int i = componentNameStrings.length - 1; i >= 0; i--) {
+            mNonTrimmableComponentSet.add(
+                    ComponentName.unflattenFromString(componentNameStrings[i]));
+        }
+    }
+
+    /**
+     * Sets the given task as untrimmable if it is not already trimmable.
+     *
+     * <p>This method checks if the provided {@link ActivityManager.RunningTaskInfo}
+     * is considered according to config_untrimmable_activities. If the task is *not*
+     * trimmable, it explicitly sets the task's trimmable state to `false`.
+     */
+    public void setTaskUntrimmableIfNeeded(@NonNull ActivityManager.RunningTaskInfo taskInfo) {
+        if (!isTrimmable(taskInfo)) {
+            setTaskTrimmable(taskInfo, /* trimmable= */ false);
+        }
     }
 }

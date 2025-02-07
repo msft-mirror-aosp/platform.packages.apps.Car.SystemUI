@@ -24,6 +24,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.UserHandle;
+import android.util.ArraySet;
+import android.util.Log;
 import android.view.SurfaceControl;
 
 import androidx.annotation.NonNull;
@@ -46,18 +48,19 @@ import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 /**
  * A {@link RootTaskStack} based implementation of a {@link Panel}.
  */
 public class TaskPanel implements Panel {
     private static final String TAG = TaskPanel.class.getSimpleName();
+    private static final String ROLE_TYPE_STRING = "string";
+    private static final String ROLE_TYPE_ARRAY = "array";
 
     private final AutoTaskStackController mAutoTaskStackController;
     private final CarServiceProvider mCarServiceProvider;
-    private final List<ComponentName> mPersistedActivities = new ArrayList<>();
+    private final Set<ComponentName> mPersistedActivities;
     private final Context mContext;
     private final AutoTaskStackHelper mAutoTaskStackHelper;
     private int mLayer = -1;
@@ -72,7 +75,6 @@ public class TaskPanel implements Panel {
     private int mDisplayId;
     private boolean mIsLaunchRoot;
     private RootTaskStack mRootTaskStack;
-    private int mTaskCount;
 
     @AssistedInject
     public TaskPanel(AutoTaskStackController autoTaskStackController, @NonNull Context context,
@@ -85,6 +87,7 @@ public class TaskPanel implements Panel {
         mContext = context;
         mAutoTaskStackHelper = autoTaskStackHelper;
         mId = id;
+        mPersistedActivities = new ArraySet<>();
     }
 
     /**
@@ -123,17 +126,12 @@ public class TaskPanel implements Panel {
                     @Override
                     public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo,
                             SurfaceControl leash) {
-                        if (!mIsLaunchRoot && mTaskCount == 0) {
-                            // set the initial task to be non-trimmable to prevent ATMS removal.
-                            // TODO: use expanded role functionality to determine trimmability
-                            mAutoTaskStackHelper.setTaskTrimmable(taskInfo, false);
-                        }
-                        mTaskCount++;
+                        mAutoTaskStackHelper.setTaskUntrimmableIfNeeded(taskInfo);
                     }
 
                     @Override
                     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
-                        mTaskCount--;
+                        // no-op
                     }
                 });
     }
@@ -191,13 +189,13 @@ public class TaskPanel implements Panel {
      */
     @Nullable
     public Intent getDefaultIntent() {
-        List<ComponentName> tasks = getPersistedActivities();
-        if (tasks.isEmpty()) {
+        ComponentName componentName = mAutoTaskStackHelper.getDefaultIntent(mId);
+        if (componentName == null) {
             return null;
         }
         Intent defaultIntent = new Intent(Intent.ACTION_MAIN);
         defaultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        defaultIntent.setComponent(tasks.getFirst());
+        defaultIntent.setComponent(componentName);
         return defaultIntent;
     }
 
@@ -225,25 +223,10 @@ public class TaskPanel implements Panel {
     }
 
     /**
-     * Return the Role task string associated with this panel
-     * TODO: finalize role API and potentially remove
-     */
-    public String getRoleTask() {
-        if (mRole == 0) {
-            return null;
-        }
-        return mContext.getResources().getString(mRole);
-    }
-
-    /**
      * Return whether this panel is the launch root panel.
      */
     public boolean getIsLaunchRoot() {
         return mIsLaunchRoot;
-    }
-
-    public List<ComponentName> getPersistedActivities() {
-        return mPersistedActivities;
     }
 
     public String getId() {
@@ -328,30 +311,51 @@ public class TaskPanel implements Panel {
     public void setRole(int role) {
         if (this.mRole == role) return;
         this.mRole = role;
+        String roleTypeName = mContext.getResources().getResourceTypeName(mRole);
+        switch(roleTypeName) {
+            case ROLE_TYPE_STRING:
+                String roleString = mContext.getResources().getString(mRole);
+                if (PanelState.DEFAULT_ROLE.equals(roleString)) {
+                    mIsLaunchRoot = true;
+                    return;
+                }
+                mPersistedActivities.clear();
+                ComponentName componentName = ComponentName.unflattenFromString(roleString);
+                mPersistedActivities.add(componentName);
+                break;
+            case ROLE_TYPE_ARRAY:
+                mPersistedActivities.clear();
+                String[] componentNameStrings = mContext.getResources().getStringArray(mRole);
+                mPersistedActivities.addAll(convertToComponentNames(componentNameStrings));
+                break;
+            default: {
+                Log.e(TAG, "Role type is not supported " + roleTypeName);
+            }
+        }
     }
 
-    @Override
-    public void setLaunchRoot(boolean isLaunchRoot) {
-        mIsLaunchRoot = isLaunchRoot;
+    private ArraySet<ComponentName> convertToComponentNames(String[] componentStrings) {
+        ArraySet<ComponentName> componentNames = new ArraySet<>(componentStrings.length);
+        for (int i = componentStrings.length - 1; i >= 0; i--) {
+            componentNames.add(ComponentName.unflattenFromString(componentStrings[i]));
+        }
+        return componentNames;
     }
 
     private void setPersistentActivity() {
-        mPersistedActivities.clear();
         if (mRole == 0) {
             return;
         }
-        String roleString = mContext.getResources().getString(mRole);
-        if (PanelState.DEFAULT_ROLE.equals(roleString)) {
+
+        if (mIsLaunchRoot) {
             return;
         }
-        List<ComponentName> tasks = new ArrayList<>();
-        ComponentName componentName = ComponentName.unflattenFromString(roleString);
-        tasks.add(componentName);
+
         if (mCarActivityManager != null && mRootTaskStack != null) {
-            mCarActivityManager.setPersistentActivitiesOnRootTask(tasks,
+            mCarActivityManager.setPersistentActivitiesOnRootTask(
+                    mPersistedActivities.stream().toList(),
                     mRootTaskStack.getRootTaskInfo().token.asBinder());
         }
-        mPersistedActivities.add(componentName);
     }
 
     @VisibleForTesting
@@ -375,6 +379,13 @@ public class TaskPanel implements Panel {
                 + ", mLeash=" + mLeash
                 + ", mRootTaskStack=" + mRootTaskStack
                 + '}';
+    }
+
+    /**
+     * Checks if the activity with given {@link ComponentName} should show in current panel.
+     */
+    public boolean handles(@Nullable ComponentName componentName) {
+        return componentName != null && mPersistedActivities.contains(componentName);
     }
 
     @AssistedFactory

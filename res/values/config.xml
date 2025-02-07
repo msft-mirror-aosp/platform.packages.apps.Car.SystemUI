@@ -275,4 +275,24 @@
     <!-- The entry point for panel definition of scalableUI feature.  -->
     <array name="window_states">
     </array>
+
+    <!--
+        List of activity names that should not be considered trimmable by the system.
+        Used when scalableUi feature is enabled.
+    -->
+    <string-array name="config_untrimmable_activities" translatable="false">
+    </string-array>
+
+    <!--
+        Specifies the default activities associated with different panel IDs.
+
+        This string array defines the default activity to launch for panels. Each item in the array
+        represents a mapping between a panel ID and its corresponding activity.
+        The format of each item is: "panel_id;activity_component_name".
+        - `panel_id`:  The ID of the panel (e.g., "app_grid_panel", "map_panel").
+        - `activity_component_name`: The fully qualified component name of the activity to launch
+           for that panel.
+    -->
+    <string-array name="config_default_activities" translatable="false">
+    </string-array>
 </resources>

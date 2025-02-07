@@ -200,8 +200,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         String panelId;
         TaskPanel panel = null;
         if (componentString != null) {
-            panel = TaskPanelPool.getTaskPanel(
-                    tp -> tp.getRoleTask() != null && tp.getRoleTask().equals(componentString));
+            panel = TaskPanelPool.getTaskPanel(tp -> tp.handles(component));
         }
         if (panel == null) {
             panel = TaskPanelPool.getTaskPanel(TaskPanel::getIsLaunchRoot);

@@ -33,6 +33,7 @@ import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoShellModule;
+import com.android.wm.shell.automotive.TaskRepository;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.common.SyncTransactionQueue;
@@ -80,7 +81,8 @@ public abstract class CarWMShellModule {
             SyncTransactionQueue syncQueue,
             Optional<RecentTasksController> recentTasksOptional,
             Optional<WindowDecorViewModel> windowDecorViewModelOptional,
-            TaskViewTransitions taskViewTransitions) {
+            TaskViewTransitions taskViewTransitions,
+            TaskRepository taskRepository) {
         return new CarFullscreenTaskMonitorListener(context,
                 carServiceProvider,
                 shellInit,
@@ -88,7 +90,8 @@ public abstract class CarWMShellModule {
                 syncQueue,
                 recentTasksOptional,
                 windowDecorViewModelOptional,
-                taskViewTransitions);
+                taskViewTransitions,
+                taskRepository);
     }
 
     @WMSingleton

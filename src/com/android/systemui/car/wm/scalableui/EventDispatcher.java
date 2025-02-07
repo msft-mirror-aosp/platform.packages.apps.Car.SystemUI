@@ -29,11 +29,11 @@ import javax.inject.Inject;
 @WMSingleton
 public class EventDispatcher {
 
-    private final AutoTaskStackHelper mAutoTaskStackHelper;
+    private final TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
 
     @Inject
-    public EventDispatcher(AutoTaskStackHelper autoTaskStackHelper) {
-        mAutoTaskStackHelper = autoTaskStackHelper;
+    public EventDispatcher(TaskPanelTransitionCoordinator taskPanelTransitionCoordinator) {
+        mTaskPanelTransitionCoordinator = taskPanelTransitionCoordinator;
     }
 
     /**
@@ -62,6 +62,6 @@ public class EventDispatcher {
      * transaction.
      */
     public void executeTransaction(Event event) {
-        mAutoTaskStackHelper.startTransition(getTransaction(event));
+        mTaskPanelTransitionCoordinator.startTransition(getTransaction(event));
     }
 }

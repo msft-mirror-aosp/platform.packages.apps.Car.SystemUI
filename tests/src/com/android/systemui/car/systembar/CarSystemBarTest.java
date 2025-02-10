@@ -30,6 +30,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -38,7 +39,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.RemoteException;
@@ -58,9 +58,9 @@ import com.android.internal.statusbar.RegisterStatusBarResult;
 import com.android.internal.view.AppearanceRegion;
 import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
+import com.android.systemui.SysuiTestableContext;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -96,7 +96,7 @@ import org.mockito.MockitoAnnotations;
 public class CarSystemBarTest extends SysuiTestCase {
 
     private TestableResources mTestableResources;
-    private Context mSpiedContext;
+    private SysuiTestableContext mSpiedContext;
     private FakeExecutor mExecutor;
     private CarSystemBarControllerImpl mCarSystemBarController;
 
@@ -104,16 +104,6 @@ public class CarSystemBarTest extends SysuiTestCase {
     private UserTracker mUserTracker;
     @Mock
     private ActivityManager mActivityManager;
-    @Mock
-    private ButtonSelectionStateController mButtonSelectionStateController;
-    @Mock
-    private ButtonRoleHolderController mButtonRoleHolderController;
-    @Mock
-    private MicPrivacyChipViewController mMicPrivacyChipViewController;
-    @Mock
-    private CameraPrivacyChipViewController mCameraPrivacyChipViewController;
-    @Mock
-    private StatusIconPanelViewController.Builder mPanelControllerBuilder;
     @Mock
     private StatusIconPanelViewController mPanelController;
     @Mock
@@ -143,27 +133,25 @@ public class CarSystemBarTest extends SysuiTestCase {
     @Mock
     private StatusBarSignalPolicy mSignalPolicy;
     @Mock
-    private HvacController mHvacController;
-    @Mock
     private ConfigurationController mConfigurationController;
     @Mock
     private CarSystemBarRestartTracker mCarSystemBarRestartTracker;
     @Mock
     private CarSystemBarViewFactory mCarSystemBarViewFactory;
     @Mock
-    private CarSystemBarView mTopBar;
+    private CarSystemBarViewController mTopBar;
     @Mock
     private ViewGroup mTopWindow;
     @Mock
-    private CarSystemBarView mRigthBar;
+    private CarSystemBarViewController mRigthBar;
     @Mock
     private ViewGroup mRightWindow;
     @Mock
-    private CarSystemBarView mLeftBar;
+    private CarSystemBarViewController mLeftBar;
     @Mock
     private ViewGroup mLeftWindow;
     @Mock
-    private CarSystemBarView mBottomBar;
+    private CarSystemBarViewController mBottomBar;
     @Mock
     private ViewGroup mBottomWindow;
 
@@ -179,17 +167,27 @@ public class CarSystemBarTest extends SysuiTestCase {
         mExecutor = new FakeExecutor(new FakeSystemClock());
         mUiBgExecutor = new FakeExecutor(new FakeSystemClock());
         mSpiedContext = spy(mContext);
-        when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
+        mSpiedContext.addMockSystemService(ActivityManager.class, mActivityManager);
+        mSpiedContext.addMockSystemService(WindowManager.class, mWindowManager);
+        when(mSpiedContext.createWindowContext(anyInt(), any())).thenReturn(mSpiedContext);
         when(mStatusBarIconController.getTransitionsController()).thenReturn(
                 mLightBarTransitionsController);
-        when(mCarSystemBarViewFactory.getTopBar(anyBoolean())).thenReturn(mTopBar);
-        when(mCarSystemBarViewFactory.getTopWindow()).thenReturn(mTopWindow);
-        when(mCarSystemBarViewFactory.getRightBar(anyBoolean())).thenReturn(mRigthBar);
-        when(mCarSystemBarViewFactory.getRightWindow()).thenReturn(mRightWindow);
-        when(mCarSystemBarViewFactory.getBottomBar(anyBoolean())).thenReturn(mBottomBar);
-        when(mCarSystemBarViewFactory.getBottomWindow()).thenReturn(mBottomWindow);
-        when(mCarSystemBarViewFactory.getLeftBar(anyBoolean())).thenReturn(mLeftBar);
-        when(mCarSystemBarViewFactory.getLeftWindow()).thenReturn(mLeftWindow);
+        when(mTopBar.getView()).thenReturn(mock(CarSystemBarView.class));
+        when(mCarSystemBarViewFactory.getSystemBarViewController(eq(TOP), anyBoolean()))
+                .thenReturn(mTopBar);
+        when(mCarSystemBarViewFactory.getSystemBarWindow(eq(TOP))).thenReturn(mTopWindow);
+        when(mRigthBar.getView()).thenReturn(mock(CarSystemBarView.class));
+        when(mCarSystemBarViewFactory.getSystemBarViewController(eq(RIGHT), anyBoolean()))
+                .thenReturn(mRigthBar);
+        when(mCarSystemBarViewFactory.getSystemBarWindow(eq(RIGHT))).thenReturn(mRightWindow);
+        when(mBottomBar.getView()).thenReturn(mock(CarSystemBarView.class));
+        when(mCarSystemBarViewFactory.getSystemBarViewController(eq(BOTTOM), anyBoolean()))
+                .thenReturn(mBottomBar);
+        when(mCarSystemBarViewFactory.getSystemBarWindow(eq(BOTTOM))).thenReturn(mBottomWindow);
+        when(mLeftBar.getView()).thenReturn(mock(CarSystemBarView.class));
+        when(mCarSystemBarViewFactory.getSystemBarViewController(eq(LEFT), anyBoolean()))
+                .thenReturn(mLeftBar);
+        when(mCarSystemBarViewFactory.getSystemBarWindow(eq(LEFT))).thenReturn(mLeftWindow);
         mAppearanceRegions = new AppearanceRegion[]{
                 new AppearanceRegion(APPEARANCE_LIGHT_STATUS_BARS, new Rect())
         };
@@ -218,23 +216,17 @@ public class CarSystemBarTest extends SysuiTestCase {
         mDependency.injectMockDependency(DarkIconDispatcher.class);
         mDependency.injectMockDependency(StatusBarIconController.class);
 
-        setupPanelControllerBuilderMocks();
-
         initCarSystemBar();
     }
 
     private void initCarSystemBar() {
-        SystemBarConfigs systemBarConfigs = new SystemBarConfigs(mTestableResources.getResources());
+        SystemBarConfigs systemBarConfigs =
+                new SystemBarConfigsImpl(mSpiedContext, mTestableResources.getResources());
         FakeDisplayTracker displayTracker = new FakeDisplayTracker(mContext);
         mCarSystemBarController = spy(new CarSystemBarControllerImpl(mSpiedContext,
                 mUserTracker,
                 mCarSystemBarViewFactory,
-                mButtonSelectionStateController,
-                () -> mMicPrivacyChipViewController,
-                () -> mCameraPrivacyChipViewController,
-                mButtonRoleHolderController,
                 systemBarConfigs,
-                () -> mPanelControllerBuilder,
                 mLightBarController,
                 mStatusBarIconController,
                 mWindowManager,
@@ -246,7 +238,6 @@ public class CarSystemBarTest extends SysuiTestCase {
                 mBarService,
                 () -> mKeyguardStateController,
                 () -> mIconPolicy,
-                mHvacController,
                 mConfigurationController,
                 mCarSystemBarRestartTracker,
                 displayTracker,
@@ -540,14 +531,14 @@ public class CarSystemBarTest extends SysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, false);
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, true);
         mTestableResources.addOverride(R.bool.config_enableRightSystemBar, true);
-        mSystemBarConfigs = new SystemBarConfigs(mTestableResources.getResources());
+        mSystemBarConfigs =
+                new SystemBarConfigsImpl(mSpiedContext, mTestableResources.getResources());
         when(mCarSystemBarController.getBarWindow(TOP)).thenReturn(mock(ViewGroup.class));
         when(mCarSystemBarController.getBarWindow(BOTTOM)).thenReturn(null);
         when(mCarSystemBarController.getBarWindow(LEFT)).thenReturn(mock(ViewGroup.class));
         when(mCarSystemBarController.getBarWindow(RIGHT)).thenReturn(mock(ViewGroup.class));
         mCarSystemBarController.restartSystemBars();
 
-        verify(mCarSystemBarController, times(1)).removeAll();
         verify(mCarSystemBarController, times(2)).resetSystemBarConfigs();
         assertThat(mCarSystemBarController.getBarWindow(TOP)).isNotNull();
         assertThat(mCarSystemBarController.getBarWindow(BOTTOM)).isNull();
@@ -558,16 +549,5 @@ public class CarSystemBarTest extends SysuiTestCase {
     private void waitForDelayableExecutor() {
         mExecutor.advanceClockToLast();
         mExecutor.runAllReady();
-    }
-
-    private void setupPanelControllerBuilderMocks() {
-        when(mPanelControllerBuilder.setXOffset(anyInt())).thenReturn(mPanelControllerBuilder);
-        when(mPanelControllerBuilder.setYOffset(anyInt())).thenReturn(mPanelControllerBuilder);
-        when(mPanelControllerBuilder.setGravity(anyInt())).thenReturn(mPanelControllerBuilder);
-        when(mPanelControllerBuilder.setDisabledWhileDriving(anyBoolean())).thenReturn(
-                mPanelControllerBuilder);
-        when(mPanelControllerBuilder.setShowAsDropDown(anyBoolean())).thenReturn(
-                mPanelControllerBuilder);
-        when(mPanelControllerBuilder.build(any(), anyInt(), anyInt())).thenReturn(mPanelController);
     }
 }

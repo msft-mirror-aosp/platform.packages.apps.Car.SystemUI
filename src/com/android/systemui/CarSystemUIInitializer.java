@@ -16,14 +16,16 @@
 
 package com.android.systemui;
 
+import static com.android.systemui.car.Flags.daviewBasedWindowing;
+
 import android.content.Context;
 import android.os.Process;
 import android.os.UserHandle;
 
 import com.android.systemui.dagger.GlobalRootComponent;
 import com.android.systemui.dagger.SysUIComponent;
-import com.android.systemui.dagger.WMComponent;
 import com.android.systemui.wmshell.CarWMComponent;
+import com.android.wm.shell.dagger.WMComponent;
 
 import java.util.Optional;
 
@@ -56,6 +58,9 @@ public class CarSystemUIInitializer extends SystemUIInitializer {
         if (Process.myUserHandle().isSystem()) {
             carWm.getCarSystemUIProxy();
             carWm.getRemoteCarTaskViewTransitions();
+            if (daviewBasedWindowing()) {
+                carWm.getDaViewTransitions();
+            }
         }
     }
 }

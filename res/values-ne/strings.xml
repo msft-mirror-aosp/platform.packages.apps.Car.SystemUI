@@ -117,6 +117,10 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> को प्रोफाइल साइन आउट गरिँदै छ। पछि फेरि प्रयास गर्नुहोस्।"</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"यी प्रयोगकर्ता हाल उपलब्ध हुनुहुन्न"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"यात्रुको जानकारी देखाइने डिस्प्लेमा \"सुरक्षित प्रयोगकर्ता\" सुरु गर्न सकिएन"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"गलत प्याटर्न"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"गलत PIN"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"गलत पासवर्ड"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{अत्यन्तै धेरै पटक गलत तरिकाले अनलक गर्ने प्रयास गरियो। # सेकेन्डपछि फेरि प्रयास गर्नुहोस्।}other{अत्यन्तै धेरै पटक गलत तरिकाले अनलक गर्ने प्रयास गरियो। # सेकेन्डपछि फेरि प्रयास गर्नुहोस्।}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"चालकको सिट"</string>
     <string name="seat_front" msgid="836133281052793377">"अगाडिको सिट"</string>
     <string name="seat_rear" msgid="403133444964528577">"पछाडिको सिट"</string>

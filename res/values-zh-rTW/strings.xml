@@ -117,6 +117,10 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"正在將<xliff:g id="USER_NAME">%s</xliff:g>登出，請稍後再試。"</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"目前無法啟動使用者"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"無法在乘客螢幕上啟動安全使用者"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"解鎖圖案錯誤"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"PIN 碼錯誤"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"密碼錯誤"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{錯誤次數過多，請於 # 秒後再試一次。}other{錯誤次數過多，請於 # 秒後再試一次。}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"駕駛座"</string>
     <string name="seat_front" msgid="836133281052793377">"前方座位"</string>
     <string name="seat_rear" msgid="403133444964528577">"後方座位"</string>

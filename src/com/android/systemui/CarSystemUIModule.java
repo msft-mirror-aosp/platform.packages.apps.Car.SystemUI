@@ -77,6 +77,7 @@ import com.android.systemui.statusbar.policy.SensorPrivacyController;
 import com.android.systemui.statusbar.policy.SensorPrivacyControllerImpl;
 import com.android.systemui.unfold.SysUIUnfoldStartableModule;
 import com.android.systemui.wallpapers.dagger.NoopWallpaperModule;
+import com.android.systemui.window.dagger.WindowRootViewBlurNotSupportedModule;
 
 import dagger.Binds;
 import dagger.Module;
@@ -113,6 +114,7 @@ import javax.inject.Named;
                 ScreenDecorationsModule.class,
                 ShadeEmptyImplModule.class,
                 SysUIUnfoldStartableModule.class,
+                WindowRootViewBlurNotSupportedModule.class
         }
 )
 abstract class CarSystemUIModule {

@@ -174,6 +174,9 @@ public class ActivityBlockingActivity extends FragmentActivity {
                     case NONE -> displayBlockingContent();
                 }
             });
+        } else {
+            Slog.d(TAG, "Ignoring app blocking activity feature");
+            displayBlockingContent();
         }
     }
 

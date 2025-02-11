@@ -61,6 +61,8 @@
     <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"/>
     <!-- Permission to read notifications -->
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATIONS"/>
+    <!-- This permission is required for display compatibility -->
+    <uses-permission android:name="android.car.permission.CONTROL_CAR_APP_LAUNCH" />
 
     <application
         tools:replace="android:name,android:appComponentFactory"

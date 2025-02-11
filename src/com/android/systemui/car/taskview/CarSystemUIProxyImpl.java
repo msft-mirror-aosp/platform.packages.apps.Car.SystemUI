@@ -42,10 +42,12 @@ import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.dagger.WMSingleton;
 import com.android.wm.shell.taskview.TaskViewTransitions;
+import com.android.wm.shell.windowdecor.WindowDecorViewModel;
 
 import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -68,6 +70,7 @@ public final class CarSystemUIProxyImpl
 
     private boolean mConnected;
     private CarActivityManager mCarActivityManager;
+    private final Optional<WindowDecorViewModel> mWindowDecorViewModelOptional;
 
     /**
      * Returns true if {@link CarSystemUIProxyImpl} should be registered, false otherwise.
@@ -96,11 +99,13 @@ public final class CarSystemUIProxyImpl
             SyncTransactionQueue syncTransactionQueue,
             ShellTaskOrganizer taskOrganizer,
             TaskViewTransitions taskViewTransitions,
-            DumpManager dumpManager) {
+            DumpManager dumpManager,
+            Optional<WindowDecorViewModel> windowDecorViewModelOptional) {
         mContext = context;
         mTaskOrganizer = taskOrganizer;
         mSyncQueue = syncTransactionQueue;
         mTaskViewTransitions = taskViewTransitions;
+        mWindowDecorViewModelOptional = windowDecorViewModelOptional;
         mDisplayManager = mContext.getSystemService(DisplayManager.class);
         dumpManager.registerDumpable(this);
 
@@ -135,7 +140,9 @@ public final class CarSystemUIProxyImpl
                         mSyncQueue,
                         carTaskViewClient,
                         this,
-                        mTaskViewTransitions, mCarActivityManager);
+                        mTaskViewTransitions,
+                        mCarActivityManager,
+                        mWindowDecorViewModelOptional);
         mRemoteCarTaskViewServerSet.add(remoteCarTaskViewServerImpl);
         return remoteCarTaskViewServerImpl.getHostImpl();
     }

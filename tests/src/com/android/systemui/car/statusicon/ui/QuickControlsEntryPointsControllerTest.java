@@ -147,8 +147,8 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
         mQuickControlsEntryPointsController.addIconViews(qcEntryPointContainer,
                 /* shouldAttachPanel= */ true);
 
-        verify((QuickControlsEntryPointContainer) qcEntryPointContainer, times(3)).showAsDropDown();
-        verify(qcEntryPointContainer, times(3)).addView(any());
+        verify((QuickControlsEntryPointContainer) qcEntryPointContainer, times(4)).showAsDropDown();
+        verify(qcEntryPointContainer, times(4)).addView(any());
     }
 
     @Test
@@ -164,7 +164,7 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
         mQuickControlsEntryPointsController.addIconViews(qcHeaderReadOnlyIconsContainer,
                 /* shouldAttachPanel= */ true);
 
-        verify(qcHeaderReadOnlyIconsContainer, times(3)).addView(any());
+        verify(qcHeaderReadOnlyIconsContainer, times(4)).addView(any());
     }
 
     @Test
@@ -185,8 +185,8 @@ public class QuickControlsEntryPointsControllerTest extends SysuiTestCase {
         mQuickControlsEntryPointsController.addIconViews(qcHeaderReadOnlyIconsContainer,
                 /* shouldAttachPanel= */ true);
 
-        verify(controller, times(3)).registerIconView(any());
-        verify(controller, times(6)).getPanelContentLayout();
-        verify(controller, times(3)).getPanelWidth();
+        verify(controller, times(4)).registerIconView(any());
+        verify(controller, times(8)).getPanelContentLayout();
+        verify(controller, times(4)).getPanelWidth();
     }
 }

@@ -19,6 +19,7 @@ package com.android.systemui;
 import static com.android.systemui.Dependency.ALLOW_NOTIFICATION_LONG_PRESS_NAME;
 import static com.android.systemui.Dependency.LEAK_REPORT_EMAIL_NAME;
 
+import android.annotation.Nullable;
 import android.content.Context;
 import android.hardware.SensorPrivacyManager;
 import android.os.Handler;
@@ -31,6 +32,8 @@ import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
 import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
 import com.android.systemui.car.drivemode.DriveModeModule;
+import com.android.systemui.car.displaycompat.ToolbarController;
+import com.android.systemui.car.displaycompat.ToolbarControllerImpl;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
 import com.android.systemui.car.statusbar.DozeServiceHost;
@@ -225,4 +228,19 @@ abstract class CarSystemUIModule {
     @Binds
     abstract PrivacyDotDecorProviderFactory providePrivacyDotDecorProviderFactory(
             CarPrivacyChipDecorProviderFactory carPrivacyDotDecorProviderFactory);
+
+    /**
+     * Injects ToolbarController
+     */
+    @Nullable
+    @Provides
+    static ToolbarController providesToolbarController(Context context,
+            ToolbarControllerImpl impl) {
+        if (context.getResources()
+                .getInteger(R.integer.config_showDisplayCompatToolbar) == 0) {
+            return null;
+        } else {
+            return impl;
+        }
+    }
 }

@@ -75,7 +75,7 @@ import org.mockito.quality.Strictness;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
-@TestableLooper.RunWithLooper
+@TestableLooper.RunWithLooper(setAsMainLooper = true)
 @SmallTest
 public class DisplayInputSinkControllerTest extends SysuiTestCase {
     private static final String TAG = DisplayInputSinkControllerTest.class.getSimpleName();
@@ -120,11 +120,10 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
                 .spyStatic(UserManager.class)
                 .strictness(Strictness.WARN)
                 .startMocking();
-        spyOn(mContext);
         mContentResolver = mContext.getContentResolver();
         spyOn(mContentResolver);
         mHandler = new Handler(Looper.getMainLooper());
-        doReturn(mDisplayManager).when(mContext).getSystemService(DisplayManager.class);
+        mContext.addMockSystemService(DisplayManager.class, mDisplayManager);
         mDisplayInputSinkController =
                 new DisplayInputSinkController(mContext, mHandler, mCarServiceProvider,
                         mDisplayInputSinks, mDisplayInputLockWindows, mDisplayInputLockSetting,
@@ -138,6 +137,7 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
         }).when(mCarServiceProvider).addListener(any(CarServiceOnConnectedListener.class));
         doReturn(mCarPowerManager).when(mCar).getCarManager(CarPowerManager.class);
         doReturn(mCarOccupantZoneManager).when(mCar).getCarManager(CarOccupantZoneManager.class);
+        doReturn(true).when(() -> UserManager.isVisibleBackgroundUsersEnabled());
         // Initialize two displays as passenger displays.
         setUpDisplay(mPassengerDisplay1, mPassengerDisplayId1, mPassengerDisplayUniqueId1);
         setUpDisplay(mPassengerDisplay2, mPassengerDisplayId2, mPassengerDisplayUniqueId2);
@@ -146,6 +146,21 @@ public class DisplayInputSinkControllerTest extends SysuiTestCase {
     @After
     public void tearDown() {
         mMockingSession.finishMocking();
+    }
+
+    @Test
+    public void start_nonMUMDSystem_controllerNotStarted() {
+        doReturn(UserHandle.USER_SYSTEM).when(() -> UserHandle.myUserId());
+        doReturn(true).when(() -> UserManager.isHeadlessSystemUserMode());
+        doReturn(false).when(() -> UserManager.isVisibleBackgroundUsersEnabled());
+
+        mDisplayInputSinkController.start();
+
+        verify(mContentResolver, never())
+                .registerContentObserver(any(Uri.class), anyBoolean(), any(ContentObserver.class));
+        verify(mDisplayManager, never()).registerDisplayListener(
+                any(DisplayManager.DisplayListener.class),
+                any());
     }
 
     @Test

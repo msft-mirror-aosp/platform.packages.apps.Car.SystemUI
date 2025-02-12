@@ -31,6 +31,7 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.wm.CarServiceTaskReporter;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.wm.shell.automotive.AutoTaskStackController;
@@ -65,12 +66,14 @@ public class TaskPanelTest extends SysuiTestCase{
     private RootTaskStack mRootTaskStack;
     @Mock
     private CarActivityManager mCarActivityManager;
+    @Mock
+    private CarServiceTaskReporter mCarServiceTaskReporter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mTaskPanel = new TaskPanel(mAutoTaskStackController, mContext, mCarServiceProvider,
-                mAutoTaskStackHelper, mEventDispatcher, TASK_PANEL_ID);
+                mAutoTaskStackHelper, mEventDispatcher, mCarServiceTaskReporter, TASK_PANEL_ID);
         when(mFactory.create(any())).thenReturn(mTaskPanel);
     }
 

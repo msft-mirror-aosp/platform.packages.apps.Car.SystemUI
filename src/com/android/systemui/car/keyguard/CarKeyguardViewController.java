@@ -253,6 +253,11 @@ public class CarKeyguardViewController extends OverlayViewController implements
     }
 
     @Override
+    public void readyForKeyguardDone() {
+        mViewMediatorCallback.readyForKeyguardDone();
+    }
+
+    @Override
     @MainThread
     public void showPrimaryBouncer(boolean scrimmed) {
         if (mShowing && !mPrimaryBouncerInteractor.isFullyShowing()) {
@@ -281,7 +286,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     public void hide(long startTime, long fadeoutDuration) {
         if (!mShowing || mIsSleeping) return;
 
-        mViewMediatorCallback.readyForKeyguardDone();
+        readyForKeyguardDone();
         mShowing = false;
         mKeyguardStateController.notifyKeyguardState(mShowing,
                 mKeyguardStateController.isOccluded());

@@ -25,6 +25,7 @@ import android.provider.Settings;
 import android.util.ArraySet;
 import android.util.Slog;
 import android.view.WindowInsets;
+import android.view.WindowInsets.Type.InsetsType;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -45,6 +46,9 @@ import java.io.StringWriter;
  *     "immersive.full=*"
  *   to force hide status bars for com.package1 but not com.package2:
  *     "immersive.status=com.package1,-com.package2"
+ *   to force hide navigation bar everywhere, and com.package1 to control visibility of both system
+ *   bar types:
+ *     "immersive.navigation=*,+com.package1"
  *
  * Separate multiple name-value pairs with ':'
  *   e.g. "immersive.status=com.package:immersive.navigation=*"
@@ -109,26 +113,43 @@ public class BarControlPolicy {
     }
 
     /**
-     * Returns bar visibilities based on POLICY_CONTROL_AUTO filters and window policies.
+     * Returns bar visibilities based on POLICY_CONTROL_AUTO filters, window policies and the
+     * requested visible system bar types.
+     *
      * @return int[], where the first value is the inset types that should be shown, and the second
      *         is the inset types that should be hidden.
      */
-    @WindowInsets.Type.InsetsType
-    public static int[] getBarVisibilities(String packageName) {
+    @InsetsType
+    public static int[] getBarVisibilities(
+            String packageName, @InsetsType int requestedVisibleTypes) {
         int hideTypes = 0;
         int showTypes = 0;
-        if (matchesStatusFilter(packageName)) {
+
+        if (isStatusControlAllowed(packageName)) {
+            if ((requestedVisibleTypes & WindowInsets.Type.statusBars()) != 0) {
+                showTypes |= WindowInsets.Type.statusBars();
+            } else {
+                hideTypes |= WindowInsets.Type.statusBars();
+            }
+        } else if (matchesStatusFilter(packageName)) {
             hideTypes |= WindowInsets.Type.statusBars();
         } else {
             showTypes |= WindowInsets.Type.statusBars();
         }
-        if (matchesNavigationFilter(packageName)) {
+
+        if (isNavigationControlAllowed(packageName)) {
+            if ((requestedVisibleTypes & WindowInsets.Type.navigationBars()) != 0) {
+                showTypes |= WindowInsets.Type.navigationBars();
+            } else {
+                hideTypes |= WindowInsets.Type.navigationBars();
+            }
+        } else if (matchesNavigationFilter(packageName)) {
             hideTypes |= WindowInsets.Type.navigationBars();
         } else {
             showTypes |= WindowInsets.Type.navigationBars();
         }
 
-        return new int[] {showTypes, hideTypes};
+        return new int[] { showTypes, hideTypes };
     }
 
     private static boolean matchesStatusFilter(String packageName) {
@@ -138,6 +159,24 @@ public class BarControlPolicy {
     private static boolean matchesNavigationFilter(String packageName) {
         return sImmersiveNavigationFilter != null
                 && sImmersiveNavigationFilter.matches(packageName);
+    }
+
+    /**
+     * Returns {@code true} if the status bar visibility is allowed to be controlled by the given
+     * package.
+     */
+    private static boolean isStatusControlAllowed(String packageName) {
+        return sImmersiveStatusFilter != null
+                && sImmersiveStatusFilter.isControlAllowed(packageName);
+    }
+
+    /**
+     * Returns {@code true} if the navigation bar visibility is allowed to be controlled by the
+     * given package.
+     */
+    private static boolean isNavigationControlAllowed(String packageName) {
+        return sImmersiveNavigationFilter != null
+                && sImmersiveNavigationFilter.isControlAllowed(packageName);
     }
 
     private static void setFilters(String value) {
@@ -174,10 +213,13 @@ public class BarControlPolicy {
 
         private final ArraySet<String> mToInclude;
         private final ArraySet<String> mToExclude;
+        private final ArraySet<String> mAllowControl;
 
-        private Filter(ArraySet<String> toInclude, ArraySet<String> toExclude) {
+        private Filter(ArraySet<String> toInclude, ArraySet<String> toExclude,
+                ArraySet<String> allowControl) {
             mToInclude = toInclude;
             mToExclude = toExclude;
+            mAllowControl = allowControl;
         }
 
         boolean matches(String packageName) {
@@ -194,10 +236,18 @@ public class BarControlPolicy {
             return mToInclude.contains(ALL) || mToInclude.contains(packageName);
         }
 
+        boolean isControlAllowed(String packageName) {
+            return mAllowControl.contains(ALL) || mAllowControl.contains(packageName);
+        }
+
         void dump(PrintWriter pw) {
             pw.print("Filter[");
-            dump("toInclude", mToInclude, pw); pw.print(',');
-            dump("toExclude", mToExclude, pw); pw.print(']');
+            dump("toInclude", mToInclude, pw);
+            pw.print(',');
+            dump("toExclude", mToExclude, pw);
+            pw.print(',');
+            dump("allowControl", mAllowControl, pw);
+            pw.print(']');
         }
 
         private void dump(String name, ArraySet<String> set, PrintWriter pw) {
@@ -221,18 +271,22 @@ public class BarControlPolicy {
         // e.g. "com.package1", or "com.android.systemui, com.android.keyguard" or "*"
         static Filter parse(String value) {
             if (value == null) return null;
-            ArraySet<String> toInclude = new ArraySet<String>();
-            ArraySet<String> toExclude = new ArraySet<String>();
+            ArraySet<String> toInclude = new ArraySet<>();
+            ArraySet<String> toExclude = new ArraySet<>();
+            ArraySet<String> allowControl = new ArraySet<>();
             for (String token : value.split(",")) {
                 token = token.trim();
                 if (token.startsWith("-") && token.length() > 1) {
                     token = token.substring(1);
                     toExclude.add(token);
+                } else if (token.startsWith("+") && token.length() > 1) {
+                    token = token.substring(1);
+                    allowControl.add(token);
                 } else {
                     toInclude.add(token);
                 }
             }
-            return new Filter(toInclude, toExclude);
+            return new Filter(toInclude, toExclude, allowControl);
         }
     }
 

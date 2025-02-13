@@ -30,20 +30,16 @@ import android.view.SurfaceControl;
 
 import com.android.systemui.car.CarServiceProvider;
 import com.android.wm.shell.ShellTaskOrganizer;
-import com.android.wm.shell.dagger.WMSingleton;
 import com.android.wm.shell.taskview.TaskViewTransitions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.inject.Inject;
-
 /**
  * This class reports the task events to CarService using {@link CarActivityManager}.
  */
-@WMSingleton
-public final class CarServiceTaskReporter {
+final class CarServiceTaskReporter {
     private final DisplayManager mDisplayManager;
     private final AtomicReference<CarActivityManager> mCarActivityManagerRef =
             new AtomicReference<>();
@@ -51,8 +47,7 @@ public final class CarServiceTaskReporter {
     private final TaskViewTransitions mTaskViewTransitions;
     private final ShellTaskOrganizer mShellTaskOrganizer;
 
-    @Inject
-    public CarServiceTaskReporter(Context context, CarServiceProvider carServiceProvider,
+    CarServiceTaskReporter(Context context, CarServiceProvider carServiceProvider,
             TaskViewTransitions taskViewTransitions,
             ShellTaskOrganizer shellTaskOrganizer) {
         mDisplayManager = context.getSystemService(DisplayManager.class);

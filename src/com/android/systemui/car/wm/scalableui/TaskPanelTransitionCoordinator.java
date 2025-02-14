@@ -24,11 +24,14 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.SurfaceControl;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.internal.dep.Trace;
+import com.android.car.scalableui.manager.Event;
 import com.android.car.scalableui.manager.PanelTransaction;
+import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.Transition;
 import com.android.car.scalableui.model.Variant;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
@@ -76,6 +79,64 @@ public class TaskPanelTransitionCoordinator {
                     createAutoTaskStackTransaction(transaction));
             mPendingPanelTransactions.put(transition, transaction);
         }
+    }
+
+    /**
+     * This is a medium-term workaround to resolve the transition conflicts for cts purpose.
+     *
+     * <p>Transition conflicts arise when multiple intents occur rapidly, leading to
+     * {@code handleRequest} only processing the initial intent. Subsequent intents are handled
+     * directly by the Window Manager without invoking the {@code handleRequest} callback. Due to
+     * missing task info, window state corrections are limited to scenarios where the launch root
+     * task has changed. This change is interpreted as either a task open or close event, determined
+     * by the visibility change.
+     * TODO(b/397527431) : handle transition conflicts correctly after b/388067743.
+     */
+    public void maybeResolveConflict(Map<Integer, AutoTaskStackState> changedTaskStacks,
+            IBinder transition) {
+        PanelTransaction transaction = null;
+        synchronized (mPendingPanelTransactions) {
+            transaction = mPendingPanelTransactions.get(transition);
+        }
+
+        for (Map.Entry<Integer, AutoTaskStackState> entry : changedTaskStacks.entrySet()) {
+            int autoTaskStackId = entry.getKey();
+            TaskPanel tp = TaskPanelPool.getTaskPanel(taskPanel ->
+                    taskPanel.getRootStack() != null
+                            && taskPanel.getRootStack().getId() == autoTaskStackId);
+            if (tp == null || !tp.isLaunchRoot()) {
+                if (DEBUG) {
+                    Log.d(TAG, "Panel is null or not launch root" + tp);
+                }
+                continue;
+            }
+
+            // If there is no recorded pending transaction for the changed rootTask, treat it as
+            // conflict.
+            AutoTaskStackState changedState = entry.getValue();
+            boolean findConflict = transaction == null
+                    || !isEqual(changedState, transaction.getPanelTransactionState(tp.getId()));
+            if (findConflict) {
+                Log.e(TAG, "Transition conflicts found on launch root task - " + changedState);
+                Event event = new Event(
+                        changedState.getChildrenTasksVisible() ? "_System_TaskOpenEvent"
+                                : "_System_TaskCloseEvent").addToken("panelId", tp.getId());
+                PanelTransaction panelTransaction = StateManager.handleEvent(event);
+                mAutoTaskStackController.startTransition(
+                        createAutoTaskStackTransaction(panelTransaction));
+            }
+        }
+    }
+
+    private boolean isEqual(@NonNull AutoTaskStackState changedState,
+            @Nullable Transition panelTransition) {
+        if (panelTransition == null) {
+            return false;
+        }
+        Variant toVariant = panelTransition.getToVariant();
+        return changedState.getChildrenTasksVisible() == toVariant.isVisible()
+                && changedState.getLayer() == toVariant.getLayer()
+                && changedState.getBounds().equals(toVariant.getBounds());
     }
 
     /**

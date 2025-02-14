@@ -132,6 +132,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                     + ", finishTransaction" + finishTransaction.getId());
         }
 
+        mTaskPanelTransitionCoordinator.maybeResolveConflict(changedTaskStacks, transition);
+
         Trace.beginSection(TAG + "#startAnimation");
 
         calculateTransaction(startTransaction, info, /* isFinish= */ false);
@@ -203,7 +205,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             panel = TaskPanelPool.getTaskPanel(tp -> tp.handles(component));
         }
         if (panel == null) {
-            panel = TaskPanelPool.getTaskPanel(TaskPanel::getIsLaunchRoot);
+            panel = TaskPanelPool.getTaskPanel(TaskPanel::isLaunchRoot);
         }
         if (panel != null) {
             panelId = panel.getId();

@@ -30,31 +30,30 @@ import android.view.SurfaceControl;
 
 import com.android.systemui.car.CarServiceProvider;
 import com.android.wm.shell.ShellTaskOrganizer;
-import com.android.wm.shell.dagger.WMSingleton;
+import com.android.wm.shell.automotive.TaskRepository;
 import com.android.wm.shell.taskview.TaskViewTransitions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.inject.Inject;
-
 /**
  * This class reports the task events to CarService using {@link CarActivityManager}.
  */
-@WMSingleton
-public final class CarServiceTaskReporter {
+final class CarServiceTaskReporter {
     private final DisplayManager mDisplayManager;
     private final AtomicReference<CarActivityManager> mCarActivityManagerRef =
             new AtomicReference<>();
     private final boolean mShouldConnectToCarActivityService;
     private final TaskViewTransitions mTaskViewTransitions;
     private final ShellTaskOrganizer mShellTaskOrganizer;
+    // TODO(b/395767437): Add task listener for fullscreen and multi window mode in task repository
+    private final TaskRepository mTaskRepository;
 
-    @Inject
-    public CarServiceTaskReporter(Context context, CarServiceProvider carServiceProvider,
+    CarServiceTaskReporter(Context context, CarServiceProvider carServiceProvider,
             TaskViewTransitions taskViewTransitions,
-            ShellTaskOrganizer shellTaskOrganizer) {
+            ShellTaskOrganizer shellTaskOrganizer,
+            TaskRepository taskRepository) {
         mDisplayManager = context.getSystemService(DisplayManager.class);
         mTaskViewTransitions = taskViewTransitions;
         // Rely on whether or not CarSystemUIProxy should be registered to account for these
@@ -69,6 +68,7 @@ public final class CarServiceTaskReporter {
         mShouldConnectToCarActivityService = CarSystemUIProxyImpl.shouldRegisterCarSystemUIProxy(
                 context);
         mShellTaskOrganizer = shellTaskOrganizer;
+        mTaskRepository = taskRepository;
 
         if (mShouldConnectToCarActivityService) {
             carServiceProvider.addListener(this::onCarConnected);
@@ -92,7 +92,11 @@ public final class CarServiceTaskReporter {
         }
         CarActivityManager carAM = mCarActivityManagerRef.get();
         if (carAM != null) {
-            carAM.onTaskAppeared(taskInfo, leash);
+            if (carAM.isUsingAutoTaskStackWindowing()) {
+                mTaskRepository.onTaskAppeared(taskInfo, leash);
+            } else {
+                carAM.onTaskAppeared(taskInfo, leash);
+            }
         } else {
             Slog.w(TAG, "CarActivityManager is null, skip onTaskAppeared: taskInfo=" + taskInfo);
         }
@@ -117,7 +121,11 @@ public final class CarServiceTaskReporter {
 
         CarActivityManager carAM = mCarActivityManagerRef.get();
         if (carAM != null) {
-            carAM.onTaskInfoChanged(taskInfo);
+            if (carAM.isUsingAutoTaskStackWindowing()) {
+                mTaskRepository.onTaskChanged(taskInfo);
+            } else {
+                carAM.onTaskInfoChanged(taskInfo);
+            }
         } else {
             Slog.w(TAG, "CarActivityManager is null, skip onTaskInfoChanged: taskInfo=" + taskInfo);
         }
@@ -141,7 +149,11 @@ public final class CarServiceTaskReporter {
 
         CarActivityManager carAM = mCarActivityManagerRef.get();
         if (carAM != null) {
-            carAM.onTaskVanished(taskInfo);
+            if (carAM.isUsingAutoTaskStackWindowing()) {
+                mTaskRepository.onTaskVanished(taskInfo);
+            } else {
+                carAM.onTaskVanished(taskInfo);
+            }
         } else {
             Slog.w(TAG, "CarActivityManager is null, skip onTaskVanished: taskInfo=" + taskInfo);
         }

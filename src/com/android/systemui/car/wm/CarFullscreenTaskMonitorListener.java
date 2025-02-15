@@ -52,24 +52,25 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
     static final String TAG = "CarFullscrTaskMonitor";
     static final boolean DBG = Log.isLoggable(TAG, Log.DEBUG);
     private final ShellTaskOrganizer mShellTaskOrganizer;
-    private final CarServiceTaskReporter mCarServiceTaskReporter;
+    // TODO(b/395767437): Add task listener for fullscreen and multi window mode in task repository
+    private final AutoTaskRepository mTaskRepository;
 
     private final ShellTaskOrganizer.TaskListener mMultiWindowTaskListener =
             new ShellTaskOrganizer.TaskListener() {
                 @Override
                 public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo,
                         SurfaceControl leash) {
-                    mCarServiceTaskReporter.reportTaskAppeared(taskInfo, leash);
+                    mTaskRepository.onTaskAppeared(taskInfo, leash);
                 }
 
                 @Override
                 public void onTaskInfoChanged(ActivityManager.RunningTaskInfo taskInfo) {
-                    mCarServiceTaskReporter.reportTaskInfoChanged(taskInfo);
+                    mTaskRepository.onTaskChanged(taskInfo);
                 }
 
                 @Override
                 public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
-                    mCarServiceTaskReporter.reportTaskVanished(taskInfo);
+                    mTaskRepository.onTaskVanished(taskInfo);
                 }
             };
 
@@ -86,11 +87,7 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
         super(shellInit, shellTaskOrganizer, syncQueue, recentTasksOptional,
                 windowDecorViewModelOptional);
         mShellTaskOrganizer = shellTaskOrganizer;
-        mCarServiceTaskReporter = new CarServiceTaskReporter(context, carServiceProvider,
-                taskViewTransitions,
-                shellTaskOrganizer,
-                taskRepository);
-
+        mTaskRepository = taskRepository;
         shellInit.addInitCallback(
                 () -> mShellTaskOrganizer.addListenerForType(mMultiWindowTaskListener,
                         ShellTaskOrganizer.TASK_LISTENER_TYPE_MULTI_WINDOW),
@@ -101,18 +98,18 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
     public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo,
             SurfaceControl leash) {
         super.onTaskAppeared(taskInfo, leash);
-        mCarServiceTaskReporter.reportTaskAppeared(taskInfo, leash);
+        mTaskRepository.onTaskAppeared(taskInfo, leash);
     }
 
     @Override
     public void onTaskInfoChanged(ActivityManager.RunningTaskInfo taskInfo) {
         super.onTaskInfoChanged(taskInfo);
-        mCarServiceTaskReporter.reportTaskInfoChanged(taskInfo);
+        mTaskRepository.onTaskChanged(taskInfo);
     }
 
     @Override
     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
         super.onTaskVanished(taskInfo);
-        mCarServiceTaskReporter.reportTaskVanished(taskInfo);
+        mTaskRepository.onTaskVanished(taskInfo);
     }
 }

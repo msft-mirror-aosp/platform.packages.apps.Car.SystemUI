@@ -159,9 +159,6 @@ public final class CarSystemUIProxyImpl
         removeExistingTaskViewTasks();
 
         mCarActivityManager = car.getCarManager(CarActivityManager.class);
-        if (!mCarActivityManager.isUsingAutoTaskStackWindowing()) {
-            mCarActivityManager.registerTaskMonitor();
-        }
         mCarActivityManager.registerCarSystemUIProxy(this);
     }
 

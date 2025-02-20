@@ -30,7 +30,7 @@ import android.view.SurfaceControl;
 
 import com.android.systemui.car.CarServiceProvider;
 import com.android.wm.shell.ShellTaskOrganizer;
-import com.android.wm.shell.automotive.TaskRepository;
+import com.android.wm.shell.automotive.AutoTaskRepository;
 import com.android.wm.shell.taskview.TaskViewTransitions;
 
 import java.util.ArrayList;
@@ -48,12 +48,12 @@ final class CarServiceTaskReporter {
     private final TaskViewTransitions mTaskViewTransitions;
     private final ShellTaskOrganizer mShellTaskOrganizer;
     // TODO(b/395767437): Add task listener for fullscreen and multi window mode in task repository
-    private final TaskRepository mTaskRepository;
+    private final AutoTaskRepository mTaskRepository;
 
     CarServiceTaskReporter(Context context, CarServiceProvider carServiceProvider,
             TaskViewTransitions taskViewTransitions,
             ShellTaskOrganizer shellTaskOrganizer,
-            TaskRepository taskRepository) {
+            AutoTaskRepository taskRepository) {
         mDisplayManager = context.getSystemService(DisplayManager.class);
         mTaskViewTransitions = taskViewTransitions;
         // Rely on whether or not CarSystemUIProxy should be registered to account for these

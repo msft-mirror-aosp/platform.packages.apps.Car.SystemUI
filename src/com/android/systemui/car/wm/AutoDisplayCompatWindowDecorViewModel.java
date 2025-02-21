@@ -63,7 +63,9 @@ public class AutoDisplayCompatWindowDecorViewModel extends CarWindowDecorViewMod
             SyncTransactionQueue syncQueue,
             CarServiceProvider carServiceProvider) {
         super(context, mainExecutor, bgExecutor, taskOrganizer, displayController,
-                displayInsetsController, syncQueue);
+                displayInsetsController, syncQueue,
+                /* isWindowDecorEnabled= */ context.getResources()
+                        .getBoolean(R.bool.config_showDisplayCompatWindowDecoration));
         mContext = context;
         carServiceProvider.addListener(
                 car -> mCarPackageManager = car.getCarManager(CarPackageManager.class));
@@ -75,8 +77,7 @@ public class AutoDisplayCompatWindowDecorViewModel extends CarWindowDecorViewMod
     @Override
     protected boolean shouldShowWindowDecor(ActivityManager.RunningTaskInfo taskInfo) {
         String packageName = getPackageName(taskInfo);
-        if (packageName == null || mContext.getResources()
-                .getInteger(R.integer.config_showDisplayCompatWindowDecoration) == 0) {
+        if (packageName == null) {
             return false;
         }
         Context userContext = mContext.createContextAsUser(

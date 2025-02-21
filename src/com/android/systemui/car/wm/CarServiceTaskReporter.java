@@ -167,10 +167,15 @@ final class CarServiceTaskReporter {
         // after the car service is connected and hence will go via the {@link #onTaskAppeared}
         // flow.
         List<ActivityManager.RunningTaskInfo> runningTasks = getRunningNonTaskViewTasks();
+        CarActivityManager carAM = mCarActivityManagerRef.get();
         for (ActivityManager.RunningTaskInfo runningTaskInfo : runningTasks) {
             Slog.d(TAG, "Sending onTaskAppeared for an already existing task: "
                     + runningTaskInfo.taskId);
-            mCarActivityManagerRef.get().onTaskAppeared(runningTaskInfo, /* leash = */ null);
+            if (carAM.isUsingAutoTaskStackWindowing()) {
+                mTaskRepository.onTaskAppeared(runningTaskInfo, /* leash = */ null);
+            } else {
+                carAM.onTaskAppeared(runningTaskInfo, /* leash = */ null);
+            }
         }
     }
 

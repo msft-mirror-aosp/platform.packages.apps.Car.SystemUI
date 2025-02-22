@@ -225,7 +225,7 @@ public class TaskPanel implements Panel {
     /**
      * Return whether this panel is the launch root panel.
      */
-    public boolean getIsLaunchRoot() {
+    public boolean isLaunchRoot() {
         return mIsLaunchRoot;
     }
 

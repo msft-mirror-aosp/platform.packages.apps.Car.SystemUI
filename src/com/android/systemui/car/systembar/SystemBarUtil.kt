@@ -128,7 +128,7 @@ object SystemBarUtil {
             )
         val navBarVisibleOnBarControlPolicy =
             (behavior == SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY) &&
-                    isBarVisibleOnBarControlPolicy(context, navigationBars())
+                    isBarVisibilityEnforcedByBarControlPolicy(context, navigationBars())
 
         return remoteInsetsControllerControlsSystemBars &&
                 (behavior == SYSTEM_BAR_PERSISTENCY_CONFIG_NON_IMMERSIVE ||
@@ -147,17 +147,18 @@ object SystemBarUtil {
             )
         val statusBarVisibleOnBarControlPolicy =
             (behavior == SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY) &&
-                    isBarVisibleOnBarControlPolicy(context, statusBars())
+                    isBarVisibilityEnforcedByBarControlPolicy(context, statusBars())
 
         return remoteInsetsControllerControlsSystemBars &&
                 (behavior == SYSTEM_BAR_PERSISTENCY_CONFIG_NON_IMMERSIVE ||
                         statusBarVisibleOnBarControlPolicy)
     }
 
-    private fun isBarVisibleOnBarControlPolicy(context: Context, type: Int): Boolean {
+    private fun isBarVisibilityEnforcedByBarControlPolicy(context: Context, type: Int): Boolean {
         val showTypes =
             BarControlPolicy.getBarVisibilities(
-                context.packageName
+                context.packageName,
+                /* requestedVisibleTypes= */ 0
             )[VISIBLE_BAR_VISIBILITIES_TYPES_INDEX]
         return (showTypes and type) != 0
     }

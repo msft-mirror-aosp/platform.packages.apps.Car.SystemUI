@@ -39,8 +39,8 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
@@ -61,7 +61,7 @@ import java.util.Collections;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class HvacPanelOverlayViewControllerTest extends SysuiTestCase {
+public class HvacPanelOverlayViewControllerTest extends CarSysuiTestCase {
     HvacPanelOverlayViewController mHvacPanelOverlayViewController;
     TestableResources mTestableResources;
 

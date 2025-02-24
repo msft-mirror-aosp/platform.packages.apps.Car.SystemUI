@@ -185,10 +185,12 @@ public class SeatTemperatureLevelButton extends ImageButton implements HvacView 
                             + "same length as R.integer.hvac_seat_heat_level_count");
         }
 
+        int[] drawableIds = new int[seatTemperatureIcons.length()];
         for (int i = 0; i < mTotalLevelCount; i++) {
-            mIcons.set(i, seatTemperatureIcons.getDrawable(i));
+            drawableIds[i] = seatTemperatureIcons.getResourceId(i, 0);
+            mIcons.set(i, mContext.getResources().getDrawable(drawableIds[i], mContext.getTheme()));
         }
-        seatTemperatureIcons.recycle();
         typedArray.recycle();
+        seatTemperatureIcons.recycle();
     }
 }

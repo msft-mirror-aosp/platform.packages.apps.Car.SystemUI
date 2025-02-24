@@ -29,6 +29,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
@@ -126,8 +127,10 @@ public class QCLogoutButtonController extends QCFooterViewController {
 
     @VisibleForTesting
     AlertDialog createDialog() {
-        Context context = getContext().createWindowContext(getContext().getDisplay(),
-                WindowManager.LayoutParams.TYPE_NAVIGATION_BAR_PANEL, null);
+        // Copy the theme from the original context to the WindowContext
+        Context context = new ContextThemeWrapper(getContext().createWindowContext(
+                WindowManager.LayoutParams.TYPE_NAVIGATION_BAR_PANEL,
+                null), getContext().getTheme());
         return new AlertDialog.Builder(context,
                 com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setTitle(R.string.user_logout_title)

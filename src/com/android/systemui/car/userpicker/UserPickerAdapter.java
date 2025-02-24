@@ -58,9 +58,10 @@ final class UserPickerAdapter extends Adapter<UserPickerAdapter.UserPickerAdapte
         mContext = context;
         mDisplayId = mContext.getDisplayId();
         mDisabledAlpha = mContext.getResources().getFloat(R.fraction.user_picker_disabled_alpha);
-        mCurrentUserSubtitleColor = mContext.getColor(
-                R.color.user_picker_current_login_state_color);
-        mOtherUserSubtitleColor = mContext.getColor(R.color.user_picker_other_login_state_color);
+        mCurrentUserSubtitleColor = mContext.getResources().getColor(
+                R.color.user_picker_current_login_state_color, mContext.getTheme());
+        mOtherUserSubtitleColor = mContext.getResources().getColor(
+                R.color.user_picker_other_login_state_color, mContext.getTheme());
         mVerticalSpacing = mContext.getResources().getDimensionPixelSize(
                 R.dimen.user_picker_vertical_space_between_users);
         mHorizontalSpacing = mContext.getResources().getDimensionPixelSize(

@@ -22,6 +22,7 @@ import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_M
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Binder;
+import android.view.ContextThemeWrapper;
 import android.view.DisplayCutout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -73,8 +74,11 @@ public class SystemUIOverlayWindowController implements
     public SystemUIOverlayWindowController(
             Context context,
             ConfigurationController configurationController) {
-        mContext = context.createWindowContext(WindowManager.LayoutParams.TYPE_NOTIFICATION_SHADE,
-                /* options= */ null);
+        // Copy the theme from the original context to the WindowContext
+        mContext = new ContextThemeWrapper(context.createWindowContext(
+                WindowManager.LayoutParams.TYPE_NOTIFICATION_SHADE,
+                /* options= */ null), context.getTheme());
+
         mWindowManager = mContext.getSystemService(WindowManager.class);
 
         mLpChanged = new WindowManager.LayoutParams();

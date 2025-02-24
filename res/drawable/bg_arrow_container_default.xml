@@ -17,5 +17,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="@color/qc_pop_up_color" />
-    <corners android:radius="@dimen/data_subscription_pop_up_radius" />
+    <corners android:radius="?dataSubscriptionPopUpRadius" />
 </shape>

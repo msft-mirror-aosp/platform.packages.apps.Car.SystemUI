@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.UserHandle;
+import android.os.UserManager;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.SurfaceControl;
@@ -36,6 +37,7 @@ import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.wm.shell.automotive.AutoTaskStackController;
@@ -108,6 +110,10 @@ public class TaskPanel implements Panel {
                         if (mIsLaunchRoot) {
                             mAutoTaskStackController.setDefaultRootTaskStackOnDisplay(mDisplayId,
                                     mRootTaskId);
+                        }
+
+                        if (isUserUnlocked(mContext)) {
+                            reset();
                         }
                     }
 
@@ -312,7 +318,7 @@ public class TaskPanel implements Panel {
         if (this.mRole == role) return;
         this.mRole = role;
         String roleTypeName = mContext.getResources().getResourceTypeName(mRole);
-        switch(roleTypeName) {
+        switch (roleTypeName) {
             case ROLE_TYPE_STRING:
                 String roleString = mContext.getResources().getString(mRole);
                 if (PanelState.DEFAULT_ROLE.equals(roleString)) {
@@ -392,5 +398,14 @@ public class TaskPanel implements Panel {
     public interface Factory {
         /** Create instance of TaskPanel with specified id */
         TaskPanel create(String id);
+    }
+
+    private static boolean isUserUnlocked(@NonNull Context context) {
+        int userId = CarSystemUIUserUtil.isSecondaryMUMDSystemUI()
+                ? context.getUserId()
+                : ActivityManager.getCurrentUser();
+
+        UserManager userManager = context.getSystemService(UserManager.class);
+        return userManager != null && userManager.isUserUnlocked(userId);
     }
 }

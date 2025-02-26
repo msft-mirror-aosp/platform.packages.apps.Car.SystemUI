@@ -168,6 +168,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                 pos = change.getStartAbsBounds();
             }
             transaction.setPosition(leash, pos.left, pos.top);
+            transaction.setCornerRadius(leash, taskPanel.getCornerRadius());
             taskPanel.setLeash(leash);
 
             transaction.setLayer(leash, taskPanel.getLayer());

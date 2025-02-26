@@ -75,6 +75,7 @@ public class TaskPanel implements Panel {
     private SurfaceControl mLeash;
     private float mAlpha;
     private int mDisplayId;
+    private int mCornerRadius;
     private boolean mIsLaunchRoot;
     private RootTaskStack mRootTaskStack;
 
@@ -314,6 +315,16 @@ public class TaskPanel implements Panel {
     }
 
     @Override
+    public void setCornerRadius(int radius) {
+        mCornerRadius = radius;
+    }
+
+    @Override
+    public int getCornerRadius() {
+        return mCornerRadius;
+    }
+
+    @Override
     public void setRole(int role) {
         if (this.mRole == role) return;
         this.mRole = role;
@@ -384,6 +395,7 @@ public class TaskPanel implements Panel {
                 + ", mLayer=" + mLayer
                 + ", mLeash=" + mLeash
                 + ", mRootTaskStack=" + mRootTaskStack
+                + ", mCornerRadius=" + mCornerRadius
                 + '}';
     }
 

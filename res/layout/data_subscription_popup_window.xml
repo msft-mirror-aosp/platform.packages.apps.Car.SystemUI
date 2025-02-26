@@ -24,7 +24,7 @@
     android:clickable="true"
     android:focusable="true"
     app:carUiArrowHeight="@dimen/data_subscription_pop_up_arrow_height"
-    app:carUiArrowRadius="@dimen/data_subscription_pop_up_arrow_radius"
+    app:carUiArrowRadius="?dataSubscriptionPopUpArrowRadius"
     app:carUiArrowWidth="@dimen/data_subscription_pop_up_arrow_width"
     app:carUiContentView="@id/pop_up_view"
     app:carUiContentViewDrawable="@drawable/bg_arrow_container_default"

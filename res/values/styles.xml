@@ -27,20 +27,20 @@
     </style>
 
     <style name="TextAppearance.SystemBar.Clock"
-           parent="@*android:style/TextAppearance.StatusBar.Icon">
+        parent="@*android:style/TextAppearance.StatusBar.Icon">
         <item name="android:textSize">@dimen/car_body4_size</item>
         <item name="android:textColor">@color/system_bar_clock_text_color</item>
         <item name="android:textFontWeight">500</item>
     </style>
 
     <style name="TextAppearance.SystemBar.ClockWithSelection"
-           parent="@*android:style/TextAppearance.StatusBar.Icon">
+        parent="@*android:style/TextAppearance.StatusBar.Icon">
         <item name="android:textSize">@dimen/car_body1_size</item>
         <item name="android:textColor">@color/system_bar_text_color_with_selection</item>
     </style>
 
     <style name="TextAppearance.SystemBar.Username"
-           parent="@android:style/TextAppearance.DeviceDefault">
+        parent="@android:style/TextAppearance.DeviceDefault">
         <item name="android:textSize">@dimen/car_body3_size</item>
         <item name="android:textColor">@color/system_bar_text_color_with_selection</item>
         <item name="android:fontFamily">sans-serif-medium</item>
@@ -83,7 +83,7 @@
         <item name="android:layout_centerVertical">true</item>
     </style>
 
-<!--    Todo: update RB to work with these styles -->
+    <!--    Todo: update RB to work with these styles -->
     <style name="TopBarButton">
         <item name="android:layout_marginTop">@dimen/car_quick_controls_entry_points_button_margin_top</item>
         <item name="android:layout_marginBottom">@dimen/car_quick_controls_entry_points_button_margin_bottom</item>
@@ -111,7 +111,7 @@
 
     <style name="HvacTemperatureFont">
         <item name="android:textSize">@dimen/temperature_bar_text_size</item>
-        <item name="android:textColor">@color/car_on_primary</item>
+        <item name="android:textColor">?oemColorOnPrimary</item>
     </style>
 
     <style name="HvacTemperature" parent="HvacTemperatureFont">
@@ -188,7 +188,7 @@
     </style>
 
     <style name="QCFooterButtonStyle"
-           parent="android:Widget.DeviceDefault.Button">
+        parent="android:Widget.DeviceDefault.Button">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minHeight">@dimen/car_quick_controls_footer_button_min_height</item>
@@ -234,7 +234,7 @@
     </style>
 
     <!-- Biometrics -->
-    <style name="PinPadKey" parent="TextAppearance.Car.Headline.Medium">
+    <style name="PinPadKey">
         <item name="android:gravity">center</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@*android:color/car_body3</item>
@@ -269,5 +269,26 @@
         <item name="android:layout_width">44dp</item>
         <item name="android:layout_height">44dp</item>
         <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="CarSystemUIThemeOverlay">
+        <item name="carControlHighlight">#99d9e2ff</item>
+        <item name="systemBarPillRadius">?oemShapeCornerFull</item>
+        <item name="systemBarPillSelectedRadius">?oemShapeCornerSmall</item>
+        <item name="hvacPanelBackgroundRadius">?oemShapeCornerExtraLarge</item>
+        <item name="notificationShadeHandleBarRadius">?oemShapeCornerMedium</item>
+        <item name="notificationShadowRadius">?oemShapeCornerSmall</item>
+        <item name="carStatusIconPanelBorderRadius">?oemShapeCornerLarge</item>
+        <item name="carNavBarButtonSelectedCornerRadius">?oemShapeCornerMedium</item>
+        <item name="hvacPanelHandleBarRadius">?oemShapeCornerMedium</item>
+        <item name="temperatureBarBgRadius">?oemShapeCornerExtraLarge</item>
+        <item name="hvacPanelButtonRadius">?oemShapeCornerExtraLarge</item>
+        <item name="hvacFanSpeedBarCornerRadius">?oemShapeCornerLarge</item>
+        <item name="activityBlockingActionButtonCornerRadius">?oemShapeCornerLarge</item>
+        <item name="displayInputLockBackgroundRadius">?oemShapeCornerExtraSmall</item>
+        <item name="userPickerPillRadius">?oemShapeCornerLarge</item>
+        <item name="pinPadKeyRadius">?oemShapeCornerFull</item>
+        <item name="dataSubscriptionPopUpRadius">?oemShapeCornerMedium</item>
+        <item name="dataSubscriptionPopUpArrowRadius">?oemShapeCornerExtraSmall</item>
     </style>
 </resources>

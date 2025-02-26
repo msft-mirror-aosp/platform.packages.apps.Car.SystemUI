@@ -26,7 +26,7 @@
                     <solid android:color="@color/car_ui_rotary_focus_pressed_fill_color"/>
                     <stroke android:width="@dimen/car_ui_rotary_focus_pressed_stroke_width"
                             android:color="@color/car_ui_rotary_focus_pressed_stroke_color"/>
-                    <corners android:radius="@dimen/car_nav_bar_button_selected_corner_radius"/>
+                    <corners android:radius="?hvacFanSpeedBarCornerRadius"/>
                 </shape>
             </item>
         </layer-list>
@@ -43,7 +43,7 @@
                     <solid android:color="@color/car_ui_rotary_focus_fill_color"/>
                     <stroke android:width="@dimen/car_ui_rotary_focus_stroke_width"
                             android:color="@color/car_ui_rotary_focus_stroke_color"/>
-                    <corners android:radius="@dimen/car_nav_bar_button_selected_corner_radius"/>
+                    <corners android:radius="?hvacFanSpeedBarCornerRadius"/>
                 </shape>
             </item>
         </layer-list>

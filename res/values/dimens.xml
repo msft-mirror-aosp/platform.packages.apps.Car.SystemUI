@@ -65,10 +65,6 @@
     <dimen name="system_bar_button_margin">32dp</dimen>
     <!-- Padding between the system bar button and the icon within it -->
     <dimen name="system_bar_button_padding">16dp</dimen>
-    <!-- Radius for system bar pill buttons -->
-    <dimen name="system_bar_pill_radius">100dp</dimen>
-    <!-- Radius for system bar pill buttons when selected -->
-    <dimen name="system_bar_pill_selected_radius">16dp</dimen>
 
     <!-- The amount by which to scale up the status bar icons. -->
     <item name="status_bar_icon_scale_factor" format="float" type="dimen">1.75</item>
@@ -76,7 +72,6 @@
     <dimen name="car_primary_icon_size">@*android:dimen/car_primary_icon_size</dimen>
 
     <dimen name="hvac_container_padding">16dp</dimen>
-    <dimen name="hvac_panel_background_radius">48dp</dimen>
     <dimen name="hvac_temperature_bar_margin">32dp</dimen>
     <dimen name="hvac_temperature_text_size">44sp</dimen>
     <dimen name="hvac_temperature_text_padding">10dp</dimen>
@@ -145,13 +140,11 @@
     <dimen name="car_volume_item_divider_height">60dp</dimen>
     <dimen name="car_volume_item_divider_width">1dp</dimen>
     <dimen name="car_volume_item_divider_margin_end">@*android:dimen/car_padding_4</dimen>
-    <dimen name="car_volume_item_corner_radius">@*android:dimen/car_radius_3</dimen>
 
     <!-- Car notification shade-->
     <dimen name="notification_shade_handle_bar_frame_padding">10dp</dimen>
     <dimen name="notification_shade_handle_bar_width">64dp</dimen>
     <dimen name="notification_shade_handle_bar_height">10dp</dimen>
-    <dimen name="notification_shade_handle_bar_radius">20dp</dimen>
     <dimen name="notification_shade_list_padding_bottom">0dp</dimen>
 
     <!-- The alpha for the scrim behind the notification shade. This value is 1 so that the
@@ -198,9 +191,6 @@
 
     <!-- The bottom padding of the panel that holds the list of notifications. -->
     <dimen name="notification_panel_padding_bottom">@dimen/notification_divider_height</dimen>
-
-    <!-- The corner radius of the shadow behind the notification. -->
-    <dimen name="notification_shadow_radius">16dp</dimen>
 
     <!-- The amount of space below the notification list. This value is 0 so the list scrolls
          all the way to the bottom. -->
@@ -286,7 +276,6 @@
     <dimen name="car_read_only_status_icon_height">24dp</dimen>
 
     <dimen name="car_status_icon_panel_default_width">800dp</dimen>
-    <dimen name="car_status_icon_panel_border_radius">32dp</dimen>
     <dimen name="car_status_icon_panel_padding_top">22dp</dimen>
     <dimen name="car_status_icon_panel_padding_bottom">32dp</dimen>
     <dimen name="car_status_icon_panel_margin_top">0dp</dimen>
@@ -299,8 +288,6 @@
     <dimen name="car_quick_controls_footer_button_horizontal_margin">33dp</dimen>
     <dimen name="car_quick_controls_footer_button_min_height">88dp</dimen>
 
-    <dimen name="car_nav_bar_button_selected_corner_radius">24dp</dimen>
-
     <!-- dimensions for HVAC   -->
 
     <dimen name="hvac_panel_full_expanded_height">500dp</dimen>
@@ -310,7 +297,6 @@
     <dimen name="hvac_panel_handle_bar_frame_padding">10dp</dimen>
     <dimen name="hvac_panel_handle_bar_width">64dp</dimen>
     <dimen name="hvac_panel_handle_bar_height">10dp</dimen>
-    <dimen name="hvac_panel_handle_bar_radius">20dp</dimen>
     <dimen name="hvac_panel_button_dimen">96dp</dimen>
 
     <dimen name="temperature_side_margin">32dp</dimen>
@@ -330,7 +316,6 @@
     <dimen name="temperature_bar_icon_margin">20dp</dimen>
     <dimen name="temperature_bar_close_icon_dimen">96dp</dimen>
 
-    <dimen name="temperature_bar_bg_radius">54dp</dimen>
     <dimen name="temperature_bar_floating_text_bottom_margin">50dp</dimen>
     <dimen name="temperature_bar_off_text_bottom_margin">56dp</dimen>
 
@@ -346,7 +331,6 @@
     <dimen name="hvac_panel_button_height">96dp</dimen>
     <dimen name="hvac_panel_button_width">96dp</dimen>
 
-    <dimen name="hvac_panel_button_radius">54dp</dimen>
     <dimen name="hvac_panel_group_height">244dp</dimen>
     <dimen name="hvac_panel_center_group_width">536dp</dimen>
     <dimen name="hvac_panel_center_group_margin">16dp</dimen>
@@ -354,7 +338,6 @@
     <dimen name="hvac_fan_speed_bar_height">72dp</dimen>
     <dimen name="hvac_fan_speed_bar_vertical_inset">8dp</dimen>
     <dimen name="hvac_fan_speed_bar_width">680dp</dimen>
-    <dimen name="hvac_fan_speed_bar_corner_radius">28dp</dimen>
     <dimen name="hvac_fan_speed_bar_end_button_margin">12dp</dimen>
     <dimen name="hvac_fan_speed_bar_segment_margin">4dp</dimen>
 
@@ -403,7 +386,6 @@
     <!-- Dimensions for the Buttons in ActivityBlockingActivity -->
     <dimen name="activity_blocking_action_button_height">76dp</dimen>
     <dimen name="activity_blocking_action_button_top_margin">48dp</dimen>
-    <dimen name="activity_blocking_action_button_corner_radius">38dp</dimen>
     <dimen name="activity_blocking_action_button_max_width">268dp</dimen>
     <dimen name="activity_blocking_action_button_min_width">@*android:dimen/car_button_min_width</dimen>
     <dimen name="activity_blocking_action_button_text_size">@*android:dimen/car_body3_size</dimen>
@@ -426,13 +408,11 @@
     <dimen name="display_input_lock_text_bottom_margin">24dp</dimen>
     <dimen name="display_input_lock_text_size">24sp</dimen>
     <dimen name="display_input_lock_text_width">642dp</dimen>
-    <dimen name="display_input_lock_background_radius">8dp</dimen>
 
     <!-- Dimensions for user picker -->
     <dimen name="user_picker_button_size">76dp</dimen>
     <dimen name="user_picker_pill_button_width">80dp</dimen>
     <dimen name="user_picker_pill_button_height">56dp</dimen>
-    <dimen name="user_picker_pill_radius">30dp</dimen>
     <dimen name="user_picker_pill_header_margin">20dp</dimen>
     <dimen name="user_picker_pill_padding_horizontal">22dp</dimen>
     <dimen name="user_picker_pill_padding_vertical">10dp</dimen>
@@ -466,14 +446,11 @@
     <dimen name="pin_pad_key_height">96dp</dimen>
     <dimen name="pin_pad_key_margin">10dp</dimen>
     <dimen name="pin_pad_icon_size">@*android:dimen/car_primary_icon_size</dimen>
-    <dimen name="pin_pad_key_radius">100dp</dimen>
 
     <dimen name="dock_container_margin">10dp</dimen>
 
-    <dimen name="data_subscription_pop_up_radius">24dp</dimen>
     <dimen name="data_subscription_pop_up_arrow_height">19dp</dimen>
     <dimen name="data_subscription_pop_up_arrow_width">38dp</dimen>
-    <dimen name="data_subscription_pop_up_arrow_radius">5dp</dimen>
     <dimen name="data_subscription_pop_up_arrow_offset">84dp</dimen>
     <dimen name="data_subscription_pop_up_vertical_padding">46dp</dimen>
     <dimen name="data_subscription_pop_up_horizontal_padding">@*android:dimen/car_padding_3</dimen>

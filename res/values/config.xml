@@ -297,7 +297,7 @@
     <!-- Determines whether to show the display compatibility toolbar. -->
     <!-- 0 disabled -->
     <!-- 1 enabled -->
-    <integer name="config_showDisplayCompatToolbar">0</integer>
+    <integer name="config_showDisplayCompatToolbar">1</integer>
 
     <!-- Determines whether to show the display compatibility toolbar on System Bar -->
     <!-- 0 disabled -->
@@ -305,8 +305,6 @@
     <integer name="config_showDisplayCompatToolbarOnSystemBar">0</integer>
 
     <!-- Determines whether to show the display compatibility window decoration. -->
-    <!-- 0 disabled -->
-    <!-- 1 enabled -->
-    <integer name="config_showDisplayCompatWindowDecoration">1</integer>
+    <bool name="config_showDisplayCompatWindowDecoration">false</bool>
 
 </resources>

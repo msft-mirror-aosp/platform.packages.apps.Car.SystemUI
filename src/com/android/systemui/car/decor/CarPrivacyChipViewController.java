@@ -27,6 +27,7 @@ import androidx.annotation.UiThread;
 import com.android.internal.statusbar.LetterboxDetails;
 import com.android.internal.view.AppearanceRegion;
 import com.android.systemui.R;
+import com.android.systemui.ScreenDecorationsThread;
 import com.android.systemui.car.systembar.SystemBarConfigs;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Application;
@@ -35,11 +36,14 @@ import com.android.systemui.plugins.statusbar.StatusBarStateController;
 import com.android.systemui.privacy.PrivacyType;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.events.PrivacyDotViewController;
+import com.android.systemui.statusbar.events.PrivacyDotViewControllerImpl;
 import com.android.systemui.statusbar.events.SystemStatusAnimationScheduler;
 import com.android.systemui.statusbar.events.ViewState;
 import com.android.systemui.statusbar.phone.StatusBarContentInsetsProvider;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.util.concurrency.DelayableExecutor;
+
+import kotlinx.coroutines.CoroutineScope;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -47,13 +51,11 @@ import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
 
-import kotlinx.coroutines.CoroutineScope;
-
 /**
  * Subclass of {@link PrivacyDotViewController}.
  */
 @SysUISingleton
-public class CarPrivacyChipViewController extends PrivacyDotViewController
+public class CarPrivacyChipViewController extends PrivacyDotViewControllerImpl
         implements CommandQueue.Callbacks {
     private static final String TAG = CarPrivacyChipViewController.class.getSimpleName();
     private boolean mAreaVisible;
@@ -70,13 +72,15 @@ public class CarPrivacyChipViewController extends PrivacyDotViewController
             @NotNull ConfigurationController configurationController,
             @NotNull StatusBarContentInsetsProvider contentInsetsProvider,
             @NotNull SystemStatusAnimationScheduler animationScheduler,
-            CommandQueue commandQueue) {
+            @NotNull @ScreenDecorationsThread DelayableExecutor uiExecutor,
+            CommandQueue commandQueue,
+            SystemBarConfigs systemBarConfigs) {
         super(mainExecutor, scope, stateController, configurationController, contentInsetsProvider,
-                animationScheduler, null);
+                animationScheduler, null, uiExecutor);
         commandQueue.addCallback(this);
         mAnimationHelper = new CarPrivacyChipAnimationHelper(context);
-        mBarType = SystemBarConfigs.BAR_PROVIDER_MAP[context.getResources().getInteger(
-                R.integer.config_privacyIndicatorLocation)].getType();
+        mBarType = systemBarConfigs.getInsetsFrameProvider(context.getResources().getInteger(
+                R.integer.config_privacyIndicatorLocation)).getType();
     }
 
     @Override

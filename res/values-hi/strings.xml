@@ -117,6 +117,10 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> को साइन आउट किया जा रहा है. कुछ देर बाद कोशिश करें."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"फ़िलहाल, उपयोगकर्ता की प्रोफ़ाइल उपलब्ध नहीं है"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"पैसेंजर की डिसप्ले पर, उपयोगकर्ता की सुरक्षित प्रोफ़ाइल को चालू नहीं किया जा सका"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"आपने गलत पैटर्न डाला है"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"आपने गलत पिन डाला है"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"आपने गलत पासवर्ड डाला है"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{कई बार गलत पिन का इस्तेमाल किया गया है. # सेकंड बाद फिर से कोशिश करें.}one{कई बार गलत पिन का इस्तेमाल किया गया है. # सेकंड बाद फिर से कोशिश करें.}other{कई बार गलत पिन का इस्तेमाल किया गया है. # सेकंड बाद फिर से कोशिश करें.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"ड्राइवर वाली सीट"</string>
     <string name="seat_front" msgid="836133281052793377">"सामने वाली सीट"</string>
     <string name="seat_rear" msgid="403133444964528577">"पीछे वाली सीट"</string>

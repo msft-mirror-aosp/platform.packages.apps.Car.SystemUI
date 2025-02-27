@@ -18,14 +18,25 @@ package {
     default_team: "trendy_team_system_experience",
 }
 
-android_library {
-    name: "CarSystemUI-core",
+genrule {
+    name: "statslog-carsystemui-java-gen",
+    tools: ["stats-log-api-gen"],
+    cmd: "$(location stats-log-api-gen) --java $(out) --module carsystemui" +
+        " --javaPackage com.android.systemui --javaClass CarSystemUIStatsLog",
+    out: ["com/android/systemui/car/CarSystemUIStatsLog.java"],
+}
 
-    srcs: [
-        "src/**/*.java",
-        "src/**/*.kt",
-        "src/**/I*.aidl",
-    ],
+carsystemui_srcs = [
+    "src/**/*.java",
+    "src/**/*.kt",
+    "src/**/I*.aidl",
+    ":statslog-carsystemui-java-gen",
+]
+
+java_defaults {
+    name: "CarSystemUI-core-defaults",
+
+    srcs: carsystemui_srcs,
 
     resource_dirs: [
         "res-keyguard",
@@ -74,6 +85,17 @@ android_library {
         "android.car",
     ],
 
+    // TODO(b/319708040): re-enable use_resource_processor
+    use_resource_processor: false,
+}
+
+android_library {
+    name: "CarSystemUI-core",
+
+    defaults: [
+        "CarSystemUI-core-defaults",
+    ],
+
     aaptflags: [
         "--no-resource-deduping",
     ],
@@ -85,11 +107,14 @@ android_library {
     plugins: ["dagger2-compiler"],
     // TODO(b/319708040): re-enable use_resource_processor
     use_resource_processor: false,
-
 }
 
 android_app {
     name: "CarSystemUI",
+
+    defaults: [
+        "wmshell_defaults",
+    ],
 
     static_libs: [
         "CarSystemUI-core",
@@ -140,6 +165,40 @@ android_app {
     // TODO(b/319708040): re-enable use_resource_processor
     use_resource_processor: false,
 }
+
+// Begin daggervis
+
+// Dropped from google3/java/com/google/android/libraries/docs/inject/daggerplugin/dot
+java_import_host {
+    name: "car-systemui-binding-graph-plugin-jar",
+    jars: ["daggervis/libdagger_binding_graph_plugin_lib.jar"],
+}
+
+// A java SPI plugin to visualize dagger dependency graph.
+java_plugin {
+    name: "car-systemui-binding-graph-plugin",
+    static_libs: [
+        "car-systemui-binding-graph-plugin-jar",
+        "dagger2-compiler-lib",
+        "auto_service_annotations",
+        "auto_value_annotations",
+        "auto_value_memoized_extension_annotations",
+    ],
+    processor_class: "dagger.internal.codegen.ComponentProcessor",
+}
+
+android_library {
+    name: "CarSystemUI-core-daggervis",
+    defaults: [
+        "CarSystemUI-core-defaults",
+    ],
+    plugins: [
+        "car-systemui-binding-graph-plugin",
+        "dagger2-compiler",
+    ],
+}
+
+// End daggervis
 
 // Resource lib
 // To be used ONLY for RROs of CarSystemUI
@@ -199,6 +258,7 @@ android_library {
         "src/**/*.java",
         "src/**/*.kt",
         "src/**/I*.aidl",
+        ":statslog-carsystemui-java-gen",
     ],
 
     kotlin_lang_version: "1.9",
@@ -237,6 +297,7 @@ android_app {
     defaults: [
         "platform_app_defaults",
         "SystemUI_optimized_defaults",
+        "wmshell_defaults",
     ],
     manifest: "tests/AndroidManifest-base.xml",
 

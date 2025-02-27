@@ -34,10 +34,13 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
 import com.android.systemui.R;
+import com.android.systemui.car.systembar.element.CarSystemBarElement;
+import com.android.systemui.car.systembar.element.CarSystemBarElementFlags;
+import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
 
 import java.util.List;
 
-public class TemperatureControlView extends LinearLayout implements HvacView {
+public class TemperatureControlView extends LinearLayout implements HvacView, CarSystemBarElement {
     protected static final int BUTTON_REPEAT_INTERVAL_MS = 500;
     protected TextView mTempTextView;
     protected View mIncreaseButton;
@@ -52,6 +55,11 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
     private final int mAreaId;
     private final int mAvailableTextColor;
     private final int mUnavailableTextColor;
+
+    private final Class<?> mElementControllerClassAttr;
+    private final int mSystemBarDisableFlags;
+    private final int mSystemBarDisable2Flags;
+    private final boolean mDisableForLockTaskModeLocked;
 
     private boolean mPowerOn = false;
     private boolean mDisableViewIfPowerOff = false;
@@ -88,6 +96,18 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
         mAvailableTextColor = ContextCompat.getColor(getContext(), R.color.system_bar_text_color);
         mUnavailableTextColor = ContextCompat.getColor(getContext(),
                 R.color.system_bar_text_unavailable_color);
+
+        mElementControllerClassAttr =
+                CarSystemBarElementResolver.getElementControllerClassFromAttributes(context, attrs);
+        mSystemBarDisableFlags =
+                CarSystemBarElementFlags.getStatusBarManagerDisableFlagsFromAttributes(context,
+                        attrs);
+        mSystemBarDisable2Flags =
+                CarSystemBarElementFlags.getStatusBarManagerDisable2FlagsFromAttributes(context,
+                        attrs);
+        mDisableForLockTaskModeLocked =
+                CarSystemBarElementFlags.getDisableForLockTaskModeLockedFromAttributes(context,
+                        attrs);
     }
 
     @Override
@@ -172,6 +192,29 @@ public class TemperatureControlView extends LinearLayout implements HvacView {
      */
     public void setTemperatureTextClickListener(OnClickListener onClickListener) {
         mTempTextView.setOnClickListener(onClickListener);
+    }
+
+    @Override
+    public Class<?> getElementControllerClass() {
+        if (mElementControllerClassAttr != null) {
+            return mElementControllerClassAttr;
+        }
+        return null;
+    }
+
+    @Override
+    public int getSystemBarDisableFlags() {
+        return mSystemBarDisableFlags;
+    }
+
+    @Override
+    public int getSystemBarDisable2Flags() {
+        return mSystemBarDisable2Flags;
+    }
+
+    @Override
+    public boolean disableForLockTaskModeLocked() {
+        return mDisableForLockTaskModeLocked;
     }
 
     /**

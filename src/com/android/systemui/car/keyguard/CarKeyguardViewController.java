@@ -53,11 +53,14 @@ import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.keyguard.KeyguardWmStateRefactor;
 import com.android.systemui.keyguard.ui.viewmodel.PrimaryBouncerToGoneTransitionViewModel;
 import com.android.systemui.log.BouncerLogger;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.ShadeExpansionStateManager;
 import com.android.systemui.shade.domain.interactor.ShadeLockscreenInteractor;
+import com.android.systemui.statusbar.domain.interactor.OccludedState;
+import com.android.systemui.statusbar.domain.interactor.StatusBarKeyguardViewManagerInteractor;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
 import com.android.systemui.statusbar.phone.CentralSurfaces;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
@@ -65,6 +68,7 @@ import com.android.systemui.toast.SystemUIToast;
 import com.android.systemui.toast.ToastFactory;
 import com.android.systemui.user.domain.interactor.SelectedUserInteractor;
 import com.android.systemui.util.concurrency.DelayableExecutor;
+import com.android.systemui.util.kotlin.JavaAdapter;
 
 import dagger.Lazy;
 
@@ -144,6 +148,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private ViewGroup mKeyguardContainer;
     private PrimaryBouncerToGoneTransitionViewModel mPrimaryBouncerToGoneTransitionViewModel;
     private final Optional<KeyguardSystemBarPresenter> mKeyguardSystemBarPresenter;
+    private final StatusBarKeyguardViewManagerInteractor mStatusBarKeyguardViewManagerInteractor;
+    private final JavaAdapter mJavaAdapter;
 
     @Inject
     public CarKeyguardViewController(
@@ -169,7 +175,9 @@ public class CarKeyguardViewController extends OverlayViewController implements
             BouncerLogger bouncerLogger,
             BouncerMessageInteractor bouncerMessageInteractor,
             SelectedUserInteractor selectedUserInteractor,
-            Optional<KeyguardSystemBarPresenter> keyguardSystemBarPresenter) {
+            Optional<KeyguardSystemBarPresenter> keyguardSystemBarPresenter,
+            StatusBarKeyguardViewManagerInteractor statusBarKeyguardViewManagerInteractor,
+            JavaAdapter javaAdapter) {
         super(R.id.keyguard_stub, overlayViewGlobalStateController);
 
         mContext = context;
@@ -197,6 +205,22 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mBouncerMessageInteractor = bouncerMessageInteractor;
         primaryBouncerCallbackInteractor.addBouncerExpansionCallback(mExpansionCallback);
         mKeyguardSystemBarPresenter = keyguardSystemBarPresenter;
+        mStatusBarKeyguardViewManagerInteractor = statusBarKeyguardViewManagerInteractor;
+        mJavaAdapter = javaAdapter;
+
+        if (KeyguardWmStateRefactor.isEnabled()) {
+            // Show the keyguard views whenever we've told WM that the lockscreen is visible.
+            mJavaAdapter.alwaysCollectFlow(
+                    mStatusBarKeyguardViewManagerInteractor.getKeyguardViewVisibility(),
+                    this::consumeShowStatusBarKeyguardView);
+            mJavaAdapter.alwaysCollectFlow(
+                    mStatusBarKeyguardViewManagerInteractor.getKeyguardViewOcclusionState(),
+                    this::consumeOcclusionState);
+        }
+    }
+
+    protected void consumeOcclusionState(OccludedState occludedState) {
+        setOccluded(occludedState.getOccluded(), false);
     }
 
     @Override
@@ -218,7 +242,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
                 mMessageAreaControllerFactory,
                 mBouncerMessageInteractor,
                 mBouncerLogger,
-                mSelectedUserInteractor);
+                mSelectedUserInteractor, null /* plugins */);
         mBiometricUnlockControllerLazy.get().setKeyguardViewController(this);
     }
 
@@ -295,6 +319,11 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
     @Override
     public void hideAlternateBouncer(boolean forceUpdateScrim) {
+        hideAlternateBouncer(forceUpdateScrim, true);
+    }
+
+    @Override
+    public void hideAlternateBouncer(boolean forceUpdateScrim, boolean clearDismissAction) {
         // no-op
     }
 
@@ -453,7 +482,14 @@ public class CarKeyguardViewController extends OverlayViewController implements
             ShadeExpansionStateManager shadeExpansionStateManager,
             BiometricUnlockController biometricUnlockController,
             View notificationContainer) {
-        // no-op
+    }
+
+    private void consumeShowStatusBarKeyguardView(boolean show) {
+        if (show) {
+            show(/* options= */ null);
+        } else {
+            hide(/* startTime = */ 0, /* fadeoutDuration= */ 0);
+        }
     }
 
     /**
@@ -466,10 +502,18 @@ public class CarKeyguardViewController extends OverlayViewController implements
     }
 
     @Override
+    public void onWindowFocusableChanged(boolean focusable) {
+        super.onWindowFocusableChanged(focusable);
+        if (focusable && mBouncerView.getDelegate() != null) {
+            mBouncerView.getDelegate().resume();
+        }
+    }
+
+    @Override
     public boolean setAllowRotaryFocus(boolean allowRotaryFocus) {
         boolean changed = super.setAllowRotaryFocus(allowRotaryFocus);
         if (changed && allowRotaryFocus && mBouncerView.getDelegate() != null) {
-            // Resume the view so it can regain focus
+            // Resume the view so it can gain rotary focus
             mBouncerView.getDelegate().resume();
         }
         return changed;
@@ -521,7 +565,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private void makeOverlayToast(int stringId) {
         Resources res = mContext.getResources();
 
-        SystemUIToast systemUIToast = mToastFactory.createToast(mContext,
+        SystemUIToast systemUIToast = mToastFactory.createToast(mContext, mContext,
                 res.getString(stringId), mContext.getPackageName(), UserHandle.myUserId(),
                 res.getConfiguration().orientation);
 

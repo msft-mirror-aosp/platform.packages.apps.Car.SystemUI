@@ -30,13 +30,9 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.systemui.dagger.SysUISingleton;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import javax.inject.Inject;
 
@@ -53,33 +49,30 @@ import javax.inject.Inject;
 public class OverlayViewGlobalStateController {
     private static final boolean DEBUG = false;
     private static final String TAG = OverlayViewGlobalStateController.class.getSimpleName();
-    private static final int UNKNOWN_Z_ORDER = -1;
     private final SystemUIOverlayWindowController mSystemUIOverlayWindowController;
     private final WindowInsetsController mWindowInsetsController;
-    @VisibleForTesting
-    Map<OverlayViewController, Integer> mZOrderMap;
-    @VisibleForTesting
-    SortedMap<Integer, OverlayViewController> mZOrderVisibleSortedMap;
+    private final OverlayVisibilityMediator mOverlayVisibilityMediator;
+
     @VisibleForTesting
     Set<OverlayViewController> mViewsHiddenForOcclusion;
-    @VisibleForTesting
-    OverlayViewController mHighestZOrder;
     private boolean mIsOccluded;
 
     @Inject
     public OverlayViewGlobalStateController(
-            SystemUIOverlayWindowController systemUIOverlayWindowController) {
+            SystemUIOverlayWindowController systemUIOverlayWindowController,
+            OverlayVisibilityMediator overlayVisibilityMediator) {
         mSystemUIOverlayWindowController = systemUIOverlayWindowController;
+        mOverlayVisibilityMediator = overlayVisibilityMediator;
         mSystemUIOverlayWindowController.attach();
         mSystemUIOverlayWindowController.registerOutsideTouchListener((v, event) -> {
-            if (mHighestZOrder != null) {
-                mHighestZOrder.onTouchEvent(v, event);
+            if (mOverlayVisibilityMediator.getHighestZOrderOverlayViewController() != null) {
+                mOverlayVisibilityMediator.getHighestZOrderOverlayViewController()
+                        .onTouchEvent(v, event);
             }
         });
         mWindowInsetsController =
                 mSystemUIOverlayWindowController.getBaseLayout().getWindowInsetsController();
-        mZOrderMap = new HashMap<>();
-        mZOrderVisibleSortedMap = new TreeMap<>();
+
         mViewsHiddenForOcclusion = new HashSet<>();
     }
 
@@ -101,7 +94,7 @@ public class OverlayViewGlobalStateController {
      * controller itself.
      */
     public void showView(OverlayPanelViewController panelViewController) {
-        showView(panelViewController, /* show= */ null);
+        showView(panelViewController, /* show */ null);
     }
 
     /**
@@ -113,7 +106,7 @@ public class OverlayViewGlobalStateController {
             mViewsHiddenForOcclusion.add(viewController);
             return;
         }
-        if (mZOrderVisibleSortedMap.isEmpty()) {
+        if (!mOverlayVisibilityMediator.isAnyOverlayViewVisible()) {
             setWindowVisible(true);
         }
 
@@ -125,39 +118,17 @@ public class OverlayViewGlobalStateController {
             show.run();
         }
 
-        updateInternalsWhenShowingView(viewController);
+        mOverlayVisibilityMediator.showView(viewController);
         refreshUseStableInsets();
         refreshInsetsToFit();
         refreshWindowFocus();
         refreshWindowDefaultDimBehind();
-        refreshSystemBarVisibility();
-        refreshStatusBarVisibility();
+        refreshInsetTypeVisibility(navigationBars());
+        refreshInsetTypeVisibility(statusBars());
         refreshRotaryFocusIfNeeded();
 
         Log.d(TAG, "Content shown: " + viewController.getClass().getName());
         debugLog();
-    }
-
-    private void updateInternalsWhenShowingView(OverlayViewController viewController) {
-        int zOrder;
-        if (mZOrderMap.containsKey(viewController)) {
-            zOrder = mZOrderMap.get(viewController);
-        } else {
-            zOrder = mSystemUIOverlayWindowController.getBaseLayout().indexOfChild(
-                    viewController.getLayout());
-            mZOrderMap.put(viewController, zOrder);
-        }
-
-        mZOrderVisibleSortedMap.put(zOrder, viewController);
-
-        refreshHighestZOrderWhenShowingView(viewController);
-    }
-
-    private void refreshHighestZOrderWhenShowingView(OverlayViewController viewController) {
-        if (mZOrderMap.getOrDefault(mHighestZOrder, UNKNOWN_Z_ORDER) < mZOrderMap.get(
-                viewController)) {
-            mHighestZOrder = viewController;
-        }
     }
 
     /**
@@ -168,7 +139,7 @@ public class OverlayViewGlobalStateController {
      * controller itself.
      */
     public void hideView(OverlayPanelViewController panelViewController) {
-        hideView(panelViewController, /* hide= */ null);
+        hideView(panelViewController, /* hide */ null);
     }
 
     /**
@@ -185,12 +156,12 @@ public class OverlayViewGlobalStateController {
                     + viewController.getClass().getName());
             return;
         }
-        if (!mZOrderMap.containsKey(viewController)) {
+        if (!mOverlayVisibilityMediator.hasOverlayViewBeenShown(viewController)) {
             Log.d(TAG, "Content cannot be hidden since it has never been shown: "
                     + viewController.getClass().getName());
             return;
         }
-        if (!mZOrderVisibleSortedMap.containsKey(mZOrderMap.get(viewController))) {
+        if (!mOverlayVisibilityMediator.isOverlayViewVisible(viewController)) {
             Log.d(TAG, "Content cannot be hidden since it isn't currently shown: "
                     + viewController.getClass().getName());
             return;
@@ -200,17 +171,16 @@ public class OverlayViewGlobalStateController {
             hide.run();
         }
 
-        mZOrderVisibleSortedMap.remove(mZOrderMap.get(viewController));
-        refreshHighestZOrderWhenHidingView(viewController);
+        mOverlayVisibilityMediator.hideView(viewController);
         refreshUseStableInsets();
         refreshInsetsToFit();
         refreshWindowFocus();
         refreshWindowDefaultDimBehind();
-        refreshSystemBarVisibility();
-        refreshStatusBarVisibility();
+        refreshInsetTypeVisibility(navigationBars());
+        refreshInsetTypeVisibility(statusBars());
         refreshRotaryFocusIfNeeded();
 
-        if (mZOrderVisibleSortedMap.isEmpty()) {
+        if (!mOverlayVisibilityMediator.isAnyOverlayViewVisible()) {
             setWindowVisible(false);
         }
 
@@ -225,65 +195,52 @@ public class OverlayViewGlobalStateController {
      * updated
      */
     public boolean updateWindowDimBehind(OverlayViewController viewController, float dimAmount) {
-        if (mHighestZOrder == null || viewController != mHighestZOrder) {
+        OverlayViewController highestZOrder = mOverlayVisibilityMediator
+                .getHighestZOrderOverlayViewController();
+        if (highestZOrder == null || viewController != highestZOrder) {
             return false;
         }
         mSystemUIOverlayWindowController.setDimBehind(dimAmount);
         return true;
     }
 
-    private void refreshHighestZOrderWhenHidingView(OverlayViewController viewController) {
-        if (mZOrderVisibleSortedMap.isEmpty()) {
-            mHighestZOrder = null;
-            return;
-        }
-        if (!mHighestZOrder.equals(viewController)) {
-            return;
-        }
-
-        mHighestZOrder = mZOrderVisibleSortedMap.get(mZOrderVisibleSortedMap.lastKey());
-    }
-
-    private void refreshSystemBarVisibility() {
-        if (mZOrderVisibleSortedMap.isEmpty()) {
-            mWindowInsetsController.show(navigationBars());
+    private void refreshInsetTypeVisibility(@InsetsType int insetType) {
+        if (!mOverlayVisibilityMediator.isAnyOverlayViewVisible()) {
+            mWindowInsetsController.show(insetType);
             return;
         }
 
         // Do not hide navigation bar insets if the window is not focusable.
-        if (mHighestZOrder.shouldFocusWindow() && !mHighestZOrder.shouldShowNavigationBarInsets()) {
-            mWindowInsetsController.hide(navigationBars());
+        OverlayViewController highestZOrder = mOverlayVisibilityMediator
+                .getHighestZOrderOverlayViewController();
+        boolean shouldShowInsets =
+                (insetType == navigationBars() && highestZOrder.shouldShowNavigationBarInsets())
+                || (insetType == statusBars() && highestZOrder.shouldShowStatusBarInsets());
+        if (highestZOrder.shouldFocusWindow() && !shouldShowInsets) {
+            mWindowInsetsController.hide(insetType);
         } else {
-            mWindowInsetsController.show(navigationBars());
-        }
-    }
-
-    private void refreshStatusBarVisibility() {
-        if (mZOrderVisibleSortedMap.isEmpty()) {
-            mWindowInsetsController.show(statusBars());
-            return;
-        }
-
-        // Do not hide status bar insets if the window is not focusable.
-        if (mHighestZOrder.shouldFocusWindow() && !mHighestZOrder.shouldShowStatusBarInsets()) {
-            mWindowInsetsController.hide(statusBars());
-        } else {
-            mWindowInsetsController.show(statusBars());
+            mWindowInsetsController.show(insetType);
         }
     }
 
     private void refreshWindowFocus() {
-        setWindowFocusable(mHighestZOrder == null ? false : mHighestZOrder.shouldFocusWindow());
+        OverlayViewController highestZOrder = mOverlayVisibilityMediator
+                .getHighestZOrderOverlayViewController();
+        setWindowFocusable(highestZOrder == null ? false : highestZOrder.shouldFocusWindow());
     }
 
     private void refreshWindowDefaultDimBehind() {
-        float dimAmount = mHighestZOrder == null ? 0f : mHighestZOrder.getDefaultDimAmount();
+        OverlayViewController highestZOrder = mOverlayVisibilityMediator
+                .getHighestZOrderOverlayViewController();
+        float dimAmount = highestZOrder == null ? 0f : highestZOrder.getDefaultDimAmount();
         mSystemUIOverlayWindowController.setDimBehind(dimAmount);
     }
 
     private void refreshUseStableInsets() {
+        OverlayViewController highestZOrder = mOverlayVisibilityMediator
+                .getHighestZOrderOverlayViewController();
         mSystemUIOverlayWindowController.setUsingStableInsets(
-                mHighestZOrder == null ? false : mHighestZOrder.shouldUseStableInsets());
+                highestZOrder == null ? false : highestZOrder.shouldUseStableInsets());
     }
 
     /**
@@ -294,28 +251,33 @@ public class OverlayViewGlobalStateController {
      * return an {@link InsetsSide}, then that takes precedence over {@link InsetsType}.
      */
     private void refreshInsetsToFit() {
-        if (mZOrderVisibleSortedMap.isEmpty()) {
+        if (!mOverlayVisibilityMediator.isAnyOverlayViewVisible()) {
             setFitInsetsTypes(statusBars());
         } else {
-            if (mHighestZOrder.getInsetSidesToFit() != OverlayViewController.INVALID_INSET_SIDE) {
+            OverlayViewController highestZOrder = mOverlayVisibilityMediator
+                    .getHighestZOrderOverlayViewController();
+            if (highestZOrder.getInsetSidesToFit() != OverlayViewController.INVALID_INSET_SIDE) {
                 // First fit all system bar insets as setFitInsetsSide defines which sides of system
                 // bar insets to actually honor.
                 setFitInsetsTypes(WindowInsets.Type.systemBars());
-                setFitInsetsSides(mHighestZOrder.getInsetSidesToFit());
+                setFitInsetsSides(highestZOrder.getInsetSidesToFit());
             } else {
-                setFitInsetsTypes(mHighestZOrder.getInsetTypesToFit());
+                setFitInsetsTypes(highestZOrder.getInsetTypesToFit());
             }
         }
     }
 
     private void refreshRotaryFocusIfNeeded() {
-        for (OverlayViewController controller : mZOrderVisibleSortedMap.values()) {
-            boolean isTop = Objects.equals(controller, mHighestZOrder);
+        OverlayViewController highestZOrder = mOverlayVisibilityMediator
+                .getHighestZOrderOverlayViewController();
+        for (OverlayViewController controller : mOverlayVisibilityMediator
+                .getVisibleOverlayViewsByZOrder()) {
+            boolean isTop = Objects.equals(controller, highestZOrder);
             controller.setAllowRotaryFocus(isTop);
         }
 
-        if (!mZOrderVisibleSortedMap.isEmpty()) {
-            mHighestZOrder.refreshRotaryFocusIfNeeded();
+        if (mOverlayVisibilityMediator.isAnyOverlayViewVisible()) {
+            highestZOrder.refreshRotaryFocusIfNeeded();
         }
     }
 
@@ -354,6 +316,10 @@ public class OverlayViewGlobalStateController {
     /** Sets the focusable flag of the sysui overlawy window. */
     public void setWindowFocusable(boolean focusable) {
         mSystemUIOverlayWindowController.setWindowFocusable(focusable);
+        if (mOverlayVisibilityMediator.getHighestZOrderOverlayViewController() != null) {
+            mOverlayVisibilityMediator.getHighestZOrderOverlayViewController()
+                    .onWindowFocusableChanged(focusable);
+        }
     }
 
     /** Inflates the view controlled by the given view controller. */
@@ -367,7 +333,10 @@ public class OverlayViewGlobalStateController {
      * Return {@code true} if OverlayWindow is in a state where HUNs should be displayed above it.
      */
     public boolean shouldShowHUN() {
-        return mZOrderVisibleSortedMap.isEmpty() || mHighestZOrder.shouldShowHUN();
+        OverlayViewController highestZOrder = mOverlayVisibilityMediator
+                .getHighestZOrderOverlayViewController();
+        return !mOverlayVisibilityMediator.isAnyOverlayViewVisible()
+                || highestZOrder.shouldShowHUN();
     }
 
     /**
@@ -391,7 +360,7 @@ public class OverlayViewGlobalStateController {
 
     private void hideViewsForOcclusion() {
         HashSet<OverlayViewController> viewsCurrentlyShowing = new HashSet<>(
-                mZOrderVisibleSortedMap.values());
+                mOverlayVisibilityMediator.getVisibleOverlayViewsByZOrder());
         viewsCurrentlyShowing.forEach(overlayController -> {
             if (!overlayController.shouldShowWhenOccluded()) {
                 hideView(overlayController, overlayController::hideInternal);
@@ -412,11 +381,12 @@ public class OverlayViewGlobalStateController {
             return;
         }
 
-        Log.d(TAG, "mHighestZOrder: " + mHighestZOrder);
-        Log.d(TAG, "mZOrderVisibleSortedMap.size(): " + mZOrderVisibleSortedMap.size());
-        Log.d(TAG, "mZOrderVisibleSortedMap: " + mZOrderVisibleSortedMap);
-        Log.d(TAG, "mZOrderMap.size(): " + mZOrderMap.size());
-        Log.d(TAG, "mZOrderMap: " + mZOrderMap);
+        Log.d(TAG, "HighestZOrder: " + mOverlayVisibilityMediator
+                .getHighestZOrderOverlayViewController());
+        Log.d(TAG, "Number of visible overlays: " + mOverlayVisibilityMediator
+                .getVisibleOverlayViewsByZOrder().size());
+        Log.d(TAG, "Is any overlay visible: " + mOverlayVisibilityMediator
+                .isAnyOverlayViewVisible());
         Log.d(TAG, "mIsOccluded: " + mIsOccluded);
         Log.d(TAG, "mViewsHiddenForOcclusion: " + mViewsHiddenForOcclusion);
         Log.d(TAG, "mViewsHiddenForOcclusion.size(): " + mViewsHiddenForOcclusion.size());

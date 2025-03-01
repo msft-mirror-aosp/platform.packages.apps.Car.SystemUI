@@ -16,6 +16,7 @@
 package com.android.systemui.car.wm.scalableui;
 
 import static android.app.WindowConfiguration.ACTIVITY_TYPE_HOME;
+import static android.view.WindowManager.TRANSIT_FLAG_AVOID_MOVE_TO_FRONT;
 
 import static com.android.systemui.car.Flags.scalableUi;
 
@@ -134,6 +135,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                     + ", finishTransaction=" + finishTransaction.getId());
         }
 
+        mTaskPanelTransitionCoordinator.maybeResolveConflict(changedTaskStacks, transition);
+
         Trace.beginSection(TAG + "#startAnimation");
 
         calculateTransaction(startTransaction, info, /* isFinish= */ false);
@@ -184,6 +187,14 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             return new Event("_System_OnHomeEvent");
         }
 
+        if ((request.getFlags() & TRANSIT_FLAG_AVOID_MOVE_TO_FRONT)
+                == TRANSIT_FLAG_AVOID_MOVE_TO_FRONT) {
+            if (DEBUG) {
+                Log.d(TAG, "Launching activity to the background, no panel action needed.");
+            }
+            return EMPTY_EVENT;
+        }
+
         ComponentName component;
         if (TransitionUtil.isClosingType(request.getType())) {
             // On a closing event, the baseActivity may be null but the realActivity will still
@@ -205,7 +216,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             panel = TaskPanelPool.getTaskPanel(tp -> tp.handles(component));
         }
         if (panel == null) {
-            panel = TaskPanelPool.getTaskPanel(TaskPanel::getIsLaunchRoot);
+            panel = TaskPanelPool.getTaskPanel(TaskPanel::isLaunchRoot);
         }
         if (panel != null) {
             panelId = panel.getId();

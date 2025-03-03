@@ -60,11 +60,14 @@ public class BluetoothStatusIconController extends StatusIconViewController impl
         mBluetoothController = bluetoothController;
 
         mBluetoothOffDrawable = resources.getDrawable(
-                R.drawable.ic_bluetooth_status_off, /* theme= */ null);
+                R.drawable.ic_bluetooth_status_off,
+                /* theme= */ view.getContext().getTheme());
         mBluetoothOnDisconnectedDrawable = resources.getDrawable(
-                R.drawable.ic_bluetooth_status_on_disconnected, /* theme= */ null);
+                R.drawable.ic_bluetooth_status_on_disconnected,
+                /* theme= */ view.getContext().getTheme());
         mBluetoothOnConnectedDrawable = resources.getDrawable(
-                R.drawable.ic_bluetooth_status_on_connected, /* theme= */ null);
+                R.drawable.ic_bluetooth_status_on_connected,
+                /* theme= */ view.getContext().getTheme());
 
         mBluetoothOffContentDescription = resources.getString(
                 R.string.status_icon_bluetooth_off);

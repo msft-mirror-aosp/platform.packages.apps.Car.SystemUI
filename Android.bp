@@ -54,7 +54,6 @@ java_defaults {
         "car-telephony-common-no-overlayable",
         "car-ui-lib-no-overlayable",
         "car-qc-lib",
-        "car-resource-common",
         "car-scalable-ui-lib",
         "com_android_systemui_car_flags_lib",
         "androidx.annotation_annotation",
@@ -81,11 +80,14 @@ java_defaults {
         "androidx.test.rules",
         "car-data-subscription-lib",
         "Car-WindowManager-Shell",
+        "oem-token-lib",
     ],
 
     libs: [
         "android.car",
+        "token-shared-lib-prebuilt",
     ],
+    enforce_uses_libs: false,
 
     // TODO(b/319708040): re-enable use_resource_processor
     use_resource_processor: false,
@@ -126,7 +128,10 @@ android_app {
 
     libs: [
         "android.car",
+        "token-shared-lib-prebuilt",
     ],
+
+    enforce_uses_libs: false,
 
     resource_dirs: [],
 
@@ -219,7 +224,6 @@ android_library {
         "car-telephony-common-no-overlayable",
         "car-ui-lib-no-overlayable",
         "car-qc-lib",
-        "car-resource-common",
         "car-scalable-ui-lib",
         "com_android_systemui_car_flags_lib",
         "CarDockLib",
@@ -227,7 +231,14 @@ android_library {
         "testng",
         "//external/kotlinc:kotlin-annotations",
         "Car-WindowManager-Shell",
+        "oem-token-lib",
     ],
+
+    libs: [
+        "token-shared-lib-prebuilt",
+    ],
+    enforce_uses_libs: false,
+
 }
 
 android_library {
@@ -254,7 +265,11 @@ android_library {
         "android.test.runner.stubs.system",
         "android.test.base.stubs.system",
         "android.car",
+        "token-shared-lib-prebuilt",
+        "android.test.mock.stubs.system",
     ],
+
+    enforce_uses_libs: false,
 
     aaptflags: [
         "--extra-packages",
@@ -298,7 +313,11 @@ android_app {
     libs: [
         "keepanno-annotations",
         "android.car",
+        "token-shared-lib-prebuilt",
     ],
+
+    enforce_uses_libs: false,
+
     aaptflags: [
         "--extra-packages",
         "com.android.systemui",
@@ -337,7 +356,10 @@ android_robolectric_test {
         "android.test.base.stubs.system",
         "android.test.mock.stubs.system",
         "truth",
+        "token-shared-lib-prebuilt",
     ],
+
+    enforce_uses_libs: false,
 
     instrumentation_for: "CarSystemUIRobo-stub",
     java_resource_dirs: ["tests/robolectric/config"],
@@ -368,7 +390,10 @@ android_ravenwood_test {
         "android.test.runner.stubs.system",
         "android.test.base.stubs.system",
         "android.test.mock.stubs.system",
+        "token-shared-lib-prebuilt",
     ],
+
+    enforce_uses_libs: false,
     auto_gen_config: true,
     plugins: [
         "dagger2-compiler",

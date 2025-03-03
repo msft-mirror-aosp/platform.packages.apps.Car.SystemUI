@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 
 import com.android.systemui.car.CarServiceProvider;
 import com.android.wm.shell.ShellTaskOrganizer;
+import com.android.wm.shell.automotive.AutoTaskRepository;
 import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.fullscreen.FullscreenTaskListener;
 import com.android.wm.shell.recents.RecentTasksController;
@@ -118,13 +119,15 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
             SyncTransactionQueue syncQueue,
             Optional<RecentTasksController> recentTasksOptional,
             Optional<WindowDecorViewModel> windowDecorViewModelOptional,
-            TaskViewTransitions taskViewTransitions) {
+            TaskViewTransitions taskViewTransitions,
+            AutoTaskRepository taskRepository) {
         super(shellInit, shellTaskOrganizer, syncQueue, recentTasksOptional,
                 windowDecorViewModelOptional, Optional.empty());
         mShellTaskOrganizer = shellTaskOrganizer;
         mCarServiceTaskReporter = new CarServiceTaskReporter(context, carServiceProvider,
                 taskViewTransitions,
-                shellTaskOrganizer);
+                shellTaskOrganizer,
+                taskRepository);
 
         shellInit.addInitCallback(
                 () -> mShellTaskOrganizer.addListenerForType(mMultiWindowTaskListener,

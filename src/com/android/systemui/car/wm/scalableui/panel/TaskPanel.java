@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.UserHandle;
+import android.os.UserManager;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.SurfaceControl;
@@ -36,7 +37,7 @@ import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.car.CarServiceProvider;
-import com.android.systemui.car.wm.CarServiceTaskReporter;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.wm.shell.automotive.AutoTaskStackController;
@@ -64,7 +65,6 @@ public class TaskPanel implements Panel {
     private final Set<ComponentName> mPersistedActivities;
     private final Context mContext;
     private final AutoTaskStackHelper mAutoTaskStackHelper;
-    private final CarServiceTaskReporter mCarServiceTaskReporter;
     private int mLayer = -1;
     private int mRole = 0;
     private CarActivityManager mCarActivityManager;
@@ -83,13 +83,11 @@ public class TaskPanel implements Panel {
             CarServiceProvider carServiceProvider,
             AutoTaskStackHelper autoTaskStackHelper,
             EventDispatcher dispatcher,
-            CarServiceTaskReporter carServiceTaskReporter,
             @Assisted String id) {
         mAutoTaskStackController = autoTaskStackController;
         mCarServiceProvider = carServiceProvider;
         mContext = context;
         mAutoTaskStackHelper = autoTaskStackHelper;
-        mCarServiceTaskReporter = carServiceTaskReporter;
         mId = id;
         mPersistedActivities = new ArraySet<>();
     }
@@ -113,6 +111,10 @@ public class TaskPanel implements Panel {
                             mAutoTaskStackController.setDefaultRootTaskStackOnDisplay(mDisplayId,
                                     mRootTaskId);
                         }
+
+                        if (isUserUnlocked(mContext)) {
+                            reset();
+                        }
                     }
 
                     @Override
@@ -130,18 +132,12 @@ public class TaskPanel implements Panel {
                     @Override
                     public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo,
                             SurfaceControl leash) {
-                        mCarServiceTaskReporter.reportTaskAppeared(taskInfo, leash);
                         mAutoTaskStackHelper.setTaskUntrimmableIfNeeded(taskInfo);
                     }
 
                     @Override
                     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
-                        mCarServiceTaskReporter.reportTaskVanished(taskInfo);
-                    }
-
-                    @Override
-                    public void onTaskInfoChanged(ActivityManager.RunningTaskInfo taskInfo) {
-                        mCarServiceTaskReporter.reportTaskInfoChanged(taskInfo);
+                        // no-op
                     }
                 });
     }
@@ -235,7 +231,7 @@ public class TaskPanel implements Panel {
     /**
      * Return whether this panel is the launch root panel.
      */
-    public boolean getIsLaunchRoot() {
+    public boolean isLaunchRoot() {
         return mIsLaunchRoot;
     }
 
@@ -322,7 +318,7 @@ public class TaskPanel implements Panel {
         if (this.mRole == role) return;
         this.mRole = role;
         String roleTypeName = mContext.getResources().getResourceTypeName(mRole);
-        switch(roleTypeName) {
+        switch (roleTypeName) {
             case ROLE_TYPE_STRING:
                 String roleString = mContext.getResources().getString(mRole);
                 if (PanelState.DEFAULT_ROLE.equals(roleString)) {
@@ -402,5 +398,14 @@ public class TaskPanel implements Panel {
     public interface Factory {
         /** Create instance of TaskPanel with specified id */
         TaskPanel create(String id);
+    }
+
+    private static boolean isUserUnlocked(@NonNull Context context) {
+        int userId = CarSystemUIUserUtil.isSecondaryMUMDSystemUI()
+                ? context.getUserId()
+                : ActivityManager.getCurrentUser();
+
+        UserManager userManager = context.getSystemService(UserManager.class);
+        return userManager != null && userManager.isUserUnlocked(userId);
     }
 }

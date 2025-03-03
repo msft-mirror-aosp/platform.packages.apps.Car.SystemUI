@@ -33,8 +33,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.car.internal.dep.Trace;
-import com.android.car.scalableui.manager.Event;
-import com.android.car.scalableui.manager.PanelTransaction;
+import com.android.car.scalableui.model.Event;
+import com.android.car.scalableui.model.PanelTransaction;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.R;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
@@ -59,7 +59,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             PanelAutoTaskStackTransitionHandlerDelegate.class.getSimpleName();
 
     private static final String EMPTY_EVENT_ID = "empty_event";
-    private static final Event EMPTY_EVENT = new Event(EMPTY_EVENT_ID);
+    private static final Event EMPTY_EVENT = new Event.Builder(EMPTY_EVENT_ID).build();
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
 
     private final AutoTaskStackController mAutoTaskStackController;
@@ -183,7 +183,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         if (request.getTriggerTask().baseIntent.getCategories() != null
                 && request.getTriggerTask().baseIntent.getCategories().contains(
                 Intent.CATEGORY_HOME)) {
-            return new Event("_System_OnHomeEvent");
+            return new Event.Builder("_System_OnHomeEvent").build();
         }
 
         if ((request.getFlags() & TRANSIT_FLAG_AVOID_MOVE_TO_FRONT)
@@ -227,13 +227,15 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         }
 
         if (TransitionUtil.isClosingType(request.getType())) {
-            return new Event("_System_TaskCloseEvent")
+            return new Event.Builder("_System_TaskCloseEvent")
                     .addToken("panelId", panelId)
-                    .addToken("component", componentString);
+                    .addToken("component", componentString)
+                    .build();
         }
-        return new Event("_System_TaskOpenEvent")
+        return new Event.Builder("_System_TaskOpenEvent")
                 .addToken("panelId", panelId)
-                .addToken("component", componentString);
+                .addToken("component", componentString)
+                .build();
     }
 
     @Override

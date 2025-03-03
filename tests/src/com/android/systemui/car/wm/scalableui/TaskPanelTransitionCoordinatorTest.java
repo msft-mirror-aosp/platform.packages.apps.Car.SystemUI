@@ -33,7 +33,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.android.car.scalableui.manager.PanelTransaction;
+import com.android.car.scalableui.model.PanelTransaction;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.wm.shell.automotive.AutoTaskStackController;
@@ -74,8 +74,8 @@ public class TaskPanelTransitionCoordinatorTest extends SysuiTestCase {
         IBinder binder = new Binder();
         Animator animator = new ValueAnimator();
         when(mAutoTaskStackController.startTransition(any())).thenReturn(binder);
-        PanelTransaction panelTransaction = new PanelTransaction();
-        panelTransaction.setAnimator("testPanel", animator);
+        PanelTransaction panelTransaction = new PanelTransaction.Builder()
+                .addAnimator("testPanel", animator).build();
 
         mTaskPanelTransitionCoordinator.startTransition(panelTransaction);
 
@@ -111,8 +111,8 @@ public class TaskPanelTransitionCoordinatorTest extends SysuiTestCase {
                 latch.countDown();
             }
         });
-        PanelTransaction panelTransaction = new PanelTransaction();
-        panelTransaction.setAnimator("testPanel", animator);
+        PanelTransaction panelTransaction = new PanelTransaction.Builder()
+                .addAnimator("testPanel", animator).build();
         mTaskPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction);
 
         AtomicBoolean animationStarted = new AtomicBoolean(false);
@@ -143,8 +143,8 @@ public class TaskPanelTransitionCoordinatorTest extends SysuiTestCase {
                 latch.countDown();
             }
         });
-        PanelTransaction panelTransaction = new PanelTransaction();
-        panelTransaction.setAnimator("testPanel", animator);
+        PanelTransaction panelTransaction = new PanelTransaction.Builder()
+                .addAnimator("testPanel", animator).build();
         mTaskPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction);
 
         // Run the animation on the main looper

@@ -17,9 +17,9 @@ package com.android.systemui.car.wm.scalableui;
 
 import android.content.Context;
 
-import com.android.car.scalableui.manager.Event;
-import com.android.car.scalableui.manager.PanelTransaction;
 import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.Event;
+import com.android.car.scalableui.model.PanelTransaction;
 import com.android.systemui.R;
 import com.android.wm.shell.dagger.WMSingleton;
 
@@ -52,7 +52,7 @@ public class EventDispatcher {
      * See {@link #getTransaction(Event)}
      */
     public static PanelTransaction getTransaction(String event) {
-        return getTransaction(new Event(event));
+        return getTransaction(new Event.Builder(event).build());
     }
 
     /**
@@ -66,7 +66,7 @@ public class EventDispatcher {
      * See {@link #executeTransaction(Event)}
      */
     public void executeTransaction(String event) {
-        executeTransaction(new Event(event));
+        executeTransaction(new Event.Builder(event).build());
     }
 
     /**

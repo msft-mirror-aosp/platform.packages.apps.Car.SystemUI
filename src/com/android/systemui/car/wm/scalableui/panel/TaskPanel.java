@@ -23,6 +23,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.util.ArraySet;
@@ -59,6 +60,7 @@ public class TaskPanel implements Panel {
     private static final String TAG = TaskPanel.class.getSimpleName();
     private static final String ROLE_TYPE_STRING = "string";
     private static final String ROLE_TYPE_ARRAY = "array";
+    private static final boolean DEBUG = Build.isDebuggable();
 
     private final AutoTaskStackController mAutoTaskStackController;
     private final CarServiceProvider mCarServiceProvider;
@@ -98,15 +100,21 @@ public class TaskPanel implements Panel {
     @Override
     public void init() {
         mCarServiceProvider.addListener(
-                car -> mCarActivityManager = car.getCarManager(CarActivityManager.class));
+                car -> {
+                    mCarActivityManager = car.getCarManager(CarActivityManager.class);
+                    trySetPersistentActivity();
+                });
 
         mAutoTaskStackController.createRootTaskStack(mDisplayId,
                 new RootTaskStackListener() {
                     @Override
                     public void onRootTaskStackCreated(@NonNull RootTaskStack rootTaskStack) {
+                        if (DEBUG) {
+                            Log.d(TAG, mId + ", onRootTaskStackCreated " + rootTaskStack);
+                        }
                         mRootTaskStack = rootTaskStack;
                         mRootTaskId = mRootTaskStack.getRootTaskInfo().taskId;
-                        setPersistentActivity();
+                        trySetPersistentActivity();
                         if (mIsLaunchRoot) {
                             mAutoTaskStackController.setDefaultRootTaskStackOnDisplay(mDisplayId,
                                     mRootTaskId);
@@ -348,20 +356,33 @@ public class TaskPanel implements Panel {
         return componentNames;
     }
 
-    private void setPersistentActivity() {
+    private void trySetPersistentActivity() {
+        if (mCarActivityManager == null || mRootTaskStack == null) {
+            if (DEBUG) {
+                Log.d(TAG,
+                        "mCarActivityManager or mRootTaskStack is null, [" + mId + ","
+                                + mCarActivityManager + ", " + mRootTaskStack + "]");
+            }
+            return;
+        }
+
         if (mRole == 0) {
+            if (DEBUG) {
+                Log.d(TAG, "mRole is 0, [" + mId + "]");
+            }
             return;
         }
 
         if (mIsLaunchRoot) {
+            if (DEBUG) {
+                Log.d(TAG, "mIsLaunchRoot is true, [" + mId + "]");
+            }
             return;
         }
 
-        if (mCarActivityManager != null && mRootTaskStack != null) {
-            mCarActivityManager.setPersistentActivitiesOnRootTask(
-                    mPersistedActivities.stream().toList(),
-                    mRootTaskStack.getRootTaskInfo().token.asBinder());
-        }
+        mCarActivityManager.setPersistentActivitiesOnRootTask(
+                mPersistedActivities.stream().toList(),
+                mRootTaskStack.getRootTaskInfo().token.asBinder());
     }
 
     @VisibleForTesting

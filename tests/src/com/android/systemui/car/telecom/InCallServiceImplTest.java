@@ -27,7 +27,7 @@ import android.testing.TestableLooper;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.telephony.calling.InCallServiceManager;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 
 import org.junit.Before;
@@ -42,7 +42,7 @@ import java.util.List;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class InCallServiceImplTest extends SysuiTestCase {
+public class InCallServiceImplTest extends CarSysuiTestCase {
     private InCallServiceImpl mInCallService;
     @Mock
     private Call mMockCall;

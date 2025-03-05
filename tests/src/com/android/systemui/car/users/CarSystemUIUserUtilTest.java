@@ -31,7 +31,7 @@ import android.testing.AndroidTestingRunner;
 import androidx.test.filters.SmallTest;
 
 import com.android.dx.mockito.inline.extended.ExtendedMockito;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.settings.UserTracker;
 
@@ -46,7 +46,7 @@ import org.mockito.quality.Strictness;
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @SmallTest
-public class CarSystemUIUserUtilTest extends SysuiTestCase {
+public class CarSystemUIUserUtilTest extends CarSysuiTestCase {
 
     private final UserHandle mUserHandle = UserHandle.of(1000);
     private final int mActivityManagerTestUser = 1001;

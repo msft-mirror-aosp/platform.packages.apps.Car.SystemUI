@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/activity_blocked_text"
-            android:textAppearance="@style/ActivityBlockingActivityText" />
+            style="@style/ActivityBlockingActivityText" />
 
         <LinearLayout
             android:id="@+id/action_button_container"
@@ -74,7 +74,7 @@
             android:id="@+id/debug_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/ActivityBlockingActivityText"
+            style="@style/ActivityBlockingActivityText"
             android:visibility="gone" />
 
     </LinearLayout>

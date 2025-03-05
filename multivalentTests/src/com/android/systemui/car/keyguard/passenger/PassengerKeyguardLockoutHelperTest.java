@@ -27,8 +27,8 @@ import androidx.test.filters.SmallTest;
 
 import com.android.internal.widget.LockPatternUtils;
 import com.android.settingslib.utils.StringUtil;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.settings.UserTracker;
 
@@ -42,7 +42,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidJUnit4.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class PassengerKeyguardLockoutHelperTest extends SysuiTestCase {
+public class PassengerKeyguardLockoutHelperTest extends CarSysuiTestCase {
     private static final int TEST_USER_ID = 1000;
     private static final int TEST_TIMEOUT_LENGTH_MS = 1000; // 1 second
 

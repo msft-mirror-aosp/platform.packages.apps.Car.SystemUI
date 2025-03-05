@@ -60,7 +60,7 @@ import android.view.MotionEvent;
 import androidx.annotation.NonNull;
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarServiceProvider.CarServiceOnConnectedListener;
 import com.android.systemui.car.CarSystemUiTest;
@@ -77,7 +77,7 @@ import org.mockito.quality.Strictness;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper(setAsMainLooper = true)
 @SmallTest
-public class DisplayInputSinkControllerTest extends SysuiTestCase {
+public class DisplayInputSinkControllerTest extends CarSysuiTestCase {
     private static final String TAG = DisplayInputSinkControllerTest.class.getSimpleName();
 
     private static final String EMPTY_SETTING_VALUE = "";

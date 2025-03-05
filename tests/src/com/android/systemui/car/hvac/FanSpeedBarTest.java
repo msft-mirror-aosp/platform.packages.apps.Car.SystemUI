@@ -33,7 +33,7 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.hvac.referenceui.FanSpeedBar;
 import com.android.systemui.car.hvac.referenceui.FanSpeedBarSegment;
@@ -49,7 +49,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class FanSpeedBarTest extends SysuiTestCase {
+public class FanSpeedBarTest extends CarSysuiTestCase {
     private static final int GLOBAL_AREA_ID = 117;
     private static final int PROPERTY_ID = HVAC_FAN_SPEED;
 

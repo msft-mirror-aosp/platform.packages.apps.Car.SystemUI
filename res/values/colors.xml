@@ -16,45 +16,18 @@
   -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <color name="privacy_chip_light_icon_color">@color/car_nav_icon_fill_color_selected</color>
-    <color name="privacy_chip_indicator_outside_stroke_color">@android:color/black</color>
-    <color name="system_bar_icon_color">@android:color/white</color>
-    <drawable name="nav_bar_background">@android:color/black</drawable>
-    <drawable name="status_bar_background">@android:color/black</drawable>
-
-    <!-- The background color of the notification shade -->
-    <color name="notification_shade_background_color">#D6000000</color>
 
     <!-- The background color of the car volume dialog -->
     <color name="car_volume_dialog_background_color">@color/system_bar_background_opaque</color>
 
     <!-- The color of the dividing line between grouped notifications. -->
     <color name="notification_divider_color">@*android:color/notification_action_list</color>
+
     <!-- The color of the ripples on the untinted notifications -->
     <color name="notification_ripple_untinted_color">@color/car_control_highlight</color>
 
-    <color name="keyguard_keypad_image_color">@android:color/white</color>
-
-    <!-- Semi-transparent background color of blocking activity. -->
-    <color name="activity_blocking_activity_background">#c7000000</color>
-    <color name="activity_blocking_action_button_background_color">
-        @*android:color/car_grey_868
-    </color>
-
-    <!-- Color of text in blocking activity. -->
-    <color name="blocking_text">@android:color/white</color>
-    <color name="ic_ux_restricted_color">@android:color/white</color>
-
-    <!-- Colors for display input lock icon and text -->
-    <color name="display_input_lock_icon_color">@android:color/white</color>
-    <color name="display_input_lock_background_color">@*android:color/car_grey_868</color>
-
-    <!-- Color for user picker -->
-    <color name="user_picker_bottom_bar_color">@android:color/black</color>
-    <color name="user_picker_snack_bar_transparent_color">@android:color/white</color>
     <drawable name="user_picker_splash_icon">@android:color/transparent</drawable>
 
     <!-- Color for PIN Pad icon.-->
     <color name="pin_pad_icon_color">@color/car_ui_text_color_primary</color>
-
-    <color name="car_control_highlight">#99d9e2ff</color>
 </resources>

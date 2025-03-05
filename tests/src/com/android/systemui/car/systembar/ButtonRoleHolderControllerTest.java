@@ -37,7 +37,7 @@ import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.tests.R;
@@ -54,7 +54,7 @@ import java.util.List;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class ButtonRoleHolderControllerTest extends SysuiTestCase {
+public class ButtonRoleHolderControllerTest extends CarSysuiTestCase {
     private static final String TEST_VALID_PACKAGE_NAME = "foo";
     private static final String TEST_INVALID_PACKAGE_NAME = "bar";
     private static final UserHandle TEST_CURRENT_USER = UserHandle.of(100);

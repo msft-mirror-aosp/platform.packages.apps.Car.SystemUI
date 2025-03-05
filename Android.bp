@@ -405,5 +405,6 @@ filegroup {
     srcs: [
         "multivalentTests/src/**/*.kt",
         "multivalentTests/src/**/*.java",
+        "tests/utils/src/com/android/systemui/*.java",
     ],
 }

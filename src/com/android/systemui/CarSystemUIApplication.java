@@ -23,6 +23,7 @@ import android.annotation.Nullable;
 import android.car.Car;
 import android.car.CarOccupantZoneManager;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.view.ContextThemeWrapper;
@@ -105,4 +106,11 @@ public class CarSystemUIApplication extends SystemUIApplication {
         Context context = super.createWindowContext(type, options);
         return new ContextThemeWrapper(context, this.getTheme());
     }
+
+    @Override
+    public Context createConfigurationContext(Configuration overrideConfiguration) {
+        Context context = super.createConfigurationContext(overrideConfiguration);
+        return new ContextThemeWrapper(context, this.getTheme());
+    }
+
 }

@@ -27,7 +27,7 @@ import android.testing.TestableLooper;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
@@ -48,7 +48,7 @@ import javax.inject.Provider;
 @RunWith(AndroidJUnit4.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class DebugPanelButtonViewControllerTest extends SysuiTestCase {
+public class DebugPanelButtonViewControllerTest extends CarSysuiTestCase {
     @Mock
     private CarSystemBarPanelButtonView mView;
     @Mock

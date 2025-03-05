@@ -31,7 +31,7 @@ import android.testing.TestableLooper;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
@@ -49,7 +49,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class QCScreenOffButtonControllerTest extends SysuiTestCase {
+public class QCScreenOffButtonControllerTest extends CarSysuiTestCase {
     private QCFooterView mView;
     private QCScreenOffButtonController mController;
 

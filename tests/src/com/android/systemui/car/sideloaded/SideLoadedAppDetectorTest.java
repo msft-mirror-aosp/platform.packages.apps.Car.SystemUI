@@ -34,8 +34,8 @@ import android.testing.TestableResources;
 
 import androidx.test.filters.SmallTest;
 
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 
@@ -49,7 +49,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class SideLoadedAppDetectorTest extends SysuiTestCase {
+public class SideLoadedAppDetectorTest extends CarSysuiTestCase {
 
     private static final String SAFE_VENDOR = "com.safe.vendor";
     private static final String UNSAFE_VENDOR = "com.unsafe.vendor";

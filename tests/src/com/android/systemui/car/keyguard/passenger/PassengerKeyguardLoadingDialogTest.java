@@ -50,7 +50,7 @@ import androidx.test.filters.SmallTest;
 
 import com.android.dx.mockito.inline.extended.ExtendedMockito;
 import com.android.internal.widget.LockPatternUtils;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
@@ -74,7 +74,7 @@ import java.util.concurrent.Executor;
 @TestableLooper.RunWithLooper
 @SmallTest
 @EnableFlags(Flags.FLAG_SUPPORTS_SECURE_PASSENGER_USERS)
-public class PassengerKeyguardLoadingDialogTest extends SysuiTestCase {
+public class PassengerKeyguardLoadingDialogTest extends CarSysuiTestCase {
     private static final int TEST_USER_ID = 1000;
     private static final int TEST_DRIVER_DISPLAY_ID = 100;
     private static final int TEST_PASSENGER_DISPLAY_ID = 101;

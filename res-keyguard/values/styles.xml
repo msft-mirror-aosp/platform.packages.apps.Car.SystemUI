@@ -34,8 +34,8 @@
 
     <style name="NumPadKeyButton.LastRow">
         <item name="android:layout_marginBottom">0dp</item>
-        <item name="android:colorControlNormal">?android:attr/colorBackground</item>
-        <item name="android:colorControlHighlight">?android:attr/colorAccent</item>
+        <item name="android:colorControlNormal">?oemColorOnSurfaceVariant</item>
+        <item name="android:colorControlHighlight">?oemColorPrimary</item>
     </style>
 
     <style name="KeyguardButton" parent="@android:style/Widget.DeviceDefault.Button">
@@ -45,7 +45,6 @@
     </style>
 
     <style name="Widget.TextView.NumPadKey" parent="@android:style/Widget.TextView">
-        <!-- Only replaces the text size. -->
-        <item name="android:textSize">@*android:dimen/car_body1_size</item>
+        android:textAppearance="?oemTextAppearanceTitleLarge"
     </style>
 </resources>

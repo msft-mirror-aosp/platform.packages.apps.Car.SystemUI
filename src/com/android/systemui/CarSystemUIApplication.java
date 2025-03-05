@@ -18,12 +18,16 @@ package com.android.systemui;
 
 import static android.car.CarOccupantZoneManager.DISPLAY_TYPE_MAIN;
 
+import android.annotation.NonNull;
+import android.annotation.Nullable;
 import android.car.Car;
 import android.car.CarOccupantZoneManager;
 import android.content.Context;
+import android.os.Bundle;
 import android.os.UserHandle;
 import android.view.ContextThemeWrapper;
 import android.view.Display;
+import android.view.WindowManager;
 
 import com.android.car.oem.tokens.Token;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
@@ -91,6 +95,14 @@ public class CarSystemUIApplication extends SystemUIApplication {
     @Override
     public Context createContextAsUser(UserHandle user, @CreatePackageOptions int flags) {
         Context context = super.createContextAsUser(user, flags);
+        return new ContextThemeWrapper(context, this.getTheme());
+    }
+
+    @Override
+    @NonNull
+    public Context createWindowContext(@WindowManager.LayoutParams.WindowType int type,
+        @Nullable Bundle options) {
+        Context context = super.createWindowContext(type, options);
         return new ContextThemeWrapper(context, this.getTheme());
     }
 }

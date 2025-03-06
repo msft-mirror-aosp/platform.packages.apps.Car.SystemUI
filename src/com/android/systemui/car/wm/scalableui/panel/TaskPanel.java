@@ -106,7 +106,7 @@ public class TaskPanel implements Panel {
                     trySetPersistentActivity();
                 });
 
-        mAutoTaskStackController.createRootTaskStack(mDisplayId,
+        mAutoTaskStackController.createRootTaskStack(mDisplayId, mId,
                 new RootTaskStackListener() {
                     @Override
                     public void onRootTaskStackCreated(@NonNull RootTaskStack rootTaskStack) {

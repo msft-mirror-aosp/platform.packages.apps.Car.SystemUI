@@ -33,7 +33,6 @@ import android.os.Binder;
 import android.util.ArrayMap;
 import android.util.ArraySet;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.InsetsFrameProvider;
 import android.view.View;
@@ -153,9 +152,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
         if (mWindowContexts.containsKey(windowType)) {
             return mWindowContexts.get(windowType);
         }
-        // Copy the theme from the original context to the WindowContext
-        Context context = new ContextThemeWrapper(mContext.createWindowContext(
-                windowType, /* options= */ null), mContext.getTheme());
+        Context context = mContext.createWindowContext(windowType, /* options= */ null);
         mWindowContexts.put(windowType, context);
         return context;
     }

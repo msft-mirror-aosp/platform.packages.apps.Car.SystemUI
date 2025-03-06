@@ -50,7 +50,6 @@ import android.os.UserManager;
 import android.sysprop.CarProperties;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -429,10 +428,8 @@ public class UserGridRecyclerView extends RecyclerView {
 
         private Context getKeyguardDialogWindowContext() {
             if (mKeyguardDialogWindowContext == null) {
-                // Copy the theme from the original context to the WindowContext
-                mKeyguardDialogWindowContext = new ContextThemeWrapper(mContext.createWindowContext(
-                        TYPE_KEYGUARD_DIALOG, /* options= */ null),
-                        mContext.getTheme());
+                mKeyguardDialogWindowContext = mContext.createWindowContext(TYPE_KEYGUARD_DIALOG,
+                        /* options= */ null);
             }
             return mKeyguardDialogWindowContext;
         }

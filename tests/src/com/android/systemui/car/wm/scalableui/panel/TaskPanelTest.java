@@ -17,6 +17,7 @@ package com.android.systemui.car.wm.scalableui.panel;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -78,7 +79,7 @@ public class TaskPanelTest extends SysuiTestCase {
         mTaskPanel.setDisplayId(0);
         mTaskPanel.init();
 
-        verify(mAutoTaskStackController).createRootTaskStack(anyInt(), any());
+        verify(mAutoTaskStackController).createRootTaskStack(anyInt(), anyString(), any());
     }
 
     @Test

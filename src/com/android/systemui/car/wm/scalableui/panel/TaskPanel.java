@@ -95,7 +95,7 @@ public final class TaskPanel extends BasePanel {
                     trySetPersistentActivity();
                 });
 
-        mAutoTaskStackController.createRootTaskStack(getDisplayId(),
+        mAutoTaskStackController.createRootTaskStack(getDisplayId(), getPanelId(),
                 new RootTaskStackListener() {
                     @Override
                     public void onRootTaskStackCreated(@NonNull RootTaskStack rootTaskStack) {

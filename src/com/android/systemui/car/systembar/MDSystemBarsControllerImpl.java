@@ -17,27 +17,13 @@
 package com.android.systemui.car.systembar;
 
 import android.annotation.Nullable;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.om.OverlayManager;
 import android.content.res.Configuration;
 import android.os.Build;
-import android.os.Handler;
-import android.os.RemoteException;
 import android.os.UserHandle;
 import android.util.Log;
-import android.view.Display;
-import android.view.IDisplayWindowInsetsController;
-import android.view.IWindowManager;
-import android.view.InsetsSource;
-import android.view.InsetsSourceControl;
-import android.view.InsetsState;
-import android.view.WindowInsets;
 import android.view.WindowManager;
-import android.view.inputmethod.ImeTracker;
-
-import androidx.annotation.BinderThread;
-import androidx.annotation.MainThread;
 
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
@@ -60,44 +46,26 @@ import com.android.systemui.util.concurrency.DelayableExecutor;
 
 import dagger.Lazy;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.inject.Provider;
 
 /**
- * b/259604616, This controller is created as a workaround for NavBar issues in concurrent
- * {@link CarSystemBar}/SystemUI.
- * Problem: CarSystemBar relies on {@link IStatusBarService},
- * which can register only one process to listen for the {@link CommandQueue} events.
- * Solution: {@link MDSystemBarsControllerImpl} intercepts Insets change event by registering the
- * {@link BinderThread} with
- * {@link IWindowManager#setDisplayWindowInsetsController(int, IDisplayWindowInsetsController)} and
- * notifies its listener for both Primary and Secondary SystemUI
- * process.
+ * Currently because of Bug:b/260206944, RROs are not applied to the secondary user.
+ * This class acts as a Mediator, which toggles the Overlay state of the RRO package,
+ * which in turn triggers onConfigurationChange. Only after this change start the
+ * CarSystemBar with overlaid resources.
  */
 public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
 
     private static final String TAG = MDSystemBarsControllerImpl.class.getSimpleName();
     private static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;
-    private Set<Listener> mListeners;
-    private int mDisplayId = Display.INVALID_DISPLAY;
-    private InsetsState mCurrentInsetsState;
-    private final IWindowManager mIWindowManager;
-    private final Handler mMainHandler;
+
     private final Context mContext;
-    private final Listener mListener = new Listener() {
-        @Override
-        public void onKeyboardVisibilityChanged(boolean show) {
-            MDSystemBarsControllerImpl.this.updateKeyboardVisibility(show);
-        }
-    };
+
     private final OverlayManager mOverlayManager;
 
     private boolean mInitialized = false;
 
-    public MDSystemBarsControllerImpl(IWindowManager wmService,
-            @Main Handler mainHandler,
+    public MDSystemBarsControllerImpl(
             Context context,
             UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,
@@ -149,8 +117,6 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
                 restartTracker,
                 displayTracker,
                 toolbarController);
-        mIWindowManager = wmService;
-        mMainHandler = mainHandler;
         mContext = context;
         mOverlayManager = context.getSystemService(OverlayManager.class);
     }
@@ -200,137 +166,7 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
         if (!CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
             super.createSystemBar();
         } else {
-            addListener(mListener);
             createNavBar();
         }
-    }
-
-    /**
-     * Adds a listener for the display.
-     * Adding a listener to a Display, replaces previous binder callback to this
-     * displayId
-     * {@link IWindowManager#setDisplayWindowInsetsController(int, IDisplayWindowInsetsController)}
-     * A SystemUI process should only register to a single display with displayId
-     * {@link Context#getDisplayId()}
-     *
-     * Note: {@link  Context#getDisplayId()} will return the {@link Context#DEVICE_ID_DEFAULT}, if
-     * called in the constructor. As this component's constructor is called before the DisplayId
-     * gets assigned to the context.
-     *
-     * @param listener SystemBar Inset events
-     */
-    @MainThread
-    private void addListener(Listener listener) {
-        if (mDisplayId != Display.INVALID_DISPLAY && mDisplayId != mContext.getDisplayId()) {
-            Log.e(TAG, "Unexpected Display Id change");
-            mListeners = null;
-            mCurrentInsetsState = null;
-            unregisterWindowInsetController(mDisplayId);
-        }
-        if (mListeners != null) {
-            mListeners.add(listener);
-            return;
-        }
-        mDisplayId = mContext.getDisplayId();
-        mListeners = new HashSet<>();
-        mListeners.add(listener);
-        registerWindowInsetController(mDisplayId);
-    }
-
-    private void registerWindowInsetController(int displayId) {
-        if (DEBUG) {
-            Log.d(TAG, "Registering a WindowInsetController with Display: " + displayId);
-        }
-        try {
-            mIWindowManager.setDisplayWindowInsetsController(displayId,
-                    new DisplayWindowInsetsControllerImpl());
-        } catch (RemoteException e) {
-            Log.w(TAG, "Unable to set insets controller on display " + displayId);
-        }
-    }
-
-    private void unregisterWindowInsetController(int displayId) {
-        if (DEBUG) {
-            Log.d(TAG, "Unregistering a WindowInsetController with Display: " + displayId);
-        }
-        try {
-            mIWindowManager.setDisplayWindowInsetsController(displayId, null);
-        } catch (RemoteException e) {
-            Log.w(TAG, "Unable to remove insets controller on display " + displayId);
-        }
-    }
-
-    @BinderThread
-    private class DisplayWindowInsetsControllerImpl
-            extends IDisplayWindowInsetsController.Stub {
-        @Override
-        public void topFocusedWindowChanged(ComponentName component,
-                @WindowInsets.Type.InsetsType int requestedVisibleTypes) {
-            //no-op
-        }
-
-        @Override
-        public void insetsChanged(InsetsState insetsState) {
-            if (insetsState == null || insetsState.equals(mCurrentInsetsState)) {
-                return;
-            }
-            mCurrentInsetsState = insetsState;
-            if (mListeners == null) {
-                return;
-            }
-            boolean show = insetsState.isSourceOrDefaultVisible(InsetsSource.ID_IME,
-                    WindowInsets.Type.ime());
-            mMainHandler.post(() -> {
-                for (Listener l : mListeners) {
-                    l.onKeyboardVisibilityChanged(show);
-                }
-            });
-        }
-
-        @Override
-        public void insetsControlChanged(InsetsState insetsState,
-                InsetsSourceControl[] activeControls) {
-            //no-op
-        }
-
-        @Override
-        public void showInsets(@WindowInsets.Type.InsetsType int types, boolean fromIme,
-                @Nullable ImeTracker.Token statsToken) {
-            //no-op
-        }
-
-        @Override
-        public void hideInsets(@WindowInsets.Type.InsetsType int types, boolean fromIme,
-                @Nullable ImeTracker.Token statsToken) {
-            //no-op
-        }
-
-        @Override
-        public void setImeInputTargetRequestedVisibility(boolean visible) {
-            //no-op
-        }
-    }
-
-    /**
-     * Remove a listener for a display
-     *
-     * @param listener SystemBar Inset events Listener
-     * @return if set contains such a listener, returns {@code true} otherwise false
-     */
-    public boolean removeListener(Listener listener) {
-        if (mListeners == null) {
-            return false;
-        }
-        return mListeners.remove(listener);
-    }
-
-    /**
-     * Listener for SystemBar insets events
-     */
-    public interface Listener {
-        /**
-         * show/hide keyboard
-         */
-        void onKeyboardVisibilityChanged(boolean showing);
     }
 }

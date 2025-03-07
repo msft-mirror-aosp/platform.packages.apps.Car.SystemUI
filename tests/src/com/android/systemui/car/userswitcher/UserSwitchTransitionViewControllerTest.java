@@ -141,7 +141,7 @@ public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
     @Test
     public void onHandleShow_showsUserSwitchingMessage() {
         String message = "Hello world!";
-        when(mMockActivityManager.getSwitchingFromUserMessage()).thenReturn(message);
+        when(mMockActivityManager.getSwitchingFromUserMessage(anyInt())).thenReturn(message);
 
         mCarUserSwitchingDialogController.handleShow(/* newUserId= */ TEST_USER_1);
         mExecutor.advanceClockToLast();

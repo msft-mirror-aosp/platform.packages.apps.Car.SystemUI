@@ -58,7 +58,8 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
     static final String TAG = CarFullscreenTaskMonitorListener.class.getSimpleName();
     static final boolean DBG = Log.isLoggable(TAG, Log.DEBUG);
     private final ShellTaskOrganizer mShellTaskOrganizer;
-    private final CarServiceTaskReporter mCarServiceTaskReporter;
+    // TODO(b/395767437): Add task listener for fullscreen and multi window mode in task repository
+    private final AutoTaskRepository mTaskRepository;
     @GuardedBy("mLock")
     private final ArraySet<OnTaskChangeListener> mTaskListeners = new ArraySet<>();
     private final Object mLock = new Object();
@@ -69,7 +70,7 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
                 @Override
                 public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo,
                         SurfaceControl leash) {
-                    mCarServiceTaskReporter.reportTaskAppeared(taskInfo, leash);
+                    mTaskRepository.onTaskAppeared(taskInfo, leash);
                     synchronized (mLock) {
                         for (OnTaskChangeListener listener : mTaskListeners) {
                             listener.onTaskAppeared(taskInfo);
@@ -84,7 +85,7 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
 
                 @Override
                 public void onTaskInfoChanged(ActivityManager.RunningTaskInfo taskInfo) {
-                    mCarServiceTaskReporter.reportTaskInfoChanged(taskInfo);
+                    mTaskRepository.onTaskChanged(taskInfo);
                     synchronized (mLock) {
                         for (OnTaskChangeListener listener : mTaskListeners) {
                             listener.onTaskInfoChanged(taskInfo);
@@ -98,7 +99,7 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
 
                 @Override
                 public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
-                    mCarServiceTaskReporter.reportTaskVanished(taskInfo);
+                    mTaskRepository.onTaskVanished(taskInfo);
                     synchronized (mLock) {
                         for (OnTaskChangeListener listener : mTaskListeners) {
                             listener.onTaskVanished(taskInfo);
@@ -124,10 +125,7 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
         super(shellInit, shellTaskOrganizer, syncQueue, recentTasksOptional,
                 windowDecorViewModelOptional, Optional.empty());
         mShellTaskOrganizer = shellTaskOrganizer;
-        mCarServiceTaskReporter = new CarServiceTaskReporter(context, carServiceProvider,
-                taskViewTransitions,
-                shellTaskOrganizer,
-                taskRepository);
+        mTaskRepository = taskRepository;
 
         shellInit.addInitCallback(
                 () -> mShellTaskOrganizer.addListenerForType(mMultiWindowTaskListener,
@@ -140,7 +138,7 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
     public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo,
             SurfaceControl leash) {
         super.onTaskAppeared(taskInfo, leash);
-        mCarServiceTaskReporter.reportTaskAppeared(taskInfo, leash);
+        mTaskRepository.onTaskAppeared(taskInfo, leash);
         synchronized (mLock) {
             for (OnTaskChangeListener listener : mTaskListeners) {
                 listener.onTaskAppeared(taskInfo);
@@ -158,7 +156,7 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
     @Override
     public void onTaskInfoChanged(ActivityManager.RunningTaskInfo taskInfo) {
         super.onTaskInfoChanged(taskInfo);
-        mCarServiceTaskReporter.reportTaskInfoChanged(taskInfo);
+        mTaskRepository.onTaskChanged(taskInfo);
         synchronized (mLock) {
             for (OnTaskChangeListener listener : mTaskListeners) {
                 listener.onTaskInfoChanged(taskInfo);
@@ -169,7 +167,7 @@ public class CarFullscreenTaskMonitorListener extends FullscreenTaskListener {
     @Override
     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
         super.onTaskVanished(taskInfo);
-        mCarServiceTaskReporter.reportTaskVanished(taskInfo);
+        mTaskRepository.onTaskVanished(taskInfo);
         synchronized (mLock) {
             for (OnTaskChangeListener listener : mTaskListeners) {
                 listener.onTaskVanished(taskInfo);

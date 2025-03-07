@@ -305,6 +305,7 @@ public class TaskPanelTransitionCoordinator {
         tx.setLayer(sc, taskPanel.getLayer());
         tx.setPosition(sc, taskPanel.getBounds().left, taskPanel.getBounds().top);
         tx.setWindowCrop(sc, taskPanel.getBounds().width(), taskPanel.getBounds().height());
+        tx.setCornerRadius(sc, taskPanel.getCornerRadius());
         tx.apply();
         Trace.endSection();
     }

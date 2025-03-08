@@ -27,7 +27,7 @@ import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 import java.util.List;
 
 /**
- *  Interface for classes that provide system bar configurations.
+ * Interface for classes that provide system bar configurations.
  */
 public interface SystemBarConfigs {
 
@@ -40,6 +40,16 @@ public interface SystemBarConfigs {
      * </p>
      */
     void resetSystemBarConfigs();
+
+    /**
+     * Invalidates cached window context and creates a new window from application context.
+     *
+     * <p>
+     * This method should be called when the window context configurations are not in sync with
+     * application context configurations.
+     * </p>
+     */
+    void resetSystemBarWindowContext();
 
     /**
      * When creating system bars or overlay windows, use a WindowContext
@@ -98,12 +108,11 @@ public interface SystemBarConfigs {
 
     /**
      * @param index must be one of the following values
-     * STATUS_BAR = 0
-     * NAVIGATION_BAR = 1
-     * STATUS_BAR_EXTRA = 2
-     * NAVIGATION_BAR_EXTRA = 3
-     * see {@link #getSystemBarInsetTypeBySide(int)}
-     *
+     *              STATUS_BAR = 0
+     *              NAVIGATION_BAR = 1
+     *              STATUS_BAR_EXTRA = 2
+     *              NAVIGATION_BAR_EXTRA = 3
+     *              see {@link #getSystemBarInsetTypeBySide(int)}
      * @return The {@link InsetsFrameProvider}, or {@code null} if the side is unknown
      */
     InsetsFrameProvider getInsetsFrameProvider(int index);

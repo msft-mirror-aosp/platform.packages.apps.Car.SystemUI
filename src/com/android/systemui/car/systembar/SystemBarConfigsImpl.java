@@ -143,6 +143,14 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
     }
 
     @Override
+    public void resetSystemBarWindowContext() {
+        for (int windowType : mWindowContexts.keySet()) {
+            Context context = mContext.createWindowContext(windowType, /* options= */ null);
+            mWindowContexts.put(windowType, context);
+        }
+    }
+
+    @Override
     public Context getWindowContextBySide(@SystemBarSide int side) {
         SystemBarConfig config = mSystemBarConfigMap.get(side);
         if (config == null) {
@@ -426,14 +434,14 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
         mLeftNavBarEnabled = mResources.getBoolean(R.bool.config_enableLeftSystemBar);
         mRightNavBarEnabled = mResources.getBoolean(R.bool.config_enableRightSystemBar);
         mDisplayCompatToolbarState =
-            mResources.getInteger(R.integer.config_showDisplayCompatToolbarOnSystemBar);
+                mResources.getInteger(R.integer.config_showDisplayCompatToolbarOnSystemBar);
         mSystemBarConfigMap.clear();
 
         if ((mLeftNavBarEnabled && isLeftDisplayCompatToolbarEnabled())
                 || (mRightNavBarEnabled && isRightDisplayCompatToolbarEnabled())) {
             throw new IllegalStateException(
-                "Navigation Bar and Display Compat toolbar can't be "
-                    + "on the same side");
+                    "Navigation Bar and Display Compat toolbar can't be "
+                            + "on the same side");
         }
 
         if (mTopNavBarEnabled) {
@@ -713,7 +721,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
                             | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
                     PixelFormat.TRANSLUCENT);
             lp.setTitle(BAR_TITLE_MAP.get(mSide));
-            lp.providedInsets = new InsetsFrameProvider[] {
+            lp.providedInsets = new InsetsFrameProvider[]{
                     BAR_PROVIDER_MAP[mBarType],
                     BAR_GESTURE_MAP.get(mSide)
             };

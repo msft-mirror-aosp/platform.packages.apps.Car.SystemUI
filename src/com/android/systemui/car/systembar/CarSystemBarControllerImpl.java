@@ -39,6 +39,7 @@ import android.graphics.Rect;
 import android.inputmethodservice.InputMethodService;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PatternMatcher;
 import android.os.RemoteException;
 import android.util.ArraySet;
@@ -103,6 +104,10 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     private static final String OVERLAY_FILTER_DATA_SCHEME = "package";
 
+    private static final int MAX_RETRIES_FOR_WINDOW_CONTEXT_UPDATE_CHECK = 3;
+
+    private static final long RETRY_DELAY_FOR_WINDOW_CONTEXT_UPDATE_CHECK = 500;
+
     private final Context mContext;
     private final CarSystemBarViewFactory mCarSystemBarViewFactory;
     private final SystemBarConfigs mSystemBarConfigs;
@@ -157,6 +162,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     // it's open.
     private boolean mDeviceIsSetUpForUser = true;
     private boolean mIsUserSetupInProgress = false;
+    private int mWindowContextUpdateCheckRetryCount = 0;
 
     private AppearanceRegion[] mAppearanceRegions = new AppearanceRegion[0];
     @BarTransitions.TransitionMode
@@ -165,10 +171,41 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     private int mSystemBarMode;
     private boolean mStatusBarTransientShown;
     private boolean mNavBarTransientShown;
+    private Handler mHandler;
 
     private boolean mIsUiModeNight = false;
 
     private Locale mCurrentLocale;
+
+    private final Runnable mWindowContextUpdateCheckRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (checkSystemBarWindowContextsAreUpdated()) {
+                // cache the current state
+                Map<Integer, Bundle> cachedSystemBarCurrentState = cacheSystemBarCurrentState();
+
+                resetSystemBarContent(/* isProvisionedStateChange= */ false);
+
+                // retrieve the previous state
+                restoreSystemBarSavedState(cachedSystemBarCurrentState);
+                mWindowContextUpdateCheckRetryCount = 0;
+            } else if (mWindowContextUpdateCheckRetryCount
+                    == MAX_RETRIES_FOR_WINDOW_CONTEXT_UPDATE_CHECK) {
+                resetSystemBarContext();
+
+                // cache the current state
+                Map<Integer, Bundle> cachedSystemBarCurrentState = cacheSystemBarCurrentState();
+
+                resetSystemBarContent(/* isProvisionedStateChange= */ false);
+
+                // retrieve the previous state
+                restoreSystemBarSavedState(cachedSystemBarCurrentState);
+            } else {
+                mWindowContextUpdateCheckRetryCount++;
+                mHandler.postDelayed(this, RETRY_DELAY_FOR_WINDOW_CONTEXT_UPDATE_CHECK);
+            }
+        }
+    };
 
     public CarSystemBarControllerImpl(Context context,
             UserTracker userTracker,
@@ -189,7 +226,8 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             ConfigurationController configurationController,
             CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
-            @Nullable ToolbarController toolbarController) {
+            @Nullable ToolbarController toolbarController,
+            @Main Handler handler) {
         mContext = context;
         mUserTracker = userTracker;
         mCarSystemBarViewFactory = carSystemBarViewFactory;
@@ -210,6 +248,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mConfigurationController = configurationController;
         mCarSystemBarRestartTracker = restartTracker;
         mDisplayCompatToolbarController = toolbarController;
+        mHandler = handler;
     }
 
     /**
@@ -405,7 +444,25 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             mIsUiModeNight = isConfigNightMode;
         }
 
-        // cache the current state
+        if (mWindowContextUpdateCheckRunnable != null) {
+            mHandler.removeCallbacks(mWindowContextUpdateCheckRunnable);
+            mWindowContextUpdateCheckRetryCount = 0;
+        }
+        mHandler.post(mWindowContextUpdateCheckRunnable);
+    }
+
+
+    private boolean checkSystemBarWindowContextsAreUpdated() {
+        return mSystemBarConfigs.getSystemBarSidesByZOrder().stream().allMatch(side -> {
+            Configuration windowConfig = mSystemBarConfigs.getWindowContextBySide(
+                    side).getResources().getConfiguration();
+            Locale locale = windowConfig.getLocales().get(0);
+            return windowConfig.isNightModeActive() == mIsUiModeNight && (
+                    (locale != null && locale.equals(mCurrentLocale)) || locale == mCurrentLocale);
+        });
+    }
+
+    private Map<Integer, Bundle> cacheSystemBarCurrentState() {
         Map<Integer, Bundle> savedStates = mSystemBarConfigs.getSystemBarSidesByZOrder().stream()
                 .collect(HashMap::new,
                         (map, side) -> {
@@ -415,10 +472,10 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
                             map.put(side, bundle);
                         },
                         HashMap::putAll);
+        return savedStates;
+    }
 
-        resetSystemBarContent(/* isProvisionedStateChange= */ false);
-
-        // retrieve the previous state
+    private void restoreSystemBarSavedState(Map<Integer, Bundle> savedStates) {
         mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
             getBarViewController(side, isDeviceSetupForUser())
                     .onRestoreInstanceState(savedStates.get(side));
@@ -451,7 +508,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      * {@code StatusBarManager.Disable2Flags}, lock task mode. When there is a change in state,
      * and refreshes the system bars.
      *
-     * @param state {@code StatusBarManager.DisableFlags}
+     * @param state  {@code StatusBarManager.DisableFlags}
      * @param state2 {@code StatusBarManager.Disable2Flags}
      */
     @VisibleForTesting
@@ -461,7 +518,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         if (diff == 0 && mLockTaskMode == lockTaskMode) {
             if (DEBUG) {
                 Log.d(TAG, "setSystemBarStates(): status bar states unchanged: state: "
-                        + state + " state2: " +  state2 + " lockTaskMode: " + mLockTaskMode);
+                        + state + " state2: " + state2 + " lockTaskMode: " + mLockTaskMode);
             }
             return;
         }
@@ -607,6 +664,13 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mSystemBarConfigs.resetSystemBarConfigs();
         mCarSystemBarViewFactory.resetSystemBarWindowCache();
         readConfigs();
+    }
+
+    /**
+     * Invalidate SystemBar window context and recreates from application context.
+     */
+    void resetSystemBarContext() {
+        mSystemBarConfigs.resetSystemBarWindowContext();
     }
 
     protected void updateKeyboardVisibility(boolean isKeyboardVisible) {

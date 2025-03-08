@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.om.OverlayManager;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.Handler;
 import android.os.UserHandle;
 import android.util.Log;
 import android.view.WindowManager;
@@ -60,6 +61,7 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
     private boolean mInitialized = false;
 
     public MDSystemBarsControllerImpl(
+            @Main Handler mainHandler,
             Context context,
             UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,
@@ -98,7 +100,8 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
                 configurationController,
                 restartTracker,
                 displayTracker,
-                toolbarController);
+                toolbarController,
+                mainHandler);
         mContext = context;
         mOverlayManager = context.getSystemService(OverlayManager.class);
     }

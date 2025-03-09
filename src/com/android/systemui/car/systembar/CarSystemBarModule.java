@@ -23,6 +23,7 @@ import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
 
 import android.annotation.Nullable;
 import android.content.Context;
+import android.os.Handler;
 import android.view.WindowManager;
 
 import com.android.internal.statusbar.IStatusBarService;
@@ -134,6 +135,7 @@ public abstract class CarSystemBarModule {
     @SysUISingleton
     @Provides
     static CarSystemBarController provideCarSystemBarController(
+            @Main Handler mainHandler,
             @CarSysUIDynamicOverride Optional<CarSystemBarController> carSystemBarController,
             Context context,
             UserTracker userTracker,
@@ -171,7 +173,7 @@ public abstract class CarSystemBarModule {
                 .getBoolean(R.bool.config_enableSecondaryUserRRO);
 
         if (isSecondaryMUMDSystemUI && isSecondaryUserRROsEnabled) {
-            return new MDSystemBarsControllerImpl(context, userTracker,
+            return new MDSystemBarsControllerImpl(mainHandler, context, userTracker,
                     carSystemBarViewFactory, systemBarConfigs, lightBarController,
                     darkIconDispatcher, windowManager, deviceProvisionedController, commandQueue,
                     autoHideController, buttonSelectionStateListener, mainExecutor, barService,
@@ -183,7 +185,7 @@ public abstract class CarSystemBarModule {
                     deviceProvisionedController, commandQueue, autoHideController,
                     buttonSelectionStateListener, mainExecutor, barService,
                     keyguardStateControllerLazy, iconPolicyLazy, configurationController,
-                    restartTracker, displayTracker, toolbarController);
+                    restartTracker, displayTracker, toolbarController, mainHandler);
         }
     }
 

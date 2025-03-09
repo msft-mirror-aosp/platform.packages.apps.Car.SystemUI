@@ -233,7 +233,8 @@ public class UserSwitchTransitionViewController extends OverlayViewController {
                             previousUserId, newUserId));
         } else {
             // Show the switchingFromUserMessage if it was set.
-            String switchingFromUserMessage = mActivityManager.getSwitchingFromUserMessage();
+            String switchingFromUserMessage =
+                    mActivityManager.getSwitchingFromUserMessage(previousUserId);
             msgView.setText(switchingFromUserMessage != null ? switchingFromUserMessage
                     : mResources.getString(R.string.car_loading_profile));
         }

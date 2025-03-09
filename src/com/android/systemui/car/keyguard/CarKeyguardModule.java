@@ -38,11 +38,13 @@ import com.android.keyguard.mediator.ScreenOnCoordinator;
 import com.android.systemui.CoreStartable;
 import com.android.systemui.animation.ActivityTransitionAnimator;
 import com.android.systemui.broadcast.BroadcastDispatcher;
+import com.android.systemui.car.keyguard.passenger.PassengerKeyguardLoadingDialog;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.classifier.FalsingModule;
 import com.android.systemui.communal.ui.viewmodel.CommunalTransitionViewModel;
 import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.dagger.qualifiers.Application;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.systemui.dreams.DreamOverlayStateController;
@@ -58,6 +60,8 @@ import com.android.systemui.keyguard.WindowManagerOcclusionManager;
 import com.android.systemui.keyguard.dagger.KeyguardFaceAuthNotSupportedModule;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
 import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
+import com.android.systemui.keyguard.domain.interactor.KeyguardTransitionBootInteractor;
+import com.android.systemui.keyguard.domain.interactor.StartKeyguardTransitionModule;
 import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationBarController;
 import com.android.systemui.navigationbar.NavigationModeController;
@@ -66,6 +70,7 @@ import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.DisplayTrackerImpl;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.ShadeController;
+import com.android.systemui.shade.data.repository.ShadeDisplaysRepository;
 import com.android.systemui.statusbar.NotificationShadeDepthController;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
 import com.android.systemui.statusbar.SysuiStatusBarStateController;
@@ -91,8 +96,11 @@ import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
 
 import kotlinx.coroutines.CoroutineDispatcher;
+import kotlinx.coroutines.CoroutineScope;
 
 import java.util.concurrent.Executor;
+
+import javax.inject.Provider;
 
 /**
  * Dagger Module providing keyguard.
@@ -106,6 +114,7 @@ import java.util.concurrent.Executor;
                 FalsingModule.class,
                 KeyguardFaceAuthNotSupportedModule.class,
                 KeyguardRepositoryModule.class,
+                StartKeyguardTransitionModule.class,
         })
 public interface CarKeyguardModule {
 
@@ -163,6 +172,7 @@ public interface CarKeyguardModule {
             Lazy<WindowManagerLockscreenVisibilityManager> wmLockscreenVisibilityManager,
             SelectedUserInteractor selectedUserInteractor,
             KeyguardInteractor keyguardInteractor,
+            KeyguardTransitionBootInteractor transitionBootInteractor,
             WindowManagerOcclusionManager wmOcclusionManager) {
         return new CarKeyguardViewMediator(
                 context,
@@ -213,6 +223,7 @@ public interface CarKeyguardModule {
                 wmLockscreenVisibilityManager,
                 selectedUserInteractor,
                 keyguardInteractor,
+                transitionBootInteractor,
                 wmOcclusionManager);
     }
 
@@ -234,13 +245,16 @@ public interface CarKeyguardModule {
             KeyguardDisplayManager.DeviceStateHelper deviceStateHelper,
             KeyguardStateController keyguardStateController,
             ConnectedDisplayKeyguardPresentation.Factory
-                    connectedDisplayKeyguardPresentationFactory) {
+                    connectedDisplayKeyguardPresentationFactory,
+            Provider<ShadeDisplaysRepository> shadeDisplaysRepositoryProvider,
+            @Application CoroutineScope appScope) {
         DisplayTracker finalDisplayTracker =
                 CarSystemUIUserUtil.isDriverMUMDSystemUI() ? displayTrackerImpl.get()
                         : defaultDisplayTracker;
         return new CarKeyguardDisplayManager(context, navigationBarControllerLazy,
                 finalDisplayTracker, mainExecutor, uiBgExecutor, deviceStateHelper,
-                keyguardStateController, connectedDisplayKeyguardPresentationFactory);
+                keyguardStateController, connectedDisplayKeyguardPresentationFactory,
+                shadeDisplaysRepositoryProvider, appScope);
     }
 
     /** Binds {@link KeyguardUpdateMonitor} as a {@link CoreStartable}. */
@@ -248,4 +262,10 @@ public interface CarKeyguardModule {
     @IntoMap
     @ClassKey(KeyguardUpdateMonitor.class)
     CoreStartable bindsKeyguardUpdateMonitor(KeyguardUpdateMonitor keyguardUpdateMonitor);
+
+    /** Binds {@link PassengerKeyguardLoadingDialog} as a {@link CoreStartable}. */
+    @Binds
+    @IntoMap
+    @ClassKey(PassengerKeyguardLoadingDialog.class)
+    CoreStartable bindsPassengerKeyguardLoadingDialog(PassengerKeyguardLoadingDialog dialog);
 }

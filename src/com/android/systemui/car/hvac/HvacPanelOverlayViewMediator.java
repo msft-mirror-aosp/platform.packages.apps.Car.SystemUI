@@ -98,22 +98,6 @@ public class HvacPanelOverlayViewMediator implements OverlayViewMediator {
         mCarSystemBarController.registerBarTouchListener(RIGHT,
                 mHvacPanelOverlayViewController.getDragCloseTouchListener());
 
-        mCarSystemBarController.registerHvacPanelController(
-                new HvacPanelController() {
-                    @Override
-                    public void togglePanel() {
-                        mHvacPanelOverlayViewController.toggle();
-                    }
-
-                    @Override
-                    public boolean isHvacPanelOpen() {
-                        return mHvacPanelOverlayViewController.isPanelExpanded();
-                    }
-                });
-
-        mCarSystemBarController.registerHvacPanelOverlayViewController(
-                mHvacPanelOverlayViewController);
-
         mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* executor= */ null,
                 mUserTracker.getUserHandle());

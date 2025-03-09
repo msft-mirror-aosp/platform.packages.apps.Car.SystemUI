@@ -49,7 +49,22 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
+                        app:remoteQCProvider="content://com.android.car.settings.qc/debug_driving_mode_toggle"/>
+                    <com.android.systemui.car.qc.SystemUIQCView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
                         app:remoteQCProvider="content://com.android.car.settings.qc/debug_layout_bounds_toggle"/>
+                    <com.android.systemui.car.qc.SystemUIQCView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        app:remoteQCProvider="content://com.android.car.settings.qc/debug_force_rtl_toggle"/>
+                    <com.android.systemui.car.qc.SystemUIQCView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        app:remoteQCProvider="content://com.android.car.settings.qc/debug_customization_overlay_toggle"/>
                 </LinearLayout>
             </ScrollView>
             <com.android.systemui.car.qc.QCFooterButton

@@ -20,7 +20,6 @@ import static android.provider.Settings.Global.DEVELOPMENT_SETTINGS_ENABLED;
 
 import android.database.ContentObserver;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 
 import com.android.settingslib.development.DevelopmentSettingsEnabler;
@@ -41,7 +40,6 @@ import javax.inject.Provider;
  * A controller for the debug panel button.
  */
 public class DebugPanelButtonViewController extends CarSystemBarPanelButtonViewController {
-    private static final boolean DEBUG = Build.IS_ENG || Build.IS_USERDEBUG;
     private final GlobalSettings mGlobalSettings;
     private final Uri mDevelopEnabled;
     private final ContentObserver mDeveloperSettingsObserver;
@@ -85,6 +83,7 @@ public class DebugPanelButtonViewController extends CarSystemBarPanelButtonViewC
 
     @Override
     protected boolean shouldBeVisible() {
-        return DEBUG && DevelopmentSettingsEnabler.isDevelopmentSettingsEnabled(getContext());
+        return BuildInfoUtil.isDevTesting(getContext())
+                && DevelopmentSettingsEnabler.isDevelopmentSettingsEnabled(getContext());
     }
 }

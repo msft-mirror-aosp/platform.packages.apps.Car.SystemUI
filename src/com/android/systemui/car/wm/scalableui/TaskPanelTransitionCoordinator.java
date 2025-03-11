@@ -29,9 +29,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.internal.dep.Trace;
-import com.android.car.scalableui.manager.Event;
-import com.android.car.scalableui.manager.PanelTransaction;
 import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.Event;
+import com.android.car.scalableui.model.PanelTransaction;
 import com.android.car.scalableui.model.Transition;
 import com.android.car.scalableui.model.Variant;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
@@ -118,9 +118,11 @@ public class TaskPanelTransitionCoordinator {
                     || !isEqual(changedState, transaction.getPanelTransactionState(tp.getId()));
             if (findConflict) {
                 Log.e(TAG, "Transition conflicts found on launch root task - " + changedState);
-                Event event = new Event(
+                Event event = new Event.Builder(
                         changedState.getChildrenTasksVisible() ? "_System_TaskOpenEvent"
-                                : "_System_TaskCloseEvent").addToken("panelId", tp.getId());
+                                : "_System_TaskCloseEvent")
+                                .addToken("panelId", tp.getId())
+                                .build();
                 PanelTransaction panelTransaction = StateManager.handleEvent(event);
                 mAutoTaskStackController.startTransition(
                         createAutoTaskStackTransaction(panelTransaction));

@@ -136,7 +136,7 @@ public class DataSubscriptionStatsLogHelper {
      */
     private void writeDataSubscriptionEventReported(int eventType, int messageType) {
         if (Build.isDebuggable()) {
-            Log.v(TAG, "writing CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED. sessionId="
+            Log.d(TAG, "writing CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED. sessionId="
                     + mSessionId + ", eventType= " + eventType
                     + ", messageType=" + messageType);
         }

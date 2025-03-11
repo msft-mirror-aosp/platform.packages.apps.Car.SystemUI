@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.systemui.car.notification;
+package com.android.systemui.car.systembar;
 
-/** Interface for controlling the notifications shade. */
-public interface NotificationsShadeController {
-    /** Toggles the visibility of the notifications shade. */
-    void togglePanel();
+import android.view.ViewGroup;
 
-    /** Returns {@code true} if the panel is open. */
-    boolean isNotificationPanelOpen();
+import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
+
+/**
+ * A controller for initializing the system bar views.
+ *
+ * @param <T> type of the controller that will be created by this factory. needs to conform to
+ * {@link CarSystemBarViewController} interface.
+ */
+public interface CarSystemBarViewControllerFactory<T extends CarSystemBarViewController> {
+    /** Create instance of CarSystemBarViewController for the system bar view */
+    T create(@SystemBarSide int side, ViewGroup view);
 }

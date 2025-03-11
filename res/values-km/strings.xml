@@ -117,6 +117,10 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> កំពុងចេញពីគណនី។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។"</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"បច្ចុប្បន្ន មិនអាចជ្រើសរើសអ្នកប្រើប្រាស់នេះបានទេ"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"មិនអាចចាប់ផ្ដើមអ្នកប្រើប្រាស់ដែលមានការរក្សាសុវត្ថិភាពនៅលើផ្ទាំងអេក្រង់អ្នកដំណើរបានទេ"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"លំនាំមិនត្រឹមត្រូវទេ"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"កូដ PIN មិន​ត្រឹមត្រូវទេ"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{ការព្យាយាមមិនត្រឹមត្រូវច្រើនដងពេក។ ព្យាយាមម្តងទៀតក្នុងរយៈពេល # វិនាទីទៀត។}other{ការព្យាយាមមិនត្រឹមត្រូវច្រើនដងពេក។ ព្យាយាមម្តងទៀតក្នុងរយៈពេល # វិនាទីទៀត។}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"អ្នកបើកបរ"</string>
     <string name="seat_front" msgid="836133281052793377">"មុខ"</string>
     <string name="seat_rear" msgid="403133444964528577">"ក្រោយ"</string>

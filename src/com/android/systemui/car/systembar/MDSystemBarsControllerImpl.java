@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.systembar;
 
+import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.content.ComponentName;
 import android.content.Context;
@@ -43,8 +44,6 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.displaycompat.ToolbarController;
-import com.android.systemui.car.hvac.HvacController;
-import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -62,8 +61,6 @@ import dagger.Lazy;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.inject.Provider;
 
 /**
  * b/259604616, This controller is created as a workaround for NavBar issues in concurrent
@@ -101,12 +98,7 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
             Context context,
             UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,
-            ButtonSelectionStateController buttonSelectionStateController,
-            Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
-            Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
-            ButtonRoleHolderController buttonRoleHolderController,
             SystemBarConfigs systemBarConfigs,
-            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider,
             // TODO(b/156052638): Should not need to inject LightBarController
             LightBarController lightBarController,
             DarkIconDispatcher darkIconDispatcher,
@@ -119,7 +111,6 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
             IStatusBarService barService,
             Lazy<KeyguardStateController> keyguardStateControllerLazy,
             Lazy<PhoneStatusBarPolicy> iconPolicyLazy,
-            HvacController hvacController,
             ConfigurationController configurationController,
             CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
@@ -127,12 +118,7 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
         super(context,
                 userTracker,
                 carSystemBarViewFactory,
-                buttonSelectionStateController,
-                micPrivacyChipViewControllerLazy,
-                cameraPrivacyChipViewControllerLazy,
-                buttonRoleHolderController,
                 systemBarConfigs,
-                panelControllerBuilderProvider,
                 lightBarController,
                 darkIconDispatcher,
                 windowManager,
@@ -144,7 +130,6 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
                 barService,
                 keyguardStateControllerLazy,
                 iconPolicyLazy,
-                hvacController,
                 configurationController,
                 restartTracker,
                 displayTracker,
@@ -306,7 +291,8 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
         }
 
         @Override
-        public void setImeInputTargetRequestedVisibility(boolean visible) {
+        public void setImeInputTargetRequestedVisibility(boolean visible,
+                @NonNull ImeTracker.Token statsToken) {
             //no-op
         }
     }

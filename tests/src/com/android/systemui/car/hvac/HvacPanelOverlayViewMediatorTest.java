@@ -62,8 +62,11 @@ public class HvacPanelOverlayViewMediatorTest extends SysuiTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mHvacPanelOverlayViewMediator = new HvacPanelOverlayViewMediator(mContext,
-                mCarSystemBarController, mHvacPanelOverlayViewController, mBroadcastDispatcher,
+        mHvacPanelOverlayViewMediator = new HvacPanelOverlayViewMediator(
+                mContext,
+                mCarSystemBarController,
+                mHvacPanelOverlayViewController,
+                mBroadcastDispatcher,
                 mUserTracker);
     }
 

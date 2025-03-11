@@ -18,6 +18,7 @@ package com.android.systemui.car.window;
 
 import com.android.systemui.car.hvac.HvacPanelOverlayViewMediator;
 import com.android.systemui.car.keyguard.CarKeyguardOverlayViewMediator;
+import com.android.systemui.car.keyguard.passenger.PassengerKeyguardOverlayViewMediator;
 import com.android.systemui.car.notification.BottomNotificationPanelViewMediator;
 import com.android.systemui.car.notification.NotificationPanelViewMediator;
 import com.android.systemui.car.notification.TopNotificationPanelViewMediator;
@@ -66,6 +67,13 @@ public abstract class OverlayWindowModule {
     public abstract OverlayViewMediator bindCarKeyguardOverlayViewMediator(
             CarKeyguardOverlayViewMediator carKeyguardOverlayViewMediator);
 
+    /** Injects PassengerKeyguardOverlayViewMediator. */
+    @Binds
+    @IntoMap
+    @ClassKey(PassengerKeyguardOverlayViewMediator.class)
+    public abstract OverlayViewMediator bindPassengerKeyguardViewMediator(
+            PassengerKeyguardOverlayViewMediator overlayViewsMediator);
+
     /** Injects FullscreenUserSwitcherViewsMediator. */
     @Binds
     @IntoMap
@@ -99,4 +107,9 @@ public abstract class OverlayWindowModule {
     @IntoSet
     public abstract ConfigurationListener bindSystemUIOverlayWindowManagerConfigChanges(
             SystemUIOverlayWindowManager systemUIOverlayWindowManager);
+
+    /** Injects OverlayVisibilityMediator. */
+    @Binds
+    public abstract OverlayVisibilityMediator bindOverlayVisibilityMediator(
+            OverlayVisibilityMediatorImpl overlayVisibilityMediatorImpl);
 }

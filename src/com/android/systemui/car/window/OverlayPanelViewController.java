@@ -208,6 +208,23 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
         }
     }
 
+    /**
+     * Returning true from this method will make other panels to become hidden.
+     */
+    public boolean isExclusive() {
+        return true;
+    }
+
+    /**
+     * Returning true from this method means the system bars will return true from
+     * {@link ViewGroup#onInterceptTouchEvent} method if the system bars support
+     * drag by setting both R.bool.config_systemBarButtonsDraggable and
+     * R.bool.config_consumeSystemBarTouchWhenNotificationPanelOpen to true.
+     */
+    public boolean shouldPanelConsumeSystemBarTouch() {
+        return false;
+    }
+
     /** Checks if a {@link MotionEvent} is an action to open the panel.
      * @param e {@link MotionEvent} to check.
      * @return true only if opening action.

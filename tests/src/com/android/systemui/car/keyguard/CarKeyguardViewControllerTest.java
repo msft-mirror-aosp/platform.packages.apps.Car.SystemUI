@@ -168,7 +168,8 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
         mCarKeyguardViewController.show(/* options= */ null);
         waitForDelayableExecutor();
 
-        verify(mPrimaryBouncerInteractor).show(/* isScrimmed= */ true);
+        verify(mPrimaryBouncerInteractor).show(/* isScrimmed= */ true,
+                "CarKeyguardViewController#resetBouncer");
     }
 
     @Test
@@ -246,7 +247,8 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
         mCarKeyguardViewController.setOccluded(/* occluded= */ false, /* animate= */ false);
         waitForDelayableExecutor();
 
-        verify(mPrimaryBouncerInteractor).show(/* isScrimmed= */ true);
+        verify(mPrimaryBouncerInteractor).show(/* isScrimmed= */ true,
+                "CarKeyguardViewController#resetBouncer");
     }
 
     @Test

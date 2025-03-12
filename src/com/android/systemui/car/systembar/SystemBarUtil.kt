@@ -25,11 +25,8 @@ import android.provider.Settings
 import android.text.TextUtils
 import android.util.ArraySet
 import android.util.Log
-import android.view.WindowInsets.Type.navigationBars
-import android.view.WindowInsets.Type.statusBars
 import com.android.systemui.R
 import com.android.systemui.settings.UserTracker
-import com.android.systemui.wm.BarControlPolicy
 import java.net.URISyntaxException
 
 object SystemBarUtil {
@@ -115,50 +112,5 @@ object SystemBarUtil {
             return
         }
         launchApp(context, tosIntent, userHandle)
-    }
-
-    /**
-     * Helper function that returns {@code true} if the navigation bar is persistent on the display.
-     */
-    fun isNavBarPersistent(context: Context): Boolean {
-        val behavior = context.resources.getInteger(R.integer.config_systemBarPersistency)
-        val remoteInsetsControllerControlsSystemBars =
-            context.resources.getBoolean(
-                android.R.bool.config_remoteInsetsControllerControlsSystemBars
-            )
-        val navBarVisibleOnBarControlPolicy =
-            (behavior == SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY) &&
-                    isBarVisibleOnBarControlPolicy(context, navigationBars())
-
-        return remoteInsetsControllerControlsSystemBars &&
-                (behavior == SYSTEM_BAR_PERSISTENCY_CONFIG_NON_IMMERSIVE ||
-                        behavior == SYSTEM_BAR_PERSISTENCY_CONFIG_IMMERSIVE_WITH_NAV ||
-                        navBarVisibleOnBarControlPolicy)
-    }
-
-    /**
-     * Helper function that returns {@code true} if the status bar is persistent on the display.
-     */
-    fun isStatusBarPersistent(context: Context): Boolean {
-        val behavior = context.resources.getInteger(R.integer.config_systemBarPersistency)
-        val remoteInsetsControllerControlsSystemBars =
-            context.resources.getBoolean(
-                android.R.bool.config_remoteInsetsControllerControlsSystemBars
-            )
-        val statusBarVisibleOnBarControlPolicy =
-            (behavior == SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY) &&
-                    isBarVisibleOnBarControlPolicy(context, statusBars())
-
-        return remoteInsetsControllerControlsSystemBars &&
-                (behavior == SYSTEM_BAR_PERSISTENCY_CONFIG_NON_IMMERSIVE ||
-                        statusBarVisibleOnBarControlPolicy)
-    }
-
-    private fun isBarVisibleOnBarControlPolicy(context: Context, type: Int): Boolean {
-        val showTypes =
-            BarControlPolicy.getBarVisibilities(
-                context.packageName
-            )[VISIBLE_BAR_VISIBILITIES_TYPES_INDEX]
-        return (showTypes and type) != 0
     }
 }

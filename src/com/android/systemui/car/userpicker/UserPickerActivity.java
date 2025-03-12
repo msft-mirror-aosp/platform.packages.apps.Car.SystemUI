@@ -48,7 +48,6 @@ import com.android.car.ui.recyclerview.CarUiRecyclerView;
 import com.android.systemui.Dumpable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
-import com.android.systemui.car.systembar.SystemBarUtil;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.userpicker.UserPickerController.Callbacks;
 import com.android.systemui.car.userswitcher.UserIconProvider;
@@ -243,11 +242,11 @@ public class UserPickerActivity extends Activity implements Dumpable {
 
     // Avoid activity resizing due to dismissible system bars.
     private final View.OnApplyWindowInsetsListener mOnApplyWindowInsetsListener = (v, insets) -> {
-        if (!SystemBarUtil.INSTANCE.isStatusBarPersistent(this)) {
+        if (!insets.isVisible(WindowInsets.Type.statusBars())) {
             Insets statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars());
             insets.inset(statusBarInsets);
         }
-        if (!SystemBarUtil.INSTANCE.isNavBarPersistent(/* context*/ this)) {
+        if (!insets.isVisible(WindowInsets.Type.navigationBars())) {
             Insets navBarInsets = insets.getInsets(WindowInsets.Type.navigationBars());
             insets.inset(navBarInsets);
         }

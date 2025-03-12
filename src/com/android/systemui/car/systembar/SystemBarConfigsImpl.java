@@ -17,7 +17,6 @@ package com.android.systemui.car.systembar;
 
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
 
-import static com.android.car.dockutil.Flags.dockFeature;
 import static com.android.systemui.car.Flags.displayCompatibilityV2;
 import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
 import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
@@ -40,7 +39,6 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
-import com.android.car.dockutil.Flags;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.car.notification.BottomNotificationPanelViewMediator;
@@ -189,8 +187,6 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
             case TOP:
                 if (!isSetUp) {
                     return R.layout.car_top_system_bar_unprovisioned;
-                } else if (Flags.dockFeature()) {
-                    return R.layout.car_top_system_bar_dock;
                 } else {
                     return R.layout.car_top_system_bar;
                 }
@@ -203,8 +199,6 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
             case BOTTOM:
                 if (!isSetUp) {
                     return R.layout.car_bottom_system_bar_unprovisioned;
-                } else if (Flags.dockFeature()) {
-                    return R.layout.car_bottom_system_bar_dock;
                 } else {
                     return R.layout.car_bottom_system_bar;
                 }
@@ -729,10 +723,8 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
             lp.windowAnimations = 0;
             lp.gravity = BAR_GRAVITY_MAP.get(mSide);
             lp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
-            if (dockFeature()) {
-                lp.privateFlags = lp.privateFlags
-                        | WindowManager.LayoutParams.PRIVATE_FLAG_INTERCEPT_GLOBAL_DRAG_AND_DROP;
-            }
+            lp.privateFlags = lp.privateFlags
+                    | WindowManager.LayoutParams.PRIVATE_FLAG_INTERCEPT_GLOBAL_DRAG_AND_DROP;
             return lp;
         }
 

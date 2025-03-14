@@ -16,6 +16,8 @@
 
 package com.android.systemui.wm;
 
+import static com.android.systemui.car.Flags.packageLevelSystemBarVisibility;
+
 import android.car.settings.CarSettings;
 import android.content.Context;
 import android.database.ContentObserver;
@@ -25,6 +27,7 @@ import android.provider.Settings;
 import android.util.ArraySet;
 import android.util.Slog;
 import android.view.WindowInsets;
+import android.view.WindowInsets.Type.InsetsType;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -45,6 +48,9 @@ import java.io.StringWriter;
  *     "immersive.full=*"
  *   to force hide status bars for com.package1 but not com.package2:
  *     "immersive.status=com.package1,-com.package2"
+ *   to force hide navigation bar everywhere, and allow com.package1 to control visibility of both
+ *   system bar types:
+ *     "immersive.navigation=*,+com.package1"
  *
  * Separate multiple name-value pairs with ':'
  *   e.g. "immersive.status=com.package:immersive.navigation=*"
@@ -113,8 +119,13 @@ public class BarControlPolicy {
      * @return int[], where the first value is the inset types that should be shown, and the second
      *         is the inset types that should be hidden.
      */
-    @WindowInsets.Type.InsetsType
+    @InsetsType
     public static int[] getBarVisibilities(String packageName) {
+        if (packageLevelSystemBarVisibility()) {
+            throw new IllegalStateException("This method should only be called when "
+                    + "'package_level_system_bar_visibility' flag is disabled");
+        }
+
         int hideTypes = 0;
         int showTypes = 0;
         if (matchesStatusFilter(packageName)) {
@@ -129,6 +140,56 @@ public class BarControlPolicy {
         }
 
         return new int[] {showTypes, hideTypes};
+    }
+
+    /**
+     * Returns bar visibilities based on POLICY_CONTROL_AUTO filters, window policies and the
+     * requested visible system bar types.
+     *
+     * @return int[], where the first value is the inset types that should be shown, and the second
+     *         is the inset types that should be hidden.
+     */
+    @InsetsType
+    public static int[] getBarVisibilities(
+            String packageName, @InsetsType int requestedVisibleTypes) {
+        if (!packageLevelSystemBarVisibility()) {
+            throw new IllegalStateException("This method should only be called when "
+                    + "'package_level_system_bar_visibility' flag is enabled");
+        }
+
+        int hideTypes = 0;
+        int showTypes = 0;
+
+        boolean isStatusControlAllowed = sImmersiveStatusFilter != null
+                && sImmersiveStatusFilter.isControlAllowed(packageName);
+
+        if (isStatusControlAllowed) {
+            if ((requestedVisibleTypes & WindowInsets.Type.statusBars()) != 0) {
+                showTypes |= WindowInsets.Type.statusBars();
+            } else {
+                hideTypes |= WindowInsets.Type.statusBars();
+            }
+        } else if (matchesStatusFilter(packageName)) {
+            hideTypes |= WindowInsets.Type.statusBars();
+        } else {
+            showTypes |= WindowInsets.Type.statusBars();
+        }
+
+        boolean isNavigationControlAllowed = sImmersiveNavigationFilter != null
+                && sImmersiveNavigationFilter.isControlAllowed(packageName);
+        if (isNavigationControlAllowed) {
+            if ((requestedVisibleTypes & WindowInsets.Type.navigationBars()) != 0) {
+                showTypes |= WindowInsets.Type.navigationBars();
+            } else {
+                hideTypes |= WindowInsets.Type.navigationBars();
+            }
+        } else if (matchesNavigationFilter(packageName)) {
+            hideTypes |= WindowInsets.Type.navigationBars();
+        } else {
+            showTypes |= WindowInsets.Type.navigationBars();
+        }
+
+        return new int[] { showTypes, hideTypes };
     }
 
     private static boolean matchesStatusFilter(String packageName) {
@@ -174,10 +235,13 @@ public class BarControlPolicy {
 
         private final ArraySet<String> mToInclude;
         private final ArraySet<String> mToExclude;
+        private final ArraySet<String> mAllowControl;
 
-        private Filter(ArraySet<String> toInclude, ArraySet<String> toExclude) {
+        private Filter(ArraySet<String> toInclude, ArraySet<String> toExclude,
+                ArraySet<String> allowControl) {
             mToInclude = toInclude;
             mToExclude = toExclude;
+            mAllowControl = packageLevelSystemBarVisibility() ? allowControl : null;
         }
 
         boolean matches(String packageName) {
@@ -194,10 +258,24 @@ public class BarControlPolicy {
             return mToInclude.contains(ALL) || mToInclude.contains(packageName);
         }
 
+        boolean isControlAllowed(String packageName) {
+            return packageLevelSystemBarVisibility() && (mAllowControl.contains(ALL)
+                    || mAllowControl.contains(packageName));
+        }
+
         void dump(PrintWriter pw) {
             pw.print("Filter[");
-            dump("toInclude", mToInclude, pw); pw.print(',');
-            dump("toExclude", mToExclude, pw); pw.print(']');
+            dump("toInclude", mToInclude, pw);
+
+            pw.print(',');
+            dump("toExclude", mToExclude, pw);
+
+            if (packageLevelSystemBarVisibility()) {
+                pw.print(',');
+                dump("allowControl", mAllowControl, pw);
+            }
+
+            pw.print(']');
         }
 
         private void dump(String name, ArraySet<String> set, PrintWriter pw) {
@@ -221,18 +299,23 @@ public class BarControlPolicy {
         // e.g. "com.package1", or "com.android.systemui, com.android.keyguard" or "*"
         static Filter parse(String value) {
             if (value == null) return null;
-            ArraySet<String> toInclude = new ArraySet<String>();
-            ArraySet<String> toExclude = new ArraySet<String>();
+            ArraySet<String> toInclude = new ArraySet<>();
+            ArraySet<String> toExclude = new ArraySet<>();
+            ArraySet<String> allowControl =
+                    packageLevelSystemBarVisibility() ? new ArraySet<>() : null;
             for (String token : value.split(",")) {
                 token = token.trim();
                 if (token.startsWith("-") && token.length() > 1) {
                     token = token.substring(1);
                     toExclude.add(token);
+                } else if (allowControl != null && token.startsWith("+") && token.length() > 1) {
+                    token = token.substring(1);
+                    allowControl.add(token);
                 } else {
                     toInclude.add(token);
                 }
             }
-            return new Filter(toInclude, toExclude);
+            return new Filter(toInclude, toExclude, allowControl);
         }
     }
 

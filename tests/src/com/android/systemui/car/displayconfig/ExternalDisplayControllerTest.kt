@@ -20,10 +20,10 @@ import android.testing.AndroidTestingRunner
 import android.testing.TestableLooper.RunWithLooper
 import android.view.Display
 import androidx.test.filters.SmallTest
+import com.android.app.displaylib.DisplayRepository.PendingDisplay
 import com.android.systemui.SysuiTestCase
 import com.android.systemui.car.CarSystemUiTest
 import com.android.systemui.display.data.repository.DisplayRepository
-import com.android.systemui.display.data.repository.DisplayRepository.PendingDisplay
 import com.android.systemui.process.ProcessWrapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancelChildren

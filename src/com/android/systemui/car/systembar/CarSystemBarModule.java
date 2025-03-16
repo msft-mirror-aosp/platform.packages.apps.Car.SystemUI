@@ -16,6 +16,11 @@
 
 package com.android.systemui.car.systembar;
 
+import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
+import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
+import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
+import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
+
 import android.annotation.Nullable;
 import android.content.Context;
 import android.os.Handler;
@@ -28,8 +33,10 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.car.displaycompat.ToolbarController;
-import com.android.systemui.car.hvac.HvacController;
+import com.android.systemui.car.hvac.HvacButtonController;
+import com.android.systemui.car.hvac.TemperatureControlViewController;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
+import com.android.systemui.car.notification.NotificationButtonController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
@@ -53,6 +60,7 @@ import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.ClassKey;
+import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.IntoSet;
 import dagger.multibindings.Multibinds;
@@ -152,7 +160,6 @@ public abstract class CarSystemBarModule {
             IStatusBarService barService,
             Lazy<KeyguardStateController> keyguardStateControllerLazy,
             Lazy<PhoneStatusBarPolicy> iconPolicyLazy,
-            HvacController hvacController,
             ConfigurationController configurationController,
             CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
@@ -169,23 +176,18 @@ public abstract class CarSystemBarModule {
 
         if (isSecondaryMUMDSystemUI && isSecondaryUserRROsEnabled) {
             return new MDSystemBarsControllerImpl(iWindowManager, mainHandler, context, userTracker,
-                    carSystemBarViewFactory, buttonSelectionStateController,
-                    micPrivacyChipViewControllerLazy, cameraPrivacyChipViewControllerLazy,
-                    buttonRoleHolderController, systemBarConfigs, panelControllerBuilderProvider,
-                    lightBarController, darkIconDispatcher, windowManager,
-                    deviceProvisionedController, commandQueue, autoHideController,
-                    buttonSelectionStateListener, mainExecutor, barService,
-                    keyguardStateControllerLazy, iconPolicyLazy, hvacController,
-                    configurationController, restartTracker, displayTracker, toolbarController);
-        } else {
-            return new CarSystemBarControllerImpl(context, userTracker, carSystemBarViewFactory,
-                    buttonSelectionStateController, micPrivacyChipViewControllerLazy,
-                    cameraPrivacyChipViewControllerLazy, buttonRoleHolderController,
-                    systemBarConfigs, panelControllerBuilderProvider, lightBarController,
+                    carSystemBarViewFactory, systemBarConfigs, lightBarController,
                     darkIconDispatcher, windowManager, deviceProvisionedController, commandQueue,
                     autoHideController, buttonSelectionStateListener, mainExecutor, barService,
-                    keyguardStateControllerLazy, iconPolicyLazy, hvacController,
-                    configurationController, restartTracker, displayTracker, toolbarController);
+                    keyguardStateControllerLazy, iconPolicyLazy, configurationController,
+                    restartTracker, displayTracker, toolbarController);
+        } else {
+            return new CarSystemBarControllerImpl(context, userTracker, carSystemBarViewFactory,
+                    systemBarConfigs, lightBarController, darkIconDispatcher, windowManager,
+                    deviceProvisionedController, commandQueue, autoHideController,
+                    buttonSelectionStateListener, mainExecutor, barService,
+                    keyguardStateControllerLazy, iconPolicyLazy, configurationController,
+                    restartTracker, displayTracker, toolbarController);
         }
     }
 
@@ -240,7 +242,7 @@ public abstract class CarSystemBarModule {
     /** Injects KeyguardSystemBarPresenter */
     @SysUISingleton
     @Provides
-    static Optional<KeyguardSystemBarPresenter> bindKeyguardSystemBarPresenter(
+    static Optional<KeyguardSystemBarPresenter> provideKeyguardSystemBarPresenter(
              CarSystemBarController controller) {
         if (controller instanceof KeyguardSystemBarPresenter) {
             return Optional.of((KeyguardSystemBarPresenter) controller);
@@ -255,4 +257,93 @@ public abstract class CarSystemBarModule {
     @ClassKey(DebugPanelButtonViewController.class)
     public abstract CarSystemBarElementController.Factory bindDebugPanelButtonViewController(
             DebugPanelButtonViewController.Factory factory);
+
+    /** Injects CarSystemBarViewFactory */
+    @SysUISingleton
+    @Binds
+    public abstract CarSystemBarViewFactory bindCarSystemBarViewFactory(
+            CarSystemBarViewFactoryImpl impl);
+
+    /** Injects CarSystemBarViewController for @SystemBarSide LEFT */
+    @Binds
+    @IntoMap
+    @IntKey(LEFT)
+    public abstract CarSystemBarViewControllerFactory bindLeftCarSystemBarViewFactory(
+            CarSystemBarViewControllerImpl.Factory factory);
+
+    /** Injects CarSystemBarViewController for @SystemBarSide TOP */
+    @Binds
+    @IntoMap
+    @IntKey(TOP)
+    public abstract CarSystemBarViewControllerFactory bindTopCarSystemBarViewFactory(
+            CarTopSystemBarViewController.Factory factory);
+
+    /** Injects CarSystemBarViewController for @SystemBarSide RIGHT */
+    @Binds
+    @IntoMap
+    @IntKey(RIGHT)
+    public abstract CarSystemBarViewControllerFactory bindRightCarSystemBarViewFactory(
+            CarSystemBarViewControllerImpl.Factory factory);
+
+    /** Injects CarSystemBarViewController for @SystemBarSide BOTTOM */
+    @Binds
+    @IntoMap
+    @IntKey(BOTTOM)
+    public abstract CarSystemBarViewControllerFactory bindBottomCarSystemBarViewFactory(
+            CarSystemBarViewControllerImpl.Factory factory);
+
+    /** Injects CarSystemBarButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(CarSystemBarButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindCarSystemBarButtonControllerFactory(
+            CarSystemBarButtonController.Factory factory);
+
+    /** Injects NotificationButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(NotificationButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindNotificationButtonControllerFactory(
+            NotificationButtonController.Factory factory);
+
+    /** Injects HvacButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(HvacButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindHvacButtonControllerFactory(
+            HvacButtonController.Factory factory);
+
+    /** Injects TemperatureControlViewController */
+    @Binds
+    @IntoMap
+    @ClassKey(TemperatureControlViewController.class)
+    public abstract CarSystemBarElementController.Factory
+            bindTemperatureControlViewControllerFactory(
+                    TemperatureControlViewController.Factory factory);
+
+    /** Injects HomeButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(HomeButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindHomeButtonControllerFactory(
+            HomeButtonController.Factory factory);
+
+    /** Injects PassengerHomeButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(PassengerHomeButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindPassengerHomeButtonControllerFactory(
+            PassengerHomeButtonController.Factory factory);
+
+    /** Injects ControlCenterButtonController */
+    @Binds
+    @IntoMap
+    @ClassKey(ControlCenterButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindControlCenterButtonControllerFactory(
+            ControlCenterButtonController.Factory factory);
+
+    /** Injects SystemBarConfigs */
+    @SysUISingleton
+    @Binds
+    public abstract SystemBarConfigs bindSystemBarConfigs(SystemBarConfigsImpl impl);
 }

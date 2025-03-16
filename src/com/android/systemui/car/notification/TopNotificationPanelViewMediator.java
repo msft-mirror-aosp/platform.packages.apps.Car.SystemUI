@@ -21,7 +21,6 @@ import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
 import android.content.Context;
 
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.systembar.CarSystemBarController;
 import com.android.systemui.car.window.OverlayPanelViewController;
 import com.android.systemui.dagger.SysUISingleton;
@@ -45,16 +44,13 @@ public class TopNotificationPanelViewMediator extends NotificationPanelViewMedia
             PowerManagerHelper powerManagerHelper,
             BroadcastDispatcher broadcastDispatcher,
             UserTracker userTracker,
-            CarDeviceProvisionedController carDeviceProvisionedController,
-            ConfigurationController configurationController
-    ) {
+            ConfigurationController configurationController) {
         super(context,
                 carSystemBarController,
                 notificationPanelViewController,
                 powerManagerHelper,
                 broadcastDispatcher,
                 userTracker,
-                carDeviceProvisionedController,
                 configurationController);
         notificationPanelViewController.setOverlayDirection(
                 OverlayPanelViewController.OVERLAY_FROM_TOP_BAR);

@@ -117,6 +117,10 @@
     <string name="wait_for_until_stopped_message" msgid="4964287657737020726">"<xliff:g id="USER_NAME">%s</xliff:g> hisobidan chiqadi. Keyinroq qayta urining."</string>
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Foydalanuvchi ishlamaydi"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Yoʻlovchi ekranida xavfsiz foydalanuvchini ishga tushirish imkonsiz"</string>
+    <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Grafik kalit xato"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"PIN kod xato"</string>
+    <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Parol xato"</string>
+    <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{Koʻp marta xato urinildi. # soniyadan keyin qaytadan urining.}other{Koʻp marta xato urinildi. # soniyadan keyin qayta urining.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"haydovchi"</string>
     <string name="seat_front" msgid="836133281052793377">"old"</string>
     <string name="seat_rear" msgid="403133444964528577">"orqa"</string>

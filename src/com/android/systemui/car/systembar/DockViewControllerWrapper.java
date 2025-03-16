@@ -18,6 +18,9 @@ package com.android.systemui.car.systembar;
 
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKED;
+import static android.view.Display.INVALID_DISPLAY;
+
+import static com.android.car.dockutil.events.DockCompatUtils.isDockSupportedOnDisplay;
 
 import android.car.Car;
 import android.car.user.CarUserManager;
@@ -151,6 +154,13 @@ public class DockViewControllerWrapper extends
             if (DEBUG) {
                 Log.d(TAG, "Dock already initialized");
             }
+            return;
+        }
+        int currentDisplayId = mView.getDisplay() != null ? mView.getDisplay().getDisplayId()
+                : INVALID_DISPLAY;
+        if (!isDockSupportedOnDisplay(mContext, currentDisplayId)) {
+            Log.e(TAG, "Dock cannot be initialised: Tried to launch on unsupported display "
+                    + currentDisplayId);
             return;
         }
         DockView dockView = mView.findViewById(R.id.dock);

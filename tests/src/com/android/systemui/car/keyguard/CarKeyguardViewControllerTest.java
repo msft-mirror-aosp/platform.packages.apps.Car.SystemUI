@@ -54,11 +54,13 @@ import com.android.systemui.car.window.SystemUIOverlayWindowController;
 import com.android.systemui.keyguard.ui.viewmodel.PrimaryBouncerToGoneTransitionViewModel;
 import com.android.systemui.log.BouncerLogger;
 import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.domain.interactor.StatusBarKeyguardViewManagerInteractor;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
 import com.android.systemui.toast.ToastFactory;
 import com.android.systemui.user.domain.interactor.SelectedUserInteractor;
 import com.android.systemui.util.concurrency.FakeExecutor;
+import com.android.systemui.util.kotlin.JavaAdapter;
 import com.android.systemui.util.time.FakeSystemClock;
 
 import org.junit.Before;
@@ -147,7 +149,9 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
                 mock(BouncerLogger.class),
                 mock(BouncerMessageInteractor.class),
                 mock(SelectedUserInteractor.class),
-                Optional.of(mKeyguardSystemBarPresenter)
+                Optional.of(mKeyguardSystemBarPresenter),
+                mock(StatusBarKeyguardViewManagerInteractor.class),
+                mock(JavaAdapter.class)
         );
         mCarKeyguardViewController.inflate((ViewGroup) LayoutInflater.from(mContext).inflate(
                 R.layout.sysui_overlay_window, /* root= */ null));

@@ -39,6 +39,7 @@ import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.communal.domain.interactor.CommunalSceneInteractor;
+import com.android.systemui.communal.domain.interactor.CommunalSettingsInteractor;
 import com.android.systemui.communal.ui.viewmodel.CommunalTransitionViewModel;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dreams.DreamOverlayStateController;
@@ -77,9 +78,9 @@ import com.android.wm.shell.keyguard.KeyguardTransitions;
 
 import dagger.Lazy;
 
-import java.util.concurrent.Executor;
-
 import kotlinx.coroutines.CoroutineDispatcher;
+
+import java.util.concurrent.Executor;
 
 /**
  * Car customizations on top of {@link KeyguardViewMediator}. Please refer to that class for
@@ -148,6 +149,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             KeyguardInteractor keyguardInteractor,
             KeyguardTransitionBootInteractor transitionBootInteractor,
             Lazy<CommunalSceneInteractor> communalSceneInteractor,
+            Lazy<CommunalSettingsInteractor> communalSettingsInteractor,
             WindowManagerOcclusionManager wmOcclusionManager) {
         super(context, uiEventLogger, sessionTracker,
                 userTracker, falsingCollector, lockPatternUtils, broadcastDispatcher,
@@ -176,6 +178,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 keyguardInteractor,
                 transitionBootInteractor,
                 communalSceneInteractor,
+                communalSettingsInteractor,
                 wmOcclusionManager);
         mContext = context;
         mTrustManager = trustManager;

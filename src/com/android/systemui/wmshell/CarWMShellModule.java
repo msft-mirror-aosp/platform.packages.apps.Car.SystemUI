@@ -28,6 +28,7 @@ import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
 import com.android.systemui.car.wm.scalableui.PanelAutoTaskStackTransitionHandlerDelegate;
 import com.android.systemui.car.wm.scalableui.PanelConfigReader;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
+import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
@@ -98,12 +99,14 @@ public abstract class CarWMShellModule {
     @Provides
     static Optional<PanelConfigReader> providesPanelConfigReader(
             Context context,
-            TaskPanel.Factory taskPanelFactory
+            TaskPanel.Factory taskPanelFactory,
+            DecorPanel.Factory decorPanelFactory
     ) {
         if (isScalableUIEnabled(context)) {
             return Optional.of(new PanelConfigReader(
                     context,
-                    taskPanelFactory));
+                    taskPanelFactory,
+                    decorPanelFactory));
         }
         return Optional.empty();
     }

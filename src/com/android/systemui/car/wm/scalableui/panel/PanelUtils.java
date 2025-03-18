@@ -15,19 +15,34 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
+import android.app.ActivityManager;
+import android.content.Context;
+import android.os.UserManager;
+
 import androidx.annotation.Nullable;
 
 import com.android.car.scalableui.panel.PanelPool;
+import com.android.systemui.car.users.CarSystemUIUserUtil;
+import com.android.wm.shell.dagger.WMSingleton;
 
 import java.util.function.Predicate;
+
+import javax.inject.Inject;
 
 /**
  * This utility class provides helper methods for {@link TaskPanel}.
  */
-public class TaskPanelPool {
-    private static final String TAG = TaskPanelPool.class.getSimpleName();
+@WMSingleton
+public class PanelUtils {
+    private static final String TAG = PanelUtils.class.getSimpleName();
+    private final Context mContext;
+    private final UserManager mUserManager;
 
-    private TaskPanelPool() {}
+    @Inject
+    public PanelUtils(Context context) {
+        mContext = context;
+        mUserManager = mContext.getSystemService(UserManager.class);
+    }
 
     /**
      * Checks if any panel in the pool handles the given root task ID.
@@ -35,7 +50,7 @@ public class TaskPanelPool {
      * @param rootTaskId The root task ID to check.
      * @return True if a panel with the given root task ID exists in the pool, false otherwise.
      */
-    public static boolean handles(int rootTaskId) {
+    public boolean handles(int rootTaskId) {
         return getTaskPanel(panel -> panel.getRootTaskId() == rootTaskId) != null;
     }
 
@@ -46,8 +61,19 @@ public class TaskPanelPool {
      * @return The matching {@link TaskPanel}, or null if none is found.
      */
     @Nullable
-    public static TaskPanel getTaskPanel(Predicate<TaskPanel> predicate) {
+    public TaskPanel getTaskPanel(Predicate<TaskPanel> predicate) {
         return (TaskPanel) PanelPool.getInstance().getPanel(
                 p -> (p instanceof TaskPanel tp) && predicate.test(tp));
+    }
+
+    /**
+     * Checks if the user is unlocked.
+     */
+    public boolean isUserUnlocked() {
+        int userId = CarSystemUIUserUtil.isSecondaryMUMDSystemUI()
+                ? mContext.getUserId()
+                : ActivityManager.getCurrentUser();
+
+        return mUserManager != null && mUserManager.isUserUnlocked(userId);
     }
 }

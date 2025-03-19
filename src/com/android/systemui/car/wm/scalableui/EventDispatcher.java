@@ -15,10 +15,15 @@
  */
 package com.android.systemui.car.wm.scalableui;
 
+import android.content.Context;
+
 import com.android.car.scalableui.manager.Event;
 import com.android.car.scalableui.manager.PanelTransaction;
 import com.android.car.scalableui.manager.StateManager;
+import com.android.systemui.R;
 import com.android.wm.shell.dagger.WMSingleton;
+
+import dagger.Lazy;
 
 import javax.inject.Inject;
 
@@ -29,11 +34,18 @@ import javax.inject.Inject;
 @WMSingleton
 public class EventDispatcher {
 
+    private final Context mContext;
     private final TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
 
     @Inject
-    public EventDispatcher(TaskPanelTransitionCoordinator taskPanelTransitionCoordinator) {
-        mTaskPanelTransitionCoordinator = taskPanelTransitionCoordinator;
+    public EventDispatcher(Context context,
+            Lazy<TaskPanelTransitionCoordinator> taskPanelTransitionCoordinator) {
+        mContext = context;
+        if (isScalableUIEnabled()) {
+            mTaskPanelTransitionCoordinator = taskPanelTransitionCoordinator.get();
+        } else {
+            mTaskPanelTransitionCoordinator = null;
+        }
     }
 
     /**
@@ -62,6 +74,13 @@ public class EventDispatcher {
      * transaction.
      */
     public void executeTransaction(Event event) {
+        if (!isScalableUIEnabled()) {
+            throw new IllegalStateException("ScalableUI disabled - cannot execute transaction");
+        }
         mTaskPanelTransitionCoordinator.startTransition(getTransaction(event));
+    }
+
+    private boolean isScalableUIEnabled() {
+        return mContext.getResources().getBoolean(R.bool.config_enableScalableUI);
     }
 }

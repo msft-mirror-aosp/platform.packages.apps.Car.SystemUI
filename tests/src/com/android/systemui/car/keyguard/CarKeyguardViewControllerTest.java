@@ -72,6 +72,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import kotlinx.coroutines.CoroutineDispatcher;
+
 import java.util.Optional;
 
 @CarSystemUiTest
@@ -156,6 +158,7 @@ public class CarKeyguardViewControllerTest extends SysuiTestCase {
                 mock(SelectedUserInteractor.class),
                 Optional.of(mKeyguardSystemBarPresenter),
                 mock(StatusBarKeyguardViewManagerInteractor.class),
+                mock(CoroutineDispatcher.class),
                 mock(JavaAdapter.class)
         );
         mCarKeyguardViewController.inflate((ViewGroup) LayoutInflater.from(mContext).inflate(

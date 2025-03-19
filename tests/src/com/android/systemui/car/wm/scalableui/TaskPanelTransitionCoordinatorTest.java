@@ -38,6 +38,7 @@ import com.android.car.scalableui.model.PanelTransaction;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
+import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoSurfaceTransaction;
 import com.android.wm.shell.automotive.AutoSurfaceTransactionFactory;
 import com.android.wm.shell.automotive.AutoTaskStackController;
@@ -71,12 +72,15 @@ public class TaskPanelTransitionCoordinatorTest extends SysuiTestCase {
     private AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
     @Mock
     private AutoSurfaceTransaction mAutoSurfaceTransaction;
+    @Mock
+    private AutoLayoutManager mAutoLayoutManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mTaskPanelTransitionCoordinator = new TaskPanelTransitionCoordinator(
-                mAutoTaskStackController, mAutoSurfaceTransactionFactory, mPanelUtils);
+                mAutoTaskStackController, mAutoSurfaceTransactionFactory, mPanelUtils,
+                mAutoLayoutManager);
         when(mAutoSurfaceTransactionFactory.createTransaction(anyString())).thenReturn(
                 mAutoSurfaceTransaction);
     }

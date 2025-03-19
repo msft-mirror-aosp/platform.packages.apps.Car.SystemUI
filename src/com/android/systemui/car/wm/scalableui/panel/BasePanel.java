@@ -16,6 +16,7 @@
 package com.android.systemui.car.wm.scalableui.panel;
 
 import android.content.Context;
+import android.graphics.Insets;
 import android.graphics.Rect;
 import android.os.Build;
 
@@ -41,6 +42,8 @@ public abstract class BasePanel implements Panel {
     private float mAlpha;
     private int mDisplayId;
     private int mCornerRadius;
+    @NonNull
+    private Insets mInsets = Insets.NONE;
 
     public BasePanel(@NonNull Context context, String id) {
         mContext = context;
@@ -167,5 +170,15 @@ public abstract class BasePanel implements Panel {
     @Override
     public void setRole(int role) {
         mRole = role;
+    }
+
+    @Override
+    public void setInsets(Insets insets) {
+        mInsets = insets;
+    }
+
+    @Override
+    public Insets getInsets() {
+        return mInsets;
     }
 }

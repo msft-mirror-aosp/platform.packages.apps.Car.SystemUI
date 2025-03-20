@@ -16,6 +16,7 @@
 package com.android.systemui.car.wm.scalableui.panel;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,6 +59,18 @@ public final class DecorPanel extends BasePanel {
         mAutoDecorManager = autoDecorManager;
         mPanelUtils = panelUtils;
         mMainExecutor = mainExecutor;
+    }
+
+    @NonNull
+    @Override
+    public Rect getSafeBounds() {
+        // no-op
+        return new Rect();
+    }
+
+    @Override
+    public void setSafeBounds(@NonNull Rect safeBounds) {
+        // no-op
     }
 
     @Override

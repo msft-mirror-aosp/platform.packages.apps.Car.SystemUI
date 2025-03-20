@@ -483,4 +483,19 @@
     <dimen name="data_subscription_pop_up_horizontal_margin">15dp</dimen>
     <dimen name="data_subscription_pop_up_horizontal_offset">92dp</dimen>
     <dimen name="data_subscription_pop_up_vertical_offset">6dp</dimen>
+
+    <!-- TODO(b/409131368): Remove when landscape reference is migrated to scalable ui -->
+    <!-- coordinates of rect to be used for safe region to open compat apps -->
+    <dimen name="safe_region_left">0dp</dimen>
+    <dimen name="safe_region_top">144dp</dimen>
+    <dimen name="safe_region_right">1408dp</dimen>
+    <dimen name="safe_region_bottom">696dp</dimen>
+
+    <!-- TODO(b/409131368): Remove when landscape reference is migrated to scalable ui -->
+    <!-- coordinates of rect to be used to show toolbar for compat apps -->
+    <!-- height = 68dp -->
+    <dimen name="caption_region_left">0dp</dimen>
+    <dimen name="caption_region_top">76dp</dimen>
+    <dimen name="caption_region_right">1408dp</dimen>
+    <dimen name="caption_region_bottom">144dp</dimen>
 </resources>

@@ -282,4 +282,7 @@
 
     <!-- Enable toolkit for data subscription. -->
     <bool name="config_enableDataSubscriptionToolkit">false</bool>
+
+    <!-- Setup and add safe area and toolbar per display on for Display Compat apps . -->
+    <bool name="config_enableSafeAreaAndToolbarPerDisplay">true</bool>
 </resources>

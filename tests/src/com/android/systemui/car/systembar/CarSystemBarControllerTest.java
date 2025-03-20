@@ -49,7 +49,6 @@ import android.view.WindowManager;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.car.dockutil.Flags;
 import com.android.car.ui.FocusParkingView;
 import com.android.dx.mockito.inline.extended.ExtendedMockito;
 import com.android.internal.statusbar.IStatusBarService;
@@ -740,13 +739,5 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
                 ? ActivityManager.LOCK_TASK_MODE_LOCKED
                 : ActivityManager.LOCK_TASK_MODE_NONE);
         mCarSystemBarController.setSystemBarStates(/* state= */ 0, /* state2= */ 0);
-    }
-
-    private void enableSystemBarWithNotificationButton() {
-        if (Flags.dockFeature()) {
-            mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);
-        } else {
-            mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
-        }
     }
 }

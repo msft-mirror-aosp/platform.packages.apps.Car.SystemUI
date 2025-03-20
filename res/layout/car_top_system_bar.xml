@@ -40,8 +40,8 @@
             android:id="@+id/clock_container"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingStart="@dimen/car_padding_4"
-            android:paddingEnd="@dimen/car_padding_4"
+            android:paddingStart="@dimen/car_padding_2"
+            android:paddingEnd="@dimen/car_padding_2"
             android:layout_centerInParent="true">
             <com.android.systemui.statusbar.policy.Clock
                 android:id="@+id/clock"
@@ -52,7 +52,7 @@
                 android:singleLine="true"
                 android:textAppearance="@style/TextAppearance.SystemBar.Clock"
                 systemui:amPmStyle="gone"
-            />
+                />
         </FrameLayout>
 
         <include layout="@layout/read_only_status_icons"
@@ -60,6 +60,19 @@
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/clock_container"/>
+
+        <com.android.systemui.car.systembar.CarSystemBarButton
+            android:id="@+id/notifications"
+            android:contentDescription="@string/system_bar_notifications_label"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            style="@style/TopBarButton"
+            android:layout_toLeftOf="@id/camera_privacy_chip"
+            systemui:highlightWhenSelected="true"
+            systemui:icon="@drawable/car_ic_notification_dock"
+            systemui:longIntent="intent:#Intent;action=com.android.car.bugreport.action.START_BUG_REPORT;end"
+            systemui:systemBarDisableFlags="notificationIcons"
+            systemui:controller="com.android.systemui.car.notification.NotificationButtonController"/>
 
         <include layout="@layout/camera_privacy_chip"
             android:layout_width="wrap_content"
@@ -72,13 +85,11 @@
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/user_name_container"
-            android:contentDescription="@string/system_bar_mic_privacy_chip"
-        />
+            android:contentDescription="@string/system_bar_mic_privacy_chip" />
 
         <include layout="@layout/user_name_container"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true" />
     </RelativeLayout>
-
 </com.android.systemui.car.systembar.CarSystemBarView>

@@ -34,7 +34,7 @@ import com.android.internal.widget.LockPatternChecker;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.LockscreenCredential;
 import com.android.internal.widget.VerifyCredentialResponse;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.settings.UserTracker;
@@ -51,7 +51,7 @@ import org.mockito.quality.Strictness;
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @SmallTest
-public class PassengerKeyguardCredentialViewControllerTest extends SysuiTestCase {
+public class PassengerKeyguardCredentialViewControllerTest extends CarSysuiTestCase {
 
     private TestPassengerKeyguardCredentialViewController mController;
     private MockitoSession mSession;

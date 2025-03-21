@@ -55,8 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@*android:dimen/car_padding_2"
             android:gravity="center"
-            android:textColor="@android:color/white"
-            android:textSize="@*android:dimen/car_body1_size"
+            android:textAppearance="?oemTextAppearanceTitleLarge"
             android:text="@string/car_keyguard_enter_your_pattern" />
 
         <include layout="@layout/keyguard_message_area" />

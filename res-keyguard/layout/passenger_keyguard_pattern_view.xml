@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/confirm_lock_message_vertical_spacing"
         android:text="@string/car_keyguard_enter_your_pattern"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
+        android:textAppearance="?oemTextAppearanceTitleLarge"/>
 
     <TextView
         android:id="@+id/message"
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/confirm_lock_message_vertical_spacing"
         android:gravity="center"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        android:textAppearance="?oemTextAppearanceTitleMedium"/>
 
     <com.android.internal.widget.LockPatternView
         android:id="@+id/lockPattern"

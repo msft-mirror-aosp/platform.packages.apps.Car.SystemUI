@@ -42,7 +42,7 @@ import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.tests.R;
 
@@ -59,7 +59,7 @@ import java.util.List;
 @SmallTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
-public class TemperatureControlViewTest extends SysuiTestCase {
+public class TemperatureControlViewTest extends CarSysuiTestCase {
     private static final int GLOBAL_AREA_ID = 117;
     private static final int AREA_ID = 99;
     private static final int PROPERTY_ID = HVAC_TEMPERATURE_SET;

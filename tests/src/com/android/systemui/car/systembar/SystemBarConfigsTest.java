@@ -39,8 +39,8 @@ import android.view.WindowManager;
 
 import androidx.test.filters.SmallTest;
 
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.notification.NotificationPanelViewController;
@@ -64,7 +64,7 @@ import java.util.Map;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class SystemBarConfigsTest extends SysuiTestCase {
+public class SystemBarConfigsTest extends CarSysuiTestCase {
     private static final int SYSTEM_BAR_GIRTH = 100;
 
     private SystemBarConfigsImpl mSystemBarConfigs;

@@ -41,8 +41,8 @@ import androidx.test.filters.SmallTest;
 
 import com.android.car.qc.QCItem;
 import com.android.car.ui.FocusParkingView;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
@@ -62,7 +62,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class StatusIconPanelViewControllerTest extends SysuiTestCase {
+public class StatusIconPanelViewControllerTest extends CarSysuiTestCase {
     private StatusIconPanelViewController mViewController;
     private ImageView mAnchorView;
     private UserHandle mUserHandle;

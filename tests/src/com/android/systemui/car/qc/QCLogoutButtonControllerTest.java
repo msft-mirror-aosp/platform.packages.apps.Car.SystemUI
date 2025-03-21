@@ -47,7 +47,7 @@ import android.view.Display;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
@@ -71,7 +71,7 @@ import java.util.List;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class QCLogoutButtonControllerTest extends SysuiTestCase {
+public class QCLogoutButtonControllerTest extends CarSysuiTestCase {
     @Mock
     private AlertDialog mDialog;
     @Mock

@@ -30,7 +30,7 @@ import android.view.IWindowManager;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
@@ -46,7 +46,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidJUnit4.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class DisplaySystemBarsControllerTest extends SysuiTestCase {
+public class DisplaySystemBarsControllerTest extends CarSysuiTestCase {
 
     private DisplaySystemBarsController mController;
 

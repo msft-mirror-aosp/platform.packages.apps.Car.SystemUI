@@ -27,7 +27,7 @@ import android.testing.TestableLooper;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.CarSystemBarController;
@@ -43,7 +43,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class HvacPanelOverlayViewMediatorTest extends SysuiTestCase {
+public class HvacPanelOverlayViewMediatorTest extends CarSysuiTestCase {
 
     private HvacPanelOverlayViewMediator mHvacPanelOverlayViewMediator;
 

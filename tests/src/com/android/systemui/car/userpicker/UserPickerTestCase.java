@@ -37,12 +37,12 @@ import android.view.DisplayAdjustments;
 import android.view.DisplayInfo;
 import android.view.LayoutInflater;
 
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 
 import org.junit.Before;
 
-public abstract class UserPickerTestCase extends SysuiTestCase {
+public abstract class UserPickerTestCase extends CarSysuiTestCase {
     static final int IDLE_TIMEOUT = 1_500;
 
     static final int USER_ID_DRIVER = 999;

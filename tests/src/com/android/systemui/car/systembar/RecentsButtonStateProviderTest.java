@@ -42,8 +42,8 @@ import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.shared.system.TaskStackChangeListener;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
@@ -62,7 +62,7 @@ import java.util.function.Function;
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @SmallTest
-public class RecentsButtonStateProviderTest extends SysuiTestCase {
+public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
     private static final String RECENTS_ACTIVITY_NAME =
             "com.android.car.carlauncher/.recents.CarRecentsActivity";
     private static final String DIALER_ACTIVITY_NAME = "com.android.car.dialer/.ui.TelecomActivity";

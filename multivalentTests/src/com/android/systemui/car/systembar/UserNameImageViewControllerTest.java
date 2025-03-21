@@ -30,7 +30,7 @@ import android.testing.TestableLooper;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
@@ -52,7 +52,7 @@ import java.util.concurrent.Executor;
 @RunWith(AndroidJUnit4.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class UserNameImageViewControllerTest extends SysuiTestCase {
+public class UserNameImageViewControllerTest extends CarSysuiTestCase {
     private final UserInfo mUserInfo1 =
             new UserInfo(/* id= */ 0, /* name= */ "User 1", /* flags= */ 0);
     private final UserInfo mUserInfo2 =

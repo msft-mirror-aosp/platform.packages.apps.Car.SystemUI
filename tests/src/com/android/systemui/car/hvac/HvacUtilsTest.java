@@ -25,7 +25,7 @@ import android.car.hardware.property.AreaIdConfig;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 
 import org.junit.Before;
@@ -37,7 +37,7 @@ import java.util.List;
 
 @CarSystemUiTest
 @SmallTest
-public class HvacUtilsTest extends SysuiTestCase {
+public class HvacUtilsTest extends CarSysuiTestCase {
     @Mock
     private CarPropertyConfig<Float> mFloatCarPropertyConfig;
     @Mock

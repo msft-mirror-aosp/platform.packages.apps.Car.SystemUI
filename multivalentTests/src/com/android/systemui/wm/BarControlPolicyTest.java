@@ -33,7 +33,7 @@ import android.view.WindowInsets.Type.InsetsType;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 
 import org.junit.After;
@@ -45,7 +45,7 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 @RunWithLooper
 @SmallTest
-public class BarControlPolicyTest extends SysuiTestCase {
+public class BarControlPolicyTest extends CarSysuiTestCase {
 
     private static final String PACKAGE_NAME = "sample.app";
     private static final String PACKAGE_NAME2 = "sample2.app";

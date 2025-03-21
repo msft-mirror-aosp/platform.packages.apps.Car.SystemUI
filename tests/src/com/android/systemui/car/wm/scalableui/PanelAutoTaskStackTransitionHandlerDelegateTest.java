@@ -35,7 +35,7 @@ import android.window.TransitionRequestInfo;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.wm.shell.automotive.AutoTaskStackController;
@@ -55,7 +55,7 @@ import java.util.Map;
 @CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
 @SmallTest
-public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCase {
+public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTestCase {
 
     private PanelAutoTaskStackTransitionHandlerDelegate mDelegate;
 

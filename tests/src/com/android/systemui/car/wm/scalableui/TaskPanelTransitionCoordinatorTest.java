@@ -35,7 +35,7 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.android.car.scalableui.model.PanelTransaction;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.wm.shell.automotive.AutoSurfaceTransaction;
@@ -57,7 +57,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(AndroidJUnit4.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class TaskPanelTransitionCoordinatorTest extends SysuiTestCase {
+public class TaskPanelTransitionCoordinatorTest extends CarSysuiTestCase {
 
     private TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
 

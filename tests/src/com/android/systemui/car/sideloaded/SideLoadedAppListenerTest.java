@@ -34,7 +34,7 @@ import android.view.DisplayInfo;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 
 import org.junit.Before;
@@ -51,7 +51,7 @@ import java.util.List;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class SideLoadedAppListenerTest extends SysuiTestCase {
+public class SideLoadedAppListenerTest extends CarSysuiTestCase {
 
     private static final String APP_PACKAGE_NAME = "com.test";
     private static final String APP_CLASS_NAME = ".TestClass";

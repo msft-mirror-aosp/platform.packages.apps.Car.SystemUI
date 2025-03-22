@@ -28,8 +28,8 @@ import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
@@ -49,7 +49,7 @@ import java.util.Collections;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class CarSystemBarViewTest extends SysuiTestCase {
+public class CarSystemBarViewTest extends CarSysuiTestCase {
 
     private CarSystemBarView mNavBarView;
 

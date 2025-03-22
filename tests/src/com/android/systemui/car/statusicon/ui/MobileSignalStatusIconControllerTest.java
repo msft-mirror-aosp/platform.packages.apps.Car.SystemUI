@@ -26,8 +26,8 @@ import android.testing.TestableLooper;
 
 import androidx.test.filters.SmallTest;
 
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.statusicon.StatusIconView;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
@@ -46,7 +46,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper(setAsMainLooper = true)
 @SmallTest
-public class MobileSignalStatusIconControllerTest extends SysuiTestCase {
+public class MobileSignalStatusIconControllerTest extends CarSysuiTestCase {
     @Mock
     NetworkController mNetworkController;
     @Mock

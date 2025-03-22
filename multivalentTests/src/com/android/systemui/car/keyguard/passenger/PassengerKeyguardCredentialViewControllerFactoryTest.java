@@ -35,7 +35,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import com.android.internal.widget.LockPatternUtils;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.settings.UserTracker;
@@ -49,7 +49,7 @@ import org.mockito.MockitoAnnotations;
 @CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
 @SmallTest
-public class PassengerKeyguardCredentialViewControllerFactoryTest extends SysuiTestCase {
+public class PassengerKeyguardCredentialViewControllerFactoryTest extends CarSysuiTestCase {
     private static final int TEST_USER_ID = 1000;
 
     private PassengerKeyguardCredentialViewControllerFactory mFactory;

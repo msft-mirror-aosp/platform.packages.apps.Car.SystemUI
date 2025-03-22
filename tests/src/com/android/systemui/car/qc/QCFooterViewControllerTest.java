@@ -37,7 +37,7 @@ import android.testing.TestableLooper;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
@@ -56,7 +56,7 @@ import org.mockito.quality.Strictness;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class QCFooterViewControllerTest extends SysuiTestCase {
+public class QCFooterViewControllerTest extends CarSysuiTestCase {
     @Mock
     private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
     @Mock

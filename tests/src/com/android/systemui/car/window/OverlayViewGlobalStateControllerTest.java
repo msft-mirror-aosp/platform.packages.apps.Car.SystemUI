@@ -37,7 +37,7 @@ import android.view.WindowInsetsController;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.tests.R;
 
@@ -51,7 +51,7 @@ import java.util.Arrays;
 
 @CarSystemUiTest
 @SmallTest
-public class OverlayViewGlobalStateControllerTest extends SysuiTestCase {
+public class OverlayViewGlobalStateControllerTest extends CarSysuiTestCase {
 
     private OverlayViewGlobalStateController mOverlayViewGlobalStateController;
     private ViewGroup mBaseLayout;

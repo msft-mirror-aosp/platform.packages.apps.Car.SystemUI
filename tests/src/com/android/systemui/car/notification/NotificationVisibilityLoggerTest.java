@@ -40,7 +40,7 @@ import com.android.car.notification.NotificationDataManager;
 import com.android.dx.mockito.inline.extended.ExtendedMockito;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.NotificationVisibility;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.util.concurrency.FakeExecutor;
@@ -61,7 +61,7 @@ import java.util.Collections;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class NotificationVisibilityLoggerTest extends SysuiTestCase {
+public class NotificationVisibilityLoggerTest extends CarSysuiTestCase {
 
     private static final String PKG = "package_1";
     private static final String OP_PKG = "OpPackage";

@@ -34,7 +34,7 @@ import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.hvac.HvacPropertySetter;
 import com.android.systemui.tests.R;
@@ -49,7 +49,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class HvacBooleanToggleButtonTest extends SysuiTestCase {
+public class HvacBooleanToggleButtonTest extends CarSysuiTestCase {
     private static final int GLOBAL_AREA_ID = 117;
     private static final int AREA_ID = 1;
     private static final int PROPERTY_ID = HVAC_AC_ON;

@@ -32,7 +32,7 @@ import android.view.Display;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.statusbar.CommandQueue;
 
@@ -47,7 +47,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class CarSystemBarElementStatusBarDisableControllerTest extends SysuiTestCase {
+public class CarSystemBarElementStatusBarDisableControllerTest extends CarSysuiTestCase {
     private CarSystemBarElementStatusBarDisableController mController;
     @Mock
     private CommandQueue mCommandQueue;

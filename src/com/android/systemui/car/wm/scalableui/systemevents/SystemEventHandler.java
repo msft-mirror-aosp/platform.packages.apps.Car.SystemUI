@@ -87,6 +87,7 @@ public class SystemEventHandler implements CoreStartable,
                                 + mIsUserSetupInProgress);
                     }
                     if (mIsUserSetupInProgress) {
+                        mEventDispatcher.executeTransaction(SYSTEM_ENTER_SUW_EVENT_ID);
                         return;
                     }
                     if (event.getUserHandle().isSystem()) {

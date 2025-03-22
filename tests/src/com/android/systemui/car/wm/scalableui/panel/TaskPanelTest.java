@@ -50,7 +50,7 @@ import org.mockito.MockitoAnnotations;
 @CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
 @SmallTest
-public class TaskPanelTest extends CarSysuiTestCase{
+public class TaskPanelTest extends CarSysuiTestCase {
     private static final String TASK_PANEL_ID = "TASK_PANEL_ID";
 
     private TaskPanel mTaskPanel;

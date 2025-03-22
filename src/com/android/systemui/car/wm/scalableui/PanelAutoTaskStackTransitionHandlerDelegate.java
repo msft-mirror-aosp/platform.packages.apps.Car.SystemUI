@@ -41,8 +41,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.car.internal.dep.Trace;
+import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.Event;
+import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.PanelTransaction;
+import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.R;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
@@ -167,6 +170,9 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             @NonNull TransitionInfo info, boolean isFinish) {
         SurfaceControl leash = null;
         Rect pos = null;
+        boolean visibility;
+        float cornerRadius;
+        int layer;
         for (TransitionInfo.Change change : info.getChanges()) {
             if (change.getTaskInfo() == null) {
                 continue;
@@ -179,15 +185,40 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
 
             leash = change.getLeash();
             if (isFinish) {
-                pos = change.getEndAbsBounds();
+                // Use the PanelState is up to date even before animation, but not Panel.
+                PanelState ps = StateManager.getPanelState(
+                        taskPanel.getPanelId());
+                if (ps == null) {
+                    Log.e(TAG, "PanelState is null " + taskPanel.getPanelId());
+                    continue;
+                }
+                Variant currentVariant = ps.getCurrentVariant();
+                if (currentVariant == null) {
+                    Log.e(TAG, "Current Variant for panelState is null " + taskPanel.getPanelId());
+                    continue;
+                }
+                pos = currentVariant.getBounds();
+                visibility = currentVariant.isVisible();
+                cornerRadius = currentVariant.getCornerRadius();
+                layer = currentVariant.getLayer();
             } else {
-                pos = change.getStartAbsBounds();
+                // Start from current panel surface bounds rather than using window bounds from
+                // change.
+                pos = taskPanel.getBounds();
+                visibility = taskPanel.isVisible();
+                cornerRadius = taskPanel.getCornerRadius();
+                layer = taskPanel.getLayer();
+            }
+            if (DEBUG) {
+                Log.d(TAG, taskPanel.getPanelId() + (isFinish ? "end" : "start") + " bounds=" + pos
+                        + ", visibility=" + visibility + ", cornerRadius" + cornerRadius
+                        + ", layer=" + layer);
             }
             transaction.setPosition(leash, pos.left, pos.top);
-            transaction.setCornerRadius(leash, taskPanel.getCornerRadius());
+            transaction.setCornerRadius(leash, cornerRadius);
+            transaction.setVisibility(leash, visibility);
+            transaction.setLayer(leash, layer);
             taskPanel.setLeash(leash);
-
-            transaction.setLayer(leash, taskPanel.getLayer());
         }
     }
 
@@ -262,10 +293,11 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             @NonNull Map<Integer, AutoTaskStackState> changedTaskStacks, boolean aborted,
             @Nullable SurfaceControl.Transaction finishTransaction) {
         if (DEBUG) {
-            Log.d(TAG, "onTransitionConsumed=" + aborted);
+            Log.d(TAG, "onTransitionConsumed=" + aborted + ", transition=" + transition
+                    + ", changedTaskStacks" + changedTaskStacks);
         }
         Trace.beginSection(TAG + "#onTransitionConsumed");
-        mTaskPanelTransitionCoordinator.stopRunningAnimations();
+        mTaskPanelTransitionCoordinator.stopRunningAnimations(transition);
         Trace.endSection();
     }
 
@@ -276,10 +308,10 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             @NonNull IBinder mergeTarget,
             @NonNull Transitions.TransitionFinishCallback finishCallback) {
         if (DEBUG) {
-            Log.d(TAG, "mergeAnimation");
+            Log.d(TAG, "mergeAnimation " + transition);
         }
         Trace.beginSection(TAG + "#mergeAnimation");
-        mTaskPanelTransitionCoordinator.stopRunningAnimations();
+        mTaskPanelTransitionCoordinator.stopRunningAnimations(transition);
         Trace.endSection();
     }
 }

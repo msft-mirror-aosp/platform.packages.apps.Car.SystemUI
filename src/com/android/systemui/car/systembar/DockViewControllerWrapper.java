@@ -34,7 +34,6 @@ import androidx.annotation.NonNull;
 import com.android.car.docklib.DockViewController;
 import com.android.car.docklib.data.DockProtoDataController;
 import com.android.car.docklib.view.DockView;
-import com.android.car.dockutil.Flags;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
@@ -146,9 +145,6 @@ public class DockViewControllerWrapper extends
     }
 
     private void setupDock() {
-        if (!Flags.dockFeature()) {
-            return;
-        }
         if (mDockViewController != null) {
             if (mDockViewController.getUserContext().getUserId() == mUserTracker.getUserId()) {
                 if (DEBUG) {

@@ -26,41 +26,38 @@
         <item name="android:padding">22dp</item>
     </style>
 
-    <style name="TextAppearance.SystemBar.Clock"
-        parent="@*android:style/TextAppearance.StatusBar.Icon">
-        <item name="android:textSize">@dimen/car_body4_size</item>
+    <style name="SystemBarClockText">
+        <item name="android:textAppearance">?oemTextAppearanceTitleMedium</item>
         <item name="android:textColor">@color/system_bar_clock_text_color</item>
         <item name="android:textFontWeight">500</item>
     </style>
 
-    <style name="TextAppearance.SystemBar.ClockWithSelection"
-        parent="@*android:style/TextAppearance.StatusBar.Icon">
-        <item name="android:textSize">@dimen/car_body1_size</item>
+    <style name="SystemBarClockWithSelectionText">
+        <item name="android:textAppearance">?oemTextAppearanceTitleLarge</item>
         <item name="android:textColor">@color/system_bar_text_color_with_selection</item>
     </style>
 
-    <style name="TextAppearance.SystemBar.Username"
-        parent="@android:style/TextAppearance.DeviceDefault">
-        <item name="android:textSize">@dimen/car_body3_size</item>
+    <style name="SystemBarUsernameText">
+        <item name="android:textAppearance">?oemTextAppearanceTitleMedium</item>
         <item name="android:textColor">@color/system_bar_text_color_with_selection</item>
         <item name="android:fontFamily">sans-serif-medium</item>
-    </style>
-
-    <style name="TextAppearance.CarStatus" parent="@android:style/TextAppearance.DeviceDefault">
-        <item name="android:textSize">@*android:dimen/car_body2_size</item>
-        <item name="android:textColor">@color/system_bar_text_color</item>
+        <item name="android:textColorHint">?oemColorOnSurfaceInverse</item>
+        <item name="android:textColorHighlight">?oemColorOnSurfaceInverse</item>
+        <item name="android:textColorLink">?oemColorOnSurfaceInverse</item>
     </style>
 
     <!-- The style for a Toast. -->
-    <style name="TextAppearance.Toast" parent="@*android:style/TextAppearance.DeviceDefault">
-        <item name="android:textSize">@*android:dimen/car_body2_size</item>
-        <item name="android:textColor">@android:color/white</item>
+    <style name="ToastText">
+        <item name="android:textAppearance">?oemTextAppearanceTitleMedium</item>
+        <item name="fontFamily">@*android:string/config_bodyFontFamily</item>
+        <item name="lineHeight">20sp</item>
     </style>
 
     <style name="SystemBarButton">
         <item name="android:layout_height">@dimen/system_bar_button_size</item>
         <item name="android:layout_width">@dimen/system_bar_button_size</item>
-        <item name="android:layout_marginEnd">@dimen/system_bar_button_margin</item>
+        <item name="android:layout_marginEnd">0dp</item>
+        <item name="android:layout_centerVertical">true</item>
         <item name="android:padding">@dimen/system_bar_button_padding</item>
         <item name="android:gravity">center</item>
         <item name="android:background">@drawable/nav_bar_button_background</item>
@@ -69,12 +66,6 @@
     <style name="SystemBarButton.Vertical">
         <item name="android:layout_marginEnd">0dp</item>
         <item name="android:layout_marginBottom">@dimen/system_bar_button_margin</item>
-    </style>
-
-    <!-- todo(b/304320644): update SystemBarButton -->
-    <style name="SystemBarButtonWithDock" parent="SystemBarButton">
-        <item name="android:layout_marginEnd">0dp</item>
-        <item name="android:layout_centerVertical">true</item>
     </style>
 
     <style name="TemperatureControlView">
@@ -170,7 +161,7 @@
     <style name="ActionButtonText" parent="android:TextAppearance.DeviceDefault">
         <item name="android:fontFamily">roboto-regular</item>
         <item name="android:textColor">@color/blocking_text</item>
-        <item name="android:textSize">@*android:dimen/car_body3_size</item>
+        <item name="android:textAppearance">?oemTextAppearanceTitleMedium</item>
     </style>
 
     <!-- Style for buttons in ActivityBlockingActivity. -->
@@ -215,17 +206,15 @@
     <!-- Style for message text of user picker alert dialog. -->
     <style name="UserPickerDialogMessageNormalText">
         <item name="android:textStyle">normal</item>
-        <item name="android:textSize">@dimen/car_body4_size</item>
-        <item name="android:textColor">@*android:color/car_body4</item>
+        <item name="android:textAppearance">?oemTextAppearanceTitleSmall</item>
     </style>
     <style name="UserPickerDialogMessageLargeText">
         <item name="android:textStyle">normal</item>
-        <item name="android:textSize">@dimen/car_body2_size</item>
-        <item name="android:textColor">@*android:color/car_body4</item>
+        <item name="android:textAppearance">?oemTextAppearanceTitleMedium</item>
     </style>
     <!-- Style user picker snackbar. -->
     <style name="UserPickerSnackBarText" parent="Widget.MaterialComponents.Snackbar.TextView">
-        <item name="android:textSize">@dimen/car_body3_size</item>
+        <item name="android:textAppearance">?oemTextAppearanceTitleMedium</item>
         <item name="android:textColor">@color/car_ui_text_color_primary</item>
         <item name="android:textColorPrimary">@color/car_ui_text_color_primary</item>
         <item name="android:textColorLink">@color/car_ui_text_color_primary</item>
@@ -237,30 +226,30 @@
     <style name="PinPadKey">
         <item name="android:gravity">center</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@*android:color/car_body3</item>
-        <item name="android:tint">@*android:color/car_body3</item>
+        <item name="android:textColor">?oemColorSecondary</item>
+        <item name="android:tint">?oemColorSecondary</item>
         <item name="android:clickable">true</item>
     </style>
 
     <!-- Passenger Keyguard -->
     <style name="PassengerLockPattern">
-        <item name="*android:regularColor">@*android:color/car_body1</item>
-        <item name="*android:successColor">@*android:color/car_blue_500</item>
-        <item name="*android:errorColor">?android:attr/colorError</item>
+        <item name="*android:regularColor">?oemColorSurfaceContainerLow</item>
+        <item name="*android:successColor">?oemColorBlue</item>
+        <item name="*android:errorColor">?oemColorError</item>
     </style>
 
     <style name="PassengerPinPadKey">
         <item name="android:gravity">center</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textSize">@*android:dimen/car_body1_size</item>
-        <item name="android:textColor">@*android:color/car_body3</item>
-        <item name="android:tint">@*android:color/car_body3</item>
+        <item name="android:textAppearance">?oemTextAppearanceTitleLarge</item>
+        <item name="android:textColor">?oemColorSecondary</item>
+        <item name="android:tint">?oemColorSecondary</item>
         <item name="android:clickable">true</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
 
     <style name="CaptionBarStyle">
-        <item name="android:background">@color/car_surface</item>
+        <item name="android:background">?oemColorSurface</item>
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>
     </style>
@@ -272,7 +261,6 @@
     </style>
 
     <style name="CarSystemUIThemeOverlay">
-        <item name="carControlHighlight">#99d9e2ff</item>
         <item name="systemBarPillRadius">?oemShapeCornerFull</item>
         <item name="systemBarPillSelectedRadius">?oemShapeCornerSmall</item>
         <item name="hvacPanelBackgroundRadius">?oemShapeCornerExtraLarge</item>

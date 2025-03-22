@@ -28,6 +28,7 @@ import static com.android.systemui.car.systembar.SystemBarUtil.SYSTEM_BAR_PERSIS
 import static com.android.systemui.car.systembar.SystemBarUtil.VISIBLE_BAR_VISIBILITIES_TYPES_INDEX;
 import static com.android.systemui.car.systembar.SystemBarUtil.INVISIBLE_BAR_VISIBILITIES_TYPES_INDEX;
 import static com.android.systemui.car.users.CarSystemUIUserUtil.isSecondaryMUMDSystemUI;
+import static com.android.systemui.car.Flags.packageLevelSystemBarVisibility;
 
 import android.annotation.NonNull;
 import android.annotation.Nullable;
@@ -235,7 +236,8 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             String packageName = component != null ? component.getPackageName() : null;
 
             if (mBehavior == SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY) {
-                if (Objects.equals(mPackageName, packageName)) {
+                if (Objects.equals(mPackageName, packageName) && (!packageLevelSystemBarVisibility()
+                        || mWindowRequestedVisibleTypes == requestedVisibleTypes)) {
                     return;
                 }
             } else {
@@ -344,7 +346,10 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         private int[] getBarVisibilities(int immersiveState) {
             int[] barVisibilities;
             if (mBehavior == SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY) {
-                barVisibilities = BarControlPolicy.getBarVisibilities(mPackageName);
+                barVisibilities = packageLevelSystemBarVisibility()
+                        ? BarControlPolicy.getBarVisibilities(
+                                mPackageName, mWindowRequestedVisibleTypes)
+                        : BarControlPolicy.getBarVisibilities(mPackageName);
             } else if (immersiveState == STATE_IMMERSIVE_WITH_NAV_BAR) {
                 barVisibilities = mImmersiveWithNavBarVisibilities;
             } else if (immersiveState == STATE_IMMERSIVE_WITH_STATUS_BAR) {

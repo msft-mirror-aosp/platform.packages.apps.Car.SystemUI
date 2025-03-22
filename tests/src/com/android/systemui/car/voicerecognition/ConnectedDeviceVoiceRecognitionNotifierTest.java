@@ -35,7 +35,7 @@ import android.testing.AndroidTestingRunner;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 
@@ -50,7 +50,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @SmallTest
 // TODO(b/162866441): Refactor to use the Executor pattern instead.
-public class ConnectedDeviceVoiceRecognitionNotifierTest extends SysuiTestCase {
+public class ConnectedDeviceVoiceRecognitionNotifierTest extends CarSysuiTestCase {
 
     // TODO(b/218911666): {@link BluetoothHeadsetClient.ACTION_AG_EVENT} is a hidden API.
     private static final String HEADSET_CLIENT_ACTION_AG_EVENT =

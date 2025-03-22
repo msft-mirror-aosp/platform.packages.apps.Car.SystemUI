@@ -30,8 +30,8 @@ import android.widget.ImageView;
 
 import androidx.test.filters.SmallTest;
 
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 
 import org.junit.Before;
@@ -44,7 +44,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper(setAsMainLooper = true)
 @SmallTest
-public class StatusIconControllerTest extends SysuiTestCase {
+public class StatusIconControllerTest extends CarSysuiTestCase {
 
     private TestStatusIconController mTestStatusIconController;
 

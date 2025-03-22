@@ -31,7 +31,7 @@ import android.testing.TestableLooper;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.telephony.calling.InCallServiceManager;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.telecom.InCallServiceImpl;
 import com.android.systemui.lifecycle.InstantTaskExecutorRule;
@@ -50,7 +50,7 @@ import java.util.List;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class InCallLiveDataTest extends SysuiTestCase {
+public class InCallLiveDataTest extends CarSysuiTestCase {
     @Rule
     public TestRule rule = new InstantTaskExecutorRule();
 

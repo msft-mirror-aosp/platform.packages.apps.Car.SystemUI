@@ -41,8 +41,8 @@ import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
 
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.privacy.MicPrivacyChip;
 import com.android.systemui.privacy.PrivacyItem;
@@ -65,7 +65,7 @@ import java.util.concurrent.Executor;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class MicPrivacyChipViewControllerTest extends SysuiTestCase {
+public class MicPrivacyChipViewControllerTest extends CarSysuiTestCase {
     private static final int TEST_USER_ID = 1001;
 
     private MicPrivacyChipViewController mMicPrivacyChipViewController;

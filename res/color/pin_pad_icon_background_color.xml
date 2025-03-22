@@ -53,7 +53,7 @@
         <shape>
             <corners android:radius="?pinPadKeyRadius"/>
             <!-- This is a mask color and needs to be set. Would not show in UI. -->
-            <solid android:color="@android:color/white"/>
+            <solid android:color="?oemColorOnSurface"/>
         </shape>
     </item>
 </ripple>

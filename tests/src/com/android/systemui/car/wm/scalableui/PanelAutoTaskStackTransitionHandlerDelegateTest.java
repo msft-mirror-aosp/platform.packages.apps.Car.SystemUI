@@ -35,8 +35,9 @@ import android.window.TransitionRequestInfo;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -54,7 +55,7 @@ import java.util.Map;
 @CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
 @SmallTest
-public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCase {
+public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTestCase {
 
     private PanelAutoTaskStackTransitionHandlerDelegate mDelegate;
 
@@ -64,6 +65,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
     private TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
     @Mock
     private Transitions.TransitionFinishCallback mFinishCallback;
+    @Mock
+    private PanelUtils mPanelUtils;
 
     @Before
     public void setUp() {
@@ -71,7 +74,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
         when(mTaskPanelTransitionCoordinator.createAutoTaskStackTransaction(any(),
                 any())).thenReturn(new AutoTaskStackTransaction());
         mDelegate = new PanelAutoTaskStackTransitionHandlerDelegate(mContext,
-                mAutoTaskStackController, mTaskPanelTransitionCoordinator);
+                mAutoTaskStackController, mTaskPanelTransitionCoordinator, mPanelUtils);
     }
 
     @Test

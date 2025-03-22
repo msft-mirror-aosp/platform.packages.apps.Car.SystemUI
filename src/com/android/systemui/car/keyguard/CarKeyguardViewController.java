@@ -267,9 +267,9 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
     @Override
     @MainThread
-    public void showPrimaryBouncer(boolean scrimmed) {
+    public void showPrimaryBouncer(boolean scrimmed, String reason) {
         if (mShowing && !mPrimaryBouncerInteractor.isFullyShowing()) {
-            mPrimaryBouncerInteractor.show(/* isScrimmed= */ true);
+            mPrimaryBouncerInteractor.show(/* isScrimmed= */ true, reason);
         }
     }
 
@@ -570,7 +570,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mMainExecutor.execute(() -> {
             hideInternal();
             mPrimaryBouncerInteractor.hide();
-            mPrimaryBouncerInteractor.show(/* isScrimmed= */ true);
+            mPrimaryBouncerInteractor.show(/* isScrimmed= */ true, TAG + "#resetBouncer");
             revealKeyguardIfBouncerPrepared();
         });
     }

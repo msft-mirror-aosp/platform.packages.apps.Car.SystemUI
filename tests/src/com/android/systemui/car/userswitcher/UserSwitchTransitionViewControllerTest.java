@@ -46,8 +46,8 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.util.concurrency.FakeExecutor;
@@ -65,7 +65,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class UserSwitchTransitionViewControllerTest extends SysuiTestCase {
+public class UserSwitchTransitionViewControllerTest extends CarSysuiTestCase {
     private static final int TEST_USER_1 = 100;
     private static final int TEST_USER_2 = 110;
 

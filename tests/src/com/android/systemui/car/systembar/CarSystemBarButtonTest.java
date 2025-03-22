@@ -46,7 +46,7 @@ import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
 import com.android.systemui.tests.R;
@@ -60,7 +60,7 @@ import org.mockito.MockitoAnnotations;
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @SmallTest
-public class CarSystemBarButtonTest extends SysuiTestCase {
+public class CarSystemBarButtonTest extends CarSysuiTestCase {
 
     private static final String DIALER_BUTTON_ACTIVITY_NAME =
             "com.android.car.dialer/.ui.TelecomActivity";

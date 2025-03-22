@@ -23,7 +23,7 @@ import androidx.test.filters.SmallTest;
 
 import com.android.car.qc.QCList;
 import com.android.car.qc.QCRow;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.drivemode.InMemoryDriveModeManager;
 
@@ -38,7 +38,7 @@ import java.util.List;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class DriveModeQcPanelTest extends SysuiTestCase {
+public class DriveModeQcPanelTest extends CarSysuiTestCase {
 
     private DriveModeQcPanel mPanel;
 

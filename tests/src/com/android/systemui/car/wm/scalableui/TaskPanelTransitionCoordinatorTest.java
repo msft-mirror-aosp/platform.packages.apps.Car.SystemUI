@@ -18,6 +18,7 @@ package com.android.systemui.car.wm.scalableui;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,8 +35,12 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.android.car.scalableui.model.PanelTransaction;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
+import com.android.wm.shell.automotive.AutoLayoutManager;
+import com.android.wm.shell.automotive.AutoSurfaceTransaction;
+import com.android.wm.shell.automotive.AutoSurfaceTransactionFactory;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.transition.Transitions;
 
@@ -53,7 +58,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(AndroidJUnit4.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class TaskPanelTransitionCoordinatorTest extends SysuiTestCase {
+public class TaskPanelTransitionCoordinatorTest extends CarSysuiTestCase {
 
     private TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
 
@@ -61,12 +66,23 @@ public class TaskPanelTransitionCoordinatorTest extends SysuiTestCase {
     private Transitions.TransitionFinishCallback mFinishCallback;
     @Mock
     private AutoTaskStackController mAutoTaskStackController;
+    @Mock
+    private PanelUtils mPanelUtils;
+    @Mock
+    private AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
+    @Mock
+    private AutoSurfaceTransaction mAutoSurfaceTransaction;
+    @Mock
+    private AutoLayoutManager mAutoLayoutManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mTaskPanelTransitionCoordinator = new TaskPanelTransitionCoordinator(
-                mAutoTaskStackController);
+                mAutoTaskStackController, mAutoSurfaceTransactionFactory, mPanelUtils,
+                mAutoLayoutManager);
+        when(mAutoSurfaceTransactionFactory.createTransaction(anyString())).thenReturn(
+                mAutoSurfaceTransaction);
     }
 
     @Test

@@ -37,7 +37,7 @@ import android.view.ViewGroup;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.tests.R;
@@ -57,7 +57,7 @@ import java.util.List;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class OverlayPanelViewControllerTest extends SysuiTestCase {
+public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
     private TestOverlayPanelViewController mOverlayPanelViewController;
     private ViewGroup mBaseLayout;
 

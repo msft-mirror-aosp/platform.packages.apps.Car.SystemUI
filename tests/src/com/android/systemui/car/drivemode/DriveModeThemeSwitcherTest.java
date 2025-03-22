@@ -30,7 +30,7 @@ import android.testing.TestableLooper;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.SysuiTestableContext;
 import com.android.systemui.car.CarSystemUiTest;
 
@@ -47,7 +47,7 @@ import java.util.List;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class DriveModeThemeSwitcherTest extends SysuiTestCase {
+public class DriveModeThemeSwitcherTest extends CarSysuiTestCase {
 
     private DriveModeThemeSwitcher mDriveModeThemeSwitcher;
     @Mock

@@ -34,7 +34,7 @@ import androidx.lifecycle.LiveData;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.telephony.calling.InCallServiceManager;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.telecom.InCallServiceImpl;
 import com.android.systemui.lifecycle.InstantTaskExecutorRule;
@@ -54,7 +54,7 @@ import java.util.List;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class BlockerViewModelTest extends SysuiTestCase {
+public class BlockerViewModelTest extends CarSysuiTestCase {
     private BlockerViewModel mBlockerViewModel;
     private static final String PROPERTY_IN_CALL_SERVICE = "PROPERTY_IN_CALL_SERVICE";
     private static final String BLOCKED_ACTIVITY_PKG_NAME = "com.blocked.activity";

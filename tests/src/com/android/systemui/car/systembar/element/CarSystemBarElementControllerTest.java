@@ -34,7 +34,7 @@ import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 
 import org.junit.Before;
@@ -47,7 +47,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class CarSystemBarElementControllerTest extends SysuiTestCase {
+public class CarSystemBarElementControllerTest extends CarSysuiTestCase {
 
     private TestCarSystemBarElement mElement;
     private TestCarSystemBarElementController mController;

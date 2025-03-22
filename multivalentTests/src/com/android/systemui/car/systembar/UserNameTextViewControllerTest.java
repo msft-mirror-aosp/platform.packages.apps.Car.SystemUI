@@ -31,7 +31,7 @@ import android.testing.TestableLooper;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
@@ -52,7 +52,7 @@ import java.util.concurrent.Executor;
 @RunWith(AndroidJUnit4.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class UserNameTextViewControllerTest extends SysuiTestCase {
+public class UserNameTextViewControllerTest extends CarSysuiTestCase {
     private static final String USER_1_NAME = "User 1";
     private static final String USER_2_NAME = "User 2";
     private final UserInfo mUserInfo1 =

@@ -31,7 +31,7 @@ import android.testing.TestableLooper;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.datasubscription.DataSubscription;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
@@ -48,7 +48,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class DataSubscriptionUnseenIconControllerTest extends SysuiTestCase {
+public class DataSubscriptionUnseenIconControllerTest extends CarSysuiTestCase {
     private DataSubscriptionUnseenIconController mController;
     @Mock
     private CarSystemBarImageView mView;

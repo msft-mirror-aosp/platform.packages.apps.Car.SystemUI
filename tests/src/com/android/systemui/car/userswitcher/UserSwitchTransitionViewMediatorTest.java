@@ -24,7 +24,7 @@ import android.testing.TestableLooper;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.settings.UserTracker;
@@ -39,7 +39,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class UserSwitchTransitionViewMediatorTest extends SysuiTestCase {
+public class UserSwitchTransitionViewMediatorTest extends CarSysuiTestCase {
     private static final int TEST_USER = 100;
 
     private UserSwitchTransitionViewMediator mUserSwitchTransitionViewMediator;

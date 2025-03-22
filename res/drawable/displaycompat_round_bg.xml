@@ -18,8 +18,8 @@
     android:shape="oval">
 
     <gradient
-        android:startColor="#3C5D93"
-        android:endColor="#3C5D93"
+        android:startColor="?oemColorSurfaceContainer"
+        android:endColor="?oemColorSurfaceContainer"
         android:angle="0"/>
 
     <size

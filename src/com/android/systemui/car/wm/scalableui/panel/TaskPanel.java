@@ -22,10 +22,8 @@ import android.car.app.CarActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.UserHandle;
-import android.os.UserManager;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.SurfaceControl;
@@ -38,9 +36,7 @@ import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.car.CarServiceProvider;
-import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
-import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -56,7 +52,7 @@ import java.util.Set;
 /**
  * A {@link RootTaskStack} based implementation of a {@link Panel}.
  */
-public class TaskPanel implements Panel {
+public final class TaskPanel extends BasePanel {
     private static final String TAG = TaskPanel.class.getSimpleName();
     private static final String ROLE_TYPE_STRING = "string";
     private static final String ROLE_TYPE_ARRAY = "array";
@@ -65,34 +61,27 @@ public class TaskPanel implements Panel {
     private final AutoTaskStackController mAutoTaskStackController;
     private final CarServiceProvider mCarServiceProvider;
     private final Set<ComponentName> mPersistedActivities;
-    private final Context mContext;
     private final AutoTaskStackHelper mAutoTaskStackHelper;
-    private int mLayer = -1;
-    private int mRole = 0;
     private CarActivityManager mCarActivityManager;
     private int mRootTaskId = -1;
-    private Rect mBounds = null;
-    private boolean mIsVisible;
-    private String mId;
     private SurfaceControl mLeash;
-    private float mAlpha;
-    private int mDisplayId;
-    private int mCornerRadius;
     private boolean mIsLaunchRoot;
     private RootTaskStack mRootTaskStack;
+    private PanelUtils mPanelUtils;
 
     @AssistedInject
-    public TaskPanel(AutoTaskStackController autoTaskStackController, @NonNull Context context,
+    public TaskPanel(AutoTaskStackController autoTaskStackController,
+            @NonNull Context context,
             CarServiceProvider carServiceProvider,
             AutoTaskStackHelper autoTaskStackHelper,
-            EventDispatcher dispatcher,
+            PanelUtils panelUtils,
             @Assisted String id) {
+        super(context, id);
         mAutoTaskStackController = autoTaskStackController;
         mCarServiceProvider = carServiceProvider;
-        mContext = context;
         mAutoTaskStackHelper = autoTaskStackHelper;
-        mId = id;
         mPersistedActivities = new ArraySet<>();
+        mPanelUtils = panelUtils;
     }
 
     /**
@@ -106,22 +95,23 @@ public class TaskPanel implements Panel {
                     trySetPersistentActivity();
                 });
 
-        mAutoTaskStackController.createRootTaskStack(mDisplayId, mId,
+        mAutoTaskStackController.createRootTaskStack(getDisplayId(), getPanelId(),
                 new RootTaskStackListener() {
                     @Override
                     public void onRootTaskStackCreated(@NonNull RootTaskStack rootTaskStack) {
                         if (DEBUG) {
-                            Log.d(TAG, mId + ", onRootTaskStackCreated " + rootTaskStack);
+                            Log.d(TAG, getPanelId() + ", onRootTaskStackCreated " + rootTaskStack);
                         }
                         mRootTaskStack = rootTaskStack;
                         mRootTaskId = mRootTaskStack.getRootTaskInfo().taskId;
                         trySetPersistentActivity();
                         if (mIsLaunchRoot) {
-                            mAutoTaskStackController.setDefaultRootTaskStackOnDisplay(mDisplayId,
+                            mAutoTaskStackController.setDefaultRootTaskStackOnDisplay(
+                                    getDisplayId(),
                                     mRootTaskId);
                         }
 
-                        if (isUserUnlocked(mContext)) {
+                        if (mPanelUtils.isUserUnlocked()) {
                             reset();
                         }
                     }
@@ -153,6 +143,10 @@ public class TaskPanel implements Panel {
 
     @Override
     public void reset() {
+        if (getRootStack() == null) {
+            Log.e(TAG, "Cannot reset when root stack is null for panel" + getPanelId());
+            return;
+        }
         AutoTaskStackTransaction autoTaskStackTransaction = new AutoTaskStackTransaction();
         AutoTaskStackState autoTaskStackState = new AutoTaskStackState(getBounds(), isVisible(),
                 getLayer());
@@ -175,7 +169,7 @@ public class TaskPanel implements Panel {
         options.setLaunchRootTask(getRootStack().getRootTaskInfo().token);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
-                mContext.createContextAsUser(UserHandle.CURRENT, 0), 0, defaultIntent,
+                getContext().createContextAsUser(UserHandle.CURRENT, 0), 0, defaultIntent,
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         autoTaskStackTransaction.sendPendingIntent(pendingIntent, defaultIntent,
                 options.toBundle());
@@ -204,7 +198,7 @@ public class TaskPanel implements Panel {
      */
     @Nullable
     public Intent getDefaultIntent() {
-        ComponentName componentName = mAutoTaskStackHelper.getDefaultIntent(mId);
+        ComponentName componentName = mAutoTaskStackHelper.getDefaultIntent(getPanelId());
         if (componentName == null) {
             return null;
         }
@@ -212,21 +206,6 @@ public class TaskPanel implements Panel {
         defaultIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         defaultIntent.setComponent(componentName);
         return defaultIntent;
-    }
-
-    @Override
-    public void setDisplayId(int displayId) {
-        mDisplayId = displayId;
-    }
-
-    @Override
-    public Rect getBounds() {
-        return mBounds;
-    }
-
-    @Override
-    public void setBounds(Rect bounds) {
-        mBounds = bounds;
     }
 
     public SurfaceControl getLeash() {
@@ -244,102 +223,14 @@ public class TaskPanel implements Panel {
         return mIsLaunchRoot;
     }
 
-    public String getId() {
-        return mId;
-    }
-
-    public void setId(String id) {
-        mId = id;
-    }
-
-    @Override
-    public int getLayer() {
-        return mLayer;
-    }
-
-    @Override
-    public void setLayer(int layer) {
-        this.mLayer = layer;
-    }
-
-    @Override
-    public int getX1() {
-        return mBounds.left;
-    }
-
-    @Override
-    public int getX2() {
-        return mBounds.right;
-    }
-
-    @Override
-    public int getY1() {
-        return mBounds.top;
-    }
-
-    @Override
-    public int getY2() {
-        return mBounds.bottom;
-    }
-
-    @Override
-    public void setX1(int x) {
-        setBounds(new Rect(x, getY1(), getX2(), getY2()));
-    }
-
-    @Override
-    public void setX2(int x) {
-        setBounds(new Rect(getX1(), getY1(), x, getY2()));
-    }
-
-    @Override
-    public void setY1(int y) {
-        setBounds(new Rect(getX1(), y, getX2(), getY2()));
-    }
-
-    @Override
-    public void setY2(int y) {
-        setBounds(new Rect(getX1(), getY1(), getX2(), y));
-    }
-
-    @Override
-    public boolean isVisible() {
-        return mIsVisible;
-    }
-
-    @Override
-    public void setVisibility(boolean isVisible) {
-        mIsVisible = isVisible;
-    }
-
-    @Override
-    public float getAlpha() {
-        return mAlpha;
-    }
-
-    @Override
-    public void setAlpha(float alpha) {
-        mAlpha = alpha;
-    }
-
-    @Override
-    public void setCornerRadius(int radius) {
-        mCornerRadius = radius;
-    }
-
-    @Override
-    public int getCornerRadius() {
-        return mCornerRadius;
-    }
-
     @Override
     public void setRole(int role) {
-        if (this.mRole == role) return;
-        this.mRole = role;
-        String roleTypeName = mContext.getResources().getResourceTypeName(mRole);
+        if (getRole() == role) return;
+        super.setRole(role);
+        String roleTypeName = getContext().getResources().getResourceTypeName(getRole());
         switch (roleTypeName) {
             case ROLE_TYPE_STRING:
-                String roleString = mContext.getResources().getString(mRole);
+                String roleString = getContext().getResources().getString(getRole());
                 if (PanelState.DEFAULT_ROLE.equals(roleString)) {
                     mIsLaunchRoot = true;
                     return;
@@ -350,7 +241,8 @@ public class TaskPanel implements Panel {
                 break;
             case ROLE_TYPE_ARRAY:
                 mPersistedActivities.clear();
-                String[] componentNameStrings = mContext.getResources().getStringArray(mRole);
+                String[] componentNameStrings = getContext().getResources().getStringArray(
+                        getRole());
                 mPersistedActivities.addAll(convertToComponentNames(componentNameStrings));
                 break;
             default: {
@@ -371,22 +263,22 @@ public class TaskPanel implements Panel {
         if (mCarActivityManager == null || mRootTaskStack == null) {
             if (DEBUG) {
                 Log.d(TAG,
-                        "mCarActivityManager or mRootTaskStack is null, [" + mId + ","
+                        "mCarActivityManager or mRootTaskStack is null, [" + getId() + ","
                                 + mCarActivityManager + ", " + mRootTaskStack + "]");
             }
             return;
         }
 
-        if (mRole == 0) {
+        if (getRole() == 0) {
             if (DEBUG) {
-                Log.d(TAG, "mRole is 0, [" + mId + "]");
+                Log.d(TAG, "mRole is 0, [" + getPanelId() + "]");
             }
             return;
         }
 
         if (mIsLaunchRoot) {
             if (DEBUG) {
-                Log.d(TAG, "mIsLaunchRoot is true, [" + mId + "]");
+                Log.d(TAG, "mIsLaunchRoot is true, [" + getPanelId() + "]");
             }
             return;
         }
@@ -404,19 +296,19 @@ public class TaskPanel implements Panel {
     @Override
     public String toString() {
         return "TaskPanel{"
-                + "mId='" + mId + '\''
+                + "mId='" + getPanelId() + '\''
                 + ", mIsLaunchRoot=" + mIsLaunchRoot
-                + ", mDisplayId=" + mDisplayId
-                + ", mAlpha=" + mAlpha
-                + ", mIsVisible=" + mIsVisible
-                + ", mBounds=" + mBounds
+                + ", mDisplayId=" + getDisplayId()
+                + ", mAlpha=" + getAlpha()
+                + ", mIsVisible=" + isVisible()
+                + ", mBounds=" + getBounds()
                 + ", mRootTaskId=" + mRootTaskId
-                + ", mContext=" + mContext
-                + ", mRole=" + mRole
-                + ", mLayer=" + mLayer
+                + ", mContext=" + getContext()
+                + ", mRole=" + getRole()
+                + ", mLayer=" + getLayer()
                 + ", mLeash=" + mLeash
                 + ", mRootTaskStack=" + mRootTaskStack
-                + ", mCornerRadius=" + mCornerRadius
+                + ", mCornerRadius=" + getCornerRadius()
                 + '}';
     }
 
@@ -431,14 +323,5 @@ public class TaskPanel implements Panel {
     public interface Factory {
         /** Create instance of TaskPanel with specified id */
         TaskPanel create(String id);
-    }
-
-    private static boolean isUserUnlocked(@NonNull Context context) {
-        int userId = CarSystemUIUserUtil.isSecondaryMUMDSystemUI()
-                ? context.getUserId()
-                : ActivityManager.getCurrentUser();
-
-        UserManager userManager = context.getSystemService(UserManager.class);
-        return userManager != null && userManager.isUserUnlocked(userId);
     }
 }

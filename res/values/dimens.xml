@@ -501,4 +501,7 @@
 
     <dimen name="overlay_panel_view_vail_width">96dp</dimen>
     <dimen name="overlay_panel_view_vail_height">96dp</dimen>
+
+    <!-- Grip bar for panels -->
+    <dimen name="panel_grip_bar_corner_radius">48dp</dimen>
 </resources>

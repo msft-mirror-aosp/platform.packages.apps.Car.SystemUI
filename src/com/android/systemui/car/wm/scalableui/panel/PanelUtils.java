@@ -69,6 +69,17 @@ public class PanelUtils {
     }
 
     /**
+     * Retrieves a {@link DecorPanel} that satisfies the given {@link Predicate}.
+     *
+     * @param predicate The predicate to test against potential {@link DecorPanel} instances.
+     * @return The matching {@link DecorPanel}, or null if none is found.
+     */
+    public DecorPanel getDecorPanel(Predicate<DecorPanel> predicate) {
+        return (DecorPanel) PanelPool.getInstance().getPanel(
+                p -> (p instanceof DecorPanel decorPanel) && predicate.test(decorPanel));
+    }
+
+    /**
      * Checks if the user is unlocked.
      */
     public boolean isUserUnlocked() {

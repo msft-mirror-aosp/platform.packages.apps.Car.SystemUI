@@ -153,7 +153,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
                 false,
                 mock(SurfaceControl.Transaction.class));
 
-        verify(mTaskPanelTransitionCoordinator).stopRunningAnimations();
+        verify(mTaskPanelTransitionCoordinator).stopRunningAnimations(any());
     }
 
     @Test
@@ -166,6 +166,6 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
                 mock(IBinder.class),
                 mock(Transitions.TransitionFinishCallback.class));
 
-        verify(mTaskPanelTransitionCoordinator).stopRunningAnimations();
+        verify(mTaskPanelTransitionCoordinator).stopRunningAnimations(any());
     }
 }

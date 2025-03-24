@@ -39,8 +39,8 @@ import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelTransaction;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.R;
+import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
-import com.android.systemui.car.wm.scalableui.panel.TaskPanelPool;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -67,15 +67,19 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     private final AutoTaskStackController mAutoTaskStackController;
     private final TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
     private final Context mContext;
+    private PanelUtils mPanelUtils;
 
     @Inject
     public PanelAutoTaskStackTransitionHandlerDelegate(
             Context context,
             AutoTaskStackController autoTaskStackController,
-            TaskPanelTransitionCoordinator taskPanelTransitionCoordinator) {
+            TaskPanelTransitionCoordinator taskPanelTransitionCoordinator,
+            PanelUtils panelUtils
+    ) {
         mAutoTaskStackController = autoTaskStackController;
         mTaskPanelTransitionCoordinator = taskPanelTransitionCoordinator;
         mContext = context;
+        mPanelUtils = panelUtils;
     }
 
     /**
@@ -117,7 +121,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         if (request.getTriggerTask() == null) {
             return false;
         }
-        return TaskPanelPool.handles(request.getTriggerTask().parentTaskId)
+        return mPanelUtils.handles(request.getTriggerTask().parentTaskId)
                 || request.getTriggerTask().topActivityType == ACTIVITY_TYPE_HOME;
     }
 
@@ -157,7 +161,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             if (change.getTaskInfo() == null) {
                 continue;
             }
-            TaskPanel taskPanel = TaskPanelPool.getTaskPanel(
+            TaskPanel taskPanel = mPanelUtils.getTaskPanel(
                     tp -> tp.getRootTaskId() == change.getTaskInfo().taskId);
             if (taskPanel == null) {
                 continue;
@@ -214,13 +218,13 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         String panelId;
         TaskPanel panel = null;
         if (componentString != null) {
-            panel = TaskPanelPool.getTaskPanel(tp -> tp.handles(component));
+            panel = mPanelUtils.getTaskPanel(tp -> tp.handles(component));
         }
         if (panel == null) {
-            panel = TaskPanelPool.getTaskPanel(TaskPanel::isLaunchRoot);
+            panel = mPanelUtils.getTaskPanel(TaskPanel::isLaunchRoot);
         }
         if (panel != null) {
-            panelId = panel.getId();
+            panelId = panel.getPanelId();
         } else {
             // There is no panel ready to handle this event
             // TODO(b/392694590): determine if/how this case should be handled

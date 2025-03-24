@@ -28,7 +28,7 @@ import android.view.WindowManager;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.notification.CarNotificationTypeItem;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
@@ -43,7 +43,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class CarHeadsUpNotificationSystemContainerTest extends SysuiTestCase {
+public class CarHeadsUpNotificationSystemContainerTest extends CarSysuiTestCase {
     private CarHeadsUpNotificationSystemContainer mCarHeadsUpNotificationSystemContainer;
     @Mock
     private CarDeviceProvisionedController mCarDeviceProvisionedController;

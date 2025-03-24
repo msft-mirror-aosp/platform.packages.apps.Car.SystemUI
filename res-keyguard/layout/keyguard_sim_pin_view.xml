@@ -83,15 +83,14 @@
             android:id="@+id/divider"
             android:layout_width="@dimen/keyguard_security_width"
             android:layout_height="@dimen/divider_height"
-            android:background="@android:color/white" />
+            android:background="?oemColorOnSurface" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@*android:dimen/car_padding_2"
             android:gravity="center"
-            android:textColor="@android:color/white"
-            android:textSize="@*android:dimen/car_body1_size"
+            android:textAppearance="?oemTextAppearanceTitleLarge"
             android:text="@string/car_keyguard_enter_your_pin" />
 
         <include layout="@layout/keyguard_message_area" />

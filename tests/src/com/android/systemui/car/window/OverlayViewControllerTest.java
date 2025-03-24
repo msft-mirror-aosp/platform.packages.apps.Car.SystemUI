@@ -28,7 +28,7 @@ import android.view.ViewGroup;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.tests.R;
 
@@ -44,7 +44,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class OverlayViewControllerTest extends SysuiTestCase {
+public class OverlayViewControllerTest extends CarSysuiTestCase {
     private TestOverlayViewController mOverlayViewController;
     private ViewGroup mBaseLayout;
 

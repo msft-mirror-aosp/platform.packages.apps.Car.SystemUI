@@ -36,7 +36,7 @@ import android.window.WindowContainerToken;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.taskview.TaskViewBase;
@@ -52,7 +52,7 @@ import java.util.Optional;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public final class RootTaskMediatorTest extends SysuiTestCase {
+public final class RootTaskMediatorTest extends CarSysuiTestCase {
     private RootTaskMediator mMediator;
     private final ShellTaskOrganizer mShellTaskOrganizer = mock(ShellTaskOrganizer.class);
     private final TaskViewTaskController mTaskViewTaskController = mock(

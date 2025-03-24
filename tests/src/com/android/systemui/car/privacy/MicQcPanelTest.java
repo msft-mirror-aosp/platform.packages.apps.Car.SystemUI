@@ -37,8 +37,8 @@ import androidx.test.filters.SmallTest;
 
 import com.android.car.qc.QCItem;
 import com.android.car.qc.QCList;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.MicPrivacyChipViewController;
 import com.android.systemui.privacy.PrivacyDialog;
@@ -57,7 +57,7 @@ import java.util.List;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class MicQcPanelTest extends SysuiTestCase {
+public class MicQcPanelTest extends CarSysuiTestCase {
     private static final String APP_LABEL_ACTIVE = "active";
     private static final String APP_LABEL_INACTIVE = "inactive";
     private static final String PACKAGE_NAME = "package";

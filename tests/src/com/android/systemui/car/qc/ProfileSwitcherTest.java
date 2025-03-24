@@ -60,8 +60,8 @@ import com.android.car.qc.QCItem;
 import com.android.car.qc.QCList;
 import com.android.car.qc.QCRow;
 import com.android.dx.mockito.inline.extended.ExtendedMockito;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.userswitcher.UserIconProvider;
@@ -85,7 +85,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper(setAsMainLooper = true)
 @SmallTest
-public class ProfileSwitcherTest extends SysuiTestCase {
+public class ProfileSwitcherTest extends CarSysuiTestCase {
     private static final int TEST_USER_ID_1 = 1000;
     private static final int TEST_USER_ID_2 = 1001;
 

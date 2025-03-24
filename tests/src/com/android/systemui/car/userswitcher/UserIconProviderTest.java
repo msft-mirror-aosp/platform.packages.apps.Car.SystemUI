@@ -34,7 +34,7 @@ import androidx.test.filters.SmallTest;
 
 import com.android.car.internal.user.UserHelper;
 import com.android.dx.mockito.inline.extended.ExtendedMockito;
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 
 import org.junit.After;
@@ -49,7 +49,7 @@ import org.mockito.quality.Strictness;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class UserIconProviderTest extends SysuiTestCase {
+public class UserIconProviderTest extends CarSysuiTestCase {
     private final UserInfo mUserInfo =
                 new UserInfo(/* id= */ 0, /* name= */ "User", /* flags= */ 0);
     private final UserInfo mGuestUserInfo =

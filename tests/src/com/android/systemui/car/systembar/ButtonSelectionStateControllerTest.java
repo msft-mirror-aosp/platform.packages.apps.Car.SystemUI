@@ -27,7 +27,7 @@ import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.tests.R;
 
@@ -43,7 +43,7 @@ import java.util.List;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class ButtonSelectionStateControllerTest extends SysuiTestCase {
+public class ButtonSelectionStateControllerTest extends CarSysuiTestCase {
 
     private static final String TEST_COMPONENT_NAME_PACKAGE = "com.android.car.carlauncher";
     private static final String TEST_COMPONENT_NAME_CLASS = ".CarLauncher";

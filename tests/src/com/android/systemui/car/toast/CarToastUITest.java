@@ -36,8 +36,8 @@ import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.CommandQueue;
@@ -56,7 +56,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class CarToastUITest extends SysuiTestCase {
+public class CarToastUITest extends CarSysuiTestCase {
     private static final int UID = 0;
     private static final int DURATION = 1000;
     private static final String PACKAGE_NAME = "PACKAGE_NAME";

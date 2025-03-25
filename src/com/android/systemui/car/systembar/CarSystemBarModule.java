@@ -39,6 +39,7 @@ import com.android.systemui.car.notification.NotificationButtonController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
+import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -115,11 +116,12 @@ public abstract class CarSystemBarModule {
     @SysUISingleton
     @Provides
     static ButtonSelectionStateController provideButtonSelectionStateController(Context context,
+            TaskPanelInfoRepository infoRepository,
             @CarSysUIDynamicOverride Optional<ButtonSelectionStateController> controller) {
         if (controller.isPresent()) {
             return controller.get();
         }
-        return new ButtonSelectionStateController(context);
+        return new ButtonSelectionStateController(context, infoRepository);
     }
 
     @BindsOptionalOf

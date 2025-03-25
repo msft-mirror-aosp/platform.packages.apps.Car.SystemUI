@@ -20,6 +20,7 @@ import androidx.annotation.CallSuper;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.settings.UserTracker;
 
 import dagger.assisted.Assisted;
@@ -33,21 +34,39 @@ public class CarSystemBarButtonController
         extends CarSystemBarElementController<CarSystemBarButton> {
 
     private final UserTracker mUserTracker;
+    private final EventDispatcher mEventDispatcher;
+    private final ButtonSelectionStateController mButtonSelectionStateController;
 
     @AssistedInject
     public CarSystemBarButtonController(@Assisted CarSystemBarButton barButton,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
-            UserTracker userTracker) {
+            UserTracker userTracker, EventDispatcher eventDispatcher,
+            ButtonSelectionStateController buttonSelectionStateController) {
         super(barButton, disableController, stateController);
 
         mUserTracker = userTracker;
+        mEventDispatcher = eventDispatcher;
+        mButtonSelectionStateController = buttonSelectionStateController;
     }
 
     @Override
     @CallSuper
     protected void onInit() {
         mView.setUserTracker(mUserTracker);
+        mView.setEventDispatcher(mEventDispatcher);
+    }
+
+    @Override
+    protected void onViewAttached() {
+        super.onViewAttached();
+        mButtonSelectionStateController.addAllButtonsWithSelectionState(mView);
+    }
+
+    @Override
+    protected void onViewDetached() {
+        super.onViewDetached();
+        mButtonSelectionStateController.removeButton(mView);
     }
 
     @AssistedFactory

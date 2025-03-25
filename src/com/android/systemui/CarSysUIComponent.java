@@ -18,6 +18,7 @@ package com.android.systemui;
 
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
+import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.dagger.DependencyProvider;
 import com.android.systemui.dagger.SysUIComponent;
 import com.android.systemui.dagger.SysUISingleton;
@@ -57,6 +58,12 @@ public interface CarSysUIComponent extends SysUIComponent {
          */
         @BindsInstance
         Builder setScalableUIWMInitializer(Optional<ScalableUIWMInitializer> initializer);
+
+        /**
+         * Sets the ScalableUI {@link TaskPanelInfoRepository} for the builder.
+         */
+        @BindsInstance
+        Builder setTaskPanelInfoRepository(TaskPanelInfoRepository repository);
 
         /**
          * Sets the ScalableUI {@link EventDispatcher} for the builder.

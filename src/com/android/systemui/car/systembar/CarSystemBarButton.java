@@ -48,6 +48,7 @@ import com.android.systemui.car.systembar.element.CarSystemBarElement;
 import com.android.systemui.car.systembar.element.CarSystemBarElementFlags;
 import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
 import com.android.systemui.car.window.OverlayViewController;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
 
@@ -79,12 +80,21 @@ public class CarSystemBarButton extends LinearLayout implements
     private final boolean mDisableForLockTaskModeLocked;
     @Nullable
     private UserTracker mUserTracker;
+    @Nullable
+    private EventDispatcher mEventDispatcher;
     private ViewGroup mIconContainer;
     private AlphaOptimizedImageView mIcon;
     private AlphaOptimizedImageView mMoreIcon;
     private ImageView mUnseenIcon;
-    private String mIntent;
+    /** The intent to be used while the button is selected. */
+    private Intent mSelectedIntent;
+    /** The intent to be used while the button is unselected. */
+    private Intent mUnselectedIntent;
     private String mLongIntent;
+    /** The event to be used while the button is selected. */
+    private String mSelectedEvent;
+    /** The event to be used while the button is unselected. */
+    private String mUnselectedEvent;
     private boolean mBroadcastIntent;
     /** Whether to clear the backstack (i.e. put the home activity directly behind) when pressed */
     private boolean mClearBackStack;
@@ -98,6 +108,7 @@ public class CarSystemBarButton extends LinearLayout implements
     private Drawable mAppIcon;
     private boolean mIsDefaultAppIconForRoleEnabled;
     private boolean mToggleSelectedState;
+    private String[] mPanelNames;
     private String[] mComponentNames;
     /** App categories that are to be used with this widget */
     private String[] mButtonCategories;
@@ -134,6 +145,7 @@ public class CarSystemBarButton extends LinearLayout implements
                 CarSystemBarElementFlags.getDisableForLockTaskModeLockedFromAttributes(context,
                         attrs);
 
+        setUpCategories(typedArray);
         setUpIntents(typedArray);
         setUpIcons(typedArray);
         typedArray.recycle();
@@ -242,6 +254,16 @@ public class CarSystemBarButton extends LinearLayout implements
     }
 
     /**
+     * @return The list of panel names that should be used for selection
+     */
+    public String[] getPanelNames() {
+        if (mPanelNames == null) {
+            return new String[0];
+        }
+        return mPanelNames;
+    }
+
+    /**
      * @return The list of component names.
      */
     public String[] getComponentName() {
@@ -305,38 +327,98 @@ public class CarSystemBarButton extends LinearLayout implements
     @VisibleForTesting
     protected float getIconAlpha() { return mIcon.getAlpha(); }
 
+    protected Intent getIntent() {
+        if (mSelected) {
+            return mSelectedIntent;
+        } else {
+            return mUnselectedIntent;
+        }
+    }
+
+    protected String getEvent() {
+        if (mSelected) {
+            return mSelectedEvent;
+        } else {
+            return mUnselectedEvent;
+        }
+    }
+
     /**
-     * Sets up intents for click, long touch, and broadcast.
+     * Sets up package, category and component names for the buttons.
+     * These properties can be used to control the selected state of buttons as a group.
      */
-    protected void setUpIntents(TypedArray typedArray) {
-        mIntent = typedArray.getString(R.styleable.CarSystemBarButton_intent);
-        mLongIntent = typedArray.getString(R.styleable.CarSystemBarButton_longIntent);
-        mBroadcastIntent = typedArray.getBoolean(R.styleable.CarSystemBarButton_broadcast, false);
-
-        mClearBackStack = typedArray.getBoolean(R.styleable.CarSystemBarButton_clearBackStack,
-                false);
-
+    protected void setUpCategories(TypedArray typedArray) {
         String categoryString = typedArray.getString(R.styleable.CarSystemBarButton_categories);
         String packageString = typedArray.getString(R.styleable.CarSystemBarButton_packages);
         String componentNameString =
                 typedArray.getString(R.styleable.CarSystemBarButton_componentNames);
+        String panelNamesString =
+                typedArray.getString(R.styleable.CarSystemBarButton_panelNames);
+        if (packageString != null) {
+            mButtonPackages = packageString.split(BUTTON_FILTER_DELIMITER);
+        }
+        if (categoryString != null) {
+            mButtonCategories = categoryString.split(BUTTON_FILTER_DELIMITER);
+        }
+        if (componentNameString != null) {
+            mComponentNames = componentNameString.split(BUTTON_FILTER_DELIMITER);
+        }
+        if (panelNamesString != null) {
+            mPanelNames = panelNamesString.split(BUTTON_FILTER_DELIMITER);
+        }
+    }
+
+    /**
+     * Sets up intents for click, long touch, and broadcast.
+     */
+    protected void setUpIntents(TypedArray typedArray) {
+        String intentString = typedArray.getString(R.styleable.CarSystemBarButton_intent);
+        String selectedIntentString =
+                typedArray.getString(R.styleable.CarSystemBarButton_selectedIntent);
+        selectedIntentString = selectedIntentString != null ? selectedIntentString : intentString;
+        String unselectedIntentString =
+                typedArray.getString(R.styleable.CarSystemBarButton_unselectedIntent);
+        unselectedIntentString =
+                unselectedIntentString != null ? unselectedIntentString : intentString;
+        mLongIntent = typedArray.getString(R.styleable.CarSystemBarButton_longIntent);
+        mBroadcastIntent = typedArray.getBoolean(R.styleable.CarSystemBarButton_broadcast, false);
+
+        String eventString = typedArray.getString(R.styleable.CarSystemBarButton_event);
+        String selectedEventString =
+                typedArray.getString(R.styleable.CarSystemBarButton_selectedEvent);
+        mSelectedEvent = selectedEventString != null ? selectedEventString : eventString;
+        String unselectedEventString =
+                typedArray.getString(R.styleable.CarSystemBarButton_unselectedEvent);
+        mUnselectedEvent =
+                unselectedEventString != null ? unselectedEventString : eventString;
+
+        mClearBackStack = typedArray.getBoolean(R.styleable.CarSystemBarButton_clearBackStack,
+                false);
 
         try {
-            if (mIntent != null) {
-                final Intent intent = Intent.parseUri(mIntent, Intent.URI_INTENT_SCHEME);
-                setOnClickListener(getButtonClickListener(intent));
-                if (packageString != null) {
-                    mButtonPackages = packageString.split(BUTTON_FILTER_DELIMITER);
-                    intent.putExtra(EXTRA_BUTTON_PACKAGES, mButtonPackages);
+            if (selectedIntentString != null) {
+                mSelectedIntent = Intent.parseUri(selectedIntentString, Intent.URI_INTENT_SCHEME);
+                if (mButtonPackages != null) {
+                    mSelectedIntent.putExtra(EXTRA_BUTTON_PACKAGES, mButtonPackages);
                 }
-                if (categoryString != null) {
-                    mButtonCategories = categoryString.split(BUTTON_FILTER_DELIMITER);
-                    intent.putExtra(EXTRA_BUTTON_CATEGORIES, mButtonCategories);
-                }
-                if (componentNameString != null) {
-                    mComponentNames = componentNameString.split(BUTTON_FILTER_DELIMITER);
+                if (mButtonCategories != null) {
+                    mSelectedIntent.putExtra(EXTRA_BUTTON_CATEGORIES, mButtonCategories);
                 }
             }
+
+            if (unselectedIntentString != null) {
+                mUnselectedIntent =
+                        Intent.parseUri(unselectedIntentString, Intent.URI_INTENT_SCHEME);
+                if (mButtonPackages != null) {
+                    mUnselectedIntent.putExtra(EXTRA_BUTTON_PACKAGES, mButtonPackages);
+                }
+                if (mButtonCategories != null) {
+                    mUnselectedIntent.putExtra(EXTRA_BUTTON_CATEGORIES, mButtonCategories);
+                }
+            }
+
+            setOnClickListener(getButtonClickListener());
+
         } catch (URISyntaxException e) {
             throw new RuntimeException("Failed to attach intent", e);
         }
@@ -353,7 +435,7 @@ public class CarSystemBarButton extends LinearLayout implements
     }
 
     /** Defines the behavior of a button click. */
-    protected OnClickListener getButtonClickListener(Intent toSend) {
+    protected OnClickListener getButtonClickListener() {
         return v -> {
             if (mDisabled) {
                 runOnClickWhileDisabled();
@@ -364,16 +446,24 @@ public class CarSystemBarButton extends LinearLayout implements
             intent.putExtra(EXTRA_DIALOG_CLOSE_REASON, DIALOG_CLOSE_REASON_CAR_SYSTEMBAR_BUTTON);
             mContext.sendBroadcastAsUser(intent, getCurrentUserHandle(mContext, mUserTracker));
 
+            if (getEvent() != null && mEventDispatcher != null) {
+                mEventDispatcher.executeTransaction(getEvent());
+            }
+
+            if (getIntent() == null) {
+                return;
+            }
+
             boolean intentLaunched = false;
             try {
                 if (mBroadcastIntent) {
-                    mContext.sendBroadcastAsUser(toSend,
+                    mContext.sendBroadcastAsUser(getIntent(),
                             getCurrentUserHandle(mContext, mUserTracker));
                     return;
                 }
                 ActivityOptions options = ActivityOptions.makeBasic();
                 options.setLaunchDisplayId(mContext.getDisplayId());
-                mContext.startActivityAsUser(toSend, options.toBundle(),
+                mContext.startActivityAsUser(getIntent(), options.toBundle(),
                         getCurrentUserHandle(mContext, mUserTracker));
                 intentLaunched = true;
             } catch (Exception e) {
@@ -422,6 +512,13 @@ public class CarSystemBarButton extends LinearLayout implements
 
     public void setUserTracker(UserTracker userTracker) {
         mUserTracker = userTracker;
+    }
+
+    /**
+     * Set the EventDispatcher instance.
+     */
+    public void setEventDispatcher(EventDispatcher eventDispatcher) {
+        mEventDispatcher = eventDispatcher;
     }
 
     /**

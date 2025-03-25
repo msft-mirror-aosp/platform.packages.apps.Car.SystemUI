@@ -38,6 +38,7 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
+import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -67,6 +68,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
     private Transitions.TransitionFinishCallback mFinishCallback;
     @Mock
     private PanelUtils mPanelUtils;
+    @Mock
+    private TaskPanelInfoRepository mTaskPanelInfoRepository;
 
     @Before
     public void setUp() {
@@ -74,7 +77,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
         when(mTaskPanelTransitionCoordinator.createAutoTaskStackTransaction(any(),
                 any())).thenReturn(new AutoTaskStackTransaction());
         mDelegate = new PanelAutoTaskStackTransitionHandlerDelegate(mContext,
-                mAutoTaskStackController, mTaskPanelTransitionCoordinator, mPanelUtils);
+                mAutoTaskStackController, mTaskPanelTransitionCoordinator, mPanelUtils,
+                mTaskPanelInfoRepository);
     }
 
     @Test

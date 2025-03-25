@@ -61,6 +61,7 @@ public abstract class BasePanel implements Panel {
         return mId;
     }
 
+    @Override
     public int getDisplayId() {
         return mDisplayId;
     }
@@ -128,6 +129,9 @@ public abstract class BasePanel implements Panel {
 
     @Override
     public void setVisibility(boolean isVisible) {
+        if (mIsVisible == isVisible) {
+            return;
+        }
         mIsVisible = isVisible;
     }
 

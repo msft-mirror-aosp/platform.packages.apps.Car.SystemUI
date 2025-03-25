@@ -39,6 +39,7 @@ import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.R;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
+import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -65,19 +66,22 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     private final AutoTaskStackController mAutoTaskStackController;
     private final TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
     private final Context mContext;
-    private PanelUtils mPanelUtils;
+    private final PanelUtils mPanelUtils;
+    private final TaskPanelInfoRepository mTaskPanelInfoRepository;
 
     @Inject
     public PanelAutoTaskStackTransitionHandlerDelegate(
             Context context,
             AutoTaskStackController autoTaskStackController,
             TaskPanelTransitionCoordinator taskPanelTransitionCoordinator,
-            PanelUtils panelUtils
+            PanelUtils panelUtils,
+            TaskPanelInfoRepository taskPanelInfoRepository
     ) {
         mAutoTaskStackController = autoTaskStackController;
         mTaskPanelTransitionCoordinator = taskPanelTransitionCoordinator;
         mContext = context;
         mPanelUtils = panelUtils;
+        mTaskPanelInfoRepository = taskPanelInfoRepository;
     }
 
     /**
@@ -138,6 +142,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         }
 
         mTaskPanelTransitionCoordinator.maybeResolveConflict(changedTaskStacks, transition);
+        mTaskPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
 
         Trace.beginSection(TAG + "#startAnimation");
 

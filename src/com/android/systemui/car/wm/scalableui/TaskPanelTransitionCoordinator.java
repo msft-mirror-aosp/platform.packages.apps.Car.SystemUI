@@ -240,6 +240,9 @@ public class TaskPanelTransitionCoordinator {
             public void onAnimationStart(Animator animation) {
                 Trace.beginSection(TAG + "#onAnimationStart");
                 super.onAnimationStart(animation);
+                if (panelTransaction.getAnimationStartCallbackRunnable() != null) {
+                    panelTransaction.getAnimationStartCallbackRunnable().run();
+                }
                 Trace.endSection();
             }
 
@@ -258,6 +261,9 @@ public class TaskPanelTransitionCoordinator {
                 }
                 synchronized (mPendingPanelTransactions) {
                     mPendingPanelTransactions.remove(transition);
+                }
+                if (panelTransaction.getAnimationEndCallbackRunnable() != null) {
+                    panelTransaction.getAnimationEndCallbackRunnable().run();
                 }
                 Trace.endSection();
             }

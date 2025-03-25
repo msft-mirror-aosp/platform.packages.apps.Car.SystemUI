@@ -74,13 +74,15 @@ public class TaskPanelTest extends SysuiTestCase {
     private CarActivityManager mCarActivityManager;
     @Mock
     private PanelUtils mPanelUtils;
+    @Mock
+    private TaskPanelInfoRepository mTaskPanelInfoRepository;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mTaskPanel = new TaskPanel(mAutoTaskStackController, mContext, mCarServiceProvider,
                 mAutoTaskStackHelper, mShellTaskOrganizer, mAutoCaptionController, mPanelUtils,
-                mAutoDecorManager, TASK_PANEL_ID);
+                mTaskPanelInfoRepository, mAutoDecorManager, TASK_PANEL_ID);
         when(mFactory.create(any())).thenReturn(mTaskPanel);
     }
 

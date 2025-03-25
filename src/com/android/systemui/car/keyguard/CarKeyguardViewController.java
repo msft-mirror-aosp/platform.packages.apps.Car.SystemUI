@@ -73,6 +73,8 @@ import com.android.systemui.util.kotlin.JavaAdapter;
 
 import dagger.Lazy;
 
+import kotlinx.coroutines.CoroutineDispatcher;
+
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -103,6 +105,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private final KeyguardBouncerViewModel mKeyguardBouncerViewModel;
     private final KeyguardBouncerComponent.Factory mKeyguardBouncerComponentFactory;
     private final BouncerView mBouncerView;
+    private final CoroutineDispatcher mMainDispatcher;
     private final PrimaryBouncerExpansionCallback mExpansionCallback =
             new PrimaryBouncerExpansionCallback() {
                 @Override
@@ -182,6 +185,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
             SelectedUserInteractor selectedUserInteractor,
             Optional<KeyguardSystemBarPresenter> keyguardSystemBarPresenter,
             StatusBarKeyguardViewManagerInteractor statusBarKeyguardViewManagerInteractor,
+            @Main CoroutineDispatcher mainDispatcher,
             JavaAdapter javaAdapter) {
         super(R.id.keyguard_stub, overlayViewGlobalStateController);
 
@@ -214,6 +218,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mKeyguardSystemBarPresenter = keyguardSystemBarPresenter;
         mStatusBarKeyguardViewManagerInteractor = statusBarKeyguardViewManagerInteractor;
         mJavaAdapter = javaAdapter;
+        mMainDispatcher = mainDispatcher;
 
         if (KeyguardWmStateRefactor.isEnabled()) {
             // Show the keyguard views whenever we've told WM that the lockscreen is visible.
@@ -243,7 +248,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
     @Override
     public void onFinishInflate() {
         mKeyguardContainer = getLayout().findViewById(R.id.keyguard_container);
-        KeyguardBouncerViewBinder.bind(mKeyguardContainer,
+        KeyguardBouncerViewBinder.bind(mMainDispatcher, mKeyguardContainer,
                 mKeyguardBouncerViewModel, mPrimaryBouncerToGoneTransitionViewModel,
                 mGlanceableHubToPrimaryBouncerTransitionViewModel,
                 mKeyguardBouncerComponentFactory,

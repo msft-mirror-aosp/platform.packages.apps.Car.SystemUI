@@ -150,6 +150,9 @@
         <item>com.android.cts.verifier</item>
     </string-array>
 
+    <!-- Specifies the component name of the home activity -->
+    <string name="config_homeComponentName" translatable="false">com.android.car.carlauncher/.CarLauncher</string>
+
     <!-- Specifies the component name of the app grid activity -->
     <string name="config_appGridComponentName" translatable="false">com.android.car.carlauncher/.AppGridActivity</string>
 

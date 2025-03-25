@@ -19,6 +19,10 @@
         value="@string/config_appGridComponentName" />
 
     <item
+        target="string/config_homeComponentName"
+        value="@string/config_homeComponentName" />
+
+    <item
         target="bool/config_enableTopSystemBar"
         value="@bool/config_enableTopSystemBar" />
     <item

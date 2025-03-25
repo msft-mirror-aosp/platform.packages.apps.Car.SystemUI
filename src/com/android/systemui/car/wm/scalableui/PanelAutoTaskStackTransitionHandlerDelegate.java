@@ -187,7 +187,10 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         if (request.getTriggerTask().baseIntent.getCategories() != null
                 && request.getTriggerTask().baseIntent.getCategories().contains(
                 Intent.CATEGORY_HOME)) {
-            return new Event.Builder("_System_OnHomeEvent").build();
+            ComponentName component = request.getTriggerTask().baseActivity;
+            String componentString = component != null ? component.flattenToString() : null;
+            return new Event.Builder("_System_OnHomeEvent").addToken("component",
+                    componentString).build();
         }
 
         if ((request.getFlags() & TRANSIT_FLAG_AVOID_MOVE_TO_FRONT)

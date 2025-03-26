@@ -16,11 +16,13 @@
 package com.android.systemui.car.wm.scalableui.systemevents;
 
 import com.android.systemui.CoreStartable;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import dagger.Binds;
 import dagger.Module;
 import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
+import dagger.multibindings.IntoSet;
 
 /**
  * Dagger injection module for {@link SystemEventHandler}
@@ -33,4 +35,10 @@ public abstract class EventHandlerModule {
     @IntoMap
     @ClassKey(SystemEventHandler.class)
     public abstract CoreStartable bindUserSystemEventHandler(SystemEventHandler systemEventHandler);
+
+    /** Injects SystemEventHandler as ConfigurationListener*/
+    @Binds
+    @IntoSet
+    public abstract ConfigurationController.ConfigurationListener provideCarSystemBarConfigListener(
+            SystemEventHandler systemEventHandler);
 }

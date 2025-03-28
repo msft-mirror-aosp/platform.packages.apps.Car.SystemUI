@@ -26,6 +26,8 @@ import androidx.annotation.Nullable;
 import com.android.car.scalableui.panel.Panel;
 import com.android.wm.shell.automotive.AutoDecor;
 import com.android.wm.shell.automotive.AutoDecorManager;
+import com.android.wm.shell.common.ShellExecutor;
+import com.android.wm.shell.shared.annotations.ExternalMainThread;
 
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
@@ -41,6 +43,7 @@ public final class DecorPanel extends BasePanel {
 
     private final AutoDecorManager mAutoDecorManager;
     private final PanelUtils mPanelUtils;
+    private final ShellExecutor mMainExecutor;
     private AutoDecor mAutoDecor;
 
     private View mDecorView;
@@ -49,26 +52,33 @@ public final class DecorPanel extends BasePanel {
     public DecorPanel(@NonNull Context context,
             AutoDecorManager autoDecorManager,
             PanelUtils panelUtils,
+            @ExternalMainThread ShellExecutor mainExecutor,
             @Assisted String id) {
         super(context, id);
         mAutoDecorManager = autoDecorManager;
         mPanelUtils = panelUtils;
+        mMainExecutor = mainExecutor;
     }
 
     @Override
     public void setRole(int role) {
         if (getRole() == role) return;
         super.setRole(role);
+    }
+
+    @Nullable
+    private View inflateDecorView() {
+        int role = getRole();
         String roleTypeName = getContext().getResources().getResourceTypeName(getRole());
         LayoutInflater inflater = LayoutInflater.from(getContext());
 
         switch (roleTypeName) {
             case ROLE_TYPE_LAYOUT:
-                mDecorView = inflater.inflate(role, null);
-                break;
+                return inflater.inflate(role, null);
             default:
                 Log.e(TAG, "Unsupported view type" + roleTypeName);
         }
+        return null;
     }
 
     @Override
@@ -80,9 +90,19 @@ public final class DecorPanel extends BasePanel {
 
     @Override
     public void reset() {
-        mAutoDecor = mAutoDecorManager.createAutoDecor(mDecorView, getLayer(), getBounds(),
-                getPanelId());
-        mAutoDecorManager.attachAutoDecorToDisplay(mAutoDecor, getDisplayId());
+        // Only modify the view and window on the main thread to prevent thread-based exceptions
+        mMainExecutor.execute(() -> {
+            // Remove existing autoDecor that holds the view.
+            if (mAutoDecor != null) {
+                mAutoDecorManager.removeAutoDecor(mAutoDecor);
+            }
+            // Reinflate and reattach the view.
+            mDecorView = inflateDecorView();
+            if (mDecorView == null) return;
+            mAutoDecor = mAutoDecorManager.createAutoDecor(mDecorView, getLayer(), getBounds(),
+                    getPanelId());
+            mAutoDecorManager.attachAutoDecorToDisplay(mAutoDecor, getDisplayId());
+        });
     }
 
     @Nullable

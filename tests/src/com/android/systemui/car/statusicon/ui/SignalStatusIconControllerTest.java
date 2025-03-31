@@ -30,7 +30,7 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.qc.DataSubscriptionController;
+import com.android.systemui.car.qc.DataSubscriptionToolkitView;
 import com.android.systemui.car.statusicon.StatusIconView;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
@@ -58,7 +58,7 @@ public class SignalStatusIconControllerTest extends CarSysuiTestCase {
     @Mock
     HotspotController mHotspotController;
     @Mock
-    DataSubscriptionController mDataSubscriptionController;
+    DataSubscriptionToolkitView mDataSubscriptionToolkitView;
     @Mock
     CarSystemBarElementStatusBarDisableController mDisableController;
     @Mock
@@ -74,7 +74,7 @@ public class SignalStatusIconControllerTest extends CarSysuiTestCase {
         mView = new StatusIconView(mContext);
         mSignalStatusIconController = new SignalStatusIconController(mView, mDisableController,
                 mStateController, mContext, mResources, mNetworkController, mHotspotController,
-                mDataSubscriptionController);
+                mDataSubscriptionToolkitView);
     }
 
     @Test

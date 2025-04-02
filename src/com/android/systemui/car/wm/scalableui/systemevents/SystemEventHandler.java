@@ -131,7 +131,7 @@ public class SystemEventHandler implements CoreStartable,
             if (mIsUserSetupInProgress) {
                 mEventDispatcher.executeTransaction("_System_EnterSuwEvent");
             } else {
-                StateManager.handlePanelReset();
+                mEventDispatcher.executeTransaction("_System_ExitSuwEvent");
             }
         }
     }

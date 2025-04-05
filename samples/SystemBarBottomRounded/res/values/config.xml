@@ -56,6 +56,10 @@
     <string name="config_notificationPanelViewMediator" translatable="false">
         com.android.systemui.car.notification.BottomNotificationPanelViewMediator</string>
 
+    <!-- Specifies the component name of the home activity -->
+    <string name="config_homeComponentName" translatable="false">
+        com.android.car.carlauncher/.CarLauncher</string>
+
     <!-- Specifies the component name of the app grid activity -->
     <string name="config_appGridComponentName" translatable="false">
         com.android.car.carlauncher/.AppGridActivity</string>

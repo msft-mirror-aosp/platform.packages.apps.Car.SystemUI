@@ -16,18 +16,23 @@
 package com.android.systemui.car.wm.scalableui.systemevents;
 
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKED;
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
 import static com.android.systemui.car.Flags.scalableUi;
 import static com.android.wm.shell.Flags.enableAutoTaskStackController;
 
 import android.car.user.CarUserManager;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.android.car.scalableui.loader.xml.XmlModelLoader;
 import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.PanelState;
 import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
@@ -37,7 +42,10 @@ import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Background;
 import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -51,7 +59,8 @@ import javax.inject.Inject;
  * is being set up.
  */
 @SysUISingleton
-public class SystemEventHandler implements CoreStartable {
+public class SystemEventHandler implements CoreStartable,
+        ConfigurationController.ConfigurationListener {
     private static final String TAG = SystemEventHandler.class.getSimpleName();
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
 
@@ -64,6 +73,8 @@ public class SystemEventHandler implements CoreStartable {
 
     private CarUserManager mCarUserManager;
     private boolean mIsUserSetupInProgress;
+
+    private int mCurrentOrientation;
 
     private final CarUserManager.UserLifecycleListener mUserLifecycleListener =
             new CarUserManager.UserLifecycleListener() {
@@ -112,6 +123,7 @@ public class SystemEventHandler implements CoreStartable {
         mCarDeviceProvisionedController = carDeviceProvisionedController;
         mEventDispatcher = dispatcher;
         mIsUserSetupInProgress = mCarDeviceProvisionedController.isCurrentUserSetupInProgress();
+        mCurrentOrientation = mContext.getResources().getConfiguration().orientation;
     }
 
     private void updateUserSetupState() {
@@ -122,7 +134,7 @@ public class SystemEventHandler implements CoreStartable {
             if (mIsUserSetupInProgress) {
                 mEventDispatcher.executeTransaction("_System_EnterSuwEvent");
             } else {
-                StateManager.handlePanelReset();
+                mEventDispatcher.executeTransaction("_System_ExitSuwEvent");
             }
         }
     }
@@ -134,6 +146,24 @@ public class SystemEventHandler implements CoreStartable {
             registerProvisionedStateListener();
         }
     }
+
+    @Override
+    public void onOrientationChanged(int orientation) {
+        if (mCurrentOrientation != orientation && (ORIENTATION_LANDSCAPE == orientation
+                || ORIENTATION_PORTRAIT == orientation)) {
+            mCurrentOrientation = orientation;
+            TypedArray states = mContext.getResources().obtainTypedArray(R.array.window_states);
+            List<PanelState> panelStateList = new ArrayList<>();
+            for (int i = 0; i < states.length(); i++) {
+                int xmlResId = states.getResourceId(i, 0);
+                XmlModelLoader loader = new XmlModelLoader(mContext);
+                PanelState panelState = loader.createPanelState(xmlResId);
+                panelStateList.add(panelState);
+            }
+            StateManager.reloadPanelState(panelStateList);
+        }
+    }
+
 
     private void registerProvisionedStateListener() {
         mCarDeviceProvisionedController.addCallback(mCarDeviceProvisionedListener);

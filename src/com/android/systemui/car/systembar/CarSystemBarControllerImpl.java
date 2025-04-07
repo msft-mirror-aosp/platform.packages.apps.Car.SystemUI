@@ -89,7 +89,6 @@ import dagger.Lazy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -103,10 +102,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     private static final String TAG = CarSystemBarController.class.getSimpleName();
 
     private static final String OVERLAY_FILTER_DATA_SCHEME = "package";
-
-    private static final int MAX_RETRIES_FOR_WINDOW_CONTEXT_UPDATE_CHECK = 3;
-
-    private static final long RETRY_DELAY_FOR_WINDOW_CONTEXT_UPDATE_CHECK = 500;
 
     private final Context mContext;
     private final CarSystemBarViewFactory mCarSystemBarViewFactory;
@@ -162,7 +157,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     // it's open.
     private boolean mDeviceIsSetUpForUser = true;
     private boolean mIsUserSetupInProgress = false;
-    private int mWindowContextUpdateCheckRetryCount = 0;
 
     private AppearanceRegion[] mAppearanceRegions = new AppearanceRegion[0];
     @BarTransitions.TransitionMode
@@ -171,41 +165,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     private int mSystemBarMode;
     private boolean mStatusBarTransientShown;
     private boolean mNavBarTransientShown;
-    private Handler mHandler;
-
-    private boolean mIsUiModeNight = false;
-
-    private Locale mCurrentLocale;
-
-    private final Runnable mWindowContextUpdateCheckRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (checkSystemBarWindowContextsAreUpdated()) {
-                // cache the current state
-                Map<Integer, Bundle> cachedSystemBarCurrentState = cacheSystemBarCurrentState();
-
-                resetSystemBarContent(/* isProvisionedStateChange= */ false);
-
-                // retrieve the previous state
-                restoreSystemBarSavedState(cachedSystemBarCurrentState);
-                mWindowContextUpdateCheckRetryCount = 0;
-            } else if (mWindowContextUpdateCheckRetryCount
-                    == MAX_RETRIES_FOR_WINDOW_CONTEXT_UPDATE_CHECK) {
-                resetSystemBarContext();
-
-                // cache the current state
-                Map<Integer, Bundle> cachedSystemBarCurrentState = cacheSystemBarCurrentState();
-
-                resetSystemBarContent(/* isProvisionedStateChange= */ false);
-
-                // retrieve the previous state
-                restoreSystemBarSavedState(cachedSystemBarCurrentState);
-            } else {
-                mWindowContextUpdateCheckRetryCount++;
-                mHandler.postDelayed(this, RETRY_DELAY_FOR_WINDOW_CONTEXT_UPDATE_CHECK);
-            }
-        }
-    };
 
     public CarSystemBarControllerImpl(Context context,
             UserTracker userTracker,
@@ -243,12 +202,9 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mIconPolicyLazy = iconPolicyLazy;
         mDisplayId = context.getDisplayId();
         mDisplayTracker = displayTracker;
-        mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
-        mCurrentLocale = mContext.getResources().getConfiguration().getLocales().get(0);
         mConfigurationController = configurationController;
         mCarSystemBarRestartTracker = restartTracker;
         mDisplayCompatToolbarController = toolbarController;
-        mHandler = handler;
     }
 
     /**
@@ -429,37 +385,11 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     @Override
     public void onConfigChanged(Configuration newConfig) {
-        Locale oldLocale = mCurrentLocale;
-        mCurrentLocale = newConfig.getLocales().get(0);
-
-        boolean isConfigNightMode = newConfig.isNightModeActive();
-        if (isConfigNightMode == mIsUiModeNight
-                && ((mCurrentLocale != null && mCurrentLocale.equals(oldLocale))
-                || mCurrentLocale == oldLocale)) {
-            return;
-        }
-
-        // Refresh UI on Night mode or system language changes.
-        if (isConfigNightMode != mIsUiModeNight) {
-            mIsUiModeNight = isConfigNightMode;
-        }
-
-        if (mWindowContextUpdateCheckRunnable != null) {
-            mHandler.removeCallbacks(mWindowContextUpdateCheckRunnable);
-            mWindowContextUpdateCheckRetryCount = 0;
-        }
-        mHandler.post(mWindowContextUpdateCheckRunnable);
-    }
-
-
-    private boolean checkSystemBarWindowContextsAreUpdated() {
-        return mSystemBarConfigs.getSystemBarSidesByZOrder().stream().allMatch(side -> {
-            Configuration windowConfig = mSystemBarConfigs.getWindowContextBySide(
-                    side).getResources().getConfiguration();
-            Locale locale = windowConfig.getLocales().get(0);
-            return windowConfig.isNightModeActive() == mIsUiModeNight && (
-                    (locale != null && locale.equals(mCurrentLocale)) || locale == mCurrentLocale);
-        });
+        // cache the current state
+        Map<Integer, Bundle> cachedSystemBarCurrentState = cacheSystemBarCurrentState();
+        resetSystemBarContent(/* isProvisionedStateChange= */ false);
+        // retrieve the previous state
+        restoreSystemBarSavedState(cachedSystemBarCurrentState);
     }
 
     private Map<Integer, Bundle> cacheSystemBarCurrentState() {
@@ -664,13 +594,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mSystemBarConfigs.resetSystemBarConfigs();
         mCarSystemBarViewFactory.resetSystemBarWindowCache();
         readConfigs();
-    }
-
-    /**
-     * Invalidate SystemBar window context and recreates from application context.
-     */
-    void resetSystemBarContext() {
-        mSystemBarConfigs.resetSystemBarWindowContext();
     }
 
     protected void updateKeyboardVisibility(boolean isKeyboardVisible) {
@@ -936,11 +859,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
                 mSystemBarViewControllerMap.remove(side);
             }
         });
-    }
-
-    @VisibleForTesting
-    boolean getIsUiModeNight() {
-        return mIsUiModeNight;
     }
 
     private void clearTransient() {

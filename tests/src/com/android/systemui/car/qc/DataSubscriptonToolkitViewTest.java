@@ -35,7 +35,7 @@ import android.widget.PopupWindow;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.datasubscription.DataSubscriptionViewActionListener;
-import com.android.systemui.CarSysuiTestCase;
+import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.settings.UserTracker;
 
@@ -53,13 +53,11 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class DataSubscriptonToolkitViewTest extends CarSysuiTestCase {
+public class DataSubscriptonToolkitViewTest extends SysuiTestCase {
     @Mock
     private PopupWindow mPopupWindow;
     @Mock
     private View mAnchorView;
-    @Mock
-    private DataSubscriptionStatsLogHelper mDataSubscriptionStatsLogHelper;
     @Mock
     private UserTracker mUserTracker;
     @Mock
@@ -74,8 +72,7 @@ public class DataSubscriptonToolkitViewTest extends CarSysuiTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(1000));
-        mDataSubscriptionToolkitView = new DataSubscriptionToolkitView(mContext, mUserTracker,
-                mDataSubscriptionStatsLogHelper);
+        mDataSubscriptionToolkitView = new DataSubscriptionToolkitView(mContext, mUserTracker);
         mDataSubscriptionToolkitView.setDataSubscriptionViewActionListener(
                 mDataSubscriptionViewActionListener);
         mDataSubscriptionToolkitView.setPopupWindow(mPopupWindow);

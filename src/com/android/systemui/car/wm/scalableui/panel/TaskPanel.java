@@ -15,6 +15,11 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
+
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_PANEL_EMPTY_EVENT_ID;
+
+import android.annotation.MainThread;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
@@ -33,10 +38,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.internal.dep.Trace;
+
+import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -63,6 +71,7 @@ public final class TaskPanel extends BasePanel {
     private final Set<ComponentName> mPersistedActivities;
     private final AutoTaskStackHelper mAutoTaskStackHelper;
     private final TaskPanelInfoRepository mTaskPanelInfoRepository;
+    private final EventDispatcher mEventDispatcher;
 
     private CarActivityManager mCarActivityManager;
     private int mRootTaskId = -1;
@@ -78,12 +87,14 @@ public final class TaskPanel extends BasePanel {
             AutoTaskStackHelper autoTaskStackHelper,
             PanelUtils panelUtils,
             TaskPanelInfoRepository taskPanelInfoRepository,
+            EventDispatcher dispatcher,
             @Assisted String id) {
         super(context, id);
         mAutoTaskStackController = autoTaskStackController;
         mCarServiceProvider = carServiceProvider;
         mAutoTaskStackHelper = autoTaskStackHelper;
         mTaskPanelInfoRepository = taskPanelInfoRepository;
+        mEventDispatcher = dispatcher;
         mPersistedActivities = new ArraySet<>();
         mPanelUtils = panelUtils;
     }
@@ -147,6 +158,12 @@ public final class TaskPanel extends BasePanel {
                     @Override
                     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
                         mTaskPanelInfoRepository.onTaskVanishedOnPanel(getId(), taskInfo);
+                        if (mRootTaskStack != null
+                                && mRootTaskStack.getRootTaskInfo().numActivities == 0) {
+                            mEventDispatcher.executeTransaction(new Event.Builder(
+                                    SYSTEM_TASK_PANEL_EMPTY_EVENT_ID).addToken(PANEL_TOKEN_ID,
+                                    getPanelId()).build());
+                        }
                     }
                 });
     }
@@ -307,8 +324,6 @@ public final class TaskPanel extends BasePanel {
     public String toString() {
         return "TaskPanel{"
                 + "mId='" + getPanelId() + '\''
-                + ", mIsLaunchRoot=" + mIsLaunchRoot
-                + ", mDisplayId=" + getDisplayId()
                 + ", mAlpha=" + getAlpha()
                 + ", mIsVisible=" + isVisible()
                 + ", mBounds=" + getBounds()
@@ -319,6 +334,8 @@ public final class TaskPanel extends BasePanel {
                 + ", mLeash=" + mLeash
                 + ", mRootTaskStack=" + mRootTaskStack
                 + ", mCornerRadius=" + getCornerRadius()
+                + ", mIsLaunchRoot=" + mIsLaunchRoot
+                + ", mDisplayId=" + getDisplayId()
                 + '}';
     }
 

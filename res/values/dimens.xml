@@ -481,4 +481,7 @@
     <dimen name="caption_region_top">76dp</dimen>
     <dimen name="caption_region_right">1408dp</dimen>
     <dimen name="caption_region_bottom">144dp</dimen>
+
+    <dimen name="overlay_panel_view_vail_width">96dp</dimen>
+    <dimen name="overlay_panel_view_vail_height">96dp</dimen>
 </resources>

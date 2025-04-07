@@ -15,6 +15,10 @@
  */
 package com.android.systemui.car.wm.scalableui;
 
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_CLOSE_EVENT_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_OPEN_EVENT_ID;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -164,9 +168,9 @@ public class TaskPanelTransitionCoordinator {
             if (findConflict) {
                 Log.e(TAG, "Transition conflicts found on launch root task - " + changedState);
                 Event event = new Event.Builder(
-                        changedState.getChildrenTasksVisible() ? "_System_TaskOpenEvent"
-                                : "_System_TaskCloseEvent")
-                        .addToken("panelId", tp.getPanelId())
+                        changedState.getChildrenTasksVisible() ? SYSTEM_TASK_OPEN_EVENT_ID
+                                : SYSTEM_TASK_CLOSE_EVENT_ID)
+                        .addToken(PANEL_TOKEN_ID, tp.getPanelId())
                         .build();
                 PanelTransaction panelTransaction = StateManager.handleEvent(event);
                 mAutoTaskStackController.startTransition(

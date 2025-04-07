@@ -19,6 +19,9 @@ import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKED
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_ENTER_SUW_EVENT_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_EXIST_SUW_EVENT_ID;
+
 import android.car.user.CarUserManager;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -129,9 +132,9 @@ public class SystemEventHandler implements CoreStartable,
         if (isUserSetupInProgress != mIsUserSetupInProgress) {
             mIsUserSetupInProgress = isUserSetupInProgress;
             if (mIsUserSetupInProgress) {
-                mEventDispatcher.executeTransaction("_System_EnterSuwEvent");
+                mEventDispatcher.executeTransaction(SYSTEM_ENTER_SUW_EVENT_ID);
             } else {
-                mEventDispatcher.executeTransaction("_System_ExitSuwEvent");
+                mEventDispatcher.executeTransaction(SYSTEM_EXIST_SUW_EVENT_ID);
             }
         }
     }

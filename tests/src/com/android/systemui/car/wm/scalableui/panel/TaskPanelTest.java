@@ -35,6 +35,7 @@ import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionController;
+import com.android.wm.shell.automotive.AutoDecorManager;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
 import com.android.wm.shell.automotive.RootTaskStack;
@@ -68,6 +69,8 @@ public class TaskPanelTest extends SysuiTestCase {
     @Mock
     private RootTaskStack mRootTaskStack;
     @Mock
+    private AutoDecorManager mAutoDecorManager;
+    @Mock
     private CarActivityManager mCarActivityManager;
     @Mock
     private PanelUtils mPanelUtils;
@@ -77,7 +80,7 @@ public class TaskPanelTest extends SysuiTestCase {
         MockitoAnnotations.initMocks(this);
         mTaskPanel = new TaskPanel(mAutoTaskStackController, mContext, mCarServiceProvider,
                 mAutoTaskStackHelper, mShellTaskOrganizer, mAutoCaptionController, mPanelUtils,
-                TASK_PANEL_ID);
+                mAutoDecorManager, TASK_PANEL_ID);
         when(mFactory.create(any())).thenReturn(mTaskPanel);
     }
 

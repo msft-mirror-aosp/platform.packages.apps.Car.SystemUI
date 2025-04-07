@@ -15,6 +15,7 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
+import android.annotation.MainThread;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
@@ -22,7 +23,9 @@ import android.car.app.CarActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.UserHandle;
 import android.util.ArraySet;
@@ -34,6 +37,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.internal.dep.Trace;
+import com.android.car.scalableui.model.Blur;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.car.CarServiceProvider;
@@ -41,6 +45,8 @@ import com.android.systemui.car.wm.AutoCaptionBarViewFactoryImpl;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionController;
+import com.android.wm.shell.automotive.AutoDecor;
+import com.android.wm.shell.automotive.AutoDecorManager;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -71,11 +77,17 @@ public final class TaskPanel extends BasePanel {
     private CarActivityManager mCarActivityManager;
     private int mRootTaskId = -1;
     private SurfaceControl mLeash;
+    private Blur mBlur;
     private boolean mIsLaunchRoot;
     @NonNull
     private Rect mSafeBounds = new Rect();
     private RootTaskStack mRootTaskStack;
     private PanelUtils mPanelUtils;
+    private OverlayPanelView mOverlayView;
+    private final AutoDecorManager mAutoDecorManager;
+    private AutoDecor mAutoDecor;
+    private String mTopTaskPackageName;
+    private Context mContext;
 
     @AssistedInject
     public TaskPanel(AutoTaskStackController autoTaskStackController,
@@ -85,6 +97,7 @@ public final class TaskPanel extends BasePanel {
             ShellTaskOrganizer shellTaskOrganizer,
             AutoCaptionController autoCaptionController,
             PanelUtils panelUtils,
+            AutoDecorManager autoDecorManager,
             @Assisted String id) {
         super(context, id);
         mAutoTaskStackController = autoTaskStackController;
@@ -95,6 +108,8 @@ public final class TaskPanel extends BasePanel {
         mAutoCaptionController = autoCaptionController;
         mAutoCaptionBarViewFactoryImpl =
                 new AutoCaptionBarViewFactoryImpl(context, shellTaskOrganizer);
+        mAutoDecorManager = autoDecorManager;
+        mContext = context;
     }
 
     /**
@@ -146,6 +161,7 @@ public final class TaskPanel extends BasePanel {
                     @Override
                     public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo,
                             SurfaceControl leash) {
+                        mTopTaskPackageName = taskInfo.baseActivity.getPackageName();
                         mAutoTaskStackHelper.setTaskUntrimmableIfNeeded(taskInfo);
                     }
 
@@ -170,6 +186,71 @@ public final class TaskPanel extends BasePanel {
             setBaseIntent(autoTaskStackTransaction);
         }
         mAutoTaskStackController.startTransition(autoTaskStackTransaction);
+    }
+
+    @MainThread
+    private void resetOverlay(Blur blur) {
+        // Remove existing autoDecor that holds the view.
+        if (mAutoDecor != null) {
+            mAutoDecorManager.removeAutoDecor(mAutoDecor);
+        }
+        mOverlayView = getOverlayView(true);
+        mAutoDecor = mAutoDecorManager.createAutoDecor(mOverlayView, getLayer(), getBounds(),
+                getPanelId());
+        mAutoDecorManager.attachAutoDecorToDisplay(mAutoDecor, getDisplayId());
+        if (mBlur == null || blur.getBlurRadius() != mBlur.getBlurRadius()) {
+            mOverlayView.setBlurIntensity(blur.getBlurRadius());
+        }
+        if (mBlur == null || blur.getBackgroundColor() != mBlur.getBackgroundColor()) {
+            mOverlayView.setBlurColor(blur.getBackgroundColor());
+        }
+        if (mBlur == null || blur.getCornerRadius() != mBlur.getCornerRadius()) {
+            mOverlayView.setCornerRadius(blur.getCornerRadius());
+        }
+        if (blur.isVailEnabled()) {
+            try {
+                Drawable icon = mContext.getPackageManager().getApplicationIcon(
+                        mTopTaskPackageName);
+                mOverlayView.setVail(icon);
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.e(TAG, "vail can't be set for package name ", e);
+            }
+        }
+    }
+
+    /**
+     * Returns the attached AutoDecor
+     */
+    public AutoDecor getAutoDecor() {
+        return mAutoDecor;
+    }
+
+    private OverlayPanelView getOverlayView(boolean forceReset) {
+        Blur blur = new Blur.Builder().build();
+        if (mOverlayView == null || forceReset) {
+            mOverlayView = new OverlayPanelView(getContext(), blur);
+        }
+
+        return mOverlayView;
+    }
+
+    private void resetOverlayView() {
+        mOverlayView = null;
+        if (mAutoDecor != null) {
+            mAutoDecorManager.removeAutoDecor(mAutoDecor);
+        }
+    }
+
+    @Override
+    public void setBlur(Blur blur) {
+        if (blur == null) {
+            resetOverlayView();
+            mBlur = null;
+            return;
+        }
+        resetOverlay(blur);
+        mOverlayView.refresh();
+        mBlur = blur;
     }
 
     private void setBaseIntent(AutoTaskStackTransaction autoTaskStackTransaction) {

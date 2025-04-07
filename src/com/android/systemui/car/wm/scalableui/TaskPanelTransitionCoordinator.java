@@ -324,6 +324,7 @@ public class TaskPanelTransitionCoordinator {
             Trace.beginSection(TAG + "#updatePanelSurface");
             AutoSurfaceTransaction autoSurfaceTransaction =
                     mAutoSurfaceTransactionFactory.createTransaction(DECOR_TRANSACTION);
+
             SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
             for (Map.Entry<String, Animator> entry : animators) {
                 String id = entry.getKey();

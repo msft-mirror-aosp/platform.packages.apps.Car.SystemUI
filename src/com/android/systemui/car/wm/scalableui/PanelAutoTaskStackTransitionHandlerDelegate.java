@@ -19,6 +19,12 @@ import static android.app.WindowConfiguration.ACTIVITY_TYPE_HOME;
 import static android.view.WindowManager.TRANSIT_FLAG_AVOID_MOVE_TO_FRONT;
 
 import static com.android.systemui.car.Flags.scalableUi;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.COMPONENT_TOKEN_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.EMPTY_EVENT_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_HOME_EVENT_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_CLOSE_EVENT_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_OPEN_EVENT_ID;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -61,7 +67,6 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     private static final String TAG =
             PanelAutoTaskStackTransitionHandlerDelegate.class.getSimpleName();
 
-    private static final String EMPTY_EVENT_ID = "empty_event";
     private static final Event EMPTY_EVENT = new Event.Builder(EMPTY_EVENT_ID).build();
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
 
@@ -196,7 +201,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                 Intent.CATEGORY_HOME)) {
             ComponentName component = request.getTriggerTask().baseActivity;
             String componentString = component != null ? component.flattenToString() : null;
-            return new Event.Builder("_System_OnHomeEvent").addToken("component",
+            return new Event.Builder(SYSTEM_HOME_EVENT_ID).addToken(COMPONENT_TOKEN_ID,
                     componentString).build();
         }
 
@@ -241,14 +246,14 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         }
 
         if (TransitionUtil.isClosingType(request.getType())) {
-            return new Event.Builder("_System_TaskCloseEvent")
-                    .addToken("panelId", panelId)
-                    .addToken("component", componentString)
+            return new Event.Builder(SYSTEM_TASK_CLOSE_EVENT_ID)
+                    .addToken(PANEL_TOKEN_ID, panelId)
+                    .addToken(COMPONENT_TOKEN_ID, componentString)
                     .build();
         }
-        return new Event.Builder("_System_TaskOpenEvent")
-                .addToken("panelId", panelId)
-                .addToken("component", componentString)
+        return new Event.Builder(SYSTEM_TASK_OPEN_EVENT_ID)
+                .addToken(PANEL_TOKEN_ID, panelId)
+                .addToken(COMPONENT_TOKEN_ID, componentString)
                 .build();
     }
 

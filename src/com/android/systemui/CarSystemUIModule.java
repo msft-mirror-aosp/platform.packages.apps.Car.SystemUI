@@ -30,6 +30,7 @@ import com.android.systemui.accessibility.data.repository.AccessibilityRepositor
 import com.android.systemui.biometrics.dagger.BiometricsModule;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
+import com.android.systemui.car.decor.CarPolicyModule;
 import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
 import com.android.systemui.car.displayconfig.ExternalDisplayController;
@@ -69,7 +70,6 @@ import com.android.systemui.statusbar.NotificationLockscreenUserManagerImpl;
 import com.android.systemui.statusbar.NotificationShadeWindowController;
 import com.android.systemui.statusbar.events.PrivacyDotViewController;
 import com.android.systemui.statusbar.notification.headsup.HeadsUpEmptyImplModule;
-import com.android.systemui.statusbar.policy.AospPolicyModule;
 import com.android.systemui.statusbar.policy.DeviceProvisionedController;
 import com.android.systemui.statusbar.policy.IndividualSensorPrivacyController;
 import com.android.systemui.statusbar.policy.IndividualSensorPrivacyControllerImpl;
@@ -92,10 +92,10 @@ import javax.inject.Named;
                 AccessibilityModule.class,
                 AccessibilityRepositoryModule.class,
                 ActivityWindowModule.class,
-                AospPolicyModule.class,
                 BiometricsModule.class,
                 BrightnessSliderModule.class,
                 CarMultiUserUtilsModule.class,
+                CarPolicyModule.class,
                 CarVolumeModule.class,
                 ExternalDisplayController.StartableModule.class,
                 DriveModeModule.class,

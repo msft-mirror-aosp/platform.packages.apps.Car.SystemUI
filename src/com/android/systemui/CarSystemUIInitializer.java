@@ -57,6 +57,7 @@ public class CarSystemUIInitializer extends SystemUIInitializer {
 
     private void initWmComponents(CarWMComponent carWm) {
         carWm.getDisplaySystemBarsController();
+        carWm.getAutoCaptionPerDisplayInitializer();
         if (Process.myUserHandle().isSystem()) {
             carWm.getCarSystemUIProxy();
             carWm.getRemoteCarTaskViewTransitions();

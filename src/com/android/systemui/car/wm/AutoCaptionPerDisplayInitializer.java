@@ -82,7 +82,9 @@ public class AutoCaptionPerDisplayInitializer implements
         if (!displayCompatibilityAutoDecorSafeRegion() || !mEnableSafeAreaAndToolbarPerDisplay) {
             return;
         }
-        mDisplayIdToListenerMap.append(displayId, new RootTDAListener());
+        RootTDAListener listener = new RootTDAListener();
+        mRootTaskDisplayAreaOrganizer.registerListener(displayId, listener);
+        mDisplayIdToListenerMap.append(displayId, listener);
     }
 
     @Override

@@ -52,11 +52,13 @@ public class CarSystemUIInitializer extends SystemUIInitializer {
                         isSystemUser ? Optional.of(carWm.getRootTaskDisplayAreaOrganizer())
                                 : Optional.empty())
                 .setScalableUIWMInitializer(carWm.getScalableUIWMInitializer())
+                .setTaskPanelInfoRepository(carWm.getTaskPanelInfoRepository())
                 .setScalableUIEventDispatcher(carWm.getScalableUIEventDispatcher());
     }
 
     private void initWmComponents(CarWMComponent carWm) {
         carWm.getDisplaySystemBarsController();
+        carWm.getAutoCaptionPerDisplayInitializer();
         if (Process.myUserHandle().isSystem()) {
             carWm.getCarSystemUIProxy();
             carWm.getRemoteCarTaskViewTransitions();

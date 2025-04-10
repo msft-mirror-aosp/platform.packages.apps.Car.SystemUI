@@ -68,6 +68,7 @@ import com.android.systemui.car.systembar.element.CarSystemBarElementStateContro
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.window.OverlayVisibilityMediator;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.settings.FakeDisplayTracker;
 import com.android.systemui.settings.UserTracker;
@@ -118,8 +119,6 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
     private UserTracker mUserTracker;
     @Mock
     private ActivityManager mActivityManager;
-    @Mock
-    private ButtonSelectionStateController mButtonSelectionStateController;
     @Mock
     private ButtonRoleHolderController mButtonRoleHolderController;
     @Mock
@@ -184,7 +183,8 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
                         return new HomeButtonController(view,
                                 mock(CarSystemBarElementStatusBarDisableController.class),
                                 mock(CarSystemBarElementStateController.class),
-                                mUserTracker);
+                                mUserTracker, mock(EventDispatcher.class),
+                                mock(ButtonSelectionStateController.class));
                     }
                 };
         controllerFactoryMap.put(HomeButtonController.class, homeButtonControllerProvider);
@@ -195,7 +195,8 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
                         return new PassengerHomeButtonController(view,
                                 mock(CarSystemBarElementStatusBarDisableController.class),
                                 mock(CarSystemBarElementStateController.class),
-                                mUserTracker);
+                                mUserTracker, mock(EventDispatcher.class),
+                                mock(ButtonSelectionStateController.class));
                     }
                 };
         controllerFactoryMap.put(PassengerHomeButtonController.class,
@@ -213,7 +214,7 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
                             ViewGroup view) {
                         return spy(new CarSystemBarViewControllerImpl(mSpiedContext, mUserTracker,
                                 carSystemBarElementInitializer, mSystemBarConfigs,
-                                mButtonRoleHolderController, mButtonSelectionStateController,
+                                mButtonRoleHolderController,
                                 () -> mCameraPrivacyChipViewController,
                                 () -> mMicPrivacyChipViewController, mOverlayVisibilityMediator,
                                 side, view));

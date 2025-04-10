@@ -66,8 +66,6 @@ public class CarSystemBarViewTest extends CarSysuiTestCase {
     @Mock
     private ButtonRoleHolderController mButtonRoleHolderController;
     @Mock
-    private ButtonSelectionStateController mButtonSelectionStateController;
-    @Mock
     private MicPrivacyChipViewController mMicPrivacyChipViewController;
     @Mock
     private CameraPrivacyChipViewController mCameraPrivacyChipViewController;
@@ -142,7 +140,6 @@ public class CarSystemBarViewTest extends CarSysuiTestCase {
                 mCarSystemBarElementInitializer,
                 systemBarConfigs,
                 mButtonRoleHolderController,
-                mButtonSelectionStateController,
                 () -> mCameraPrivacyChipViewController,
                 () -> mMicPrivacyChipViewController,
                 mOverlayVisibilityMediator,

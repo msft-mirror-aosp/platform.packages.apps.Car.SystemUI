@@ -59,7 +59,6 @@ public class CarSystemBarViewControllerImpl
     private final UserTracker mUserTracker;
     private final CarSystemBarElementInitializer mCarSystemBarElementInitializer;
     private final SystemBarConfigs mSystemBarConfigs;
-    private final ButtonSelectionStateController mButtonSelectionStateController;
     private final ButtonRoleHolderController mButtonRoleHolderController;
     private final Lazy<MicPrivacyChipViewController> mMicPrivacyChipViewControllerLazy;
     private final Lazy<CameraPrivacyChipViewController> mCameraPrivacyChipViewControllerLazy;
@@ -80,7 +79,6 @@ public class CarSystemBarViewControllerImpl
             CarSystemBarElementInitializer elementInitializer,
             SystemBarConfigs systemBarConfigs,
             ButtonRoleHolderController buttonRoleHolderController,
-            ButtonSelectionStateController buttonSelectionStateController,
             Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
             Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
             OverlayVisibilityMediator overlayVisibilityMediator,
@@ -93,7 +91,6 @@ public class CarSystemBarViewControllerImpl
         mCarSystemBarElementInitializer = elementInitializer;
         mSystemBarConfigs = systemBarConfigs;
         mButtonRoleHolderController = buttonRoleHolderController;
-        mButtonSelectionStateController = buttonSelectionStateController;
         mCameraPrivacyChipViewControllerLazy = cameraPrivacyChipViewControllerLazy;
         mMicPrivacyChipViewControllerLazy = micPrivacyChipViewControllerLazy;
         mSide = side;
@@ -209,7 +206,6 @@ public class CarSystemBarViewControllerImpl
     protected void onViewAttached() {
         mSystemBarConfigs.insetSystemBar(mSide, mView);
 
-        mButtonSelectionStateController.addAllButtonsWithSelectionState(mView);
         mButtonRoleHolderController.addAllButtonsWithRoleName(mView);
         mMicPrivacyChipViewControllerLazy.get().addPrivacyChipView(mView);
         mCameraPrivacyChipViewControllerLazy.get().addPrivacyChipView(mView);
@@ -217,7 +213,6 @@ public class CarSystemBarViewControllerImpl
 
     @Override
     protected void onViewDetached() {
-        mButtonSelectionStateController.removeAll();
         mButtonRoleHolderController.removeAll();
         mMicPrivacyChipViewControllerLazy.get().removeAll();
         mCameraPrivacyChipViewControllerLazy.get().removeAll();

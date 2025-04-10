@@ -21,6 +21,7 @@ import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.settings.UserTracker;
 
 import dagger.assisted.Assisted;
@@ -36,8 +37,10 @@ public class ControlCenterButtonController extends CarSystemBarButtonController 
     public ControlCenterButtonController(@Assisted CarSystemBarButton ccButton,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
-            UserTracker userTracker) {
-        super(ccButton, disableController, stateController, userTracker);
+            UserTracker userTracker, EventDispatcher eventDispatcher,
+            ButtonSelectionStateController buttonSelectionStateController) {
+        super(ccButton, disableController, stateController, userTracker, eventDispatcher,
+                buttonSelectionStateController);
 
         ccButton.setVisibility(
                 CarSystemUIUserUtil.isMUMDSystemUI() ? View.VISIBLE : View.GONE);

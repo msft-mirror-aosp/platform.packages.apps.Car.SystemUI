@@ -77,3 +77,10 @@ flag {
     description: "Allow per-package persistent system bar visibility control."
     bug: "328511033"
 }
+
+flag {
+    name: "display_compatibility_auto_decor_safe_region"
+    namespace: "car_sys_exp"
+    description: "This flag controls enabling the back button (using AutoDecor) and safe region for display compatibility."
+    bug: "370104463"
+}

@@ -33,6 +33,8 @@ import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
+import com.android.wm.shell.ShellTaskOrganizer;
+import com.android.wm.shell.automotive.AutoCaptionController;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
 import com.android.wm.shell.automotive.RootTaskStack;
@@ -58,6 +60,10 @@ public class TaskPanelTest extends CarSysuiTestCase{
     @Mock
     private AutoTaskStackHelper mAutoTaskStackHelper;
     @Mock
+    private AutoCaptionController mAutoCaptionController;
+    @Mock
+    private ShellTaskOrganizer mShellTaskOrganizer;
+    @Mock
     private TaskPanel.Factory mFactory;
     @Mock
     private RootTaskStack mRootTaskStack;
@@ -65,12 +71,15 @@ public class TaskPanelTest extends CarSysuiTestCase{
     private CarActivityManager mCarActivityManager;
     @Mock
     private PanelUtils mPanelUtils;
+    @Mock
+    private TaskPanelInfoRepository mTaskPanelInfoRepository;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mTaskPanel = new TaskPanel(mAutoTaskStackController, mContext, mCarServiceProvider,
-                mAutoTaskStackHelper, mPanelUtils, TASK_PANEL_ID);
+                mAutoTaskStackHelper, mShellTaskOrganizer, mAutoCaptionController, mPanelUtils,
+                mTaskPanelInfoRepository, TASK_PANEL_ID);
         when(mFactory.create(any())).thenReturn(mTaskPanel);
     }
 

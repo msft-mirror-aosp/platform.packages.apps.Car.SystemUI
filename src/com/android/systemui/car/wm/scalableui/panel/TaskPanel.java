@@ -22,6 +22,7 @@ import android.car.app.CarActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.UserHandle;
 import android.util.ArraySet;
@@ -36,7 +37,10 @@ import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.wm.AutoCaptionBarViewFactoryImpl;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
+import com.android.wm.shell.ShellTaskOrganizer;
+import com.android.wm.shell.automotive.AutoCaptionController;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -62,10 +66,16 @@ public final class TaskPanel extends BasePanel {
     private final CarServiceProvider mCarServiceProvider;
     private final Set<ComponentName> mPersistedActivities;
     private final AutoTaskStackHelper mAutoTaskStackHelper;
+    private final AutoCaptionController mAutoCaptionController;
+    private final AutoCaptionBarViewFactoryImpl mAutoCaptionBarViewFactoryImpl;
+    private final TaskPanelInfoRepository mTaskPanelInfoRepository;
+
     private CarActivityManager mCarActivityManager;
     private int mRootTaskId = -1;
     private SurfaceControl mLeash;
     private boolean mIsLaunchRoot;
+    @NonNull
+    private Rect mSafeBounds = new Rect();
     private RootTaskStack mRootTaskStack;
     private PanelUtils mPanelUtils;
 
@@ -74,14 +84,21 @@ public final class TaskPanel extends BasePanel {
             @NonNull Context context,
             CarServiceProvider carServiceProvider,
             AutoTaskStackHelper autoTaskStackHelper,
+            ShellTaskOrganizer shellTaskOrganizer,
+            AutoCaptionController autoCaptionController,
             PanelUtils panelUtils,
+            TaskPanelInfoRepository taskPanelInfoRepository,
             @Assisted String id) {
         super(context, id);
         mAutoTaskStackController = autoTaskStackController;
         mCarServiceProvider = carServiceProvider;
         mAutoTaskStackHelper = autoTaskStackHelper;
+        mTaskPanelInfoRepository = taskPanelInfoRepository;
         mPersistedActivities = new ArraySet<>();
         mPanelUtils = panelUtils;
+        mAutoCaptionController = autoCaptionController;
+        mAutoCaptionBarViewFactoryImpl =
+                new AutoCaptionBarViewFactoryImpl(context, shellTaskOrganizer);
     }
 
     /**
@@ -110,6 +127,7 @@ public final class TaskPanel extends BasePanel {
                                     getDisplayId(),
                                     mRootTaskId);
                         }
+                        setupToolbarAndSafeRegion();
 
                         if (mPanelUtils.isUserUnlocked()) {
                             reset();
@@ -124,6 +142,7 @@ public final class TaskPanel extends BasePanel {
 
                     @Override
                     public void onRootTaskStackDestroyed(@NonNull RootTaskStack rootTaskStack) {
+                        mAutoCaptionController.removeSafeRegionAndCaptionRegion(rootTaskStack);
                         mRootTaskStack = null;
                         mRootTaskId = -1;
                     }
@@ -132,11 +151,17 @@ public final class TaskPanel extends BasePanel {
                     public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo,
                             SurfaceControl leash) {
                         mAutoTaskStackHelper.setTaskUntrimmableIfNeeded(taskInfo);
+                        mTaskPanelInfoRepository.onTaskAppearedOnPanel(getId(), taskInfo);
+                    }
+
+                    @Override
+                    public void onTaskInfoChanged(ActivityManager.RunningTaskInfo taskInfo) {
+                        mTaskPanelInfoRepository.onTaskChangedOnPanel(getId(), taskInfo);
                     }
 
                     @Override
                     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
-                        // no-op
+                        mTaskPanelInfoRepository.onTaskVanishedOnPanel(getId(), taskInfo);
                     }
                 });
     }
@@ -223,6 +248,23 @@ public final class TaskPanel extends BasePanel {
         return mIsLaunchRoot;
     }
 
+    @NonNull
+    @Override
+    public Rect getSafeBounds() {
+        return mSafeBounds;
+    }
+
+    @Override
+    public void setSafeBounds(@NonNull Rect safeBounds) {
+        if (safeBounds.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Tried setting incorrect safe bounds: " + safeBounds + "on panel: "
+                            + getPanelId());
+        }
+        mSafeBounds = safeBounds;
+        setupToolbarAndSafeRegion();
+    }
+
     @Override
     public void setRole(int role) {
         if (getRole() == role) return;
@@ -286,6 +328,72 @@ public final class TaskPanel extends BasePanel {
         mCarActivityManager.setPersistentActivitiesOnRootTask(
                 mPersistedActivities.stream().toList(),
                 mRootTaskStack.getRootTaskInfo().token.asBinder());
+    }
+
+    private void setupToolbarAndSafeRegion() {
+        if (mRootTaskStack == null) {
+            logVerbose("Root TaskStack not set for panel: " + getPanelId());
+            return;
+        }
+        if (mSafeBounds.isEmpty()) {
+            // TODO(b/409067170): update AutoCaptionController API to be able to set these values
+            //  independently
+            logVerbose("Invalid Safe Bounds, not setting safe region for panel: " + getPanelId());
+            return;
+        }
+        if (getBounds() == null || getBounds().isEmpty()) {
+            logVerbose("Null or invalid panel bounds, not setting safe region for panel: "
+                    + getPanelId());
+            return;
+        }
+        if (mSafeBounds.equals(getBounds())) {
+            logVerbose("SafeBounds equivalent to panel bounds, not setting safe region for panel: "
+                    + getPanelId());
+            return;
+        }
+
+        Rect toolbarBounds = calculateToolbarBounds(getBounds(), getSafeBounds());
+        if (toolbarBounds.isEmpty()) {
+            logVerbose("Toolbar with bounds: " + toolbarBounds + " cannot be added to panel: "
+                    + getPanelId());
+            return;
+        }
+        toolbarBounds.offset(-getBounds().left, -getBounds().top);
+
+        logVerbose("Setting up toolbar and safe region with following values: "
+                + "rootTaskStack = " + mRootTaskStack
+                + ", safe bounds = " + mSafeBounds
+                + ", toolbar bounds = " + toolbarBounds
+                + ", panel bounds = " + getBounds());
+
+        mAutoCaptionController.setSafeRegionAndCaptionRegion(mRootTaskStack, mSafeBounds,
+                toolbarBounds, mAutoCaptionBarViewFactoryImpl);
+    }
+
+    @NonNull
+    private Rect calculateToolbarBounds(@NonNull Rect panelBounds, @NonNull Rect safeBounds) {
+        // TODO(b/409067170): remove this when AutoCaptionController API is able to handle safe
+        //  region and toolbar separately
+        if (panelBounds.top < safeBounds.top) {
+            return new Rect(safeBounds.left, panelBounds.top, safeBounds.right, safeBounds.top);
+        }
+        if (panelBounds.bottom > safeBounds.bottom) {
+            return new Rect(safeBounds.left, safeBounds.bottom, safeBounds.right,
+                    panelBounds.bottom);
+        }
+        if (panelBounds.left < safeBounds.left) {
+            return new Rect(panelBounds.left, safeBounds.top, safeBounds.left, safeBounds.bottom);
+        }
+        if (panelBounds.right > safeBounds.right) {
+            return new Rect(safeBounds.right, safeBounds.top, panelBounds.right, safeBounds.bottom);
+        }
+        return new Rect();
+    }
+
+    private void logVerbose(String message) {
+        if (DEBUG) {
+            Log.v(TAG, message);
+        }
     }
 
     @VisibleForTesting

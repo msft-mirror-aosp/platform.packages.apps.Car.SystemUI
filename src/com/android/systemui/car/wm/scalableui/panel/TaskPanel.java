@@ -68,6 +68,8 @@ public final class TaskPanel extends BasePanel {
     private final AutoTaskStackHelper mAutoTaskStackHelper;
     private final AutoCaptionController mAutoCaptionController;
     private final AutoCaptionBarViewFactoryImpl mAutoCaptionBarViewFactoryImpl;
+    private final TaskPanelInfoRepository mTaskPanelInfoRepository;
+
     private CarActivityManager mCarActivityManager;
     private int mRootTaskId = -1;
     private SurfaceControl mLeash;
@@ -85,11 +87,13 @@ public final class TaskPanel extends BasePanel {
             ShellTaskOrganizer shellTaskOrganizer,
             AutoCaptionController autoCaptionController,
             PanelUtils panelUtils,
+            TaskPanelInfoRepository taskPanelInfoRepository,
             @Assisted String id) {
         super(context, id);
         mAutoTaskStackController = autoTaskStackController;
         mCarServiceProvider = carServiceProvider;
         mAutoTaskStackHelper = autoTaskStackHelper;
+        mTaskPanelInfoRepository = taskPanelInfoRepository;
         mPersistedActivities = new ArraySet<>();
         mPanelUtils = panelUtils;
         mAutoCaptionController = autoCaptionController;
@@ -147,11 +151,17 @@ public final class TaskPanel extends BasePanel {
                     public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo,
                             SurfaceControl leash) {
                         mAutoTaskStackHelper.setTaskUntrimmableIfNeeded(taskInfo);
+                        mTaskPanelInfoRepository.onTaskAppearedOnPanel(getId(), taskInfo);
+                    }
+
+                    @Override
+                    public void onTaskInfoChanged(ActivityManager.RunningTaskInfo taskInfo) {
+                        mTaskPanelInfoRepository.onTaskChangedOnPanel(getId(), taskInfo);
                     }
 
                     @Override
                     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
-                        // no-op
+                        mTaskPanelInfoRepository.onTaskVanishedOnPanel(getId(), taskInfo);
                     }
                 });
     }

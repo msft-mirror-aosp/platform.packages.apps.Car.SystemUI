@@ -21,6 +21,7 @@ import com.android.systemui.car.wm.CarSystemUIProxyImpl;
 import com.android.systemui.car.wm.displayarea.DaViewTransitions;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
+import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.car.wm.taskview.RemoteCarTaskViewTransitions;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
@@ -90,6 +91,10 @@ public interface CarWMComponent extends WMComponent {
      */
     @WMSingleton
     Optional<ScalableUIWMInitializer> getScalableUIWMInitializer();
+
+    /** Provides the {@link TaskPanelInfoRepository} used to dispatch ScalableUI task info. */
+    @WMSingleton
+    TaskPanelInfoRepository getTaskPanelInfoRepository();
 
     /** Provides the {@link EventDispatcher} used to dispatch ScalableUI events. */
     @WMSingleton

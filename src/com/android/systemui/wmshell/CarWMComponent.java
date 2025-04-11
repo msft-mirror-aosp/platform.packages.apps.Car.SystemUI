@@ -16,6 +16,7 @@
 
 package com.android.systemui.wmshell;
 
+import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.CarSystemUIProxyImpl;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
@@ -51,6 +52,12 @@ public interface CarWMComponent extends WMComponent {
 
     @WMSingleton
     DisplaySystemBarsController getDisplaySystemBarsController();
+
+    /**
+     * Returns the initializer used to initialize AutoCaption per display.
+     */
+    @WMSingleton
+    Optional<AutoCaptionPerDisplayInitializer> getAutoCaptionPerDisplayInitializer();
 
     /**
      * Returns the implementation of car system ui proxy which will be used by other apps to

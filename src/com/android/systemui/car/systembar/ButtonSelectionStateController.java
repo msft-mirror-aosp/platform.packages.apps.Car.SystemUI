@@ -214,7 +214,7 @@ public class ButtonSelectionStateController {
                         ActivityTaskManager.getService().getRootTaskInfoOnDisplay(
                                 WINDOWING_MODE_FULLSCREEN, ACTIVITY_TYPE_UNDEFINED,
                                 validTaskInfo.displayId);
-                return rootTaskInfo.topActivity;
+                return rootTaskInfo == null ? null : rootTaskInfo.topActivity;
             } catch (RemoteException e) {
                 Log.e(TAG, "findSelectedButtons: Failed getting root task info", e);
             }

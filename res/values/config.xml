@@ -237,6 +237,16 @@
     <!-- 3 immersive based on bar control policy  -->
     <integer name="config_systemBarPersistency">1</integer>
 
+    <!-- Determines if the system bars should be forced into a particular system bar behavior when
+         the Setup Wizard is currently in progress. This config only takes effect if
+         config_remoteInsetsControllerControlsSystemBars is set to true and will supplement the
+         behavior of config_systemBarPersistency. -->
+    <!-- 0 disabled - will not modify config_systemBarPersistency behavior for SUW. -->
+    <!-- 1 immersive, force hide both bars for SUW -->
+    <!-- 2 immersive_with_nav, force show nav bar and hide status bar for SUW -->
+    <!-- 3 immersive_with_status, force show status bar and hide nav bar for SUW  -->
+    <integer name="config_systemBarSuwBehavior">0</integer>
+
     <!-- Determines the orientation of the status icon. -->
     <!-- 0 horizontal. -->
     <!-- 1 vertical -->
@@ -299,4 +309,7 @@
 
     <!-- Enable toolkit for data subscription. -->
     <bool name="config_enableDataSubscriptionToolkit">false</bool>
+
+    <!-- Setup and add safe area and toolbar per display on for Display Compat apps . -->
+    <bool name="config_enableSafeAreaAndToolbarPerDisplay">true</bool>
 </resources>

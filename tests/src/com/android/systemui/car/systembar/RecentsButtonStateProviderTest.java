@@ -57,7 +57,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -95,8 +94,6 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
     @Mock
     private Intent mIntent;
     @Mock
-    private Function<Intent, View.OnClickListener> mIntentAndOnClickListenerFunction;
-    @Mock
     private Consumer<AlphaOptimizedImageView> mAlphaOptimizedImageViewConsumer;
     @Mock
     private View.OnClickListener mOnClickListener;
@@ -121,7 +118,7 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
         when(mDialerBaseIntent.getComponent())
                 .thenReturn(ComponentName.unflattenFromString(DIALER_ACTIVITY_NAME));
         when(mCarSystemBarButton.getSelectedAlpha()).thenReturn(SELECTED_ALPHA);
-        when(mIntentAndOnClickListenerFunction.apply(any())).thenReturn(mOnClickListener);
+        when(mCarSystemBarButton.getIntent()).thenReturn(mIntent);
         mRecentsButtonStateProvider = new RecentsButtonStateProvider(mContext, mCarSystemBarButton);
         mTaskStackChangeListener = mRecentsButtonStateProvider.getTaskStackChangeListener();
     }
@@ -259,10 +256,10 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
         mRecentsButtonStateProvider.setIsRecentsActive(false);
 
         View.OnClickListener onClickListener = mRecentsButtonStateProvider.getButtonClickListener(
-                mIntent, mIntentAndOnClickListenerFunction);
+                mOnClickListener);
         onClickListener.onClick(mCarSystemBarButton);
 
-        verify(mIntentAndOnClickListenerFunction, times(1)).apply(mIntent);
+        verify(mOnClickListener, times(1)).onClick(mCarSystemBarButton);
     }
 
     @Test
@@ -270,10 +267,10 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
         mRecentsButtonStateProvider.setIsRecentsActive(true);
 
         View.OnClickListener onClickListener = mRecentsButtonStateProvider.getButtonClickListener(
-                mIntent, mIntentAndOnClickListenerFunction);
+                mOnClickListener);
         onClickListener.onClick(mCarSystemBarButton);
 
-        verify(mIntentAndOnClickListenerFunction, never()).apply(any());
+        verify(mOnClickListener, never()).onClick(any());
     }
 
     @Test
@@ -281,7 +278,7 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
         mRecentsButtonStateProvider.setIsRecentsActive(false);
 
         View.OnClickListener onClickListener = mRecentsButtonStateProvider.getButtonClickListener(
-                mIntent, mIntentAndOnClickListenerFunction);
+                mOnClickListener);
         onClickListener.onClick(mCarSystemBarButton);
 
         verify(mInputManager, never()).injectInputEvent(argThat(this::isRecentsKeyEvent), anyInt());
@@ -292,7 +289,7 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
         mRecentsButtonStateProvider.setIsRecentsActive(true);
 
         View.OnClickListener onClickListener = mRecentsButtonStateProvider.getButtonClickListener(
-                mIntent, mIntentAndOnClickListenerFunction);
+                mOnClickListener);
         onClickListener.onClick(mCarSystemBarButton);
 
         verify(mInputManager, times(1))

@@ -246,6 +246,9 @@ public class TaskPanelTransitionCoordinator {
             public void onAnimationStart(Animator animation) {
                 Trace.beginSection(TAG + "#onAnimationStart");
                 super.onAnimationStart(animation);
+                if (panelTransaction.getAnimationStartCallbackRunnable() != null) {
+                    panelTransaction.getAnimationStartCallbackRunnable().run();
+                }
                 Trace.endSection();
             }
 
@@ -264,6 +267,9 @@ public class TaskPanelTransitionCoordinator {
                 }
                 synchronized (mPendingPanelTransactions) {
                     mPendingPanelTransactions.remove(transition);
+                }
+                if (panelTransaction.getAnimationEndCallbackRunnable() != null) {
+                    panelTransaction.getAnimationEndCallbackRunnable().run();
                 }
                 Trace.endSection();
             }
@@ -330,6 +336,7 @@ public class TaskPanelTransitionCoordinator {
             Trace.beginSection(TAG + "#updatePanelSurface");
             AutoSurfaceTransaction autoSurfaceTransaction =
                     mAutoSurfaceTransactionFactory.createTransaction(DECOR_TRANSACTION);
+
             SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
             for (Map.Entry<String, Animator> entry : animators) {
                 String id = entry.getKey();

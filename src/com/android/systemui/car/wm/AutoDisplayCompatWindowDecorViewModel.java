@@ -25,6 +25,7 @@ import android.annotation.Nullable;
 import android.app.ActivityManager;
 import android.car.content.pm.CarPackageManager;
 import android.content.Context;
+import android.view.SurfaceControl;
 
 import com.android.systemui.car.CarServiceProvider;
 import com.android.wm.shell.ShellTaskOrganizer;
@@ -40,6 +41,12 @@ import com.android.wm.shell.windowdecor.CarWindowDecorViewModel;
 import com.android.wm.shell.windowdecor.common.viewhost.WindowDecorViewHost;
 import com.android.wm.shell.windowdecor.common.viewhost.WindowDecorViewHostSupplier;
 
+/**
+ * Implementation of {@link CarWindowDecorViewModel} that adds
+ * {@link com.android.wm.shell.windowdecor.CarWindowDecoration} to the tasks that require
+ * display compatibility.
+ * TODO(b/409134330): Remove when new auto decor solution is merged and approved.
+ */
 public class AutoDisplayCompatWindowDecorViewModel extends CarWindowDecorViewModel {
     @Nullable
     private CarPackageManager mCarPackageManager;
@@ -58,13 +65,38 @@ public class AutoDisplayCompatWindowDecorViewModel extends CarWindowDecorViewMod
         super(context, mainExecutor, bgExecutor, shellInit, taskOrganizer, displayController,
                 displayInsetsController, syncQueue, focusTransitionObserver,
                 windowDecorViewHostSupplier);
-        carServiceProvider.addListener(
-                car -> mCarPackageManager = car.getCarManager(CarPackageManager.class));
+        if (displayCompatibilityCaptionBar()) {
+            carServiceProvider.addListener(
+                    car -> mCarPackageManager = car.getCarManager(CarPackageManager.class));
+        }
+    }
+
+    @Override
+    public boolean onTaskOpening(ActivityManager.RunningTaskInfo taskInfo,
+            SurfaceControl taskSurface, SurfaceControl.Transaction startT,
+            SurfaceControl.Transaction finishT) {
+        if (!displayCompatibilityCaptionBar()) {
+            return false;
+        }
+        return super.onTaskOpening(taskInfo, taskSurface, startT, finishT);
+    }
+
+    @Override
+    public void onTaskChanging(
+            ActivityManager.RunningTaskInfo taskInfo,
+            SurfaceControl taskSurface,
+            SurfaceControl.Transaction startT,
+            SurfaceControl.Transaction finishT) {
+        if (!displayCompatibilityCaptionBar()) {
+            return;
+        }
+        super.onTaskChanging(taskInfo, taskSurface, startT, finishT);
     }
 
     @Override
     protected boolean shouldShowWindowDecor(ActivityManager.RunningTaskInfo taskInfo) {
         return displayCompatibilityCaptionBar()
+                && taskInfo != null
                 && requiresDisplayCompat(
                 getPackageName(taskInfo), taskInfo.userId, mCarPackageManager)
                 && taskInfo.displayId == DEFAULT_DISPLAY;

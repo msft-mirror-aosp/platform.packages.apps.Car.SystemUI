@@ -53,10 +53,24 @@
 
     <!-- Allow for custom attribs to be added to a nav button -->
     <declare-styleable name="CarSystemBarButton">
-        <!-- intent to start when button is click -->
+        <!-- Intent to start when button is clicked -->
         <attr name="intent" />
+        <!-- Intent to start when button is clicked in the selected state.
+             If not specified the "intent" attribute will be used. -->
+        <attr name="selectedIntent" format="string"/>
+        <!-- Intent to start when button is clicked in the unselected state.
+             If not specified the "intent" attribute will be used. -->
+        <attr name="unselectedIntent" format="string"/>
         <!-- intent to start when a long press has happened -->
         <attr name="longIntent" />
+        <!-- Event to fire when button is clicked -->
+        <attr name="event" format="string" />
+        <!-- Event to fire when button is clicked in the selected state.
+             If not specified the "event" attribute will be used. -->
+        <attr name="selectedEvent" format="string"/>
+        <!-- Event to fire when button is clicked in the unselected state.
+             If not specified the "event" attribute will be used. -->
+        <attr name="unselectedEvent" format="string"/>
         <!-- start the intent as a broad cast instead of an activity if true-->
         <attr name="broadcast" format="boolean"/>
         <!-- Alpha value to used when in selected state.  Defaults 1f  -->
@@ -73,6 +87,8 @@
         <attr name="packages" format="string" />
         <!-- componentName names that will be used for detecting selected state -->
         <attr name="componentNames" format="string" />
+        <!-- Panel names that will be used for detecting selected state -->
+        <attr name="panelNames" format="string" />
         <!-- whether to highlight the button when selected. Defaults false -->
         <attr name="showMoreWhenSelected" format="boolean" />
         <!-- whether to highlight the button when selected. Defaults false -->

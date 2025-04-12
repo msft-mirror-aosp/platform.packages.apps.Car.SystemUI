@@ -21,6 +21,11 @@ import static android.app.WindowConfiguration.WINDOWING_MODE_FULLSCREEN;
 import static android.app.WindowConfiguration.WINDOWING_MODE_MULTI_WINDOW;
 import static android.window.DisplayAreaOrganizer.FEATURE_DEFAULT_TASK_CONTAINER;
 
+import static com.android.systemui.car.Flags.scalableUi;
+import static com.android.wm.shell.Flags.enableAutoTaskStackController;
+
+import android.annotation.NonNull;
+import android.annotation.Nullable;
 import android.app.ActivityTaskManager;
 import android.app.ActivityTaskManager.RootTaskInfo;
 import android.content.ComponentName;
@@ -28,16 +33,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.os.Build;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.PanelState;
+import com.android.systemui.R;
+import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.dagger.SysUISingleton;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -51,18 +63,58 @@ import java.util.Set;
 @SysUISingleton
 public class ButtonSelectionStateController {
     private static final String TAG = ButtonSelectionStateController.class.getSimpleName();
+    private static final boolean DEBUG = Build.IS_DEBUGGABLE;
 
     private final Set<CarSystemBarButton> mRegisteredViews = new HashSet<>();
 
     protected final Context mContext;
+    protected final TaskPanelInfoRepository mTaskPanelInfoRepository;
     protected ButtonMap mButtonsByCategory = new ButtonMap();
     protected ButtonMap mButtonsByPackage = new ButtonMap();
     protected ButtonMap mButtonsByComponentName = new ButtonMap();
     protected HashSet<CarSystemBarButton> mSelectedButtons;
+    protected HashSet<CarSystemBarButton> mSelectedButtonsForPanelApp;
+    protected HashSet<CarSystemBarButton> mSelectedButtonsForPanelVisibility;
+
+    private final TaskPanelInfoRepository.TaskPanelChangeListener mTaskPanelListener =
+            this::panelTaskChanged;
+
+    private final StateManager.PanelStateObserver mPanelStateObserver =
+            new StateManager.PanelStateObserver() {
+                @Override
+                public void onBeforePanelStateChanged(Set<String> changedPanelIds,
+                        Map<String, PanelState> panelStates) {
+                    if (DEBUG) {
+                        Log.d(TAG, "onBeforePanelStateChanged: changedPanelIds="
+                                + changedPanelIds + " panelStates=" + panelStates);
+                    }
+                    panelVisibilityChanged(panelStates);
+                    // also trigger task change since it depends on panel visibility
+                    panelTaskChanged();
+                }
+
+                @Override
+                public void onPanelStateChanged(Set<String> changedPanelIds,
+                        Map<String, PanelState> panelStates) {
+                    // handled opportunistically in before method
+                }
+            };
 
     public ButtonSelectionStateController(Context context) {
+        this(context, null);
+    }
+
+    public ButtonSelectionStateController(Context context,
+            TaskPanelInfoRepository taskPanelInfoRepository) {
         mContext = context;
+        mTaskPanelInfoRepository = taskPanelInfoRepository;
         mSelectedButtons = new HashSet<>();
+        mSelectedButtonsForPanelApp = new HashSet<>();
+        mSelectedButtonsForPanelVisibility = new HashSet<>();
+        if (isScalableUIEnabled() && mTaskPanelInfoRepository != null) {
+            mTaskPanelInfoRepository.addChangeListener(mTaskPanelListener);
+            StateManager.getInstance().addPanelStateObserver(mPanelStateObserver);
+        }
     }
 
     /**
@@ -84,13 +136,13 @@ public class ButtonSelectionStateController {
         }
     }
 
-    /** Removes all buttons from the button maps. */
-    protected void removeAll() {
-        mButtonsByCategory.clear();
-        mButtonsByPackage.clear();
-        mButtonsByComponentName.clear();
-        mSelectedButtons.clear();
-        mRegisteredViews.clear();
+    /** Removes a button from the button maps. */
+    protected void removeButton(CarSystemBarButton button) {
+        mButtonsByCategory.values().forEach(set -> set.remove(button));
+        mButtonsByPackage.values().forEach(set -> set.remove(button));
+        mButtonsByComponentName.values().forEach(set -> set.remove(button));
+        mSelectedButtons.remove(button);
+        mRegisteredViews.remove(button);
     }
 
     /**
@@ -105,8 +157,10 @@ public class ButtonSelectionStateController {
      * @param taskInfoList of the currently running application
      * @param validDisplay index of the valid display
      */
-
     protected void taskChanged(List<RootTaskInfo> taskInfoList, int validDisplay) {
+        if (isScalableUIEnabled()) {
+            return;
+        }
         RootTaskInfo validTaskInfo = null;
 
         for (RootTaskInfo taskInfo : taskInfoList) {
@@ -138,6 +192,143 @@ public class ButtonSelectionStateController {
                 }
             });
         }
+    }
+
+    /**
+     * This will unselect the currently selected CarSystemBarButtons and determine which one should
+     * be selected next. It does this by reading the properties on the CarSystemBarButton and
+     * seeing if they are a match based on panel visibility and task visibility on panels.
+     */
+    protected void panelTaskChanged() {
+        mSelectedButtonsForPanelApp.clear();
+        mButtonsByComponentName.keySet().forEach(componentName -> {
+            mButtonsByComponentName.get(componentName).forEach(button -> {
+                if (mTaskPanelInfoRepository.isComponentVisibleOnDisplay(
+                        ComponentName.unflattenFromString(componentName), button.getDisplayId())) {
+                    mSelectedButtonsForPanelApp.add(button);
+                }
+            });
+        });
+
+        mButtonsByPackage.keySet().forEach(packageName -> {
+            mButtonsByPackage.get(packageName).forEach(button -> {
+                if (mTaskPanelInfoRepository.isPackageVisibleOnDisplay(packageName,
+                        button.getDisplayId())) {
+                    mSelectedButtonsForPanelApp.add(button);
+                }
+            });
+        });
+
+        // TODO(b/409398038): handle categories for ScalableUI
+
+        updatePanelButtonsSelection();
+    }
+
+    /**
+     * Determine which CarSystemBarButtons should be selected based on the current panel state
+     */
+    protected void panelVisibilityChanged(Map<String, PanelState> panelStates) {
+        mSelectedButtonsForPanelVisibility.clear();
+        for (CarSystemBarButton button : mRegisteredViews) {
+            if (button.getPanelNames().length > 0) {
+                if (shouldSelectButtonForPanelStates(button, panelStates)) {
+                    mSelectedButtonsForPanelVisibility.add(button);
+                }
+            }
+        }
+        updatePanelButtonsSelection();
+    }
+
+    /**
+     * When adding a button to this controller, check the current panel and task state to determine
+     * if the button should be initially selected.
+     */
+    protected void selectForInitialPanelTaskState(CarSystemBarButton button) {
+        if (button.getPanelNames().length > 0) {
+            if (shouldSelectButtonForPanelStates(button, /* panelStates= */ null)) {
+                mSelectedButtonsForPanelVisibility.add(button);
+            } else {
+                mSelectedButtonsForPanelVisibility.remove(button);
+            }
+        }
+
+        boolean shouldSelectForApp = false;
+        String[] packages = button.getPackages();
+        for (int i = 0; i < packages.length; i++) {
+            if (mTaskPanelInfoRepository.isPackageVisibleOnDisplay(
+                    packages[i], button.getDisplayId())) {
+                shouldSelectForApp = true;
+                break;
+            }
+        }
+        String[] componentNames = button.getComponentName();
+        for (int i = 0; i < componentNames.length; i++) {
+            if (mTaskPanelInfoRepository.isComponentVisibleOnDisplay(
+                    ComponentName.unflattenFromString(componentNames[i]),
+                    button.getDisplayId())) {
+                shouldSelectForApp = true;
+                break;
+            }
+        }
+        // TODO(b/409398038): handle categories for ScalableUI
+        if (shouldSelectForApp) {
+            mSelectedButtonsForPanelApp.add(button);
+        } else {
+            mSelectedButtonsForPanelApp.remove(button);
+        }
+
+        updatePanelButtonsSelection();
+    }
+
+    private boolean shouldSelectButtonForPanelStates(@NonNull CarSystemBarButton button,
+            @Nullable Map<String, PanelState> panelStates) {
+        if (button.getPanelNames().length == 0) {
+            return false;
+        }
+        for (String panelString : button.getPanelNames()) {
+            if (TextUtils.isEmpty(panelString)) {
+                // not valid - don't select
+                return false;
+            }
+            boolean invertVisibility = panelString.charAt(0) == '-';
+            if (invertVisibility) {
+                panelString = panelString.substring(1);
+            }
+            PanelState state;
+            if (panelStates != null) {
+                state = panelStates.get(panelString);
+            } else {
+                state = StateManager.getPanelState(panelString);
+            }
+            if (!isPanelVisible(state, button.getDisplayId()) ^ invertVisibility) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isPanelVisible(PanelState state, int displayId) {
+        if (state == null) {
+            return false;
+        }
+        return state.getDisplayId() == displayId
+                && state.getCurrentVariant() != null
+                && state.getCurrentVariant().isVisible();
+    }
+
+    protected void updatePanelButtonsSelection() {
+        mContext.getMainExecutor().execute(() -> {
+            mRegisteredViews.forEach(button -> {
+                if (mSelectedButtonsForPanelVisibility.contains(button)
+                        || mSelectedButtonsForPanelApp.contains(button)) {
+                    button.setSelected(true);
+                    mSelectedButtons.add(button);
+                } else {
+                    button.setSelected(false);
+                    mSelectedButtons.remove(button);
+                }
+            });
+        });
     }
 
     protected void clearAllSelectedButtons(int displayId) {
@@ -180,6 +371,10 @@ public class ButtonSelectionStateController {
         }
 
         mRegisteredViews.add(carSystemBarButton);
+
+        if (isScalableUIEnabled() && mTaskPanelInfoRepository != null) {
+            selectForInitialPanelTaskState(carSystemBarButton);
+        }
     }
 
     private HashSet<CarSystemBarButton> findSelectedButtons(RootTaskInfo validTaskInfo) {
@@ -214,7 +409,7 @@ public class ButtonSelectionStateController {
                         ActivityTaskManager.getService().getRootTaskInfoOnDisplay(
                                 WINDOWING_MODE_FULLSCREEN, ACTIVITY_TYPE_UNDEFINED,
                                 validTaskInfo.displayId);
-                return rootTaskInfo.topActivity;
+                return rootTaskInfo == null ? null : rootTaskInfo.topActivity;
             } catch (RemoteException e) {
                 Log.e(TAG, "findSelectedButtons: Failed getting root task info", e);
             }
@@ -250,6 +445,11 @@ public class ButtonSelectionStateController {
             }
         }
         return null;
+    }
+
+    private boolean isScalableUIEnabled() {
+        return scalableUi() && enableAutoTaskStackController()
+                && mContext.getResources().getBoolean(R.bool.config_enableScalableUI);
     }
 
     // simple multi-map

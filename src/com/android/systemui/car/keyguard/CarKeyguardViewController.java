@@ -55,6 +55,7 @@ import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.keyguard.KeyguardWmStateRefactor;
 import com.android.systemui.keyguard.ui.viewmodel.GlanceableHubToPrimaryBouncerTransitionViewModel;
+import com.android.systemui.keyguard.ui.viewmodel.PrimaryBouncerToDreamingTransitionViewModel;
 import com.android.systemui.keyguard.ui.viewmodel.PrimaryBouncerToGoneTransitionViewModel;
 import com.android.systemui.log.BouncerLogger;
 import com.android.systemui.settings.UserTracker;
@@ -150,6 +151,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
     private boolean mIsSleeping;
     private int mToastShowDurationMillisecond;
     private ViewGroup mKeyguardContainer;
+    private PrimaryBouncerToDreamingTransitionViewModel
+            mPrimaryBouncerToDreamingTransitionViewModel;
     private PrimaryBouncerToGoneTransitionViewModel mPrimaryBouncerToGoneTransitionViewModel;
     private GlanceableHubToPrimaryBouncerTransitionViewModel
             mGlanceableHubToPrimaryBouncerTransitionViewModel;
@@ -174,6 +177,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
             PrimaryBouncerInteractor primaryBouncerInteractor,
             KeyguardSecurityModel keyguardSecurityModel,
             KeyguardBouncerViewModel keyguardBouncerViewModel,
+            PrimaryBouncerToDreamingTransitionViewModel primaryBouncerToDreamingTransitionViewModel,
             PrimaryBouncerToGoneTransitionViewModel primaryBouncerToGoneTransitionViewModel,
             GlanceableHubToPrimaryBouncerTransitionViewModel
                     glanceableHubToPrimaryBouncerTransitionViewModel,
@@ -203,6 +207,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mKeyguardSecurityModel = keyguardSecurityModel;
         mKeyguardBouncerViewModel = keyguardBouncerViewModel;
         mKeyguardBouncerComponentFactory = keyguardBouncerComponentFactory;
+        mPrimaryBouncerToDreamingTransitionViewModel = primaryBouncerToDreamingTransitionViewModel;
         mPrimaryBouncerToGoneTransitionViewModel = primaryBouncerToGoneTransitionViewModel;
         mGlanceableHubToPrimaryBouncerTransitionViewModel =
                 glanceableHubToPrimaryBouncerTransitionViewModel;
@@ -249,7 +254,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
     public void onFinishInflate() {
         mKeyguardContainer = getLayout().findViewById(R.id.keyguard_container);
         KeyguardBouncerViewBinder.bind(mMainDispatcher, mKeyguardContainer,
-                mKeyguardBouncerViewModel, mPrimaryBouncerToGoneTransitionViewModel,
+                mKeyguardBouncerViewModel, mPrimaryBouncerToDreamingTransitionViewModel,
+                mPrimaryBouncerToGoneTransitionViewModel,
                 mGlanceableHubToPrimaryBouncerTransitionViewModel,
                 mKeyguardBouncerComponentFactory,
                 mMessageAreaControllerFactory,

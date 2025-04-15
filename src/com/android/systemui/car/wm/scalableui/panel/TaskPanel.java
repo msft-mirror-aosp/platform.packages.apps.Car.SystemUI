@@ -15,6 +15,8 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
+import static com.android.systemui.car.Flags.displayCompatibilityAutoDecorSafeRegion;
+
 import android.annotation.MainThread;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -412,6 +414,9 @@ public final class TaskPanel extends BasePanel {
     }
 
     private void setupToolbarAndSafeRegion() {
+        if (!displayCompatibilityAutoDecorSafeRegion()) {
+            return;
+        }
         if (mRootTaskStack == null) {
             logVerbose("Root TaskStack not set for panel: " + getPanelId());
             return;

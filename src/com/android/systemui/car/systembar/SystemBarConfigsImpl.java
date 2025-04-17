@@ -141,14 +141,6 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
     }
 
     @Override
-    public void resetSystemBarWindowContext() {
-        for (int windowType : mWindowContexts.keySet()) {
-            Context context = mContext.createWindowContext(windowType, /* options= */ null);
-            mWindowContexts.put(windowType, context);
-        }
-    }
-
-    @Override
     public Context getWindowContextBySide(@SystemBarSide int side) {
         SystemBarConfig config = mSystemBarConfigMap.get(side);
         if (config == null) {

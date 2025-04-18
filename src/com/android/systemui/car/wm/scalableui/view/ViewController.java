@@ -39,7 +39,7 @@ public abstract class ViewController implements DecorPanelController {
     protected ViewController(Context context, PanelControllerMetadata metadata) {
         mContext = context;
         mMetadata = metadata;
-        mViewName = metadata.getConfiguration(PanelControllerMetadata.VIEW_TAG);
+        mViewName = metadata.getStringConfiguration(PanelControllerMetadata.VIEW_TAG);
         if (mViewName == null) {
             throw new RuntimeException("ViewName must be set " + metadata);
         }

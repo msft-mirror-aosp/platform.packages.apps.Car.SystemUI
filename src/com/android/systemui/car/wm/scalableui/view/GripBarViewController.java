@@ -101,11 +101,11 @@ public class GripBarViewController extends ViewController implements
     }
 
     private void init(PanelControllerMetadata metadata) {
-        mDragEventId = metadata.getConfiguration(PanelControllerMetadata.EVENT_ID_TAG);
+        mDragEventId = metadata.getStringConfiguration(PanelControllerMetadata.EVENT_ID_TAG);
         mIsHorizontal = Integer.parseInt(
-                metadata.getConfiguration(PanelControllerMetadata.ORIENTATION_TAG)) == 1;
+                metadata.getStringConfiguration(PanelControllerMetadata.ORIENTATION_TAG)) == 1;
         mSnapThreshold = Integer.parseInt(
-                metadata.getConfiguration(PanelControllerMetadata.SNAPTHREADHOLD_TAG));
+                metadata.getStringConfiguration(PanelControllerMetadata.SNAPTHREADHOLD_TAG));
         mBreakPoints.clear();
         mBreakPoints.addAll(metadata.getBreakPoints());
         logIfDebuggable("Parse array: " + this);

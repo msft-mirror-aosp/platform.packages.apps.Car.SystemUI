@@ -66,6 +66,12 @@ public class CarSystemUIApplication extends SystemUIApplication {
     }
 
     @Override
+    public void onConfigurationChanged(@androidx.annotation.NonNull Configuration newConfig) {
+        Token.applyOemTokenStyle(this);
+        super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
     protected boolean shouldStartSystemUserServices() {
         if (mIsVisibleBackgroundUserSysUI) {
             // visible background user SystemUI instances should start the same services as the
@@ -102,7 +108,7 @@ public class CarSystemUIApplication extends SystemUIApplication {
     @Override
     @NonNull
     public Context createWindowContext(@WindowManager.LayoutParams.WindowType int type,
-        @Nullable Bundle options) {
+            @Nullable Bundle options) {
         Context context = super.createWindowContext(type, options);
         return new ContextThemeWrapper(context, this.getTheme());
     }

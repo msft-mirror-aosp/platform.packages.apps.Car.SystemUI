@@ -21,8 +21,11 @@ import android.graphics.Rect;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.android.car.scalableui.model.Blur;
+import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.panel.Panel;
 
 /**
@@ -33,35 +36,43 @@ import com.android.car.scalableui.panel.Panel;
 public abstract class BasePanel implements Panel {
     protected static final boolean DEBUG = Build.isDebuggable();
 
+    @VisibleForTesting
+    static final String ROLE_TYPE_STRING = "string";
+    @VisibleForTesting
+    static final String ROLE_TYPE_ARRAY = "array";
+    @VisibleForTesting
+    static final String ROLE_TYPE_LAYOUT = "layout";
+    @VisibleForTesting
+    static final String ROLE_TYPE_XML = "xml";
+
     private final Context mContext;
     private int mLayer = -1;
 
     private int mRole = 0;
     private Rect mBounds = null;
     private boolean mIsVisible;
-    private String mId;
+    private String mPanelId;
     private float mAlpha;
     private int mDisplayId;
     private int mCornerRadius;
     @NonNull
     private Insets mInsets = Insets.NONE;
     private Blur mBlur;
+    @Nullable
+    private PanelControllerMetadata mPanelControllerMetadata;
 
-    public BasePanel(@NonNull Context context, String id) {
+    public BasePanel(@NonNull Context context, String panelId) {
         mContext = context;
-        mId = id;
+        mPanelId = panelId;
     }
 
     public Context getContext() {
         return mContext;
     }
 
+    @Override
     public int getRole() {
         return mRole;
-    }
-
-    public String getId() {
-        return mId;
     }
 
     @Override
@@ -72,7 +83,7 @@ public abstract class BasePanel implements Panel {
     @Override
     @NonNull
     public String getPanelId() {
-        return mId;
+        return mPanelId;
     }
 
     @Override
@@ -189,12 +200,24 @@ public abstract class BasePanel implements Panel {
     }
 
     @Override
-    public void setInsets(Insets insets) {
+    public void setInsets(@NonNull Insets insets) {
         mInsets = insets;
     }
 
     @Override
+    @NonNull
     public Insets getInsets() {
         return mInsets;
+    }
+
+    @Override
+    @Nullable
+    public PanelControllerMetadata getPanelControllerMetadata() {
+        return mPanelControllerMetadata;
+    }
+
+    public void setPanelControllerMetadata(
+            @Nullable PanelControllerMetadata panelControllerMetadata) {
+        mPanelControllerMetadata = panelControllerMetadata;
     }
 }

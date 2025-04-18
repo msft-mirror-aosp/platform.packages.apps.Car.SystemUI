@@ -15,3 +15,6 @@
 -keep class com.android.systemui.car.qc.ProfileSwitcher { *; }
 -keep class com.android.systemui.car.qc.DriveModeQcPanel { *; }
 -keep class com.android.systemui.car.qc.QCFooterView { *; }
+-keep class com.android.systemui.car.wm.scalableui.view.GripBarViewController { *; }
+-keep class com.android.systemui.car.wm.scalableui.view.ViewProvider { *; }
+-keep class com.android.systemui.car.wm.scalableui.view.GripBar { *; }

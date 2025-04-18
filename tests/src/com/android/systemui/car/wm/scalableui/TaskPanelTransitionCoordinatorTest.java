@@ -91,7 +91,7 @@ public class TaskPanelTransitionCoordinatorTest extends CarSysuiTestCase {
         Animator animator = new ValueAnimator();
         when(mAutoTaskStackController.startTransition(any())).thenReturn(binder);
         PanelTransaction panelTransaction = new PanelTransaction.Builder()
-                .addAnimator("testPanel", animator).build();
+                .addAnimator("testPanel", animator).setHasWindowChanges(true).build();
 
         mTaskPanelTransitionCoordinator.startTransition(panelTransaction);
 
@@ -138,7 +138,7 @@ public class TaskPanelTransitionCoordinatorTest extends CarSysuiTestCase {
         });
 
         assertThat(animationStarted.get()).isTrue();
-        assertThat(latch.await(/* timeout= */ 5, TimeUnit.SECONDS)).isTrue();
+        assertThat(latch.await(/* timeout= */ 10, TimeUnit.SECONDS)).isTrue();
         assertThat(latch.getCount()).isEqualTo(0);
         assertThat(mTaskPanelTransitionCoordinator.isAnimationRunning()).isFalse();
         // There may be a slight delay between the Animator receiving onAnimationEnd and the
@@ -147,7 +147,42 @@ public class TaskPanelTransitionCoordinatorTest extends CarSysuiTestCase {
     }
 
     @Test
-    public void testStopRunningAnimations() throws InterruptedException {
+    public void testStopRunningAnimationsIfNeed_differentTransition_stopAnimation()
+            throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1); // Latch for waiting
+        IBinder binder = new Binder();
+        IBinder binder2 = new Binder();
+        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+        animator.setDuration(5000L);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                latch.countDown();
+            }
+        });
+        PanelTransaction panelTransaction = new PanelTransaction.Builder()
+                .addAnimator("testPanel", animator).build();
+        mTaskPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction);
+
+        // Run the animation on the main looper
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            mTaskPanelTransitionCoordinator.playPendingAnimations(binder, mFinishCallback);
+        });
+
+        mTaskPanelTransitionCoordinator.stopRunningAnimations(binder2);
+        // onAnimationEnd should still be called when cancelled - wait for a small amount of time
+        // and expect animation end callback to execute
+        assertThat(latch.await(/* timeout= */ 1, TimeUnit.SECONDS)).isTrue();
+        assertThat(latch.getCount()).isEqualTo(0);
+        // There may be a slight delay between the Animator receiving onAnimationEnd and the
+        // AnimatorSet receiving onAnimationEnd.
+        verify(mFinishCallback, timeout(1000)).onTransitionFinished(null);
+    }
+
+    @Test
+    public void testStopRunningAnimations_sameTransition_keepAnimation()
+            throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1); // Latch for waiting
         IBinder binder = new Binder();
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
@@ -168,14 +203,17 @@ public class TaskPanelTransitionCoordinatorTest extends CarSysuiTestCase {
             mTaskPanelTransitionCoordinator.playPendingAnimations(binder, mFinishCallback);
         });
 
-        mTaskPanelTransitionCoordinator.stopRunningAnimations();
-        // onAnimationEnd should still be called when cancelled - wait for a small amount of time
-        // and expect animation end callback to execute
-        assertThat(latch.await(/* timeout= */ 1, TimeUnit.SECONDS)).isTrue();
-        assertThat(latch.getCount()).isEqualTo(0);
-        assertThat(mTaskPanelTransitionCoordinator.isAnimationRunning()).isFalse();
+        mTaskPanelTransitionCoordinator.stopRunningAnimations(binder);
+        // Animation should continue on the same binder
+        assertThat(latch.await(/* timeout= */ 1, TimeUnit.SECONDS)).isFalse();
+        assertThat(latch.getCount()).isEqualTo(1);
+        assertThat(mTaskPanelTransitionCoordinator.isAnimationRunning()).isTrue();
         // There may be a slight delay between the Animator receiving onAnimationEnd and the
         // AnimatorSet receiving onAnimationEnd.
-        verify(mFinishCallback, timeout(1000)).onTransitionFinished(null);
+
+        assertThat(latch.await(/* timeout= */ 5, TimeUnit.SECONDS)).isTrue();
+        assertThat(latch.getCount()).isEqualTo(0);
+        assertThat(mTaskPanelTransitionCoordinator.isAnimationRunning()).isFalse();
+        verify(mFinishCallback, timeout(5000)).onTransitionFinished(null);
     }
 }

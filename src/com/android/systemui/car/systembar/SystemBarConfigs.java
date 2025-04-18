@@ -42,16 +42,6 @@ public interface SystemBarConfigs {
     void resetSystemBarConfigs();
 
     /**
-     * Invalidates cached window context and creates a new window from application context.
-     *
-     * <p>
-     * This method should be called when the window context configurations are not in sync with
-     * application context configurations.
-     * </p>
-     */
-    void resetSystemBarWindowContext();
-
-    /**
      * When creating system bars or overlay windows, use a WindowContext
      * for that particular window type to ensure proper display metrics.
      */

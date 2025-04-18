@@ -16,6 +16,7 @@
 package com.android.systemui.car.wm.scalableui;
 
 import static android.app.WindowConfiguration.ACTIVITY_TYPE_HOME;
+import static android.view.WindowInsets.Type.systemOverlays;
 import static android.view.WindowManager.TRANSIT_FLAG_AVOID_MOVE_TO_FRONT;
 
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.COMPONENT_TOKEN_ID;
@@ -51,6 +52,7 @@ import com.android.systemui.R;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
+import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -59,6 +61,7 @@ import com.android.wm.shell.shared.TransitionUtil;
 import com.android.wm.shell.transition.Transitions;
 
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import javax.inject.Inject;
 
@@ -78,6 +81,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     private final Context mContext;
     private final PanelUtils mPanelUtils;
     private final TaskPanelInfoRepository mTaskPanelInfoRepository;
+    private final AutoLayoutManager mAutoLayoutManager;
 
     @Inject
     public PanelAutoTaskStackTransitionHandlerDelegate(
@@ -85,13 +89,15 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             AutoTaskStackController autoTaskStackController,
             TaskPanelTransitionCoordinator taskPanelTransitionCoordinator,
             PanelUtils panelUtils,
-            TaskPanelInfoRepository taskPanelInfoRepository
+            TaskPanelInfoRepository taskPanelInfoRepository,
+            AutoLayoutManager autoLayoutManager
     ) {
         mAutoTaskStackController = autoTaskStackController;
         mTaskPanelTransitionCoordinator = taskPanelTransitionCoordinator;
         mContext = context;
         mPanelUtils = panelUtils;
         mTaskPanelInfoRepository = taskPanelInfoRepository;
+        mAutoLayoutManager = autoLayoutManager;
     }
 
     /**
@@ -219,6 +225,11 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             transaction.setVisibility(leash, visibility);
             transaction.setLayer(leash, layer);
             taskPanel.setLeash(leash);
+            Rect[] panelInsets = mPanelUtils.getTaskPanelInsets(taskPanel);
+            IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
+                mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(), sideIndex,
+                        systemOverlays(), panelInsets[sideIndex]);
+            });
         }
     }
 

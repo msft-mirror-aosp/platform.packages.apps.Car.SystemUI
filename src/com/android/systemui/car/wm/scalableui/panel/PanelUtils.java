@@ -19,6 +19,7 @@ import android.annotation.NonNull;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.graphics.Rect;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -85,6 +86,35 @@ public class PanelUtils {
     public DecorPanel getDecorPanel(Predicate<DecorPanel> predicate) {
         return (DecorPanel) PanelPool.getInstance().getPanel(
                 p -> (p instanceof DecorPanel decorPanel) && predicate.test(decorPanel));
+    }
+
+    /**
+     * Calculates the four rectangular areas representing the insets of a {@link TaskPanel}.
+     *
+     * This method uses the inset values and bounds of the provided {@code taskPanel}
+     * to define four distinct {@link Rect} objects. Each rectangle corresponds to the
+     * screen area effectively occupied by the left, top, right, or bottom inset,
+     * relative to the task panel's bounds.
+     *
+     * @param taskPanel The task panel whose inset areas are to be calculated.
+     * @return An array of {@link Rect} objects of size 4, ordered as follows:
+     * <ul>
+     * <li>Index 0: Rectangle representing the left inset area.</li>
+     * <li>Index 1: Rectangle representing the top inset area.</li>
+     * <li>Index 2: Rectangle representing the right inset area.</li>
+     * <li>Index 3: Rectangle representing the bottom inset area.</li>
+     * </ul>
+     */
+    public Rect[] getTaskPanelInsets(TaskPanel taskPanel) {
+        Rect insets = taskPanel.getInsets().toRect();
+        Rect[] insetSides = new Rect[4];
+        insetSides[0] = new Rect(0, 0, insets.left, taskPanel.getY2());
+        insetSides[1] = new Rect(0, 0, taskPanel.getX2(), insets.top);
+        insetSides[2] = new Rect(taskPanel.getX2() - insets.right, 0, taskPanel.getX2(),
+                taskPanel.getY2());
+        insetSides[3] = new Rect(0, taskPanel.getY2() - insets.bottom, taskPanel.getX2(),
+                taskPanel.getY2());
+        return insetSides;
     }
 
     /**

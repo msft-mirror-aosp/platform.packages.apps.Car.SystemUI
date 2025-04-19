@@ -105,4 +105,6 @@ class FakeDisplayRepository(
     override val defaultDisplayOff: Flow<Boolean> = emptyFlow(),
     override val pendingDisplay: Flow<PendingDisplay?> = fakePendingDisplayFlow,
     override val displayIds: StateFlow<Set<Int>> = MutableStateFlow(emptySet()),
-) : DisplayRepository
+) : DisplayRepository {
+    override fun getDisplay(displayId: Int): Display? = null
+}

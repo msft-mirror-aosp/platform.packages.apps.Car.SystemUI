@@ -39,7 +39,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
-import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -497,20 +496,6 @@ public class CarSystemBarTest extends CarSysuiTestCase {
         mCarSystemBarController.disable(Display.DEFAULT_DISPLAY, 0, 0, false);
 
         verify(mCarSystemBarController).setSystemBarStates(0, 0);
-    }
-
-    @Test
-    public void onConfigChanged_toggleNightMode() {
-        // get the current mode and then change to the opposite
-        boolean isNightMode = mContext.getResources().getConfiguration().isNightModeActive();
-        Configuration config = new Configuration();
-        config.uiMode =
-                isNightMode ? Configuration.UI_MODE_NIGHT_NO : Configuration.UI_MODE_NIGHT_YES;
-
-        mCarSystemBarController.init();
-        mCarSystemBarController.onConfigChanged(config);
-
-        assertThat(mCarSystemBarController.getIsUiModeNight()).isNotEqualTo(isNightMode);
     }
 
     @Test

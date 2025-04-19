@@ -1,0 +1,190 @@
+/*
+ * Copyright (C) 2025 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.android.systemui.car.wm.scalableui.view;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+
+import androidx.annotation.Nullable;
+
+import com.android.car.scalableui.model.BreakPoint;
+import com.android.car.scalableui.model.Event;
+import com.android.car.scalableui.model.KeyFrameEvent;
+import com.android.car.scalableui.model.PanelControllerMetadata;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * A Controller for the {@link GripBar}
+ * <p>
+ * Configuration for the GripBar is read from a themed attribute, which is
+ * expected to be an array resource. The array should contain values defining
+ * the behavior of the GripBar. The following indices in the configuration
+ * array are used:
+ * </p>
+ * <ul>
+ * <li>Index 0: View provider name (String)</li>
+ * <li>Index 1: View class name (String)</li>
+ * <li>Index 2: Drag event ID (String)</li>
+ * <li>Index 3: Orientation (0 for vertical, 1 for horizontal) (Integer)</li>
+ * <li>Index 4: Snap threshold (Dimension)</li>
+ * <li>Index 5: Resource ID of the breakpoint definition array (Integer)</li>
+ * </ul>
+ */
+public class GripBarViewController extends ViewController implements
+        EventDispatcher.EventProducer, GripBar.GripBarEventHandler {
+    private static final String TAG = GripBarViewController.class.getSimpleName();
+    private GripBar mGripBar;
+    private boolean mIsHorizontal;
+
+    private String mDragEventId;
+    private float mSnapThreshold;
+    private int mState = 0;
+
+    private final List<BreakPoint> mBreakPoints;
+    private EventDispatcher mEventDispatcher;
+
+    @Override
+    public void onClick() {
+        Event event = new Event.Builder((mBreakPoints.get(mState).getEventId())).build();
+        dispatchEvent(event);
+        mState = (mState + 1) % mBreakPoints.size();
+        logIfDebuggable("onclick " + event);
+    }
+
+    /**
+     * Sets the {@link EventDispatcher} for the controller.
+     *
+     * @param eventDispatcher The {@link EventDispatcher} to set. Must not be null.
+     */
+    public void setEventDispatcher(EventDispatcher eventDispatcher) {
+        mEventDispatcher = eventDispatcher;
+    }
+
+    public GripBarViewController(Context context, PanelControllerMetadata metadata) {
+        super(context, metadata);
+        mBreakPoints = new ArrayList<>();
+        init(metadata);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    @Nullable
+    public View getView() {
+        View view = super.getView();
+        if (view instanceof GripBar gripBar) {
+            mGripBar = gripBar;
+        } else {
+            throw new RuntimeException("GripBarViewController mush have a gripBar view");
+        }
+        mGripBar.addGripBarEventHandlers(this);
+        return mGripBar;
+    }
+
+    private void init(PanelControllerMetadata metadata) {
+        mDragEventId = metadata.getConfiguration(PanelControllerMetadata.EVENT_ID_TAG);
+        mIsHorizontal = Integer.parseInt(
+                metadata.getConfiguration(PanelControllerMetadata.ORIENTATION_TAG)) == 1;
+        mSnapThreshold = Integer.parseInt(
+                metadata.getConfiguration(PanelControllerMetadata.SNAPTHREADHOLD_TAG));
+        mBreakPoints.clear();
+        mBreakPoints.addAll(metadata.getBreakPoints());
+        logIfDebuggable("Parse array: " + this);
+    }
+
+    private void dispatchEvent(Event event) {
+        if (mEventDispatcher == null) {
+            Log.e(TAG, "EventDispatcher is null");
+            return;
+        }
+        mEventDispatcher.executeTransaction(event);
+    }
+
+    private float getDistance(BreakPoint breakPoint, float value) {
+        return Math.abs(value - breakPoint.getPoint());
+    }
+
+    private BreakPoint findClosestBreakPoint(float value) {
+        BreakPoint closest = mBreakPoints.getFirst();
+        float minDistance = Float.MAX_VALUE;
+        for (BreakPoint breakPoint : mBreakPoints) {
+            float distance = getDistance(breakPoint, value);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closest = breakPoint;
+            }
+        }
+        return closest;
+    }
+
+    @Override
+    public void onTouch(MotionEvent event) {
+        if (mBreakPoints.size() < 2) {
+            logIfDebuggable("break point not valid " + mBreakPoints.size());
+            return;
+        }
+
+        float value = mIsHorizontal ? event.getRawX() : event.getRawY();
+        float min = mBreakPoints.getFirst().getPoint();
+        float max = mBreakPoints.getLast().getPoint();
+        BreakPoint closest = findClosestBreakPoint(value);
+        float closestDistance = getDistance(closest, value);
+        if (closestDistance < mSnapThreshold) {
+            value = closest.getPoint();
+        }
+
+        float progress = (value - min) / (max - min);
+        logIfDebuggable("progress " + progress);
+        if (progress < 0 || progress > 1) {
+            dispatchEvent(new Event.Builder(closest.getEventId()).build());
+            return;
+        }
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                return;
+            case MotionEvent.ACTION_MOVE:
+                dispatchEvent(new KeyFrameEvent.Builder(mDragEventId,
+                        progress).build());
+                break;
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                dispatchEvent(new Event.Builder(closest.getEventId()).build());
+                break;
+            default:
+                return;
+        }
+        return;
+    }
+
+    @Override
+    public String toString() {
+        String breakpointsString = (mBreakPoints == null) ? "null" :
+                mBreakPoints.stream()
+                        .map(Object::toString)
+                        .collect(Collectors.joining(", ", "[", "]"));
+
+        return "GripBarViewProvider{" + "mGripBar=" + mGripBar + ", mIsHorizontal=" + mIsHorizontal
+                + ", mDragEventId='" + mDragEventId + '\'' + ", mSnapThreshold=" + mSnapThreshold
+                + ", mBreakPoints=" + breakpointsString + '}';
+    }
+}

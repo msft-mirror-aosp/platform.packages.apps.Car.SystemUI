@@ -15,6 +15,10 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
+import static com.android.systemui.car.Flags.displayCompatibilityAutoDecorSafeRegion;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_PANEL_EMPTY_EVENT_ID;
+
 import android.annotation.MainThread;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -38,11 +42,13 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.model.Blur;
+import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.wm.AutoCaptionBarViewFactoryImpl;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionController;
 import com.android.wm.shell.automotive.AutoDecor;
@@ -64,8 +70,7 @@ import java.util.Set;
  */
 public final class TaskPanel extends BasePanel {
     private static final String TAG = TaskPanel.class.getSimpleName();
-    private static final String ROLE_TYPE_STRING = "string";
-    private static final String ROLE_TYPE_ARRAY = "array";
+
     private static final boolean DEBUG = Build.isDebuggable();
 
     private final AutoTaskStackController mAutoTaskStackController;
@@ -75,6 +80,7 @@ public final class TaskPanel extends BasePanel {
     private final AutoCaptionController mAutoCaptionController;
     private final AutoCaptionBarViewFactoryImpl mAutoCaptionBarViewFactoryImpl;
     private final TaskPanelInfoRepository mTaskPanelInfoRepository;
+    private final EventDispatcher mEventDispatcher;
 
     private CarActivityManager mCarActivityManager;
     private int mRootTaskId = -1;
@@ -101,12 +107,14 @@ public final class TaskPanel extends BasePanel {
             PanelUtils panelUtils,
             TaskPanelInfoRepository taskPanelInfoRepository,
             AutoDecorManager autoDecorManager,
+            EventDispatcher dispatcher,
             @Assisted String id) {
         super(context, id);
         mAutoTaskStackController = autoTaskStackController;
         mCarServiceProvider = carServiceProvider;
         mAutoTaskStackHelper = autoTaskStackHelper;
         mTaskPanelInfoRepository = taskPanelInfoRepository;
+        mEventDispatcher = dispatcher;
         mPersistedActivities = new ArraySet<>();
         mPanelUtils = panelUtils;
         mAutoCaptionController = autoCaptionController;
@@ -167,17 +175,23 @@ public final class TaskPanel extends BasePanel {
                             SurfaceControl leash) {
                         mTopTaskPackageName = taskInfo.baseActivity.getPackageName();
                         mAutoTaskStackHelper.setTaskUntrimmableIfNeeded(taskInfo);
-                        mTaskPanelInfoRepository.onTaskAppearedOnPanel(getId(), taskInfo);
+                        mTaskPanelInfoRepository.onTaskAppearedOnPanel(getPanelId(), taskInfo);
                     }
 
                     @Override
                     public void onTaskInfoChanged(ActivityManager.RunningTaskInfo taskInfo) {
-                        mTaskPanelInfoRepository.onTaskChangedOnPanel(getId(), taskInfo);
+                        mTaskPanelInfoRepository.onTaskChangedOnPanel(getPanelId(), taskInfo);
                     }
 
                     @Override
                     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
-                        mTaskPanelInfoRepository.onTaskVanishedOnPanel(getId(), taskInfo);
+                        mTaskPanelInfoRepository.onTaskVanishedOnPanel(getPanelId(), taskInfo);
+                        if (mRootTaskStack != null
+                                && mRootTaskStack.getRootTaskInfo().numActivities == 0) {
+                            mEventDispatcher.executeTransaction(new Event.Builder(
+                                    SYSTEM_TASK_PANEL_EMPTY_EVENT_ID).addToken(PANEL_TOKEN_ID,
+                                    getPanelId()).build());
+                        }
                     }
                 });
     }
@@ -386,7 +400,7 @@ public final class TaskPanel extends BasePanel {
         if (mCarActivityManager == null || mRootTaskStack == null) {
             if (DEBUG) {
                 Log.d(TAG,
-                        "mCarActivityManager or mRootTaskStack is null, [" + getId() + ","
+                        "mCarActivityManager or mRootTaskStack is null, [" + getPanelId() + ","
                                 + mCarActivityManager + ", " + mRootTaskStack + "]");
             }
             return;
@@ -412,6 +426,9 @@ public final class TaskPanel extends BasePanel {
     }
 
     private void setupToolbarAndSafeRegion() {
+        if (!displayCompatibilityAutoDecorSafeRegion()) {
+            return;
+        }
         if (mRootTaskStack == null) {
             logVerbose("Root TaskStack not set for panel: " + getPanelId());
             return;
@@ -486,18 +503,17 @@ public final class TaskPanel extends BasePanel {
     public String toString() {
         return "TaskPanel{"
                 + "mId='" + getPanelId() + '\''
-                + ", mIsLaunchRoot=" + mIsLaunchRoot
-                + ", mDisplayId=" + getDisplayId()
+                + ", mBounds=" + getBounds()
                 + ", mAlpha=" + getAlpha()
                 + ", mIsVisible=" + isVisible()
-                + ", mBounds=" + getBounds()
                 + ", mRootTaskId=" + mRootTaskId
-                + ", mContext=" + getContext()
                 + ", mRole=" + getRole()
                 + ", mLayer=" + getLayer()
                 + ", mLeash=" + mLeash
                 + ", mRootTaskStack=" + mRootTaskStack
                 + ", mCornerRadius=" + getCornerRadius()
+                + ", mIsLaunchRoot=" + mIsLaunchRoot
+                + ", mDisplayId=" + getDisplayId()
                 + '}';
     }
 

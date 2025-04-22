@@ -15,11 +15,8 @@
  */
 package com.android.systemui.car.wm.activity;
 
-import static android.app.WindowConfiguration.WINDOWING_MODE_MULTI_WINDOW;
-
 import static com.android.systemui.car.Flags.configAppBlockingActivities;
 
-import android.app.ActivityManager;
 import android.car.Car;
 import android.car.CarOccupantZoneManager;
 import android.car.app.CarActivityManager;
@@ -30,7 +27,6 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Insets;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
@@ -41,7 +37,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.UserHandle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.Slog;
 import android.view.Display;
@@ -61,7 +56,6 @@ import com.android.systemui.car.ndo.BlockerViewModel;
 import com.android.systemui.car.ndo.NdoViewModelFactory;
 import com.android.systemui.car.wm.activity.blurredbackground.BlurredSurfaceRenderer;
 
-import java.util.List;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -197,6 +191,15 @@ public class ActivityBlockingActivity extends FragmentActivity {
 
     @Override
     protected void onResume() {
+        // TODO(b/412839927): Provide a way to know the task under ABA. If the task under ABA is DO,
+        // then close the ABA. Right now, it is possible that
+        // - A NDO activity launch. ABA start call is fired.
+        // - While ABA is being started, another DO activity comes to top.
+        // - ABA shown now
+        // In this case, we have NDO, DO and then ABA. We don't want to show ABA over DO activity.
+        // So we need to add the logic to check what is below ABA, and if it is DO, then
+        // close ABA. Currently there is no reliable way to check what task is under ABA.
+
         super.onResume();
 
         // Display info about the current blocked activity, and optionally show an exit button
@@ -208,16 +211,9 @@ public class ActivityBlockingActivity extends FragmentActivity {
         // blockedActivity is expected to be always passed in as the topmost activity of task.
         String blockedActivity = getIntent().getStringExtra(
                 CarPackageManager.BLOCKING_INTENT_EXTRA_BLOCKED_ACTIVITY_NAME);
-        if (!TextUtils.isEmpty(blockedActivity)) {
-            if (isTopActivityBehindAbaDistractionOptimized()) {
-                Slog.w(TAG, "Top activity is already DO, so finishing");
-                finish();
-                return;
-            }
 
-            if (Log.isLoggable(TAG, Log.DEBUG)) {
-                Slog.d(TAG, "Blocking activity " + blockedActivity);
-            }
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Slog.d(TAG, "Blocking activity " + blockedActivity);
         }
 
         displayExitButton();
@@ -358,68 +354,6 @@ public class ActivityBlockingActivity extends FragmentActivity {
     private String getExitButtonText() {
         return isExitOptionCloseApplication() ? getString(R.string.exit_button_close_application)
                 : getString(R.string.exit_button_go_back);
-    }
-
-    /**
-     * It is possible that the stack info has changed between when the intent to launch this
-     * activity was initiated and when this activity is started. Check whether the activity behind
-     * the ABA is distraction optimized.
-     *
-     * @return {@code true} if the activity is distraction optimized, {@code false} if the top task
-     * behind the ABA is null or the top task's top activity is null or if the top activity is
-     * non-distraction optimized.
-     */
-    private boolean isTopActivityBehindAbaDistractionOptimized() {
-        List<ActivityManager.RunningTaskInfo> taskInfosTopToBottom;
-        taskInfosTopToBottom = mCarActivityManager.getVisibleTasks();
-        ActivityManager.RunningTaskInfo topStackBehindAba = null;
-
-        // Iterate in bottom to top manner
-        for (int i = taskInfosTopToBottom.size() - 1; i >= 0; i--) {
-            ActivityManager.RunningTaskInfo taskInfo = taskInfosTopToBottom.get(i);
-            if (taskInfo.displayId != getDisplayId()) {
-                // ignore stacks on other displays
-                continue;
-            }
-
-            // TODO(b/359583186): Remove this check when targets with splitscreen multitasking
-            // feature are moved to DaViews.
-            if (getApplicationContext().getPackageManager().hasSystemFeature(
-                    PackageManager.FEATURE_CAR_SPLITSCREEN_MULTITASKING)
-                    && taskInfo.getWindowingMode() != WINDOWING_MODE_MULTI_WINDOW) {
-                // targets which have splitscreen multitasking feature, can have other visible
-                // tasks such as home which are not blocked. Only consider tasks with multi
-                // window windowing mode.
-                continue;
-            }
-
-            if (getComponentName().equals(taskInfo.topActivity)) {
-                // quit when stack with the blocking activity is encountered because the last seen
-                // task will be the topStackBehindAba.
-                break;
-            }
-
-            topStackBehindAba = taskInfo;
-        }
-
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Slog.d(TAG, String.format("Top stack behind ABA is: %s", topStackBehindAba));
-        }
-
-        if (topStackBehindAba != null && topStackBehindAba.topActivity != null) {
-            boolean isDo = mCarPackageManager.isActivityDistractionOptimized(
-                    topStackBehindAba.topActivity.getPackageName(),
-                    topStackBehindAba.topActivity.getClassName());
-            if (Log.isLoggable(TAG, Log.DEBUG)) {
-                Slog.d(TAG,
-                        String.format("Top activity (%s) is DO: %s", topStackBehindAba.topActivity,
-                                isDo));
-            }
-            return isDo;
-        }
-
-        // unknown top stack / activity, default to considering it non-DO
-        return false;
     }
 
     private void displayDebugInfo() {

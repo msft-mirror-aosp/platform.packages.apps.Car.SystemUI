@@ -16,8 +16,10 @@
 package com.android.systemui.car.wm.scalableui.panel;
 
 import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.os.UserManager;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -86,5 +88,53 @@ public class PanelUtils {
                 : ActivityManager.getCurrentUser();
 
         return mUserManager != null && mUserManager.isUserUnlocked(userId);
+    }
+
+    /**
+     * Helper method to safely extract the package name from a RunningTaskInfo.
+     * It checks topActivity, realActivity, baseActivity, and finally the baseIntent
+     * in that order to find a valid package name.
+     *
+     * @param taskInfo The RunningTaskInfo object.
+     * @return The package name associated with the task, or null if it cannot be determined.
+     */
+    @Nullable
+    public String getTaskPackageName(@Nullable ActivityManager.RunningTaskInfo taskInfo) {
+        if (taskInfo == null) {
+            return null;
+        }
+
+        // 1. Try topActivity
+        if (taskInfo.topActivity != null) {
+            return taskInfo.topActivity.getPackageName();
+        }
+
+        // 2. Try realActivity
+        if (taskInfo.realActivity != null) {
+            return taskInfo.realActivity.getPackageName();
+        }
+
+        // 3. Try baseActivity (the original attempt)
+        if (taskInfo.baseActivity != null) {
+            return taskInfo.baseActivity.getPackageName();
+        }
+
+        // 4. Try baseIntent
+        if (taskInfo.baseIntent != null) {
+            // First, try getting the component from the intent
+            ComponentName component = taskInfo.baseIntent.getComponent();
+            if (component != null) {
+                return component.getPackageName();
+            }
+            // If component is null, the package might be set explicitly on the intent
+            String intentPackage = taskInfo.baseIntent.getPackage();
+            if (intentPackage != null) {
+                return intentPackage;
+            }
+        }
+
+        // If none of the above worked, return null
+        Log.w(TAG, "Could not determine package name for taskId: " + taskInfo.taskId);
+        return null;
     }
 }

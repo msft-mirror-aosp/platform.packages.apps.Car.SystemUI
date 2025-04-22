@@ -15,6 +15,9 @@
  */
 package com.android.systemui.car.wm.scalableui.view;
 
+import static com.android.car.scalableui.model.PanelControllerMetadata.DRAG_DEC_EVENT_ID_TAG;
+import static com.android.car.scalableui.model.PanelControllerMetadata.DRAG_INC_EVENT_ID_TAG;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
@@ -57,7 +60,11 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     private boolean mIsHorizontal;
 
     private String mDragEventId;
+    private String mDragDecreaseEventId;
+    private String mDragIncreaseEventId;
     private float mSnapThreshold;
+    private float mDragStart;
+
     private int mState = 0;
 
     private final List<BreakPoint> mBreakPoints;
@@ -102,6 +109,8 @@ public class GripBarViewController extends DecorPanelControllerBase implements
 
     private void init(PanelControllerMetadata metadata) {
         mDragEventId = metadata.getStringConfiguration(PanelControllerMetadata.EVENT_ID_TAG);
+        mDragDecreaseEventId = metadata.getStringConfiguration(DRAG_DEC_EVENT_ID_TAG);
+        mDragIncreaseEventId = metadata.getStringConfiguration(DRAG_INC_EVENT_ID_TAG);
         mIsHorizontal = Integer.parseInt(
                 metadata.getStringConfiguration(PanelControllerMetadata.ORIENTATION_TAG)) == 1;
         mSnapThreshold = Integer.parseInt(
@@ -161,10 +170,18 @@ public class GripBarViewController extends DecorPanelControllerBase implements
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                mDragStart = mIsHorizontal ? event.getRawX() : event.getRawY();
                 return;
             case MotionEvent.ACTION_MOVE:
                 dispatchEvent(new KeyFrameEvent.Builder(mDragEventId,
                         progress).build());
+                if (mDragDecreaseEventId != null && value < mDragStart) {
+                    dispatchEvent(new KeyFrameEvent.Builder(mDragDecreaseEventId,
+                            progress).build());
+                } else if (mDragIncreaseEventId != null) {
+                    dispatchEvent(new KeyFrameEvent.Builder(mDragIncreaseEventId,
+                            progress).build());
+                }
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:

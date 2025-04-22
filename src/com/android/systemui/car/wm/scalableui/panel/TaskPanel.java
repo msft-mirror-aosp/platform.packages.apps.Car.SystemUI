@@ -283,7 +283,6 @@ public final class TaskPanel extends BasePanel {
         Variant currentVariant = panelState == null ? null : panelState.getCurrentVariant();
 
         update(autoSurfaceTransaction, tx, currentVariant, /* updateChildren= */ true);
-
         tx.apply();
         autoSurfaceTransaction.apply();
     }
@@ -294,12 +293,6 @@ public final class TaskPanel extends BasePanel {
     @Nullable
     public AutoDecor getAutoDecor() {
         return mAutoDecor;
-    }
-
-
-    @Override
-    public void setBlur(Blur blur) {
-        // Pending cherry-pick
     }
 
     private void updateDecors(@NonNull AutoSurfaceTransaction autoSurfaceTransaction,

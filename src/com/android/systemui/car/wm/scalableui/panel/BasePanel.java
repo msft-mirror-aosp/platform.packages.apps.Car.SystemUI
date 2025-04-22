@@ -28,7 +28,6 @@ import android.view.SurfaceControl;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.car.scalableui.model.Blur;
 import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.model.Role;
 import com.android.car.scalableui.model.Variant;
@@ -61,7 +60,6 @@ public abstract class BasePanel implements Panel {
     private int mCornerRadius;
     @NonNull
     private Insets mInsets = Insets.NONE;
-    private Blur mBlur;
     @Nullable
     private PanelControllerMetadata mPanelControllerMetadata;
 
@@ -209,16 +207,6 @@ public abstract class BasePanel implements Panel {
     @Override
     public void setBounds(Rect bounds) {
         mBounds = bounds;
-    }
-
-    @Override
-    public void setBlur(Blur blur) {
-        mBlur = blur;
-    }
-
-    @Override
-    public Blur getBlur() {
-        return mBlur;
     }
 
     @Override

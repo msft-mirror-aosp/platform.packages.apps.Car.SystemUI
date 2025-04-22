@@ -157,18 +157,10 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
             }
 
             // Attach the root task with the taskview shell part.
-            if (mTransitions.isUsingShellTransitions()) {
-                // Do not trigger onTaskAppeared on shell part directly as it is no longer the
-                // correct entry point for a new task in the task view.
-                // Shell part will eventually trigger onTaskAppeared on the client as well.
-                mTransitions.startRootTask(mTaskViewTaskShellPart, taskInfo, leash, wct);
-            } else {
-                if (wct != null) {
-                    mShellTaskOrganizer.applyTransaction(wct);
-                }
-                // Shell part will eventually trigger onTaskAppeared on the client as well.
-                mTaskViewTaskShellPart.onTaskAppeared(taskInfo, leash);
-            }
+            // Do not trigger onTaskAppeared on shell part directly as it is no longer the
+            // correct entry point for a new task in the task view.
+            // Shell part will eventually trigger onTaskAppeared on the client as well.
+            mTransitions.startRootTask(mTaskViewTaskShellPart, taskInfo, leash, wct);
             return;
         }
 
@@ -256,12 +248,7 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         // from mLaunchRootStack
         wct.removeTask(topTask.token);
 
-        if (mTransitions.isUsingShellTransitions()) {
-            mTransitions.startInstantTransition(TRANSIT_CLOSE, wct);
-        } else {
-            mShellTaskOrganizer.applyTransaction(wct);
-        }
-
+        mTransitions.startInstantTransition(TRANSIT_CLOSE, wct);
     }
 
     @Override
@@ -308,11 +295,7 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         if (mIsLaunchRoot) {
             WindowContainerTransaction wct = new WindowContainerTransaction();
             wct.setLaunchRoot(mRootTask.token, null, null);
-            if (mTransitions.isUsingShellTransitions()) {
-                mTransitions.startInstantTransition(TRANSIT_CHANGE, wct);
-            } else {
-                mShellTaskOrganizer.applyTransaction(wct);
-            }
+            mTransitions.startInstantTransition(TRANSIT_CHANGE, wct);
         }
         // Should run on shell's executor
         mShellTaskOrganizer.deleteRootTask(mRootTask.token);

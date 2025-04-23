@@ -15,8 +15,6 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
-import static com.android.systemui.car.wm.scalableui.panel.BasePanel.ROLE_TYPE_LAYOUT;
-
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -32,12 +30,12 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
+import com.android.car.scalableui.model.Role;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
@@ -62,8 +60,6 @@ public class DecorPanelTest extends SysuiTestCase {
     private static final int TEST_LAYER = 1;
     private static final String TEST_PANEL_ID_NAME = "DecorName";
     private static final int TEST_DISPLAY_ID = 0;
-    // Define placeholder resource IDs appropriate for your test setup if R cannot be resolved
-    private static final int TEST_ROLE_LAYOUT = 12345; // Example placeholder
 
     // --- Mocks for Dependencies ---
     @Mock
@@ -89,7 +85,7 @@ public class DecorPanelTest extends SysuiTestCase {
     @Mock
     private AutoDecor mAutoDecor;
     @Mock
-    private LayoutInflater mLayoutInflater;
+    private Role mRole;
 
     // --- Captors ---
     @Captor
@@ -112,10 +108,8 @@ public class DecorPanelTest extends SysuiTestCase {
         ));
 
         doReturn(mResources).when(mMockContext).getResources();
-        doReturn(ROLE_TYPE_LAYOUT).when(mResources).getResourceTypeName(anyInt());
-        when(mMockContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).thenReturn(
-                mLayoutInflater);
-        doReturn(mMockDecorView).when(mLayoutInflater).inflate(anyInt(), eq(null));
+        doReturn(mMockDecorView).when(mRole).getView(any());
+        doReturn(mRole).when(mDecorPanel).getRole();
 
         // --- Handle Executor ---
         doAnswer(invocation -> {
@@ -131,7 +125,6 @@ public class DecorPanelTest extends SysuiTestCase {
         doReturn(mMockBounds).when(mDecorPanel).getBounds();
         doReturn(TEST_PANEL_ID_NAME).when(mDecorPanel).getPanelId();
         doReturn(TEST_DISPLAY_ID).when(mDecorPanel).getDisplayId();
-        doReturn(TEST_ROLE_LAYOUT).when(mDecorPanel).getRole(); // Default role
 
         // --- Stub AutoDecorManager ---
         when(mAutoDecorManager.createAutoDecor(any(), anyInt(), any(), any()))
@@ -142,7 +135,6 @@ public class DecorPanelTest extends SysuiTestCase {
     @Test
     public void init_whenUserIsUnlocked_callsReset() {
         when(mPanelUtils.isUserUnlocked()).thenReturn(true);
-        doReturn(mMockDecorView).when(mDecorPanel).inflateDecorView(); // Ensure reset doesn't fail
 
         mDecorPanel.init();
 

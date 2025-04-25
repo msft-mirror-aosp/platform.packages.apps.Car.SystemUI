@@ -17,11 +17,13 @@ package com.android.systemui.car.notification;
 
 import android.view.View;
 
+import com.android.systemui.car.systembar.ButtonSelectionStateController;
 import com.android.systemui.car.systembar.CarSystemBarButton;
 import com.android.systemui.car.systembar.CarSystemBarButtonController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.settings.UserTracker;
 
 import dagger.assisted.Assisted;
@@ -40,8 +42,10 @@ public class NotificationButtonController extends CarSystemBarButtonController {
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
             NotificationPanelViewController notificationPanelViewController,
-            UserTracker userTracker) {
-        super(notificationsButton, disableController, stateController, userTracker);
+            UserTracker userTracker, EventDispatcher eventDispatcher,
+            ButtonSelectionStateController buttonSelectionStateController) {
+        super(notificationsButton, disableController, stateController, userTracker,
+                eventDispatcher, buttonSelectionStateController);
 
         mNotificationPanelViewController = notificationPanelViewController;
         mNotificationPanelViewController.registerViewStateListener(notificationsButton);

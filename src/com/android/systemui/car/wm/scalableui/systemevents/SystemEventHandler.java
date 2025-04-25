@@ -18,6 +18,8 @@ package com.android.systemui.car.wm.scalableui.systemevents;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKED;
 
 import static com.android.systemui.car.Flags.scalableUi;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_ENTER_SUW_EVENT_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_EXIST_SUW_EVENT_ID;
 import static com.android.wm.shell.Flags.enableAutoTaskStackController;
 
 import android.car.user.CarUserManager;
@@ -120,9 +122,9 @@ public class SystemEventHandler implements CoreStartable {
         if (isUserSetupInProgress != mIsUserSetupInProgress) {
             mIsUserSetupInProgress = isUserSetupInProgress;
             if (mIsUserSetupInProgress) {
-                mEventDispatcher.executeTransaction("_System_EnterSuwEvent");
+                mEventDispatcher.executeTransaction(SYSTEM_ENTER_SUW_EVENT_ID);
             } else {
-                StateManager.handlePanelReset();
+                mEventDispatcher.executeTransaction(SYSTEM_EXIST_SUW_EVENT_ID);
             }
         }
     }

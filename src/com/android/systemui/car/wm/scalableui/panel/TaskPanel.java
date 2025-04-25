@@ -94,6 +94,7 @@ public final class TaskPanel extends BasePanel {
     private OverlayPanelView mOverlayView;
     private final AutoDecorManager mAutoDecorManager;
     private AutoDecor mAutoDecor;
+    @Nullable
     private String mTopTaskPackageName;
     private Context mContext;
 
@@ -173,7 +174,14 @@ public final class TaskPanel extends BasePanel {
                     @Override
                     public void onTaskAppeared(ActivityManager.RunningTaskInfo taskInfo,
                             SurfaceControl leash) {
-                        mTopTaskPackageName = taskInfo.baseActivity.getPackageName();
+
+                        mTopTaskPackageName = mPanelUtils.getTaskPackageName(taskInfo);
+                        if (mTopTaskPackageName == null) {
+                            Log.e(TAG, "onTaskAppeared: Failed to get package name for task "
+                                    + taskInfo.taskId);
+                            return;
+                        }
+
                         mAutoTaskStackHelper.setTaskUntrimmableIfNeeded(taskInfo);
                         mTaskPanelInfoRepository.onTaskAppearedOnPanel(getId(), taskInfo);
                     }
@@ -232,12 +240,16 @@ public final class TaskPanel extends BasePanel {
             mOverlayView.setCornerRadius(blur.getCornerRadius());
         }
         if (blur.isVailEnabled()) {
-            try {
-                Drawable icon = mContext.getPackageManager().getApplicationIcon(
-                        mTopTaskPackageName);
-                mOverlayView.setVail(icon);
-            } catch (PackageManager.NameNotFoundException e) {
-                Log.e(TAG, "vail can't be set for package name ", e);
+            if (mTopTaskPackageName == null) {
+                Log.e(TAG, "vail can't be set for null package name");
+            } else {
+                try {
+                    Drawable icon = mContext.getPackageManager().getApplicationIcon(
+                            mTopTaskPackageName);
+                    mOverlayView.setVail(icon);
+                } catch (PackageManager.NameNotFoundException e) {
+                    Log.e(TAG, "vail can't be set for package name ", e);
+                }
             }
         }
     }

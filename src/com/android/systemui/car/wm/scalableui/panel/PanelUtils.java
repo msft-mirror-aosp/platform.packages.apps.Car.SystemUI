@@ -16,8 +16,11 @@
 package com.android.systemui.car.wm.scalableui.panel;
 
 import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.UserManager;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -78,6 +81,35 @@ public class PanelUtils {
     }
 
     /**
+     * Calculates the four rectangular areas representing the insets of a {@link TaskPanel}.
+     *
+     * This method uses the inset values and bounds of the provided {@code taskPanel}
+     * to define four distinct {@link Rect} objects. Each rectangle corresponds to the
+     * screen area effectively occupied by the left, top, right, or bottom inset,
+     * relative to the task panel's bounds.
+     *
+     * @param taskPanel The task panel whose inset areas are to be calculated.
+     * @return An array of {@link Rect} objects of size 4, ordered as follows:
+     * <ul>
+     * <li>Index 0: Rectangle representing the left inset area.</li>
+     * <li>Index 1: Rectangle representing the top inset area.</li>
+     * <li>Index 2: Rectangle representing the right inset area.</li>
+     * <li>Index 3: Rectangle representing the bottom inset area.</li>
+     * </ul>
+     */
+    public Rect[] getTaskPanelInsets(TaskPanel taskPanel) {
+        Rect insets = taskPanel.getInsets().toRect();
+        Rect[] insetSides = new Rect[4];
+        insetSides[0] = new Rect(0, 0, insets.left, taskPanel.getY2());
+        insetSides[1] = new Rect(0, 0, taskPanel.getX2(), insets.top);
+        insetSides[2] = new Rect(taskPanel.getX2() - insets.right, 0, taskPanel.getX2(),
+                taskPanel.getY2());
+        insetSides[3] = new Rect(0, taskPanel.getY2() - insets.bottom, taskPanel.getX2(),
+                taskPanel.getY2());
+        return insetSides;
+    }
+
+    /**
      * Checks if the user is unlocked.
      */
     public boolean isUserUnlocked() {
@@ -86,5 +118,53 @@ public class PanelUtils {
                 : ActivityManager.getCurrentUser();
 
         return mUserManager != null && mUserManager.isUserUnlocked(userId);
+    }
+
+    /**
+     * Helper method to safely extract the package name from a RunningTaskInfo.
+     * It checks topActivity, realActivity, baseActivity, and finally the baseIntent
+     * in that order to find a valid package name.
+     *
+     * @param taskInfo The RunningTaskInfo object.
+     * @return The package name associated with the task, or null if it cannot be determined.
+     */
+    @Nullable
+    public String getTaskPackageName(@Nullable ActivityManager.RunningTaskInfo taskInfo) {
+        if (taskInfo == null) {
+            return null;
+        }
+
+        // 1. Try topActivity
+        if (taskInfo.topActivity != null) {
+            return taskInfo.topActivity.getPackageName();
+        }
+
+        // 2. Try realActivity
+        if (taskInfo.realActivity != null) {
+            return taskInfo.realActivity.getPackageName();
+        }
+
+        // 3. Try baseActivity (the original attempt)
+        if (taskInfo.baseActivity != null) {
+            return taskInfo.baseActivity.getPackageName();
+        }
+
+        // 4. Try baseIntent
+        if (taskInfo.baseIntent != null) {
+            // First, try getting the component from the intent
+            ComponentName component = taskInfo.baseIntent.getComponent();
+            if (component != null) {
+                return component.getPackageName();
+            }
+            // If component is null, the package might be set explicitly on the intent
+            String intentPackage = taskInfo.baseIntent.getPackage();
+            if (intentPackage != null) {
+                return intentPackage;
+            }
+        }
+
+        // If none of the above worked, return null
+        Log.w(TAG, "Could not determine package name for taskId: " + taskInfo.taskId);
+        return null;
     }
 }

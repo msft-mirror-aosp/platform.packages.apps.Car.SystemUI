@@ -60,6 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.inject.Inject;
@@ -81,13 +82,14 @@ public class TaskPanelTransitionCoordinator {
     private AnimatorSet mRunningAnimatorSet = null;
     private final AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
     private final PanelUtils mPanelUtils;
-    private final AutoLayoutManager mAutoLayoutManager;
     private IBinder mActiveTransition;
+    private final AutoLayoutManager mAutoLayoutManager;
 
     @Inject
     public TaskPanelTransitionCoordinator(AutoTaskStackController autoTaskStackController,
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
-            PanelUtils panelUtils, AutoLayoutManager autoLayoutManager) {
+            PanelUtils panelUtils,
+            AutoLayoutManager autoLayoutManager) {
         mAutoTaskStackController = autoTaskStackController;
         mAutoSurfaceTransactionFactory = autoSurfaceTransactionFactory;
         mPanelUtils = panelUtils;
@@ -442,26 +444,10 @@ public class TaskPanelTransitionCoordinator {
         tx.setAlpha(sc, taskPanel.getAlpha());
         tx.setLayer(sc, taskPanel.getLayer());
 
-        Rect insets = taskPanel.getInsets().toRect();
-        mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(),
-                /* left */ 0, systemOverlays(),
-                new Rect(0, 0, insets.left, taskPanel.getBounds().bottom));
-        mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(),
-                /* top */ 1, systemOverlays(),
-                new Rect(0, 0, taskPanel.getBounds().right, insets.top));
-        mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(),
-                /* right */ 2, systemOverlays(),
-                new Rect(
-                        taskPanel.getBounds().right - insets.right,
-                        0,
-                        taskPanel.getBounds().right,
-                        taskPanel.getBounds().bottom));
-        mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(),
-                /* bottom */ 3, systemOverlays(),
-                new Rect(
-                        0,
-                        taskPanel.getBounds().bottom - insets.bottom,
-                        taskPanel.getBounds().right,
-                        taskPanel.getBounds().bottom));
+        Rect[] panelInsets = mPanelUtils.getTaskPanelInsets(taskPanel);
+        IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
+            mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(), sideIndex,
+                    systemOverlays(), panelInsets[sideIndex]);
+        });
     }
 }

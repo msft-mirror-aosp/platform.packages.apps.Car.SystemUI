@@ -47,11 +47,22 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:paddingBottom="@dimen/data_subscription_pop_up_vertical_padding"
-            android:paddingEnd="@dimen/data_subscription_pop_up_horizontal_padding"
             android:paddingStart="@dimen/data_subscription_pop_up_horizontal_padding"
+            android:paddingEnd="@dimen/data_subscription_pop_up_text_padding"
             android:paddingTop="@dimen/data_subscription_pop_up_vertical_padding"
             android:textColor="@color/qc_pop_up_text_color"
-            android:layout_marginHorizontal="@dimen/data_subscription_pop_up_horizontal_margin"/>
+            android:layout_marginStart="@dimen/data_subscription_pop_up_horizontal_margin"/>
+        <TextView
+            android:id="@+id/popup_uxr_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="@dimen/data_subscription_pop_up_vertical_padding"
+            android:paddingStart="@dimen/data_subscription_pop_up_text_padding"
+            android:paddingEnd="@dimen/data_subscription_pop_up_horizontal_padding"
+            android:paddingTop="@dimen/data_subscription_pop_up_vertical_padding"
+            android:textColor="@color/qc_pop_up_text_color"
+            android:layout_marginEnd="@dimen/data_subscription_pop_up_horizontal_margin"/>
 
         <Button
             android:id="@+id/data_subscription_explore_options_button"

@@ -48,7 +48,7 @@ public class DataSubscriptionUnseenIconController extends
     }
 
     @Override
-    public void onChange(int value) {
+    public void onStatusChanged(int value) {
         updateShouldDisplayUnseenIcon();
     }
 

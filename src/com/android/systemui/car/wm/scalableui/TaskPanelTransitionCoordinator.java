@@ -104,12 +104,12 @@ public class TaskPanelTransitionCoordinator {
                 mPendingPanelTransactions.put(transition, transaction);
                 playPendingAnimations(transition, null);
             } else {
-                this.updateTaskPanelSurface(transaction);
+                updatePanelSurface(transaction);
             }
         }
     }
 
-    private void updateTaskPanelSurface(PanelTransaction panelTransaction) {
+    private void updatePanelSurface(PanelTransaction panelTransaction) {
         logIfDebuggable("updatePanelSurface: " + panelTransaction);
         AutoSurfaceTransaction autoSurfaceTransaction =
                 mAutoSurfaceTransactionFactory.createTransaction(DECOR_TRANSACTION);
@@ -122,7 +122,7 @@ public class TaskPanelTransitionCoordinator {
             }
             Transition transition = entry.getValue();
             Variant toVariant = transition.getToVariant();
-            if (panel instanceof DecorPanel decorPanel) {
+            if (panel instanceof DecorPanel decorPanel && decorPanel.getAutoDecor() != null) {
                 logIfDebuggable("move decorPanel=" + decorPanel.getPanelId() + " to"
                         + toVariant.getBounds() + " layer=" + toVariant.getLayer()
                         + " visible=" + toVariant.isVisible());
@@ -145,6 +145,8 @@ public class TaskPanelTransitionCoordinator {
                         toVariant.getBounds().top);
                 autoSurfaceTransaction.setTaskSurfaceCornerRadius(taskId,
                         toVariant.getCornerRadius());
+            } else {
+                Log.e(TAG, "Invalid panel " + panel);
             }
         }
         autoSurfaceTransaction.apply();

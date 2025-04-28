@@ -34,8 +34,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.datasubscription.DataSubscriptionController;
+import com.android.car.datasubscription.DataSubscriptionMessageCreator;
+import com.android.car.datasubscription.DataSubscriptionMessageEventListener;
 import com.android.car.datasubscription.DataSubscriptionViewActionListener;
-import com.android.car.datasubscription.NetworkTaskEventListener;
 import com.android.systemui.R;
 import com.android.systemui.settings.UserTracker;
 
@@ -44,7 +45,7 @@ import javax.inject.Inject;
 /**
  * Create a toolkit view for data subscription controller
  */
-public class DataSubscriptionToolkitView implements NetworkTaskEventListener {
+public class DataSubscriptionToolkitView implements DataSubscriptionMessageEventListener {
     private final DataSubscriptionStatsLogHelper mDataSubscriptionStatsLogHelper;
     private final Context mContext;
     @NonNull
@@ -55,20 +56,21 @@ public class DataSubscriptionToolkitView implements NetworkTaskEventListener {
     private final int mPopUpTimeOut;
     private final UserTracker mUserTracker;
     private View mAnchorView;
-    private CharSequence mTopLabel;
-    private boolean mIsProactiveMsg;
+    private boolean mIsProactiveMessage;
     private DataSubscriptionViewActionListener mListener;
     private TextView mPopUpPrompt;
+    private TextView mUxrPrompt;
 
     @Inject
     public DataSubscriptionToolkitView(
             Context context,
             UserTracker userTracker,
-            DataSubscriptionStatsLogHelper dataSubscriptionStatsLogHelper) {
+            DataSubscriptionStatsLogHelper dataSubscriptionStatsLogHelper,
+            DataSubscriptionMessageCreator dataSubscriptionMessageCreator) {
         mContext = context;
         mUserTracker = userTracker;
         mDataSubscriptionStatsLogHelper = dataSubscriptionStatsLogHelper;
-        mListener = new DataSubscriptionController(mContext);
+        mListener = new DataSubscriptionController(mContext, dataSubscriptionMessageCreator);
         mIntent = new Intent(DATA_SUBSCRIPTION_ACTION);
         mIntent.setPackage(mContext.getString(
                 R.string.connectivity_flow_app));
@@ -88,7 +90,7 @@ public class DataSubscriptionToolkitView implements NetworkTaskEventListener {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 mPopupWindow.dismiss();
-                mListener.onMsgDismissed();
+                mListener.onMessageDismissed();
                 mDataSubscriptionStatsLogHelper.logSessionFinished();
                 return true;
             }
@@ -102,27 +104,28 @@ public class DataSubscriptionToolkitView implements NetworkTaskEventListener {
             mDataSubscriptionStatsLogHelper.logButtonClicked();
         });
         mPopUpPrompt = mPopupView.findViewById(R.id.popup_text_view);
-
+        mUxrPrompt = mPopupView.findViewById(R.id.popup_uxr_text_view);
     }
 
     @Override
     public boolean onDataSubscriptionStatusChanged(boolean isUxrRequired,
-                                         boolean shouldDisplayProactiveMsg) {
+            String proactiveMessage, String uxrPrompt) {
         if (isUxrRequired && mPopupWindow.isShowing()) {
             mPopupWindow.dismiss();
             mDataSubscriptionStatsLogHelper.logSessionFinished();
             return false;
         }
-        if (shouldDisplayProactiveMsg && !mPopupWindow.isShowing()) {
-            mIsProactiveMsg = true;
-            showPopUpWindow();
+        if (proactiveMessage != null && !proactiveMessage.isEmpty()
+                && !mPopupWindow.isShowing()) {
+            mIsProactiveMessage = true;
+            showPopUpWindow(proactiveMessage, uxrPrompt);
             return true;
         }
         return false;
     }
     @Override
-    public boolean onAppForeground(boolean isUxrRequired, boolean shouldDisplayReactiveMsg,
-                                  CharSequence appLabel) {
+    public boolean onAppForegrounded(boolean isUxrRequired, String reactiveMessage,
+            String uxrPrompt) {
         if (isUxrRequired && mPopupWindow.isShowing()) {
             mPopupWindow.dismiss();
             mDataSubscriptionStatsLogHelper.logSessionFinished();
@@ -133,30 +136,31 @@ public class DataSubscriptionToolkitView implements NetworkTaskEventListener {
         } else {
             mExplorationButton.setVisibility(View.VISIBLE);
         }
-        mTopLabel = appLabel;
 
-        if (shouldDisplayReactiveMsg && !mPopupWindow.isShowing()) {
-            mIsProactiveMsg = false;
-            showPopUpWindow();
+        if (reactiveMessage != null && !reactiveMessage.isEmpty()
+                && !mPopupWindow.isShowing()) {
+            mIsProactiveMessage = false;
+            showPopUpWindow(reactiveMessage, uxrPrompt);
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean onUxrChange(boolean isUxrRequired) {
-        if (mIsProactiveMsg && mPopupWindow.isShowing() && isUxrRequired) {
+    public boolean onUxrChanged(boolean isUxrRequired, String uxrPrompt) {
+        if (mIsProactiveMessage && mPopupWindow.isShowing() && isUxrRequired) {
             mPopupWindow.dismiss();
             mDataSubscriptionStatsLogHelper.logSessionFinished();
             return false;
         }
 
-        if (!mIsProactiveMsg && mPopupWindow.isShowing()) {
+        if (!mIsProactiveMessage && mPopupWindow.isShowing()) {
             if (isUxrRequired) {
                 mExplorationButton.setVisibility(View.GONE);
             } else {
                 mExplorationButton.setVisibility(View.VISIBLE);
             }
+            mUxrPrompt.setText(uxrPrompt);
             mPopupWindow.update();
             return true;
         }
@@ -164,15 +168,15 @@ public class DataSubscriptionToolkitView implements NetworkTaskEventListener {
     }
 
     @VisibleForTesting
-    void showPopUpWindow() {
-        if (mPopUpPrompt != null) {
-            if (mIsProactiveMsg) {
-                mPopUpPrompt.setText(R.string.data_subscription_proactive_msg_prompt);
+    void showPopUpWindow(String message, String uxrPrompt) {
+        if (mAnchorView != null) {
+            mPopUpPrompt.setText(message);
+            mUxrPrompt.setText(uxrPrompt);
+            if (mIsProactiveMessage) {
                 mDataSubscriptionStatsLogHelper.logSessionStarted(
                         DataSubscriptionStatsLogHelper.DataSubscriptionMessageType
                                 .PROACTIVE);
             } else {
-                mPopUpPrompt.setText(getReactiveMsg());
                 mDataSubscriptionStatsLogHelper.logSessionStarted(
                         DataSubscriptionStatsLogHelper.DataSubscriptionMessageType
                                 .REACTIVE);
@@ -185,11 +189,11 @@ public class DataSubscriptionToolkitView implements NetworkTaskEventListener {
                 mPopupWindow.showAsDropDown(mAnchorView, -xOffsetInPx, yOffsetInPx);
                 mAnchorView.getHandler().postDelayed(() -> {
                     if (mPopupWindow.isShowing()) {
-                        // after the proactive msg dismisses, it won't get displayed again
-                        // hence the msg from now on will just be reactive
-                        mIsProactiveMsg = false;
+                        // after the proactive message dismisses, it won't get displayed again
+                        // hence the message from now on will just be reactive
+                        mIsProactiveMessage = false;
                         mPopupWindow.dismiss();
-                        mListener.onMsgDismissed();
+                        mListener.onMessageDismissed();
                         mDataSubscriptionStatsLogHelper.logSessionFinished();
                     }
                 }, mPopUpTimeOut);
@@ -197,24 +201,15 @@ public class DataSubscriptionToolkitView implements NetworkTaskEventListener {
         }
     }
 
-    private CharSequence getReactiveMsg() {
-        return mContext.getString(
-                R.string.data_subscription_reactive_msg_prompt, mTopLabel.isEmpty()
-                        ? mContext.getResources().getString(
-                        R.string.data_subscription_reactive_generic_app_label) :
-                        mTopLabel);
-
-    }
-
     /** Set the anchor view. If null, unregisters active data subscription listeners */
     public void setAnchorView(View view) {
         mAnchorView = view;
         if (view != null) {
-            mListener.setNetworkTaskEventListener(this);
+            mListener.setDataSubscriptionMessageEventListener(this);
             mListener.registerListeners();
         } else {
             if (mListener != null) {
-                mListener.setNetworkTaskEventListener(null);
+                mListener.setDataSubscriptionMessageEventListener(null);
                 mListener.unregisterListeners();
             }
         }
@@ -226,8 +221,8 @@ public class DataSubscriptionToolkitView implements NetworkTaskEventListener {
     }
 
     @VisibleForTesting
-    void setIsProactiveMsg(boolean isProactiveMsg) {
-        mIsProactiveMsg = isProactiveMsg;
+    void setIsProactiveMessage(boolean isProactiveMessage) {
+        mIsProactiveMessage = isProactiveMessage;
     }
 
     @VisibleForTesting

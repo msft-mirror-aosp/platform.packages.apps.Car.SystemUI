@@ -44,7 +44,7 @@ import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.model.Blur;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelControllerMetadata;
-import com.android.car.scalableui.model.PanelState;
+import com.android.car.scalableui.model.Role;
 import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.TaskPanelController;
 import com.android.systemui.car.CarServiceProvider;
@@ -66,6 +66,7 @@ import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
+import java.util.Arrays;
 import java.util.Set;
 
 /**
@@ -402,29 +403,18 @@ public final class TaskPanel extends BasePanel {
     }
 
     @Override
-    public void setRole(int role) {
+    public void setRole(Role role) {
         if (getRole() == role) return;
         super.setRole(role);
-        String roleTypeName = getContext().getResources().getResourceTypeName(getRole());
-        switch (roleTypeName) {
-            case ROLE_TYPE_STRING:
-                String roleString = getContext().getResources().getString(getRole());
-                if (PanelState.DEFAULT_ROLE.equals(roleString)) {
-                    mIsLaunchRoot = true;
-                    return;
-                }
+
+        if (getRole().isDefault()) {
+            mIsLaunchRoot = true;
+            return;
+        } else {
+            ComponentName[] persistedActivities = getRole().getPersistedActivities();
+            if (persistedActivities != null) {
                 mPersistedActivities.clear();
-                ComponentName componentName = ComponentName.unflattenFromString(roleString);
-                mPersistedActivities.add(componentName);
-                break;
-            case ROLE_TYPE_ARRAY:
-                mPersistedActivities.clear();
-                String[] componentNameStrings = getContext().getResources().getStringArray(
-                        getRole());
-                mPersistedActivities.addAll(convertToComponentNames(componentNameStrings));
-                break;
-            default: {
-                Log.e(TAG, "Role type is not supported " + roleTypeName);
+                mPersistedActivities.addAll(Arrays.asList(persistedActivities));
             }
         }
     }
@@ -458,9 +448,10 @@ public final class TaskPanel extends BasePanel {
             return;
         }
 
-        if (getRole() == 0) {
+        if (getRole().getPersistedActivities() == null
+                || getRole().getPersistedActivities().length == 0) {
             if (DEBUG) {
-                Log.d(TAG, "mRole is 0, [" + getPanelId() + "]");
+                Log.d(TAG, "Persistent Activities is empty, [" + getPanelId() + "]");
             }
             return;
         }

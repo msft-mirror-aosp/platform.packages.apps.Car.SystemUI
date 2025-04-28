@@ -351,7 +351,7 @@ public final class TaskPanel extends BasePanel {
 
     @Override
     public void setSafeBounds(@NonNull Rect safeBounds) {
-        if (safeBounds.isEmpty()) {
+        if (safeBounds.isEmpty() && !getBounds().isEmpty()) {
             throw new IllegalArgumentException(
                     "Tried setting incorrect safe bounds: " + safeBounds + "on panel: "
                             + getPanelId());

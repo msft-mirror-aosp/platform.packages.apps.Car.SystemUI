@@ -64,6 +64,7 @@ import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -360,6 +361,10 @@ public final class TaskPanel extends BasePanel {
     public void setPanelControllerMetadata(
             @Nullable PanelControllerMetadata panelControllerMetadata) {
         super.setPanelControllerMetadata(panelControllerMetadata);
+        if (Objects.equals(getPanelControllerMetadata(), panelControllerMetadata)) {
+            logIfDebuggable(getPanelId() + ": PanelControllerMetadata unchanged.");
+            return;
+        }
         mTaskPanelController = mPanelControllerInitializer.createTaskPanelController(
                 panelControllerMetadata);
         if (mTaskPanelController != null) {

@@ -22,13 +22,15 @@ import android.content.Intent;
 import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.tos.TosHelper;
 import com.android.systemui.R;
+import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 
 public final class MapsPanelController extends BaseTaskPanelController {
     private static final String TAG = MapsPanelController.class.getSimpleName();
 
     public MapsPanelController(@NonNull Context context,
-            @NonNull PanelControllerMetadata panelControllerMetadata) {
-        super(context, panelControllerMetadata);
+            @NonNull PanelControllerMetadata panelControllerMetadata,
+            @NonNull PanelUtils panelUtils) {
+        super(context, panelControllerMetadata, panelUtils);
     }
 
     @Override

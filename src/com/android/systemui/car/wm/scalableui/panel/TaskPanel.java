@@ -18,7 +18,7 @@ package com.android.systemui.car.wm.scalableui.panel;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_PANEL_EMPTY_EVENT_ID;
 
-import android.annotation.SuppressLint;
+import android.annotation.MainThread;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
@@ -35,7 +35,6 @@ import android.util.ArraySet;
 import android.util.Log;
 import android.view.SurfaceControl;
 
-import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -56,6 +55,7 @@ import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionController;
 import com.android.wm.shell.automotive.AutoDecor;
 import com.android.wm.shell.automotive.AutoDecorManager;
+import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -71,6 +71,7 @@ import dagger.assisted.AssistedInject;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * A {@link RootTaskStack} based implementation of a {@link Panel}.
@@ -125,6 +126,8 @@ public final class TaskPanel extends BasePanel {
     @Nullable
     private TaskPanelController mTaskPanelController;
     @NonNull
+    private final AutoLayoutManager mAutoLayoutManager;
+    @NonNull
     private final ShellExecutor mMainExecutor;
 
     @AssistedInject
@@ -139,6 +142,7 @@ public final class TaskPanel extends BasePanel {
             AutoDecorManager autoDecorManager,
             EventDispatcher dispatcher,
             PanelControllerInitializer panelControllerInitializer,
+            AutoLayoutManager autoLayoutManager,
             @ShellMainThread ShellExecutor mainExecutor,
             @Assisted String id) {
         super(context, id);
@@ -155,6 +159,7 @@ public final class TaskPanel extends BasePanel {
         mAutoDecorManager = autoDecorManager;
         mContext = context;
         mPanelControllerInitializer = panelControllerInitializer;
+        mAutoLayoutManager = autoLayoutManager;
         mMainExecutor = mainExecutor;
     }
 
@@ -185,6 +190,12 @@ public final class TaskPanel extends BasePanel {
                                     mRootTaskId);
                         }
                         setupToolbarAndSafeRegion();
+                        Rect[] panelInsets = mPanelUtils.getTaskPanelInsets(TaskPanel.this);
+                        IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
+                            mAutoLayoutManager.addOrUpdateInsets(TaskPanel.this.getRootStack(),
+                                    sideIndex,
+                                    systemOverlays(), panelInsets[sideIndex]);
+                        });
 
                         if (mPanelUtils.isUserUnlocked()) {
                             reset();

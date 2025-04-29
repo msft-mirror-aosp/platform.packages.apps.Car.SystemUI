@@ -23,6 +23,7 @@ import android.content.Context;
 import android.hardware.SensorPrivacyManager;
 import android.window.DisplayAreaOrganizer;
 
+import com.android.car.datasubscription.DataSubscriptionMessageCreator;
 import com.android.keyguard.KeyguardViewController;
 import com.android.keyguard.dagger.KeyguardDisplayModule;
 import com.android.systemui.accessibility.AccessibilityModule;
@@ -203,4 +204,10 @@ abstract class CarSystemUIModule {
     @Binds
     abstract PrivacyDotDecorProviderFactory providePrivacyDotDecorProviderFactory(
             CarPrivacyChipDecorProviderFactory carPrivacyDotDecorProviderFactory);
+
+    @Provides
+    static DataSubscriptionMessageCreator bindDataSubscriptionMessageCreator(
+            Context context) {
+        return new DataSubscriptionMessageCreator(context);
+    }
 }

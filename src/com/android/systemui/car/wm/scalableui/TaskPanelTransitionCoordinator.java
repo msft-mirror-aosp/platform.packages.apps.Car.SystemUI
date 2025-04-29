@@ -152,6 +152,11 @@ public class TaskPanelTransitionCoordinator {
                         toVariant.getBounds().top);
                 autoSurfaceTransaction.setTaskSurfaceCornerRadius(taskId,
                         toVariant.getCornerRadius());
+                Rect[] panelInsets = mPanelUtils.getTaskPanelInsets(taskPanel);
+                IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
+                    mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(), sideIndex,
+                            systemOverlays(), panelInsets[sideIndex]);
+                });
             } else {
                 Log.e(TAG,"Invalid panel " + panel);
             }

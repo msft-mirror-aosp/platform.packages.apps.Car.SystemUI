@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,6 +41,7 @@ import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.panel.TaskPanelHandler;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -70,6 +72,8 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
     private TaskPanelHandler mTaskPanelHandler;
     @Mock
     private PanelControllerMetadata mPanelControllerMetadata;
+    @Mock
+    private PanelUtils mPanelUtils;
 
     @Before
     public void setUp() {
@@ -83,7 +87,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
                 PanelControllerMetadata.DEFAULT_COMPONENT)).thenReturn(
                 DEFAULT_ACTIVITY.flattenToString());
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
-                mPanelControllerMetadata);
+                mPanelControllerMetadata, mPanelUtils);
         Intent defaultIntent = controller.getDefaultComponent();
         assertNotNull(defaultIntent);
         assertEquals(DEFAULT_ACTIVITY, defaultIntent.getComponent());
@@ -94,7 +98,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
         when(mPanelControllerMetadata.getStringConfiguration(
                 PanelControllerMetadata.DEFAULT_COMPONENT)).thenReturn(null);
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
-                mPanelControllerMetadata);
+                mPanelControllerMetadata, mPanelUtils);
         Intent defaultIntent = controller.getDefaultComponent();
         assertNotNull(defaultIntent);
         assertNull(defaultIntent.getComponent());
@@ -108,7 +112,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
         when(mPanelControllerMetadata.hasConfiguration(
                 PanelControllerMetadata.PERSISTENT_ACTIVITY)).thenReturn(true);
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
-                mPanelControllerMetadata);
+                mPanelControllerMetadata, mPanelUtils);
         Set<ComponentName> persistentActivities = controller.getPersistentActivities();
         assertEquals(2, persistentActivities.size());
         assertTrue(persistentActivities.contains(ACTIVITY_1));
@@ -120,7 +124,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
         when(mPanelControllerMetadata.getStringConfiguration(
                 PanelControllerMetadata.PERSISTENT_ACTIVITY)).thenReturn(null);
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
-                mPanelControllerMetadata);
+                mPanelControllerMetadata, mPanelUtils);
         Set<ComponentName> persistentActivities = controller.getPersistentActivities();
         assertTrue(persistentActivities.isEmpty());
     }
@@ -130,11 +134,15 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
         String updateFilterString = "android-app://com.example.package/path";
         when(mPanelControllerMetadata.getStringConfiguration(
                 PanelControllerMetadata.UPDATABLE_INTENT_FILTER)).thenReturn(updateFilterString);
-        new BaseTaskPanelController(mMockContext, mPanelControllerMetadata);
+
+        new BaseTaskPanelController(mMockContext, mPanelControllerMetadata, mPanelUtils);
+
         ArgumentCaptor<BroadcastReceiver> receiverCaptor = ArgumentCaptor.forClass(
                 BroadcastReceiver.class);
         ArgumentCaptor<IntentFilter> filterCaptor = ArgumentCaptor.forClass(IntentFilter.class);
-        verify(mMockContext).registerReceiver(receiverCaptor.capture(), filterCaptor.capture());
+        verify(mMockContext).registerReceiver(receiverCaptor.capture(), filterCaptor.capture(),
+                eq(Context.RECEIVER_EXPORTED));
+
         IntentFilter filter = filterCaptor.getValue();
         assertEquals(2, filter.countActions());
         assertTrue(filter.hasAction(Intent.ACTION_PACKAGE_ADDED));
@@ -146,9 +154,11 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
     public void constructor_noUpdateFilter_doesNotRegisterReceiver() {
         when(mPanelControllerMetadata.getStringConfiguration(
                 PanelControllerMetadata.UPDATABLE_INTENT_FILTER)).thenReturn(null);
-        new BaseTaskPanelController(mMockContext, mPanelControllerMetadata);
+
+        new BaseTaskPanelController(mMockContext, mPanelControllerMetadata, mPanelUtils);
+
         verify(mMockContext, never()).registerReceiver(any(BroadcastReceiver.class),
-                any(IntentFilter.class));
+                any(IntentFilter.class), eq(Context.RECEIVER_EXPORTED));
     }
 
     @Test
@@ -157,7 +167,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
                 PanelControllerMetadata.PERSISTENT_ACTIVITY,
                 ACTIVITY_1.flattenToString()).build();
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
-                mPanelControllerMetadata);
+                mPanelControllerMetadata, mPanelUtils);
         controller.registerTaskPanelHandler(mTaskPanelHandler);
         // Trigger update (e.g., after package event)
         controller.updatePersistentActivities();
@@ -173,7 +183,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
                 PanelControllerMetadata.PERSISTENT_ACTIVITY,
                 ACTIVITY_1.flattenToString()).build();
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
-                mPanelControllerMetadata);
+                mPanelControllerMetadata, mPanelUtils);
         assertTrue(controller.handles(ACTIVITY_1));
     }
 
@@ -184,7 +194,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
                 ACTIVITY_1.flattenToString()).build();
 
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
-                mPanelControllerMetadata);
+                mPanelControllerMetadata, mPanelUtils);
         assertFalse(controller.handles(ACTIVITY_2));
     }
 
@@ -194,7 +204,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
                 PanelControllerMetadata.DEFAULT_COMPONENT)).thenReturn(
                 DEFAULT_ACTIVITY.flattenToString());
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
-                mPanelControllerMetadata);
+                mPanelControllerMetadata, mPanelUtils);
         Intent intent = controller.getDefaultComponent();
         assertNotNull(intent);
         assertEquals(DEFAULT_ACTIVITY, intent.getComponent());

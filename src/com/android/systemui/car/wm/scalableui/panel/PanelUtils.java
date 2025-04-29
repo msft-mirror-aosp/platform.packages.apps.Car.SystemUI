@@ -15,18 +15,26 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
+import android.annotation.NonNull;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.UserManager;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.panel.PanelPool;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.wm.shell.dagger.WMSingleton;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
@@ -136,5 +144,46 @@ public class PanelUtils {
         // If none of the above worked, return null
         Log.w(TAG, "Could not determine package name for taskId: " + taskInfo.taskId);
         return null;
+    }
+
+    /**
+     * Parses persistent activity {@link ComponentName}s from package names specified in the
+     * configuration.
+     */
+    public Set<ComponentName> parsePersistentActivitiesFromPackages(
+            @NonNull PanelControllerMetadata panelControllerMetadata, @NonNull String configName) {
+        Set<ComponentName> set = new HashSet<>();
+        if (!panelControllerMetadata.hasConfiguration(configName)) {
+            return set;
+        }
+        List<String> list = panelControllerMetadata.getListConfiguration(configName);
+        if (list == null) {
+            String value = panelControllerMetadata.getStringConfiguration(configName);
+            set.addAll(getComponentNamesFromPackage(value));
+        } else {
+            for (String item : list) {
+                set.addAll(getComponentNamesFromPackage(item));
+            }
+        }
+        return set;
+    }
+
+    private Set<ComponentName> getComponentNamesFromPackage(@Nullable String packageName) {
+        Set<ComponentName> set = new HashSet<>();
+        if (packageName == null) {
+            return set;
+        }
+        PackageManager pm = mContext.getPackageManager();
+        try {
+            PackageInfo packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            if (packageInfo != null && packageInfo.activities != null) {
+                for (ActivityInfo ai : packageInfo.activities) {
+                    set.add(ai.getComponentName());
+                }
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Fail to find package Info for " + packageName + ", e=" + e);
+        }
+        return set;
     }
 }

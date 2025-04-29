@@ -114,7 +114,7 @@ public final class DecorPanel extends BasePanel {
     public void setVisibility(boolean isVisible) {
         mMainExecutor.execute(() -> {
             boolean currentVisibility = isVisible();
-            if (currentVisibility != isVisible) {
+            if (currentVisibility != isVisible && mDecorView != null) {
                 if (isVisible) {
                     mDecorView.setVisibility(View.VISIBLE);
                 } else {

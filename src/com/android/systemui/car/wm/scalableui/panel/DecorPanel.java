@@ -111,6 +111,21 @@ public final class DecorPanel extends BasePanel {
     }
 
     @Override
+    public void setVisibility(boolean isVisible) {
+        mMainExecutor.execute(() -> {
+            boolean currentVisibility = isVisible();
+            if (currentVisibility != isVisible) {
+                if (isVisible) {
+                    mDecorView.setVisibility(View.VISIBLE);
+                } else {
+                    mDecorView.setVisibility(View.GONE);
+                }
+            }
+            super.setVisibility(isVisible);
+        });
+    }
+
+    @Override
     public void reset() {
         // Only modify the view and window on the main thread to prevent thread-based exceptions
         mMainExecutor.execute(() -> {

@@ -139,7 +139,4 @@
     <string name="back_btn" msgid="7774349944465667391">"Артқа"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Толық экран"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Жоспарларды көру"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Интернет тарифтік жоспарыңыздың мерзімі аяқталды."</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s үшін интернет байланысы қажет."</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"Осы қолданба"</string>
 </resources>

@@ -139,7 +139,4 @@
     <string name="back_btn" msgid="7774349944465667391">"返回"</string>
     <string name="fullscreen" msgid="7648956467442135844">"全螢幕"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"查看計劃"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"你的互聯網計劃已到期"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s 需要互聯網連線"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"此應用程式"</string>
 </resources>

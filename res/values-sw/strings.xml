@@ -139,7 +139,4 @@
     <string name="back_btn" msgid="7774349944465667391">"Rudi nyuma"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Skrini Nzima"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Angalia mipango"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Muda wa mpango wako wa intaneti umeisha"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s inahitaji muunganisho wa intaneti"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"Programu hii"</string>
 </resources>

@@ -139,7 +139,4 @@
     <string name="back_btn" msgid="7774349944465667391">"กลับ"</string>
     <string name="fullscreen" msgid="7648956467442135844">"เต็มหน้าจอ"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"ดูแพ็กเกจ"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"แพ็กเกจอินเทอร์เน็ตของคุณหมดอายุแล้ว"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s ต้องมีการเชื่อมต่ออินเทอร์เน็ต"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"แอปนี้"</string>
 </resources>

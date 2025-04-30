@@ -28,4 +28,5 @@ public class SystemEventConstants {
     /** Token IDs */
     public static final String PANEL_TOKEN_ID = "panelId";
     public static final String COMPONENT_TOKEN_ID = "component";
+    public static final String PACKAGE_TOKEN_ID = "package";
 }

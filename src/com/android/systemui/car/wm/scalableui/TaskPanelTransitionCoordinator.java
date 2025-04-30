@@ -153,7 +153,7 @@ public class TaskPanelTransitionCoordinator {
                 autoSurfaceTransaction.setTaskSurfaceCornerRadius(taskId,
                         toVariant.getCornerRadius());
             } else {
-                Log.e(TAG,"Invalid panel " + panel);
+                Log.e(TAG, "Invalid panel " + panel);
             }
         }
         autoSurfaceTransaction.apply();
@@ -376,6 +376,12 @@ public class TaskPanelTransitionCoordinator {
                     toVariant.getLayer());
             autoTaskStackTransaction.setTaskStackState(taskPanel.getRootStack().getId(),
                     autoTaskStackState);
+
+            if (toVariant.isVisible() && taskPanel.isRootTaskEmpty()
+                    && mPanelUtils.isUserUnlocked()) {
+                taskPanel.setBaseIntent(autoTaskStackTransaction);
+                logIfDebuggable("Set base intent for " + taskPanel.getPanelId());
+            }
         }
 
         return autoTaskStackTransaction;

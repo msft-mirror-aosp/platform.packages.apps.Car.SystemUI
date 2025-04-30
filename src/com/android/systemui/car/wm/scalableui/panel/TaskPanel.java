@@ -18,7 +18,7 @@ package com.android.systemui.car.wm.scalableui.panel;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_PANEL_EMPTY_EVENT_ID;
 
-import android.annotation.MainThread;
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
@@ -35,6 +35,7 @@ import android.util.ArraySet;
 import android.util.Log;
 import android.view.SurfaceControl;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -219,7 +220,7 @@ public final class TaskPanel extends BasePanel {
                     @Override
                     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
                         mTaskPanelInfoRepository.onTaskVanishedOnPanel(getPanelId(), taskInfo);
-                        if (isRooTaskEmpty()) {
+                        if (isRootTaskEmpty()) {
                             mEventDispatcher.executeTransaction(new Event.Builder(
                                     SYSTEM_TASK_PANEL_EMPTY_EVENT_ID).addToken(PANEL_TOKEN_ID,
                                     getPanelId()).build());
@@ -315,7 +316,16 @@ public final class TaskPanel extends BasePanel {
         mBlur = blur;
     }
 
-    private void setBaseIntent(AutoTaskStackTransaction autoTaskStackTransaction) {
+    /**
+     * Sets the base intent for the provided AutoTaskStackTransaction.
+     *
+     * This method configures and sends a PendingIntent based on the default intent
+     * of this component, targeting the root task of the current root stack.
+     * It will return early if no default intent or root task info is available.
+     *
+     * @param autoTaskStackTransaction The transaction to which the base intent will be applied.
+     */
+    public void setBaseIntent(AutoTaskStackTransaction autoTaskStackTransaction) {
         if (getDefaultIntent() == null || getRootStack().getRootTaskInfo() == null) {
             return;
         }
@@ -369,11 +379,17 @@ public final class TaskPanel extends BasePanel {
         return defaultIntent;
     }
 
+    @Nullable
     public SurfaceControl getLeash() {
         return mLeash;
     }
 
-    public void setLeash(SurfaceControl leash) {
+    @Nullable
+    public String getTopTaskPackageName() {
+        return mTopTaskPackageName;
+    }
+
+    public void setLeash(@Nullable SurfaceControl leash) {
         mLeash = leash;
     }
 
@@ -437,6 +453,7 @@ public final class TaskPanel extends BasePanel {
         return componentNames;
     }
 
+    @SuppressLint("MissingPermission")
     private void trySetPersistentActivity() {
         if (mCarActivityManager == null || mRootTaskStack == null) {
             if (DEBUG) {
@@ -474,15 +491,13 @@ public final class TaskPanel extends BasePanel {
         }
     }
 
-    @Override
-    public void setVisibility(boolean isVisible) {
-        super.setVisibility(isVisible);
-        if (isVisible && isRooTaskEmpty()) {
-            mContext.startActivityAsUser(getDefaultIntent(), UserHandle.CURRENT);
-        }
-    }
-
-    private boolean isRooTaskEmpty() {
+    /**
+     * Checks if the root task stack exists and is currently empty (contains no activities).
+     *
+     * @return True if mRootTaskStack is not null and the root task has zero activities, false
+     * otherwise.
+     */
+    public boolean isRootTaskEmpty() {
         return mRootTaskStack != null
                 && mRootTaskStack.getRootTaskInfo().numActivities == 0;
     }
@@ -561,7 +576,8 @@ public final class TaskPanel extends BasePanel {
     @Override
     public String toString() {
         return "TaskPanel{"
-                + "mId='" + getPanelId() + '\''
+                + "mId='" + getPanelId()
+                + ", isRooTaskEmpty=" + isRootTaskEmpty()
                 + ", mBounds=" + getBounds()
                 + ", mAlpha=" + getAlpha()
                 + ", mIsVisible=" + isVisible()

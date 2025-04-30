@@ -20,6 +20,7 @@ import static android.view.WindowManager.TRANSIT_FLAG_AVOID_MOVE_TO_FRONT;
 
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.COMPONENT_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.EMPTY_EVENT_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PACKAGE_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_HOME_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_CLOSE_EVENT_ID;
@@ -230,9 +231,10 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                 && request.getTriggerTask().baseIntent.getCategories().contains(
                 Intent.CATEGORY_HOME)) {
             ComponentName component = request.getTriggerTask().baseActivity;
-            String componentString = component != null ? component.flattenToString() : null;
-            return new Event.Builder(SYSTEM_HOME_EVENT_ID).addToken(COMPONENT_TOKEN_ID,
-                    componentString).build();
+            String packageString = component != null ? component.getPackageName() : null;
+            // Multiple SUW activities have home as categories. Panels should treat them the same.
+            return new Event.Builder(SYSTEM_HOME_EVENT_ID).addToken(PACKAGE_TOKEN_ID,
+                    packageString).build();
         }
 
         if ((request.getFlags() & TRANSIT_FLAG_AVOID_MOVE_TO_FRONT)

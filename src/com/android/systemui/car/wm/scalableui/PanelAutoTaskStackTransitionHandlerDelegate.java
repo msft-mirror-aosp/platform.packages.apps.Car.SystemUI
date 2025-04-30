@@ -294,11 +294,15 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                     .addToken(PANEL_TOKEN_ID, panelId)
                     .addToken(COMPONENT_TOKEN_ID, componentString)
                     .build();
+        } else if (TransitionUtil.isOpeningType(request.getType())) {
+            return new Event.Builder(SYSTEM_TASK_OPEN_EVENT_ID)
+                    .addToken(PANEL_TOKEN_ID, panelId)
+                    .addToken(COMPONENT_TOKEN_ID, componentString)
+                    .build();
+        } else {
+            Log.e(TAG, "Unknown transition type " + request.getType());
+            return EMPTY_EVENT;
         }
-        return new Event.Builder(SYSTEM_TASK_OPEN_EVENT_ID)
-                .addToken(PANEL_TOKEN_ID, panelId)
-                .addToken(COMPONENT_TOKEN_ID, componentString)
-                .build();
     }
 
     @Override

@@ -69,8 +69,7 @@ import java.util.Set;
  */
 public final class TaskPanel extends BasePanel {
     private static final String TAG = TaskPanel.class.getSimpleName();
-    private static final String ROLE_TYPE_STRING = "string";
-    private static final String ROLE_TYPE_ARRAY = "array";
+
     private static final boolean DEBUG = Build.isDebuggable();
 
     private final AutoTaskStackController mAutoTaskStackController;
@@ -183,17 +182,17 @@ public final class TaskPanel extends BasePanel {
                         }
 
                         mAutoTaskStackHelper.setTaskUntrimmableIfNeeded(taskInfo);
-                        mTaskPanelInfoRepository.onTaskAppearedOnPanel(getId(), taskInfo);
+                        mTaskPanelInfoRepository.onTaskAppearedOnPanel(getPanelId(), taskInfo);
                     }
 
                     @Override
                     public void onTaskInfoChanged(ActivityManager.RunningTaskInfo taskInfo) {
-                        mTaskPanelInfoRepository.onTaskChangedOnPanel(getId(), taskInfo);
+                        mTaskPanelInfoRepository.onTaskChangedOnPanel(getPanelId(), taskInfo);
                     }
 
                     @Override
                     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
-                        mTaskPanelInfoRepository.onTaskVanishedOnPanel(getId(), taskInfo);
+                        mTaskPanelInfoRepository.onTaskVanishedOnPanel(getPanelId(), taskInfo);
                         if (mRootTaskStack != null
                                 && mRootTaskStack.getRootTaskInfo().numActivities == 0) {
                             mEventDispatcher.executeTransaction(new Event.Builder(
@@ -412,7 +411,7 @@ public final class TaskPanel extends BasePanel {
         if (mCarActivityManager == null || mRootTaskStack == null) {
             if (DEBUG) {
                 Log.d(TAG,
-                        "mCarActivityManager or mRootTaskStack is null, [" + getId() + ","
+                        "mCarActivityManager or mRootTaskStack is null, [" + getPanelId() + ","
                                 + mCarActivityManager + ", " + mRootTaskStack + "]");
             }
             return;
@@ -512,11 +511,10 @@ public final class TaskPanel extends BasePanel {
     public String toString() {
         return "TaskPanel{"
                 + "mId='" + getPanelId() + '\''
+                + ", mBounds=" + getBounds()
                 + ", mAlpha=" + getAlpha()
                 + ", mIsVisible=" + isVisible()
-                + ", mBounds=" + getBounds()
                 + ", mRootTaskId=" + mRootTaskId
-                + ", mContext=" + getContext()
                 + ", mRole=" + getRole()
                 + ", mLayer=" + getLayer()
                 + ", mLeash=" + mLeash

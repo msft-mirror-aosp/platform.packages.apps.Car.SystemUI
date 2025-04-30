@@ -57,6 +57,7 @@ import com.android.wm.shell.shared.annotations.ShellMainThread;
 import com.android.wm.shell.sysui.ShellInit;
 import com.android.wm.shell.taskview.TaskViewTransitions;
 import com.android.wm.shell.transition.FocusTransitionObserver;
+import com.android.wm.shell.transition.Transitions;
 import com.android.wm.shell.windowdecor.WindowDecorViewModel;
 import com.android.wm.shell.windowdecor.common.viewhost.DefaultWindowDecorViewHostSupplier;
 import com.android.wm.shell.windowdecor.common.viewhost.WindowDecorViewHost;
@@ -135,6 +136,8 @@ public abstract class CarWMShellModule {
     @Provides
     static WindowDecorViewModel provideWindowDecorViewModel(
             Context context,
+            @ShellMainThread Handler handler,
+            Transitions transitions,
             @ShellMainThread ShellExecutor mainExecutor,
             @ShellBackgroundThread ShellExecutor bgExecutor,
             ShellInit shellInit,
@@ -148,6 +151,8 @@ public abstract class CarWMShellModule {
     ) {
         return new AutoDisplayCompatWindowDecorViewModel(
                 context,
+                handler,
+                transitions,
                 mainExecutor,
                 bgExecutor,
                 shellInit,

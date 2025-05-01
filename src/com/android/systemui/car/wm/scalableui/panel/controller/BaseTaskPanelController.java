@@ -16,6 +16,7 @@
 package com.android.systemui.car.wm.scalableui.panel.controller;
 
 import android.annotation.NonNull;
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -34,6 +35,7 @@ import androidx.annotation.VisibleForTesting;
 import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.panel.TaskPanelController;
 import com.android.car.scalableui.panel.TaskPanelHandler;
+import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -54,15 +56,15 @@ public class BaseTaskPanelController implements TaskPanelController {
     private static final String TAG = BaseTaskPanelController.class.getSimpleName();
     protected static final boolean DEBUG = Build.isDebuggable();
     private static final String PACKAGE_DATA_SCHEME = "package";
-
     protected final Context mContext;
-
     @NonNull
     private final Object mLock = new Object();
     @NonNull
     private final PanelControllerMetadata mPanelControllerMetadata;
     @NonNull
     private final Set<ComponentName> mPersistentActivities;
+    @NonNull
+    private final PanelUtils mPanelUtils;
     @Nullable
     private ComponentName mDefaultComponent;
     @Nullable
@@ -79,10 +81,12 @@ public class BaseTaskPanelController implements TaskPanelController {
      *                                containing configuration information.
      */
     public BaseTaskPanelController(@NonNull Context context,
-            @NonNull PanelControllerMetadata panelControllerMetadata) {
+            @NonNull PanelControllerMetadata panelControllerMetadata,
+            @NonNull PanelUtils panelUtils) {
         mContext = context;
         mPanelControllerMetadata = panelControllerMetadata;
         mPersistentActivities = new HashSet<>();
+        mPanelUtils = panelUtils;
         init(panelControllerMetadata);
     }
 
@@ -93,6 +97,7 @@ public class BaseTaskPanelController implements TaskPanelController {
             registerApplicationInstallUninstallReceiver();
         }
         updatePersistentActivities();
+        logIfDebuggable("Panel Controller init: " + this);
     }
 
     private Intent parseUpdateFilter(@NonNull PanelControllerMetadata metadata) {
@@ -119,16 +124,16 @@ public class BaseTaskPanelController implements TaskPanelController {
             public void onReceive(Context context, Intent intent) {
                 updatePersistentActivities();
             }
-        }, filter);
+        }, filter, Context.RECEIVER_EXPORTED);
     }
 
+    @SuppressLint("MissingPermission")
     @VisibleForTesting
     void updatePersistentActivities() {
         mPersistentActivities.clear();
         if (mUpdateFilter != null) {
             List<ResolveInfo> result = mContext.getPackageManager().queryIntentActivitiesAsUser(
                     mUpdateFilter, PackageManager.MATCH_ALL, ActivityManager.getCurrentUser());
-
             for (ResolveInfo info : result) {
                 if (info == null || info.activityInfo == null
                         || info.activityInfo.getComponentName() == null) {
@@ -140,10 +145,11 @@ public class BaseTaskPanelController implements TaskPanelController {
                 }
             }
         }
-
+        mPersistentActivities.addAll(
+                mPanelUtils.parsePersistentActivitiesFromPackages(mPanelControllerMetadata,
+                        PanelControllerMetadata.PERSISTENT_PACKAGE));
         mPersistentActivities.addAll(parsePersistentActivities(mPanelControllerMetadata,
                 PanelControllerMetadata.PERSISTENT_ACTIVITY));
-
         synchronized (mLock) {
             if (mTaskPanelHandler != null) {
                 mTaskPanelHandler.onApplicationChanged();
@@ -191,7 +197,6 @@ public class BaseTaskPanelController implements TaskPanelController {
                 set.add(componentName);
             }
         }
-
         return set;
     }
 

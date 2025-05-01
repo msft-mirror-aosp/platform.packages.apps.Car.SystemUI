@@ -15,10 +15,13 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
+import static android.view.WindowInsets.Type.systemOverlays;
+
 import static com.android.systemui.car.Flags.displayCompatibilityAutoDecorSafeRegion;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_PANEL_EMPTY_EVENT_ID;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
@@ -52,6 +55,7 @@ import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionController;
 import com.android.wm.shell.automotive.AutoDecor;
 import com.android.wm.shell.automotive.AutoDecorManager;
+import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -64,6 +68,7 @@ import dagger.assisted.AssistedInject;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * A {@link RootTaskStack} based implementation of a {@link Panel}.
@@ -113,6 +118,8 @@ public final class TaskPanel extends BasePanel {
     private String mTopTaskPackageName;
     @Nullable
     private TaskPanelController mTaskPanelController;
+    @NonNull
+    private final AutoLayoutManager mAutoLayoutManager;
 
     @AssistedInject
     public TaskPanel(AutoTaskStackController autoTaskStackController,
@@ -126,6 +133,7 @@ public final class TaskPanel extends BasePanel {
             AutoDecorManager autoDecorManager,
             EventDispatcher dispatcher,
             PanelControllerInitializer panelControllerInitializer,
+            AutoLayoutManager autoLayoutManager,
             @Assisted String id) {
         super(context, id);
         mAutoTaskStackController = autoTaskStackController;
@@ -141,6 +149,7 @@ public final class TaskPanel extends BasePanel {
         mAutoDecorManager = autoDecorManager;
         mContext = context;
         mPanelControllerInitializer = panelControllerInitializer;
+        mAutoLayoutManager = autoLayoutManager;
     }
 
     /**
@@ -170,6 +179,12 @@ public final class TaskPanel extends BasePanel {
                                     mRootTaskId);
                         }
                         setupToolbarAndSafeRegion();
+                        Rect[] panelInsets = mPanelUtils.getTaskPanelInsets(TaskPanel.this);
+                        IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
+                            mAutoLayoutManager.addOrUpdateInsets(TaskPanel.this.getRootStack(),
+                                    sideIndex,
+                                    systemOverlays(), panelInsets[sideIndex]);
+                        });
 
                         if (mPanelUtils.isUserUnlocked()) {
                             reset();
@@ -212,7 +227,7 @@ public final class TaskPanel extends BasePanel {
                     @Override
                     public void onTaskVanished(ActivityManager.RunningTaskInfo taskInfo) {
                         mTaskPanelInfoRepository.onTaskVanishedOnPanel(getPanelId(), taskInfo);
-                        if (isRooTaskEmpty()) {
+                        if (isRootTaskEmpty()) {
                             mEventDispatcher.executeTransaction(new Event.Builder(
                                     SYSTEM_TASK_PANEL_EMPTY_EVENT_ID).addToken(PANEL_TOKEN_ID,
                                     getPanelId()).build());
@@ -237,7 +252,16 @@ public final class TaskPanel extends BasePanel {
         mAutoTaskStackController.startTransition(autoTaskStackTransaction);
     }
 
-    private void setBaseIntent(AutoTaskStackTransaction autoTaskStackTransaction) {
+    /**
+     * Sets the base intent for the provided AutoTaskStackTransaction.
+     *
+     * This method configures and sends a PendingIntent based on the default intent
+     * of this component, targeting the root task of the current root stack.
+     * It will return early if no default intent or root task info is available.
+     *
+     * @param autoTaskStackTransaction The transaction to which the base intent will be applied.
+     */
+    public void setBaseIntent(AutoTaskStackTransaction autoTaskStackTransaction) {
         if (getDefaultIntent() == null || getRootStack().getRootTaskInfo() == null) {
             return;
         }
@@ -291,15 +315,17 @@ public final class TaskPanel extends BasePanel {
         return defaultIntent;
     }
 
+    @Nullable
     public SurfaceControl getLeash() {
         return mLeash;
     }
 
+    @Nullable
     public String getTopTaskPackageName() {
         return mTopTaskPackageName;
     }
 
-    public void setLeash(SurfaceControl leash) {
+    public void setLeash(@Nullable SurfaceControl leash) {
         mLeash = leash;
     }
 
@@ -363,6 +389,7 @@ public final class TaskPanel extends BasePanel {
         return componentNames;
     }
 
+    @SuppressLint("MissingPermission")
     private void trySetPersistentActivity() {
         if (mCarActivityManager == null || mRootTaskStack == null) {
             if (DEBUG) {
@@ -400,15 +427,13 @@ public final class TaskPanel extends BasePanel {
         }
     }
 
-    @Override
-    public void setVisibility(boolean isVisible) {
-        super.setVisibility(isVisible);
-        if (isVisible && isRooTaskEmpty()) {
-            mContext.startActivityAsUser(getDefaultIntent(), UserHandle.CURRENT);
-        }
-    }
-
-    private boolean isRooTaskEmpty() {
+    /**
+     * Checks if the root task stack exists and is currently empty (contains no activities).
+     *
+     * @return True if mRootTaskStack is not null and the root task has zero activities, false
+     * otherwise.
+     */
+    public boolean isRootTaskEmpty() {
         return mRootTaskStack != null
                 && mRootTaskStack.getRootTaskInfo().numActivities == 0;
     }
@@ -490,7 +515,8 @@ public final class TaskPanel extends BasePanel {
     @Override
     public String toString() {
         return "TaskPanel{"
-                + "mId='" + getPanelId() + '\''
+                + "mId='" + getPanelId()
+                + ", isRooTaskEmpty=" + isRootTaskEmpty()
                 + ", mBounds=" + getBounds()
                 + ", mAlpha=" + getAlpha()
                 + ", mIsVisible=" + isVisible()

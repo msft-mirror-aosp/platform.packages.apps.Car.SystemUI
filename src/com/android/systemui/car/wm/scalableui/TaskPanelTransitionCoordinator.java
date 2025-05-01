@@ -152,8 +152,13 @@ public class TaskPanelTransitionCoordinator {
                         toVariant.getBounds().top);
                 autoSurfaceTransaction.setTaskSurfaceCornerRadius(taskId,
                         toVariant.getCornerRadius());
+                Rect[] panelInsets = mPanelUtils.getTaskPanelInsets(taskPanel);
+                IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
+                    mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(), sideIndex,
+                            systemOverlays(), panelInsets[sideIndex]);
+                });
             } else {
-                Log.e(TAG,"Invalid panel " + panel);
+                Log.e(TAG, "Invalid panel " + panel);
             }
         }
         autoSurfaceTransaction.apply();
@@ -376,6 +381,12 @@ public class TaskPanelTransitionCoordinator {
                     toVariant.getLayer());
             autoTaskStackTransaction.setTaskStackState(taskPanel.getRootStack().getId(),
                     autoTaskStackState);
+
+            if (toVariant.isVisible() && taskPanel.isRootTaskEmpty()
+                    && mPanelUtils.isUserUnlocked()) {
+                taskPanel.setBaseIntent(autoTaskStackTransaction);
+                logIfDebuggable("Set base intent for " + taskPanel.getPanelId());
+            }
         }
 
         return autoTaskStackTransaction;

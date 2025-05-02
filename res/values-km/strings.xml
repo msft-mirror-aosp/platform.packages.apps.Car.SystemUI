@@ -135,7 +135,4 @@
     <string name="back_btn" msgid="7774349944465667391">"ថយក្រោយ"</string>
     <string name="fullscreen" msgid="7648956467442135844">"អេក្រង់ពេញ"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"មើល​គម្រោង"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"គម្រោងអ៊ីនធឺណិតរបស់អ្នកផុតកំណត់ហើយ"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s ត្រូវការការតភ្ជាប់អ៊ីនធឺណិត"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"កម្មវិធីនេះ"</string>
 </resources>

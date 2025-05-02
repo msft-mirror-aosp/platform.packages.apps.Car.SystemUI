@@ -135,7 +135,4 @@
     <string name="back_btn" msgid="7774349944465667391">"Terug"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Volskerm"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Sien pakkette"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Jou internetpakket het verval"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s het ’n internetverbinding nodig"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"Hierdie app"</string>
 </resources>

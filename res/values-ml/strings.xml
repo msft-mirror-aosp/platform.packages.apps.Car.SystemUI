@@ -135,7 +135,4 @@
     <string name="back_btn" msgid="7774349944465667391">"മടങ്ങുക"</string>
     <string name="fullscreen" msgid="7648956467442135844">"പൂർണ്ണ സ്ക്രീൻ"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"പ്ലാനുകൾ കാണുക"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"നിങ്ങളുടെ ഇന്റർനെറ്റ് പ്ലാൻ കാലഹരണപ്പെട്ടു"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s എന്നതിന് ഇന്റർനെറ്റ് കണക്ഷൻ ആവശ്യമാണ്"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"ഈ ആപ്പ്"</string>
 </resources>

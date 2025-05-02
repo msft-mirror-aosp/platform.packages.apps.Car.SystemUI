@@ -255,24 +255,15 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             return EMPTY_EVENT;
         }
 
-        ComponentName component;
-        if (TransitionUtil.isClosingType(request.getType())) {
-            // On a closing event, the baseActivity may be null but the realActivity will still
-            // return the component being closed.
-            component = request.getTriggerTask().realActivity;
-            if (DEBUG) {
-                Log.d(TAG, "Closing transition - using realActivity component=" + component);
-            }
-        } else {
-            component = request.getTriggerTask().baseActivity;
-            if (DEBUG) {
-                Log.d(TAG, "Open transition - using baseActivity component=" + component);
-            }
+        ComponentName component = mPanelUtils.getTaskComponentName(request.getTriggerTask());
+        if (DEBUG) {
+            Log.d(TAG, "Transition type=" + request.getType()
+                    + " using component=" + component);
         }
         String componentString = component != null ? component.flattenToString() : null;
         String panelId;
         TaskPanel panel = null;
-        if (componentString != null) {
+        if (component != null) {
             panel = mPanelUtils.getTaskPanel(tp -> tp.handles(component));
         }
         if (panel == null) {

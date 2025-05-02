@@ -135,7 +135,4 @@
     <string name="back_btn" msgid="7774349944465667391">"ପଛକୁ ଫେରନ୍ତୁ"</string>
     <string name="fullscreen" msgid="7648956467442135844">"ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"ପ୍ଲାନଗୁଡ଼ିକ ଦେଖନ୍ତୁ"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"ଆପଣଙ୍କର ଇଣ୍ଟର୍ନେଟ ପ୍ଲାନର ମିଆଦ ଶେଷ ହୋଇଯାଇଛି"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s ଏକ ଇଣ୍ଟର୍ନେଟ କନେକ୍ସନ ଆବଶ୍ୟକ କରେ"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"ଏହି ଆପ"</string>
 </resources>

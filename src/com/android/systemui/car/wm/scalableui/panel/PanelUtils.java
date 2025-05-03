@@ -129,9 +129,49 @@ public class PanelUtils {
     }
 
     /**
-     * Helper method to safely extract the package name from a RunningTaskInfo.
+     * Helper method to safely extract the ComponentName from a RunningTaskInfo.
      * It checks topActivity, realActivity, baseActivity, and finally the baseIntent
-     * in that order to find a valid package name.
+     * in that order to find a valid component.
+     *
+     * @param taskInfo The RunningTaskInfo object.
+     * @return The ComponentName associated with the task, or null if it cannot be determined.
+     */
+    @Nullable
+    public ComponentName getTaskComponentName(@Nullable ActivityManager.RunningTaskInfo taskInfo) {
+        if (taskInfo == null) {
+            return null;
+        }
+
+        // 1. Try topActivity
+        if (taskInfo.topActivity != null) {
+            return taskInfo.topActivity;
+        }
+
+        // 2. Try realActivity
+        if (taskInfo.realActivity != null) {
+            return taskInfo.realActivity;
+        }
+
+        // 3. Try baseActivity (the original attempt)
+        if (taskInfo.baseActivity != null) {
+            return taskInfo.baseActivity;
+        }
+
+        // 4. Try getting the component from the baseIntent
+        ComponentName component = taskInfo.baseIntent.getComponent();
+        if (component != null) {
+            return component;
+        }
+
+        // If none of the above worked, return null
+        Log.w(TAG, "Could not determine component for taskId: " + taskInfo.taskId);
+        return null;
+    }
+
+    /**
+     * Helper method to safely extract the package name from a RunningTaskInfo.
+     * See {@link #getTaskComponentName} for ordering of retrieving component. If not present,
+     * attempt to fall back to baseIntent package.
      *
      * @param taskInfo The RunningTaskInfo object.
      * @return The package name associated with the task, or null if it cannot be determined.
@@ -142,33 +182,15 @@ public class PanelUtils {
             return null;
         }
 
-        // 1. Try topActivity
-        if (taskInfo.topActivity != null) {
-            return taskInfo.topActivity.getPackageName();
+        ComponentName taskComponentName = getTaskComponentName(taskInfo);
+        if (taskComponentName != null) {
+            return taskComponentName.getPackageName();
         }
 
-        // 2. Try realActivity
-        if (taskInfo.realActivity != null) {
-            return taskInfo.realActivity.getPackageName();
-        }
-
-        // 3. Try baseActivity (the original attempt)
-        if (taskInfo.baseActivity != null) {
-            return taskInfo.baseActivity.getPackageName();
-        }
-
-        // 4. Try baseIntent
-        if (taskInfo.baseIntent != null) {
-            // First, try getting the component from the intent
-            ComponentName component = taskInfo.baseIntent.getComponent();
-            if (component != null) {
-                return component.getPackageName();
-            }
-            // If component is null, the package might be set explicitly on the intent
-            String intentPackage = taskInfo.baseIntent.getPackage();
-            if (intentPackage != null) {
-                return intentPackage;
-            }
+        // If component is null, the package might be set explicitly on the intent
+        String intentPackage = taskInfo.baseIntent.getPackage();
+        if (intentPackage != null) {
+            return intentPackage;
         }
 
         // If none of the above worked, return null

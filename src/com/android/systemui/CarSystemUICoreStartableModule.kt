@@ -19,7 +19,6 @@ package com.android.systemui
 import com.android.keyguard.KeyguardBiometricLockoutLogger
 import com.android.systemui.car.input.DisplayInputSinkController
 import com.android.systemui.car.toast.CarToastUI
-import com.android.systemui.car.voicerecognition.ConnectedDeviceVoiceRecognitionNotifier
 import com.android.systemui.car.window.SystemUIOverlayWindowManager
 import com.android.systemui.car.wm.activity.window.ActivityWindowManager
 import com.android.systemui.car.wm.cluster.ClusterDisplayController
@@ -69,14 +68,6 @@ abstract class CarSystemUICoreStartableModule {
     @IntoMap
     @ClassKey(DisplayInputSinkController::class)
     abstract fun bindDisplayInputSinkController(service: DisplayInputSinkController): CoreStartable
-
-    /** Inject into ConnectedDeviceVoiceRecognitionNotifier.  */
-    @Binds
-    @IntoMap
-    @ClassKey(ConnectedDeviceVoiceRecognitionNotifier::class)
-    abstract fun bindConnectedDeviceVoiceRecognitionNotifier(
-            service: ConnectedDeviceVoiceRecognitionNotifier
-    ): CoreStartable
 
     /** Inject into KeyguardBiometricLockoutLogger.  */
     @Binds

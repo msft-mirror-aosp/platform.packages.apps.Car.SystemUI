@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 
 import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.panel.TaskPanelController;
+import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.wm.shell.dagger.WMSingleton;
 
 import java.lang.reflect.Constructor;
@@ -45,10 +46,13 @@ public class PanelControllerInitializer {
     private static final boolean DEBUG = Build.isDebuggable();
     private static final String TAG = PanelControllerInitializer.class.getSimpleName();
     private final Context mContext;
+    private final PanelUtils mPanelUtils;
 
     @Inject
-    public PanelControllerInitializer(@NonNull Context context) {
+    public PanelControllerInitializer(@NonNull Context context,
+            @NonNull PanelUtils panelUtils) {
         mContext = context;
+        mPanelUtils = panelUtils;
     }
 
     /**
@@ -76,9 +80,10 @@ public class PanelControllerInitializer {
             Class<?> clazz = Class.forName(controllerName);
             if (TaskPanelController.class.isAssignableFrom(clazz)) {
                 Constructor<?> constructor = clazz.getConstructor(Context.class,
-                        PanelControllerMetadata.class);
+                        PanelControllerMetadata.class, PanelUtils.class);
                 //TODO(b/411549493): move to factory pattern.
-                return (TaskPanelController) constructor.newInstance(mContext, metadata);
+                return (TaskPanelController) constructor.newInstance(mContext, metadata,
+                        mPanelUtils);
             }
         } catch (ClassNotFoundException | NoSuchMethodException e) {
             // Handle the case where the class is not found

@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.userswitcher;
 
-import static com.android.systemui.Flags.FLAG_REFACTOR_GET_CURRENT_USER;
 import static com.android.systemui.car.Flags.FLAG_USER_SWITCH_KEYGUARD_SHOWN_TIMEOUT;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -183,44 +182,17 @@ public class UserSwitchTransitionViewControllerTest extends CarSysuiTestCase {
     }
 
     @Test
-    public void onHandleShow_noUserRefactor_setsWMState() throws RemoteException {
-        mSetFlagsRule.disableFlags(FLAG_REFACTOR_GET_CURRENT_USER);
-
-        mCarUserSwitchingDialogController.handleShow(/* newUserId= */ TEST_USER_1);
-        mExecutor.advanceClockToLast();
-        mExecutor.runAllReady();
-
-        verify(mWindowManagerService).setSwitchingUser(true);
-        verify(mWindowManagerService).lockNow(null);
-    }
-
-    @Test
     public void onHandleShow_userRefactor_setsWMState() throws RemoteException {
-        mSetFlagsRule.enableFlags(FLAG_REFACTOR_GET_CURRENT_USER);
-
         mCarUserSwitchingDialogController.handleShow(/* newUserId= */ TEST_USER_1);
         mExecutor.advanceClockToLast();
         mExecutor.runAllReady();
 
         verify(mWindowManagerService).setSwitchingUser(true);
-        verify(mWindowManagerService, never()).lockNow(null);
-    }
-
-    @Test
-    public void handleSwitching_noUserRefactor_doNothing() throws RemoteException {
-        mSetFlagsRule.disableFlags(FLAG_REFACTOR_GET_CURRENT_USER);
-
-        mCarUserSwitchingDialogController.handleSwitching(/* newUserId= */ TEST_USER_1);
-        mExecutor.advanceClockToLast();
-        mExecutor.runAllReady();
-
         verify(mWindowManagerService, never()).lockNow(null);
     }
 
     @Test
     public void handleSwitching_userRefactor_userNotSecure_doNothing() throws RemoteException {
-        mSetFlagsRule.enableFlags(FLAG_REFACTOR_GET_CURRENT_USER);
-
         mCarUserSwitchingDialogController.handleSwitching(/* newUserId= */ TEST_USER_1);
         mExecutor.advanceClockToLast();
         mExecutor.runAllReady();
@@ -230,7 +202,6 @@ public class UserSwitchTransitionViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void handleSwitching_userRefactor_userSecure_setsWMState() throws RemoteException {
-        mSetFlagsRule.enableFlags(FLAG_REFACTOR_GET_CURRENT_USER);
         when(mKeyguardManager.isDeviceSecure(anyInt())).thenReturn(true);
 
         mCarUserSwitchingDialogController.handleSwitching(/* newUserId= */ TEST_USER_1);

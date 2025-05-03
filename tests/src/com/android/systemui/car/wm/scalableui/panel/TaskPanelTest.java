@@ -38,6 +38,7 @@ import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerIn
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionController;
 import com.android.wm.shell.automotive.AutoDecorManager;
+import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
 import com.android.wm.shell.automotive.RootTaskStack;
@@ -82,6 +83,8 @@ public class TaskPanelTest extends CarSysuiTestCase {
     private EventDispatcher mEventDispatcher;
     @Mock
     private PanelControllerInitializer mPanelControllerInitializer;
+    @Mock
+    private AutoLayoutManager mAutoLayoutManager;
 
     @Before
     public void setUp() {
@@ -89,7 +92,7 @@ public class TaskPanelTest extends CarSysuiTestCase {
         mTaskPanel = new TaskPanel(mAutoTaskStackController, mContext, mCarServiceProvider,
                 mAutoTaskStackHelper, mShellTaskOrganizer, mAutoCaptionController, mPanelUtils,
                 mTaskPanelInfoRepository, mAutoDecorManager, mEventDispatcher,
-                mPanelControllerInitializer, TASK_PANEL_ID);
+                mPanelControllerInitializer, mAutoLayoutManager, TASK_PANEL_ID);
         when(mFactory.create(any())).thenReturn(mTaskPanel);
     }
 

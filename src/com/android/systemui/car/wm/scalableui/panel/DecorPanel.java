@@ -18,13 +18,13 @@ package com.android.systemui.car.wm.scalableui.panel;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.android.car.scalableui.model.Role;
 import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
@@ -82,7 +82,7 @@ public final class DecorPanel extends BasePanel {
     }
 
     @Override
-    public void setRole(int role) {
+    public void setRole(Role role) {
         if (getRole() == role) return;
         super.setRole(role);
     }
@@ -90,23 +90,8 @@ public final class DecorPanel extends BasePanel {
     @VisibleForTesting
     @Nullable
     View inflateDecorView() {
-        int role = getRole();
-        String roleTypeName = getContext().getResources().getResourceTypeName(getRole());
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-
-        View view = null;
-
-        switch (roleTypeName) {
-            case ROLE_TYPE_LAYOUT:
-                view = inflater.inflate(role, null);
-                break;
-            case ROLE_TYPE_STRING:
-                view = initFromController();
-                break;
-            default:
-                Log.e(TAG, "Unsupported view type" + roleTypeName);
-        }
-        return view;
+        View view = getRole().getView(getContext());
+        return view != null ? view : initFromController();
     }
 
     private View initFromController() {
@@ -123,6 +108,21 @@ public final class DecorPanel extends BasePanel {
         if (mPanelUtils.isUserUnlocked()) {
             reset();
         }
+    }
+
+    @Override
+    public void setVisibility(boolean isVisible) {
+        mMainExecutor.execute(() -> {
+            boolean currentVisibility = isVisible();
+            if (currentVisibility != isVisible && mDecorView != null) {
+                if (isVisible) {
+                    mDecorView.setVisibility(View.VISIBLE);
+                } else {
+                    mDecorView.setVisibility(View.GONE);
+                }
+            }
+            super.setVisibility(isVisible);
+        });
     }
 
     @Override

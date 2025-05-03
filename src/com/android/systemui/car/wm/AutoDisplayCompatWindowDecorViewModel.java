@@ -21,10 +21,12 @@ import static com.android.systemui.car.Flags.displayCompatibilityCaptionBar;
 import static com.android.systemui.car.displaycompat.CarDisplayCompatUtils.getPackageName;
 import static com.android.systemui.car.displaycompat.CarDisplayCompatUtils.requiresDisplayCompat;
 
+import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.app.ActivityManager;
 import android.car.content.pm.CarPackageManager;
 import android.content.Context;
+import android.os.Handler;
 import android.view.SurfaceControl;
 
 import com.android.systemui.car.CarServiceProvider;
@@ -37,6 +39,7 @@ import com.android.wm.shell.shared.annotations.ShellBackgroundThread;
 import com.android.wm.shell.shared.annotations.ShellMainThread;
 import com.android.wm.shell.sysui.ShellInit;
 import com.android.wm.shell.transition.FocusTransitionObserver;
+import com.android.wm.shell.transition.Transitions;
 import com.android.wm.shell.windowdecor.CarWindowDecorViewModel;
 import com.android.wm.shell.windowdecor.common.viewhost.WindowDecorViewHost;
 import com.android.wm.shell.windowdecor.common.viewhost.WindowDecorViewHostSupplier;
@@ -52,6 +55,8 @@ public class AutoDisplayCompatWindowDecorViewModel extends CarWindowDecorViewMod
     private CarPackageManager mCarPackageManager;
 
     public AutoDisplayCompatWindowDecorViewModel(Context context,
+            @NonNull @ShellMainThread Handler handler,
+            @NonNull Transitions transitions,
             @ShellMainThread ShellExecutor mainExecutor,
             @ShellBackgroundThread ShellExecutor bgExecutor,
             ShellInit shellInit,
@@ -62,8 +67,8 @@ public class AutoDisplayCompatWindowDecorViewModel extends CarWindowDecorViewMod
             FocusTransitionObserver focusTransitionObserver,
             WindowDecorViewHostSupplier<WindowDecorViewHost> windowDecorViewHostSupplier,
             CarServiceProvider carServiceProvider) {
-        super(context, mainExecutor, bgExecutor, shellInit, taskOrganizer, displayController,
-                displayInsetsController, syncQueue, focusTransitionObserver,
+        super(context, handler, transitions, mainExecutor, bgExecutor, shellInit, taskOrganizer,
+                displayController, displayInsetsController, syncQueue, focusTransitionObserver,
                 windowDecorViewHostSupplier);
         if (displayCompatibilityCaptionBar()) {
             carServiceProvider.addListener(

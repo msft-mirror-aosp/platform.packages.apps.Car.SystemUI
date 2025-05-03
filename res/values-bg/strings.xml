@@ -139,7 +139,4 @@
     <string name="back_btn" msgid="7774349944465667391">"Назад"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Цял екран"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Вижте плановете"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Планът ви за интернет е изтекъл"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s се нуждае от връзка с интернет"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"Това приложение"</string>
 </resources>

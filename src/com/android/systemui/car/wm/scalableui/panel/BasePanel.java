@@ -19,13 +19,13 @@ import android.content.Context;
 import android.graphics.Insets;
 import android.graphics.Rect;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
-import com.android.car.scalableui.model.Blur;
 import com.android.car.scalableui.model.PanelControllerMetadata;
+import com.android.car.scalableui.model.Role;
 import com.android.car.scalableui.panel.Panel;
 
 /**
@@ -35,21 +35,15 @@ import com.android.car.scalableui.panel.Panel;
  */
 public abstract class BasePanel implements Panel {
     protected static final boolean DEBUG = Build.isDebuggable();
-
-    @VisibleForTesting
-    static final String ROLE_TYPE_STRING = "string";
-    @VisibleForTesting
-    static final String ROLE_TYPE_ARRAY = "array";
-    @VisibleForTesting
-    static final String ROLE_TYPE_LAYOUT = "layout";
-    @VisibleForTesting
-    static final String ROLE_TYPE_XML = "xml";
+    private static final String TAG = BasePanel.class.getSimpleName();
 
     private final Context mContext;
     private int mLayer = -1;
 
-    private int mRole = 0;
-    private Rect mBounds = null;
+    @Nullable
+    private Role mRole;
+    @NonNull
+    private Rect mBounds = new Rect();
     private boolean mIsVisible;
     private String mPanelId;
     private float mAlpha;
@@ -57,7 +51,6 @@ public abstract class BasePanel implements Panel {
     private int mCornerRadius;
     @NonNull
     private Insets mInsets = Insets.NONE;
-    private Blur mBlur;
     @Nullable
     private PanelControllerMetadata mPanelControllerMetadata;
 
@@ -71,7 +64,7 @@ public abstract class BasePanel implements Panel {
     }
 
     @Override
-    public int getRole() {
+    public Role getRole() {
         return mRole;
     }
 
@@ -185,17 +178,7 @@ public abstract class BasePanel implements Panel {
     }
 
     @Override
-    public void setBlur(Blur blur) {
-        mBlur = blur;
-    }
-
-    @Override
-    public Blur getBlur() {
-        return mBlur;
-    }
-
-    @Override
-    public void setRole(int role) {
+    public void setRole(Role role) {
         mRole = role;
     }
 
@@ -219,5 +202,11 @@ public abstract class BasePanel implements Panel {
     public void setPanelControllerMetadata(
             @Nullable PanelControllerMetadata panelControllerMetadata) {
         mPanelControllerMetadata = panelControllerMetadata;
+    }
+
+    protected static void logIfDebuggable(String msg) {
+        if (DEBUG) {
+            Log.d(TAG, msg);
+        }
     }
 }

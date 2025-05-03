@@ -139,7 +139,4 @@
     <string name="back_btn" msgid="7774349944465667391">"Enrere"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Pantalla completa"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Mostra els plans"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"El teu pla d\'Internet ha caducat"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s necessita connexió a Internet"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"Aquesta aplicació"</string>
 </resources>

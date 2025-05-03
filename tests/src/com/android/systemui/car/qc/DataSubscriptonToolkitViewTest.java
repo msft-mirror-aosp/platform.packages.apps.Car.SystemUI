@@ -34,6 +34,7 @@ import android.widget.PopupWindow;
 
 import androidx.test.filters.SmallTest;
 
+import com.android.car.datasubscription.DataSubscriptionMessageCreator;
 import com.android.car.datasubscription.DataSubscriptionViewActionListener;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
@@ -64,8 +65,11 @@ public class DataSubscriptonToolkitViewTest extends CarSysuiTestCase {
     private UserTracker mUserTracker;
     @Mock
     private DataSubscriptionViewActionListener mDataSubscriptionViewActionListener;
+    @Mock
+    private DataSubscriptionMessageCreator mDataSubscriptionMessageCreator;
 
     private DataSubscriptionToolkitView mDataSubscriptionToolkitView;
+    private String mUxrPrompt = "Test UXR Prompt";
 
     @Rule
     public final CheckFlagsRule mCheckFlagsRule = DeviceFlagsValueProvider.createCheckFlagsRule();
@@ -75,7 +79,7 @@ public class DataSubscriptonToolkitViewTest extends CarSysuiTestCase {
         MockitoAnnotations.initMocks(this);
         when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(1000));
         mDataSubscriptionToolkitView = new DataSubscriptionToolkitView(mContext, mUserTracker,
-                mDataSubscriptionStatsLogHelper);
+                mDataSubscriptionStatsLogHelper, mDataSubscriptionMessageCreator);
         mDataSubscriptionToolkitView.setDataSubscriptionViewActionListener(
                 mDataSubscriptionViewActionListener);
         mDataSubscriptionToolkitView.setPopupWindow(mPopupWindow);
@@ -104,10 +108,11 @@ public class DataSubscriptonToolkitViewTest extends CarSysuiTestCase {
 
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
     @Test
-    public void onDataSubscriptionStatusChanged_shouldNotDisplayProactiveMsg_popUpNotDisplay() {
+    public void onDataSubscriptionStatusChanged_emptyProactiveMessage_popUpNotDisplay() {
         when(mPopupWindow.isShowing()).thenReturn(true);
 
-        mDataSubscriptionToolkitView.onDataSubscriptionStatusChanged(false, false);
+        mDataSubscriptionToolkitView.onDataSubscriptionStatusChanged(false, "",
+                mUxrPrompt);
 
         assertThat(mDataSubscriptionToolkitView.getPopUpPrompt().getText().isEmpty())
                 .isTrue();
@@ -115,21 +120,22 @@ public class DataSubscriptonToolkitViewTest extends CarSysuiTestCase {
 
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
     @Test
-    public void onDataSubscriptionStatusChanged_shouldDisplayProactiveMsg_popUpDisplay() {
+    public void onDataSubscriptionStatusChanged_validProactiveMessage_popUpDisplay() {
         when(mPopupWindow.isShowing()).thenReturn(true);
 
-        mDataSubscriptionToolkitView.onDataSubscriptionStatusChanged(false, true);
+        mDataSubscriptionToolkitView.onDataSubscriptionStatusChanged(
+                false, "Valid Message", mUxrPrompt);
 
         Assert.assertNotNull(mDataSubscriptionToolkitView.getPopUpPrompt().getText());
     }
 
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
     @Test
-    public void onAppForeground_shouldNotDisplayReactiveMsg_popUpNotDisplay() {
+    public void onAppForeground_emptyReactiveMessage_popUpNotDisplay() {
         when(mPopupWindow.isShowing()).thenReturn(true);
 
-        mDataSubscriptionToolkitView.onAppForeground(false, true,
-                "Test App Label");
+        mDataSubscriptionToolkitView.onAppForegrounded(false, "",
+                mUxrPrompt);
 
         assertThat(mDataSubscriptionToolkitView.getPopUpPrompt().getText().isEmpty())
                 .isTrue();
@@ -137,36 +143,35 @@ public class DataSubscriptonToolkitViewTest extends CarSysuiTestCase {
 
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
     @Test
-    public void onAppForeground_shouldDisplayReactiveMsg_popUpDisplay() {
+    public void onAppForeground_validReactiveMessage_popUpDisplay() {
         when(mPopupWindow.isShowing()).thenReturn(true);
 
-        mDataSubscriptionToolkitView.onAppForeground(false, true,
-                "Test App Label");
+        mDataSubscriptionToolkitView.onAppForegrounded(false, "Valid Message",
+                mUxrPrompt);
 
         Assert.assertNotNull(mDataSubscriptionToolkitView.getPopUpPrompt().getText());
     }
 
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
     @Test
-    public void onUxrChange_UxrRequired_proactivePopUpDimissed() {
-        mDataSubscriptionToolkitView.setIsProactiveMsg(true);
+    public void onUxrChanged_UxrRequired_proactivePopUpDimissed() {
+        mDataSubscriptionToolkitView.setIsProactiveMessage(true);
         when(mPopupWindow.isShowing()).thenReturn(true);
 
-        mDataSubscriptionToolkitView.onUxrChange(true);
+        mDataSubscriptionToolkitView.onUxrChanged(true, mUxrPrompt);
 
         verify(mPopupWindow).dismiss();
     }
 
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)
     @Test
-    public void onUxrChange_UxrRequired_reactivePopUpButtonGone() {
-        mDataSubscriptionToolkitView.setIsProactiveMsg(false);
+    public void onUxrChanged_UxrRequired_reactivePopUpButtonGone() {
+        mDataSubscriptionToolkitView.setIsProactiveMessage(false);
         when(mPopupWindow.isShowing()).thenReturn(true);
 
-        mDataSubscriptionToolkitView.onUxrChange(true);
+        mDataSubscriptionToolkitView.onUxrChanged(true, mUxrPrompt);
 
         assertThat(mDataSubscriptionToolkitView.getExplorationButton().getVisibility())
                 .isEqualTo(View.GONE);
-
     }
 }

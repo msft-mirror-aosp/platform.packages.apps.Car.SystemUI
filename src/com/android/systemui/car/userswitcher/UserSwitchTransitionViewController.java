@@ -18,7 +18,6 @@ package com.android.systemui.car.userswitcher;
 
 import static android.car.settings.CarSettings.Global.ENABLE_USER_SWITCH_DEVELOPER_MESSAGE;
 
-import static com.android.systemui.Flags.refactorGetCurrentUser;
 import static com.android.systemui.car.Flags.userSwitchKeyguardShownTimeout;
 
 import android.annotation.UserIdInt;
@@ -140,9 +139,6 @@ public class UserSwitchTransitionViewController extends OverlayViewController {
             mTransitionViewShowing = true;
             try {
                 mWindowManagerService.setSwitchingUser(true);
-                if (!refactorGetCurrentUser()) {
-                    mWindowManagerService.lockNow(null);
-                }
             } catch (RemoteException e) {
                 Log.e(TAG, "unable to notify window manager service regarding user switch");
             }
@@ -154,7 +150,7 @@ public class UserSwitchTransitionViewController extends OverlayViewController {
             mCancelRunnable = mMainExecutor.executeDelayed(mWindowShownTimeoutCallback,
                     mWindowShownTimeoutMs);
 
-            if (refactorGetCurrentUser() && mKeyguardManager.isDeviceSecure(newUserId)) {
+            if (mKeyguardManager.isDeviceSecure(newUserId)) {
                 // Setup keyguard timeout but don't lock the device just yet.
                 // The device cannot be locked until we receive a user switching event - otherwise
                 // the KeyguardViewMediator will not have the new userId.
@@ -164,9 +160,6 @@ public class UserSwitchTransitionViewController extends OverlayViewController {
     }
 
     void handleSwitching(int newUserId) {
-        if (!refactorGetCurrentUser()) {
-            return;
-        }
         if (!mKeyguardManager.isDeviceSecure(newUserId)) {
             return;
         }

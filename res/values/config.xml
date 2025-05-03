@@ -156,6 +156,9 @@
     <!-- Specifies the component name of the app grid activity -->
     <string name="config_appGridComponentName" translatable="false">com.android.car.carlauncher/.AppGridActivity</string>
 
+    <!-- Specifies the component name of the AAOS Studio activity -->
+    <string name="config_aaosStudioComponentName" translatable="false">com.android.aaos.studio/.TokenActivity</string>
+
     <!--Percentage of the screen height, from the top, where the border between HVAC panel closing
         or opening, depending on where its handle bar is released after being dragged, would be
         drawn.
@@ -308,7 +311,7 @@
     </string-array>
 
     <!-- Enable toolkit for data subscription. -->
-    <bool name="config_enableDataSubscriptionToolkit">false</bool>
+    <bool name="config_enableDataSubscriptionToolkit">true</bool>
 
     <!-- Setup and add safe area and toolbar per display on for Display Compat apps . -->
     <bool name="config_enableSafeAreaAndToolbarPerDisplay">true</bool>

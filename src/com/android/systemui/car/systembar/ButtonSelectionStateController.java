@@ -398,6 +398,7 @@ public class ButtonSelectionStateController {
         return selectedButtons;
     }
 
+    @Nullable
     protected ComponentName getTopActivity(RootTaskInfo validTaskInfo) {
         // Window mode being WINDOW_MODE_MULTI_WINDOW implies TaskView might be visible on the
         // display. In such cases, topActivity reported by validTaskInfo will be the one hosted in
@@ -409,12 +410,12 @@ public class ButtonSelectionStateController {
                         ActivityTaskManager.getService().getRootTaskInfoOnDisplay(
                                 WINDOWING_MODE_FULLSCREEN, ACTIVITY_TYPE_UNDEFINED,
                                 validTaskInfo.displayId);
-                return rootTaskInfo == null ? null : rootTaskInfo.topActivity;
+                return SystemBarUtil.INSTANCE.getTaskComponentName(rootTaskInfo);
             } catch (RemoteException e) {
                 Log.e(TAG, "findSelectedButtons: Failed getting root task info", e);
             }
         } else {
-            return validTaskInfo.topActivity;
+            return SystemBarUtil.INSTANCE.getTaskComponentName(validTaskInfo);
         }
 
         return null;

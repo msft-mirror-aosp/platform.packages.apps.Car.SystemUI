@@ -175,7 +175,12 @@ public class PanelUtils {
         }
         PackageManager pm = mContext.getPackageManager();
         try {
-            PackageInfo packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            // User may not be unlocked when parsing package info - use MATCH_DIRECT_BOOT_AWARE
+            // and MATCH_DIRECT_BOOT_UNAWARE to retrieve activities regardless of user state.
+            PackageInfo packageInfo = pm.getPackageInfoAsUser(packageName,
+                    PackageManager.GET_ACTIVITIES | PackageManager.MATCH_DIRECT_BOOT_AWARE
+                            | PackageManager.MATCH_DIRECT_BOOT_UNAWARE,
+                    ActivityManager.getCurrentUser());
             if (packageInfo != null && packageInfo.activities != null) {
                 for (ActivityInfo ai : packageInfo.activities) {
                     set.add(ai.getComponentName());

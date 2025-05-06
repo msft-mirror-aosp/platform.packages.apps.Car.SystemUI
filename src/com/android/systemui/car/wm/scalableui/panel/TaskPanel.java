@@ -438,11 +438,11 @@ public final class TaskPanel extends BasePanel {
     @Override
     public void setPanelControllerMetadata(
             @Nullable PanelControllerMetadata panelControllerMetadata) {
-        super.setPanelControllerMetadata(panelControllerMetadata);
         if (Objects.equals(getPanelControllerMetadata(), panelControllerMetadata)) {
             logIfDebuggable(getPanelId() + ": PanelControllerMetadata unchanged.");
             return;
         }
+        super.setPanelControllerMetadata(panelControllerMetadata);
         mTaskPanelController = mPanelControllerInitializer.createTaskPanelController(
                 panelControllerMetadata);
         if (mTaskPanelController != null) {

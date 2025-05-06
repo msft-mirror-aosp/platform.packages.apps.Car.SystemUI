@@ -112,6 +112,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
     }
 
     private void init() {
+        mWindowContexts.clear();
         populateMaps();
         readConfigs();
 
@@ -150,6 +151,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
         if (mWindowContexts.containsKey(windowType)) {
             return mWindowContexts.get(windowType);
         }
+
         Context context = mContext.createWindowContext(windowType, /* options= */ null);
         mWindowContexts.put(windowType, context);
         return context;

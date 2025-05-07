@@ -120,7 +120,7 @@ public class TaskPanelTransitionCoordinator {
             }
             Transition transition = entry.getValue();
             Variant toVariant = transition.getToVariant();
-            if (panel instanceof DecorPanel decorPanel) {
+            if (panel instanceof DecorPanel decorPanel && decorPanel.getAutoDecor() != null) {
                 if (DEBUG) {
                     Log.d(TAG, "move decorPanel=" + decorPanel.getPanelId() + " to"
                             + toVariant.getBounds() + " layer=" + toVariant.getLayer()

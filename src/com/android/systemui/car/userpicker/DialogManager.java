@@ -22,6 +22,7 @@ import android.annotation.IntDef;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.os.UserManager;
 import android.util.Log;
 import android.util.Slog;
 import android.util.SparseArray;
@@ -194,7 +195,16 @@ final class DialogManager {
                 message = mUserAddingMessage;
                 break;
             case DIALOG_TYPE_MAX_USER_COUNT_REACHED:
-                message = String.format(mMaxUserLimitReachedMessage, getMaxSupportedUsers());
+                if (android.multiuser.Flags.consistentMaxUsers()
+                        && android.multiuser.Flags.maxUsersInCarIsForSecondary()) {
+                    // Includes secondary users and - for non-HSUM devices - the full system user.
+                    int maxSupportedUsers = mContext.getSystemService(UserManager.class)
+                            .getCurrentAllowedNumberOfUsers(UserManager.USER_TYPE_FULL_SECONDARY)
+                            + (UserManager.isHeadlessSystemUserMode() ? 0 : 1);
+                    message = String.format(mMaxUserLimitReachedMessage, maxSupportedUsers);
+                } else {
+                    message = String.format(mMaxUserLimitReachedMessage, getMaxSupportedUsers());
+                }
                 break;
             case DIALOG_TYPE_CONFIRM_ADD_USER:
                 message = mConfirmAddUserMessage;

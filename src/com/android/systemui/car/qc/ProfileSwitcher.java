@@ -248,7 +248,7 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             if (mPendingUserAdd) {
                 return;
             }
-            if (!mUserManager.canAddMoreUsers()) {
+            if (!mUserManager.canAddMoreUsers(UserManager.USER_TYPE_FULL_SECONDARY)) {
                 showMaxUserLimitReachedDialog();
             } else {
                 showConfirmAddUserDialog();
@@ -433,19 +433,25 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     }
 
     private int getMaxSupportedRealUsers() {
-        int maxSupportedUsers = UserManager.getMaxSupportedUsers();
-        if (UserManager.isHeadlessSystemUserMode()) {
-            maxSupportedUsers -= 1;
-        }
-        List<UserInfo> users = mUserManager.getAliveUsers();
-        // Count all users that are managed profiles of another user.
-        int managedProfilesCount = 0;
-        for (UserInfo user : users) {
-            if (user.isManagedProfile()) {
-                managedProfilesCount++;
+        if (!android.multiuser.Flags.consistentMaxUsers()
+                || !android.multiuser.Flags.maxUsersInCarIsForSecondary()) {
+            int maxSupportedUsers = UserManager.getMaxSupportedUsers();
+            if (UserManager.isHeadlessSystemUserMode()) {
+                maxSupportedUsers -= 1;
             }
+            List<UserInfo> users = mUserManager.getAliveUsers();
+            // Count all users that are managed profiles of another user.
+            int managedProfilesCount = 0;
+            for (UserInfo user : users) {
+                if (user.isManagedProfile()) {
+                    managedProfilesCount++;
+                }
+            }
+            return maxSupportedUsers - managedProfilesCount;
         }
-        return maxSupportedUsers - managedProfilesCount;
+        // "Real" users means secondary users and - for non-HSUM devices - the full system user.
+        return mUserManager.getCurrentAllowedNumberOfUsers(UserManager.USER_TYPE_FULL_SECONDARY)
+                + (UserManager.isHeadlessSystemUserMode() ? 0 : 1);
     }
 
     private void showMaxUserLimitReachedDialog() {

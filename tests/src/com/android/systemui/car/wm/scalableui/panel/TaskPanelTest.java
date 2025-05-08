@@ -29,8 +29,8 @@ import android.graphics.Rect;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.SysuiTestCase;
 import com.android.systemui.ShellSyncExecutor;
+import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
@@ -39,6 +39,9 @@ import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerIn
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionController;
 import com.android.wm.shell.automotive.AutoDecorManager;
+import com.android.wm.shell.automotive.AutoLayoutManager;
+import com.android.wm.shell.automotive.AutoSurfaceTransaction;
+import com.android.wm.shell.automotive.AutoSurfaceTransactionFactory;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
 import com.android.wm.shell.automotive.RootTaskStack;
@@ -85,6 +88,12 @@ public class TaskPanelTest extends SysuiTestCase {
     private EventDispatcher mEventDispatcher;
     @Mock
     private PanelControllerInitializer mPanelControllerInitializer;
+    @Mock
+    private AutoLayoutManager mAutoLayoutManager;
+    @Mock
+    AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
+    @Mock
+    private AutoSurfaceTransaction mAutoSurfaceTransaction;
 
     @Before
     public void setUp() {
@@ -93,8 +102,12 @@ public class TaskPanelTest extends SysuiTestCase {
         mTaskPanel = new TaskPanel(mAutoTaskStackController, mContext, mCarServiceProvider,
                 mAutoTaskStackHelper, mShellTaskOrganizer, mAutoCaptionController, mPanelUtils,
                 mTaskPanelInfoRepository, mAutoDecorManager, mEventDispatcher,
-                mPanelControllerInitializer, mMainExecutor, TASK_PANEL_ID);
+                mPanelControllerInitializer, mAutoLayoutManager, mMainExecutor,
+                mAutoSurfaceTransactionFactory, TASK_PANEL_ID);
         when(mFactory.create(any())).thenReturn(mTaskPanel);
+
+        when(mAutoSurfaceTransactionFactory.createTransaction(any())).thenReturn(
+                mAutoSurfaceTransaction);
     }
 
     @Test

@@ -15,10 +15,13 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
+import static android.view.WindowInsets.Type.systemOverlays;
+
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_PANEL_EMPTY_EVENT_ID;
 
 import android.annotation.MainThread;
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
@@ -44,6 +47,7 @@ import com.android.car.scalableui.model.Blur;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.model.Role;
+import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.TaskPanelController;
 import com.android.systemui.car.CarServiceProvider;
@@ -56,6 +60,8 @@ import com.android.wm.shell.automotive.AutoCaptionController;
 import com.android.wm.shell.automotive.AutoDecor;
 import com.android.wm.shell.automotive.AutoDecorManager;
 import com.android.wm.shell.automotive.AutoLayoutManager;
+import com.android.wm.shell.automotive.AutoSurfaceTransaction;
+import com.android.wm.shell.automotive.AutoSurfaceTransactionFactory;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -80,6 +86,7 @@ public final class TaskPanel extends BasePanel {
     private static final String TAG = TaskPanel.class.getSimpleName();
 
     private static final boolean DEBUG = Build.isDebuggable();
+    private static final String TASK_PANEL_TRANSACTION = ", TASK_PANEL_TRANSACTION";
 
     @NonNull
     private final AutoTaskStackController mAutoTaskStackController;
@@ -129,6 +136,8 @@ public final class TaskPanel extends BasePanel {
     private final AutoLayoutManager mAutoLayoutManager;
     @NonNull
     private final ShellExecutor mMainExecutor;
+    @NonNull
+    private final AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
 
     @AssistedInject
     public TaskPanel(AutoTaskStackController autoTaskStackController,
@@ -144,6 +153,7 @@ public final class TaskPanel extends BasePanel {
             PanelControllerInitializer panelControllerInitializer,
             AutoLayoutManager autoLayoutManager,
             @ShellMainThread ShellExecutor mainExecutor,
+            AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
             @Assisted String id) {
         super(context, id);
         mAutoTaskStackController = autoTaskStackController;
@@ -161,6 +171,7 @@ public final class TaskPanel extends BasePanel {
         mPanelControllerInitializer = panelControllerInitializer;
         mAutoLayoutManager = autoLayoutManager;
         mMainExecutor = mainExecutor;
+        mAutoSurfaceTransactionFactory = autoSurfaceTransactionFactory;
     }
 
     /**
@@ -168,8 +179,10 @@ public final class TaskPanel extends BasePanel {
      */
     @Override
     public void init() {
+        super.init();
         mCarServiceProvider.addListener(
                 car -> {
+                    logIfDebuggable("On car connected:" + this);
                     mCarActivityManager = car.getCarManager(CarActivityManager.class);
                     trySetPersistentActivity();
                 });
@@ -249,6 +262,7 @@ public final class TaskPanel extends BasePanel {
 
     @Override
     public void reset() {
+        super.reset();
         if (getRootStack() == null) {
             Log.e(TAG, "Cannot reset when root stack is null for panel" + getPanelId());
             return;
@@ -262,6 +276,13 @@ public final class TaskPanel extends BasePanel {
         }
         mMainExecutor.execute(
                 () -> mAutoTaskStackController.startTransition(autoTaskStackTransaction));
+
+        AutoSurfaceTransaction autoSurfaceTransaction = mAutoSurfaceTransactionFactory
+                .createTransaction(RESET_TRANSACTION + getPanelId());
+        SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
+        update(autoSurfaceTransaction, tx, /* variant= */ null);
+        tx.apply();
+        autoSurfaceTransaction.apply();
     }
 
     @MainThread
@@ -360,6 +381,7 @@ public final class TaskPanel extends BasePanel {
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         autoTaskStackTransaction.sendPendingIntent(pendingIntent, defaultIntent,
                 options.toBundle());
+        logIfDebuggable("setBaseIntent:" + this);
         Trace.endSection();
     }
 
@@ -372,10 +394,7 @@ public final class TaskPanel extends BasePanel {
      * Returns the task ID of the root task associated with this panel.
      */
     public int getRootTaskId() {
-        if (mRootTaskStack == null) {
-            return -1;
-        }
-        return mRootTaskStack.getRootTaskInfo().taskId;
+        return mRootTaskId;
     }
 
     /**
@@ -451,6 +470,72 @@ public final class TaskPanel extends BasePanel {
                 mPersistedActivities.addAll(Arrays.asList(persistedActivities));
             }
         }
+    }
+
+
+    /**
+     * Calculates the four rectangular areas representing the insets of this {@link TaskPanel}.
+     *
+     * <p>This method uses the inset values and bounds of this {@link TaskPanel} (or an optionally
+     * provided {@link Variant}) to define four distinct {@link Rect} objects. Each rectangle
+     * corresponds to the screen area effectively occupied by the left, top, right, or bottom
+     * inset, relative to the panel's bounds.
+     *
+     * @param variant An optional {@link Variant} to use for calculating insets. If null, the
+     *                current panel's insets and bounds are used.
+     * @return An array of {@link Rect} objects of size 4, ordered as follows:
+     * <ul>
+     * <li>Index 0: Rectangle representing the left inset area.</li>
+     * <li>Index 1: Rectangle representing the top inset area.</li>
+     * <li>Index 2: Rectangle representing the right inset area.</li>
+     * <li>Index 3: Rectangle representing the bottom inset area.</li>
+     * </ul>
+     */
+    public Rect[] getInsetRects(@Nullable Variant variant) {
+        Rect insets = variant == null ? getInsets().toRect() : variant.getInsets().toRect();
+        Rect bounds = variant == null ? getBounds() : variant.getBounds();
+
+        Rect[] insetSides = new Rect[4];
+        insetSides[0] = new Rect(0, 0, insets.left, bounds.bottom);
+        insetSides[1] = new Rect(0, 0, bounds.right, insets.top);
+        insetSides[2] = new Rect(bounds.right - insets.right, 0, bounds.right, bounds.bottom);
+        insetSides[3] = new Rect(0, bounds.bottom - insets.bottom, bounds.right, bounds.bottom);
+        return insetSides;
+    }
+
+    @Override
+    public void update(
+            @NonNull AutoSurfaceTransaction autoSurfaceTransaction,
+            @Nullable SurfaceControl.Transaction tx,
+            @Nullable Variant variant) {
+        if (getRootStack() == null) {
+            Log.e(TAG, "RootStack is null for " + getPanelId());
+            return;
+        }
+        logIfDebuggable("updatePanelSurface:" + this);
+        int taskId = getRootTaskId();
+        Rect bounds = variant == null ? getBounds() : variant.getBounds();
+        autoSurfaceTransaction.setTaskSurfaceCrop(taskId,
+                new Rect(0, 0, bounds.width(), bounds.height()));
+        autoSurfaceTransaction.setTaskSurfacePosition(taskId, bounds.left,
+                bounds.top);
+        autoSurfaceTransaction.setTaskSurfaceCornerRadius(taskId,
+                variant == null ? getCornerRadius() : variant.getCornerRadius());
+
+        //TODO(b/404959846): move following to AutoSurfaceTransaction
+        if (tx != null && getLeash() != null) {
+            tx.setVisibility(getLeash(), variant == null ? isVisible() : variant.isVisible());
+            tx.setAlpha(getLeash(), variant == null ? getAlpha() : variant.getAlpha());
+            tx.setLayer(getLeash(), variant == null ? getLayer() : variant.getLayer());
+        } else {
+            Log.e(TAG, "leash is " + getLeash() + ", tx is " + tx);
+        }
+
+        Rect[] panelInsets = getInsetRects(variant);
+        IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
+            mAutoLayoutManager.addOrUpdateInsets(getRootStack(), sideIndex,
+                    systemOverlays(), panelInsets[sideIndex]);
+        });
     }
 
     @Override

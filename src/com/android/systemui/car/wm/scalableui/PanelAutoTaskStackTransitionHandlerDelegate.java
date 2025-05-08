@@ -220,12 +220,13 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                         + ", visibility=" + visibility + ", cornerRadius" + cornerRadius
                         + ", layer=" + layer);
             }
+            //TODO(b/404959846): use panel update.
             transaction.setPosition(leash, pos.left, pos.top);
             transaction.setCornerRadius(leash, cornerRadius);
             transaction.setVisibility(leash, visibility);
             transaction.setLayer(leash, layer);
             taskPanel.setLeash(leash);
-            Rect[] panelInsets = mPanelUtils.getTaskPanelInsets(taskPanel);
+            Rect[] panelInsets = taskPanel.getInsetRects(/* variant= */ null);
             IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
                 mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(), sideIndex,
                         systemOverlays(), panelInsets[sideIndex]);

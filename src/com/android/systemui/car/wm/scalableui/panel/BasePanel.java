@@ -20,6 +20,7 @@ import android.graphics.Insets;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.Log;
+import android.view.SurfaceControl;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,7 +28,9 @@ import androidx.annotation.Nullable;
 import com.android.car.scalableui.model.Blur;
 import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.model.Role;
+import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.Panel;
+import com.android.wm.shell.automotive.AutoSurfaceTransaction;
 
 /**
  * Abstract base class for implementing a {@link Panel}.
@@ -37,6 +40,7 @@ import com.android.car.scalableui.panel.Panel;
 public abstract class BasePanel implements Panel {
     protected static final boolean DEBUG = Build.isDebuggable();
     private static final String TAG = BasePanel.class.getSimpleName();
+    protected static final String RESET_TRANSACTION = "Reset : ";
 
     private final Context mContext;
     private int mLayer = -1;
@@ -137,6 +141,16 @@ public abstract class BasePanel implements Panel {
     }
 
     @Override
+    public void reset() {
+        logIfDebuggable("Reset panel " + getPanelId());
+    }
+
+    @Override
+    public void init() {
+        logIfDebuggable("Init panel " + getPanelId());
+    }
+
+    @Override
     public void setVisibility(boolean isVisible) {
         if (mIsVisible == isVisible) {
             return;
@@ -209,6 +223,26 @@ public abstract class BasePanel implements Panel {
     public PanelControllerMetadata getPanelControllerMetadata() {
         return mPanelControllerMetadata;
     }
+
+    /**
+     * Updates surface of the {@link BasePanel} based on the provided {@link Variant}.
+     *
+     * <p> if provided {@link Variant} is null, update the surface with the data from {@link Panel}
+     * itself.
+     *
+     * @param autoSurfaceTransaction The {@link AutoSurfaceTransaction} instance used to apply
+     *                               surface property changes. Must not be {@code null}.
+     * @param tx                     An optional {@link android.view.SurfaceControl.Transaction}.
+     *                               This parameter is currently not used in the method's body. It
+     *                               can be {@code null}.
+     * @param variant                The {@link Variant} configuration object that provides the
+     *                               desired properties (bounds, visibility, layer, corner radius,
+     *                               alpha) for the decor surface. Maybe {@code null}.
+     */
+    public abstract void update(
+            @NonNull AutoSurfaceTransaction autoSurfaceTransaction,
+            @Nullable SurfaceControl.Transaction tx,
+            @Nullable Variant variant);
 
     public void setPanelControllerMetadata(
             @Nullable PanelControllerMetadata panelControllerMetadata) {

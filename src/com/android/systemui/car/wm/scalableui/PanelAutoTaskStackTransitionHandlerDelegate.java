@@ -126,6 +126,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             AutoTaskStackTransaction wct =
                     mTaskPanelTransitionCoordinator.createAutoTaskStackTransaction(transition,
                             panelTransaction);
+            mTaskPanelTransitionCoordinator.resetUnpreparedDecorPanel(panelTransaction);
             if (DEBUG) {
                 Log.d(TAG, "handleRequest: COMPLETED " + wct);
             }

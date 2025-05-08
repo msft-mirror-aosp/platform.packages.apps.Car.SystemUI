@@ -36,12 +36,14 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.android.car.scalableui.model.PanelTransaction;
 import com.android.systemui.CarSysuiTestCase;
+import com.android.systemui.ShellSyncExecutor;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoSurfaceTransaction;
 import com.android.wm.shell.automotive.AutoSurfaceTransactionFactory;
 import com.android.wm.shell.automotive.AutoTaskStackController;
+import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.transition.Transitions;
 
 import org.junit.Before;
@@ -61,6 +63,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TaskPanelTransitionCoordinatorTest extends CarSysuiTestCase {
 
     private TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
+    private ShellExecutor mMainExecutor;
 
     @Mock
     private Transitions.TransitionFinishCallback mFinishCallback;
@@ -78,9 +81,10 @@ public class TaskPanelTransitionCoordinatorTest extends CarSysuiTestCase {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mMainExecutor = new ShellSyncExecutor();
         mTaskPanelTransitionCoordinator = new TaskPanelTransitionCoordinator(
                 mAutoTaskStackController, mAutoSurfaceTransactionFactory, mPanelUtils,
-                mAutoLayoutManager);
+                mAutoLayoutManager, mMainExecutor);
         when(mAutoSurfaceTransactionFactory.createTransaction(anyString())).thenReturn(
                 mAutoSurfaceTransaction);
     }

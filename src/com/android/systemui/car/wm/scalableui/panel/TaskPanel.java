@@ -61,6 +61,8 @@ import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
 import com.android.wm.shell.automotive.RootTaskStack;
 import com.android.wm.shell.automotive.RootTaskStackListener;
+import com.android.wm.shell.common.ShellExecutor;
+import com.android.wm.shell.shared.annotations.ShellMainThread;
 
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
@@ -121,6 +123,8 @@ public final class TaskPanel extends BasePanel {
     private TaskPanelController mTaskPanelController;
     @NonNull
     private final AutoLayoutManager mAutoLayoutManager;
+    @NonNull
+    private final ShellExecutor mMainExecutor;
 
     @AssistedInject
     public TaskPanel(AutoTaskStackController autoTaskStackController,
@@ -135,6 +139,7 @@ public final class TaskPanel extends BasePanel {
             EventDispatcher dispatcher,
             PanelControllerInitializer panelControllerInitializer,
             AutoLayoutManager autoLayoutManager,
+            @ShellMainThread ShellExecutor mainExecutor,
             @Assisted String id) {
         super(context, id);
         mAutoTaskStackController = autoTaskStackController;
@@ -151,6 +156,7 @@ public final class TaskPanel extends BasePanel {
         mContext = context;
         mPanelControllerInitializer = panelControllerInitializer;
         mAutoLayoutManager = autoLayoutManager;
+        mMainExecutor = mainExecutor;
     }
 
     /**
@@ -250,7 +256,8 @@ public final class TaskPanel extends BasePanel {
         if (isVisible()) {
             setBaseIntent(autoTaskStackTransaction);
         }
-        mAutoTaskStackController.startTransition(autoTaskStackTransaction);
+        mMainExecutor.execute(
+                () -> mAutoTaskStackController.startTransition(autoTaskStackTransaction));
     }
 
     /**

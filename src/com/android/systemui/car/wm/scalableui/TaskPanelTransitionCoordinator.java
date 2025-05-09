@@ -15,6 +15,8 @@
  */
 package com.android.systemui.car.wm.scalableui;
 
+import static android.view.WindowInsets.Type.systemOverlays;
+
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_CLOSE_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_OPEN_EVENT_ID;
@@ -44,6 +46,7 @@ import com.android.car.scalableui.panel.PanelPool;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
+import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoSurfaceTransaction;
 import com.android.wm.shell.automotive.AutoSurfaceTransactionFactory;
 import com.android.wm.shell.automotive.AutoTaskStackController;
@@ -78,15 +81,17 @@ public class TaskPanelTransitionCoordinator {
     private AnimatorSet mRunningAnimatorSet = null;
     private final AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
     private final PanelUtils mPanelUtils;
-    private IBinder mActiveTransition;
+    private final AutoLayoutManager mAutoLayoutManager;
+   private IBinder mActiveTransition;
 
     @Inject
     public TaskPanelTransitionCoordinator(AutoTaskStackController autoTaskStackController,
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
-            PanelUtils panelUtils) {
+            PanelUtils panelUtils, AutoLayoutManager autoLayoutManager) {
         mAutoTaskStackController = autoTaskStackController;
         mAutoSurfaceTransactionFactory = autoSurfaceTransactionFactory;
         mPanelUtils = panelUtils;
+        mAutoLayoutManager = autoLayoutManager;
     }
 
     /**
@@ -406,15 +411,12 @@ public class TaskPanelTransitionCoordinator {
             @NonNull AutoSurfaceTransaction autoSurfaceTransaction) {
         if (decorPanel == null || decorPanel.getAutoDecor() == null) {
             Log.e(TAG, "AutoDecor is null for " + decorPanel);
-            Trace.endSection();
             return;
         }
         logIfDebuggable("updateDecorPanelSurface:" + decorPanel);
         autoSurfaceTransaction.setBounds(decorPanel.getAutoDecor(), decorPanel.getBounds());
         autoSurfaceTransaction.setVisibility(decorPanel.getAutoDecor(), decorPanel.isVisible());
         autoSurfaceTransaction.setZOrder(decorPanel.getAutoDecor(), decorPanel.getLayer());
-
-        Trace.endSection();
     }
 
     private void updateTaskPanelSurface(TaskPanel taskPanel, SurfaceControl.Transaction tx,
@@ -443,6 +445,27 @@ public class TaskPanelTransitionCoordinator {
         tx.setLayer(sc, taskPanel.getLayer());
         tx.setPosition(sc, taskPanel.getBounds().left, taskPanel.getBounds().top);
         tx.setWindowCrop(sc, taskPanel.getBounds().width(), taskPanel.getBounds().height());
+        Rect insets = taskPanel.getInsets().toRect();
+        mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(),
+                /* left */ 0, systemOverlays(),
+                new Rect(0, 0, insets.left, taskPanel.getBounds().bottom));
+        mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(),
+                /* top */ 1, systemOverlays(),
+                new Rect(0, 0, taskPanel.getBounds().right, insets.top));
+        mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(),
+                /* right */ 2, systemOverlays(),
+                new Rect(
+                        taskPanel.getBounds().right - insets.right,
+                        0,
+                        taskPanel.getBounds().right,
+                        taskPanel.getBounds().bottom));
+        mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(),
+                /* bottom */ 3, systemOverlays(),
+                new Rect(
+                        0,
+                        taskPanel.getBounds().bottom - insets.bottom,
+                        taskPanel.getBounds().right,
+                        taskPanel.getBounds().bottom));
         tx.setCornerRadius(sc, taskPanel.getCornerRadius());
         tx.apply();
     }

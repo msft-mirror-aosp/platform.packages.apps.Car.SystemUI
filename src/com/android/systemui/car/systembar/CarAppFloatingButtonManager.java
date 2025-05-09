@@ -61,7 +61,6 @@ public class CarAppFloatingButtonManager {
     private static final long INPUT_IDLE_TIMEOUT = 10000;
     private static final long INACTIVITY_TIMEOUT_MS = 12000;
 
-    private AnimatorSet initialAnimSet;
     private Context mContext;
     private WindowManager windowManager;
     private View appFloatingButtonView;
@@ -73,7 +72,6 @@ public class CarAppFloatingButtonManager {
     private InputMonitor inputMonitor;
     private TextView btnText;
 
-    private boolean initialAnimationShown = false;
     private boolean isFadingIn = false;
     private boolean isInputMonitorActive = false;
     private boolean isSystemFade = false;
@@ -163,13 +161,8 @@ public class CarAppFloatingButtonManager {
     public void showAppFloatingButton() {
         if (appFloatingButtonView != null) {
             if (!appFloatingButtonView.isAttachedToWindow()) {
-                if (!initialAnimationShown) {
-                    addFloatingButton();
-                    applyInitialAnimations();
-                } else {
-                    addFloatingButton();
-                    applyRippleEffect();
-                }
+                addFloatingButton();
+                applyRippleEffect();
             } else {
                 windowManager.updateViewLayout(appFloatingButtonView, params);
             }
@@ -196,48 +189,6 @@ public class CarAppFloatingButtonManager {
             windowManager.removeView(appFloatingButtonView);
             deactivateInputMonitor();
         }
-    }
-
-    /**
-     * Applies the initial animation to the control bar, followed by a ripple effect.
-     */
-    private void applyInitialAnimations() {
-        backButton.setActivated(true);
-        backButton.setClickable(false);
-        btnText.setText(R.string.fab_drag_up);
-        btnText.setTextColor(mContext.getResources().getColor(R.color.fab_white));
-        btnText.setBackgroundColor(
-            mContext.getResources().getColor(R.color.fab_default_background));
-        btnText.setVisibility(View.VISIBLE);
-
-        ValueAnimator moveUpAnimator = ValueAnimator.ofInt(params.y, params.y - 100);
-        moveUpAnimator.setDuration(ANIMATION_DURATION_MS);
-        moveUpAnimator.addUpdateListener(
-            animation -> updateViewLayout((int) animation.getAnimatedValue()));
-
-        ValueAnimator moveDownAnimator = ValueAnimator.ofInt(params.y - 100, params.y);
-        moveDownAnimator.setDuration(ANIMATION_DURATION_MS);
-        moveDownAnimator.addUpdateListener(
-            animation -> updateViewLayout((int) animation.getAnimatedValue()));
-
-        initialAnimSet = new AnimatorSet();
-        initialAnimSet.playSequentially(moveUpAnimator, moveDownAnimator);
-        initialAnimSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                animateText(mContext.getString(R.string.fab_drag_up),
-                    mContext.getString(R.string.fab_drag_down));
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                backButton.setActivated(false);
-                animateBackText();
-                initialAnimationShown = true;
-                backButton.setClickable(true);
-            }
-        });
-        initialAnimSet.start();
     }
 
     private void applyRippleEffect() {
@@ -313,31 +264,6 @@ public class CarAppFloatingButtonManager {
         ObjectAnimator fadeOut = ObjectAnimator.ofFloat(backButton, "alpha", 1f, level);
         fadeOut.setDuration(ANIMATION_DURATION_MS);
         fadeOut.start();
-    }
-
-    /**
-     * Updates the layout of the control bar with the new Y position.
-     *
-     * @param newY The new Y position.
-     */
-    private void updateViewLayout(int newY) {
-        if (appFloatingButtonView.isAttachedToWindow()) {
-            try {
-                params.y = newY;
-                windowManager.updateViewLayout(appFloatingButtonView, params);
-            } catch (IllegalArgumentException e) {
-                Log.e(TAG, "Failed to update view layout. View not attached to window.", e);
-            }
-        } else {
-            Log.w(TAG, "Skipped updateViewLayout. View not attached, clearning animations");
-            if (initialAnimSet != null && initialAnimSet.isRunning()) {
-                initialAnimSet.removeAllListeners();
-                initialAnimSet.cancel();
-                initialAnimSet = null;
-            }
-            initialAnimationShown = true;
-            backButton.setClickable(true);
-        }
     }
 
     // Activates InputMonitor only when needed

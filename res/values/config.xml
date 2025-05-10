@@ -315,4 +315,7 @@
 
     <!-- Setup and add safe area and toolbar per display on for Display Compat apps . -->
     <bool name="config_enableSafeAreaAndToolbarPerDisplay">true</bool>
+
+    <!-- Figma file ID for the DCF file used to load system ui -->
+    <string name="config_scalableUiDcfFileId">cydzv1nh1pZBdFmZAbdFQU</string>
 </resources>

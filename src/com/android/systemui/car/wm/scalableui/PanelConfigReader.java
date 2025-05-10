@@ -22,7 +22,14 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.util.Log;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.List;
+
 import com.android.car.internal.dep.Trace;
+import com.android.car.scalableui.designcompose.DocLoadException;
+import com.android.car.scalableui.designcompose.PanelStateDocLoader;
 import com.android.car.scalableui.loader.xml.XmlModelLoader;
 import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.PanelState;
@@ -31,6 +38,8 @@ import com.android.systemui.R;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.wm.shell.dagger.WMSingleton;
+
+import static com.android.systemui.car.Flags.scalableUiDesignCompose;
 
 @WMSingleton
 public class PanelConfigReader {
@@ -42,9 +51,7 @@ public class PanelConfigReader {
 
     public PanelConfigReader(Context context, TaskPanel.Factory taskPanelFactory,
             DecorPanel.Factory decorPanelFactory) {
-        if (DEBUG) {
-            Log.d(TAG, "PanelConfig initialized user: " + ActivityManager.getCurrentUser());
-        }
+        debugLog("PanelConfig initialized user: " + ActivityManager.getCurrentUser());
         mContext = context;
         mTaskPanelFactory = taskPanelFactory;
         mDecorPanelFactory = decorPanelFactory;
@@ -65,21 +72,62 @@ public class PanelConfigReader {
 
         try {
             Trace.beginSection(TAG + "#init");
-            Resources res = mContext.getResources();
             StateManager.clearStates();
-            try (TypedArray states = res.obtainTypedArray(R.array.window_states)) {
-                for (int i = 0; i < states.length(); i++) {
-                    int xmlResId = states.getResourceId(i, 0);
-                    if (DEBUG) {
-                        Log.d(TAG, "PanelConfig adding state: " + xmlResId);
-                    }
-                    XmlModelLoader loader = new XmlModelLoader(mContext);
-                    PanelState panelState = loader.createPanelState(xmlResId);
-                    StateManager.addState(panelState);
-                }
+
+            if (scalableUiDesignCompose()) {
+                loadFromDcf();
+            } else {
+                loadFromXml();
             }
         } finally {
             Trace.endSection();
+        }
+    }
+
+    private void loadFromDcf() {
+        try {
+            InputStream dcfStream = mContext.getResources().openRawResource(R.raw.ScalableSystemUi);
+            if (dcfStream == null) {
+                Log.e(TAG, "Failed to open file ScalableSystemUi.dcf");
+                // Throw a runtime exception to cause a crash
+                throw new RuntimeException("Failed to open ScalableSystemUi.dcf");
+            }
+
+            debugLog("Loading panel states from DCF file");
+            PanelStateDocLoader dcLoader = new PanelStateDocLoader(mContext);
+            String docId = mContext.getResources().getString(R.string.config_scalableUiDcfFileId);
+
+            List<PanelState> states = dcLoader.loadPanelStates(dcfStream, docId);
+            debugLog("Loaded Panels: " + states.size());
+
+            for (PanelState panelState : states) {
+                debugLog("PanelConfig adding state: " + panelState.getId());
+                StateManager.addState(panelState);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error opening or processing DCF file: " + e);
+            // Throw a runtime exception to cause a crash
+            throw new RuntimeException("Error opening or processing DCF file: ", e);
+        }
+    }
+
+    private void loadFromXml() {
+        debugLog("Loading panel states from XML");
+        Resources res = mContext.getResources();
+        try (TypedArray states = res.obtainTypedArray(R.array.window_states)) {
+            for (int i = 0; i < states.length(); i++) {
+                int xmlResId = states.getResourceId(i, 0);
+                debugLog("PanelConfig adding state: " + xmlResId);
+                XmlModelLoader loader = new XmlModelLoader(mContext);
+                PanelState panelState = loader.createPanelState(xmlResId);
+                StateManager.addState(panelState);
+            }
+        }
+    }
+
+    private void debugLog(String logMsg) {
+        if (DEBUG) {
+            Log.d(TAG, logMsg);
         }
     }
 }

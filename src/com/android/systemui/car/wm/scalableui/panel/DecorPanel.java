@@ -52,7 +52,7 @@ public final class DecorPanel extends BasePanel {
     @VisibleForTesting
     AutoDecor mAutoDecor;
 
-    private View mDecorView;
+    @Nullable private View mDecorView;
 
     @AssistedInject
     public DecorPanel(@NonNull Context context,
@@ -112,6 +112,8 @@ public final class DecorPanel extends BasePanel {
 
     @Override
     public void setVisibility(boolean isVisible) {
+        if (mDecorView == null)
+            return;
         mMainExecutor.execute(() -> {
             boolean currentVisibility = isVisible();
             if (currentVisibility != isVisible && mDecorView != null) {

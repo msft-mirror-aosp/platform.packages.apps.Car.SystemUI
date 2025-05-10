@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,9 @@
 package com.android.systemui.car.systembar
 
 import android.app.ActivityOptions
+import android.app.TaskInfo
 import android.car.settings.CarSettings.Secure.KEY_UNACCEPTED_TOS_DISABLED_APPS
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.UserHandle
@@ -25,6 +27,7 @@ import android.provider.Settings
 import android.text.TextUtils
 import android.util.ArraySet
 import android.util.Log
+import androidx.annotation.Nullable
 import com.android.systemui.R
 import com.android.systemui.settings.UserTracker
 import java.net.URISyntaxException
@@ -116,5 +119,41 @@ object SystemBarUtil {
             return
         }
         launchApp(context, tosIntent, userHandle)
+    }
+
+    /**
+     * Helper method to safely extract the ComponentName from a [TaskInfo].
+     * It checks [TaskInfo.topActivity], [TaskInfo.realActivity],
+     * [TaskInfo.baseActivity], and finally the [TaskInfo.baseIntent]
+     * in that order to find a valid ComponentName.
+     *
+     * @param taskInfo The [TaskInfo] object.
+     * @return The ComponentName associated with the task, or null if it cannot be determined.
+     */
+    @Nullable
+    fun getTaskComponentName(@Nullable taskInfo: TaskInfo?): ComponentName? {
+        if (taskInfo == null) {
+            return null
+        }
+
+        // 1. Try topActivity
+        taskInfo.topActivity?.let { return it }
+
+        // 2. Try realActivity
+        taskInfo.realActivity?.let { return it }
+
+        // 3. Try baseActivity (the original attempt)
+        taskInfo.baseActivity?.let { return it }
+
+        // 4. Try baseIntent
+        taskInfo.baseIntent?.let { baseIntent ->
+            // First, try getting the component from the intent
+            baseIntent.component?.let { return it }
+            // If component is null, we can't get ComponentName from the intent
+        }
+
+        // If none of the above worked, return null
+        Log.w(TAG, "Could not determine ComponentName for taskId: ${taskInfo.taskId}")
+        return null
     }
 }

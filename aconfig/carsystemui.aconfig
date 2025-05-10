@@ -84,3 +84,10 @@ flag {
     description: "This flag controls enabling the back button (using AutoDecor) and safe region for display compatibility."
     bug: "370104463"
 }
+
+flag {
+    name: "scalable_ui_design_compose"
+    namespace: "car_sys_exp"
+    description: "This flag controls enabling loading the system ui using the DesignCompose dcf file instead of xml."
+    bug: "414813386"
+}

@@ -17,6 +17,7 @@ package com.android.systemui.car.wm.scalableui.panel;
 
 import android.annotation.NonNull;
 import android.app.ActivityManager;
+import android.app.TaskInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -129,15 +130,15 @@ public class PanelUtils {
     }
 
     /**
-     * Helper method to safely extract the ComponentName from a RunningTaskInfo.
+     * Helper method to safely extract the ComponentName from a TaskInfo.
      * It checks topActivity, realActivity, baseActivity, and finally the baseIntent
      * in that order to find a valid component.
      *
-     * @param taskInfo The RunningTaskInfo object.
+     * @param taskInfo The TaskInfo object.
      * @return The ComponentName associated with the task, or null if it cannot be determined.
      */
     @Nullable
-    public ComponentName getTaskComponentName(@Nullable ActivityManager.RunningTaskInfo taskInfo) {
+    public ComponentName getTaskComponentName(@Nullable TaskInfo taskInfo) {
         if (taskInfo == null) {
             return null;
         }
@@ -169,15 +170,15 @@ public class PanelUtils {
     }
 
     /**
-     * Helper method to safely extract the package name from a RunningTaskInfo.
+     * Helper method to safely extract the package name from a TaskInfo.
      * See {@link #getTaskComponentName} for ordering of retrieving component. If not present,
      * attempt to fall back to baseIntent package.
      *
-     * @param taskInfo The RunningTaskInfo object.
+     * @param taskInfo The TaskInfo object.
      * @return The package name associated with the task, or null if it cannot be determined.
      */
     @Nullable
-    public String getTaskPackageName(@Nullable ActivityManager.RunningTaskInfo taskInfo) {
+    public String getTaskPackageName(@Nullable TaskInfo taskInfo) {
         if (taskInfo == null) {
             return null;
         }
@@ -227,7 +228,12 @@ public class PanelUtils {
         }
         PackageManager pm = mContext.getPackageManager();
         try {
-            PackageInfo packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            // User may not be unlocked when parsing package info - use MATCH_DIRECT_BOOT_AWARE
+            // and MATCH_DIRECT_BOOT_UNAWARE to retrieve activities regardless of user state.
+            PackageInfo packageInfo = pm.getPackageInfoAsUser(packageName,
+                    PackageManager.GET_ACTIVITIES | PackageManager.MATCH_DIRECT_BOOT_AWARE
+                            | PackageManager.MATCH_DIRECT_BOOT_UNAWARE,
+                    ActivityManager.getCurrentUser());
             if (packageInfo != null && packageInfo.activities != null) {
                 for (ActivityInfo ai : packageInfo.activities) {
                     set.add(ai.getComponentName());

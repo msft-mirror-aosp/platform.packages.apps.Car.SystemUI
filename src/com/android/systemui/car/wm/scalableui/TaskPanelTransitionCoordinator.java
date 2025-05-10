@@ -109,9 +109,35 @@ public class TaskPanelTransitionCoordinator {
                 IBinder transition = mAutoTaskStackController.startTransition(
                         createAutoTaskStackTransaction(transaction));
                 mPendingPanelTransactions.put(transition, transaction);
+                resetUnpreparedDecorPanel(transaction);
                 playPendingAnimations(transition, null);
             } else {
                 updatePanelSurface(transaction);
+            }
+        }
+    }
+
+    /**
+     * Resets {@link DecorPanel} with no {@link AutoDecor} initialized.
+     *
+     * <p>This method iterates through each panel state defined in the provided
+     * {@code PanelTransaction}. For each entry, it attempts to find the corresponding
+     * {@code DecorPanel} using its ID. If a {@code DecorPanel} is found,and it does not have an
+     * associated {@link AutoDecor} and its target variant in the
+     * transaction
+     * is set to be visible, then the {@code DecorPanel} will be reset to its
+     * default state.
+     */
+    public void resetUnpreparedDecorPanel(PanelTransaction transaction) {
+        for (Map.Entry<String, Transition> entry : transaction.getPanelTransactionStates()) {
+            DecorPanel decorPanel = mPanelUtils.getDecorPanel(
+                    p -> p.getPanelId().equals(entry.getKey()));
+            if (decorPanel == null) {
+                continue;
+            }
+            Variant toVariant = entry.getValue().getToVariant();
+            if (decorPanel.getAutoDecor() == null && toVariant.isVisible()) {
+                decorPanel.reset();
             }
         }
     }

@@ -52,7 +52,9 @@ import com.android.wm.shell.automotive.AutoSurfaceTransactionFactory;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
+import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.dagger.WMSingleton;
+import com.android.wm.shell.shared.annotations.ShellMainThread;
 import com.android.wm.shell.transition.Transitions;
 
 import java.util.ArrayList;
@@ -84,16 +86,19 @@ public class TaskPanelTransitionCoordinator {
     private final PanelUtils mPanelUtils;
     private IBinder mActiveTransition;
     private final AutoLayoutManager mAutoLayoutManager;
+    private final ShellExecutor mMainExecutor;
 
     @Inject
     public TaskPanelTransitionCoordinator(AutoTaskStackController autoTaskStackController,
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
             PanelUtils panelUtils,
-            AutoLayoutManager autoLayoutManager) {
+            AutoLayoutManager autoLayoutManager,
+            @ShellMainThread ShellExecutor mainExecutor) {
         mAutoTaskStackController = autoTaskStackController;
         mAutoSurfaceTransactionFactory = autoSurfaceTransactionFactory;
         mPanelUtils = panelUtils;
         mAutoLayoutManager = autoLayoutManager;
+        mMainExecutor = mainExecutor;
     }
 
     /**
@@ -104,17 +109,19 @@ public class TaskPanelTransitionCoordinator {
      *                    transition.
      */
     public void startTransition(PanelTransaction transaction) {
-        synchronized (mPendingPanelTransactions) {
-            if (transaction.hasWindowChanges()) {
-                IBinder transition = mAutoTaskStackController.startTransition(
-                        createAutoTaskStackTransaction(transaction));
-                mPendingPanelTransactions.put(transition, transaction);
-                resetUnpreparedDecorPanel(transaction);
-                playPendingAnimations(transition, null);
-            } else {
-                updatePanelSurface(transaction);
+        mMainExecutor.execute(() -> {
+            synchronized (mPendingPanelTransactions) {
+                if (transaction.hasWindowChanges()) {
+                    IBinder transition = mAutoTaskStackController.startTransition(
+                            createAutoTaskStackTransaction(transaction));
+                    mPendingPanelTransactions.put(transition, transaction);
+                    resetUnpreparedDecorPanel(transaction);
+                    playPendingAnimations(transition, null);
+                } else {
+                    updatePanelSurface(transaction);
+                }
             }
-        }
+        });
     }
 
     /**

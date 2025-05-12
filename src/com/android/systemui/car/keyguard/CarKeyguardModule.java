@@ -25,7 +25,7 @@ import com.android.internal.jank.InteractionJankMonitor;
 import com.android.internal.logging.UiEventLogger;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.widget.LockPatternUtils;
-import com.android.keyguard.ConnectedDisplayKeyguardPresentation;
+import com.android.keyguard.ConnectedDisplayKeyguardPresentationFactory;
 import com.android.keyguard.KeyguardDisplayManager;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardViewController;
@@ -58,6 +58,7 @@ import com.android.systemui.keyguard.WindowManagerLockscreenVisibilityManager;
 import com.android.systemui.keyguard.WindowManagerOcclusionManager;
 import com.android.systemui.keyguard.dagger.GlanceableHubTransitionModule;
 import com.android.systemui.keyguard.dagger.KeyguardFaceAuthNotSupportedModule;
+import com.android.systemui.keyguard.dagger.KeyguardConnectedDisplaysModule;
 import com.android.systemui.keyguard.dagger.PrimaryBouncerTransitionModule;
 import com.android.systemui.keyguard.data.repository.KeyguardRepositoryModule;
 import com.android.systemui.keyguard.domain.interactor.KeyguardInteractor;
@@ -116,6 +117,7 @@ import javax.inject.Provider;
                 KeyguardRepositoryModule.class,
                 PrimaryBouncerTransitionModule.class,
                 StartKeyguardTransitionModule.class,
+                KeyguardConnectedDisplaysModule.class,
         })
 public interface CarKeyguardModule {
 
@@ -249,7 +251,7 @@ public interface CarKeyguardModule {
             @UiBackground Executor uiBgExecutor,
             KeyguardDisplayManager.DeviceStateHelper deviceStateHelper,
             KeyguardStateController keyguardStateController,
-            ConnectedDisplayKeyguardPresentation.Factory
+            ConnectedDisplayKeyguardPresentationFactory
                     connectedDisplayKeyguardPresentationFactory,
             Provider<ShadeDisplaysRepository> shadeDisplaysRepositoryProvider,
             @Application CoroutineScope appScope) {

@@ -19,6 +19,7 @@ import android.content.Context;
 import android.graphics.Insets;
 import android.graphics.Rect;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +36,7 @@ import com.android.car.scalableui.panel.Panel;
  */
 public abstract class BasePanel implements Panel {
     protected static final boolean DEBUG = Build.isDebuggable();
+    private static final String TAG = BasePanel.class.getSimpleName();
 
     private final Context mContext;
     private int mLayer = -1;
@@ -211,5 +213,11 @@ public abstract class BasePanel implements Panel {
     public void setPanelControllerMetadata(
             @Nullable PanelControllerMetadata panelControllerMetadata) {
         mPanelControllerMetadata = panelControllerMetadata;
+    }
+
+    protected static void logIfDebuggable(String msg) {
+        if (DEBUG) {
+            Log.d(TAG, msg);
+        }
     }
 }

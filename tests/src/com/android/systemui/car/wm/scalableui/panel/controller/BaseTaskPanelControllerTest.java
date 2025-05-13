@@ -39,7 +39,7 @@ import androidx.test.filters.SmallTest;
 
 import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.panel.TaskPanelHandler;
-import com.android.systemui.CarSysuiTestCase;
+import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 
@@ -57,7 +57,7 @@ import java.util.Set;
 @CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
 @SmallTest
-public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
+public class BaseTaskPanelControllerTest extends SysuiTestCase {
     private static final ComponentName DEFAULT_ACTIVITY = new ComponentName("com.example",
             "DefaultActivity");
     private static final ComponentName ACTIVITY_1 = new ComponentName("com.test",

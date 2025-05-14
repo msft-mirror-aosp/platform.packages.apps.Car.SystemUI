@@ -66,6 +66,7 @@ import com.android.systemui.car.notification.NotificationsShadeController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.settings.FakeDisplayTracker;
@@ -168,7 +169,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mSpiedContext = spy(mContext);
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
         mCarSystemBarViewFactory = new CarSystemBarViewFactory(mSpiedContext, mFeatureFlags,
-                mock(UserTracker.class), mCarSystemBarElementInitializer);
+                mock(UserTracker.class), mock(EventDispatcher.class),
+                mCarSystemBarElementInitializer);
         setupPanelControllerBuilderMocks();
 
         mRegisterStatusBarResult = new RegisterStatusBarResult(new ArrayMap<>(), 0, 0,

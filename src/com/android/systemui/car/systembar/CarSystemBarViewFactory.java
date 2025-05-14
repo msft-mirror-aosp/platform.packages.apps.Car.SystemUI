@@ -30,6 +30,7 @@ import com.android.car.ui.FocusParkingView;
 import com.android.systemui.R;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.settings.UserTracker;
@@ -67,6 +68,7 @@ public class CarSystemBarViewFactory {
     private final ArrayMap<Type, ViewGroup> mCachedContainerMap = new ArrayMap<>();
     private final FeatureFlags mFeatureFlags;
     private final UserTracker mUserTracker;
+    private final EventDispatcher mEventDispatcher;
     private final CarSystemBarElementInitializer mCarSystemBarElementInitializer;
     private final List<CarSystemBarElementController> mCarSystemBarElementControllers =
             new ArrayList<>();
@@ -90,11 +92,13 @@ public class CarSystemBarViewFactory {
             Context context,
             FeatureFlags featureFlags,
             UserTracker userTracker,
+            EventDispatcher eventDispatcher,
             CarSystemBarElementInitializer elementInitializer
     ) {
         mContext = context;
         mFeatureFlags = featureFlags;
         mUserTracker = userTracker;
+        mEventDispatcher = eventDispatcher;
         mCarSystemBarElementInitializer = elementInitializer;
     }
 
@@ -194,7 +198,7 @@ public class CarSystemBarViewFactory {
                 /* root= */ null);
 
         view.setupHvacButton();
-        view.setupSystemBarButtons(mUserTracker);
+        view.setupSystemBarButtons(mUserTracker, mEventDispatcher);
         mCarSystemBarElementControllers.addAll(
                 mCarSystemBarElementInitializer.initializeCarSystemBarElements(view));
 

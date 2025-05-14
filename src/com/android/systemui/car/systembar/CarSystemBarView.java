@@ -33,6 +33,7 @@ import com.android.systemui.car.hvac.HvacView;
 import com.android.systemui.car.hvac.TemperatureControlView;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationsShadeController;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.settings.UserTracker;
 
 import java.lang.annotation.ElementType;
@@ -136,17 +137,19 @@ public class CarSystemBarView extends LinearLayout {
         }
     }
 
-    void setupSystemBarButtons(UserTracker userTracker) {
-        setupSystemBarButtons(this, userTracker);
+    void setupSystemBarButtons(UserTracker userTracker, EventDispatcher eventDispatcher) {
+        setupSystemBarButtons(this, userTracker, eventDispatcher);
     }
 
-    private void setupSystemBarButtons(View v, UserTracker userTracker) {
+    private void setupSystemBarButtons(View v, UserTracker userTracker,
+            EventDispatcher eventDispatcher) {
         if (v instanceof CarSystemBarButton) {
             ((CarSystemBarButton) v).setUserTracker(userTracker);
+            ((CarSystemBarButton) v).setEventDispatcher(eventDispatcher);
         } else if (v instanceof ViewGroup) {
             ViewGroup viewGroup = (ViewGroup) v;
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                setupSystemBarButtons(viewGroup.getChildAt(i), userTracker);
+                setupSystemBarButtons(viewGroup.getChildAt(i), userTracker, eventDispatcher);
             }
         }
     }

@@ -17,7 +17,6 @@
 package com.android.systemui.car.systembar;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
@@ -44,9 +43,8 @@ public class AppGridButton extends CarSystemBarButton {
     }
 
     @Override
-    protected OnClickListener getButtonClickListener(Intent toSend) {
-        return mRecentsButtonStateProvider.getButtonClickListener(toSend,
-                super::getButtonClickListener);
+    protected OnClickListener getButtonClickListener() {
+        return mRecentsButtonStateProvider.getButtonClickListener(super.getButtonClickListener());
     }
 
     @Override

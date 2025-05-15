@@ -60,6 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.inject.Inject;
@@ -82,7 +83,7 @@ public class TaskPanelTransitionCoordinator {
     private final AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
     private final PanelUtils mPanelUtils;
     private final AutoLayoutManager mAutoLayoutManager;
-   private IBinder mActiveTransition;
+    private IBinder mActiveTransition;
 
     @Inject
     public TaskPanelTransitionCoordinator(AutoTaskStackController autoTaskStackController,
@@ -449,6 +450,11 @@ public class TaskPanelTransitionCoordinator {
         tx.setVisibility(sc, taskPanel.isVisible());
         tx.setAlpha(sc, taskPanel.getAlpha());
         tx.setLayer(sc, taskPanel.getLayer());
+        Rect[] panelInsets = mPanelUtils.getTaskPanelInsets(taskPanel);
+        IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
+            mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(), sideIndex,
+                    systemOverlays(), panelInsets[sideIndex]);
+        });
         tx.setPosition(sc, taskPanel.getBounds().left, taskPanel.getBounds().top);
         tx.setWindowCrop(sc, taskPanel.getBounds().width(), taskPanel.getBounds().height());
         Rect insets = taskPanel.getInsets().toRect();

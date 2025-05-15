@@ -41,6 +41,8 @@ import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.wm.shell.automotive.AutoDecor;
 import com.android.wm.shell.automotive.AutoDecorManager;
+import com.android.wm.shell.automotive.AutoSurfaceTransaction;
+import com.android.wm.shell.automotive.AutoSurfaceTransactionFactory;
 import com.android.wm.shell.common.ShellExecutor;
 
 import org.junit.Before;
@@ -86,6 +88,10 @@ public class DecorPanelTest extends CarSysuiTestCase {
     private AutoDecor mAutoDecor;
     @Mock
     private Role mRole;
+    @Mock
+    private AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
+    @Mock
+    private AutoSurfaceTransaction mAutoSurfaceTransaction;
 
     // --- Captors ---
     @Captor
@@ -104,6 +110,7 @@ public class DecorPanelTest extends CarSysuiTestCase {
                 mEventDispatcher,
                 mPanelUtils,
                 mShellExecutor,
+                mAutoSurfaceTransactionFactory,
                 TEST_PANEL_ID
         ));
 
@@ -129,6 +136,9 @@ public class DecorPanelTest extends CarSysuiTestCase {
         // --- Stub AutoDecorManager ---
         when(mAutoDecorManager.createAutoDecor(any(), anyInt(), any(), any()))
                 .thenReturn(mMockNewAutoDecor);
+
+        when(mAutoSurfaceTransactionFactory.createTransaction(any())).thenReturn(
+                mAutoSurfaceTransaction);
     }
 
     // --- Tests for init() ---

@@ -91,13 +91,18 @@ public class SystemEventHandler implements CoreStartable,
                         return;
                     }
                     if (event.getUserHandle().isSystem()) {
+                        Log.i(TAG, "Ignore system event");
                         return;
                     }
 
                     if (event.getEventType() == USER_LIFECYCLE_EVENT_TYPE_UNLOCKED) {
                         if (event.getUserId() == mUserTracker.getUserId()) {
                             StateManager.handlePanelReset();
+                        } else {
+                            Log.i(TAG, "Not current user" + event.getUserId());
                         }
+                    } else {
+                        Log.i(TAG, "Ignore system event" + event.getEventType());
                     }
                 }
             };

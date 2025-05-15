@@ -40,6 +40,8 @@ import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionController;
 import com.android.wm.shell.automotive.AutoDecorManager;
 import com.android.wm.shell.automotive.AutoLayoutManager;
+import com.android.wm.shell.automotive.AutoSurfaceTransaction;
+import com.android.wm.shell.automotive.AutoSurfaceTransactionFactory;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
 import com.android.wm.shell.automotive.RootTaskStack;
@@ -88,6 +90,10 @@ public class TaskPanelTest extends CarSysuiTestCase {
     private PanelControllerInitializer mPanelControllerInitializer;
     @Mock
     private AutoLayoutManager mAutoLayoutManager;
+    @Mock
+    AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
+    @Mock
+    private AutoSurfaceTransaction mAutoSurfaceTransaction;
 
     @Before
     public void setUp() {
@@ -97,8 +103,11 @@ public class TaskPanelTest extends CarSysuiTestCase {
                 mAutoTaskStackHelper, mShellTaskOrganizer, mAutoCaptionController, mPanelUtils,
                 mTaskPanelInfoRepository, mAutoDecorManager, mEventDispatcher,
                 mPanelControllerInitializer, mAutoLayoutManager, mMainExecutor,
-                TASK_PANEL_ID);
+                mAutoSurfaceTransactionFactory, TASK_PANEL_ID);
         when(mFactory.create(any())).thenReturn(mTaskPanel);
+
+        when(mAutoSurfaceTransactionFactory.createTransaction(any())).thenReturn(
+                mAutoSurfaceTransaction);
     }
 
     @Test

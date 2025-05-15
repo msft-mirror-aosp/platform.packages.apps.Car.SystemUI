@@ -15,8 +15,6 @@
  */
 package com.android.systemui.car.wm.scalableui;
 
-import static android.view.WindowInsets.Type.systemOverlays;
-
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_CLOSE_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_OPEN_EVENT_ID;
@@ -25,7 +23,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -43,6 +40,7 @@ import com.android.car.scalableui.model.Transition;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.PanelPool;
+import com.android.systemui.car.wm.scalableui.panel.BasePanel;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
@@ -62,7 +60,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.inject.Inject;
@@ -153,6 +150,7 @@ public class TaskPanelTransitionCoordinator {
         logIfDebuggable("updatePanelSurface: " + panelTransaction);
         AutoSurfaceTransaction autoSurfaceTransaction =
                 mAutoSurfaceTransactionFactory.createTransaction(DECOR_TRANSACTION);
+        SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
         for (Map.Entry<String, Transition> entry : panelTransaction.getPanelTransactionStates()) {
             Panel panel = PanelPool.getInstance().getPanel(
                     p -> p.getPanelId().equals(entry.getKey()));
@@ -162,34 +160,8 @@ public class TaskPanelTransitionCoordinator {
             }
             Transition transition = entry.getValue();
             Variant toVariant = transition.getToVariant();
-            if (panel instanceof DecorPanel decorPanel && decorPanel.getAutoDecor() != null) {
-                logIfDebuggable("move decorPanel=" + decorPanel.getPanelId() + " to"
-                        + toVariant.getBounds() + " layer=" + toVariant.getLayer()
-                        + " visible=" + toVariant.isVisible());
-                autoSurfaceTransaction.setBounds(decorPanel.getAutoDecor(),
-                        toVariant.getBounds());
-                autoSurfaceTransaction.setVisibility(decorPanel.getAutoDecor(),
-                        toVariant.isVisible());
-                autoSurfaceTransaction.setZOrder(decorPanel.getAutoDecor(), toVariant.getLayer());
-            } else if (panel instanceof TaskPanel taskPanel) {
-                if (taskPanel.getRootStack() == null) {
-                    Log.e(TAG, "Root stack is null for " + taskPanel.getPanelId());
-                    continue;
-                }
-                logIfDebuggable(
-                        "Move taskPanel=" + taskPanel.getPanelId() + " to"
-                                + toVariant.getBounds());
-                int taskId = taskPanel.getRootStack().getRootTaskInfo().taskId;
-                autoSurfaceTransaction.setTaskSurfacePosition(taskId,
-                        toVariant.getBounds().left,
-                        toVariant.getBounds().top);
-                autoSurfaceTransaction.setTaskSurfaceCornerRadius(taskId,
-                        toVariant.getCornerRadius());
-                Rect[] panelInsets = mPanelUtils.getTaskPanelInsets(taskPanel);
-                IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
-                    mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(), sideIndex,
-                            systemOverlays(), panelInsets[sideIndex]);
-                });
+            if (panel instanceof BasePanel basePanel) {
+                basePanel.update(autoSurfaceTransaction, tx, toVariant);
             } else {
                 Log.e(TAG, "Invalid panel " + panel);
             }
@@ -339,7 +311,10 @@ public class TaskPanelTransitionCoordinator {
                         panelTransaction.getPanelTransactionStates()) {
                     DecorPanel decorPanel = mPanelUtils.getDecorPanel(
                             dp -> dp.getPanelId().equals(entry.getKey()));
-                    updateDecorPanelSurface(decorPanel, autoSurfaceTransaction);
+                    if (decorPanel == null) {
+                        continue;
+                    }
+                    decorPanel.update(autoSurfaceTransaction, /* tx= */ null, /* variant= */ null);
                 }
                 autoSurfaceTransaction.apply();
 
@@ -439,10 +414,9 @@ public class TaskPanelTransitionCoordinator {
             for (Map.Entry<String, Animator> entry : animators) {
                 String id = entry.getKey();
                 Panel panel = PanelPool.getInstance().getPanel(p -> p.getPanelId().equals(id));
-                if (panel instanceof TaskPanel taskPanel) {
-                    updateTaskPanelSurface(taskPanel, tx, autoSurfaceTransaction);
-                } else if (panel instanceof DecorPanel decorPanel) {
-                    updateDecorPanelSurface(decorPanel, autoSurfaceTransaction);
+                if (panel instanceof BasePanel basePanel) {
+                    basePanel.update(autoSurfaceTransaction, tx, /* variant= */ null);
+
                 }
             }
             //TODO(b/404959846): migrate to autoSurfaceTransaction here once api is added.
@@ -451,49 +425,5 @@ public class TaskPanelTransitionCoordinator {
             Trace.endSection();
         });
         return surfaceAnimator;
-    }
-
-    private void updateDecorPanelSurface(@Nullable DecorPanel decorPanel,
-            @NonNull AutoSurfaceTransaction autoSurfaceTransaction) {
-        if (decorPanel == null || decorPanel.getAutoDecor() == null) {
-            Log.e(TAG, "AutoDecor is null for " + decorPanel);
-            return;
-        }
-        logIfDebuggable("updateDecorPanelSurface:" + decorPanel);
-        autoSurfaceTransaction.setBounds(decorPanel.getAutoDecor(), decorPanel.getBounds());
-        autoSurfaceTransaction.setVisibility(decorPanel.getAutoDecor(), decorPanel.isVisible());
-        autoSurfaceTransaction.setZOrder(decorPanel.getAutoDecor(), decorPanel.getLayer());
-    }
-
-    private void updateTaskPanelSurface(TaskPanel taskPanel, SurfaceControl.Transaction tx,
-            AutoSurfaceTransaction autoSurfaceTransaction) {
-        SurfaceControl sc = taskPanel.getLeash();
-        if (sc == null) {
-            Log.e(TAG, "leash is null for " + taskPanel);
-            return;
-        }
-
-        if (taskPanel.getRootStack() == null) {
-            Log.e(TAG, "RootStack is null for " + taskPanel.getPanelId());
-            return;
-        }
-        logIfDebuggable("updatePanelSurface:" + taskPanel);
-        int taskId = taskPanel.getRootStack().getRootTaskInfo().getTaskId();
-        autoSurfaceTransaction.setTaskSurfaceCrop(taskId,
-                new Rect(0, 0, taskPanel.getBounds().width(),
-                        taskPanel.getBounds().height()));
-        autoSurfaceTransaction.setTaskSurfacePosition(taskId, taskPanel.getX1(), taskPanel.getY1());
-        autoSurfaceTransaction.setTaskSurfaceCornerRadius(taskId, taskPanel.getCornerRadius());
-
-        //TODO(b/404959846): move following to AutoSurfaceTransaction
-        tx.setVisibility(sc, taskPanel.isVisible());
-        tx.setAlpha(sc, taskPanel.getAlpha());
-        tx.setLayer(sc, taskPanel.getLayer());
-
-        Rect[] panelInsets = mPanelUtils.getTaskPanelInsets(taskPanel);
-        IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
-            mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(), sideIndex,
-                    systemOverlays(), panelInsets[sideIndex]);
-        });
     }
 }

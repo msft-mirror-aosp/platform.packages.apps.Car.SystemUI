@@ -17,6 +17,7 @@ package com.android.systemui.car.wm.scalableui.panel;
 
 import static android.view.WindowInsets.Type.systemOverlays;
 
+import static com.android.car.scalableui.Flags.enableDecor;
 import static com.android.systemui.car.Flags.displayCompatibilityAutoDecorSafeRegion;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_PANEL_EMPTY_EVENT_ID;
@@ -41,8 +42,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.internal.dep.Trace;
+import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.Decor;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelControllerMetadata;
+import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.Role;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.Panel;
@@ -72,8 +76,11 @@ import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -119,8 +126,8 @@ public final class TaskPanel extends BasePanel {
     private Rect mSafeBounds = new Rect();
     @Nullable
     private RootTaskStack mRootTaskStack;
-    @Nullable
-    private AutoDecor mAutoDecor;
+    @NonNull
+    private final Map<String, AutoDecor> mExistingAutoDecors;
     @Nullable
     private String mTopTaskPackageName;
     @Nullable
@@ -165,6 +172,7 @@ public final class TaskPanel extends BasePanel {
         mAutoLayoutManager = autoLayoutManager;
         mMainExecutor = mainExecutor;
         mAutoSurfaceTransactionFactory = autoSurfaceTransactionFactory;
+        mExistingAutoDecors = new HashMap<>();
     }
 
     /**
@@ -268,9 +276,75 @@ public final class TaskPanel extends BasePanel {
         AutoSurfaceTransaction autoSurfaceTransaction = mAutoSurfaceTransactionFactory
                 .createTransaction(RESET_TRANSACTION + getPanelId());
         SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
-        update(autoSurfaceTransaction, tx, /* variant= */ null);
+
+        PanelState panelState = StateManager.getPanelState(getPanelId());
+        Variant currentVariant = panelState == null ? null : panelState.getCurrentVariant();
+
+        update(autoSurfaceTransaction, tx, currentVariant, /* updateChildren= */ true);
+
         tx.apply();
         autoSurfaceTransaction.apply();
+    }
+
+    private void updateDecors(@NonNull AutoSurfaceTransaction autoSurfaceTransaction,
+            @Nullable Variant variant) {
+        logIfDebuggable("Update " + getPanelId() + " decors, with variant" + variant);
+        if (!enableDecor()) {
+            return;
+        }
+        if (variant == null) {
+            logIfDebuggable("Return as the variant is non for " + getPanelId());
+            return;
+        }
+        mMainExecutor.execute(() -> {
+            if (getRootStack() == null) {
+                return;
+            }
+
+            logIfDebuggable("Update " + getPanelId() + " decors, with variant" + variant);
+
+            variant.getDecors().forEach((id, decor) -> {
+                logIfDebuggable("Create decor " + id);
+                AutoDecor autoDecor = mExistingAutoDecors.getOrDefault(id,
+                        mAutoDecorManager.createAutoDecor(decor.getView(mContext),
+                                decor.getLayer(), getSafeBounds(), decor.getId()));
+                if (!mExistingAutoDecors.containsKey(id)) {
+                    mAutoDecorManager.attachAutoDecorToTask(autoDecor, getRootTaskId());
+                    mExistingAutoDecors.put(id, autoDecor);
+                }
+
+                updateAutoDecor(autoDecor, decor, autoSurfaceTransaction);
+            });
+
+            // Remove the AutoDecor that is no longer there.
+            Set<Map.Entry<String, AutoDecor>> decorToRemove =
+                    mExistingAutoDecors.entrySet().stream()
+                            .filter(entry -> !variant.getDecors().containsKey(entry.getKey()))
+                            .peek(entry -> {
+                                logIfDebuggable("Remove decor" + entry.getKey());
+                                mAutoDecorManager.removeAutoDecor(entry.getValue());
+                            })
+                            .collect(Collectors.toSet());
+            if (!decorToRemove.isEmpty()) {
+                decorToRemove.forEach(entry -> mExistingAutoDecors.remove(entry.getKey()));
+            }
+        });
+    }
+
+    private void updateAutoDecor(AutoDecor autoDecor, Decor decor,
+            AutoSurfaceTransaction autoSurfaceTransaction) {
+
+        Rect bounds = new Rect(0, 0, getBounds().width(), getBounds().height());
+        autoSurfaceTransaction.setBounds(autoDecor, bounds);
+        autoSurfaceTransaction.setVisibility(autoDecor, true);
+        autoSurfaceTransaction.setZOrder(autoDecor, decor.getLayer());
+        autoSurfaceTransaction.setCornerRadius(autoDecor, getCornerRadius());
+        autoSurfaceTransaction.setCrop(autoDecor, bounds);
+    }
+
+    @Override
+    public void refreshTheme() {
+        // TODO(418311330): implement refresh;
     }
 
     /**
@@ -424,12 +498,15 @@ public final class TaskPanel extends BasePanel {
     public void update(
             @NonNull AutoSurfaceTransaction autoSurfaceTransaction,
             @Nullable SurfaceControl.Transaction tx,
-            @Nullable Variant variant) {
+            @Nullable Variant variant,
+            boolean updateChildren) {
         if (getRootStack() == null) {
             Log.e(TAG, "RootStack is null for " + getPanelId());
             return;
         }
-        logIfDebuggable("updatePanelSurface:" + this);
+        logIfDebuggable(
+                "update TaskPanel:" + getPanelId() + ", updateChildren =" + updateChildren + ", "
+                        + "variant" + variant);
         int taskId = getRootTaskId();
         Rect bounds = variant == null ? getBounds() : variant.getBounds();
         autoSurfaceTransaction.setTaskSurfaceCrop(taskId,
@@ -453,6 +530,9 @@ public final class TaskPanel extends BasePanel {
             mAutoLayoutManager.addOrUpdateInsets(getRootStack(), sideIndex,
                     systemOverlays(), panelInsets[sideIndex]);
         });
+        if (updateChildren) {
+            updateDecors(autoSurfaceTransaction, variant);
+        }
     }
 
     @Override
@@ -603,6 +683,14 @@ public final class TaskPanel extends BasePanel {
 
     @Override
     public String toString() {
+
+        String decorString = mExistingAutoDecors.isEmpty()
+                ? "Empty"
+                : mExistingAutoDecors.entrySet()
+                        .stream()
+                        .map(entry -> entry.getKey() + "=" + entry.getValue())
+                        .collect(Collectors.joining(" , "));
+
         return "TaskPanel{"
                 + "mId='" + getPanelId()
                 + ", isRooTaskEmpty=" + isRootTaskEmpty()
@@ -617,6 +705,7 @@ public final class TaskPanel extends BasePanel {
                 + ", mCornerRadius=" + getCornerRadius()
                 + ", mIsLaunchRoot=" + mIsLaunchRoot
                 + ", mDisplayId=" + getDisplayId()
+                + ", mDecors=" + decorString
                 + '}';
     }
 

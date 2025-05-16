@@ -74,6 +74,7 @@ public class PanelTransitionCoordinator {
     private static final String TAG = PanelTransitionCoordinator.class.getName();
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
     private static final String DECOR_TRANSACTION = "DECOR_TRANSACTION";
+    private static final String PANEL_TRANSACTION = "PANEL_TRANSACTION";
 
     private final AutoTaskStackController mAutoTaskStackController;
     @GuardedBy("mPendingPanelTransactions")
@@ -163,9 +164,18 @@ public class PanelTransitionCoordinator {
             Transition transition = entry.getValue();
             Variant toVariant = transition.getToVariant();
             if (panel instanceof BasePanel basePanel) {
-                basePanel.update(autoSurfaceTransaction, tx, toVariant);
+                basePanel.update(autoSurfaceTransaction, tx, toVariant,
+                        /* updateChildren= */ false);
             } else {
                 Log.e(TAG, "Invalid panel " + panel);
+            }
+        }
+        for (String unchangedPanelId : panelTransaction.getUnchangedPanelIdSet()) {
+            Panel panel = PanelPool.getInstance().getPanel(
+                    p -> p.getPanelId().equals(unchangedPanelId));
+            if (panel instanceof BasePanel basePanel) {
+                basePanel.update(autoSurfaceTransaction, tx, /* variant= */ null,
+                        /* updateChildren= */ false);
             }
         }
         autoSurfaceTransaction.apply();
@@ -269,7 +279,6 @@ public class PanelTransitionCoordinator {
         mRunningAnimatorSet = new AnimatorSet();
         mActiveTransition = transition;
 
-
         long totalDuration = Long.MIN_VALUE;
         List<Animator> animationToRun = new ArrayList<>();
         for (Map.Entry<String, Animator> entry : panelTransaction.getAnimators()) {
@@ -306,17 +315,19 @@ public class PanelTransitionCoordinator {
                     finishCallback.onTransitionFinished(/* wct= */ null);
                 }
 
-                // Enforce the surface state for decor panel.
+                // Enforce the surface state for panels.
                 AutoSurfaceTransaction autoSurfaceTransaction =
-                        mAutoSurfaceTransactionFactory.createTransaction(DECOR_TRANSACTION);
+                        mAutoSurfaceTransactionFactory.createTransaction(PANEL_TRANSACTION);
                 for (Map.Entry<String, Transition> entry :
                         panelTransaction.getPanelTransactionStates()) {
-                    DecorPanel decorPanel = mPanelUtils.getDecorPanel(
+                    BasePanel basePanel = mPanelUtils.getBasePanel(
                             dp -> dp.getPanelId().equals(entry.getKey()));
-                    if (decorPanel == null) {
+                    if (basePanel == null) {
                         continue;
                     }
-                    decorPanel.update(autoSurfaceTransaction, /* tx= */ null, /* variant= */ null);
+                    Variant toVariant = entry.getValue().getToVariant();
+                    basePanel.update(autoSurfaceTransaction, /* tx= */ null,
+                            toVariant, /* updateChildren= */ true);
                 }
                 autoSurfaceTransaction.apply();
 
@@ -417,8 +428,8 @@ public class PanelTransitionCoordinator {
                 String id = entry.getKey();
                 Panel panel = PanelPool.getInstance().getPanel(p -> p.getPanelId().equals(id));
                 if (panel instanceof BasePanel basePanel) {
-                    basePanel.update(autoSurfaceTransaction, tx, /* variant= */ null);
-
+                    basePanel.update(autoSurfaceTransaction, tx, /* variant= */
+                            null, /* updateChildren= */ false);
                 }
             }
             //TODO(b/404959846): migrate to autoSurfaceTransaction here once api is added.

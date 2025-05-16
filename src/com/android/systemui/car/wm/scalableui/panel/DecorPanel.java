@@ -25,6 +25,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.Role;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.DecorPanelController;
@@ -139,9 +141,19 @@ public final class DecorPanel extends BasePanel {
 
             AutoSurfaceTransaction autoSurfaceTransaction = mAutoSurfaceTransactionFactory
                     .createTransaction(RESET_TRANSACTION + getPanelId());
-            update(autoSurfaceTransaction, /* tx= */ null, /* variant= */ null);
+
+            PanelState panelState = StateManager.getPanelState(getPanelId());
+            Variant currentVariant = panelState == null ? null : panelState.getCurrentVariant();
+
+            update(autoSurfaceTransaction, /* tx= */ null, currentVariant,
+                    /* updateChildren= */ true);
             autoSurfaceTransaction.apply();
         });
+    }
+
+    @Override
+    public void refreshTheme() {
+        // TODO(418311330): implement refresh;
     }
 
     @Nullable
@@ -166,7 +178,8 @@ public final class DecorPanel extends BasePanel {
     public void update(
             @NonNull AutoSurfaceTransaction autoSurfaceTransaction,
             @Nullable SurfaceControl.Transaction tx,
-            @Nullable Variant variant) {
+            @Nullable Variant variant,
+            boolean updateChildren) {
         if (getAutoDecor() == null) {
             Log.e(TAG, "AutoDecor is null for " + getPanelId());
             return;

@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import com.android.car.scalableui.loader.xml.XmlModelLoader;
 import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.PanelState;
+import com.android.car.scalableui.panel.PanelPool;
 import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
@@ -155,6 +156,12 @@ public class SystemEventHandler implements CoreStartable,
             registerUserEventListener();
             registerProvisionedStateListener();
         }
+    }
+
+    @Override
+    public void onThemeChanged() {
+        ConfigurationController.ConfigurationListener.super.onThemeChanged();
+        PanelPool.getInstance().refreshTheme();
     }
 
     @Override

@@ -505,4 +505,10 @@
 
     <!-- Grip bar for panels -->
     <dimen name="panel_grip_bar_corner_radius">48dp</dimen>
+    <dimen name="panel_grip_bar_decor_top_margin">15dp</dimen>
+    <dimen name="panel_grip_bar_decor_corner_radius">2dp</dimen>
+    <dimen name="panel_grip_bar_decor_width">100dp</dimen>
+    <dimen name="panel_grip_bar_decor_height">4dp</dimen>
+
+
 </resources>

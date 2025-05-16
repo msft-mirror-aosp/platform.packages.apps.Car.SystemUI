@@ -215,8 +215,7 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
                         return spy(new CarSystemBarViewControllerImpl(mSpiedContext, mUserTracker,
                                 carSystemBarElementInitializer, mSystemBarConfigs,
                                 mButtonRoleHolderController,
-                                () -> mCameraPrivacyChipViewController,
-                                () -> mMicPrivacyChipViewController, mOverlayVisibilityMediator,
+                                mOverlayVisibilityMediator,
                                 side, view));
                     }
                 };

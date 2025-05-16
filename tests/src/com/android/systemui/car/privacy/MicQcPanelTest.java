@@ -40,7 +40,6 @@ import com.android.car.qc.QCList;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.systembar.MicPrivacyChipViewController;
 import com.android.systemui.privacy.PrivacyDialog;
 
 import org.junit.Before;
@@ -71,9 +70,7 @@ public class MicQcPanelTest extends CarSysuiTestCase {
     @Mock
     private Context mUserContext;
     @Mock
-    private MicPrivacyElementsProviderImpl mMicPrivacyElementsProvider;
-    @Mock
-    private MicPrivacyChipViewController mMicSensorInfoProvider;
+    private MicSensorPrivacyInfoProvider mMicSensorInfoProvider;
     @Mock
     private PackageManager mPackageManager;
     @Mock
@@ -89,8 +86,7 @@ public class MicQcPanelTest extends CarSysuiTestCase {
         mContext.prepareCreateContextAsUser(UserHandle.SYSTEM, mUserContext);
         when(mUserContext.getPackageManager()).thenReturn(mPackageManager);
 
-        mMicQcPanel = new MicQcPanel(mContext, mMicSensorInfoProvider,
-                mMicPrivacyElementsProvider);
+        mMicQcPanel = new MicQcPanel(mContext, mMicSensorInfoProvider);
 
         mPhoneCallTitle = mContext.getString(R.string.ongoing_privacy_dialog_phonecall);
         mMicOnTitleText = mContext.getString(R.string.privacy_chip_use_sensor,
@@ -104,7 +100,7 @@ public class MicQcPanelTest extends CarSysuiTestCase {
     public void testGetQCItem_micDisabled_noPrivacyItems_returnsOnlyMicMutedRow() {
         when(mMicSensorInfoProvider.isSensorEnabled()).thenReturn(false);
         List<PrivacyDialog.PrivacyElement> elements = Collections.emptyList();
-        when(mMicPrivacyElementsProvider.getPrivacyElements()).thenReturn(elements);
+        when(mMicSensorInfoProvider.getPrivacyElements()).thenReturn(elements);
 
         QCList list = getQCList();
 
@@ -116,7 +112,7 @@ public class MicQcPanelTest extends CarSysuiTestCase {
     public void testGetQCItem_micEnabled_noPrivacyItems_returnsOnlyMicMutedRow() {
         when(mMicSensorInfoProvider.isSensorEnabled()).thenReturn(true);
         List<PrivacyDialog.PrivacyElement> elements = Collections.emptyList();
-        when(mMicPrivacyElementsProvider.getPrivacyElements()).thenReturn(elements);
+        when(mMicSensorInfoProvider.getPrivacyElements()).thenReturn(elements);
 
         QCList list = getQCList();
 
@@ -129,7 +125,7 @@ public class MicQcPanelTest extends CarSysuiTestCase {
         when(mMicSensorInfoProvider.isSensorEnabled()).thenReturn(true);
         List<PrivacyDialog.PrivacyElement> elements =
                 List.of(getPrivacyElement(/* active=*/ true, /* phoneCall= */ false));
-        when(mMicPrivacyElementsProvider.getPrivacyElements()).thenReturn(elements);
+        when(mMicSensorInfoProvider.getPrivacyElements()).thenReturn(elements);
 
         QCList list = getQCList();
 
@@ -144,7 +140,7 @@ public class MicQcPanelTest extends CarSysuiTestCase {
         when(mMicSensorInfoProvider.isSensorEnabled()).thenReturn(true);
         List<PrivacyDialog.PrivacyElement> elements =
                 List.of(getPrivacyElement(/* active=*/ true, /* phoneCall= */ false));
-        when(mMicPrivacyElementsProvider.getPrivacyElements()).thenReturn(elements);
+        when(mMicSensorInfoProvider.getPrivacyElements()).thenReturn(elements);
 
         QCList list = getQCList();
 
@@ -157,7 +153,7 @@ public class MicQcPanelTest extends CarSysuiTestCase {
         when(mMicSensorInfoProvider.isSensorEnabled()).thenReturn(false);
         List<PrivacyDialog.PrivacyElement> elements =
                 List.of(getPrivacyElement(/* active=*/ false, /* phoneCall= */ true));
-        when(mMicPrivacyElementsProvider.getPrivacyElements()).thenReturn(elements);
+        when(mMicSensorInfoProvider.getPrivacyElements()).thenReturn(elements);
 
         QCList list = getQCList();
 
@@ -173,7 +169,7 @@ public class MicQcPanelTest extends CarSysuiTestCase {
         when(mMicSensorInfoProvider.isSensorEnabled()).thenReturn(false);
         List<PrivacyDialog.PrivacyElement> elements =
                 List.of(getPrivacyElement(/* active=*/ false, /* phoneCall= */ true));
-        when(mMicPrivacyElementsProvider.getPrivacyElements()).thenReturn(elements);
+        when(mMicSensorInfoProvider.getPrivacyElements()).thenReturn(elements);
 
         QCList list = getQCList();
 
@@ -190,7 +186,7 @@ public class MicQcPanelTest extends CarSysuiTestCase {
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ false));
         elements.add(getPrivacyElement(/* active=*/ true, /* phoneCall= */ false));
         elements.add(getPrivacyElement(/* active=*/ true, /* phoneCall= */ true));
-        when(mMicPrivacyElementsProvider.getPrivacyElements())
+        when(mMicSensorInfoProvider.getPrivacyElements())
                 .thenReturn(elements);
 
         QCList list = getQCList();
@@ -210,7 +206,7 @@ public class MicQcPanelTest extends CarSysuiTestCase {
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ false));
         elements.add(getPrivacyElement(/* active=*/ true, /* phoneCall= */ false));
         elements.add(getPrivacyElement(/* active=*/ true, /* phoneCall= */ true));
-        when(mMicPrivacyElementsProvider.getPrivacyElements())
+        when(mMicSensorInfoProvider.getPrivacyElements())
                 .thenReturn(elements);
 
         QCList list = getQCList();
@@ -230,7 +226,7 @@ public class MicQcPanelTest extends CarSysuiTestCase {
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ false));
         elements.add(getPrivacyElement(/* active=*/ true, /* phoneCall= */ false));
         elements.add(getPrivacyElement(/* active=*/ true, /* phoneCall= */ true));
-        when(mMicPrivacyElementsProvider.getPrivacyElements())
+        when(mMicSensorInfoProvider.getPrivacyElements())
                 .thenReturn(elements);
 
         QCList list = getQCList();
@@ -251,7 +247,7 @@ public class MicQcPanelTest extends CarSysuiTestCase {
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ false));
         elements.add(getPrivacyElement(/* active=*/ true, /* phoneCall= */ false));
         elements.add(getPrivacyElement(/* active=*/ true, /* phoneCall= */ true));
-        when(mMicPrivacyElementsProvider.getPrivacyElements())
+        when(mMicSensorInfoProvider.getPrivacyElements())
                 .thenReturn(elements);
 
         QCList list = getQCList();

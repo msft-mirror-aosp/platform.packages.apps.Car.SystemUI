@@ -16,10 +16,10 @@
 
 package com.android.systemui.car.systembar;
 
-import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
-import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
-import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
 import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
+import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
+import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
+import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
 
 import android.annotation.Nullable;
 import android.content.Context;
@@ -143,8 +143,6 @@ public abstract class CarSystemBarModule {
             UserTracker userTracker,
             CarSystemBarViewFactory carSystemBarViewFactory,
             ButtonSelectionStateController buttonSelectionStateController,
-            Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
-            Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
             ButtonRoleHolderController buttonRoleHolderController,
             SystemBarConfigs systemBarConfigs,
             Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider,
@@ -276,7 +274,7 @@ public abstract class CarSystemBarModule {
     @IntoMap
     @IntKey(TOP)
     public abstract CarSystemBarViewControllerFactory bindTopCarSystemBarViewFactory(
-            CarTopSystemBarViewController.Factory factory);
+            CarSystemBarViewControllerImpl.Factory factory);
 
     /** Injects CarSystemBarViewController for @SystemBarSide RIGHT */
     @Binds
@@ -298,6 +296,20 @@ public abstract class CarSystemBarModule {
     @ClassKey(CarSystemBarButtonController.class)
     public abstract CarSystemBarElementController.Factory bindCarSystemBarButtonControllerFactory(
             CarSystemBarButtonController.Factory factory);
+
+    /** Injects MicPrivacyChipViewController */
+    @Binds
+    @IntoMap
+    @ClassKey(MicPrivacyChipViewController.class)
+    public abstract CarSystemBarElementController.Factory bindMicChipViewControllerFactory(
+            MicPrivacyChipViewController.Factory factory);
+
+    /** Injects CameraPrivacyChipViewController */
+    @Binds
+    @IntoMap
+    @ClassKey(CameraPrivacyChipViewController.class)
+    public abstract CarSystemBarElementController.Factory bindCameraChipViewControllerFactory(
+            CameraPrivacyChipViewController.Factory factory);
 
     /** Injects NotificationButtonController */
     @Binds

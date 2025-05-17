@@ -18,7 +18,7 @@ package com.android.systemui.car.keyguard;
 
 import android.content.Context;
 
-import com.android.keyguard.ConnectedDisplayKeyguardPresentation;
+import com.android.keyguard.ConnectedDisplayKeyguardPresentationFactory;
 import com.android.keyguard.KeyguardDisplayManager;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Application;
@@ -52,7 +52,7 @@ public class CarKeyguardDisplayManager extends KeyguardDisplayManager {
             Executor mainExecutor, Executor uiBgExecutor,
             KeyguardDisplayManager.DeviceStateHelper deviceStateHelper,
             KeyguardStateController keyguardStateController,
-            ConnectedDisplayKeyguardPresentation.Factory
+            ConnectedDisplayKeyguardPresentationFactory
                     connectedDisplayKeyguardPresentationFactory,
             Provider<ShadeDisplaysRepository> shadeDisplaysRepositoryProvider,
             @Application CoroutineScope appScope) {

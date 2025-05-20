@@ -76,7 +76,7 @@ public class CarPrivacyChipViewController extends PrivacyDotViewControllerImpl
             CommandQueue commandQueue,
             SystemBarConfigs systemBarConfigs) {
         super(mainExecutor, scope, stateController, configurationController, contentInsetsProvider,
-                animationScheduler, null, uiExecutor, context.getDisplayId(), null);
+                animationScheduler, null, null, uiExecutor, context.getDisplayId(), null);
         commandQueue.addCallback(this);
         mAnimationHelper = new CarPrivacyChipAnimationHelper(context);
         mBarType = systemBarConfigs.getInsetsFrameProvider(context.getResources().getInteger(

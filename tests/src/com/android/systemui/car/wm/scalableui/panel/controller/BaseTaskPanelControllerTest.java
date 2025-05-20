@@ -77,7 +77,7 @@ public class BaseTaskPanelControllerTest extends SysuiTestCase {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.initMocks(this);
         when(mMockContext.getPackageManager()).thenReturn(mPackageManager);
     }
 

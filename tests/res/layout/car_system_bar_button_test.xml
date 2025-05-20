@@ -45,6 +45,48 @@
     />
 
     <com.android.systemui.car.systembar.CarSystemBarButton
+        android:id="@+id/dialer_activity_toggle"
+        style="@style/SystemBarButton"
+        systemui:componentNames="com.android.car.dialer/.ui.TelecomActivity"
+        systemui:icon="@drawable/car_ic_apps"
+        systemui:unselectedIntent="intent:#Intent;component=com.android.car.dialer/.ui.TelecomActivity;launchFlags=0x24000000;end"
+        systemui:selectedIntent="intent:#Intent;component=com.android.car.carlauncher/.CarLauncher;launchFlags=0x24000000;end"
+        systemui:selectedIcon="@drawable/car_ic_apps_selected"
+        systemui:highlightWhenSelected="true"
+        />
+
+    <com.android.systemui.car.systembar.CarSystemBarButton
+        android:id="@+id/dialer_activity_toggle_missing_selected"
+        style="@style/SystemBarButton"
+        systemui:componentNames="com.android.car.dialer/.ui.TelecomActivity"
+        systemui:icon="@drawable/car_ic_apps"
+        systemui:intent="intent:#Intent;component=com.android.car.carlauncher/.CarLauncher;launchFlags=0x24000000;end"
+        systemui:unselectedIntent="intent:#Intent;component=com.android.car.dialer/.ui.TelecomActivity;launchFlags=0x24000000;end"
+        systemui:selectedIcon="@drawable/car_ic_apps_selected"
+        systemui:highlightWhenSelected="true"
+        />
+
+    <com.android.systemui.car.systembar.CarSystemBarButton
+        android:id="@+id/app_grid_button_with_selection_events"
+        style="@style/SystemBarButton"
+        systemui:icon="@drawable/car_ic_apps"
+        systemui:selectedEvent="close_app_grid"
+        systemui:unselectedEvent="open_app_grid"
+        systemui:selectedIcon="@drawable/car_ic_apps_selected"
+        systemui:highlightWhenSelected="true"
+        />
+
+    <com.android.systemui.car.systembar.CarSystemBarButton
+        android:id="@+id/app_grid_button_without_unselect_event"
+        style="@style/SystemBarButton"
+        systemui:icon="@drawable/car_ic_apps"
+        systemui:event="open_app_grid"
+        systemui:selectedEvent="close_app_grid"
+        systemui:selectedIcon="@drawable/car_ic_apps_selected"
+        systemui:highlightWhenSelected="true"
+        />
+
+    <com.android.systemui.car.systembar.CarSystemBarButton
         android:id="@+id/dialer_activity_clear_backstack"
         style="@style/SystemBarButton"
         systemui:componentNames="com.android.car.dialer/.ui.TelecomActivity"

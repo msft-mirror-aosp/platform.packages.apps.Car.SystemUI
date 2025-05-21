@@ -64,7 +64,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
     @Mock
     private AutoTaskStackController mAutoTaskStackController;
     @Mock
-    private TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
+    private PanelTransitionCoordinator mPanelTransitionCoordinator;
     @Mock
     private Transitions.TransitionFinishCallback mFinishCallback;
     @Mock
@@ -77,10 +77,10 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        when(mTaskPanelTransitionCoordinator.createAutoTaskStackTransaction(any(),
+        when(mPanelTransitionCoordinator.createAutoTaskStackTransaction(any(),
                 any())).thenReturn(new AutoTaskStackTransaction());
         mDelegate = new PanelAutoTaskStackTransitionHandlerDelegate(mContext,
-                mAutoTaskStackController, mTaskPanelTransitionCoordinator, mPanelUtils,
+                mAutoTaskStackController, mPanelTransitionCoordinator, mPanelUtils,
                 mTaskPanelInfoRepository, mAutoLayoutManager);
     }
 
@@ -116,7 +116,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
         TransitionInfo info = mock(TransitionInfo.class);
         SurfaceControl.Transaction startTransaction = mock(SurfaceControl.Transaction.class);
         SurfaceControl.Transaction finishTransaction = mock(SurfaceControl.Transaction.class);
-        when(mTaskPanelTransitionCoordinator.playPendingAnimations(any(), any())).thenReturn(true);
+        when(mPanelTransitionCoordinator.playPendingAnimations(any(), any())).thenReturn(true);
 
         boolean result = mDelegate.startAnimation(
                 mock(IBinder.class),
@@ -135,7 +135,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
         TransitionInfo info = mock(TransitionInfo.class);
         SurfaceControl.Transaction startTransaction = mock(SurfaceControl.Transaction.class);
         SurfaceControl.Transaction finishTransaction = mock(SurfaceControl.Transaction.class);
-        when(mTaskPanelTransitionCoordinator.playPendingAnimations(any(), any())).thenReturn(false);
+        when(mPanelTransitionCoordinator.playPendingAnimations(any(), any())).thenReturn(false);
 
         boolean result = mDelegate.startAnimation(
                 mock(IBinder.class),
@@ -156,7 +156,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
                 false,
                 mock(SurfaceControl.Transaction.class));
 
-        verify(mTaskPanelTransitionCoordinator).stopRunningAnimations(any());
+        verify(mPanelTransitionCoordinator).stopRunningAnimations(any());
     }
 
     @Test
@@ -169,6 +169,6 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
                 mock(IBinder.class),
                 mock(Transitions.TransitionFinishCallback.class));
 
-        verify(mTaskPanelTransitionCoordinator).stopRunningAnimations(any());
+        verify(mPanelTransitionCoordinator).stopRunningAnimations(any());
     }
 }

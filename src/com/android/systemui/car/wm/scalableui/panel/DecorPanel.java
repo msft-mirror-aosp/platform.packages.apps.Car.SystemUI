@@ -120,6 +120,7 @@ public final class DecorPanel extends BasePanel {
 
     @Override
     public void setVisibility(boolean isVisible) {
+        super.setVisibility(isVisible);
         if (mDecorView == null) {
             return;
         }
@@ -132,7 +133,6 @@ public final class DecorPanel extends BasePanel {
                     mDecorView.setVisibility(View.GONE);
                 }
             }
-            super.setVisibility(isVisible);
         });
     }
 

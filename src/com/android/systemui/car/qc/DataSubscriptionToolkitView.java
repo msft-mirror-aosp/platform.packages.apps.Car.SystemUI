@@ -90,7 +90,6 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 mPopupWindow.dismiss();
-                mListener.onMessageDismissed();
                 mDataSubscriptionStatsLogHelper.logSessionFinished();
                 return true;
             }
@@ -193,7 +192,6 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
                         // hence the message from now on will just be reactive
                         mIsProactiveMessage = false;
                         mPopupWindow.dismiss();
-                        mListener.onMessageDismissed();
                         mDataSubscriptionStatsLogHelper.logSessionFinished();
                     }
                 }, mPopUpTimeOut);

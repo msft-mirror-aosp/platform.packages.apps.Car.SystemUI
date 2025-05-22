@@ -78,26 +78,26 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
 
     private final AutoTaskStackController mAutoTaskStackController;
-    private final TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
+    private final PanelTransitionCoordinator mPanelTransitionCoordinator;
     private final Context mContext;
     private final PanelUtils mPanelUtils;
-    private final TaskPanelInfoRepository mTaskPanelInfoRepository;
+    private final TaskPanelInfoRepository mPanelInfoRepository;
     private final AutoLayoutManager mAutoLayoutManager;
 
     @Inject
     public PanelAutoTaskStackTransitionHandlerDelegate(
             Context context,
             AutoTaskStackController autoTaskStackController,
-            TaskPanelTransitionCoordinator taskPanelTransitionCoordinator,
+            PanelTransitionCoordinator panelTransitionCoordinator,
             PanelUtils panelUtils,
-            TaskPanelInfoRepository taskPanelInfoRepository,
+            TaskPanelInfoRepository panelInfoRepository,
             AutoLayoutManager autoLayoutManager
     ) {
         mAutoTaskStackController = autoTaskStackController;
-        mTaskPanelTransitionCoordinator = taskPanelTransitionCoordinator;
+        mPanelTransitionCoordinator = panelTransitionCoordinator;
         mContext = context;
         mPanelUtils = panelUtils;
-        mTaskPanelInfoRepository = taskPanelInfoRepository;
+        mPanelInfoRepository = panelInfoRepository;
         mAutoLayoutManager = autoLayoutManager;
     }
 
@@ -124,9 +124,9 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             Event event = calculateEvent(request);
             PanelTransaction panelTransaction = EventDispatcher.getTransaction(event);
             AutoTaskStackTransaction wct =
-                    mTaskPanelTransitionCoordinator.createAutoTaskStackTransaction(transition,
+                    mPanelTransitionCoordinator.createAutoTaskStackTransaction(transition,
                             panelTransaction);
-            mTaskPanelTransitionCoordinator.resetUnpreparedDecorPanel(panelTransaction);
+            mPanelTransitionCoordinator.resetUnpreparedDecorPanel(panelTransaction);
             if (DEBUG) {
                 Log.d(TAG, "handleRequest: COMPLETED " + wct);
             }
@@ -159,8 +159,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                     + ", finishTransaction=" + finishTransaction.getId());
         }
 
-        mTaskPanelTransitionCoordinator.maybeResolveConflict(changedTaskStacks, transition);
-        mTaskPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
+        mPanelTransitionCoordinator.maybeResolveConflict(changedTaskStacks, transition);
+        mPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
 
         Trace.beginSection(TAG + "#startAnimation");
 
@@ -168,7 +168,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         calculateTransaction(finishTransaction, info, /* isFinish= */ true);
         startTransaction.apply();
 
-        boolean animationStarted = mTaskPanelTransitionCoordinator.playPendingAnimations(transition,
+        boolean animationStarted = mPanelTransitionCoordinator.playPendingAnimations(transition,
                 finishCallback);
         Trace.endSection();
         return animationStarted;
@@ -307,7 +307,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                     + ", changedTaskStacks" + changedTaskStacks);
         }
         Trace.beginSection(TAG + "#onTransitionConsumed");
-        mTaskPanelTransitionCoordinator.stopRunningAnimations(transition);
+        mPanelTransitionCoordinator.stopRunningAnimations(transition);
         Trace.endSection();
     }
 
@@ -321,7 +321,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             Log.d(TAG, "mergeAnimation " + transition);
         }
         Trace.beginSection(TAG + "#mergeAnimation");
-        mTaskPanelTransitionCoordinator.stopRunningAnimations(transition);
+        mPanelTransitionCoordinator.stopRunningAnimations(transition);
         Trace.endSection();
     }
 }

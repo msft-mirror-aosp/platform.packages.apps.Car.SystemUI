@@ -102,7 +102,7 @@ public class PassengerKeyguardCredentialViewControllerTest extends CarSysuiTestC
 
         ExtendedMockito.verify(() -> LockPatternChecker.verifyCredential(any(), any(), anyInt(),
                 anyInt(), captor.capture()));
-        captor.getValue().onVerified(VerifyCredentialResponse.ERROR, 0);
+        captor.getValue().onVerified(VerifyCredentialResponse.OTHER_ERROR, 0);
         verify(mMainHandler).post(failureRunnable);
     }
 
@@ -117,7 +117,7 @@ public class PassengerKeyguardCredentialViewControllerTest extends CarSysuiTestC
 
         ExtendedMockito.verify(() -> LockPatternChecker.verifyCredential(any(), any(), anyInt(),
                 anyInt(), captor.capture()));
-        captor.getValue().onVerified(VerifyCredentialResponse.ERROR, throttleTimeoutMs);
+        captor.getValue().onVerified(VerifyCredentialResponse.OTHER_ERROR, throttleTimeoutMs);
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mMainHandler).post(runnableCaptor.capture());
         runnableCaptor.getValue().run();

@@ -65,7 +65,7 @@ public class CarSystemUIApplication extends SystemUIApplication {
     }
 
     @Override
-    public void onConfigurationChanged(@androidx.annotation.NonNull Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
         Token.applyOemTokenStyle(this);
         super.onConfigurationChanged(newConfig);
     }
@@ -112,6 +112,16 @@ public class CarSystemUIApplication extends SystemUIApplication {
     public Context createWindowContext(@WindowManager.LayoutParams.WindowType int type,
             @Nullable Bundle options) {
         Context context = super.createWindowContext(type, options);
+        context.getTheme().setTo(getTheme());
+        context.getTheme().rebase();
+        return context;
+    }
+
+    @Override
+    @NonNull
+    public Context createWindowContext(@NonNull Display display, int type,
+            @Nullable Bundle options) {
+        Context context = super.createWindowContext(display, type, options);
         context.getTheme().setTo(getTheme());
         context.getTheme().rebase();
         return context;

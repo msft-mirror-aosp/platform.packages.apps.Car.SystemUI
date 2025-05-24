@@ -70,8 +70,8 @@ import javax.inject.Inject;
  * based on event triggers and then applying visual updates to panels based on their current state.
  */
 @WMSingleton
-public class TaskPanelTransitionCoordinator {
-    private static final String TAG = TaskPanelTransitionCoordinator.class.getName();
+public class PanelTransitionCoordinator {
+    private static final String TAG = PanelTransitionCoordinator.class.getName();
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
     private static final String DECOR_TRANSACTION = "DECOR_TRANSACTION";
 
@@ -86,7 +86,7 @@ public class TaskPanelTransitionCoordinator {
     private final ShellExecutor mMainExecutor;
 
     @Inject
-    public TaskPanelTransitionCoordinator(AutoTaskStackController autoTaskStackController,
+    public PanelTransitionCoordinator(AutoTaskStackController autoTaskStackController,
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
             PanelUtils panelUtils,
             AutoLayoutManager autoLayoutManager,
@@ -106,19 +106,21 @@ public class TaskPanelTransitionCoordinator {
      *                    transition.
      */
     public void startTransition(PanelTransaction transaction) {
-        mMainExecutor.execute(() -> {
-            synchronized (mPendingPanelTransactions) {
-                if (transaction.hasWindowChanges()) {
+        if (transaction.hasWindowChanges()) {
+            mMainExecutor.execute(() -> {
+                synchronized (mPendingPanelTransactions) {
                     IBinder transition = mAutoTaskStackController.startTransition(
                             createAutoTaskStackTransaction(transaction));
                     mPendingPanelTransactions.put(transition, transaction);
                     resetUnpreparedDecorPanel(transaction);
                     playPendingAnimations(transition, null);
-                } else {
-                    updatePanelSurface(transaction);
                 }
-            }
-        });
+            });
+        } else {
+            // If the transaction does not involve window changes, execute it directly. Posting
+            // to the shell main thread could introduce unnecessary latency and visual lag.
+            updatePanelSurface(transaction);
+        }
     }
 
     /**

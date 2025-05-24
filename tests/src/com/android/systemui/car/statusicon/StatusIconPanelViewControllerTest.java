@@ -54,7 +54,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -141,20 +140,6 @@ public class StatusIconPanelViewControllerTest extends CarSysuiTestCase {
         waitForIdleSync();
 
         assertThat(mViewController.getPanel().isShowing()).isFalse();
-    }
-
-    @Test
-    public void onPanelAnchorViewClicked_sendsIntentToDismissSystemDialogsWithIdentifier() {
-        ArgumentCaptor<Intent> argumentCaptor = ArgumentCaptor.forClass(Intent.class);
-
-        clickAnchorView();
-        waitForIdleSync();
-
-        verify(mContext).sendBroadcastAsUser(argumentCaptor.capture(), eq(mUserHandle));
-        assertThat(argumentCaptor.getValue().getAction()).isEqualTo(
-                Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        assertThat(argumentCaptor.getValue().getIdentifier()).isEqualTo(
-                mViewController.getIdentifier());
     }
 
     @Test

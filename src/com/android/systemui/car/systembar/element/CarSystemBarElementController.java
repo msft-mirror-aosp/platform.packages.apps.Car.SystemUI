@@ -97,7 +97,7 @@ public abstract class CarSystemBarElementController<V extends View & CarSystemBa
      */
     protected final void updateVisibility() {
         boolean visible = shouldBeVisible() && !mIsDisabledBySystemBarState;
-        mView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        mView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**

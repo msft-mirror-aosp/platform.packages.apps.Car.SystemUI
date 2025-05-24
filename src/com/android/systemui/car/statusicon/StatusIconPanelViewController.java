@@ -316,6 +316,7 @@ public class StatusIconPanelViewController extends ViewController<View> {
 
     /**
      * Create the PopupWindow panel and assign to {@link mPanel}.
+     *
      * @return true if the panel was created, false otherwise
      */
     private boolean createPanel() {
@@ -371,7 +372,7 @@ public class StatusIconPanelViewController extends ViewController<View> {
     private void dismissAllSystemDialogs() {
         Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         intent.setIdentifier(mIdentifier);
-        mContext.sendBroadcastAsUser(intent, mUserTracker.getUserHandle());
+        mContext.getApplicationContext().sendBroadcastAsUser(intent, mUserTracker.getUserHandle());
     }
 
     private void registerFocusListener(boolean register) {
@@ -487,7 +488,8 @@ public class StatusIconPanelViewController extends ViewController<View> {
                 ConfigurationController configurationController,
                 CarDeviceProvisionedController deviceProvisionedController,
                 CarSystemBarElementInitializer elementInitializer) {
-            mContext = context;
+            mContext = context.createWindowContext(context.getDisplay(),
+                    WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG, null);
             mUserTracker = userTracker;
             mBroadcastDispatcher = broadcastDispatcher;
             mConfigurationController = configurationController;
@@ -514,7 +516,10 @@ public class StatusIconPanelViewController extends ViewController<View> {
             return this;
         }
 
-        /** Set the panel's gravity - by default the gravity will be `Gravity.TOP | Gravity.START`*/
+        /**
+         * Set the panel's gravity - by default the gravity will be `Gravity.TOP | Gravity
+         * .START`
+         */
         public Builder setGravity(int gravity) {
             mGravity = gravity;
             return this;
@@ -550,8 +555,8 @@ public class StatusIconPanelViewController extends ViewController<View> {
          */
         public StatusIconPanelViewController build(View anchorView, @LayoutRes int layoutRes,
                 @DimenRes int widthRes) {
-            return new StatusIconPanelViewController(mContext, mUserTracker, mBroadcastDispatcher,
-                    mConfigurationController, mCarDeviceProvisionedController,
+            return new StatusIconPanelViewController(mContext, mUserTracker,
+                    mBroadcastDispatcher, mConfigurationController, mCarDeviceProvisionedController,
                     mCarSystemBarElementInitializer, anchorView, layoutRes, widthRes, mXOffset,
                     mYOffset, mGravity, mIsDisabledWhileDriving, mIsDisabledWhileUnprovisioned,
                     mShowAsDropDown);

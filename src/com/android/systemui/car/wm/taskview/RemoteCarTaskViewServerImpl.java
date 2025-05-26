@@ -202,18 +202,8 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             if (taskInfo == null) {
                 return;
             }
-            if (mTaskViewTransitions.isUsingShellTransitions() && mTaskViewTransitions != null) {
-                mTaskViewTransitions.setTaskViewVisible(mTaskViewTaskController, /* visible= */
-                        true, /* reorder= */ true);
-                return;
-            }
-
-            WindowContainerTransaction wct = new WindowContainerTransaction();
-            // Clears the hidden flag to make it TopFocusedRootTask: b/228092608
-            wct.setHidden(taskInfo.token, /* hidden= */ false);
-            // Moves the embedded task to the top to make it resumed: b/225388469
-            wct.reorder(taskInfo.token, /* onTop= */ true);
-            mShellTaskOrganizer.applyTransaction(wct);
+            mTaskViewTransitions.setTaskViewVisible(mTaskViewTaskController, /* visible= */
+                    true, /* reorder= */ true);
         }
 
         @Override
@@ -227,14 +217,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             if (taskInfo == null) {
                 return;
             }
-            if (mTaskViewTransitions.isUsingShellTransitions()) {
-                mTaskViewTransitions.setTaskViewVisible(mTaskViewTaskController, visibility);
-                return;
-            }
-
-            WindowContainerTransaction wct = new WindowContainerTransaction();
-            wct.setHidden(taskInfo.token, !visibility);
-            mShellTaskOrganizer.applyTransaction(wct);
+            mTaskViewTransitions.setTaskViewVisible(mTaskViewTaskController, visibility);
         }
 
         @Override
@@ -249,14 +232,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
                 return;
             }
 
-            if (mTaskViewTransitions.isUsingShellTransitions()) {
-                mTaskViewTransitions.reorderTaskViewTask(mTaskViewTaskController, onTop);
-                return;
-            }
-
-            WindowContainerTransaction wct = new WindowContainerTransaction();
-            wct.reorder(taskInfo.token, onTop);
-            mShellTaskOrganizer.applyTransaction(wct);
+            mTaskViewTransitions.reorderTaskViewTask(mTaskViewTaskController, onTop);
         }
 
         @Override

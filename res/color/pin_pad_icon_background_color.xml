@@ -42,7 +42,7 @@
             </item>
             <item>
                 <shape>
-                    <solid android:color="@color/car_secondary_container"/>
+                    <solid android:color="?oemColorSecondaryContainer"/>
                     <corners android:radius="?pinPadKeyRadius"/>
                 </shape>
             </item>

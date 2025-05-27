@@ -15,8 +15,8 @@
   ~ limitations under the License.
   -->
 
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item >
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
         <shape>
             <solid android:color="@android:color/white"/>
             <corners android:topLeftRadius="@dimen/panel_grip_bar_corner_radius"
@@ -24,4 +24,12 @@
                 android:bottomLeftRadius="0dp" android:bottomRightRadius="0dp"/>
         </shape>
     </item>
-</selector>
+
+    <item android:top="@dimen/panel_grip_bar_decor_top_margin" android:gravity="center_horizontal|top">
+        <shape>
+            <corners android:radius="@dimen/panel_grip_bar_decor_corner_radius" />
+            <size android:width="@dimen/panel_grip_bar_decor_width" android:height="@dimen/panel_grip_bar_decor_height" />
+            <solid android:color="#eee" />
+        </shape>
+    </item>
+</layer-list>

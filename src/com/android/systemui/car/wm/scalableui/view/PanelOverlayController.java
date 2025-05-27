@@ -55,6 +55,8 @@ public class PanelOverlayController extends ViewController {
     private static final String TAG = PanelOverlayController.class.getSimpleName();
     private PanelOverlay mPanelOverlay;
     private String mOverlayPanelId;
+    private BackgroundBlurDrawable mBackgroundBlurDrawable;
+    private int mBlurRadius;
 
     public PanelOverlayController(Context context, PanelControllerMetadata metadata) {
         super(context, metadata);
@@ -65,22 +67,34 @@ public class PanelOverlayController extends ViewController {
     @Override
     @NonNull
     public View getView() {
+        Log.e(TAG, "getView... ");
         View view = super.getView();
         if (view instanceof PanelOverlay panelOverlay) {
             mPanelOverlay = panelOverlay;
         } else {
             throw new RuntimeException("PanelOverlayController mush have a PanelOverlay view");
         }
-        mPanelOverlay.setOnVisibilityChangeListener((visibility) -> {
-            if (visibility == View.GONE) {
-                return;
+        mPanelOverlay.setOnChangeListener(new PanelOverlay.OnChangeListener() {
+            @Override
+            public void onVisibilityChange(int visibility) {
+                Log.e(TAG, "visibility changed... " + visibility
+                        + " mOverlayPanelId: " + mOverlayPanelId);
+                if (visibility == View.GONE) {
+                    return;
+                }
+                setBlur();
+                PanelPool pool = PanelPool.getInstance();
+                Panel panel = pool.getPanel(mOverlayPanelId);
+                if (panel instanceof TaskPanel) {
+                    String packageName = ((TaskPanel) panel).getTopTaskPackageName();
+                    setVail(packageName);
+                }
             }
-            setBlur();
-            PanelPool pool = PanelPool.getInstance();
-            Panel panel = pool.getPanel(mOverlayPanelId);
-            if (panel instanceof TaskPanel) {
-                String packageName = ((TaskPanel) panel).getTopTaskPackageName();
-                setVail(packageName);
+
+            @Override
+            public void onAlphaChanged(float alpha) {
+                mBackgroundBlurDrawable.setBlurRadius((int) (mBlurRadius * alpha));
+                mPanelOverlay.setBackground(mBackgroundBlurDrawable);
             }
         });
         return mPanelOverlay;
@@ -118,15 +132,15 @@ public class PanelOverlayController extends ViewController {
         if (mPanelOverlay.getBackground() != null) {
             return;
         }
-        BackgroundBlurDrawable drawable =
+        mBackgroundBlurDrawable =
                 mPanelOverlay.getViewRootImpl().createBackgroundBlurDrawable();
-        drawable.setColor(
+        mBackgroundBlurDrawable.setColor(
                 mContext.getResources().getColor(R.color.overlay_panel_bg_color));
-        drawable.setCornerRadius(
+        mBackgroundBlurDrawable.setCornerRadius(
                 mContext.getResources().getInteger(R.integer.overlay_panel_blur_corner_radius));
-        drawable.setBlurRadius(
-                mContext.getResources().getInteger(R.integer.overlay_panel_blur_radius));
-        mPanelOverlay.setBackground(drawable);
+        mBlurRadius = mContext.getResources().getInteger(R.integer.overlay_panel_blur_radius);
+        mBackgroundBlurDrawable.setBlurRadius(mBlurRadius);
+        mPanelOverlay.setBackground(mBackgroundBlurDrawable);
     }
 
     private void addCenteredIconWithConstraintSet(ImageView iconImageView, int width, int height) {

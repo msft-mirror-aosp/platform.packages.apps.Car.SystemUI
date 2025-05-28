@@ -75,6 +75,10 @@ public class AssistantButton extends CarSystemBarButton {
                     @Override
                     public void onSetUiHints(Bundle hints) {
                     }
+
+                    @Override
+                    public void onSetInvocationEffectEnabled(boolean enabled) {
+                    }
                 }
         );
     }

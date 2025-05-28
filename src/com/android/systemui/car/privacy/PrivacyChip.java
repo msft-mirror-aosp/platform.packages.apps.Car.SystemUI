@@ -32,6 +32,9 @@ import androidx.constraintlayout.motion.widget.MotionLayout;
 
 import com.android.systemui.R;
 import com.android.systemui.car.statusicon.AnimatedStatusIcon;
+import com.android.systemui.car.systembar.element.CarSystemBarElement;
+import com.android.systemui.car.systembar.element.CarSystemBarElementFlags;
+import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -60,10 +63,15 @@ import java.util.concurrent.TimeUnit;
  * <li>SENSOR_OFF - panel opened ->> SENSOR_OFF_SELECTED</li>
  * </ul>
  */
-public abstract class PrivacyChip extends MotionLayout implements AnimatedStatusIcon {
+public abstract class PrivacyChip extends MotionLayout implements AnimatedStatusIcon,
+        CarSystemBarElement {
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
     private static final String TAG = "PrivacyChip";
 
+    private final Class<?> mElementControllerClassAttr;
+    private final int mSystemBarDisableFlags;
+    private final int mSystemBarDisable2Flags;
+    private final boolean mDisableForLockTaskModeLocked;
     private final int mDelayPillToCircle;
     private final int mDelayToNoSensorUsage;
 
@@ -84,6 +92,18 @@ public abstract class PrivacyChip extends MotionLayout implements AnimatedStatus
     public PrivacyChip(@NonNull Context context,
             @Nullable AttributeSet attrs, int defStyleAttrs) {
         super(context, attrs, defStyleAttrs);
+
+        mElementControllerClassAttr =
+                CarSystemBarElementResolver.getElementControllerClassFromAttributes(context, attrs);
+        mSystemBarDisableFlags =
+                CarSystemBarElementFlags.getStatusBarManagerDisableFlagsFromAttributes(context,
+                        attrs);
+        mSystemBarDisable2Flags =
+                CarSystemBarElementFlags.getStatusBarManagerDisable2FlagsFromAttributes(context,
+                        attrs);
+        mDisableForLockTaskModeLocked =
+                CarSystemBarElementFlags.getDisableForLockTaskModeLockedFromAttributes(context,
+                        attrs);
 
         mDelayPillToCircle = getResources().getInteger(R.integer.privacy_chip_pill_to_circle_delay);
         mDelayToNoSensorUsage =
@@ -560,6 +580,29 @@ public abstract class PrivacyChip extends MotionLayout implements AnimatedStatus
         darkIcon.setAlpha(1.0f);
 
         super.setTransition(transitionId);
+    }
+
+    @Override
+    public Class<?> getElementControllerClass() {
+        if (mElementControllerClassAttr != null) {
+            return mElementControllerClassAttr;
+        }
+        return null;
+    }
+
+    @Override
+    public int getSystemBarDisableFlags() {
+        return mSystemBarDisableFlags;
+    }
+
+    @Override
+    public int getSystemBarDisable2Flags() {
+        return mSystemBarDisable2Flags;
+    }
+
+    @Override
+    public boolean disableForLockTaskModeLocked() {
+        return mDisableForLockTaskModeLocked;
     }
 
     protected abstract @DrawableRes int getLightMutedIconResourceId();

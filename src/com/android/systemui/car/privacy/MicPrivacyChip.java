@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.systemui.R;
+import com.android.systemui.car.systembar.MicPrivacyChipViewController;
 
 /** Car optimized Mic Privacy Chip View that is shown when microphone is being used. */
 public class MicPrivacyChip extends PrivacyChip {
@@ -72,5 +73,14 @@ public class MicPrivacyChip extends PrivacyChip {
     @Override
     protected String getSensorNameWithFirstLetterCapitalized() {
         return SENSOR_NAME_WITH_FIRST_LETTER_CAPITALIZED;
+    }
+
+    @Override
+    public Class<?> getElementControllerClass() {
+        Class<?> superClass = super.getElementControllerClass();
+        if (superClass != null) {
+            return superClass;
+        }
+        return MicPrivacyChipViewController.class;
     }
 }

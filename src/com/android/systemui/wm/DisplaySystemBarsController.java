@@ -249,18 +249,16 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         }
 
         @Override
-        public void hideInsets(@InsetsType int types, boolean fromIme,
-                @Nullable ImeTracker.Token statsToken) {
+        public void hideInsets(@InsetsType int types, @Nullable ImeTracker.Token statsToken) {
             if ((types & WindowInsets.Type.ime()) == 0) {
-                mInsetsController.hide(types, /* fromIme = */ false, statsToken);
+                mInsetsController.hide(types, statsToken);
             }
         }
 
         @Override
-        public void showInsets(@InsetsType int types, boolean fromIme,
-                @Nullable ImeTracker.Token statsToken) {
+        public void showInsets(@InsetsType int types, @Nullable ImeTracker.Token statsToken) {
             if ((types & WindowInsets.Type.ime()) == 0) {
-                mInsetsController.show(types, /* fromIme= */ false, statsToken);
+                mInsetsController.show(types, statsToken);
             }
         }
 
@@ -385,9 +383,9 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             mAppRequestedVisibleTypes = mRequestedVisibleTypes;
 
             showInsets(barVisibilities[VISIBLE_BAR_VISIBILITIES_TYPES_INDEX],
-                    /* fromIme= */ false, /* statsToken= */ null);
+                    /* statsToken= */ null);
             hideInsets(barVisibilities[INVISIBLE_BAR_VISIBILITIES_TYPES_INDEX],
-                    /* fromIme= */ false, /* statsToken = */ null);
+                    /* statsToken = */ null);
 
             int insetMask = barVisibilities[VISIBLE_BAR_VISIBILITIES_TYPES_INDEX]
                     | barVisibilities[INVISIBLE_BAR_VISIBILITIES_TYPES_INDEX];

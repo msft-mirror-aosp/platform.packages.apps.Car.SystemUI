@@ -24,23 +24,44 @@ import android.hardware.SensorPrivacyManager;
 import androidx.annotation.IdRes;
 
 import com.android.systemui.R;
-import com.android.systemui.dagger.SysUISingleton;
+import com.android.systemui.car.CarDeviceProvisionedController;
+import com.android.systemui.car.privacy.PrivacyChip;
+import com.android.systemui.car.statusicon.StatusIconPanelViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.privacy.PrivacyItemController;
 import com.android.systemui.privacy.PrivacyType;
 import com.android.systemui.settings.UserTracker;
 
-import javax.inject.Inject;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
+
+import javax.inject.Provider;
 
 /** Controls a Camera Privacy Chip view in system icons. */
-@SysUISingleton
 public class CameraPrivacyChipViewController extends PrivacyChipViewController {
 
-    @Inject
-    public CameraPrivacyChipViewController(Context context,
+    @AssistedInject
+    public CameraPrivacyChipViewController(@Assisted PrivacyChip view,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
+            Context context,
             PrivacyItemController privacyItemController,
             SensorPrivacyManager sensorPrivacyManager,
-            UserTracker userTracker) {
-        super(context, privacyItemController, sensorPrivacyManager, userTracker);
+            UserTracker userTracker,
+            CarDeviceProvisionedController carDeviceProvisionedController,
+            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider) {
+        super(view, disableController, stateController, context, privacyItemController,
+                sensorPrivacyManager, userTracker, carDeviceProvisionedController,
+                panelControllerBuilderProvider);
+    }
+
+    @AssistedFactory
+    public interface Factory extends
+            CarSystemBarElementController.Factory<PrivacyChip,
+                    CameraPrivacyChipViewController> {
     }
 
     @Override
@@ -56,5 +77,10 @@ public class CameraPrivacyChipViewController extends PrivacyChipViewController {
     @Override
     protected @IdRes int getChipResourceId() {
         return R.id.camera_privacy_chip;
+    }
+
+    @Override
+    protected int getPanelLayoutRes() {
+        return R.layout.qc_camera_panel;
     }
 }

@@ -140,8 +140,6 @@ public class CarSystemBarViewTest extends CarSysuiTestCase {
                 mCarSystemBarElementInitializer,
                 systemBarConfigs,
                 mButtonRoleHolderController,
-                () -> mCameraPrivacyChipViewController,
-                () -> mMicPrivacyChipViewController,
                 mOverlayVisibilityMediator,
                 0,
                 view);

@@ -26,7 +26,9 @@ import com.android.car.scalableui.model.PanelControllerMetadata
 import com.android.car.scalableui.model.Role
 import com.android.car.scalableui.model.Variant
 import com.android.car.scalableui.panel.Panel
+import com.android.car.scalableui.panel.PanelUpdatePublisher
 import com.android.wm.shell.automotive.AutoSurfaceTransaction
+import java.util.Optional
 
 /**
  * A base class for implementing a [Panel].
@@ -36,6 +38,7 @@ import com.android.wm.shell.automotive.AutoSurfaceTransaction
 abstract class BasePanel constructor(
     private val context: Context,
     private val panelId: String,
+    private val panelUpdatePublisherOptional: Optional<PanelUpdatePublisher>
 ) : Panel {
     private var layer = -1
     private var canFocusOnTransition = Focus.Companion.DEFAULT_FOCUS_ON_TRANSITION
@@ -107,16 +110,19 @@ abstract class BasePanel constructor(
             return
         }
         this.isVisible = isVisible
+        getPanelUpdateObserver()?.postVisibility(panelId, isVisible)
     }
 
     override fun getAlpha() = alpha
 
     override fun setAlpha(alpha: Float) {
         this.alpha = alpha
+        getPanelUpdateObserver()?.postAlpha(panelId, alpha)
     }
 
     override fun setCornerRadius(radius: Int) {
         this.cornerRadius = radius
+        getPanelUpdateObserver()?.postCornerRadius(panelId, radius)
     }
 
     override fun getCornerRadius() = cornerRadius
@@ -129,6 +135,7 @@ abstract class BasePanel constructor(
 
     override fun setBounds(bounds: Rect) {
         this.bounds = bounds
+        getPanelUpdateObserver()?.postBounds(panelId, bounds)
     }
 
     override fun getSafeBounds() = Rect()
@@ -143,6 +150,7 @@ abstract class BasePanel constructor(
 
     override fun setInsets(insets: Insets) {
         this.insets = insets
+        getPanelUpdateObserver()?.postInsets(panelId, insets)
     }
 
     override fun getInsets() = insets
@@ -234,6 +242,11 @@ abstract class BasePanel constructor(
         panelControllerMetadata: PanelControllerMetadata?
     ) {
         this.panelControllerMetadata = panelControllerMetadata
+        getPanelUpdateObserver()?.postControllerMetadata(panelId, panelControllerMetadata)
+    }
+
+    override fun getPanelUpdateObserver(): PanelUpdatePublisher? {
+        return panelUpdatePublisherOptional.orElse(null)
     }
 
     override fun refreshTheme() {

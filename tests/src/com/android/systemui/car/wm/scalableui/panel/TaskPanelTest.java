@@ -38,6 +38,7 @@ import androidx.test.filters.SmallTest;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.Restart;
+import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.systemui.ShellSyncExecutor;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
@@ -66,6 +67,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
 
 @CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
@@ -117,6 +120,8 @@ public class TaskPanelTest extends SysuiTestCase {
     private ActivityManager.RunningTaskInfo mRunningTaskInfo;
     @Mock
     private FlagManager mFlagManager;
+    @Mock
+    private PanelUpdatePublisher mPanelUpdatePublisher;
 
     @Before
     public void setUp() {
@@ -125,10 +130,10 @@ public class TaskPanelTest extends SysuiTestCase {
         mTaskPanel = Mockito.spy(
                 new TaskPanel(mAutoTaskStackController, mUserContext, mCarServiceProvider,
                         mAutoTaskStackHelper, mShellTaskOrganizer, mAutoCaptionController,
-                        mPanelUtils,
-                        mTaskPanelInfoRepository, mAutoDecorManager, mEventDispatcher,
+                        mPanelUtils, mTaskPanelInfoRepository, mAutoDecorManager, mEventDispatcher,
                         mPanelControllerInitializer, mAutoLayoutManager, mMainExecutor,
-                        mAutoSurfaceTransactionFactory, mFlagManager, TASK_PANEL_ID));
+                        mAutoSurfaceTransactionFactory, mFlagManager,
+                        Optional.of(mPanelUpdatePublisher), TASK_PANEL_ID));
         when(mFactory.create(any())).thenReturn(mTaskPanel);
 
         when(mAutoSurfaceTransactionFactory.createTransaction(any())).thenReturn(

@@ -26,6 +26,7 @@
     <test class="com.android.tradefed.testtype.AndroidJUnitTest">
         <option name="package" value="com.android.systemui.tests"/>
         <option name="runner" value="android.testing.TestableInstrumentation"/>
+        <option name="include-annotation" value="com.android.systemui.car.CarSystemUiTest" />
         <option name="hidden-api-checks" value="false"/>
     </test>
 </configuration>

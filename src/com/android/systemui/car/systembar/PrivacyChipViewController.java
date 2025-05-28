@@ -16,20 +16,24 @@
 
 package com.android.systemui.car.systembar;
 
-import static android.hardware.SensorPrivacyManager.Sources.QS_TILE;
 import static android.hardware.SensorPrivacyManager.TOGGLE_TYPE_SOFTWARE;
 
+import android.annotation.LayoutRes;
 import android.content.Context;
 import android.hardware.SensorPrivacyManager;
-import android.view.View;
+import android.view.Gravity;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
+import com.android.systemui.R;
+import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.privacy.PrivacyChip;
-import com.android.systemui.car.privacy.SensorInfoUpdateListener;
-import com.android.systemui.car.privacy.SensorQcPanel;
-import com.android.systemui.privacy.OngoingPrivacyChip;
+import com.android.systemui.car.statusicon.StatusIconPanelViewController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.privacy.PrivacyItem;
 import com.android.systemui.privacy.PrivacyItemController;
 import com.android.systemui.privacy.PrivacyType;
@@ -38,17 +42,18 @@ import com.android.systemui.settings.UserTracker;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Provider;
+
 /** Controls a Privacy Chip view in system icons. */
-public abstract class PrivacyChipViewController implements SensorQcPanel.SensorInfoProvider {
+public abstract class PrivacyChipViewController extends CarSystemBarElementController<PrivacyChip> {
 
     private final PrivacyItemController mPrivacyItemController;
     private final SensorPrivacyManager mSensorPrivacyManager;
     private final UserTracker mUserTracker;
-
+    private final CarDeviceProvisionedController mCarDeviceProvisionedController;
+    private final Provider<StatusIconPanelViewController.Builder> mPanelControllerBuilderProvider;
     private Context mContext;
-    private PrivacyChip mPrivacyChip;
-    private Runnable mQsTileNotifyUpdateRunnable;
-    private SensorInfoUpdateListener mSensorInfoUpdateListener;
+
     private final SensorPrivacyManager.OnSensorPrivacyChangedListener
             mOnSensorPrivacyChangedListener = (sensor, sensorPrivacyEnabled) -> {
         if (mContext == null) {
@@ -59,18 +64,14 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
         mContext.getMainExecutor().execute(() -> {
             // We need to negate enabled since when it is {@code true} it means
             // the sensor (such as microphone or camera) has been toggled off.
-            mPrivacyChip.setSensorEnabled(/* enabled= */ !sensorPrivacyEnabled);
-            mQsTileNotifyUpdateRunnable.run();
-            if (mSensorInfoUpdateListener != null) {
-                mSensorInfoUpdateListener.onSensorPrivacyChanged();
-            }
+            mView.setSensorEnabled(/* enabled= */ !sensorPrivacyEnabled);
         });
     };
 
     private final UserTracker.Callback mUserSwitchCallback = new UserTracker.Callback() {
         @Override
         public void onUserChanged(int newUser, Context userContext) {
-            mPrivacyChip.setSensorEnabled(isSensorEnabled());
+            mView.setSensorEnabled(isSensorEnabled());
         }
     };
 
@@ -81,13 +82,9 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
             new PrivacyItemController.Callback() {
                 @Override
                 public void onPrivacyItemsChanged(@NonNull List<PrivacyItem> privacyItems) {
-                    if (mPrivacyChip == null) {
+                    if (mView == null) {
                         return;
                     }
-
-                    // Call QS Tile notify update runnable here so that QS tile can update when app
-                    // usage is added/removed/updated
-                    mQsTileNotifyUpdateRunnable.run();
 
                     boolean shouldShowPrivacyChip = isSensorPartOfPrivacyItems(privacyItems);
                     if (mIsPrivacyChipVisible == shouldShowPrivacyChip) {
@@ -96,10 +93,6 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
 
                     mIsPrivacyChipVisible = shouldShowPrivacyChip;
                     setChipVisibility(shouldShowPrivacyChip);
-
-                    if (mSensorInfoUpdateListener != null) {
-                        mSensorInfoUpdateListener.onPrivacyItemsChanged();
-                    }
                 }
 
                 @Override
@@ -125,40 +118,30 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
                 }
             };
 
-    public PrivacyChipViewController(Context context, PrivacyItemController privacyItemController,
-            SensorPrivacyManager sensorPrivacyManager, UserTracker userTracker) {
+    public PrivacyChipViewController(PrivacyChip view,
+            CarSystemBarElementStatusBarDisableController disableController,
+            CarSystemBarElementStateController stateController,
+            Context context,
+            PrivacyItemController privacyItemController,
+            SensorPrivacyManager sensorPrivacyManager, UserTracker userTracker,
+            CarDeviceProvisionedController carDeviceProvisionedController,
+            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider) {
+        super(view, disableController, stateController);
         mContext = context;
         mPrivacyItemController = privacyItemController;
         mSensorPrivacyManager = sensorPrivacyManager;
         mUserTracker = userTracker;
-
-        mQsTileNotifyUpdateRunnable = () -> {
-        };
+        mCarDeviceProvisionedController = carDeviceProvisionedController;
+        mPanelControllerBuilderProvider = panelControllerBuilderProvider;
         mIsPrivacyChipVisible = false;
     }
 
-    @Override
-    public boolean isSensorEnabled() {
+    @VisibleForTesting
+    boolean isSensorEnabled() {
         // We need to negate return of isSensorPrivacyEnabled since when it is {@code true} it
         // means the sensor (microphone/camera) has been toggled off
         return !mSensorPrivacyManager.isSensorPrivacyEnabled(/* toggleType= */ TOGGLE_TYPE_SOFTWARE,
                 /* sensor= */ getChipSensor());
-    }
-
-    @Override
-    public void toggleSensor() {
-        mSensorPrivacyManager.setSensorPrivacy(/* source= */ QS_TILE, /* sensor= */ getChipSensor(),
-                /* enable= */ isSensorEnabled(), mUserTracker.getUserId());
-    }
-
-    @Override
-    public void setNotifyUpdateRunnable(Runnable runnable) {
-        mQsTileNotifyUpdateRunnable = runnable;
-    }
-
-    @Override
-    public void setSensorInfoUpdateListener(SensorInfoUpdateListener listener) {
-        mSensorInfoUpdateListener = listener;
     }
 
     protected abstract @SensorPrivacyManager.Sensors.Sensor int getChipSensor();
@@ -166,6 +149,8 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
     protected abstract PrivacyType getChipPrivacyType();
 
     protected abstract @IdRes int getChipResourceId();
+
+    protected abstract @LayoutRes int getPanelLayoutRes();
 
     private boolean isSensorPartOfPrivacyItems(@NonNull List<PrivacyItem> privacyItems) {
         Optional<PrivacyItem> optionalSensorPrivacyItem = privacyItems.stream()
@@ -175,17 +160,23 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
         return optionalSensorPrivacyItem.isPresent();
     }
 
-    /**
-     * Finds the {@link OngoingPrivacyChip} and sets relevant callbacks.
-     */
-    public void addPrivacyChipView(View view) {
-        if (mPrivacyChip != null) {
-            return;
+    @Override
+    protected void onInit() {
+        super.onInit();
+        if (isDeviceSetupForUser() && getPanelLayoutRes() != 0) {
+            StatusIconPanelViewController panelViewController =
+                    mPanelControllerBuilderProvider.get()
+                    .setXOffset(-mContext.getResources()
+                            .getDimensionPixelOffset(R.dimen.privacy_chip_horizontal_padding))
+                    .setGravity(Gravity.TOP | Gravity.END)
+                    .build(mView, getPanelLayoutRes(), R.dimen.car_sensor_qc_panel_width);
+            panelViewController.init();
         }
+    }
 
-        mPrivacyChip = view.findViewById(getChipResourceId());
-        if (mPrivacyChip == null) return;
-
+    @Override
+    protected void onViewAttached() {
+        super.onViewAttached();
         mAllIndicatorsEnabled = mPrivacyItemController.getAllIndicatorsAvailable();
         mMicCameraIndicatorsEnabled = mPrivacyItemController.getMicCameraAvailable();
         mPrivacyItemController.addCallback(mPicCallback);
@@ -198,42 +189,40 @@ public abstract class PrivacyChipViewController implements SensorQcPanel.SensorI
         // Since this can be launched using a callback thread, its UI based elements need
         // to execute on main executor.
         mContext.getMainExecutor().execute(() -> {
-            mPrivacyChip.setSensorEnabled(isSensorEnabled());
+            mView.setSensorEnabled(isSensorEnabled());
         });
         mUserTracker.removeCallback(mUserSwitchCallback);
         mUserTracker.addCallback(mUserSwitchCallback, mContext.getMainExecutor());
     }
 
-    /**
-     * Cleans up the controller and removes callbacks.
-     */
-    public void removeAll() {
+    @Override
+    protected void onViewDetached() {
+        super.onViewDetached();
         mIsPrivacyChipVisible = false;
         mPrivacyItemController.removeCallback(mPicCallback);
         mSensorPrivacyManager.removeSensorPrivacyListener(getChipSensor(),
                 mOnSensorPrivacyChangedListener);
         mUserTracker.removeCallback(mUserSwitchCallback);
-        mPrivacyChip = null;
-        mSensorInfoUpdateListener = null;
     }
 
     private void setChipVisibility(boolean chipVisible) {
-        if (mPrivacyChip == null) {
-            return;
-        }
-
         // Since this is launched using a callback thread, its UI based elements need
         // to execute on main executor.
         mContext.getMainExecutor().execute(() -> {
             if (chipVisible && getChipEnabled()) {
-                mPrivacyChip.animateIn();
+                mView.animateIn();
             } else {
-                mPrivacyChip.animateOut();
+                mView.animateOut();
             }
         });
     }
 
     private boolean getChipEnabled() {
         return mMicCameraIndicatorsEnabled || mAllIndicatorsEnabled;
+    }
+
+    private boolean isDeviceSetupForUser() {
+        return mCarDeviceProvisionedController.isCurrentUserSetup()
+                && !mCarDeviceProvisionedController.isCurrentUserSetupInProgress();
     }
 }

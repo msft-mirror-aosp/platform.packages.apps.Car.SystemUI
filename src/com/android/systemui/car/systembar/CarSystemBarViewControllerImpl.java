@@ -38,7 +38,6 @@ import com.android.systemui.car.window.OverlayVisibilityMediator;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.util.ViewController;
 
-import dagger.Lazy;
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
@@ -60,8 +59,6 @@ public class CarSystemBarViewControllerImpl
     private final CarSystemBarElementInitializer mCarSystemBarElementInitializer;
     private final SystemBarConfigs mSystemBarConfigs;
     private final ButtonRoleHolderController mButtonRoleHolderController;
-    private final Lazy<MicPrivacyChipViewController> mMicPrivacyChipViewControllerLazy;
-    private final Lazy<CameraPrivacyChipViewController> mCameraPrivacyChipViewControllerLazy;
     private final @SystemBarSide int mSide;
     private final OverlayVisibilityMediator mOverlayVisibilityMediator;
 
@@ -79,8 +76,6 @@ public class CarSystemBarViewControllerImpl
             CarSystemBarElementInitializer elementInitializer,
             SystemBarConfigs systemBarConfigs,
             ButtonRoleHolderController buttonRoleHolderController,
-            Lazy<CameraPrivacyChipViewController> cameraPrivacyChipViewControllerLazy,
-            Lazy<MicPrivacyChipViewController> micPrivacyChipViewControllerLazy,
             OverlayVisibilityMediator overlayVisibilityMediator,
             @Assisted @SystemBarSide int side,
             @Assisted ViewGroup systemBarView) {
@@ -91,8 +86,6 @@ public class CarSystemBarViewControllerImpl
         mCarSystemBarElementInitializer = elementInitializer;
         mSystemBarConfigs = systemBarConfigs;
         mButtonRoleHolderController = buttonRoleHolderController;
-        mCameraPrivacyChipViewControllerLazy = cameraPrivacyChipViewControllerLazy;
-        mMicPrivacyChipViewControllerLazy = micPrivacyChipViewControllerLazy;
         mSide = side;
         mOverlayVisibilityMediator = overlayVisibilityMediator;
 
@@ -207,15 +200,11 @@ public class CarSystemBarViewControllerImpl
         mSystemBarConfigs.insetSystemBar(mSide, mView);
 
         mButtonRoleHolderController.addAllButtonsWithRoleName(mView);
-        mMicPrivacyChipViewControllerLazy.get().addPrivacyChipView(mView);
-        mCameraPrivacyChipViewControllerLazy.get().addPrivacyChipView(mView);
     }
 
     @Override
     protected void onViewDetached() {
         mButtonRoleHolderController.removeAll();
-        mMicPrivacyChipViewControllerLazy.get().removeAll();
-        mCameraPrivacyChipViewControllerLazy.get().removeAll();
     }
 
     @AssistedFactory

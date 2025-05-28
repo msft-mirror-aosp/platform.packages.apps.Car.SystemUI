@@ -21,7 +21,6 @@ import androidx.annotation.DrawableRes;
 
 import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.systemui.R;
-import com.android.systemui.car.systembar.MicPrivacyChipViewController;
 
 import javax.inject.Inject;
 
@@ -35,10 +34,8 @@ public class MicQcPanel extends SensorQcPanel {
     private static final String SENSOR_NAME_WITH_FIRST_LETTER_CAPITALIZED = "Microphone";
 
     @Inject
-    public MicQcPanel(Context context,
-            MicPrivacyChipViewController micPrivacyChipViewController,
-            MicPrivacyElementsProviderImpl micPrivacyElementsProvider) {
-        super(context, micPrivacyChipViewController, micPrivacyElementsProvider);
+    public MicQcPanel(Context context, MicSensorPrivacyInfoProvider infoProvider) {
+        super(context, infoProvider);
     }
 
     @Override

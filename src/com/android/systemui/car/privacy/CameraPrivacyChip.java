@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.systemui.R;
+import com.android.systemui.car.systembar.CameraPrivacyChipViewController;
 
 /** Car optimized Camera Privacy Chip View that is shown when camera is being used. */
 public class CameraPrivacyChip extends PrivacyChip {
@@ -72,5 +73,14 @@ public class CameraPrivacyChip extends PrivacyChip {
     @Override
     protected String getSensorNameWithFirstLetterCapitalized() {
         return SENSOR_NAME_WITH_FIRST_LETTER_CAPITALIZED;
+    }
+
+    @Override
+    public Class<?> getElementControllerClass() {
+        Class<?> superClass = super.getElementControllerClass();
+        if (superClass != null) {
+            return superClass;
+        }
+        return CameraPrivacyChipViewController.class;
     }
 }

@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.IWindowManager;
 
+import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
@@ -34,6 +35,8 @@ import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerModule;
+import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer;
+import com.android.systemui.car.wm.scalableui.panel.panelupdates.ScalableUIPanelUpdateImpl;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
@@ -165,6 +168,37 @@ public abstract class CarWMShellModule {
     @Provides
     static FlagManager provideFlagManager(Context context) {
         return new FlagManager(context);
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<ScalableUIPanelUpdateImpl> provideScalableUIPanelUpdateImpl(
+            Context context, FlagManager flagManager) {
+        if (flagManager.isEnabled(Flag.ScalableUIEnabled)
+                && flagManager.isEnabled(Flag.EnableExtPanelUpdates)) {
+            return Optional.of(new ScalableUIPanelUpdateImpl());
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<PanelUpdatePublisher> providePanelUpdatePublisher(
+            Optional<ScalableUIPanelUpdateImpl> scalableUIPanelUpdateOptional) {
+        if (scalableUIPanelUpdateOptional.isPresent()) {
+            return Optional.of(scalableUIPanelUpdateOptional.get());
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<PanelUpdateConsumer> providePanelUpdateConsumer(
+            Optional<ScalableUIPanelUpdateImpl> scalableUIPanelUpdateOptional) {
+        if (scalableUIPanelUpdateOptional.isPresent()) {
+            return Optional.of(scalableUIPanelUpdateOptional.get());
+        }
+        return Optional.empty();
     }
 
 }

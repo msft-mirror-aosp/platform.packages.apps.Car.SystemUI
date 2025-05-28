@@ -53,6 +53,7 @@ import com.android.car.scalableui.model.Restart;
 import com.android.car.scalableui.model.Role;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.Panel;
+import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.car.scalableui.panel.TaskPanelController;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.wm.AutoCaptionBarViewFactoryImpl;
@@ -82,6 +83,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -159,8 +161,9 @@ public final class TaskPanel extends BasePanel {
             AutoLayoutManager autoLayoutManager,
             @ShellMainThread ShellExecutor mainExecutor,
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
+            Optional<PanelUpdatePublisher> panelUpdatePublisherOptional,
             @Assisted String id) {
-        super(context, id);
+        super(context, id, panelUpdatePublisherOptional);
         mAutoTaskStackController = autoTaskStackController;
         mCarServiceProvider = carServiceProvider;
         mAutoTaskStackHelper = autoTaskStackHelper;

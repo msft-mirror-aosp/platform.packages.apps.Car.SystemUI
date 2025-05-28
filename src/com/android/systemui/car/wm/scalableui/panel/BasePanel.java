@@ -32,7 +32,10 @@ import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.model.Role;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.Panel;
+import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.wm.shell.automotive.AutoSurfaceTransaction;
+
+import java.util.Optional;
 
 /**
  * Abstract base class for implementing a {@link Panel}.
@@ -62,11 +65,14 @@ public abstract class BasePanel implements Panel {
     private Insets mInsets = Insets.NONE;
     @Nullable
     private PanelControllerMetadata mPanelControllerMetadata;
+    private final Optional<PanelUpdatePublisher> mPanelUpdatePublisherOptional;
 
-    public BasePanel(@NonNull Context context, String panelId) {
+    public BasePanel(@NonNull Context context, String panelId,
+            Optional<PanelUpdatePublisher> panelUpdatePublisherOptional) {
         mContext = context;
         mPanelId = panelId;
         mRole = DEFAULT_ROLE;
+        mPanelUpdatePublisherOptional = panelUpdatePublisherOptional;
     }
 
     @NonNull
@@ -172,6 +178,9 @@ public abstract class BasePanel implements Panel {
             return;
         }
         mIsVisible = isVisible;
+        if (getPanelUpdateObserver() != null) {
+            getPanelUpdateObserver().postVisibility(mPanelId, isVisible);
+        }
     }
 
     @Override
@@ -182,11 +191,17 @@ public abstract class BasePanel implements Panel {
     @Override
     public void setAlpha(float alpha) {
         mAlpha = alpha;
+        if (getPanelUpdateObserver() != null) {
+            getPanelUpdateObserver().postAlpha(mPanelId, alpha);
+        }
     }
 
     @Override
     public void setCornerRadius(int radius) {
         mCornerRadius = radius;
+        if (getPanelUpdateObserver() != null) {
+            getPanelUpdateObserver().postCornerRadius(mPanelId, radius);
+        }
     }
 
     @Override
@@ -207,6 +222,9 @@ public abstract class BasePanel implements Panel {
     @Override
     public void setBounds(Rect bounds) {
         mBounds = bounds;
+        if (getPanelUpdateObserver() != null) {
+            getPanelUpdateObserver().postBounds(mPanelId, bounds);
+        }
     }
 
     @Override
@@ -217,6 +235,9 @@ public abstract class BasePanel implements Panel {
     @Override
     public void setInsets(@NonNull Insets insets) {
         mInsets = insets;
+        if (getPanelUpdateObserver() != null) {
+            getPanelUpdateObserver().postInsets(mPanelId, insets);
+        }
     }
 
     @Override
@@ -280,6 +301,15 @@ public abstract class BasePanel implements Panel {
     public void setPanelControllerMetadata(
             @Nullable PanelControllerMetadata panelControllerMetadata) {
         mPanelControllerMetadata = panelControllerMetadata;
+        if (getPanelUpdateObserver() != null) {
+            getPanelUpdateObserver().postControllerMetadata(mPanelId, panelControllerMetadata);
+        }
+    }
+
+    @Nullable
+    @Override
+    public PanelUpdatePublisher getPanelUpdateObserver() {
+        return mPanelUpdatePublisherOptional.orElse(null);
     }
 
     protected static void logIfDebuggable(String msg) {

@@ -17,6 +17,7 @@ package com.android.systemui.car.wm.scalableui.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -33,16 +34,21 @@ public class PanelOverlay extends ConstraintLayout {
     /**
      * Callback for view's visibility changes.
      */
-    public interface OnVisibilityChangeListener {
+    public interface OnChangeListener {
 
         /**
          * Invoked when visibility changes.
          */
-        void onChange(int visibility);
+        void onVisibilityChange(int visibility);
+
+        /**
+         * Invoked when alpha changes.
+         */
+        void onAlphaChanged(float alpha);
     }
 
     private static final String TAG = PanelOverlay.class.getSimpleName();
-    private OnVisibilityChangeListener mOnVisibilityChangeListener;
+    private OnChangeListener mOnChangeListener;
 
     /**
      * Constructor for GripBar.
@@ -68,13 +74,22 @@ public class PanelOverlay extends ConstraintLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public void setOnVisibilityChangeListener(OnVisibilityChangeListener listener) {
-        mOnVisibilityChangeListener = listener;
+    public void setOnChangeListener(OnChangeListener listener) {
+        mOnChangeListener = listener;
     }
 
     @Override
     protected void onVisibilityChanged(View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        mOnVisibilityChangeListener.onChange(visibility);
+        mOnChangeListener.onVisibilityChange(visibility);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        if (mOnChangeListener != null) {
+            mOnChangeListener.onAlphaChanged(getAlpha());
+        }
     }
 }

@@ -66,6 +66,7 @@ public class GripBar extends ConstraintLayout {
     public GripBar(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        //TODO(b/422235782): Supports refresh with Token
         setBackgroundResource(R.drawable.grip_bar_background);
         setOnTouchListener(this::onTouchEvent);
         setOnClickListener(v -> onClickEvent());

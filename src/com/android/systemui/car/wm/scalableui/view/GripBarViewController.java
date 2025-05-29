@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
  * <li>Index 5: Resource ID of the breakpoint definition array (Integer)</li>
  * </ul>
  */
-public class GripBarViewController extends ViewController implements
+public class GripBarViewController extends DecorPanelControllerBase implements
         EventDispatcher.EventProducer, GripBar.GripBarEventHandler {
     private static final String TAG = GripBarViewController.class.getSimpleName();
     private GripBar mGripBar;

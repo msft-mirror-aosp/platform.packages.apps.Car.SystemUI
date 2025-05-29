@@ -321,7 +321,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             Log.d(TAG, "mergeAnimation " + transition);
         }
         Trace.beginSection(TAG + "#mergeAnimation");
-        mTaskPanelTransitionCoordinator.stopRunningAnimations(transition);
+        mPanelTransitionCoordinator.stopRunningAnimations(transition);
         Trace.endSection();
     }
 }

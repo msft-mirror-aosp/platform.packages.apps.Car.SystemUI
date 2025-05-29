@@ -28,16 +28,13 @@ import android.car.app.CarActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.UserHandle;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.SurfaceControl;
 
-import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -132,8 +129,6 @@ public final class TaskPanel extends BasePanel {
     private RootTaskStack mRootTaskStack;
     @NonNull
     private final Map<String, AutoDecor> mExistingAutoDecors;
-    @Nullable
-    private OverlayPanelView mOverlayView;
     @Nullable
     private AutoDecor mAutoDecor;
     @Nullable
@@ -294,40 +289,6 @@ public final class TaskPanel extends BasePanel {
         autoSurfaceTransaction.apply();
     }
 
-    @MainThread
-    private void resetOverlay(Blur blur) {
-        // Remove existing autoDecor that holds the view.
-        if (mAutoDecor != null) {
-            mAutoDecorManager.removeAutoDecor(mAutoDecor);
-        }
-        mOverlayView = getOverlayView(true);
-        mAutoDecor = mAutoDecorManager.createAutoDecor(mOverlayView, getLayer(), getBounds(),
-                getPanelId());
-        mAutoDecorManager.attachAutoDecorToDisplay(mAutoDecor, getDisplayId());
-        if (mBlur == null || blur.getBlurRadius() != mBlur.getBlurRadius()) {
-            mOverlayView.setBlurIntensity(blur.getBlurRadius());
-        }
-        if (mBlur == null || blur.getBackgroundColor() != mBlur.getBackgroundColor()) {
-            mOverlayView.setBlurColor(blur.getBackgroundColor());
-        }
-        if (mBlur == null || blur.getCornerRadius() != mBlur.getCornerRadius()) {
-            mOverlayView.setCornerRadius(blur.getCornerRadius());
-        }
-        if (blur.isVailEnabled()) {
-            if (mTopTaskPackageName == null) {
-                Log.e(TAG, "vail can't be set for null package name");
-            } else {
-                try {
-                    Drawable icon = mContext.getPackageManager().getApplicationIcon(
-                            mTopTaskPackageName);
-                    mOverlayView.setVail(icon);
-                } catch (PackageManager.NameNotFoundException e) {
-                    Log.e(TAG, "vail can't be set for package name ", e);
-                }
-            }
-        }
-    }
-
     /**
      * Returns the attached AutoDecor
      */
@@ -336,33 +297,10 @@ public final class TaskPanel extends BasePanel {
         return mAutoDecor;
     }
 
-    @NonNull
-    private OverlayPanelView getOverlayView(boolean forceReset) {
-        Blur blur = new Blur.Builder().build();
-        if (mOverlayView == null || forceReset) {
-            mOverlayView = new OverlayPanelView(getContext(), blur);
-        }
-
-        return mOverlayView;
-    }
-
-    private void resetOverlayView() {
-        mOverlayView = null;
-        if (mAutoDecor != null) {
-            mAutoDecorManager.removeAutoDecor(mAutoDecor);
-        }
-    }
 
     @Override
     public void setBlur(Blur blur) {
-        if (blur == null) {
-            resetOverlayView();
-            mBlur = null;
-            return;
-        }
-        resetOverlay(blur);
-        mOverlayView.refresh();
-        mBlur = blur;
+        // Pending cherry-pick
     }
 
     private void updateDecors(@NonNull AutoSurfaceTransaction autoSurfaceTransaction,
@@ -371,18 +309,19 @@ public final class TaskPanel extends BasePanel {
         if (!enableDecor()) {
             return;
         }
-        if (variant == null) {
-            logIfDebuggable("Return as the variant is non for " + getPanelId());
-            return;
-        }
+
         mMainExecutor.execute(() -> {
             if (getRootStack() == null) {
                 return;
             }
 
-            logIfDebuggable("Update " + getPanelId() + " decors, with variant" + variant);
+            Map<String, Decor> decors = variant == null
+                    ? getCurrentDecors()
+                    : variant.getDecors();
 
-            variant.getDecors().forEach((id, decor) -> {
+            logIfDebuggable("Update " + getPanelId() + " decors, with decors" + decors);
+
+            decors.forEach((id, decor) -> {
                 logIfDebuggable("Create decor " + id);
                 AutoDecor autoDecor = mExistingAutoDecors.getOrDefault(id,
                         mAutoDecorManager.createAutoDecor(decor.getView(mContext),
@@ -410,9 +349,15 @@ public final class TaskPanel extends BasePanel {
         });
     }
 
+    @NonNull
+    private Map<String, Decor> getCurrentDecors() {
+        PanelState panelState = StateManager.getPanelState(getPanelId());
+        Variant currentVariant = panelState == null ? null : panelState.getCurrentVariant();
+        return currentVariant == null ? new HashMap<>() : currentVariant.getDecors();
+    }
+
     private void updateAutoDecor(AutoDecor autoDecor, Decor decor,
             AutoSurfaceTransaction autoSurfaceTransaction) {
-
         Rect bounds = new Rect(0, 0, getBounds().width(), getBounds().height());
         autoSurfaceTransaction.setBounds(autoDecor, bounds);
         autoSurfaceTransaction.setVisibility(autoDecor, true);
@@ -423,7 +368,14 @@ public final class TaskPanel extends BasePanel {
 
     @Override
     public void refreshTheme() {
-        // TODO(418311330): implement refresh;
+        mExistingAutoDecors.forEach((id, autoDecor) -> {
+            mAutoDecorManager.removeAutoDecor(autoDecor);
+            mExistingAutoDecors.remove(id);
+        });
+        AutoSurfaceTransaction autoSurfaceTransaction = mAutoSurfaceTransactionFactory
+                .createTransaction(REFRESH_TRANSACTION + getPanelId());
+        updateDecors(autoSurfaceTransaction, null);
+        autoSurfaceTransaction.apply();
     }
 
     /**
@@ -526,7 +478,7 @@ public final class TaskPanel extends BasePanel {
     }
 
     @Override
-    public void setRole(Role role) {
+    public void setRole(@NonNull Role role) {
         if (getRole() == role) return;
         super.setRole(role);
 
@@ -804,6 +756,10 @@ public final class TaskPanel extends BasePanel {
     }
 
     private static boolean displayCompatibilityAutoDecorSafeRegion() {
+        return Build.isDebuggable();
+    }
+
+    private static boolean enableDecor() {
         return Build.isDebuggable();
     }
 }

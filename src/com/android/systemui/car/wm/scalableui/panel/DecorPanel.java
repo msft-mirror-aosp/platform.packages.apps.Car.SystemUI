@@ -27,12 +27,11 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.PanelState;
-import com.android.car.scalableui.model.Role;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
-import com.android.systemui.car.wm.scalableui.view.ViewController;
+import com.android.systemui.car.wm.scalableui.view.DecorPanelControllerBase;
 import com.android.wm.shell.automotive.AutoDecor;
 import com.android.wm.shell.automotive.AutoDecorManager;
 import com.android.wm.shell.automotive.AutoSurfaceTransaction;
@@ -60,9 +59,12 @@ public final class DecorPanel extends BasePanel {
 
     @Nullable
     private View mDecorView;
+    @Nullable
+    DecorPanelController mDecorPanelController;
 
     @AssistedInject
-    public DecorPanel(@NonNull Context context,
+    public DecorPanel(
+            @NonNull Context context,
             AutoDecorManager autoDecorManager,
             EventDispatcher eventDispatcher,
             PanelUtils panelUtils,
@@ -90,12 +92,6 @@ public final class DecorPanel extends BasePanel {
         // no-op
     }
 
-    @Override
-    public void setRole(Role role) {
-        if (getRole() == role) return;
-        super.setRole(role);
-    }
-
     @VisibleForTesting
     @Nullable
     View inflateDecorView() {
@@ -103,13 +99,14 @@ public final class DecorPanel extends BasePanel {
         return view != null ? view : initFromController();
     }
 
+    @Nullable
     private View initFromController() {
-        DecorPanelController decorPanelController = ViewController.createDecorPanelController(
+        mDecorPanelController = DecorPanelControllerBase.createDecorPanelController(
                 getContext(), getPanelControllerMetadata());
-        if (decorPanelController instanceof EventDispatcher.EventProducer eventProducer) {
+        if (mDecorPanelController instanceof EventDispatcher.EventProducer eventProducer) {
             eventProducer.setEventDispatcher(mEventDispatcher);
         }
-        return decorPanelController == null ? null : decorPanelController.getView();
+        return mDecorPanelController == null ? null : mDecorPanelController.getView();
     }
 
     @Override
@@ -153,7 +150,10 @@ public final class DecorPanel extends BasePanel {
 
     @Override
     public void refreshTheme() {
-        // TODO(418311330): implement refresh;
+        if (mDecorPanelController != null) {
+            mDecorPanelController.refreshTheme();
+        }
+        reset();
     }
 
     @Nullable

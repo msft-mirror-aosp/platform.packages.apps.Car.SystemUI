@@ -19,7 +19,6 @@ import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_INVISIBL
 
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.mock;
-import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.spyOn;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.verify;
 
@@ -55,8 +54,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoSession;
-import org.mockito.quality.Strictness;
+import org.mockito.MockitoAnnotations;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -82,15 +80,9 @@ public class UserEventManagerTest extends UserPickerTestCase {
     @Mock
     private UserCreationResult mCreateResult;
 
-    private MockitoSession mMockingSession;
-
     @Before
     public void setUp() {
-        mMockingSession = mockitoSession()
-                .initMocks(this)
-                .spyStatic(ActivityManager.class)
-                .strictness(Strictness.WARN)
-                .startMocking();
+        MockitoAnnotations.initMocks(this);
 
         doReturn(MAIN_DISPLAY_ID).when(mContext).getDisplayId();
         doReturn(mMockCarUserManager).when(mMockCarServiceMediator).getCarUserManager();
@@ -106,9 +98,6 @@ public class UserEventManagerTest extends UserPickerTestCase {
     @After
     public void tearDown() {
         mUserEventManager.unregisterOnUpdateUsersListener(MAIN_DISPLAY_ID);
-        if (mMockingSession != null) {
-            mMockingSession.finishMocking();
-        }
     }
 
     @Test

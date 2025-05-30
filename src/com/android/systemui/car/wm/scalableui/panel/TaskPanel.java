@@ -196,6 +196,7 @@ public final class TaskPanel extends BasePanel {
                                     mRootTaskId);
                         }
                         setupToolbarAndSafeRegion();
+                        setLeash(mRootTaskStack.getLeash());
 
                         if (mPanelUtils.isUserUnlocked()) {
                             reset();

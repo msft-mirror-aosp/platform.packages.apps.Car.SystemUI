@@ -52,6 +52,9 @@ import com.android.systemui.dock.DockManagerImpl;
 import com.android.systemui.doze.DozeHost;
 import com.android.systemui.media.muteawait.MediaMuteAwaitConnectionCli;
 import com.android.systemui.media.nearby.NearbyMediaDevicesManager;
+import com.android.systemui.Flags;
+import com.android.systemui.minmode.MinModeManager;
+import com.android.systemui.minmode.MinModeManagerImpl;
 import com.android.systemui.navigationbar.NoopNavigationBarControllerModule;
 import com.android.systemui.navigationbar.gestural.GestureModule;
 import com.android.systemui.plugins.qs.QSFactory;
@@ -85,8 +88,10 @@ import dagger.Module;
 import dagger.Provides;
 
 import java.util.concurrent.Executor;
+import java.util.Optional;
 
 import javax.inject.Named;
+import javax.inject.Provider;
 
 @Module(
         includes = {
@@ -215,5 +220,16 @@ abstract class CarSystemUIModule {
     static DataSubscriptionMessageCreator bindDataSubscriptionMessageCreator(
             Context context) {
         return new DataSubscriptionMessageCreator(context);
+    }
+
+    @Provides
+    @SysUISingleton
+    static Optional<MinModeManager> provideMinModeManager(
+            Provider<MinModeManagerImpl> minModeManagerProvider) {
+        if (Flags.enableMinmode()) {
+            return Optional.of(minModeManagerProvider.get());
+        } else {
+            return Optional.empty();
+        }
     }
 }

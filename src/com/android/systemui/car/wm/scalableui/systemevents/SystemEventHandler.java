@@ -20,7 +20,7 @@ import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_ENTER_SUW_EVENT_ID;
-import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_EXIST_SUW_EVENT_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_EXIT_SUW_EVENT_ID;
 
 import android.car.user.CarUserManager;
 import android.content.Context;
@@ -81,12 +81,7 @@ public class SystemEventHandler implements CoreStartable,
                 @Override
                 public void onEvent(@NonNull CarUserManager.UserLifecycleEvent event) {
                     if (DEBUG) {
-                        Log.d(TAG, "on User event = " + event + ", mIsUserSetupInProgress="
-                                + mIsUserSetupInProgress);
-                    }
-                    if (mIsUserSetupInProgress) {
-                        mEventDispatcher.executeTransaction(SYSTEM_ENTER_SUW_EVENT_ID);
-                        return;
+                        Log.d(TAG, "on User event = " + event);
                     }
                     if (event.getUserHandle().isSystem()) {
                         return;
@@ -106,6 +101,16 @@ public class SystemEventHandler implements CoreStartable,
                 public void onUserSetupInProgressChanged() {
                     updateUserSetupState();
                 }
+
+                @Override
+                public void onDeviceProvisionedChanged() {
+                    updateUserSetupState();
+                }
+
+                @Override
+                public void onUserSwitched() {
+                    updateUserSetupState();
+                }
             };
 
     @Inject
@@ -123,21 +128,20 @@ public class SystemEventHandler implements CoreStartable,
         mUserTracker = userTracker;
         mCarDeviceProvisionedController = carDeviceProvisionedController;
         mEventDispatcher = dispatcher;
-        mIsUserSetupInProgress = mCarDeviceProvisionedController.isCurrentUserSetupInProgress();
         mCurrentOrientation = mContext.getResources().getConfiguration().orientation;
     }
 
     private void updateUserSetupState() {
-        boolean isUserSetupInProgress =
-                mCarDeviceProvisionedController.isCurrentUserSetupInProgress();
+        boolean isUserSetupInProgress = !mCarDeviceProvisionedController.isCurrentUserFullySetup();
         if (isUserSetupInProgress != mIsUserSetupInProgress) {
             mIsUserSetupInProgress = isUserSetupInProgress;
-            if (mIsUserSetupInProgress) {
-                mEventDispatcher.executeTransaction(SYSTEM_ENTER_SUW_EVENT_ID);
-            } else {
-                mEventDispatcher.executeTransaction(SYSTEM_EXIST_SUW_EVENT_ID);
-            }
+            notifySuwStateEvent();
         }
+    }
+
+    private void notifySuwStateEvent() {
+        mEventDispatcher.executeTransaction(
+                mIsUserSetupInProgress ? SYSTEM_ENTER_SUW_EVENT_ID : SYSTEM_EXIT_SUW_EVENT_ID);
     }
 
     @Override
@@ -165,8 +169,9 @@ public class SystemEventHandler implements CoreStartable,
         }
     }
 
-
     private void registerProvisionedStateListener() {
+        mIsUserSetupInProgress = !mCarDeviceProvisionedController.isCurrentUserFullySetup();
+        notifySuwStateEvent();
         mCarDeviceProvisionedController.addCallback(mCarDeviceProvisionedListener);
     }
 

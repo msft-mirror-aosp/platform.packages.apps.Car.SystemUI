@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 The Android Open Source Project
+ * Copyright (C) 2025 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.android.systemui.car.privacy;
 
+import static android.hardware.SensorPrivacyManager.Sources.QS_TILE;
+import static android.hardware.SensorPrivacyManager.TOGGLE_TYPE_SOFTWARE;
 import static android.os.UserHandle.USER_SYSTEM;
 
 import android.Manifest;
@@ -23,16 +24,19 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.UserInfo;
+import android.hardware.SensorPrivacyManager;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.permission.PermissionGroupUsage;
 import android.permission.PermissionManager;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import com.android.systemui.privacy.PrivacyDialog;
+import com.android.systemui.privacy.PrivacyItem;
 import com.android.systemui.privacy.PrivacyItemController;
 import com.android.systemui.privacy.PrivacyType;
 import com.android.systemui.privacy.logging.PrivacyLogger;
@@ -46,12 +50,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of {@link
- * com.android.systemui.car.privacy.SensorQcPanel.SensorPrivacyElementsProvider}
+ * Helper class to provide privacy elements and updates to sensor panels.
  */
-public abstract class PrivacyElementsProviderImpl implements
-        SensorQcPanel.SensorPrivacyElementsProvider {
-    private static final String TAG = "PrivacyElementsProviderImpl";
+public abstract class SensorPrivacyInfoProvider {
+    private static final String TAG = SensorPrivacyInfoProvider.class.getSimpleName();
     private static final String EMPTY_APP_NAME = "";
 
     private static final Map<String, PrivacyType> PERM_GROUP_TO_PRIVACY_TYPE_MAP =
@@ -59,31 +61,86 @@ public abstract class PrivacyElementsProviderImpl implements
                     Manifest.permission_group.MICROPHONE, PrivacyType.TYPE_MICROPHONE,
                     Manifest.permission_group.LOCATION, PrivacyType.TYPE_LOCATION);
 
-
+    private final Context mContext;
     private final PermissionManager mPermissionManager;
     private final UserTracker mUserTracker;
     private final PrivacyLogger mPrivacyLogger;
     private final PackageManager mPackageManager;
+    private final SensorPrivacyManager mSensorPrivacyManager;
     private final PrivacyItemController mPrivacyItemController;
     private final UserManager mUserManager;
+    private boolean mListenersRegistered;
+    @Nullable
+    private SensorInfoUpdateListener mSensorInfoUpdateListener;
 
-    public PrivacyElementsProviderImpl(
+    private final SensorPrivacyManager.OnSensorPrivacyChangedListener
+            mOnSensorPrivacyChangedListener =
+            new SensorPrivacyManager.OnSensorPrivacyChangedListener() {
+                @Override
+                public void onSensorPrivacyChanged(int sensor, boolean enabled) {
+                    // Since this is launched using a callback thread, its UI based elements need
+                    // to execute on main executor.
+                    mContext.getMainExecutor().execute(() -> {
+                        if (mSensorInfoUpdateListener != null) {
+                            mSensorInfoUpdateListener.onSensorPrivacyChanged();
+                        }
+                    });
+                }
+            };
+
+    private final PrivacyItemController.Callback mPicCallback =
+            new PrivacyItemController.Callback() {
+                @Override
+                public void onPrivacyItemsChanged(@NonNull List<PrivacyItem> privacyItems) {
+                    if (mSensorInfoUpdateListener != null) {
+                        mSensorInfoUpdateListener.onSensorPrivacyChanged();
+                    }
+                }
+            };
+
+    public SensorPrivacyInfoProvider(
             Context context,
             PermissionManager permissionManager,
             PackageManager packageManager,
+            SensorPrivacyManager sensorPrivacyManager,
             PrivacyItemController privacyItemController,
             UserTracker userTracker,
             PrivacyLogger privacyLogger) {
+        mContext = context;
         mPermissionManager = permissionManager;
         mPackageManager = packageManager;
+        mSensorPrivacyManager = sensorPrivacyManager;
         mPrivacyItemController = privacyItemController;
         mUserTracker = userTracker;
         mPrivacyLogger = privacyLogger;
-
         mUserManager = context.getSystemService(UserManager.class);
     }
 
-    @Override
+    /** Whether the sensor specified by {@link #getChipSensor} is enabled */
+    public boolean isSensorEnabled() {
+        // We need to negate return of isSensorPrivacyEnabled since when it is {@code true}, it
+        // means the sensor (microphone/camera) has been toggled off
+        return !mSensorPrivacyManager.isSensorPrivacyEnabled(/* toggleType= */ TOGGLE_TYPE_SOFTWARE,
+                /* sensor= */ getChipSensor());
+    }
+
+    /** Toggle the sensor specified by {@link #getChipSensor} */
+    public void toggleSensor() {
+        mSensorPrivacyManager.setSensorPrivacy(/* source= */ QS_TILE, /* sensor= */ getChipSensor(),
+                /* enable= */ isSensorEnabled(), mUserTracker.getUserId());
+    }
+
+    /** Set the {@link SensorInfoUpdateListener} for this provider */
+    public void setSensorInfoUpdateListener(@Nullable SensorInfoUpdateListener listener) {
+        mSensorInfoUpdateListener = listener;
+        if (listener != null) {
+            registerListeners();
+        } else {
+            unregisterListeners();
+        }
+    }
+
+    /** Obtain privacy elements for the privacy type of {@link #getProviderPrivacyType} */
     public List<PrivacyDialog.PrivacyElement> getPrivacyElements() {
         List<PrivacyDialog.PrivacyElement> elements = filterAndSort(createPrivacyElements());
         mPrivacyLogger.logShowDialogContents(elements);
@@ -91,6 +148,30 @@ public abstract class PrivacyElementsProviderImpl implements
     }
 
     protected abstract PrivacyType getProviderPrivacyType();
+
+    protected abstract @SensorPrivacyManager.Sensors.Sensor int getChipSensor();
+
+    private void registerListeners() {
+        if (mListenersRegistered) {
+            return;
+        }
+        mListenersRegistered = true;
+        mPrivacyItemController.addCallback(mPicCallback);
+        mSensorPrivacyManager.removeSensorPrivacyListener(getChipSensor(),
+                mOnSensorPrivacyChangedListener);
+        mSensorPrivacyManager.addSensorPrivacyListener(getChipSensor(),
+                mOnSensorPrivacyChangedListener);
+    }
+
+    private void unregisterListeners() {
+        if (!mListenersRegistered) {
+            return;
+        }
+        mListenersRegistered = false;
+        mPrivacyItemController.removeCallback(mPicCallback);
+        mSensorPrivacyManager.removeSensorPrivacyListener(getChipSensor(),
+                mOnSensorPrivacyChangedListener);
+    }
 
     private List<PrivacyDialog.PrivacyElement> createPrivacyElements() {
         List<UserInfo> userInfos = mUserTracker.getUserProfiles();

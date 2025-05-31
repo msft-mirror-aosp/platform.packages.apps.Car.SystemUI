@@ -27,6 +27,8 @@ import android.util.Singleton;
 import androidx.annotation.NonNull;
 import androidx.test.InstrumentationRegistry;
 
+import com.android.car.oem.tokens.Token;
+
 import org.junit.Rule;
 import org.mockito.Mockito;
 
@@ -43,7 +45,10 @@ public class CarSysuiTestCase extends SysuiTestCase {
 
         if (isRobolectricTest()) {
             // Manually associate a Display to context for Robolectric test. Similar to b/214297409
-            return context.createDefaultDisplayContext();
+            SysuiTestableContext displayContext = context.createDefaultDisplayContext();
+            Token.applyOemTokenStyle(displayContext);
+            displayContext.getTheme().applyStyle(R.style.CarSystemUIThemeOverlay, true);
+            return displayContext;
         } else {
             return context;
         }

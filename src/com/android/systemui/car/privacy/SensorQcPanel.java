@@ -61,15 +61,11 @@ public abstract class SensorQcPanel extends BaseLocalQCProvider
     protected Icon mSensorOffIcon;
     protected String mSensorOffTitleText;
     protected String mSensorSubtitleText;
+    private SensorPrivacyInfoProvider mSensorInfoProvider;
 
-    private SensorPrivacyElementsProvider mSensorPrivacyElementsProvider;
-    private SensorInfoProvider mSensorInfoProvider;
-
-    public SensorQcPanel(Context context, SensorInfoProvider infoProvider,
-            SensorPrivacyElementsProvider elementsProvider) {
+    public SensorQcPanel(Context context, SensorPrivacyInfoProvider infoProvider) {
         super(context);
         mSensorInfoProvider = infoProvider;
-        mSensorPrivacyElementsProvider = elementsProvider;
         mPhoneCallTitle = context.getString(R.string.ongoing_privacy_dialog_phonecall);
         mSensorOnTitleText = context.getString(R.string.privacy_chip_use_sensor, getSensorName());
         mSensorOffTitleText = context.getString(R.string.privacy_chip_off_content,
@@ -82,15 +78,14 @@ public abstract class SensorQcPanel extends BaseLocalQCProvider
 
     @Override
     public QCItem getQCItem() {
-        if (mSensorInfoProvider == null || mSensorPrivacyElementsProvider == null) {
+        if (mSensorInfoProvider == null) {
             return null;
         }
 
         QCList.Builder listBuilder = new QCList.Builder();
         listBuilder.addRow(createSensorToggleRow(mSensorInfoProvider.isSensorEnabled()));
 
-        List<PrivacyDialog.PrivacyElement> elements =
-                mSensorPrivacyElementsProvider.getPrivacyElements();
+        List<PrivacyDialog.PrivacyElement> elements = mSensorInfoProvider.getPrivacyElements();
 
         List<PrivacyDialog.PrivacyElement> activeElements = elements.stream()
                 .filter(PrivacyDialog.PrivacyElement::getActive)
@@ -241,49 +236,10 @@ public abstract class SensorQcPanel extends BaseLocalQCProvider
         mSensorInfoProvider.setSensorInfoUpdateListener(null);
     }
 
-    /**
-     * A helper object that retrieves sensor
-     * {@link com.android.systemui.privacy.PrivacyDialog.PrivacyElement} list for
-     * {@link SensorQcPanel}
-     */
-    public interface SensorPrivacyElementsProvider {
-        /**
-         * @return A list of sensors
-         * {@link com.android.systemui.privacy.PrivacyDialog.PrivacyElement}
-         */
-        List<PrivacyDialog.PrivacyElement> getPrivacyElements();
-    }
-
-    /**
-     * A helper object that allows the {@link SensorQcPanel} to communicate with
-     * {@link android.hardware.SensorPrivacyManager}
-     */
-    public interface SensorInfoProvider {
-        /**
-         * @return {@code true} if sensor privacy is not enabled (e.g., microphone/camera is on)
-         */
-        boolean isSensorEnabled();
-
-        /**
-         * Toggles sensor privacy
-         */
-        void toggleSensor();
-
-        /**
-         * Informs {@link SensorQcPanel} to update its state.
-         */
-        void setNotifyUpdateRunnable(Runnable runnable);
-
-        /**
-         * Set the listener to monitor the update.
-         */
-        void setSensorInfoUpdateListener(SensorInfoUpdateListener listener);
-    }
-
     private static class SensorToggleActionHandler implements QCItem.ActionHandler {
-        private final SensorInfoProvider mSensorInfoProvider;
+        private final SensorPrivacyInfoProvider mSensorInfoProvider;
 
-        SensorToggleActionHandler(SensorInfoProvider sensorInfoProvider) {
+        SensorToggleActionHandler(SensorPrivacyInfoProvider sensorInfoProvider) {
             this.mSensorInfoProvider = sensorInfoProvider;
         }
 

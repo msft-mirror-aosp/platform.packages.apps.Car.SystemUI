@@ -38,7 +38,10 @@ import com.android.car.datasubscription.DataSubscriptionMessageCreator;
 import com.android.car.datasubscription.DataSubscriptionMessageEventListener;
 import com.android.car.datasubscription.DataSubscriptionViewActionListener;
 import com.android.systemui.R;
+import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
+
+import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
 
@@ -60,17 +63,28 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
     private DataSubscriptionViewActionListener mListener;
     private TextView mPopUpPrompt;
     private TextView mUxrPrompt;
+    private final Executor mMainExecutor;
+
+    private final UserTracker.Callback mUserChangedCallback =
+            new UserTracker.Callback() {
+                @Override
+                public void onUserChanged(int newUser, Context userContext) {
+                    mListener.setUserId(newUser);
+                }
+            };
 
     @Inject
     public DataSubscriptionToolkitView(
             Context context,
             UserTracker userTracker,
             DataSubscriptionStatsLogHelper dataSubscriptionStatsLogHelper,
-            DataSubscriptionMessageCreator dataSubscriptionMessageCreator) {
+            DataSubscriptionMessageCreator dataSubscriptionMessageCreator,
+            @Main Executor mainExecutor) {
         mContext = context;
         mUserTracker = userTracker;
         mDataSubscriptionStatsLogHelper = dataSubscriptionStatsLogHelper;
         mListener = new DataSubscriptionController(mContext, dataSubscriptionMessageCreator);
+        mMainExecutor = mainExecutor;
         mIntent = new Intent(DATA_SUBSCRIPTION_ACTION);
         mIntent.setPackage(mContext.getString(
                 R.string.connectivity_flow_app));
@@ -205,10 +219,13 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
         if (view != null) {
             mListener.setDataSubscriptionMessageEventListener(this);
             mListener.registerListeners();
+            mListener.setUserId(mUserTracker.getUserId());
+            mUserTracker.addCallback(mUserChangedCallback, mMainExecutor);
         } else {
             if (mListener != null) {
                 mListener.setDataSubscriptionMessageEventListener(null);
                 mListener.unregisterListeners();
+                mUserTracker.removeCallback(mUserChangedCallback);
             }
         }
     }

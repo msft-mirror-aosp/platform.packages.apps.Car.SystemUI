@@ -190,6 +190,15 @@ public final class DecorPanel extends BasePanel {
         //TODO(b/404959846): replace with autoSurfaceTransaction api if available.
         if (mDecorView != null) {
             mDecorView.setAlpha(variant == null ? getAlpha() : variant.getAlpha());
+            mDecorView.post(() -> {
+                int vis;
+                if (variant == null) {
+                    vis = isVisible() ? View.VISIBLE : View.GONE;
+                } else {
+                    vis = variant.isVisible() ? View.VISIBLE : View.GONE;
+                }
+                mDecorView.setVisibility(vis);
+            });
         }
     }
 

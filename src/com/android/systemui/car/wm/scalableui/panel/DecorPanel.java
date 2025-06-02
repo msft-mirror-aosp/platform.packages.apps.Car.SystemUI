@@ -119,24 +119,6 @@ public final class DecorPanel extends BasePanel {
     }
 
     @Override
-    public void setVisibility(boolean isVisible) {
-        super.setVisibility(isVisible);
-        if (mDecorView == null) {
-            return;
-        }
-        mMainExecutor.execute(() -> {
-            boolean currentVisibility = isVisible();
-            if (currentVisibility != isVisible && mDecorView != null) {
-                if (isVisible) {
-                    mDecorView.setVisibility(View.VISIBLE);
-                } else {
-                    mDecorView.setVisibility(View.GONE);
-                }
-            }
-        });
-    }
-
-    @Override
     public void reset() {
         super.reset();
         // Only modify the view and window on the main thread to prevent thread-based exceptions
@@ -170,14 +152,6 @@ public final class DecorPanel extends BasePanel {
     @VisibleForTesting
     void setDecorView(View view) {
         mDecorView = view;
-    }
-
-    @Override
-    public void setAlpha(float alpha) {
-        super.setAlpha(alpha);
-        if (mDecorView != null) {
-            mDecorView.setAlpha(alpha);
-        }
     }
 
     @Override

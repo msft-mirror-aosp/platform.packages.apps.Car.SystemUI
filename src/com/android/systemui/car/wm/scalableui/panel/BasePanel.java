@@ -15,6 +15,7 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
+import static com.android.car.scalableui.model.Focus.DEFAULT_FOCUS_ON_TRANSITION;
 import static com.android.car.scalableui.model.Role.DEFAULT_ROLE;
 
 import android.content.Context;
@@ -47,6 +48,7 @@ public abstract class BasePanel implements Panel {
 
     private final Context mContext;
     private int mLayer = -1;
+    private boolean mCanFocusOnTransition = DEFAULT_FOCUS_ON_TRANSITION;
 
     @NonNull
     private Role mRole;
@@ -99,6 +101,16 @@ public abstract class BasePanel implements Panel {
     @Override
     public void setLayer(int layer) {
         this.mLayer = layer;
+    }
+
+    @Override
+    public boolean canFocusOnTransition() {
+        return mCanFocusOnTransition;
+    }
+
+    @Override
+    public void setCanFocusOnTransition(boolean canFocusOnTransition) {
+        mCanFocusOnTransition = canFocusOnTransition;
     }
 
     @Override

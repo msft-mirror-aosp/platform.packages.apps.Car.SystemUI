@@ -81,7 +81,7 @@ public class PanelTransitionCoordinatorTest extends SysuiTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mMainExecutor = new ShellSyncExecutor();
-        mPanelTransitionCoordinator = new PanelTransitionCoordinator(
+        mPanelTransitionCoordinator = new PanelTransitionCoordinator(mContext,
                 mAutoTaskStackController, mAutoSurfaceTransactionFactory, mPanelUtils,
                 mAutoLayoutManager, mMainExecutor);
         when(mAutoSurfaceTransactionFactory.createTransaction(anyString())).thenReturn(
@@ -132,7 +132,8 @@ public class PanelTransitionCoordinatorTest extends SysuiTestCase {
         });
         PanelTransaction panelTransaction = new PanelTransaction.Builder()
                 .addAnimator("testPanel", animator).build();
-        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction);
+        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction,
+                /* event= */ null);
 
         AtomicBoolean animationStarted = new AtomicBoolean(false);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
@@ -166,7 +167,8 @@ public class PanelTransitionCoordinatorTest extends SysuiTestCase {
         });
         PanelTransaction panelTransaction = new PanelTransaction.Builder()
                 .addAnimator("testPanel", animator).build();
-        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction);
+        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction,
+                /* event= */ null);
 
         // Run the animation on the main looper
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
@@ -199,7 +201,8 @@ public class PanelTransitionCoordinatorTest extends SysuiTestCase {
         });
         PanelTransaction panelTransaction = new PanelTransaction.Builder()
                 .addAnimator("testPanel", animator).build();
-        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction);
+        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction,
+                /* event= */ null);
 
         // Run the animation on the main looper
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {

@@ -23,8 +23,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.os.Build;
 import android.os.IBinder;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceControl;
 
@@ -40,6 +42,7 @@ import com.android.car.scalableui.model.Transition;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.PanelPool;
+import com.android.systemui.R;
 import com.android.systemui.car.wm.scalableui.panel.BasePanel;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
@@ -76,6 +79,7 @@ public class PanelTransitionCoordinator {
     private static final String DECOR_TRANSACTION = "DECOR_TRANSACTION";
     private static final String PANEL_TRANSACTION = "PANEL_TRANSACTION";
 
+    private final Context mContext;
     private final AutoTaskStackController mAutoTaskStackController;
     @GuardedBy("mPendingPanelTransactions")
     private final HashMap<IBinder, PanelTransaction> mPendingPanelTransactions = new HashMap<>();
@@ -87,11 +91,13 @@ public class PanelTransitionCoordinator {
     private final ShellExecutor mMainExecutor;
 
     @Inject
-    public PanelTransitionCoordinator(AutoTaskStackController autoTaskStackController,
+    public PanelTransitionCoordinator(Context context,
+            AutoTaskStackController autoTaskStackController,
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
             PanelUtils panelUtils,
             AutoLayoutManager autoLayoutManager,
             @ShellMainThread ShellExecutor mainExecutor) {
+        mContext = context;
         mAutoTaskStackController = autoTaskStackController;
         mAutoSurfaceTransactionFactory = autoSurfaceTransactionFactory;
         mPanelUtils = panelUtils;
@@ -111,7 +117,7 @@ public class PanelTransitionCoordinator {
             mMainExecutor.execute(() -> {
                 synchronized (mPendingPanelTransactions) {
                     IBinder transition = mAutoTaskStackController.startTransition(
-                            createAutoTaskStackTransaction(transaction));
+                            createAutoTaskStackTransaction(transaction, /* event= */ null));
                     mPendingPanelTransactions.put(transition, transaction);
                     resetUnpreparedDecorPanel(transaction);
                     playPendingAnimations(transition, null);
@@ -222,7 +228,7 @@ public class PanelTransitionCoordinator {
                         .build();
                 PanelTransaction panelTransaction = StateManager.handleEvent(event);
                 mAutoTaskStackController.startTransition(
-                        createAutoTaskStackTransaction(panelTransaction));
+                        createAutoTaskStackTransaction(panelTransaction, /* event= */ null));
             }
         }
     }
@@ -243,9 +249,9 @@ public class PanelTransitionCoordinator {
      * pending animators.
      */
     AutoTaskStackTransaction createAutoTaskStackTransaction(IBinder transition,
-            PanelTransaction panelTransaction) {
+            PanelTransaction panelTransaction, Event event) {
         AutoTaskStackTransaction autoTaskStackTransaction = createAutoTaskStackTransaction(
-                panelTransaction);
+                panelTransaction, event);
 
         synchronized (mPendingPanelTransactions) {
             mPendingPanelTransactions.put(transition, panelTransaction);
@@ -382,9 +388,8 @@ public class PanelTransitionCoordinator {
     }
 
     private AutoTaskStackTransaction createAutoTaskStackTransaction(
-            PanelTransaction panelTransaction) {
+            PanelTransaction panelTransaction, @Nullable Event event) {
         AutoTaskStackTransaction autoTaskStackTransaction = new AutoTaskStackTransaction();
-
         for (Map.Entry<String, Transition> entry :
                 panelTransaction.getPanelTransactionStates()) {
             Transition transition = entry.getValue();
@@ -408,7 +413,112 @@ public class PanelTransitionCoordinator {
             }
         }
 
+        if (mContext.getResources().getBoolean(R.bool.scalable_ui_enable_task_focus)) {
+            calculateFocusedTaskStack(panelTransaction, autoTaskStackTransaction, event);
+        }
+
         return autoTaskStackTransaction;
+    }
+
+    /**
+     * Determine focus using the following criteria (in order):
+     *   1. If the trigger is a task being opened on a visible panel, focus that panel
+     *   2. If one or more panels are becoming visible, focus the highest z-layer panel permitted
+     *   3. If the current focused panel is becoming invisible, focus the highest z-layer panel
+     *      permitted that is still visible.
+     */
+    private void calculateFocusedTaskStack(PanelTransaction panelTransaction,
+            AutoTaskStackTransaction autoTaskStackTransaction,
+            @Nullable Event event) {
+        // 1. If the trigger is a task being opened on a visible panel, focus that panel
+        if (event != null && TextUtils.equals(event.getId(), SYSTEM_TASK_OPEN_EVENT_ID)) {
+            String panelId = event.getTokens().get(PANEL_TOKEN_ID);
+            if (panelId != null) {
+                TaskPanel taskPanel = mPanelUtils.getTaskPanel(
+                        p -> p.getPanelId().equals(panelId));
+                if (taskPanel != null) {
+                    // ensure the panel is or will become visible
+                    Transition toState = panelTransaction.getPanelTransactionState(
+                            taskPanel.getPanelId());
+                    boolean isVisible;
+                    if (toState != null) {
+                        isVisible = toState.getToVariant().isVisible();
+                    } else {
+                        isVisible = taskPanel.isVisible();
+                    }
+                    if (isVisible) {
+                        logIfDebuggable("Focusing TaskPanel=" + taskPanel.getPanelId()
+                                + " for task launch");
+                        autoTaskStackTransaction.setFocusedTaskStack(
+                                taskPanel.getRootStack().getId());
+                        return;
+                    }
+                }
+            }
+        }
+
+        TaskPanel rootTaskToFocus = null;
+        int rootTaskToFocusLayer = Integer.MIN_VALUE;
+        // Set to true if the focus is for the purpose of a panel opening. This takes priority over
+        // other aspects so once it's set to true for a selected panel, only panels who this is also
+        // true for will be considered
+        boolean isFocusingForPanelOpen = false;
+        // Set to true if the currently focused panel is going from visible to invisible such that
+        // a new focus must be found.
+        boolean isCurrentFocusedPanelBecomingInvisible = false;
+        for (Map.Entry<String, Transition> entry :
+                panelTransaction.getPanelTransactionStates()) {
+            Transition transition = entry.getValue();
+            Variant toVariant = transition.getToVariant();
+            TaskPanel taskPanel = mPanelUtils.getTaskPanel(
+                    p -> p.getRootStack() != null && p.getPanelId().equals(entry.getKey()));
+            if (taskPanel == null) {
+                continue;
+            }
+
+            // To become the focus candidate, the panel must:
+            //   - Be visible after the transition and focusable on transition.
+            //   - Being not visible before transition (i.e. opening) takes priority over panels
+            //     that are already open. Therefore, when iterating if a candidate is selected for
+            //     opening, all future candidates must also be opening.
+            //   - Have a higher layer than the current candidate.
+            if (toVariant.isVisible() && toVariant.canFocusOnTransition()
+                    && ((!isFocusingForPanelOpen && !taskPanel.isVisible())
+                    || ((!isFocusingForPanelOpen || !taskPanel.isVisible())
+                    && toVariant.getLayer() > rootTaskToFocusLayer))) {
+                rootTaskToFocusLayer = toVariant.getLayer();
+                rootTaskToFocus = taskPanel;
+                isFocusingForPanelOpen = !taskPanel.isVisible();
+            } else if (taskPanel.isVisible() && !toVariant.isVisible()
+                    && taskPanel.getRootStack().getRootTaskInfo().isFocused) {
+                isCurrentFocusedPanelBecomingInvisible = true;
+            }
+        }
+
+        // If the current focus is going away and a new focus hasn't been found for a panel opening,
+        // look at all unchanged panels to see if one of those should take focus.
+        if (isCurrentFocusedPanelBecomingInvisible && !isFocusingForPanelOpen) {
+            for (String unchangedPanelId : panelTransaction.getLockededPanelIdSet()) {
+                TaskPanel taskPanel = mPanelUtils.getTaskPanel(
+                        p -> p.getPanelId().equals(unchangedPanelId));
+                if (taskPanel != null && taskPanel.isVisible() && taskPanel.canFocusOnTransition()
+                        && taskPanel.getLayer() > rootTaskToFocusLayer) {
+                    rootTaskToFocusLayer = taskPanel.getLayer();
+                    rootTaskToFocus = taskPanel;
+                }
+            }
+        }
+
+        // If a task has been found, it should be focused only if the task is selected for a panel
+        // open or if the current focus is becoming invisible (so another focus must be found).
+        if (rootTaskToFocus != null
+                && (isCurrentFocusedPanelBecomingInvisible || isFocusingForPanelOpen)) {
+            String reason =
+                    isFocusingForPanelOpen ? " for panel open" : " as highest focusable layer";
+            logIfDebuggable(
+                    "Focusing TaskPanel=" + rootTaskToFocus.getPanelId() + reason);
+            autoTaskStackTransaction.setFocusedTaskStack(rootTaskToFocus.getRootStack().getId());
+        }
     }
 
     private ValueAnimator createSurfaceAnimator(long duration,

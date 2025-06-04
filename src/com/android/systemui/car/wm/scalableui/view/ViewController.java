@@ -106,13 +106,16 @@ public abstract class ViewController implements DecorPanelController {
         return mContext;
     }
 
-    /**
-     * Retrieves the {@link View} provided by this {@link ViewController}.
-     */
+    @Override
     @Nullable
     public View getView() {
         mView = mView == null ? initView(mContext, mViewName) : mView;
         return mView;
+    }
+
+    @Override
+    public void refreshTheme() {
+        mView = initView(mContext, mViewName);
     }
 
     protected static void logIfDebuggable(String msg) {

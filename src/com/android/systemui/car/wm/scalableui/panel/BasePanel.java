@@ -227,11 +227,14 @@ public abstract class BasePanel implements Panel {
      * @param variant                The {@link Variant} configuration object that provides the
      *                               desired properties (bounds, visibility, layer, corner radius,
      *                               alpha) for the decor surface. Maybe {@code null}.
+     * @param updateChildren         Update the children components used in this panel, should only
+     *                               set to true on animationEnd or reset.
      */
     public abstract void update(
             @NonNull AutoSurfaceTransaction autoSurfaceTransaction,
             @Nullable SurfaceControl.Transaction tx,
-            @Nullable Variant variant);
+            @Nullable Variant variant,
+            boolean updateChildren);
 
     public void setPanelControllerMetadata(
             @Nullable PanelControllerMetadata panelControllerMetadata) {

@@ -52,7 +52,6 @@ public final class DisplayInputSink {
 
     private BaseIWindow mFakeWindow;
     private InputTransferToken mFocusGrantToken;
-    private InputChannel mInputChannel;
     @VisibleForTesting
     InputEventReceiver mInputEventReceiver;
 
@@ -107,7 +106,7 @@ public final class DisplayInputSink {
         mFakeWindow = new BaseIWindow();
         mFakeWindow.setSession(mWindowSession);
         mFocusGrantToken = new InputTransferToken();
-        mInputChannel = new InputChannel();
+        InputChannel inputChannel = new InputChannel();
         try {
             mWindowSession.grantInputChannel(
                     mDisplayId,
@@ -121,12 +120,12 @@ public final class DisplayInputSink {
                     /* windowToken= */ null,
                     mFocusGrantToken,
                     "InputListener of " + mSurfaceControl.toString(),
-                    mInputChannel);
+                    inputChannel);
         } catch (RemoteException e) {
             e.rethrowFromSystemServer();
         }
 
-        mInputEventReceiver = new InputEventReceiver(mInputChannel, Looper.getMainLooper()) {
+        mInputEventReceiver = new InputEventReceiver(inputChannel, Looper.getMainLooper()) {
             @Override
             public void onInputEvent(InputEvent event) {
                 mCallback.onInputEvent(event);
@@ -139,10 +138,6 @@ public final class DisplayInputSink {
         if (mInputEventReceiver != null) {
             mInputEventReceiver.dispose();
             mInputEventReceiver = null;
-        }
-        if (mInputChannel != null) {
-            mInputChannel.dispose();
-            mInputChannel = null;
         }
         try {
             if (mFakeWindow != null) {
@@ -158,7 +153,7 @@ public final class DisplayInputSink {
         StringBuilder sb = new StringBuilder("name='DisplayInputSink-");
         sb.append(mDisplayId)
                 .append("', inputChannelToken=")
-                .append(mInputChannel != null ? mInputChannel.getToken() : "null");
+                .append(mInputEventReceiver != null ? mInputEventReceiver.getToken() : "null");
         return sb.toString();
     }
 

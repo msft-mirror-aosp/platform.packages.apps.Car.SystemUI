@@ -15,6 +15,8 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
+import static com.android.car.scalableui.model.Role.DEFAULT_ROLE;
+
 import android.content.Context;
 import android.graphics.Insets;
 import android.graphics.Rect;
@@ -40,11 +42,12 @@ public abstract class BasePanel implements Panel {
     protected static final boolean DEBUG = Build.isDebuggable();
     private static final String TAG = BasePanel.class.getSimpleName();
     protected static final String RESET_TRANSACTION = "Reset : ";
+    protected static final String REFRESH_TRANSACTION = "Refresh : ";
 
     private final Context mContext;
     private int mLayer = -1;
 
-    @Nullable
+    @NonNull
     private Role mRole;
     @NonNull
     private Rect mBounds = new Rect();
@@ -61,13 +64,16 @@ public abstract class BasePanel implements Panel {
     public BasePanel(@NonNull Context context, String panelId) {
         mContext = context;
         mPanelId = panelId;
+        mRole = DEFAULT_ROLE;
     }
 
+    @NonNull
     public Context getContext() {
         return mContext;
     }
 
     @Override
+    @NonNull
     public Role getRole() {
         return mRole;
     }
@@ -192,7 +198,7 @@ public abstract class BasePanel implements Panel {
     }
 
     @Override
-    public void setRole(Role role) {
+    public void setRole(@NonNull Role role) {
         mRole = role;
     }
 
@@ -235,6 +241,29 @@ public abstract class BasePanel implements Panel {
             @Nullable SurfaceControl.Transaction tx,
             @Nullable Variant variant,
             boolean updateChildren);
+
+    /**
+     * Updates surface of the {@link BasePanel} based on the provided {@link Variant} without update
+     * children.
+     *
+     * <p> if provided {@link Variant} is null, update the surface with the data from {@link Panel}
+     * itself.
+     *
+     * @param autoSurfaceTransaction The {@link AutoSurfaceTransaction} instance used to apply
+     *                               surface property changes. Must not be {@code null}.
+     * @param tx                     An optional {@link android.view.SurfaceControl.Transaction}.
+     *                               This parameter is currently not used in the method's body. It
+     *                               can be {@code null}.
+     * @param variant                The {@link Variant} configuration object that provides the
+     *                               desired properties (bounds, visibility, layer, corner radius,
+     *                               alpha) for the decor surface. Maybe {@code null}.
+     */
+    public void update(
+            @NonNull AutoSurfaceTransaction autoSurfaceTransaction,
+            @Nullable SurfaceControl.Transaction tx,
+            @Nullable Variant variant) {
+        update(autoSurfaceTransaction, tx, variant, /* updateChildren= */ false);
+    }
 
     public void setPanelControllerMetadata(
             @Nullable PanelControllerMetadata panelControllerMetadata) {

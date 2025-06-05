@@ -292,18 +292,19 @@ public final class TaskPanel extends BasePanel {
         if (!enableDecor()) {
             return;
         }
-        if (variant == null) {
-            logIfDebuggable("Return as the variant is non for " + getPanelId());
-            return;
-        }
+
         mMainExecutor.execute(() -> {
             if (getRootStack() == null) {
                 return;
             }
 
-            logIfDebuggable("Update " + getPanelId() + " decors, with variant" + variant);
+            Map<String, Decor> decors = variant == null
+                    ? getCurrentDecors()
+                    : variant.getDecors();
 
-            variant.getDecors().forEach((id, decor) -> {
+            logIfDebuggable("Update " + getPanelId() + " decors, with decors" + decors);
+
+            decors.forEach((id, decor) -> {
                 logIfDebuggable("Create decor " + id);
                 AutoDecor autoDecor = mExistingAutoDecors.getOrDefault(id,
                         mAutoDecorManager.createAutoDecor(decor.getView(mContext),
@@ -331,9 +332,15 @@ public final class TaskPanel extends BasePanel {
         });
     }
 
+    @NonNull
+    private Map<String, Decor> getCurrentDecors() {
+        PanelState panelState = StateManager.getPanelState(getPanelId());
+        Variant currentVariant = panelState == null ? null : panelState.getCurrentVariant();
+        return currentVariant == null ? new HashMap<>() : currentVariant.getDecors();
+    }
+
     private void updateAutoDecor(AutoDecor autoDecor, Decor decor,
             AutoSurfaceTransaction autoSurfaceTransaction) {
-
         Rect bounds = new Rect(0, 0, getBounds().width(), getBounds().height());
         autoSurfaceTransaction.setBounds(autoDecor, bounds);
         autoSurfaceTransaction.setVisibility(autoDecor, true);
@@ -344,7 +351,14 @@ public final class TaskPanel extends BasePanel {
 
     @Override
     public void refreshTheme() {
-        // TODO(418311330): implement refresh;
+        mExistingAutoDecors.forEach((id, autoDecor) -> {
+            mAutoDecorManager.removeAutoDecor(autoDecor);
+            mExistingAutoDecors.remove(id);
+        });
+        AutoSurfaceTransaction autoSurfaceTransaction = mAutoSurfaceTransactionFactory
+                .createTransaction(REFRESH_TRANSACTION + getPanelId());
+        updateDecors(autoSurfaceTransaction, null);
+        autoSurfaceTransaction.apply();
     }
 
     /**
@@ -447,7 +461,7 @@ public final class TaskPanel extends BasePanel {
     }
 
     @Override
-    public void setRole(Role role) {
+    public void setRole(@NonNull Role role) {
         if (getRole() == role) return;
         super.setRole(role);
 

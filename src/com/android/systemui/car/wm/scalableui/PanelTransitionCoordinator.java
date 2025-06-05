@@ -164,18 +164,16 @@ public class PanelTransitionCoordinator {
             Transition transition = entry.getValue();
             Variant toVariant = transition.getToVariant();
             if (panel instanceof BasePanel basePanel) {
-                basePanel.update(autoSurfaceTransaction, tx, toVariant,
-                        /* updateChildren= */ false);
+                basePanel.update(autoSurfaceTransaction, tx, toVariant);
             } else {
                 Log.e(TAG, "Invalid panel " + panel);
             }
         }
-        for (String unchangedPanelId : panelTransaction.getUnchangedPanelIdSet()) {
+        for (String unchangedPanelId : panelTransaction.getLockededPanelIdSet()) {
             Panel panel = PanelPool.getInstance().getPanel(
                     p -> p.getPanelId().equals(unchangedPanelId));
             if (panel instanceof BasePanel basePanel) {
-                basePanel.update(autoSurfaceTransaction, tx, /* variant= */ null,
-                        /* updateChildren= */ false);
+                basePanel.update(autoSurfaceTransaction, tx, /* variant= */ null);
             }
         }
         autoSurfaceTransaction.apply();
@@ -428,8 +426,7 @@ public class PanelTransitionCoordinator {
                 String id = entry.getKey();
                 Panel panel = PanelPool.getInstance().getPanel(p -> p.getPanelId().equals(id));
                 if (panel instanceof BasePanel basePanel) {
-                    basePanel.update(autoSurfaceTransaction, tx, /* variant= */
-                            null, /* updateChildren= */ false);
+                    basePanel.update(autoSurfaceTransaction, tx, /* variant= */ null);
                 }
             }
             //TODO(b/404959846): migrate to autoSurfaceTransaction here once api is added.

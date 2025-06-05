@@ -28,15 +28,15 @@ import com.android.car.scalableui.panel.DecorPanelController;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public abstract class ViewController implements DecorPanelController {
-    private static final String TAG = ViewController.class.getSimpleName();
+public abstract class DecorPanelControllerBase implements DecorPanelController {
+    private static final String TAG = DecorPanelControllerBase.class.getSimpleName();
     private static final boolean DEBUG = true;
     protected final Context mContext;
     protected final String mViewName;
     protected final PanelControllerMetadata mMetadata;
     protected View mView;
 
-    protected ViewController(Context context, PanelControllerMetadata metadata) {
+    protected DecorPanelControllerBase(Context context, PanelControllerMetadata metadata) {
         mContext = context;
         mMetadata = metadata;
         mViewName = metadata.getStringConfiguration(PanelControllerMetadata.VIEW_TAG);
@@ -51,6 +51,7 @@ public abstract class ViewController implements DecorPanelController {
             return null;
         }
         try {
+            //TODO(b/422493779): replace the reflection to reduce the security risk.
             Class<?> clazz = Class.forName(viewClassName);
             if (View.class.isAssignableFrom(clazz)) {
                 Constructor<?> constructor = clazz.getConstructor(Context.class);
@@ -83,11 +84,12 @@ public abstract class ViewController implements DecorPanelController {
 
         logIfDebuggable("Init view provider with class name" + controllerName);
         try {
+            //TODO(b/422493779): replace the reflection to reduce the security risk.
             Class<?> clazz = Class.forName(controllerName);
-            if (ViewController.class.isAssignableFrom(clazz)) {
+            if (DecorPanelControllerBase.class.isAssignableFrom(clazz)) {
                 Constructor<?> constructor = clazz.getConstructor(Context.class,
                         PanelControllerMetadata.class);
-                return (ViewController) constructor.newInstance(context, metadata);
+                return (DecorPanelControllerBase) constructor.newInstance(context, metadata);
             }
         } catch (ClassNotFoundException | NoSuchMethodException e) {
             // Handle the case where the class is not found

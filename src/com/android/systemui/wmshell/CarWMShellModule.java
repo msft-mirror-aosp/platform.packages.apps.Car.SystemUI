@@ -29,6 +29,7 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.AutoDisplayCompatWindowDecorViewModel;
+import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
 import com.android.systemui.car.wm.scalableui.PanelAutoTaskStackTransitionHandlerDelegate;
 import com.android.systemui.car.wm.scalableui.PanelConfigReader;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
@@ -40,16 +41,21 @@ import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionController;
 import com.android.wm.shell.automotive.AutoShellModule;
+import com.android.wm.shell.automotive.AutoTaskRepository;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.common.SyncTransactionQueue;
+import com.android.wm.shell.dagger.DynamicOverride;
 import com.android.wm.shell.dagger.WMShellBaseModule;
 import com.android.wm.shell.dagger.WMSingleton;
+import com.android.wm.shell.fullscreen.FullscreenTaskListener;
 import com.android.wm.shell.pip.Pip;
+import com.android.wm.shell.recents.RecentTasksController;
 import com.android.wm.shell.shared.annotations.ShellBackgroundThread;
 import com.android.wm.shell.shared.annotations.ShellMainThread;
 import com.android.wm.shell.sysui.ShellInit;
+import com.android.wm.shell.taskview.TaskViewTransitions;
 import com.android.wm.shell.transition.FocusTransitionObserver;
 import com.android.wm.shell.transition.Transitions;
 import com.android.wm.shell.windowdecor.WindowDecorViewModel;
@@ -95,6 +101,29 @@ public abstract class CarWMShellModule {
 
     @BindsOptionalOf
     abstract Pip optionalPip();
+
+    @WMSingleton
+    @Provides
+    @DynamicOverride
+    static FullscreenTaskListener provideFullScreenTaskListener(Context context,
+            CarServiceProvider carServiceProvider,
+            ShellInit shellInit,
+            ShellTaskOrganizer shellTaskOrganizer,
+            SyncTransactionQueue syncQueue,
+            Optional<RecentTasksController> recentTasksOptional,
+            Optional<WindowDecorViewModel> windowDecorViewModelOptional,
+            TaskViewTransitions taskViewTransitions,
+            AutoTaskRepository taskRepository) {
+        return new CarFullscreenTaskMonitorListener(context,
+                carServiceProvider,
+                shellInit,
+                shellTaskOrganizer,
+                syncQueue,
+                recentTasksOptional,
+                windowDecorViewModelOptional,
+                taskViewTransitions,
+                taskRepository);
+    }
 
     @WMSingleton
     @Provides

@@ -51,7 +51,7 @@ import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
  * <li>Index 5: Resource ID of the breakpoint definition array (Integer)</li>
  * </ul>
  */
-public class PanelOverlayController extends ViewController {
+public class PanelOverlayController extends DecorPanelControllerBase {
     private static final String TAG = PanelOverlayController.class.getSimpleName();
     private PanelOverlay mPanelOverlay;
     private String mOverlayPanelId;

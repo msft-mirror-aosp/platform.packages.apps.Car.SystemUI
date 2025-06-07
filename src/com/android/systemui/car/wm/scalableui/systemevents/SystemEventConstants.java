@@ -24,9 +24,15 @@ public class SystemEventConstants {
     public static final String SYSTEM_TASK_PANEL_EMPTY_EVENT_ID = "_System_TaskPanelEmptyEvent";
     public static final String SYSTEM_ENTER_SUW_EVENT_ID = "_System_EnterSuwEvent";
     public static final String SYSTEM_EXIT_SUW_EVENT_ID = "_System_ExitSuwEvent";
+    public static final String SYSTEM_ON_ANIMATION_END_EVENT_ID = "_System_OnAnimationEndEvent";
 
     /** Token IDs */
     public static final String PANEL_TOKEN_ID = "panelId";
+    /**
+     * Represents the variant at the end of the animation.
+     */
+    public static final String PANEL_TO_VARIANT_ID = "panelToVariantId";
+    public static final String PANEL_DRAG_DIRECTION_ID = "direction";
     public static final String COMPONENT_TOKEN_ID = "component";
     public static final String PACKAGE_TOKEN_ID = "package";
 }

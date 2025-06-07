@@ -90,6 +90,18 @@ public class PanelUtils {
     }
 
     /**
+     * Retrieves a {@link BasePanel} that satisfies the given {@link Predicate}.
+     *
+     * @param predicate The predicate to test against potential {@link BasePanel} instances.
+     * @return The matching {@link BasePanel}, or null if none is found.
+     */
+    @Nullable
+    public BasePanel getBasePanel(Predicate<BasePanel> predicate) {
+        return (BasePanel) PanelPool.getInstance().getPanel(
+                p -> (p instanceof BasePanel basePanel) && predicate.test(basePanel));
+    }
+
+    /**
      * Checks if the user is unlocked.
      */
     public boolean isUserUnlocked() {

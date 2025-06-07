@@ -230,6 +230,7 @@ android_library {
         "car-scalable-ui-designcompose-lib",
         "car-tos-lib",
         "com_android_systemui_car_flags_lib",
+        "com_android_car_scalableui_flags_lib",
         "CarDockLib",
         "car-data-subscription-lib",
         "testng",

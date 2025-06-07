@@ -25,12 +25,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.android.car.scalableui.model.Role;
+import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
-import com.android.systemui.car.wm.scalableui.view.ViewController;
+import com.android.systemui.car.wm.scalableui.view.DecorPanelControllerBase;
 import com.android.wm.shell.automotive.AutoDecor;
 import com.android.wm.shell.automotive.AutoDecorManager;
 import com.android.wm.shell.automotive.AutoSurfaceTransaction;
@@ -58,9 +59,12 @@ public final class DecorPanel extends BasePanel {
 
     @Nullable
     private View mDecorView;
+    @Nullable
+    DecorPanelController mDecorPanelController;
 
     @AssistedInject
-    public DecorPanel(@NonNull Context context,
+    public DecorPanel(
+            @NonNull Context context,
             AutoDecorManager autoDecorManager,
             EventDispatcher eventDispatcher,
             PanelUtils panelUtils,
@@ -88,12 +92,6 @@ public final class DecorPanel extends BasePanel {
         // no-op
     }
 
-    @Override
-    public void setRole(Role role) {
-        if (getRole() == role) return;
-        super.setRole(role);
-    }
-
     @VisibleForTesting
     @Nullable
     View inflateDecorView() {
@@ -101,13 +99,14 @@ public final class DecorPanel extends BasePanel {
         return view != null ? view : initFromController();
     }
 
+    @Nullable
     private View initFromController() {
-        DecorPanelController decorPanelController = ViewController.createDecorPanelController(
+        mDecorPanelController = DecorPanelControllerBase.createDecorPanelController(
                 getContext(), getPanelControllerMetadata());
-        if (decorPanelController instanceof EventDispatcher.EventProducer eventProducer) {
+        if (mDecorPanelController instanceof EventDispatcher.EventProducer eventProducer) {
             eventProducer.setEventDispatcher(mEventDispatcher);
         }
-        return decorPanelController == null ? null : decorPanelController.getView();
+        return mDecorPanelController == null ? null : mDecorPanelController.getView();
     }
 
     @Override
@@ -116,24 +115,6 @@ public final class DecorPanel extends BasePanel {
         if (mPanelUtils.isUserUnlocked()) {
             reset();
         }
-    }
-
-    @Override
-    public void setVisibility(boolean isVisible) {
-        super.setVisibility(isVisible);
-        if (mDecorView == null) {
-            return;
-        }
-        mMainExecutor.execute(() -> {
-            boolean currentVisibility = isVisible();
-            if (currentVisibility != isVisible && mDecorView != null) {
-                if (isVisible) {
-                    mDecorView.setVisibility(View.VISIBLE);
-                } else {
-                    mDecorView.setVisibility(View.GONE);
-                }
-            }
-        });
     }
 
     @Override
@@ -157,9 +138,22 @@ public final class DecorPanel extends BasePanel {
 
             AutoSurfaceTransaction autoSurfaceTransaction = mAutoSurfaceTransactionFactory
                     .createTransaction(RESET_TRANSACTION + getPanelId());
-            update(autoSurfaceTransaction, /* tx= */ null, /* variant= */ null);
+
+            PanelState panelState = StateManager.getPanelState(getPanelId());
+            Variant currentVariant = panelState == null ? null : panelState.getCurrentVariant();
+
+            update(autoSurfaceTransaction, /* tx= */ null, currentVariant,
+                    /* updateChildren= */ true);
             autoSurfaceTransaction.apply();
         });
+    }
+
+    @Override
+    public void refreshTheme() {
+        if (mDecorPanelController != null) {
+            mDecorPanelController.refreshTheme();
+        }
+        reset();
     }
 
     @Nullable
@@ -173,18 +167,11 @@ public final class DecorPanel extends BasePanel {
     }
 
     @Override
-    public void setAlpha(float alpha) {
-        super.setAlpha(alpha);
-        if (mDecorView != null) {
-            mDecorView.setAlpha(alpha);
-        }
-    }
-
-    @Override
     public void update(
             @NonNull AutoSurfaceTransaction autoSurfaceTransaction,
             @Nullable SurfaceControl.Transaction tx,
-            @Nullable Variant variant) {
+            @Nullable Variant variant,
+            boolean updateChildren) {
         if (getAutoDecor() == null) {
             Log.e(TAG, "AutoDecor is null for " + getPanelId());
             return;
@@ -203,6 +190,15 @@ public final class DecorPanel extends BasePanel {
         //TODO(b/404959846): replace with autoSurfaceTransaction api if available.
         if (mDecorView != null) {
             mDecorView.setAlpha(variant == null ? getAlpha() : variant.getAlpha());
+            mDecorView.post(() -> {
+                int vis;
+                if (variant == null) {
+                    vis = isVisible() ? View.VISIBLE : View.GONE;
+                } else {
+                    vis = variant.isVisible() ? View.VISIBLE : View.GONE;
+                }
+                mDecorView.setVisibility(vis);
+            });
         }
     }
 

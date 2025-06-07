@@ -164,6 +164,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
 
         Trace.beginSection(TAG + "#startAnimation");
 
+        // Its expected for the auto transition handler delegate to apply startTransaction for now.
+        // TODO(b/421966313) Think about applying this in car-wm-shell instead.
         calculateTransaction(startTransaction, info, /* isFinish= */ false);
         calculateTransaction(finishTransaction, info, /* isFinish= */ true);
         startTransaction.apply();
@@ -187,11 +189,14 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             }
             TaskPanel taskPanel = mPanelUtils.getTaskPanel(
                     tp -> tp.getRootTaskId() == change.getTaskInfo().taskId);
-            if (taskPanel == null) {
+
+            if (taskPanel == null || taskPanel.getLeash() == null) {
+                Log.e(TAG, "TaskPanel is null " + change.getTaskInfo() + ", or leash is null"
+                        + taskPanel);
                 continue;
             }
+            leash = taskPanel.getLeash();
 
-            leash = change.getLeash();
             if (isFinish) {
                 // Use the PanelState is up to date even before animation, but not Panel.
                 PanelState ps = StateManager.getPanelState(

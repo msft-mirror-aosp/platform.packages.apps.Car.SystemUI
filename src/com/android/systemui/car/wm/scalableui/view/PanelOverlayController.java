@@ -15,9 +15,13 @@
  */
 package com.android.systemui.car.wm.scalableui.view;
 
+import static com.android.car.scalableui.model.PanelControllerMetadata.BACKGROUND_COLOR;
+import static com.android.car.scalableui.model.PanelControllerMetadata.OVERLAY_PANEL_ID;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
@@ -51,10 +55,11 @@ import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
  * <li>Index 5: Resource ID of the breakpoint definition array (Integer)</li>
  * </ul>
  */
-public class PanelOverlayController extends ViewController {
+public class PanelOverlayController extends DecorPanelControllerBase {
     private static final String TAG = PanelOverlayController.class.getSimpleName();
     private PanelOverlay mPanelOverlay;
     private String mOverlayPanelId;
+    private String mBackgroundColorHex;
     private BackgroundBlurDrawable mBackgroundBlurDrawable;
     private int mBlurRadius;
 
@@ -101,7 +106,8 @@ public class PanelOverlayController extends ViewController {
     }
 
     private void init(PanelControllerMetadata metadata) {
-        mOverlayPanelId = metadata.getStringConfiguration(PanelControllerMetadata.OVERLAY_PANEL_ID);
+        mOverlayPanelId = metadata.getStringConfiguration(OVERLAY_PANEL_ID);
+        mBackgroundColorHex = metadata.getStringConfiguration(BACKGROUND_COLOR);
     }
 
     private void setVail(String packageName) {
@@ -117,15 +123,13 @@ public class PanelOverlayController extends ViewController {
             Log.e(TAG, "vail can't be set for package name ", e);
             icon = mContext.getDrawable(R.drawable.car_ic_apps);
         }
-        if (icon != null) {
-            ImageView iconImageView = new ImageView(getContext());
-            iconImageView.setImageDrawable(icon);
-            int width = getContext().getResources().getDimensionPixelSize(
-                    R.dimen.overlay_panel_view_vail_width);
-            int height = getContext().getResources().getDimensionPixelSize(
-                    R.dimen.overlay_panel_view_vail_height);
-            addCenteredIconWithConstraintSet(iconImageView, width, height);
-        }
+        ImageView iconImageView = new ImageView(getContext());
+        iconImageView.setImageDrawable(icon);
+        int width = getContext().getResources().getDimensionPixelSize(
+                R.dimen.overlay_panel_view_vail_width);
+        int height = getContext().getResources().getDimensionPixelSize(
+                R.dimen.overlay_panel_view_vail_height);
+        addCenteredIconWithConstraintSet(iconImageView, width, height);
     }
 
     private void setBlur() {
@@ -134,8 +138,14 @@ public class PanelOverlayController extends ViewController {
         }
         mBackgroundBlurDrawable =
                 mPanelOverlay.getViewRootImpl().createBackgroundBlurDrawable();
-        mBackgroundBlurDrawable.setColor(
-                mContext.getResources().getColor(R.color.overlay_panel_bg_color));
+        int color;
+        if (mBackgroundColorHex != null && !mBackgroundColorHex.isEmpty()) {
+            color = Color.parseColor(mBackgroundColorHex);
+        } else {
+            color = mContext.getResources().getColor(R.color.overlay_panel_bg_color);
+        }
+
+        mBackgroundBlurDrawable.setColor(color);
         mBackgroundBlurDrawable.setCornerRadius(
                 mContext.getResources().getInteger(R.integer.overlay_panel_blur_corner_radius));
         mBlurRadius = mContext.getResources().getInteger(R.integer.overlay_panel_blur_radius);
@@ -153,6 +163,7 @@ public class PanelOverlayController extends ViewController {
         iconImageView.setLayoutParams(initialParams);
 
         mPanelOverlay.post(() -> {
+            mPanelOverlay.removeAllViews();
             mPanelOverlay.addView(iconImageView);
 
             ConstraintSet constraintSet = new ConstraintSet();

@@ -50,6 +50,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.concurrent.Executor;
+
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
@@ -68,6 +70,9 @@ public class DataSubscriptonToolkitViewTest extends CarSysuiTestCase {
     @Mock
     private DataSubscriptionMessageCreator mDataSubscriptionMessageCreator;
 
+    @Mock
+    private Executor mExecutor;
+
     private DataSubscriptionToolkitView mDataSubscriptionToolkitView;
     private String mUxrPrompt = "Test UXR Prompt";
 
@@ -79,7 +84,7 @@ public class DataSubscriptonToolkitViewTest extends CarSysuiTestCase {
         MockitoAnnotations.initMocks(this);
         when(mUserTracker.getUserHandle()).thenReturn(UserHandle.of(1000));
         mDataSubscriptionToolkitView = new DataSubscriptionToolkitView(mContext, mUserTracker,
-                mDataSubscriptionStatsLogHelper, mDataSubscriptionMessageCreator);
+                mDataSubscriptionStatsLogHelper, mDataSubscriptionMessageCreator, mExecutor);
         mDataSubscriptionToolkitView.setDataSubscriptionViewActionListener(
                 mDataSubscriptionViewActionListener);
         mDataSubscriptionToolkitView.setPopupWindow(mPopupWindow);

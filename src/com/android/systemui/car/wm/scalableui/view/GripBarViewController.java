@@ -17,6 +17,7 @@ package com.android.systemui.car.wm.scalableui.view;
 
 import static com.android.car.scalableui.model.PanelControllerMetadata.DRAG_DEC_EVENT_ID_TAG;
 import static com.android.car.scalableui.model.PanelControllerMetadata.DRAG_INC_EVENT_ID_TAG;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_DRAG_DIRECTION_ID;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -53,9 +54,12 @@ import java.util.stream.Collectors;
  * <li>Index 5: Resource ID of the breakpoint definition array (Integer)</li>
  * </ul>
  */
-public class GripBarViewController extends ViewController implements
+public class GripBarViewController extends DecorPanelControllerBase implements
         EventDispatcher.EventProducer, GripBar.GripBarEventHandler {
     private static final String TAG = GripBarViewController.class.getSimpleName();
+    private static final String DRAG_NO_CHANGE = "noChange";
+    private static final String DRAG_INCREASE = "increase";
+    private static final String DRAG_DECREASE = "decrease";
     private GripBar mGripBar;
     private boolean mIsHorizontal;
 
@@ -68,7 +72,9 @@ public class GripBarViewController extends ViewController implements
     private int mState = 0;
 
     private final List<BreakPoint> mBreakPoints;
+    private BreakPoint mStartBreakPoint;
     private EventDispatcher mEventDispatcher;
+    private float mLastDispatchedProgress;
 
     @Override
     public void onClick() {
@@ -161,11 +167,14 @@ public class GripBarViewController extends ViewController implements
             value = closest.getPoint();
         }
 
+        if (mStartBreakPoint == null) {
+            mStartBreakPoint = findClosestBreakPoint(value);
+        }
+
         float progress = (value - min) / (max - min);
         logIfDebuggable("progress " + progress);
         if (progress < 0 || progress > 1) {
-            dispatchEvent(new Event.Builder(closest.getEventId()).build());
-            return;
+            progress = progress < 0 ? 0 : 1;
         }
 
         switch (event.getAction()) {
@@ -173,24 +182,49 @@ public class GripBarViewController extends ViewController implements
                 mDragStart = mIsHorizontal ? event.getRawX() : event.getRawY();
                 return;
             case MotionEvent.ACTION_MOVE:
-                dispatchEvent(new KeyFrameEvent.Builder(mDragEventId,
-                        progress).build());
-                if (mDragDecreaseEventId != null && value < mDragStart) {
-                    dispatchEvent(new KeyFrameEvent.Builder(mDragDecreaseEventId,
-                            progress).build());
-                } else if (mDragIncreaseEventId != null) {
-                    dispatchEvent(new KeyFrameEvent.Builder(mDragIncreaseEventId,
-                            progress).build());
-                }
+                dispatchEvent(progress, value, event);
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                dispatchEvent(new Event.Builder(closest.getEventId()).build());
+                dispatchDirectionEvent(value, closest);
+                mStartBreakPoint = null;
                 break;
             default:
-                return;
         }
-        return;
+    }
+
+    private void dispatchEvent(float progress, float value, MotionEvent event) {
+        if (progress == mLastDispatchedProgress && event.getAction() != MotionEvent.ACTION_UP) {
+            // don't dispatch multiple events from same progress
+            return;
+        }
+        if (mDragDecreaseEventId != null && value < mDragStart) {
+            KeyFrameEvent keyFrameEvent = new KeyFrameEvent.Builder(mDragDecreaseEventId,
+                    progress).build();
+            dispatchEvent(keyFrameEvent);
+        } else if (mDragIncreaseEventId != null) {
+            KeyFrameEvent keyFrameEvent = new KeyFrameEvent.Builder(mDragIncreaseEventId,
+                    progress).build();
+            dispatchEvent(keyFrameEvent);
+        } else {
+            dispatchEvent(new KeyFrameEvent.Builder(mDragEventId,
+                    progress).build());
+        }
+        mLastDispatchedProgress = progress;
+    }
+
+    private void dispatchDirectionEvent(float value, BreakPoint breakPoin) {
+        String direction;
+        if (mStartBreakPoint.getEventId().equals(breakPoin.getEventId())) {
+            direction = DRAG_NO_CHANGE;
+        } else if (value < mDragStart) {
+            direction = DRAG_DECREASE;
+        } else {
+            direction = DRAG_INCREASE;
+        }
+        dispatchEvent(new Event.Builder(breakPoin.getEventId())
+                .addToken(PANEL_DRAG_DIRECTION_ID, direction)
+                .build());
     }
 
     @Override

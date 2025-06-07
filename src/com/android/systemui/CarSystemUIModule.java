@@ -47,6 +47,7 @@ import com.android.systemui.dagger.GlobalRootComponent;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.decor.PrivacyDotDecorProviderFactory;
+import com.android.systemui.display.dagger.SystemUIDisplaySubcomponent;
 import com.android.systemui.dock.DockManager;
 import com.android.systemui.dock.DockManagerImpl;
 import com.android.systemui.doze.DozeHost;
@@ -121,6 +122,9 @@ import javax.inject.Provider;
                 ShadeEmptyImplModule.class,
                 SysUIUnfoldStartableModule.class,
                 WindowRootViewBlurNotSupportedModule.class
+        },
+        subcomponents = {
+                SystemUIDisplaySubcomponent.class
         }
 )
 abstract class CarSystemUIModule {

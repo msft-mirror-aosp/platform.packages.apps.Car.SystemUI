@@ -46,7 +46,7 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"El micròfon s\'ha desactivat"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"D\'acord"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Vols activar el micròfon del vehicle?"</string>
-    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Per continuar, activa el micròfon del sistema d\'informació i entreteniment. Això activarà el micròfon per a totes les aplicacions que tinguin permís."</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Per continuar, activa el micròfon del sistema d\'infoentreteniment. Això activarà el micròfon per a totes les aplicacions que tinguin permís."</string>
     <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"<xliff:g id="APP">%s</xliff:g> està utilitzant la càmera"</string>
     <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"<xliff:g id="APP_LIST">%s</xliff:g> estan utilitzant la càmera"</string>
     <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"<xliff:g id="APP">%s</xliff:g> ha utilitzat la càmera recentment"</string>
@@ -55,7 +55,7 @@
     <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"La càmera s\'ha desactivat"</string>
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"D\'acord"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Vols activar la càmera del vehicle?"</string>
-    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Per continuar, activa la càmera del sistema d\'informació i entreteniment. Això activarà la càmera per a totes les aplicacions que tinguin permís."</string>
+    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Per continuar, activa la càmera del sistema d\'infoentreteniment. Això activarà la càmera per a totes les aplicacions que tinguin permís."</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"Pantalla d\'inici"</string>
     <string name="system_bar_phone_label" msgid="5664288201806823777">"Telèfon"</string>
     <string name="system_bar_applications_label" msgid="7081862804211786227">"Aplicacions"</string>
@@ -135,7 +135,4 @@
     <string name="back_btn" msgid="7774349944465667391">"Enrere"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Pantalla completa"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Mostra els plans"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"El teu pla d\'Internet ha caducat"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s necessita connexió a Internet"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"Aquesta aplicació"</string>
 </resources>

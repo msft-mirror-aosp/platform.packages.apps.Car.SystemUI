@@ -17,11 +17,17 @@
 package com.android.systemui.car.systembar;
 
 import static com.android.car.datasubscription.Flags.FLAG_DATA_SUBSCRIPTION_POP_UP;
+import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
+import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.XmlResourceParser;
 import android.platform.test.annotations.RequiresFlagsEnabled;
 import android.platform.test.flag.junit.CheckFlagsRule;
 import android.platform.test.flag.junit.DeviceFlagsValueProvider;
@@ -31,18 +37,26 @@ import android.testing.TestableLooper;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.datasubscription.DataSubscription;
+import com.android.car.datasubscription.DataSubscriptionConfig;
+import com.android.car.datasubscription.DataSubscriptionConfig.DataSubscriptionStatusType;
+import com.android.car.datasubscription.DataSubscriptionConfigParser;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.systembar.element.layout.CarSystemBarImageView;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.MockitoSession;
+import org.mockito.quality.Strictness;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -58,15 +72,64 @@ public class DataSubscriptionUnseenIconControllerTest extends SysuiTestCase {
     private CarSystemBarElementStateController mStateController;
     @Mock
     private DataSubscription mDataSubscription;
+    @Mock
+    private Resources mResources;
+    @Mock
+    private Context mContext;
+    @Mock
+    private XmlResourceParser mParser;
+    private MockitoSession mMockingSession;
+
     @Rule
     public final CheckFlagsRule mCheckFlagsRule = DeviceFlagsValueProvider.createCheckFlagsRule();
+    private Map<Integer, DataSubscriptionConfig> mConfigData = new HashMap<>();
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        mMockingSession = mockitoSession()
+                .initMocks(this)
+                .mockStatic(DataSubscriptionConfigParser.class)
+                .strictness(Strictness.WARN)
+                .startMocking();
+        DataSubscriptionConfig config1 = new DataSubscriptionConfig(
+                DataSubscriptionStatusType.INACTIVE,
+                true,
+                "Proactive A", "Reactive A");
+        DataSubscriptionConfig config2 = new DataSubscriptionConfig(
+                DataSubscriptionStatusType.TRIAL,
+                true,
+                "Proactive B", "Reactive B");
+        DataSubscriptionConfig config3 = new DataSubscriptionConfig(
+                DataSubscriptionStatusType.PAID,
+                true,
+                "", "");
+        DataSubscriptionConfig config4 = new DataSubscriptionConfig(
+                DataSubscriptionStatusType.EXPIRING,
+                true,
+                "", "");
+
+        mConfigData.put(1, config1);
+        mConfigData.put(2, config2);
+        mConfigData.put(3, config3);
+        mConfigData.put(4, config4);
+
+
+        when(mView.getContext()).thenReturn(mContext);
+        when(mContext.getResources()).thenReturn(mResources);
+        when(mResources.getXml(anyInt())).thenReturn(mParser);
+
+        doReturn(mConfigData).when(() -> DataSubscriptionConfigParser.loadConfig(any()));
+
         mController = new DataSubscriptionUnseenIconController(mView,
                 mDisableController, mStateController);
         mController.setSubscription(mDataSubscription);
+    }
+
+    @After
+    public void tearDown() {
+        if (mMockingSession != null) {
+            mMockingSession.finishMocking();
+        }
     }
 
     @RequiresFlagsEnabled(FLAG_DATA_SUBSCRIPTION_POP_UP)

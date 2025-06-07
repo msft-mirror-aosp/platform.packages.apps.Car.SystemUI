@@ -48,6 +48,7 @@ import androidx.test.filters.SmallTest;
 
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
 import com.android.systemui.tests.R;
 
@@ -55,6 +56,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 @CarSystemUiTest
@@ -62,8 +64,11 @@ import org.mockito.MockitoAnnotations;
 @SmallTest
 public class CarSystemBarButtonTest extends SysuiTestCase {
 
-    private static final String DIALER_BUTTON_ACTIVITY_NAME =
+    private static final String DIALER_ACTIVITY_NAME =
             "com.android.car.dialer/.ui.TelecomActivity";
+
+    private static final String LAUNCHER_ACTIVITY_NAME =
+            "com.android.car.carlauncher/.CarLauncher";
     private static final String BROADCAST_ACTION_NAME =
             "android.car.intent.action.TOGGLE_HVAC_CONTROLS";
 
@@ -72,6 +77,9 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
     private LinearLayout mTestView;
     // Does not have any selection state which is the default configuration.
     private CarSystemBarButton mDefaultButton;
+
+    @Mock
+    private EventDispatcher mEventDispatcher;
 
     @Before
     public void setUp() {
@@ -262,7 +270,86 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
         dialerButton.performClick();
         waitForIdleSync();
 
-        assertThat(getCurrentActivityName()).isEqualTo(DIALER_BUTTON_ACTIVITY_NAME);
+        assertThat(getCurrentActivityName()).isEqualTo(DIALER_ACTIVITY_NAME);
+    }
+
+    @Test
+    public void onClick_selectedIntentDefined_launchesIntentActivity() {
+        assumeFalse(hasSplitscreenMultitaskingFeature());
+
+        mDefaultButton.performClick();
+
+        CarSystemBarButton dialerButton = mTestView.findViewById(R.id.dialer_activity_toggle);
+        dialerButton.performClick();
+        waitForIdleSync();
+
+        assertThat(getCurrentActivityName()).isEqualTo(DIALER_ACTIVITY_NAME);
+
+        dialerButton.setSelected(true);
+        dialerButton.performClick();
+        waitForIdleSync();
+
+        assertThat(getCurrentActivityName()).isEqualTo(LAUNCHER_ACTIVITY_NAME);
+    }
+
+    @Test
+    public void onClick_selectedIntentMissing_launchesIntentActivity() {
+        assumeFalse(hasSplitscreenMultitaskingFeature());
+
+        mDefaultButton.performClick();
+
+        CarSystemBarButton dialerButton =
+                mTestView.findViewById(R.id.dialer_activity_toggle_missing_selected);
+        dialerButton.performClick();
+        waitForIdleSync();
+
+        assertThat(getCurrentActivityName()).isEqualTo(DIALER_ACTIVITY_NAME);
+
+        dialerButton.setSelected(true);
+        dialerButton.performClick();
+        waitForIdleSync();
+
+        assertThat(getCurrentActivityName()).isEqualTo(LAUNCHER_ACTIVITY_NAME);
+    }
+
+    @Test
+    public void onClick_selectionEventsDefined_firesEvents() {
+        mDefaultButton.performClick();
+
+        CarSystemBarButton appGridButton =
+                mTestView.findViewById(R.id.app_grid_button_with_selection_events);
+        appGridButton.setEventDispatcher(mEventDispatcher);
+        appGridButton.performClick();
+        waitForIdleSync();
+
+        verify(mEventDispatcher).executeTransaction("open_app_grid");
+
+        appGridButton.setSelected(true);
+        appGridButton.performClick();
+        waitForIdleSync();
+
+        verify(mEventDispatcher).executeTransaction("close_app_grid");
+    }
+
+    @Test
+    public void onClick_unselectEventMissing_firesEvents() {
+        assumeFalse(hasSplitscreenMultitaskingFeature());
+
+        mDefaultButton.performClick();
+
+        CarSystemBarButton appGridButton =
+                mTestView.findViewById(R.id.app_grid_button_without_unselect_event);
+        appGridButton.setEventDispatcher(mEventDispatcher);
+        appGridButton.performClick();
+        waitForIdleSync();
+
+        verify(mEventDispatcher).executeTransaction("open_app_grid");
+
+        appGridButton.setSelected(true);
+        appGridButton.performClick();
+        waitForIdleSync();
+
+        verify(mEventDispatcher).executeTransaction("close_app_grid");
     }
 
     @Test
@@ -276,7 +363,7 @@ public class CarSystemBarButtonTest extends SysuiTestCase {
                 R.id.long_click_dialer_activity);
         dialerButton.performLongClick();
 
-        assertThat(getCurrentActivityName()).isEqualTo(DIALER_BUTTON_ACTIVITY_NAME);
+        assertThat(getCurrentActivityName()).isEqualTo(DIALER_ACTIVITY_NAME);
     }
 
     @Test

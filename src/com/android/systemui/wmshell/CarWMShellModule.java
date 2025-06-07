@@ -20,18 +20,20 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.IWindowManager;
 
-import androidx.annotation.NonNull;
-
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
 import com.android.systemui.car.wm.scalableui.PanelAutoTaskStackTransitionHandlerDelegate;
 import com.android.systemui.car.wm.scalableui.PanelConfigReader;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
+import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
+import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
 import com.android.wm.shell.ShellTaskOrganizer;
+import com.android.wm.shell.automotive.AutoCaptionController;
 import com.android.wm.shell.automotive.AutoShellModule;
 import com.android.wm.shell.automotive.AutoTaskRepository;
 import com.android.wm.shell.common.DisplayController;
@@ -46,7 +48,6 @@ import com.android.wm.shell.recents.RecentTasksController;
 import com.android.wm.shell.sysui.ShellInit;
 import com.android.wm.shell.taskview.TaskViewTransitions;
 import com.android.wm.shell.windowdecor.WindowDecorViewModel;
-import com.android.wm.shell.automotive.AutoShellModule;
 
 import dagger.BindsOptionalOf;
 import dagger.Module;
@@ -66,6 +67,19 @@ public abstract class CarWMShellModule {
             @Main Handler mainHandler) {
         return new DisplaySystemBarsController(context, wmService, displayController,
                 displayInsetsController, mainHandler);
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<AutoCaptionPerDisplayInitializer> provideAutoCaptionPerDisplayInitializer(
+            Context context,
+            ShellTaskOrganizer shellTaskOrganizer,
+            AutoCaptionController autoCaptionController,
+            DisplayController displayController,
+            RootTaskDisplayAreaOrganizer rootTaskDisplayAreaOrganizer) {
+        return Optional.of(
+                new AutoCaptionPerDisplayInitializer(context, shellTaskOrganizer,
+                        autoCaptionController, displayController, rootTaskDisplayAreaOrganizer));
     }
 
     @BindsOptionalOf
@@ -98,12 +112,14 @@ public abstract class CarWMShellModule {
     @Provides
     static Optional<PanelConfigReader> providesPanelConfigReader(
             Context context,
-            TaskPanel.Factory taskPanelFactory
+            TaskPanel.Factory taskPanelFactory,
+            DecorPanel.Factory decorPanelFactory
     ) {
         if (isScalableUIEnabled(context)) {
             return Optional.of(new PanelConfigReader(
                     context,
-                    taskPanelFactory));
+                    taskPanelFactory,
+                    decorPanelFactory));
         }
         return Optional.empty();
     }

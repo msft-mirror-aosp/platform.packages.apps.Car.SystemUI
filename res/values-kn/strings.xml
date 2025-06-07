@@ -23,7 +23,7 @@
     <string name="fan_speed_off" msgid="3860115181014880798">"ಆಫ್"</string>
     <string name="hvac_temperature_off" msgid="8370977023494579242">"ಆಫ್"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"ಇದೀಗ ಕನೆಕ್ಟ್ ಆದ ಬ್ಲೂಟೂತ್ ಸಾಧನ ಧ್ವನಿ ಗುರುತಿಸುವಿಕೆ ನಿರ್ವಹಿಸಿದೆ"</string>
-    <string name="car_add_user" msgid="6182764665687382136">"ಒಂದು ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಿ"</string>
+    <string name="car_add_user" msgid="6182764665687382136">"ಒಂದು ಪ್ರೊಫೈಲ್ ಸೇರಿಸಿ"</string>
     <string name="end_session" msgid="2765206020435441421">"ಸೆಷನ್ ಅಂತ್ಯಗೊಳಿಸಿ"</string>
     <string name="car_new_user" msgid="6766334721724989964">"ಹೊಸ ಪ್ರೊಫೈಲ್"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"ಹೊಸ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಬೇಕೇ?"</string>
@@ -135,7 +135,4 @@
     <string name="back_btn" msgid="7774349944465667391">"ಹಿಂದಕ್ಕೆ"</string>
     <string name="fullscreen" msgid="7648956467442135844">"ಪೂರ್ಣ ಸ್ಕ್ರೀನ್"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"ಪ್ಲಾನ್‌ಗಳನ್ನು ನೋಡಿ"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಪ್ಲಾನ್ ಅವಧಿ ಮುಗಿದಿದೆ"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s ಗೆಇಂಟರ್‌ನೆಟ್ ಕನೆಕ್ಷನ್‌ನ ಅಗತ್ಯವಿದೆ"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"ಈ ಆ್ಯಪ್"</string>
 </resources>

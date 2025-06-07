@@ -16,15 +16,23 @@
 package com.android.systemui.car.wm.scalableui.systemevents;
 
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKED;
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
+
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_ENTER_SUW_EVENT_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_EXIT_SUW_EVENT_ID;
 
 import android.car.user.CarUserManager;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.android.car.scalableui.loader.xml.XmlModelLoader;
 import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.PanelState;
 import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
@@ -34,7 +42,10 @@ import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Background;
 import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.policy.ConfigurationController;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
@@ -48,7 +59,8 @@ import javax.inject.Inject;
  * is being set up.
  */
 @SysUISingleton
-public class SystemEventHandler implements CoreStartable {
+public class SystemEventHandler implements CoreStartable,
+        ConfigurationController.ConfigurationListener {
     private static final String TAG = SystemEventHandler.class.getSimpleName();
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
 
@@ -62,16 +74,14 @@ public class SystemEventHandler implements CoreStartable {
     private CarUserManager mCarUserManager;
     private boolean mIsUserSetupInProgress;
 
+    private int mCurrentOrientation;
+
     private final CarUserManager.UserLifecycleListener mUserLifecycleListener =
             new CarUserManager.UserLifecycleListener() {
                 @Override
                 public void onEvent(@NonNull CarUserManager.UserLifecycleEvent event) {
                     if (DEBUG) {
-                        Log.d(TAG, "on User event = " + event + ", mIsUserSetupInProgress="
-                                + mIsUserSetupInProgress);
-                    }
-                    if (mIsUserSetupInProgress) {
-                        return;
+                        Log.d(TAG, "on User event = " + event);
                     }
                     if (event.getUserHandle().isSystem()) {
                         return;
@@ -91,6 +101,16 @@ public class SystemEventHandler implements CoreStartable {
                 public void onUserSetupInProgressChanged() {
                     updateUserSetupState();
                 }
+
+                @Override
+                public void onDeviceProvisionedChanged() {
+                    updateUserSetupState();
+                }
+
+                @Override
+                public void onUserSwitched() {
+                    updateUserSetupState();
+                }
             };
 
     @Inject
@@ -108,20 +128,20 @@ public class SystemEventHandler implements CoreStartable {
         mUserTracker = userTracker;
         mCarDeviceProvisionedController = carDeviceProvisionedController;
         mEventDispatcher = dispatcher;
-        mIsUserSetupInProgress = mCarDeviceProvisionedController.isCurrentUserSetupInProgress();
+        mCurrentOrientation = mContext.getResources().getConfiguration().orientation;
     }
 
     private void updateUserSetupState() {
-        boolean isUserSetupInProgress =
-                mCarDeviceProvisionedController.isCurrentUserSetupInProgress();
+        boolean isUserSetupInProgress = !mCarDeviceProvisionedController.isCurrentUserFullySetup();
         if (isUserSetupInProgress != mIsUserSetupInProgress) {
             mIsUserSetupInProgress = isUserSetupInProgress;
-            if (mIsUserSetupInProgress) {
-                mEventDispatcher.executeTransaction("_System_EnterSuwEvent");
-            } else {
-                StateManager.handlePanelReset();
-            }
+            notifySuwStateEvent();
         }
+    }
+
+    private void notifySuwStateEvent() {
+        mEventDispatcher.executeTransaction(
+                mIsUserSetupInProgress ? SYSTEM_ENTER_SUW_EVENT_ID : SYSTEM_EXIT_SUW_EVENT_ID);
     }
 
     @Override
@@ -132,7 +152,26 @@ public class SystemEventHandler implements CoreStartable {
         }
     }
 
+    @Override
+    public void onOrientationChanged(int orientation) {
+        if (mCurrentOrientation != orientation && (ORIENTATION_LANDSCAPE == orientation
+                || ORIENTATION_PORTRAIT == orientation)) {
+            mCurrentOrientation = orientation;
+            TypedArray states = mContext.getResources().obtainTypedArray(R.array.window_states);
+            List<PanelState> panelStateList = new ArrayList<>();
+            for (int i = 0; i < states.length(); i++) {
+                int xmlResId = states.getResourceId(i, 0);
+                XmlModelLoader loader = new XmlModelLoader(mContext);
+                PanelState panelState = loader.createPanelState(xmlResId);
+                panelStateList.add(panelState);
+            }
+            StateManager.reloadPanelState(panelStateList);
+        }
+    }
+
     private void registerProvisionedStateListener() {
+        mIsUserSetupInProgress = !mCarDeviceProvisionedController.isCurrentUserFullySetup();
+        notifySuwStateEvent();
         mCarDeviceProvisionedController.addCallback(mCarDeviceProvisionedListener);
     }
 

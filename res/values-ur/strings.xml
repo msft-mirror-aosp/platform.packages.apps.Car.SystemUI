@@ -135,7 +135,4 @@
     <string name="back_btn" msgid="7774349944465667391">"پیچھے جائیں"</string>
     <string name="fullscreen" msgid="7648956467442135844">"فُل اسکرین"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"پلانز دیکھیں"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"آپ کے انٹرنیٹ پلان کی میعاد ختم ہو گئی"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"‫%s کو انٹرنیٹ کنکشن درکار ہے"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"یہ ایپ"</string>
 </resources>

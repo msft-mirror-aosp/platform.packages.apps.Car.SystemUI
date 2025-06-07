@@ -66,7 +66,7 @@
     <string name="system_bar_control_center_label" msgid="5269256399167811590">"Vadības centrs"</string>
     <string name="system_bar_assistant_label" msgid="7312821609046711200">"Asistents"</string>
     <string name="system_bar_mic_privacy_chip" msgid="2494035034004728597">"Mikrofona konfidencialitātes žetons"</string>
-    <string name="system_bar_user_avatar" msgid="4122817348016746322">"Lietotāja iemiesojums"</string>
+    <string name="system_bar_user_avatar" msgid="4122817348016746322">"Lietotāja avatārs"</string>
     <string name="system_bar_user_name_text" msgid="5859605302481171746">"Lietotājvārda teksts"</string>
     <string name="hvac_decrease_button_label" msgid="5628481079099995286">"Pazemināt temperatūru"</string>
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"Paaugstināt temperatūru"</string>
@@ -135,7 +135,4 @@
     <string name="back_btn" msgid="7774349944465667391">"Atpakaļ"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Pilnekrāna režīms"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Skatīt plānus"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Beidzies jūsu interneta plāna derīguma termiņš"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s pieprasa interneta savienojumu"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"Šī lietotne"</string>
 </resources>

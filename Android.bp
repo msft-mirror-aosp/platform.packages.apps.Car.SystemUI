@@ -18,14 +18,25 @@ package {
     default_team: "trendy_team_system_experience",
 }
 
+genrule {
+    name: "statslog-carsystemui-java-gen",
+    tools: ["stats-log-api-gen"],
+    cmd: "$(location stats-log-api-gen) --java $(out) --module carsystemui" +
+        " --javaPackage com.android.systemui --javaClass CarSystemUIStatsLog",
+    out: ["com/android/systemui/car/CarSystemUIStatsLog.java"],
+}
+
+carsystemui_srcs = [
+    "src/**/*.java",
+    "src/**/*.kt",
+    "src/**/I*.aidl",
+    ":statslog-carsystemui-java-gen",
+]
+
 android_library {
     name: "CarSystemUI-core",
 
-    srcs: [
-        "src/**/*.java",
-        "src/**/*.kt",
-        "src/**/I*.aidl",
-    ],
+    srcs: carsystemui_srcs,
 
     resource_dirs: [
         "res-keyguard",
@@ -45,6 +56,7 @@ android_library {
         "car-qc-lib",
         "car-resource-common",
         "car-scalable-ui-lib",
+        "car-tos-lib",
         "com_android_systemui_car_flags_lib",
         "androidx.annotation_annotation",
         "androidx.legacy_legacy-support-v4",
@@ -183,6 +195,7 @@ android_library {
         "car-qc-lib",
         "car-resource-common",
         "car-scalable-ui-lib",
+        "car-tos-lib",
         "com_android_systemui_car_flags_lib",
         "CarDockLib",
         "car-data-subscription-lib",
@@ -203,6 +216,7 @@ android_library {
         "src/**/*.java",
         "src/**/*.kt",
         "src/**/I*.aidl",
+        ":statslog-carsystemui-java-gen",
     ],
     static_libs: [
         "SystemUI-tests",

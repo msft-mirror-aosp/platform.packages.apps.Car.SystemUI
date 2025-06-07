@@ -477,10 +477,38 @@
     <dimen name="data_subscription_pop_up_arrow_offset">84dp</dimen>
     <dimen name="data_subscription_pop_up_vertical_padding">46dp</dimen>
     <dimen name="data_subscription_pop_up_horizontal_padding">@*android:dimen/car_padding_3</dimen>
+    <dimen name="data_subscription_pop_up_text_padding">0dp</dimen>
     <dimen name="data_subscription_pop_up_button_width">224dp</dimen>
     <dimen name="data_subscription_pop_up_button_height">68dp</dimen>
     <dimen name="car_quick_controls_panel_margin">8dp</dimen>
     <dimen name="data_subscription_pop_up_horizontal_margin">15dp</dimen>
     <dimen name="data_subscription_pop_up_horizontal_offset">92dp</dimen>
     <dimen name="data_subscription_pop_up_vertical_offset">6dp</dimen>
+
+    <!-- TODO(b/409131368): Remove when landscape reference is migrated to scalable ui -->
+    <!-- coordinates of rect to be used for safe region to open compat apps -->
+    <dimen name="safe_region_left">0dp</dimen>
+    <dimen name="safe_region_top">144dp</dimen>
+    <dimen name="safe_region_right">1408dp</dimen>
+    <dimen name="safe_region_bottom">696dp</dimen>
+
+    <!-- TODO(b/409131368): Remove when landscape reference is migrated to scalable ui -->
+    <!-- coordinates of rect to be used to show toolbar for compat apps -->
+    <!-- height = 68dp -->
+    <dimen name="caption_region_left">0dp</dimen>
+    <dimen name="caption_region_top">76dp</dimen>
+    <dimen name="caption_region_right">1408dp</dimen>
+    <dimen name="caption_region_bottom">144dp</dimen>
+
+    <dimen name="overlay_panel_view_vail_width">96dp</dimen>
+    <dimen name="overlay_panel_view_vail_height">96dp</dimen>
+
+    <!-- Grip bar for panels -->
+    <dimen name="panel_grip_bar_corner_radius">48dp</dimen>
+    <dimen name="panel_grip_bar_decor_top_margin">15dp</dimen>
+    <dimen name="panel_grip_bar_decor_corner_radius">2dp</dimen>
+    <dimen name="panel_grip_bar_decor_width">100dp</dimen>
+    <dimen name="panel_grip_bar_decor_height">4dp</dimen>
+
+
 </resources>

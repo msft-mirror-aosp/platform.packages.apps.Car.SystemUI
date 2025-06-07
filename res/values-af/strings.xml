@@ -81,7 +81,7 @@
     <string name="status_icon_sound_status" msgid="4923149230650995670">"Klankinstellings"</string>
     <string name="status_icon_drive_mode" msgid="3938622431486261076">"Rymodus"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Jy kan nie hierdie kenmerk gebruik terwyl jy bestuur nie"</string>
-    <string name="exit_button_close_application" msgid="112227710467017144">"Maak program toe"</string>
+    <string name="exit_button_close_application" msgid="112227710467017144">"Maak app toe"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Terug"</string>
     <string name="drive_mode_modes_comfort" msgid="628724737960743004">"Gemak"</string>
     <string name="drive_mode_modes_eco" msgid="7694931508925737653">"Eko"</string>
@@ -135,7 +135,4 @@
     <string name="back_btn" msgid="7774349944465667391">"Terug"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Volskerm"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Sien pakkette"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"Jou internetpakket het verval"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s het ’n internetverbinding nodig"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"Hierdie app"</string>
 </resources>

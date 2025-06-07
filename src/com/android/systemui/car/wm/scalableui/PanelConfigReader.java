@@ -23,15 +23,14 @@ import android.os.Build;
 import android.util.Log;
 
 import com.android.car.internal.dep.Trace;
+import com.android.car.scalableui.loader.xml.XmlModelLoader;
 import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.PanelPool;
 import com.android.systemui.R;
+import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.wm.shell.dagger.WMSingleton;
-
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
 
 @WMSingleton
 public class PanelConfigReader {
@@ -39,13 +38,16 @@ public class PanelConfigReader {
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
     private final Context mContext;
     private final TaskPanel.Factory mTaskPanelFactory;
+    private final DecorPanel.Factory mDecorPanelFactory;
 
-    public PanelConfigReader(Context context, TaskPanel.Factory taskPanelFactory) {
+    public PanelConfigReader(Context context, TaskPanel.Factory taskPanelFactory,
+            DecorPanel.Factory decorPanelFactory) {
         if (DEBUG) {
             Log.d(TAG, "PanelConfig initialized user: " + ActivityManager.getCurrentUser());
         }
         mContext = context;
         mTaskPanelFactory = taskPanelFactory;
+        mDecorPanelFactory = decorPanelFactory;
     }
 
     /**
@@ -53,7 +55,13 @@ public class PanelConfigReader {
      */
     public void init() {
         PanelPool.getInstance().clearPanels();
-        PanelPool.getInstance().setDelegate(id -> mTaskPanelFactory.create(id));
+        PanelPool.getInstance().setDelegate(id -> {
+            if (id.startsWith(PanelState.DECOR_PANEL_ID_PREFIX)) {
+                return mDecorPanelFactory.create(id);
+            } else {
+                return mTaskPanelFactory.create(id);
+            }
+        });
 
         try {
             Trace.beginSection(TAG + "#init");
@@ -65,11 +73,11 @@ public class PanelConfigReader {
                     if (DEBUG) {
                         Log.d(TAG, "PanelConfig adding state: " + xmlResId);
                     }
-                    StateManager.addState(mContext, xmlResId);
+                    XmlModelLoader loader = new XmlModelLoader(mContext);
+                    PanelState panelState = loader.createPanelState(xmlResId);
+                    StateManager.addState(panelState);
                 }
             }
-        } catch (XmlPullParserException | IOException e) {
-            throw new RuntimeException(e);
         } finally {
             Trace.endSection();
         }

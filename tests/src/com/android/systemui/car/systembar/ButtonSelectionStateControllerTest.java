@@ -18,6 +18,11 @@ package com.android.systemui.car.systembar;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
+
 import android.app.ActivityTaskManager.RootTaskInfo;
 import android.content.ComponentName;
 import android.testing.AndroidTestingRunner;
@@ -29,11 +34,13 @@ import androidx.test.filters.SmallTest;
 
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.tests.R;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
@@ -57,18 +64,23 @@ public class ButtonSelectionStateControllerTest extends SysuiTestCase {
     private ButtonSelectionStateController mButtonSelectionStateController;
     private ComponentName mComponentName;
 
+    @Mock
+    private TaskPanelInfoRepository mTaskPanelInfoRepository;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         mTestView = (LinearLayout) LayoutInflater.from(mContext).inflate(
                 R.layout.car_button_selection_state_controller_test, /* root= */ null);
-        mButtonSelectionStateController = new ButtonSelectionStateController(mContext);
+        mButtonSelectionStateController = new ButtonSelectionStateController(mContext,
+                mTaskPanelInfoRepository);
         mButtonSelectionStateController.addAllButtonsWithSelectionState(mTestView);
     }
 
     @Test
     public void onTaskChanged_buttonDetectableByComponentName_selectsAssociatedButton() {
+        assumeFalse(isScalableUIEnabled());
         CarSystemBarButton testButton = mTestView.findViewById(R.id.detectable_by_component_name);
         mComponentName = new ComponentName(TEST_COMPONENT_NAME_PACKAGE, TEST_COMPONENT_NAME_CLASS);
         List<RootTaskInfo> testStack = createTestStack(mComponentName);
@@ -80,6 +92,7 @@ public class ButtonSelectionStateControllerTest extends SysuiTestCase {
 
     @Test
     public void onTaskChanged_buttonDetectableByCategory_selectsAssociatedButton() {
+        assumeFalse(isScalableUIEnabled());
         CarSystemBarButton testButton = mTestView.findViewById(R.id.detectable_by_category);
         mComponentName = new ComponentName(TEST_CATEGORY, TEST_CATEGORY_CLASS);
         List<RootTaskInfo> testStack = createTestStack(mComponentName);
@@ -91,6 +104,7 @@ public class ButtonSelectionStateControllerTest extends SysuiTestCase {
 
     @Test
     public void onTaskChanged_buttonDetectableByPackage_selectsAssociatedButton() {
+        assumeFalse(isScalableUIEnabled());
         CarSystemBarButton testButton = mTestView.findViewById(R.id.detectable_by_package);
         mComponentName = new ComponentName(TEST_PACKAGE, TEST_PACKAGE_CLASS);
         List<RootTaskInfo> testStack = createTestStack(mComponentName);
@@ -102,6 +116,7 @@ public class ButtonSelectionStateControllerTest extends SysuiTestCase {
 
     @Test
     public void onTaskChanged_deselectsPreviouslySelectedButton() {
+        assumeFalse(isScalableUIEnabled());
         CarSystemBarButton oldButton = mTestView.findViewById(R.id.detectable_by_component_name);
         mComponentName = new ComponentName(TEST_COMPONENT_NAME_PACKAGE, TEST_COMPONENT_NAME_CLASS);
         List<RootTaskInfo> oldStack = createTestStack(mComponentName);
@@ -111,6 +126,55 @@ public class ButtonSelectionStateControllerTest extends SysuiTestCase {
         mComponentName = new ComponentName(TEST_PACKAGE, TEST_PACKAGE_CLASS);
         List<RootTaskInfo> newStack = createTestStack(mComponentName);
         mButtonSelectionStateController.taskChanged(newStack, /* validDisplay= */ -1);
+
+        assertButtonUnselected(oldButton);
+    }
+
+    @Test
+    public void onPanelTaskChanged_buttonDetectableByComponentName_selectsAssociatedButton() {
+        assumeTrue(isScalableUIEnabled());
+
+        CarSystemBarButton testButton = mTestView.findViewById(R.id.detectable_by_component_name);
+        mComponentName = new ComponentName(TEST_COMPONENT_NAME_PACKAGE, TEST_COMPONENT_NAME_CLASS);
+        when(mTaskPanelInfoRepository.isPackageVisibleOnDisplay(mComponentName.getPackageName(),
+                anyInt())).thenReturn(true);
+        testButton.setSelected(false);
+        mButtonSelectionStateController.panelTaskChanged();
+
+        assertbuttonSelected(testButton);
+    }
+
+    @Test
+    public void onPanelTaskChanged_buttonDetectableByPackage_selectsAssociatedButton() {
+        assumeTrue(isScalableUIEnabled());
+
+        CarSystemBarButton testButton = mTestView.findViewById(R.id.detectable_by_package);
+        mComponentName = new ComponentName(TEST_PACKAGE, TEST_PACKAGE_CLASS);
+        when(mTaskPanelInfoRepository.isPackageVisibleOnDisplay(mComponentName.getPackageName(),
+                anyInt())).thenReturn(true);
+        testButton.setSelected(false);
+        mButtonSelectionStateController.panelTaskChanged();
+
+        assertbuttonSelected(testButton);
+    }
+
+    @Test
+    public void onPanelTaskChanged_deselectsPreviouslySelectedButton() {
+        assumeTrue(isScalableUIEnabled());
+
+        CarSystemBarButton oldButton = mTestView.findViewById(R.id.detectable_by_component_name);
+        mComponentName = new ComponentName(TEST_COMPONENT_NAME_PACKAGE, TEST_COMPONENT_NAME_CLASS);
+        when(mTaskPanelInfoRepository.isComponentVisibleOnDisplay(mComponentName, anyInt()))
+                .thenReturn(true);
+        oldButton.setSelected(false);
+        mButtonSelectionStateController.panelTaskChanged();
+
+        when(mTaskPanelInfoRepository.isComponentVisibleOnDisplay(mComponentName, anyInt()))
+                .thenReturn(false);
+        mComponentName = new ComponentName(TEST_PACKAGE, TEST_PACKAGE_CLASS);
+        when(mTaskPanelInfoRepository.isComponentVisibleOnDisplay(mComponentName, anyInt()))
+                .thenReturn(true);
+        mButtonSelectionStateController.panelTaskChanged();
 
         assertButtonUnselected(oldButton);
     }
@@ -134,5 +198,10 @@ public class ButtonSelectionStateControllerTest extends SysuiTestCase {
         testStack.add(validStackInfo);
 
         return testStack;
+    }
+
+    private boolean isScalableUIEnabled() {
+        return mContext.getResources().getBoolean(
+                com.android.systemui.R.bool.config_enableScalableUI);
     }
 }

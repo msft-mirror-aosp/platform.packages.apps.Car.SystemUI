@@ -16,13 +16,17 @@
 
 package com.android.systemui.wmshell;
 
+import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.CarSystemUIProxyImpl;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
+import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.car.wm.taskview.RemoteCarTaskViewTransitions;
 import com.android.systemui.dagger.WMComponent;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
+import com.android.wm.shell.automotive.AutoDecorManager;
+import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.dagger.WMSingleton;
 
@@ -52,6 +56,12 @@ public interface CarWMComponent extends WMComponent {
     DisplaySystemBarsController getDisplaySystemBarsController();
 
     /**
+     * Returns the initializer used to initialize AutoCaption per display.
+     */
+    @WMSingleton
+    Optional<AutoCaptionPerDisplayInitializer> getAutoCaptionPerDisplayInitializer();
+
+    /**
      * Returns the implementation of car system ui proxy which will be used by other apps to
      * interact with the car system ui.
      */
@@ -77,7 +87,19 @@ public interface CarWMComponent extends WMComponent {
     @WMSingleton
     Optional<ScalableUIWMInitializer> getScalableUIWMInitializer();
 
+    /** Provides the {@link TaskPanelInfoRepository} used to dispatch ScalableUI task info. */
+    @WMSingleton
+    TaskPanelInfoRepository getTaskPanelInfoRepository();
+
     /** Provides the {@link EventDispatcher} used to dispatch ScalableUI events. */
     @WMSingleton
     EventDispatcher getScalableUIEventDispatcher();
+
+    /** Provides the {@link AutoDecorManager} used to manage {@link AutoDecor}. */
+    @WMSingleton
+    AutoDecorManager getAutoDecorManager();
+
+    /** Provides the {@link AutoLayoutManager} used to set ScalableUI Insets. */
+    @WMSingleton
+    AutoLayoutManager getAutoLayoutManager();
 }

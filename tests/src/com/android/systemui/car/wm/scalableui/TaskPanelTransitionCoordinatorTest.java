@@ -18,6 +18,7 @@ package com.android.systemui.car.wm.scalableui;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,8 +36,14 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.android.car.scalableui.model.PanelTransaction;
 import com.android.systemui.SysuiTestCase;
+import com.android.systemui.ShellSyncExecutor;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
+import com.android.wm.shell.automotive.AutoLayoutManager;
+import com.android.wm.shell.automotive.AutoSurfaceTransaction;
+import com.android.wm.shell.automotive.AutoSurfaceTransactionFactory;
 import com.android.wm.shell.automotive.AutoTaskStackController;
+import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.transition.Transitions;
 
 import org.junit.Before;
@@ -56,17 +63,30 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TaskPanelTransitionCoordinatorTest extends SysuiTestCase {
 
     private TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
+    private ShellExecutor mMainExecutor;
 
     @Mock
     private Transitions.TransitionFinishCallback mFinishCallback;
     @Mock
     private AutoTaskStackController mAutoTaskStackController;
+    @Mock
+    private PanelUtils mPanelUtils;
+    @Mock
+    private AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
+    @Mock
+    private AutoSurfaceTransaction mAutoSurfaceTransaction;
+    @Mock
+    private AutoLayoutManager mAutoLayoutManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mMainExecutor = new ShellSyncExecutor();
         mTaskPanelTransitionCoordinator = new TaskPanelTransitionCoordinator(
-                mAutoTaskStackController);
+                mAutoTaskStackController, mAutoSurfaceTransactionFactory, mPanelUtils,
+                mAutoLayoutManager, mMainExecutor);
+        when(mAutoSurfaceTransactionFactory.createTransaction(anyString())).thenReturn(
+                mAutoSurfaceTransaction);
     }
 
     @Test
@@ -75,7 +95,7 @@ public class TaskPanelTransitionCoordinatorTest extends SysuiTestCase {
         Animator animator = new ValueAnimator();
         when(mAutoTaskStackController.startTransition(any())).thenReturn(binder);
         PanelTransaction panelTransaction = new PanelTransaction.Builder()
-                .addAnimator("testPanel", animator).build();
+                .addAnimator("testPanel", animator).setHasWindowChanges(true).build();
 
         mTaskPanelTransitionCoordinator.startTransition(panelTransaction);
 
@@ -122,7 +142,7 @@ public class TaskPanelTransitionCoordinatorTest extends SysuiTestCase {
         });
 
         assertThat(animationStarted.get()).isTrue();
-        assertThat(latch.await(/* timeout= */ 5, TimeUnit.SECONDS)).isTrue();
+        assertThat(latch.await(/* timeout= */ 10, TimeUnit.SECONDS)).isTrue();
         assertThat(latch.getCount()).isEqualTo(0);
         assertThat(mTaskPanelTransitionCoordinator.isAnimationRunning()).isFalse();
         // There may be a slight delay between the Animator receiving onAnimationEnd and the
@@ -131,7 +151,42 @@ public class TaskPanelTransitionCoordinatorTest extends SysuiTestCase {
     }
 
     @Test
-    public void testStopRunningAnimations() throws InterruptedException {
+    public void testStopRunningAnimationsIfNeed_differentTransition_stopAnimation()
+            throws InterruptedException {
+        CountDownLatch latch = new CountDownLatch(1); // Latch for waiting
+        IBinder binder = new Binder();
+        IBinder binder2 = new Binder();
+        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+        animator.setDuration(5000L);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                latch.countDown();
+            }
+        });
+        PanelTransaction panelTransaction = new PanelTransaction.Builder()
+                .addAnimator("testPanel", animator).build();
+        mTaskPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction);
+
+        // Run the animation on the main looper
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            mTaskPanelTransitionCoordinator.playPendingAnimations(binder, mFinishCallback);
+        });
+
+        mTaskPanelTransitionCoordinator.stopRunningAnimations(binder2);
+        // onAnimationEnd should still be called when cancelled - wait for a small amount of time
+        // and expect animation end callback to execute
+        assertThat(latch.await(/* timeout= */ 1, TimeUnit.SECONDS)).isTrue();
+        assertThat(latch.getCount()).isEqualTo(0);
+        // There may be a slight delay between the Animator receiving onAnimationEnd and the
+        // AnimatorSet receiving onAnimationEnd.
+        verify(mFinishCallback, timeout(1000)).onTransitionFinished(null);
+    }
+
+    @Test
+    public void testStopRunningAnimations_sameTransition_keepAnimation()
+            throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1); // Latch for waiting
         IBinder binder = new Binder();
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
@@ -152,14 +207,17 @@ public class TaskPanelTransitionCoordinatorTest extends SysuiTestCase {
             mTaskPanelTransitionCoordinator.playPendingAnimations(binder, mFinishCallback);
         });
 
-        mTaskPanelTransitionCoordinator.stopRunningAnimations();
-        // onAnimationEnd should still be called when cancelled - wait for a small amount of time
-        // and expect animation end callback to execute
-        assertThat(latch.await(/* timeout= */ 1, TimeUnit.SECONDS)).isTrue();
-        assertThat(latch.getCount()).isEqualTo(0);
-        assertThat(mTaskPanelTransitionCoordinator.isAnimationRunning()).isFalse();
+        mTaskPanelTransitionCoordinator.stopRunningAnimations(binder);
+        // Animation should continue on the same binder
+        assertThat(latch.await(/* timeout= */ 1, TimeUnit.SECONDS)).isFalse();
+        assertThat(latch.getCount()).isEqualTo(1);
+        assertThat(mTaskPanelTransitionCoordinator.isAnimationRunning()).isTrue();
         // There may be a slight delay between the Animator receiving onAnimationEnd and the
         // AnimatorSet receiving onAnimationEnd.
-        verify(mFinishCallback, timeout(1000)).onTransitionFinished(null);
+
+        assertThat(latch.await(/* timeout= */ 5, TimeUnit.SECONDS)).isTrue();
+        assertThat(latch.getCount()).isEqualTo(0);
+        assertThat(mTaskPanelTransitionCoordinator.isAnimationRunning()).isFalse();
+        verify(mFinishCallback, timeout(5000)).onTransitionFinished(null);
     }
 }

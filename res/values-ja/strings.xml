@@ -23,9 +23,9 @@
     <string name="fan_speed_off" msgid="3860115181014880798">"OFF"</string>
     <string name="hvac_temperature_off" msgid="8370977023494579242">"OFF"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Bluetooth 接続デバイスで音声認識が処理されるようになりました"</string>
-    <string name="car_add_user" msgid="6182764665687382136">"プロファイルを追加"</string>
+    <string name="car_add_user" msgid="6182764665687382136">"プロフィールを追加"</string>
     <string name="end_session" msgid="2765206020435441421">"セッションを終了"</string>
-    <string name="car_new_user" msgid="6766334721724989964">"新しいプロファイル"</string>
+    <string name="car_new_user" msgid="6766334721724989964">"新しいプロフィール"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"新しいプロファイルの追加"</string>
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"新しいプロファイルを追加すると、アカウント所有者がそのプロファイルをカスタマイズできます。"</string>
     <string name="user_add_user_message_update" msgid="4507063398890966360">"どのプロファイルでもアプリ アップデートをインストールでき、すべてのプロファイルに適用されます。"</string>
@@ -135,7 +135,4 @@
     <string name="back_btn" msgid="7774349944465667391">"戻る"</string>
     <string name="fullscreen" msgid="7648956467442135844">"全画面表示"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"プランを見る"</string>
-    <string name="data_subscription_proactive_msg_prompt" msgid="3130110568883863205">"ご利用のインターネット プランの期限が切れています"</string>
-    <string name="data_subscription_reactive_msg_prompt" msgid="5252304501097103082">"%s を使用するには、インターネット接続が必要です"</string>
-    <string name="data_subscription_reactive_generic_app_label" msgid="5641823691346968670">"このアプリ"</string>
 </resources>

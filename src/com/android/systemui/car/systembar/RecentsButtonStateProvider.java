@@ -19,7 +19,6 @@ package com.android.systemui.car.systembar;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.TypedArray;
 import android.hardware.input.InputManager;
 import android.view.KeyEvent;
@@ -33,7 +32,6 @@ import com.android.systemui.shared.system.TaskStackChangeListeners;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Used to add Recents state functionality to a {@link CarSystemBarButton}
@@ -105,23 +103,18 @@ public class RecentsButtonStateProvider {
      *
      * @param defaultGetButtonClickListener default function to be called for non Recents
      *                                      functionality.
-     * @see CarSystemBarButton#getButtonClickListener(Intent)
+     * @see CarSystemBarButton#getButtonClickListener()
      */
-    public View.OnClickListener getButtonClickListener(Intent toSend,
-            Function<Intent, View.OnClickListener> defaultGetButtonClickListener) {
+    public View.OnClickListener getButtonClickListener(
+            View.OnClickListener defaultGetButtonClickListener) {
         return v -> {
             if (mIsRecentsActive) {
                 toggleRecents();
                 return;
             }
-            if (defaultGetButtonClickListener == null) {
-                return;
+            if (defaultGetButtonClickListener != null) {
+                defaultGetButtonClickListener.onClick(v);
             }
-            View.OnClickListener onClickListener = defaultGetButtonClickListener.apply(toSend);
-            if (onClickListener == null) {
-                return;
-            }
-            onClickListener.onClick(v);
         };
     }
 

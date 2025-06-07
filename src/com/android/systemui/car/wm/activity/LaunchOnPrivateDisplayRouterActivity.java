@@ -32,7 +32,7 @@ import com.android.systemui.R;
 public class LaunchOnPrivateDisplayRouterActivity extends Activity {
     private static final String TAG = "LaunchRouterActivity";
     private static final boolean DBG = Log.isLoggable(TAG, Log.DEBUG);
-    private static final String NAMESPACE_KEY = "com.android.car.app.private_display";
+    private static final String NAMESPACE_KEY = "com.android.car.app.launch_redirect";
     @VisibleForTesting
     static final String LAUNCH_ACTIVITY = NAMESPACE_KEY + ".launch_activity";
     @VisibleForTesting

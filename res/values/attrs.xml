@@ -287,4 +287,5 @@
     <attr name="pinPadKeyRadius" format="dimension"/>
     <attr name="dataSubscriptionPopUpRadius" format="dimension"/>
     <attr name="dataSubscriptionPopUpArrowRadius" format="dimension"/>
+    <attr name="clearAllButtonRadius" format="dimension"/>
 </resources>

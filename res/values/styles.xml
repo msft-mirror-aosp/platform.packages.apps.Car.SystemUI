@@ -278,5 +278,6 @@
         <item name="pinPadKeyRadius">?oemShapeCornerFull</item>
         <item name="dataSubscriptionPopUpRadius">?oemShapeCornerMedium</item>
         <item name="dataSubscriptionPopUpArrowRadius">?oemShapeCornerExtraSmall</item>
+        <item name="clearAllButtonRadius">?oemShapeCornerExtraLarge</item>
     </style>
 </resources>

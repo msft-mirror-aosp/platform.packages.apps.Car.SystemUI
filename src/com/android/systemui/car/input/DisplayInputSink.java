@@ -106,9 +106,9 @@ public final class DisplayInputSink {
         mFakeWindow = new BaseIWindow();
         mFakeWindow.setSession(mWindowSession);
         mFocusGrantToken = new InputTransferToken();
-        InputChannel inputChannel = new InputChannel();
+        InputChannel inputChannel = null;
         try {
-            mWindowSession.grantInputChannel(
+            inputChannel = mWindowSession.grantInputChannel(
                     mDisplayId,
                     mSurfaceControl,
                     mFakeWindow,
@@ -119,8 +119,7 @@ public final class DisplayInputSink {
                     TYPE_INPUT_CONSUMER,
                     /* windowToken= */ null,
                     mFocusGrantToken,
-                    "InputListener of " + mSurfaceControl.toString(),
-                    inputChannel);
+                    "InputListener of " + mSurfaceControl.toString());
         } catch (RemoteException e) {
             e.rethrowFromSystemServer();
         }

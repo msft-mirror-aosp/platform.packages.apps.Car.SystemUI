@@ -19,7 +19,7 @@
     android:color="@color/car_ui_ripple_color">
     <item>
         <shape android:shape="rectangle">
-            <corners android:radius="@dimen/clear_all_button_radius"/>
+            <corners android:radius="?clearAllButtonRadius"/>
             <solid android:color="@color/hvac_panel_handle_bar_color"/>
         </shape>
     </item>

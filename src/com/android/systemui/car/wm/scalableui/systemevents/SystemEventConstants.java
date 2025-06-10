@@ -24,9 +24,4 @@ public class SystemEventConstants {
     public static final String SYSTEM_TASK_PANEL_EMPTY_EVENT_ID = "_System_TaskPanelEmptyEvent";
     public static final String SYSTEM_ENTER_SUW_EVENT_ID = "_System_EnterSuwEvent";
     public static final String SYSTEM_EXIT_SUW_EVENT_ID = "_System_ExitSuwEvent";
-
-    /** Token IDs */
-    public static final String PANEL_TOKEN_ID = "panelId";
-    public static final String COMPONENT_TOKEN_ID = "component";
-    public static final String PACKAGE_TOKEN_ID = "package";
 }

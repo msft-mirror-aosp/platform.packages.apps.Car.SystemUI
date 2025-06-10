@@ -15,7 +15,6 @@
  */
 package com.android.systemui.car.wm.scalableui;
 
-import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_CLOSE_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_OPEN_EVENT_ID;
 
@@ -218,7 +217,7 @@ public class PanelTransitionCoordinator {
                 Event event = new Event.Builder(
                         changedState.getChildrenTasksVisible() ? SYSTEM_TASK_OPEN_EVENT_ID
                                 : SYSTEM_TASK_CLOSE_EVENT_ID)
-                        .addToken(PANEL_TOKEN_ID, tp.getPanelId())
+                        .setPanelId(tp.getPanelId())
                         .build();
                 PanelTransaction panelTransaction = StateManager.handleEvent(event);
                 mAutoTaskStackController.startTransition(

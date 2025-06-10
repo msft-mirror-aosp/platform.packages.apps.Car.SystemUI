@@ -19,10 +19,7 @@ import static android.app.WindowConfiguration.ACTIVITY_TYPE_HOME;
 import static android.view.WindowInsets.Type.systemOverlays;
 import static android.view.WindowManager.TRANSIT_FLAG_AVOID_MOVE_TO_FRONT;
 
-import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.COMPONENT_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.EMPTY_EVENT_ID;
-import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PACKAGE_TOKEN_ID;
-import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_HOME_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_CLOSE_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_OPEN_EVENT_ID;
@@ -246,8 +243,9 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             ComponentName component = request.getTriggerTask().baseActivity;
             String packageString = component != null ? component.getPackageName() : null;
             // Multiple SUW activities have home as categories. Panels should treat them the same.
-            return new Event.Builder(SYSTEM_HOME_EVENT_ID).addToken(PACKAGE_TOKEN_ID,
-                    packageString).build();
+            return new Event.Builder(SYSTEM_HOME_EVENT_ID)
+                    .setPackageName(packageString)
+                    .build();
         }
 
         if ((request.getFlags() & TRANSIT_FLAG_AVOID_MOVE_TO_FRONT)
@@ -283,13 +281,13 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
 
         if (TransitionUtil.isClosingType(request.getType())) {
             return new Event.Builder(SYSTEM_TASK_CLOSE_EVENT_ID)
-                    .addToken(PANEL_TOKEN_ID, panelId)
-                    .addToken(COMPONENT_TOKEN_ID, componentString)
+                    .setPanelId(panelId)
+                    .setComponentName(componentString)
                     .build();
         } else if (TransitionUtil.isOpeningType(request.getType())) {
             return new Event.Builder(SYSTEM_TASK_OPEN_EVENT_ID)
-                    .addToken(PANEL_TOKEN_ID, panelId)
-                    .addToken(COMPONENT_TOKEN_ID, componentString)
+                    .setPanelId(panelId)
+                    .setComponentName(componentString)
                     .build();
         } else {
             Log.e(TAG, "Unknown transition type " + request.getType());

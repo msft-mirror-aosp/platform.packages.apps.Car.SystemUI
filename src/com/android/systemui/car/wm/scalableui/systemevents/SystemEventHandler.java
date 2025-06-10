@@ -31,7 +31,9 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.android.car.scalableui.loader.xml.XmlModelLoader;
+import com.android.car.scalableui.manager.ActionManager;
 import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.Action;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.PanelPool;
@@ -169,15 +171,19 @@ public class SystemEventHandler implements CoreStartable,
         if (mCurrentOrientation != orientation && (ORIENTATION_LANDSCAPE == orientation
                 || ORIENTATION_PORTRAIT == orientation)) {
             mCurrentOrientation = orientation;
+            XmlModelLoader loader = new XmlModelLoader(mContext);
+
             TypedArray states = mContext.getResources().obtainTypedArray(R.array.window_states);
             List<PanelState> panelStateList = new ArrayList<>();
             for (int i = 0; i < states.length(); i++) {
                 int xmlResId = states.getResourceId(i, 0);
-                XmlModelLoader loader = new XmlModelLoader(mContext);
                 PanelState panelState = loader.createPanelState(xmlResId);
                 panelStateList.add(panelState);
             }
             StateManager.reloadPanelState(panelStateList);
+
+            List<Action> actions = loader.createActions(R.xml.scalable_ui_actions);
+            ActionManager.setActions(actions);
         }
     }
 

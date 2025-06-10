@@ -17,8 +17,6 @@ package com.android.systemui.car.wm.scalableui;
 
 import static com.android.car.scalableui.Flags.enableAnimationEndEvent;
 import static com.android.car.scalableui.Flags.scalableUiTaskFocus;
-import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
-import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TO_VARIANT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_ON_ANIMATION_END_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_CLOSE_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_OPEN_EVENT_ID;
@@ -223,7 +221,7 @@ public class PanelTransitionCoordinator {
                 Event event = new Event.Builder(
                         changedState.getChildrenTasksVisible() ? SYSTEM_TASK_OPEN_EVENT_ID
                                 : SYSTEM_TASK_CLOSE_EVENT_ID)
-                        .addToken(PANEL_TOKEN_ID, tp.getPanelId())
+                        .setPanelId(tp.getPanelId())
                         .build();
                 PanelTransaction panelTransaction = StateManager.handleEvent(event);
                 mAutoTaskStackController.startTransition(
@@ -371,8 +369,8 @@ public class PanelTransitionCoordinator {
                 + " with variant " + variantId);
         PanelTransaction transaction = StateManager.handleEvent(new Event.Builder(
                 SYSTEM_ON_ANIMATION_END_EVENT_ID)
-                .addToken(PANEL_TOKEN_ID, panelId)
-                .addToken(PANEL_TO_VARIANT_ID, variantId)
+                .setPanelId(panelId)
+                .setToVariantId(variantId)
                 .build());
         startTransition(transaction);
     }
@@ -459,7 +457,7 @@ public class PanelTransitionCoordinator {
             @Nullable Event event) {
         // 1. If the trigger is a task being opened on a visible panel, focus that panel
         if (event != null && TextUtils.equals(event.getId(), SYSTEM_TASK_OPEN_EVENT_ID)) {
-            String panelId = event.getTokens().get(PANEL_TOKEN_ID);
+            String panelId = event.getPanelId();
             if (panelId != null) {
                 TaskPanel taskPanel = mPanelUtils.getTaskPanel(
                         p -> p.getPanelId().equals(panelId));

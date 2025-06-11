@@ -26,10 +26,10 @@ import android.os.RemoteException;
 import android.util.Slog;
 import android.view.Surface;
 import android.view.WindowManagerGlobal;
-import android.window.ScreenCapture;
-import android.window.ScreenCapture.CaptureArgs;
-import android.window.ScreenCapture.ScreenshotHardwareBuffer;
-import android.window.ScreenCapture.SynchronousScreenCaptureListener;
+import android.window.ScreenCaptureInternal;
+import android.window.ScreenCaptureInternal.CaptureArgs;
+import android.window.ScreenCaptureInternal.ScreenshotHardwareBuffer;
+import android.window.ScreenCaptureInternal.SynchronousScreenCaptureListener;
 
 import com.android.systemui.R;
 import com.android.systemui.car.wm.activity.ActivityBlockingActivity;
@@ -156,7 +156,7 @@ public class BlurredSurfaceRenderer implements GLSurfaceView.Renderer {
                     .setSourceCrop(mScreenshotRectRelativeToDisplay)
                     .build();
             SynchronousScreenCaptureListener syncScreenCapture =
-                    ScreenCapture.createSyncCaptureListener();
+                    ScreenCaptureInternal.createSyncCaptureListener();
             try {
                 WindowManagerGlobal.getWindowManagerService().captureDisplay(mDisplayId,
                         captureArgs, syncScreenCapture);

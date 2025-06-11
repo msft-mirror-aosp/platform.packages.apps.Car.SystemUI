@@ -133,7 +133,8 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
         });
         PanelTransaction panelTransaction = new PanelTransaction.Builder()
                 .addAnimator("testPanel", animator).build();
-        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction);
+        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction,
+                /* event= */ null);
 
         AtomicBoolean animationStarted = new AtomicBoolean(false);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
@@ -167,7 +168,8 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
         });
         PanelTransaction panelTransaction = new PanelTransaction.Builder()
                 .addAnimator("testPanel", animator).build();
-        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction);
+        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction,
+                /* event= */ null);
 
         // Run the animation on the main looper
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
@@ -200,7 +202,8 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
         });
         PanelTransaction panelTransaction = new PanelTransaction.Builder()
                 .addAnimator("testPanel", animator).build();
-        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction);
+        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction,
+                /* event= */ null);
 
         // Run the animation on the main looper
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {

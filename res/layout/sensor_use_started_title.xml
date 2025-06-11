@@ -36,7 +36,7 @@
             android:layout_height="@dimen/car_alert_dialog_icon_size"
             android:id="@+id/sensor_use_microphone_icon"
             android:src="@*android:drawable/perm_group_microphone"
-            android:tint="@color/car_on_surface"
+            android:tint="?android:attr/colorForeground"
             android:visibility="gone" />
     </LinearLayout>
     <com.android.internal.widget.DialogTitle

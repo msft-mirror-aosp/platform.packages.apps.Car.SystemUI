@@ -91,3 +91,11 @@ flag {
     description: "This flag controls enabling loading the system ui using the DesignCompose dcf file instead of xml."
     bug: "414813386"
 }
+
+flag {
+    name: "scalable_ui_actions"
+    namespace: "car_sys_exp"
+    description: "This flag controls enabling scalable ui actions."
+    bug: "423995605"
+}
+

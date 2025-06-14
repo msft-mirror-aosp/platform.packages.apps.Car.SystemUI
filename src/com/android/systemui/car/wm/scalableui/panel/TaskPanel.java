@@ -19,7 +19,6 @@ import static android.view.WindowInsets.Type.systemOverlays;
 
 import static com.android.car.scalableui.Flags.enableDecor;
 import static com.android.systemui.car.Flags.displayCompatibilityAutoDecorSafeRegion;
-import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_PANEL_EMPTY_EVENT_ID;
 
 import android.annotation.SuppressLint;
@@ -249,8 +248,8 @@ public final class TaskPanel extends BasePanel {
                         mTaskPanelInfoRepository.onTaskVanishedOnPanel(getPanelId(), taskInfo);
                         if (isRootTaskEmpty()) {
                             mEventDispatcher.executeTransaction(new Event.Builder(
-                                    SYSTEM_TASK_PANEL_EMPTY_EVENT_ID).addToken(PANEL_TOKEN_ID,
-                                    getPanelId()).build());
+                                    SYSTEM_TASK_PANEL_EMPTY_EVENT_ID)
+                                    .setPanelId(getPanelId()).build());
                         }
                     }
                 });

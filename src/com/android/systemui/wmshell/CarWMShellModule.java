@@ -37,6 +37,7 @@ import com.android.systemui.car.wm.scalableui.PanelAutoTaskStackTransitionHandle
 import com.android.systemui.car.wm.scalableui.PanelConfigReader;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
+import com.android.systemui.car.wm.scalableui.panel.SystemPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.ScalableUIPanelUpdateImpl;
@@ -183,13 +184,15 @@ public abstract class CarWMShellModule {
     static Optional<PanelConfigReader> providesPanelConfigReader(
             Context context,
             TaskPanel.Factory taskPanelFactory,
-            DecorPanel.Factory decorPanelFactory
+            DecorPanel.Factory decorPanelFactory,
+            SystemPanel.Factory systemPanelFactory
     ) {
         if (isScalableUIEnabled(context)) {
             return Optional.of(new PanelConfigReader(
                     context,
                     taskPanelFactory,
-                    decorPanelFactory));
+                    decorPanelFactory,
+                    systemPanelFactory));
         }
         return Optional.empty();
     }

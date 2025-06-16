@@ -227,6 +227,18 @@ public abstract class BasePanel implements Panel {
         }
     }
 
+    @NonNull
+    @Override
+    public Rect getSafeBounds() {
+        // no-op
+        return new Rect();
+    }
+
+    @Override
+    public void setSafeBounds(@NonNull Rect safeBounds) {
+        // no-op
+    }
+
     @Override
     public void setRole(@NonNull Role role) {
         mRole = role;

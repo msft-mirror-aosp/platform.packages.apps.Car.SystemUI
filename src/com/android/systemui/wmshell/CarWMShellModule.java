@@ -33,6 +33,7 @@ import com.android.systemui.car.wm.scalableui.PanelConfigReader;
 import com.android.systemui.car.wm.scalableui.ScalableUIDumpsys;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
+import com.android.systemui.car.wm.scalableui.panel.SystemPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerModule;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer;
@@ -125,13 +126,15 @@ public abstract class CarWMShellModule {
             Context context,
             TaskPanel.Factory taskPanelFactory,
             DecorPanel.Factory decorPanelFactory,
+            SystemPanel.Factory systemPanelFactory,
             FlagManager flagManager
     ) {
         if (flagManager.isEnabled(Flag.ScalableUIEnabled)) {
             return Optional.of(new PanelConfigReader(
                     context,
                     taskPanelFactory,
-                    decorPanelFactory));
+                    decorPanelFactory,
+                    systemPanelFactory));
         }
         return Optional.empty();
     }

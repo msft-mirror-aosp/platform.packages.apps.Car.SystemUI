@@ -43,6 +43,7 @@ public class BlockerViewModel extends ViewModel implements PropertyChangeListene
     private static final String TAG = "SysUi.BlockerViewModel";
     private static final String PROPERTY_IN_CALL_SERVICE = "PROPERTY_IN_CALL_SERVICE";
     private final Context mContext;
+    private boolean mIsInitialized;
     private String mBlockedActivity;
 
     @VisibleForTesting
@@ -61,6 +62,10 @@ public class BlockerViewModel extends ViewModel implements PropertyChangeListene
 
     /** Initialize data sources **/
     public void initialize(String blockedActivity, UserHandle userHandle) {
+        // Prevent reinitialization if the ABA gets a config change.
+        if (mIsInitialized) {
+            return;
+        }
         mBlockedActivity = blockedActivity;
         mInCallLiveData = new InCallLiveData(mServiceManager, blockedActivity);
 
@@ -78,6 +83,8 @@ public class BlockerViewModel extends ViewModel implements PropertyChangeListene
         mBlockingTypeLiveData.addSource(mInCallLiveData, call -> onUpdate());
         mBlockingTypeLiveData.addSource(mMediaSessionHelper.getActiveMediaSessions(),
                 mediaSources -> onUpdate());
+
+        mIsInitialized = true;
     }
 
     /**

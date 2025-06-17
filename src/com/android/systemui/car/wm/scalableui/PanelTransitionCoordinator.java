@@ -431,7 +431,7 @@ public class PanelTransitionCoordinator {
             @Nullable Event event) {
         // 1. If the trigger is a task being opened on a visible panel, focus that panel
         if (event != null && TextUtils.equals(event.getId(), SYSTEM_TASK_OPEN_EVENT_ID)) {
-            String panelId = event.getTokens().get(PANEL_TOKEN_ID);
+            String panelId = event.getPanelId();
             if (panelId != null) {
                 TaskPanel taskPanel = mPanelUtils.getTaskPanel(
                         p -> p.getPanelId().equals(panelId));

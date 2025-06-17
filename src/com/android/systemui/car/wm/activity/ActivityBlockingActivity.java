@@ -67,6 +67,9 @@ import javax.inject.Inject;
 public class ActivityBlockingActivity extends FragmentActivity {
     private static final int ACTIVITY_MONITORING_DELAY_MS = 1000;
     private static final String TAG = "BlockingActivity";
+    // Copy of FEATURE_BACKGROUND_AUDIO_WHILE_DRIVING in androidx
+    private static final String FEATURE_BACKGROUND_AUDIO_WHILE_DRIVING =
+            "com.android.car.background_audio_while_driving";
     private static final int EGL_CONTEXT_VERSION = 2;
     private static final int EGL_CONFIG_SIZE = 8;
     private static final int INVALID_TASK_ID = -1;
@@ -154,7 +157,8 @@ public class ActivityBlockingActivity extends FragmentActivity {
         setupGLSurface();
 
         if (!configAppBlockingActivities()
-                || !getResources().getBoolean(R.bool.config_enableAppBlockingActivities)) {
+                || !getResources().getBoolean(R.bool.config_enableAppBlockingActivities)
+                || !getPackageManager().hasSystemFeature(FEATURE_BACKGROUND_AUDIO_WHILE_DRIVING)) {
             Slog.d(TAG, "Ignoring app blocking activity feature");
             displayBlockingContent();
         } else {

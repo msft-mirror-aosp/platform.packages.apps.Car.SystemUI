@@ -28,6 +28,9 @@ import com.android.car.scalableui.model.Variant
 import com.android.car.scalableui.panel.Panel
 import com.android.car.scalableui.panel.PanelUpdatePublisher
 import com.android.wm.shell.automotive.AutoSurfaceTransaction
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import java.util.Optional
 
 /**
@@ -35,9 +38,9 @@ import java.util.Optional
  *
  * Provides common functionality and state management for different types of panels
  */
-abstract class BasePanel constructor(
+open class BasePanel @AssistedInject constructor(
     private val context: Context,
-    private val panelId: String,
+    @Assisted private val panelId: String,
     private val panelUpdatePublisherOptional: Optional<PanelUpdatePublisher>
 ) : Panel {
     private var layer = -1
@@ -53,7 +56,7 @@ abstract class BasePanel constructor(
 
     override fun getContext() = context
 
-    override fun getRole(): Role = role
+    override fun getRole(): Role? = role
 
     override fun getDisplayId() = displayId
 
@@ -144,7 +147,7 @@ abstract class BasePanel constructor(
         // no-op
     }
 
-    override fun setRole(role: Role) {
+    override fun setRole(role: Role?) {
         this.role = role
     }
 
@@ -231,12 +234,20 @@ abstract class BasePanel constructor(
      * @param updateChildren         Update the children components used in this panel, should only
      *                               set to true on animationEnd or reset.
      */
-    protected abstract fun updateInternal(
+    protected open fun updateInternal(
         autoSurfaceTransaction: AutoSurfaceTransaction?,
         tx: SurfaceControl.Transaction?,
         variant: Variant?,
         updateChildren: Boolean
-    )
+    ) {
+        panelUpdateObserver?.let {
+            it.postVisibility(panelId, variant?.isVisible ?: isVisible)
+            it.postAlpha(panelId, variant?.alpha ?: alpha)
+            it.postCornerRadius(panelId, variant?.cornerRadius ?: cornerRadius)
+            it.postBounds(panelId, variant?.bounds ?: bounds)
+            it.postInsets(panelId, variant?.insets ?: insets)
+        }
+    }
 
     override fun setPanelControllerMetadata(
         panelControllerMetadata: PanelControllerMetadata?
@@ -262,6 +273,12 @@ abstract class BasePanel constructor(
                 ", insets=$insets" +
                 ", metaData=$panelControllerMetadata" +
                 ", cornerRadius=$cornerRadius}")
+    }
+
+    @AssistedFactory
+    fun interface Factory {
+        /** Create instance of [BasePanel] with specified id  */
+        fun create(id: String): BasePanel
     }
 
     companion object {

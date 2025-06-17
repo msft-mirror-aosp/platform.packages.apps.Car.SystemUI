@@ -89,18 +89,6 @@ public class PanelUtils {
     }
 
     /**
-     * Retrieves a {@link SystemPanel} that satisfies the given {@link Predicate}.
-     *
-     * @param predicate The predicate to test against potential {@link SystemPanel} instances.
-     * @return The matching {@link SystemPanel}, or null if none is found.
-     */
-    @Nullable
-    public SystemPanel getSystemPanel(Predicate<SystemPanel> predicate) {
-        return (SystemPanel) PanelPool.getInstance().getPanel(
-                p -> (p instanceof SystemPanel systemPanel) && predicate.test(systemPanel));
-    }
-
-    /**
      * Retrieves a {@link BasePanel} that satisfies the given {@link Predicate}.
      *
      * @param predicate The predicate to test against potential {@link BasePanel} instances.

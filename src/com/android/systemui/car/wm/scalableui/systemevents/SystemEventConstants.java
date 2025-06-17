@@ -24,4 +24,6 @@ public class SystemEventConstants {
     public static final String SYSTEM_TASK_PANEL_EMPTY_EVENT_ID = "_System_TaskPanelEmptyEvent";
     public static final String SYSTEM_ENTER_SUW_EVENT_ID = "_System_EnterSuwEvent";
     public static final String SYSTEM_EXIT_SUW_EVENT_ID = "_System_ExitSuwEvent";
+    public static final String HIDE_EVENT_PREFIX = "_System_Hide";
+    public static final String SHOW_EVENT_PREFIX = "_System_Show";
 }

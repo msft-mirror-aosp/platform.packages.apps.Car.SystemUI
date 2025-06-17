@@ -552,9 +552,11 @@ public final class TaskPanel extends BasePanel {
     }
 
     @Override
-    public void setRole(@NonNull Role role) {
+    public void setRole(@Nullable Role role) {
         if (getRole() == role) return;
         super.setRole(role);
+
+        if (getRole() == null) return;
 
         if (getRole().isDefault()) {
             mIsLaunchRoot = true;
@@ -691,8 +693,8 @@ public final class TaskPanel extends BasePanel {
             return;
         }
 
-        if (getRole().getPersistedActivities() == null
-                || getRole().getPersistedActivities().length == 0) {
+        if (getRole() != null && (getRole().getPersistedActivities() == null
+                || getRole().getPersistedActivities().length == 0)) {
             if (DEBUG) {
                 Log.d(TAG, "Persistent Activities is empty, [" + getPanelId() + "]");
             }

@@ -16,9 +16,16 @@
 
 package com.android.systemui;
 
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_BOTTOM_ID;
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_LEFT_ID;
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_RIGHT_ID;
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_TOP_ID;
+
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow.SystemBarConfiguration;
 import com.android.systemui.dagger.DependencyProvider;
 import com.android.systemui.dagger.SysUIComponent;
 import com.android.systemui.dagger.SysUISingleton;
@@ -30,6 +37,8 @@ import dagger.BindsInstance;
 import dagger.Subcomponent;
 
 import java.util.Optional;
+
+import javax.inject.Named;
 
 /**
  * Dagger Subcomponent for Core SysUI.
@@ -70,6 +79,62 @@ public interface CarSysUIComponent extends SysUIComponent {
          */
         @BindsInstance
         Builder setScalableUIEventDispatcher(EventDispatcher dispatcher);
+
+        /**
+         * Sets the {@link SystemBarWindow} for the left side
+         */
+        @BindsInstance
+        Builder setLeftSystemBarWindow(
+                @Named(SYSTEM_BAR_PANEL_LEFT_ID) Optional<SystemBarWindow> systemBarWindow);
+
+        /**
+         * Sets the {@link SystemBarWindow} for the top side
+         */
+        @BindsInstance
+        Builder setTopSystemBarWindow(
+                @Named(SYSTEM_BAR_PANEL_TOP_ID) Optional<SystemBarWindow> systemBarWindow);
+
+        /**
+         * Sets the {@link SystemBarWindow} for the right side
+         */
+        @BindsInstance
+        Builder setRightSystemBarWindow(
+                @Named(SYSTEM_BAR_PANEL_RIGHT_ID) Optional<SystemBarWindow> systemBarWindow);
+
+        /**
+         * Sets the {@link SystemBarWindow} for the bottom side
+         */
+        @BindsInstance
+        Builder setBottomSystemBarWindow(
+                @Named(SYSTEM_BAR_PANEL_BOTTOM_ID) Optional<SystemBarWindow> systemBarWindow);
+
+        /**
+         * Sets the {@link SystemBarConfiguration} for the left side
+         */
+        @BindsInstance
+        Builder setLeftSystemBarConfiguration(
+                @Named(SYSTEM_BAR_PANEL_LEFT_ID) Optional<SystemBarConfiguration> configuration);
+
+        /**
+         * Sets the {@link SystemBarConfiguration} for the top side
+         */
+        @BindsInstance
+        Builder setTopSystemBarConfiguration(
+                @Named(SYSTEM_BAR_PANEL_TOP_ID) Optional<SystemBarConfiguration> configuration);
+
+        /**
+         * Sets the {@link SystemBarConfiguration} for the right side
+         */
+        @BindsInstance
+        Builder setRightSystemBarConfiguration(
+                @Named(SYSTEM_BAR_PANEL_RIGHT_ID) Optional<SystemBarConfiguration> configuration);
+
+        /**
+         * Sets the {@link SystemBarConfiguration} for the bottom side
+         */
+        @BindsInstance
+        Builder setBottomSystemBarConfiguration(
+                @Named(SYSTEM_BAR_PANEL_BOTTOM_ID) Optional<SystemBarConfiguration> configuration);
 
         CarSysUIComponent build();
     }

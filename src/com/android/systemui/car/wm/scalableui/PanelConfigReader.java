@@ -32,8 +32,8 @@ import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.PanelPool;
 import com.android.systemui.R;
+import com.android.systemui.car.wm.scalableui.panel.BasePanel;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
-import com.android.systemui.car.wm.scalableui.panel.SystemPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.wm.shell.dagger.WMSingleton;
 
@@ -47,15 +47,15 @@ public class PanelConfigReader {
     private final Context mContext;
     private final TaskPanel.Factory mTaskPanelFactory;
     private final DecorPanel.Factory mDecorPanelFactory;
-    private final SystemPanel.Factory mSystemPanelFactory;
+    private final BasePanel.Factory mBasePanelFactory;
 
     public PanelConfigReader(Context context, TaskPanel.Factory taskPanelFactory,
-            DecorPanel.Factory decorPanelFactory, SystemPanel.Factory systemPanelFactory) {
+            DecorPanel.Factory decorPanelFactory, BasePanel.Factory basePanelFactory) {
         debugLog("PanelConfig initialized user: " + ActivityManager.getCurrentUser());
         mContext = context;
         mTaskPanelFactory = taskPanelFactory;
         mDecorPanelFactory = decorPanelFactory;
-        mSystemPanelFactory = systemPanelFactory;
+        mBasePanelFactory = basePanelFactory;
     }
 
     /**
@@ -67,7 +67,7 @@ public class PanelConfigReader {
             if (id.startsWith(PanelState.DECOR_PANEL_ID_PREFIX)) {
                 return mDecorPanelFactory.create(id);
             } else if (SYSTEM_PANEL_IDS.contains(id)) {
-                return mSystemPanelFactory.create(id);
+                return mBasePanelFactory.create(id);
             } else {
                 return mTaskPanelFactory.create(id);
             }

@@ -64,6 +64,7 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
     private TextView mPopUpPrompt;
     private TextView mUxrPrompt;
     private final Executor mMainExecutor;
+    private final Runnable mDismissRunnable;
 
     private final UserTracker.Callback mUserChangedCallback =
             new UserTracker.Callback() {
@@ -100,9 +101,19 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
         mPopupWindow.setTouchModal(false);
         mPopupWindow.setOutsideTouchable(true);
         mPopupWindow.setInputMethodMode(INPUT_METHOD_NOT_NEEDED);
+        mDismissRunnable = () -> {
+            if (mPopupWindow != null && mPopupWindow.isShowing()) {
+                mIsProactiveMessage = false;
+                mPopupWindow.dismiss();
+                mDataSubscriptionStatsLogHelper.logSessionFinished();
+            }
+        };
         mPopupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                if (mAnchorView != null) {
+                    mAnchorView.getHandler().removeCallbacks(mDismissRunnable);
+                }
                 mPopupWindow.dismiss();
                 mDataSubscriptionStatsLogHelper.logSessionFinished();
                 return true;
@@ -112,6 +123,9 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
         mExplorationButton = mPopupView.findViewById(
                 R.id.data_subscription_explore_options_button);
         mExplorationButton.setOnClickListener(v -> {
+            if (mAnchorView != null) {
+                mAnchorView.getHandler().removeCallbacks(mDismissRunnable);
+            }
             mPopupWindow.dismiss();
             mContext.startActivityAsUser(mIntent, mUserTracker.getUserHandle());
             mDataSubscriptionStatsLogHelper.logButtonClicked();
@@ -139,11 +153,6 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
     @Override
     public boolean onAppForegrounded(boolean isUxrRequired, String reactiveMessage,
             String uxrPrompt) {
-        if (isUxrRequired && mPopupWindow.isShowing()) {
-            mPopupWindow.dismiss();
-            mDataSubscriptionStatsLogHelper.logSessionFinished();
-            return false;
-        }
         if (isUxrRequired) {
             mExplorationButton.setVisibility(View.GONE);
         } else {
@@ -161,20 +170,32 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
 
     @Override
     public boolean onUxrChanged(boolean isUxrRequired, String uxrPrompt) {
-        if (mIsProactiveMessage && mPopupWindow.isShowing() && isUxrRequired) {
+        if (!mPopupWindow.isShowing()) {
+            return true;
+        }
+        if (mIsProactiveMessage && isUxrRequired) {
+            if (mAnchorView != null) {
+                mAnchorView.getHandler().removeCallbacks(mDismissRunnable);
+            }
             mPopupWindow.dismiss();
             mDataSubscriptionStatsLogHelper.logSessionFinished();
-            return false;
+            return true;
         }
 
-        if (!mIsProactiveMessage && mPopupWindow.isShowing()) {
+        if (!mIsProactiveMessage) {
+            if (mAnchorView != null) {
+                mAnchorView.getHandler().removeCallbacks(mDismissRunnable);
+            }
+            mPopupWindow.dismiss();
+
+            mUxrPrompt.setText(uxrPrompt);
             if (isUxrRequired) {
                 mExplorationButton.setVisibility(View.GONE);
             } else {
                 mExplorationButton.setVisibility(View.VISIBLE);
             }
-            mUxrPrompt.setText(uxrPrompt);
-            mPopupWindow.update();
+
+            showPopupWindowWithAutoDismiss();
             return true;
         }
         return false;
@@ -194,23 +215,30 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
                         DataSubscriptionStatsLogHelper.DataSubscriptionMessageType
                                 .REACTIVE);
             }
-            int xOffsetInPx = mContext.getResources().getDimensionPixelSize(
-                    R.dimen.data_subscription_pop_up_horizontal_offset);
-            int yOffsetInPx = mContext.getResources().getDimensionPixelSize(
-                    R.dimen.data_subscription_pop_up_vertical_offset);
-            mAnchorView.post(() -> {
-                mPopupWindow.showAsDropDown(mAnchorView, -xOffsetInPx, yOffsetInPx);
-                mAnchorView.getHandler().postDelayed(() -> {
-                    if (mPopupWindow.isShowing()) {
-                        // after the proactive message dismisses, it won't get displayed again
-                        // hence the message from now on will just be reactive
-                        mIsProactiveMessage = false;
-                        mPopupWindow.dismiss();
-                        mDataSubscriptionStatsLogHelper.logSessionFinished();
-                    }
-                }, mPopUpTimeOut);
-            });
+            showPopupWindowWithAutoDismiss();
         }
+    }
+
+    /**
+     * Shows the popup window at the anchor's position and sets the auto-dismiss timer.
+     */
+    private void showPopupWindowWithAutoDismiss() {
+        if (mAnchorView == null) {
+            return;
+        }
+
+        // ALWAYS cancel any previously scheduled dismiss runnable first.
+        mAnchorView.getHandler().removeCallbacks(mDismissRunnable);
+
+        int xOffsetInPx = mContext.getResources().getDimensionPixelSize(
+                R.dimen.data_subscription_pop_up_horizontal_offset);
+        int yOffsetInPx = mContext.getResources().getDimensionPixelSize(
+                R.dimen.data_subscription_pop_up_vertical_offset);
+
+        mAnchorView.post(() -> {
+            mPopupWindow.showAsDropDown(mAnchorView, -xOffsetInPx, yOffsetInPx);
+            mAnchorView.getHandler().postDelayed(mDismissRunnable, mPopUpTimeOut);
+        });
     }
 
     /** Set the anchor view. If null, unregisters active data subscription listeners */

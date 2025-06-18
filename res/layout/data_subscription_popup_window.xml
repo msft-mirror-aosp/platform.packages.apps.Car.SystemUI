@@ -54,9 +54,10 @@
             android:layout_marginStart="@dimen/data_subscription_pop_up_horizontal_margin"/>
         <TextView
             android:id="@+id/popup_uxr_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_weight="1"
+            android:gravity="start"
             android:paddingBottom="@dimen/data_subscription_pop_up_vertical_padding"
             android:paddingStart="@dimen/data_subscription_pop_up_text_padding"
             android:paddingEnd="@dimen/data_subscription_pop_up_horizontal_padding"

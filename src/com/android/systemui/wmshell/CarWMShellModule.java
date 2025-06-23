@@ -44,6 +44,7 @@ import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.scalableui.panel.BasePanel;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
+import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerModule;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.ScalableUIPanelUpdateImpl;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;
@@ -97,7 +98,8 @@ import java.util.Optional;
 import javax.inject.Named;
 
 /** Provides dependencies from {@link com.android.wm.shell} for CarSystemUI. */
-@Module(includes = {WMShellBaseModule.class, AutoShellModule.class, LetterboxModule.class})
+@Module(includes = {WMShellBaseModule.class, AutoShellModule.class, LetterboxModule.class,
+        PanelControllerModule.class})
 public abstract class CarWMShellModule {
 
     @WMSingleton

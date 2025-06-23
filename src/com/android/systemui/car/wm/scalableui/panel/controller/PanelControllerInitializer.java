@@ -15,58 +15,58 @@
  */
 package com.android.systemui.car.wm.scalableui.panel.controller;
 
-import android.annotation.NonNull;
-import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.android.car.scalableui.model.PanelControllerMetadata;
+import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.car.scalableui.panel.TaskPanelController;
-import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.wm.shell.dagger.WMSingleton;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 /**
- * Initializes {@link TaskPanelController} instances based on provided metadata.
+ * Initializes {@link TaskPanelController} and {@link DecorPanelController} instances based on
+ * provided metadata.
  *
  * <p>This class is responsible for dynamically creating instances of {@link TaskPanelController}
- * by using the controller class name specified in the {@link PanelControllerMetadata}. It handles
- * potential exceptions that may occur during class loading and instantiation.
- *
- * TODO(411549493): Move DecorPanelController here.
+ * and {@link DecorPanelController} by using the controller class name specified in the
+ * {@link PanelControllerMetadata}. It handles potential exceptions that may occur during class
+ * loading and instantiation.
  */
 @WMSingleton
 public class PanelControllerInitializer {
     private static final boolean DEBUG = Build.isDebuggable();
     private static final String TAG = PanelControllerInitializer.class.getSimpleName();
-    private final Context mContext;
-    private final PanelUtils mPanelUtils;
+    private final Map<Class<?>, Provider<TaskPanelController.Factory>>
+            mTaskPanelControllerMap;
+    private final Map<Class<?>, Provider<DecorPanelController.Factory>> mDecorPanelControllerMap;
 
     @Inject
-    public PanelControllerInitializer(@NonNull Context context,
-            @NonNull PanelUtils panelUtils) {
-        mContext = context;
-        mPanelUtils = panelUtils;
+    public PanelControllerInitializer(
+            Map<Class<?>, Provider<TaskPanelController.Factory>> taskPanelControllerMap,
+            Map<Class<?>, Provider<DecorPanelController.Factory>> decorPanelControllerMap) {
+        mTaskPanelControllerMap = taskPanelControllerMap;
+        mDecorPanelControllerMap = decorPanelControllerMap;
     }
 
     /**
      * Creates a {@link TaskPanelController} instance based on the provided metadata.
      *
      * <p>This method attempts to load the class specified by
-     * {@link PanelControllerMetadata#getControllerName()},
-     * ensures it is a subclass of {@link TaskPanelController}, and then instantiates it using a
-     * constructor that accepts a {@link Context} and a {@link PanelControllerMetadata}.
+     * {@link PanelControllerMetadata#getControllerName()}, and retrieves the class specified in
+     * the dagger graph as part of the TaskPanelController mapping.
      *
      * @param metadata The metadata containing information about the panel controller to create.
      *                 If {@code null}, this method will return {@code null}.
      * @return A new instance of {@link TaskPanelController} if successful, otherwise {@code null}.
      */
+    @Nullable
     public TaskPanelController createTaskPanelController(
             @Nullable PanelControllerMetadata metadata) {
         if (metadata == null) {
@@ -78,23 +78,52 @@ public class PanelControllerInitializer {
         logIfDebuggable("Init TaskPanelController with class name" + controllerName);
         try {
             Class<?> clazz = Class.forName(controllerName);
-            if (TaskPanelController.class.isAssignableFrom(clazz)) {
-                Constructor<?> constructor = clazz.getConstructor(Context.class,
-                        PanelControllerMetadata.class, PanelUtils.class);
-                //TODO(b/411549493): move to factory pattern.
-                return (TaskPanelController) constructor.newInstance(mContext, metadata,
-                        mPanelUtils);
+            Provider<TaskPanelController.Factory> factoryProvider =
+                    mTaskPanelControllerMap.get(clazz);
+            if (factoryProvider != null) {
+                return factoryProvider.get().create(metadata);
             }
-        } catch (ClassNotFoundException | NoSuchMethodException e) {
+        } catch (ClassNotFoundException e) {
             // Handle the case where the class is not found
             Log.e(TAG, "Class not found: " + controllerName, e);
-        } catch (InvocationTargetException e) {
-            Log.e(TAG, "InvocationTargetException: " + controllerName, e);
-        } catch (InstantiationException e) {
-            Log.e(TAG, "InstantiationException: " + controllerName, e);
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, "IllegalAccessException: " + controllerName, e);
         }
+        Log.e(TAG, "Unable to create TaskPanelController: " + controllerName);
+        return null;
+    }
+
+    /**
+     * Creates a {@link DecorPanelController} instance based on the provided metadata.
+     *
+     * <p>This method attempts to load the class specified by
+     * {@link PanelControllerMetadata#getControllerName()}, and retrieves the class specified in
+     * the dagger graph as part of the DecorPanelController mapping.
+     *
+     * @param metadata The metadata containing information about the panel controller to create.
+     *                 If {@code null}, this method will return {@code null}.
+     * @return A new instance of {@link DecorPanelController} if successful, otherwise {@code null}.
+     */
+    @Nullable
+    public DecorPanelController createDecorPanelController(
+            @Nullable PanelControllerMetadata metadata) {
+        if (metadata == null) {
+            logIfDebuggable("Metadata is null");
+            return null;
+        }
+        String controllerName = metadata.getControllerName();
+
+        logIfDebuggable("Init view provider with class name" + controllerName);
+        try {
+            Class<?> clazz = Class.forName(controllerName);
+            Provider<DecorPanelController.Factory> factoryProvider =
+                    mDecorPanelControllerMap.get(clazz);
+            if (factoryProvider != null) {
+                return factoryProvider.get().create(metadata);
+            }
+        } catch (ClassNotFoundException e) {
+            // Handle the case where the class is not found
+            Log.e(TAG, "Class not found: " + controllerName, e);
+        }
+        Log.e(TAG, "Unable to create DecorPanelController: " + controllerName);
         return null;
     }
 

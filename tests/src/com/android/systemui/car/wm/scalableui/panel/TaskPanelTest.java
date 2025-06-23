@@ -15,20 +15,28 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
+import static com.android.car.scalableui.model.Restart.RESTART_POLICY_DEFAULT;
+import static com.android.car.scalableui.model.Restart.RESTART_POLICY_LAST;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
-import android.car.app.CarActivityManager;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
+import android.os.UserHandle;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
+import com.android.car.scalableui.model.Event;
+import com.android.car.scalableui.model.PanelState;
+import com.android.car.scalableui.model.Restart;
 import com.android.systemui.ShellSyncExecutor;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
@@ -45,12 +53,15 @@ import com.android.wm.shell.automotive.AutoSurfaceTransactionFactory;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
 import com.android.wm.shell.automotive.RootTaskStack;
+import com.android.wm.shell.automotive.RootTaskStackListener;
 import com.android.wm.shell.common.ShellExecutor;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 @CarSystemUiTest
@@ -61,6 +72,7 @@ public class TaskPanelTest extends SysuiTestCase {
 
     private TaskPanel mTaskPanel;
     private ShellExecutor mMainExecutor;
+    private RootTaskStackListener mRootTaskStackListener;
 
     @Mock
     private AutoTaskStackController mAutoTaskStackController;
@@ -79,8 +91,6 @@ public class TaskPanelTest extends SysuiTestCase {
     @Mock
     private AutoDecorManager mAutoDecorManager;
     @Mock
-    private CarActivityManager mCarActivityManager;
-    @Mock
     private PanelUtils mPanelUtils;
     @Mock
     private TaskPanelInfoRepository mTaskPanelInfoRepository;
@@ -91,30 +101,49 @@ public class TaskPanelTest extends SysuiTestCase {
     @Mock
     private AutoLayoutManager mAutoLayoutManager;
     @Mock
-    AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
+    private AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
     @Mock
     private AutoSurfaceTransaction mAutoSurfaceTransaction;
+    @Mock
+    private PanelState mPanelState;
+    @Mock
+    private Restart mRestart;
+    @Mock
+    private Context mUserContext;
+    @Mock
+    private ActivityManager.RunningTaskInfo mRunningTaskInfo;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mMainExecutor = new ShellSyncExecutor();
-        mTaskPanel = new TaskPanel(mAutoTaskStackController, mContext, mCarServiceProvider,
-                mAutoTaskStackHelper, mShellTaskOrganizer, mAutoCaptionController, mPanelUtils,
-                mTaskPanelInfoRepository, mAutoDecorManager, mEventDispatcher,
-                mPanelControllerInitializer, mAutoLayoutManager, mMainExecutor,
-                mAutoSurfaceTransactionFactory, TASK_PANEL_ID);
+        mTaskPanel = Mockito.spy(
+                new TaskPanel(mAutoTaskStackController, mUserContext, mCarServiceProvider,
+                        mAutoTaskStackHelper, mShellTaskOrganizer, mAutoCaptionController,
+                        mPanelUtils,
+                        mTaskPanelInfoRepository, mAutoDecorManager, mEventDispatcher,
+                        mPanelControllerInitializer, mAutoLayoutManager, mMainExecutor,
+                        mAutoSurfaceTransactionFactory, TASK_PANEL_ID));
         when(mFactory.create(any())).thenReturn(mTaskPanel);
 
         when(mAutoSurfaceTransactionFactory.createTransaction(any())).thenReturn(
                 mAutoSurfaceTransaction);
+
+        mTaskPanel.setDisplayId(0);
+        mTaskPanel.init();
+        ArgumentCaptor<RootTaskStackListener> listenerArgumentCaptor =
+                ArgumentCaptor.forClass(RootTaskStackListener.class);
+        verify(mAutoTaskStackController).createRootTaskStack(anyInt(), anyString(),
+                listenerArgumentCaptor.capture());
+        mRootTaskStackListener = listenerArgumentCaptor.getValue();
+        doReturn(mPanelState).when(mTaskPanel).getPanelState();
+        mTaskPanel.setRootTaskStack(mRootTaskStack);
+        when(mRootTaskStack.getRootTaskInfo()).thenReturn(mRunningTaskInfo);
     }
 
     @Test
     public void testInit() {
-        mTaskPanel.setDisplayId(0);
-        mTaskPanel.init();
-
+        // init() is called in setUp, so we just verify it was called.
         verify(mAutoTaskStackController).createRootTaskStack(anyInt(), anyString(), any());
     }
 
@@ -124,13 +153,46 @@ public class TaskPanelTest extends SysuiTestCase {
         Rect bounds = new Rect(0, 0, 100, 100);
         mTaskPanel.setBounds(bounds);
         mTaskPanel.setLayer(1);
-        mTaskPanel.setRootTaskStack(mRootTaskStack);
-        when(mRootTaskStack.getRootTaskInfo()).thenReturn(
-                mock(ActivityManager.RunningTaskInfo.class));
         when(mRootTaskStack.getId()).thenReturn(123);
 
         mTaskPanel.reset();
 
         verify(mAutoTaskStackController).startTransition(any(AutoTaskStackTransaction.class));
+    }
+
+    @Test
+    public void scheduleRestartAttempt_withLastPolicy_restartsLastTask() {
+        Intent intent = new Intent("TEST_ACTION");
+        mRunningTaskInfo.baseIntent = intent;
+        when(mPanelState.getRestart()).thenReturn(mRestart);
+        when(mRestart.getMaxRetry()).thenReturn(1);
+        when(mRestart.getPolicy()).thenReturn(RESTART_POLICY_LAST);
+
+        mTaskPanel.scheduleRestartAttempt(mRunningTaskInfo);
+
+        verify(mUserContext).startActivityAsUser(intent, UserHandle.CURRENT);
+    }
+
+    @Test
+    public void scheduleRestartAttempt_withDefaultPolicy_restartsDefaultTask() {
+        Intent intent = new Intent("DEFAULT_ACTION");
+        doReturn(intent).when(mTaskPanel).getDefaultIntent();
+        when(mPanelState.getRestart()).thenReturn(mRestart);
+        when(mRestart.getMaxRetry()).thenReturn(1);
+        when(mRestart.getPolicy()).thenReturn(RESTART_POLICY_DEFAULT);
+
+        mTaskPanel.scheduleRestartAttempt(mRunningTaskInfo);
+
+        verify(mUserContext).startActivityAsUser(intent, UserHandle.CURRENT);
+    }
+
+    @Test
+    public void scheduleRestartAttempt_maxRetriesReached_sendsEmptyEvent() {
+        when(mPanelState.getRestart()).thenReturn(mRestart);
+        when(mRestart.getMaxRetry()).thenReturn(0);
+
+        mTaskPanel.scheduleRestartAttempt(mRunningTaskInfo);
+
+        verify(mEventDispatcher).executeTransaction(any(Event.class));
     }
 }

@@ -28,11 +28,21 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
 import com.android.car.scalableui.model.PanelControllerMetadata;
+import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.PanelPool;
 import com.android.internal.graphics.drawable.BackgroundBlurDrawable;
 import com.android.systemui.R;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
+import com.android.systemui.car.wm.scalableui.panel.controller.DecorPanelViewMap;
+
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
+
+import java.util.Map;
+
+import javax.inject.Provider;
 
 /**
  * A Controller for the {@link GripBar}
@@ -53,12 +63,25 @@ import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
  */
 public class PanelOverlayController extends DecorPanelControllerBase {
     private static final String TAG = PanelOverlayController.class.getSimpleName();
+    private final Context mContext;
     private PanelOverlay mPanelOverlay;
     private String mOverlayPanelId;
 
-    public PanelOverlayController(Context context, PanelControllerMetadata metadata) {
-        super(context, metadata);
+    @AssistedInject
+    public PanelOverlayController(@Assisted PanelControllerMetadata metadata,
+            @DecorPanelViewMap Map<Class<?>, Provider<View>> decorPanelViewMap,
+            Context context) {
+        super(metadata, decorPanelViewMap);
+        mContext = context;
         init(metadata);
+    }
+
+    @AssistedFactory
+    public interface Factory extends DecorPanelController.Factory<PanelOverlayController> {
+        /**
+         * Create an instance of PanelOverlayController with the provided PanelControllerMetadata
+         */
+        PanelOverlayController create(PanelControllerMetadata metadata);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -104,11 +127,11 @@ public class PanelOverlayController extends DecorPanelControllerBase {
             icon = mContext.getDrawable(R.drawable.car_ic_apps);
         }
         if (icon != null) {
-            ImageView iconImageView = new ImageView(getContext());
+            ImageView iconImageView = new ImageView(mContext);
             iconImageView.setImageDrawable(icon);
-            int width = getContext().getResources().getDimensionPixelSize(
+            int width = mContext.getResources().getDimensionPixelSize(
                     R.dimen.overlay_panel_view_vail_width);
-            int height = getContext().getResources().getDimensionPixelSize(
+            int height = mContext.getResources().getDimensionPixelSize(
                     R.dimen.overlay_panel_view_vail_height);
             addCenteredIconWithConstraintSet(iconImageView, width, height);
         }

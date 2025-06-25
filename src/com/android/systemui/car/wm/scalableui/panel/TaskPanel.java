@@ -285,6 +285,7 @@ public final class TaskPanel extends BasePanel {
         autoSurfaceTransaction.apply();
     }
 
+    @ShellMainThread
     private void updateDecors(@NonNull AutoSurfaceTransaction autoSurfaceTransaction,
             @Nullable Variant variant) {
         logIfDebuggable("Update " + getPanelId() + " decors, with variant" + variant);
@@ -292,43 +293,43 @@ public final class TaskPanel extends BasePanel {
             return;
         }
 
-        mMainExecutor.execute(() -> {
-            if (getRootStack() == null) {
-                return;
+
+        if (getRootStack() == null) {
+            return;
+        }
+
+        Map<String, Decor> decors = variant == null
+                ? getCurrentDecors()
+                : variant.getDecors();
+
+        logIfDebuggable("Update " + getPanelId() + " decors, with decors" + decors);
+
+        decors.forEach((id, decor) -> {
+            logIfDebuggable("Create decor " + id);
+            AutoDecor autoDecor = mExistingAutoDecors.getOrDefault(id,
+                    mAutoDecorManager.createAutoDecor(decor.getView(mContext),
+                            decor.getLayer(), getSafeBounds(), decor.getId()));
+            if (!mExistingAutoDecors.containsKey(id)) {
+                mAutoDecorManager.attachAutoDecorToTask(autoDecor, getRootTaskId());
+                mExistingAutoDecors.put(id, autoDecor);
             }
 
-            Map<String, Decor> decors = variant == null
-                    ? getCurrentDecors()
-                    : variant.getDecors();
-
-            logIfDebuggable("Update " + getPanelId() + " decors, with decors" + decors);
-
-            decors.forEach((id, decor) -> {
-                logIfDebuggable("Create decor " + id);
-                AutoDecor autoDecor = mExistingAutoDecors.getOrDefault(id,
-                        mAutoDecorManager.createAutoDecor(decor.getView(mContext),
-                                decor.getLayer(), getSafeBounds(), decor.getId()));
-                if (!mExistingAutoDecors.containsKey(id)) {
-                    mAutoDecorManager.attachAutoDecorToTask(autoDecor, getRootTaskId());
-                    mExistingAutoDecors.put(id, autoDecor);
-                }
-
-                updateAutoDecor(autoDecor, decor, autoSurfaceTransaction);
-            });
-
-            // Remove the AutoDecor that is no longer there.
-            Set<Map.Entry<String, AutoDecor>> decorToRemove =
-                    mExistingAutoDecors.entrySet().stream()
-                            .filter(entry -> !variant.getDecors().containsKey(entry.getKey()))
-                            .peek(entry -> {
-                                logIfDebuggable("Remove decor" + entry.getKey());
-                                mAutoDecorManager.removeAutoDecor(entry.getValue());
-                            })
-                            .collect(Collectors.toSet());
-            if (!decorToRemove.isEmpty()) {
-                decorToRemove.forEach(entry -> mExistingAutoDecors.remove(entry.getKey()));
-            }
+            updateAutoDecor(autoDecor, decor, autoSurfaceTransaction);
         });
+
+        // Remove the AutoDecor that is no longer there.
+        Set<Map.Entry<String, AutoDecor>> decorToRemove =
+                mExistingAutoDecors.entrySet().stream()
+                        .filter(entry -> decors.containsKey(entry.getKey()))
+                        .peek(entry -> {
+                            logIfDebuggable("Remove decor" + entry.getKey());
+                            mAutoDecorManager.removeAutoDecor(entry.getValue());
+                        })
+                        .collect(Collectors.toSet());
+        if (!decorToRemove.isEmpty()) {
+            decorToRemove.forEach(entry -> mExistingAutoDecors.remove(entry.getKey()));
+        }
+
     }
 
     @NonNull
@@ -350,14 +351,17 @@ public final class TaskPanel extends BasePanel {
 
     @Override
     public void refreshTheme() {
-        mExistingAutoDecors.forEach((id, autoDecor) -> {
-            mAutoDecorManager.removeAutoDecor(autoDecor);
-            mExistingAutoDecors.remove(id);
+        mMainExecutor.execute(() -> {
+            mExistingAutoDecors.forEach((id, autoDecor) -> {
+                mAutoDecorManager.removeAutoDecor(autoDecor);
+            });
+            mExistingAutoDecors.clear();
+
+            AutoSurfaceTransaction autoSurfaceTransaction = mAutoSurfaceTransactionFactory
+                    .createTransaction(REFRESH_TRANSACTION + getPanelId());
+            updateDecors(autoSurfaceTransaction, null);
+            autoSurfaceTransaction.apply();
         });
-        AutoSurfaceTransaction autoSurfaceTransaction = mAutoSurfaceTransactionFactory
-                .createTransaction(REFRESH_TRANSACTION + getPanelId());
-        updateDecors(autoSurfaceTransaction, null);
-        autoSurfaceTransaction.apply();
     }
 
     /**
@@ -476,7 +480,6 @@ public final class TaskPanel extends BasePanel {
         }
     }
 
-
     /**
      * Calculates the four rectangular areas representing the insets of this {@link TaskPanel}.
      *
@@ -544,7 +547,7 @@ public final class TaskPanel extends BasePanel {
                     systemOverlays(), panelInsets[sideIndex]);
         });
         if (updateChildren) {
-            updateDecors(autoSurfaceTransaction, variant);
+            mMainExecutor.execute(() -> updateDecors(autoSurfaceTransaction, variant));
         }
     }
 

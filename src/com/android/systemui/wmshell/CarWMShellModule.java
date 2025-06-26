@@ -16,6 +16,7 @@
 
 package com.android.systemui.wmshell;
 
+import static com.android.car.scalableui.Flags.enableExtPanelUpdates;
 import static com.android.systemui.car.Flags.scalableUi;
 import static com.android.wm.shell.Flags.enableAutoTaskStackController;
 
@@ -25,6 +26,7 @@ import android.view.IWindowManager;
 
 import androidx.annotation.NonNull;
 
+import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
@@ -35,6 +37,8 @@ import com.android.systemui.car.wm.scalableui.PanelConfigReader;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
+import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer;
+import com.android.systemui.car.wm.scalableui.panel.panelupdates.ScalableUIPanelUpdateImpl;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
@@ -199,4 +203,34 @@ public abstract class CarWMShellModule {
         return scalableUi() && enableAutoTaskStackController()
                 && context.getResources().getBoolean(R.bool.config_enableScalableUI);
     }
+
+    @WMSingleton
+    @Provides
+    static Optional<ScalableUIPanelUpdateImpl> provideScalableUIPanelUpdateImpl(Context context) {
+        if (isScalableUIEnabled(context) && enableExtPanelUpdates()) {
+            return Optional.of(new ScalableUIPanelUpdateImpl());
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<PanelUpdatePublisher> providePanelUpdatePublisher(
+            Optional<ScalableUIPanelUpdateImpl> scalableUIPanelUpdateOptional) {
+        if (scalableUIPanelUpdateOptional.isPresent()) {
+            return Optional.of(scalableUIPanelUpdateOptional.get());
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<PanelUpdateConsumer> providePanelUpdateConsumer(
+            Optional<ScalableUIPanelUpdateImpl> scalableUIPanelUpdateOptional) {
+        if (scalableUIPanelUpdateOptional.isPresent()) {
+            return Optional.of(scalableUIPanelUpdateOptional.get());
+        }
+        return Optional.empty();
+    }
+
 }

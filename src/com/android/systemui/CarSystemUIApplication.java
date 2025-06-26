@@ -30,12 +30,13 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import com.android.car.oem.tokens.Token;
+import com.android.systemui.application.impl.SystemUIApplicationImpl;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 
 /**
  * Application class for CarSystemUI.
  */
-public class CarSystemUIApplication extends SystemUIApplication {
+public class CarSystemUIApplication extends SystemUIApplicationImpl {
 
     private boolean mIsVisibleBackgroundUserSysUI;
 

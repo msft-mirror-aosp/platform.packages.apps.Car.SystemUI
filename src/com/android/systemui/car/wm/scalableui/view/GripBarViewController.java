@@ -125,7 +125,7 @@ public class GripBarViewController extends DecorPanelControllerBase implements
             Log.e(TAG, "EventDispatcher is null");
             return;
         }
-        mEventDispatcher.executeTransaction(event);
+        mEventDispatcher.executeEvent(event);
     }
 
     private float getDistance(BreakPoint breakPoint, float value) {

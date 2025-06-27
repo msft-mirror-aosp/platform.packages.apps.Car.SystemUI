@@ -149,7 +149,7 @@ public class SystemEventHandler implements CoreStartable,
     }
 
     private void notifySuwStateEvent() {
-        mEventDispatcher.executeTransaction(
+        mEventDispatcher.executeEvent(
                 mIsUserSetupInProgress ? SYSTEM_ENTER_SUW_EVENT_ID : SYSTEM_EXIT_SUW_EVENT_ID);
     }
 

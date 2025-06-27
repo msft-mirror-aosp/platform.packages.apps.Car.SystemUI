@@ -193,6 +193,6 @@ public class TaskPanelTest extends SysuiTestCase {
 
         mTaskPanel.scheduleRestartAttempt(mRunningTaskInfo);
 
-        verify(mEventDispatcher).executeTransaction(any(Event.class));
+        verify(mEventDispatcher).executeEvent(any(Event.class));
     }
 }

@@ -322,13 +322,13 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
         appGridButton.performClick();
         waitForIdleSync();
 
-        verify(mEventDispatcher).executeTransaction("open_app_grid");
+        verify(mEventDispatcher).executeEvent("open_app_grid");
 
         appGridButton.setSelected(true);
         appGridButton.performClick();
         waitForIdleSync();
 
-        verify(mEventDispatcher).executeTransaction("close_app_grid");
+        verify(mEventDispatcher).executeEvent("close_app_grid");
     }
 
     @Test
@@ -343,13 +343,13 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
         appGridButton.performClick();
         waitForIdleSync();
 
-        verify(mEventDispatcher).executeTransaction("open_app_grid");
+        verify(mEventDispatcher).executeEvent("open_app_grid");
 
         appGridButton.setSelected(true);
         appGridButton.performClick();
         waitForIdleSync();
 
-        verify(mEventDispatcher).executeTransaction("close_app_grid");
+        verify(mEventDispatcher).executeEvent("close_app_grid");
     }
 
     @Test

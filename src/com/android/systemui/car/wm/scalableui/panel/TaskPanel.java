@@ -42,7 +42,6 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.manager.StateManager;
-import com.android.car.scalableui.model.Blur;
 import com.android.car.scalableui.model.Decor;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelControllerMetadata;
@@ -52,8 +51,9 @@ import com.android.car.scalableui.model.Role;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.TaskPanelController;
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.flags.Flag;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.AutoCaptionBarViewFactoryImpl;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
@@ -117,8 +117,22 @@ public final class TaskPanel extends BasePanel {
     private final AutoDecorManager mAutoDecorManager;
     @NonNull
     private final Context mContext;
+    @Nullable
+    private CarActivityManager mCarActivityManager;
+    private int mRootTaskId = -1;
+    @Nullable
+    private SurfaceControl mLeash;
+    private boolean mIsLaunchRoot;
+    @NonNull
+    private Rect mSafeBounds = new Rect();
+    @Nullable
+    private RootTaskStack mRootTaskStack;
     @NonNull
     private final Map<String, AutoDecor> mExistingAutoDecors;
+    @Nullable
+    private String mTopTaskPackageName;
+    @Nullable
+    private TaskPanelController mTaskPanelController;
     @NonNull
     private final AutoLayoutManager mAutoLayoutManager;
     @NonNull
@@ -126,24 +140,8 @@ public final class TaskPanel extends BasePanel {
     @NonNull
     private final AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
     private int mCurrentRetryCount = 0;
-    @Nullable
-    private CarActivityManager mCarActivityManager;
-    private int mRootTaskId = -1;
-    @Nullable
-    private SurfaceControl mLeash;
-    @Nullable
-    private Blur mBlur;
-    private boolean mIsLaunchRoot;
     @NonNull
-    private Rect mSafeBounds = new Rect();
-    @Nullable
-    private RootTaskStack mRootTaskStack;
-    @Nullable
-    private AutoDecor mAutoDecor;
-    @Nullable
-    private String mTopTaskPackageName;
-    @Nullable
-    private TaskPanelController mTaskPanelController;
+    private final FlagManager mFlagManager;
 
     @AssistedInject
     public TaskPanel(AutoTaskStackController autoTaskStackController,
@@ -160,6 +158,7 @@ public final class TaskPanel extends BasePanel {
             AutoLayoutManager autoLayoutManager,
             @ShellMainThread ShellExecutor mainExecutor,
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
+            FlagManager flagManager,
             @Assisted String id) {
         super(context, id);
         mAutoTaskStackController = autoTaskStackController;
@@ -167,6 +166,7 @@ public final class TaskPanel extends BasePanel {
         mAutoTaskStackHelper = autoTaskStackHelper;
         mTaskPanelInfoRepository = taskPanelInfoRepository;
         mEventDispatcher = dispatcher;
+        mFlagManager = flagManager;
         mPersistedActivities = new ArraySet<>();
         mPanelUtils = panelUtils;
         mAutoCaptionController = autoCaptionController;
@@ -323,9 +323,8 @@ public final class TaskPanel extends BasePanel {
      */
     public boolean hasRestart() {
         PanelState panelState = getPanelState();
-        boolean restartEnabled = mContext.getResources().getBoolean(
-                R.bool.scalable_ui_enable_auto_restart);
-        return restartEnabled && panelState != null && panelState.getRestart() != null;
+        return mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart) && panelState != null
+                && panelState.getRestart() != null;
     }
 
     @Override
@@ -339,7 +338,7 @@ public final class TaskPanel extends BasePanel {
         AutoTaskStackState autoTaskStackState = new AutoTaskStackState(getBounds(), isVisible(),
                 getLayer());
         autoTaskStackTransaction.setTaskStackState(getRootStack().getId(), autoTaskStackState);
-        if (displayCompatibilityAutoDecorSafeRegion()) {
+        if (mFlagManager.isEnabled(Flag.DisplayCompatibilityAutoDecorSafeRegion)) {
             autoTaskStackTransaction.setSafeRegionBounds(getRootStack().getId(), getSafeBounds());
         }
         if (isVisible()) {
@@ -360,22 +359,13 @@ public final class TaskPanel extends BasePanel {
         autoSurfaceTransaction.apply();
     }
 
-    /**
-     * Returns the attached AutoDecor
-     */
-    @Nullable
-    public AutoDecor getAutoDecor() {
-        return mAutoDecor;
-    }
-
     @ShellMainThread
     private void updateDecors(@NonNull AutoSurfaceTransaction autoSurfaceTransaction,
             @Nullable Variant variant) {
         logIfDebuggable("Update " + getPanelId() + " decors, with variant" + variant);
-        if (!enableDecor()) {
+        if (!mFlagManager.isEnabled(Flag.EnableDecor)) {
             return;
         }
-
 
         if (getRootStack() == null) {
             return;
@@ -731,7 +721,7 @@ public final class TaskPanel extends BasePanel {
     }
 
     private void setupToolbarRegion() {
-        if (!displayCompatibilityAutoDecorSafeRegion()) {
+        if (!mFlagManager.isEnabled(Flag.DisplayCompatibilityAutoDecorSafeRegion)) {
             return;
         }
         if (mRootTaskStack == null) {
@@ -745,7 +735,7 @@ public final class TaskPanel extends BasePanel {
                     "Invalid Safe Bounds, not setting toolbar region for panel: " + getPanelId());
             return;
         }
-        if (getBounds() == null || getBounds().isEmpty()) {
+        if (getBounds().isEmpty()) {
             logVerbose("Null or invalid panel bounds, not setting safe region for panel: "
                     + getPanelId());
             return;

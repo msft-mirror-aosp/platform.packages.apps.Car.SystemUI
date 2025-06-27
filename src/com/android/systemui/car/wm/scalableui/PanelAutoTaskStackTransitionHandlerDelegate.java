@@ -41,7 +41,8 @@ import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelTransaction;
 import com.android.car.scalableui.panel.Panel;
-import com.android.systemui.R;
+import com.android.systemui.car.flags.Flag;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
@@ -74,6 +75,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     private final PanelUtils mPanelUtils;
     private final TaskPanelInfoRepository mPanelInfoRepository;
     private final AutoLayoutManager mAutoLayoutManager;
+    private final FlagManager mFlagManager;
 
     @Inject
     public PanelAutoTaskStackTransitionHandlerDelegate(
@@ -82,7 +84,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             PanelTransitionCoordinator panelTransitionCoordinator,
             PanelUtils panelUtils,
             TaskPanelInfoRepository panelInfoRepository,
-            AutoLayoutManager autoLayoutManager
+            AutoLayoutManager autoLayoutManager,
+            FlagManager flagManager
     ) {
         mAutoTaskStackController = autoTaskStackController;
         mPanelTransitionCoordinator = panelTransitionCoordinator;
@@ -90,13 +93,14 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         mPanelUtils = panelUtils;
         mPanelInfoRepository = panelInfoRepository;
         mAutoLayoutManager = autoLayoutManager;
+        mFlagManager = flagManager;
     }
 
     /**
      * Init the {@link PanelAutoTaskStackTransitionHandlerDelegate}.
      */
     public void init() {
-        if (mContext.getResources().getBoolean(R.bool.config_enableScalableUI)) {
+        if (mFlagManager.isEnabled(Flag.ScalableUIEnabled)) {
             Log.i(TAG, "ScalableUI is enabled");
             mAutoTaskStackController.setAutoTransitionHandlerDelegate(this);
         }

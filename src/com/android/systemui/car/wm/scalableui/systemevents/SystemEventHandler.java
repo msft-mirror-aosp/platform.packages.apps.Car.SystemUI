@@ -42,6 +42,8 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.flags.Flag;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Background;
@@ -74,6 +76,7 @@ public class SystemEventHandler implements CoreStartable,
     private final Executor mBackgroundExecutor;
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final EventDispatcher mEventDispatcher;
+    private final FlagManager mFlagManager;
 
     private CarUserManager mCarUserManager;
     private boolean mIsUserSetupInProgress;
@@ -129,7 +132,8 @@ public class SystemEventHandler implements CoreStartable,
             CarServiceProvider carServiceProvider,
             UserTracker userTracker,
             CarDeviceProvisionedController carDeviceProvisionedController,
-            EventDispatcher dispatcher
+            EventDispatcher dispatcher,
+            FlagManager flagManager
     ) {
         mContext = context;
         mBackgroundExecutor = bgExecutor;
@@ -137,6 +141,7 @@ public class SystemEventHandler implements CoreStartable,
         mUserTracker = userTracker;
         mCarDeviceProvisionedController = carDeviceProvisionedController;
         mEventDispatcher = dispatcher;
+        mFlagManager = flagManager;
         mCurrentOrientation = mContext.getResources().getConfiguration().orientation;
     }
 
@@ -155,7 +160,7 @@ public class SystemEventHandler implements CoreStartable,
 
     @Override
     public void start() {
-        if (isScalableUIEnabled()) {
+        if (mFlagManager.isEnabled(Flag.ScalableUIEnabled)) {
             registerUserEventListener();
             registerProvisionedStateListener();
         }
@@ -200,9 +205,5 @@ public class SystemEventHandler implements CoreStartable,
                 mCarUserManager.addListener(mBackgroundExecutor, mUserLifecycleListener);
             }
         });
-    }
-
-    private boolean isScalableUIEnabled() {
-        return mContext.getResources().getBoolean(R.bool.config_enableScalableUI);
     }
 }

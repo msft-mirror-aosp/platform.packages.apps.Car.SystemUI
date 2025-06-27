@@ -40,6 +40,7 @@ import com.android.car.scalableui.model.PanelTransaction;
 import com.android.systemui.ShellSyncExecutor;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoSurfaceTransaction;
@@ -82,6 +83,8 @@ public class PanelTransitionCoordinatorTest extends SysuiTestCase {
     private AutoSurfaceTransaction mAutoSurfaceTransaction;
     @Mock
     private AutoLayoutManager mAutoLayoutManager;
+    @Mock
+    private FlagManager mFlagManager;
 
     @Before
     public void setUp() {
@@ -89,7 +92,7 @@ public class PanelTransitionCoordinatorTest extends SysuiTestCase {
         mMainExecutor = new ShellSyncExecutor();
         mPanelTransitionCoordinator = new PanelTransitionCoordinator(mContext,
                 mAutoTaskStackController, mAutoSurfaceTransactionFactory, mPanelUtils,
-                mAutoLayoutManager, mMainExecutor);
+                mAutoLayoutManager, mMainExecutor, mFlagManager);
         when(mAutoSurfaceTransactionFactory.createTransaction(anyString())).thenReturn(
                 mAutoSurfaceTransaction);
     }

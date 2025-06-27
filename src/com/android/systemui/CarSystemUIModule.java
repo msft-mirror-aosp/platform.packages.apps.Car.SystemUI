@@ -35,6 +35,7 @@ import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
 import com.android.systemui.car.displayconfig.ExternalDisplayController;
 import com.android.systemui.car.drivemode.DriveModeModule;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
 import com.android.systemui.car.statusbar.DozeServiceHost;
@@ -209,5 +210,11 @@ abstract class CarSystemUIModule {
     static DataSubscriptionMessageCreator bindDataSubscriptionMessageCreator(
             Context context) {
         return new DataSubscriptionMessageCreator(context);
+    }
+
+    @Provides
+    @SysUISingleton
+    static FlagManager provideFlagManager(Context context) {
+        return new FlagManager(context);
     }
 }

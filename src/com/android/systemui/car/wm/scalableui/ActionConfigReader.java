@@ -21,10 +21,14 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.android.car.scalableui.loader.xml.XmlModelLoader;
 import com.android.car.scalableui.manager.ActionManager;
 import com.android.car.scalableui.model.Action;
 import com.android.systemui.R;
+import com.android.systemui.car.flags.Flag;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.wm.shell.dagger.WMSingleton;
 
 import java.util.List;
@@ -34,17 +38,26 @@ public class ActionConfigReader {
     private static final String TAG = ActionConfigReader.class.getSimpleName();
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
     private final Context mContext;
+    private final FlagManager mFlagManager;
 
-    public ActionConfigReader(Context context) {
+    public ActionConfigReader(@NonNull Context context, @NonNull FlagManager flagManager) {
         debugLog("ActionConfig initialized user: " + ActivityManager.getCurrentUser());
         mContext = context;
+        mFlagManager = flagManager;
     }
 
     /**
      * Init the Actions.
      */
     public void init() {
-        loadFromXml();
+        if (!mFlagManager.isEnabled(Flag.ScalableUiActions)) {
+            return;
+        }
+        if (mFlagManager.isEnabled(Flag.ScalableUiDesignCompose)) {
+            loadFromDcf();
+        } else {
+            loadFromXml();
+        }
     }
 
     private void loadFromDcf() {

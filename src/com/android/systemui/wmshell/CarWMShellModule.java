@@ -20,8 +20,9 @@ import android.content.Context;
 import android.os.Handler;
 import android.view.IWindowManager;
 
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.flags.Flag;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
 import com.android.systemui.car.wm.scalableui.ActionConfigReader;
@@ -119,9 +120,10 @@ public abstract class CarWMShellModule {
     static Optional<PanelConfigReader> providesPanelConfigReader(
             Context context,
             TaskPanel.Factory taskPanelFactory,
-            DecorPanel.Factory decorPanelFactory
+            DecorPanel.Factory decorPanelFactory,
+            FlagManager flagManager
     ) {
-        if (isScalableUIEnabled(context)) {
+        if (flagManager.isEnabled(Flag.ScalableUIEnabled)) {
             return Optional.of(new PanelConfigReader(
                     context,
                     taskPanelFactory,
@@ -132,9 +134,10 @@ public abstract class CarWMShellModule {
 
     @WMSingleton
     @Provides
-    static Optional<ActionConfigReader> providesActionConfigReader(Context context) {
-        if (isScalableUIEnabled(context)) {
-            return Optional.of(new ActionConfigReader(context));
+    static Optional<ActionConfigReader> providesActionConfigReader(Context context,
+            FlagManager flagManager) {
+        if (flagManager.isEnabled(Flag.ScalableUIEnabled)) {
+            return Optional.of(new ActionConfigReader(context, flagManager));
         }
         return Optional.empty();
     }
@@ -146,8 +149,10 @@ public abstract class CarWMShellModule {
             Optional<ActionConfigReader> actionConfigReaderOptional,
             Optional<PanelConfigReader> panelConfigReaderOptional,
             PanelAutoTaskStackTransitionHandlerDelegate delegate,
-            ScalableUIDumpsys scalableUIDumpsys) {
-        if (isScalableUIEnabled(context) && panelConfigReaderOptional.isPresent()) {
+            ScalableUIDumpsys scalableUIDumpsys,
+            FlagManager flagManager) {
+        if (flagManager.isEnabled(Flag.ScalableUIEnabled)
+                && panelConfigReaderOptional.isPresent()) {
             return Optional.of(
                     new ScalableUIWMInitializer(shellInit, actionConfigReaderOptional.get(),
                             panelConfigReaderOptional.get(), delegate, scalableUIDumpsys));
@@ -155,7 +160,10 @@ public abstract class CarWMShellModule {
         return Optional.empty();
     }
 
-    private static boolean isScalableUIEnabled(Context context) {
-        return context.getResources().getBoolean(R.bool.config_enableScalableUI);
+    @WMSingleton
+    @Provides
+    static FlagManager provideFlagManager(Context context) {
+        return new FlagManager(context);
     }
+
 }

@@ -49,7 +49,8 @@ import com.android.car.scalableui.model.Transition;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.PanelPool;
-import com.android.systemui.R;
+import com.android.systemui.car.flags.Flag;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.panel.BasePanel;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
@@ -93,6 +94,8 @@ public class PanelTransitionCoordinator {
     private final AutoTaskStackController mAutoTaskStackController;
     @GuardedBy("mPendingPanelTransactions")
     private final HashMap<IBinder, PanelTransaction> mPendingPanelTransactions = new HashMap<>();
+    @NonNull
+    private final FlagManager mFlagManager;
     private AnimatorSet mRunningAnimatorSet = null;
     private final AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
     private final PanelUtils mPanelUtils;
@@ -106,13 +109,15 @@ public class PanelTransitionCoordinator {
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
             PanelUtils panelUtils,
             AutoLayoutManager autoLayoutManager,
-            @ShellMainThread ShellExecutor mainExecutor) {
+            @ShellMainThread ShellExecutor mainExecutor,
+            FlagManager flagManager) {
         mContext = context;
         mAutoTaskStackController = autoTaskStackController;
         mAutoSurfaceTransactionFactory = autoSurfaceTransactionFactory;
         mPanelUtils = panelUtils;
         mAutoLayoutManager = autoLayoutManager;
         mMainExecutor = mainExecutor;
+        mFlagManager = flagManager;
     }
 
     /**
@@ -589,10 +594,6 @@ public class PanelTransitionCoordinator {
         }
     }
 
-    private static boolean displayCompatibilityAutoDecorSafeRegion() {
-        return Build.isDebuggable();
-    }
-
     private AutoTaskStackTransaction createAutoTaskStackTransaction(
             PanelTransaction panelTransaction, @Nullable Event event) {
         AutoTaskStackTransaction autoTaskStackTransaction = new AutoTaskStackTransaction();
@@ -611,7 +612,7 @@ public class PanelTransitionCoordinator {
                     toVariant.getLayer());
             autoTaskStackTransaction.setTaskStackState(taskPanel.getRootStack().getId(),
                     autoTaskStackState);
-            if (displayCompatibilityAutoDecorSafeRegion()) {
+            if (mFlagManager.isEnabled(Flag.DisplayCompatibilityAutoDecorSafeRegion)) {
                 autoTaskStackTransaction.setSafeRegionBounds(taskPanel.getRootStack().getId(),
                         toVariant.getSafeBounds());
             }
@@ -623,7 +624,7 @@ public class PanelTransitionCoordinator {
             }
         }
 
-        if (mContext.getResources().getBoolean(R.bool.scalable_ui_enable_task_focus)) {
+        if (mFlagManager.isEnabled(Flag.ScalableUiTaskFocus)) {
             calculateFocusedTaskStack(panelTransaction, autoTaskStackTransaction, event);
         }
 
@@ -632,10 +633,10 @@ public class PanelTransitionCoordinator {
 
     /**
      * Determine focus using the following criteria (in order):
-     *   1. If the trigger is a task being opened on a visible panel, focus that panel
-     *   2. If one or more panels are becoming visible, focus the highest z-layer panel permitted
-     *   3. If the current focused panel is becoming invisible, focus the highest z-layer panel
-     *      permitted that is still visible.
+     * 1. If the trigger is a task being opened on a visible panel, focus that panel
+     * 2. If one or more panels are becoming visible, focus the highest z-layer panel permitted
+     * 3. If the current focused panel is becoming invisible, focus the highest z-layer panel
+     * permitted that is still visible.
      */
     private void calculateFocusedTaskStack(PanelTransaction panelTransaction,
             AutoTaskStackTransaction autoTaskStackTransaction,

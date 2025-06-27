@@ -26,6 +26,7 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.car.displaycompat.ToolbarController;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
@@ -108,11 +109,12 @@ public abstract class CarSystemBarModule {
     @Provides
     static ButtonSelectionStateController provideButtonSelectionStateController(Context context,
             TaskPanelInfoRepository infoRepository,
-            @CarSysUIDynamicOverride Optional<ButtonSelectionStateController> controller) {
+            @CarSysUIDynamicOverride Optional<ButtonSelectionStateController> controller,
+            FlagManager flagManager) {
         if (controller.isPresent()) {
             return controller.get();
         }
-        return new ButtonSelectionStateController(context, infoRepository);
+        return new ButtonSelectionStateController(context, infoRepository, flagManager);
     }
 
     @BindsOptionalOf

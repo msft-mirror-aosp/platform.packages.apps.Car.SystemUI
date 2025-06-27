@@ -24,14 +24,17 @@ import com.android.wm.shell.sysui.ShellInit;
  */
 @WMSingleton
 public class ScalableUIWMInitializer {
+    private final ActionConfigReader mActionConfigReader;
     private final PanelConfigReader mPanelConfigReader;
     private final PanelAutoTaskStackTransitionHandlerDelegate
             mPanelAutoTaskStackTransitionHandlerDelegate;
 
     public ScalableUIWMInitializer(ShellInit shellInit,
+            ActionConfigReader actionConfigReader,
             PanelConfigReader panelConfigReader,
             PanelAutoTaskStackTransitionHandlerDelegate delegate) {
         shellInit.addInitCallback(this::onInit, this);
+        mActionConfigReader = actionConfigReader;
         mPanelConfigReader = panelConfigReader;
         mPanelAutoTaskStackTransitionHandlerDelegate = delegate;
     }
@@ -39,5 +42,6 @@ public class ScalableUIWMInitializer {
     private void onInit() {
         mPanelAutoTaskStackTransitionHandlerDelegate.init();
         mPanelConfigReader.init();
+        mActionConfigReader.init();
     }
 }

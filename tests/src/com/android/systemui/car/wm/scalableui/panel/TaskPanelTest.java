@@ -202,6 +202,7 @@ public class TaskPanelTest extends CarSysuiTestCase {
     }
 
     @Test
+    @RequiresFlagsEnabled(Flags.FLAG_SCALABLE_UI_TASK_AUTO_RESTART)
     public void scheduleRestartAttempt_maxRetriesReached_sendsEmptyEvent() {
         when(mPanelState.getRestart()).thenReturn(mRestart);
         when(mRestart.getMaxRetry()).thenReturn(0);

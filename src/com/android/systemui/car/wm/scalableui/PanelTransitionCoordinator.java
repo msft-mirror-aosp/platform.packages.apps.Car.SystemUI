@@ -15,11 +15,15 @@
  */
 package com.android.systemui.car.wm.scalableui;
 
+import static android.view.WindowManager.TRANSIT_CLOSE;
+
 import static com.android.car.scalableui.Flags.enableAnimationEndEvent;
 import static com.android.car.scalableui.Flags.scalableUiTaskFocus;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_HOME_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_ON_ANIMATION_END_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_CLOSE_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_OPEN_EVENT_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_PANEL_EMPTY_EVENT_ID;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -29,7 +33,9 @@ import android.os.Build;
 import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.SurfaceControl;
+import android.window.TransitionInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,6 +61,7 @@ import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
 import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.dagger.WMSingleton;
+import com.android.wm.shell.shared.TransitionUtil;
 import com.android.wm.shell.shared.annotations.ShellMainThread;
 import com.android.wm.shell.transition.Transitions;
 
@@ -63,6 +70,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.inject.Inject;
@@ -117,7 +125,6 @@ public class PanelTransitionCoordinator {
                             createAutoTaskStackTransaction(transaction, /* event= */ null));
                     mPendingPanelTransactions.put(transition, transaction);
                     resetUnpreparedDecorPanel(transaction);
-                    playPendingAnimations(transition, null);
                 }
             });
         } else {
@@ -183,6 +190,34 @@ public class PanelTransitionCoordinator {
     }
 
     /**
+     * Handle special cases within the task state provided by startAnimation.
+     */
+    void reconcileAutoTaskStackState(IBinder transition,
+            Map<Integer, AutoTaskStackState> changedTaskStacks,
+            TransitionInfo info) {
+        // Only one "special event" should be sent as needed using the following priority:
+        // 1. Conflict event where the panel should be open
+        // 2. Panel empty event
+        // 3. Conflict event where the panel should be closed
+        Event finalEvent = null;
+        Event conflictEvent = getConflitResolutionEvent(changedTaskStacks, transition);
+        Event emptyPanelEvent = getTriggerTaskPanelEmptyEvent(info);
+        if (conflictEvent != null && (conflictEvent.getId().equals(SYSTEM_TASK_OPEN_EVENT_ID)
+                || emptyPanelEvent == null)) {
+            logIfDebuggable("Sending conflict resolution event " + conflictEvent);
+            finalEvent = conflictEvent;
+        } else if (emptyPanelEvent != null) {
+            logIfDebuggable("Sending empty panel event " + emptyPanelEvent);
+            finalEvent = emptyPanelEvent;
+        }
+
+        if (finalEvent != null) {
+            PanelTransaction transaction = StateManager.handleEvent(finalEvent);
+            startTransition(transaction);
+        }
+    }
+
+    /**
      * This is a medium-term workaround to resolve the transition conflicts for cts purpose.
      *
      * <p>Transition conflicts arise when multiple intents occur rapidly, leading to
@@ -193,7 +228,7 @@ public class PanelTransitionCoordinator {
      * by the visibility change.
      * TODO(b/397527431) : handle transition conflicts correctly after b/388067743.
      */
-    public void maybeResolveConflict(Map<Integer, AutoTaskStackState> changedTaskStacks,
+    private Event getConflitResolutionEvent(Map<Integer, AutoTaskStackState> changedTaskStacks,
             IBinder transition) {
         PanelTransaction transaction = null;
         synchronized (mPendingPanelTransactions) {
@@ -218,16 +253,14 @@ public class PanelTransitionCoordinator {
                     transaction.getPanelTransactionState(tp.getPanelId()));
             if (findConflict) {
                 Log.e(TAG, "Transition conflicts found on launch root task - " + changedState);
-                Event event = new Event.Builder(
+                return new Event.Builder(
                         changedState.getChildrenTasksVisible() ? SYSTEM_TASK_OPEN_EVENT_ID
                                 : SYSTEM_TASK_CLOSE_EVENT_ID)
                         .setPanelId(tp.getPanelId())
                         .build();
-                PanelTransaction panelTransaction = StateManager.handleEvent(event);
-                mAutoTaskStackController.startTransition(
-                        createAutoTaskStackTransaction(panelTransaction, /* event= */ null));
             }
         }
+        return null;
     }
 
     private boolean isEqual(@NonNull AutoTaskStackState changedState,
@@ -383,15 +416,70 @@ public class PanelTransitionCoordinator {
      *
      * @param transition The {@link IBinder} token for the incoming transition request. Used to
      *                   check if the currently running animation is for a different transition.
+     * @return true if an animation was stopped
      */
-    void stopRunningAnimations(@NonNull IBinder transition) {
+    boolean stopRunningAnimations(@NonNull IBinder transition) {
         logIfDebuggable("stopRunningAnimationsIfNeed " + transition);
         if (isAnimationRunning() && transition != mActiveTransition) {
             logIfDebuggable("stopRunningAnimations: has running animatorSet "
                     + mRunningAnimatorSet.getCurrentPlayTime() + ", incoming transition = "
                     + transition + ", active transition = " + mActiveTransition);
             mRunningAnimatorSet.end();
+            return true;
         }
+        return false;
+    }
+
+    /**
+     * If it is believed that this transition will cause a TaskPanel to become empty, preemptively
+     * trigger a new transition for the task panel empty event.
+     * Note that this will not trigger here if a TaskPanel has indicated that it will handle its
+     * own task restart.
+     */
+    private Event getTriggerTaskPanelEmptyEvent(@NonNull TransitionInfo info) {
+        // Map of panelId to a boolean Pair representing TaskPanel becoming invisible (first) and
+        // a task closing on the panel (second).
+        // If both are true, this means that the task close within the transition caused the panel
+        // to become invisible, meaning there is nothing left for the panel to show and it is empty.
+        HashMap<String, Pair<Boolean, Boolean>> taskPanelCloseMap = new HashMap<>();
+        info.getChanges().forEach(change -> {
+            if (TransitionUtil.isClosingType(change.getMode()) && change.getTaskInfo() != null) {
+                TaskPanel taskPanel = mPanelUtils.getTaskPanel(
+                        tp -> tp.getRootTaskId() == change.getTaskInfo().taskId);
+                if (taskPanel != null && !taskPanel.hasRestart()) {
+                    taskPanelCloseMap.compute(taskPanel.getPanelId(),
+                            (k, v) -> (v == null) ? new Pair<>(true, false)
+                                    : new Pair<>(true, v.second));
+                } else {
+                    TaskPanel parentTaskPanel = mPanelUtils.getTaskPanel(
+                            tp -> tp.getRootTaskId() == change.getTaskInfo().parentTaskId);
+                    if (parentTaskPanel != null && !parentTaskPanel.hasRestart()
+                            && change.getMode() == TRANSIT_CLOSE) {
+                        taskPanelCloseMap.compute(parentTaskPanel.getPanelId(),
+                                (k, v) -> (v == null) ? new Pair<>(false, true)
+                                        : new Pair<>(v.first, true));
+                    }
+                }
+            }
+        });
+        Set<String> emptyPanelKeys = taskPanelCloseMap.entrySet().stream()
+                .filter(entry -> {
+                    Pair<Boolean, Boolean> pair = entry.getValue();
+                    // Ensure the pair itself is not null, and then check its components
+                    return pair != null && pair.first && pair.second;
+                })
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+
+        if (emptyPanelKeys.size() == 1) {
+            return new Event.Builder(
+                    SYSTEM_TASK_PANEL_EMPTY_EVENT_ID)
+                    .setPanelId(emptyPanelKeys.iterator().next()).build();
+        } else if (emptyPanelKeys.size() > 1) {
+            Log.e(TAG, "Multiple empty panels in same transition - sending home event");
+            return new Event.Builder(SYSTEM_HOME_EVENT_ID).build();
+        }
+        return null;
     }
 
     private static void logIfDebuggable(String msg) {

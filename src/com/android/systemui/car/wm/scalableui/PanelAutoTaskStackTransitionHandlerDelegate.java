@@ -130,7 +130,9 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             return wct;
         }
         Trace.endSection();
-        return null;
+        // return empty transaction so the delegate still gets a start animation callback to
+        // apply the relevant changes in startAnimation.
+        return new AutoTaskStackTransaction();
     }
 
     private boolean shouldHandleByPanels(@NonNull TransitionRequestInfo request) {
@@ -155,7 +157,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                     + ", finishTransaction=" + finishTransaction.getId());
         }
 
-        mPanelTransitionCoordinator.maybeResolveConflict(changedTaskStacks, transition);
+        mPanelTransitionCoordinator.reconcileAutoTaskStackState(transition, changedTaskStacks,
+                info);
         mPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
 
         Trace.beginSection(TAG + "#startAnimation");
@@ -305,7 +308,13 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                     + finishTransaction);
         }
         Trace.beginSection(TAG + "#onTransitionConsumed");
-        mPanelTransitionCoordinator.stopRunningAnimations(transition);
+        boolean stopped = mPanelTransitionCoordinator.stopRunningAnimations(transition);
+        if (!stopped && aborted) {
+            // If the transition was aborted and the animation was never run, this transition likely
+            // had no shell-related changes. Run the animations now to apply non-shell changes.
+            mPanelTransitionCoordinator.playPendingAnimations(transition,
+                    null);
+        }
         Trace.endSection();
     }
 

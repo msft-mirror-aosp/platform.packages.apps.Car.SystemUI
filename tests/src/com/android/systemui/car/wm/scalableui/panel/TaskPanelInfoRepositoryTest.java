@@ -15,9 +15,6 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
-import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
-import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;
-
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.Mockito.never;
@@ -44,8 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoSession;
-import org.mockito.quality.Strictness;
+import org.mockito.MockitoAnnotations;
 
 @CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
@@ -60,8 +56,6 @@ public class TaskPanelInfoRepositoryTest extends SysuiTestCase {
     private TaskPanelInfoRepository mTaskPanelInfoRepository;
     private FakeExecutor mFakeExecutor;
 
-    private MockitoSession mMockingSession;
-
     @Mock
     private TaskPanelInfoRepository.TaskPanelChangeListener mTaskPanelChangeListener;
     @Mock
@@ -71,25 +65,17 @@ public class TaskPanelInfoRepositoryTest extends SysuiTestCase {
 
     @Before
     public void setUp() {
-        mMockingSession = mockitoSession()
-                .initMocks(this)
-                .mockStatic(PanelPool.class)
-                .strictness(Strictness.WARN)
-                .startMocking();
+        MockitoAnnotations.initMocks(this);
 
         mFakeExecutor = new FakeExecutor(new FakeSystemClock());
-        doReturn(mPanelPool).when(() -> PanelPool.getInstance());
         when(mPanelPool.getPanel(TEST_PANEL_ID)).thenReturn(mTestPanel);
         when(mTestPanel.isVisible()).thenReturn(true);
-        mTaskPanelInfoRepository = new TaskPanelInfoRepository(mFakeExecutor);
+        mTaskPanelInfoRepository = new TaskPanelInfoRepository(mFakeExecutor, mPanelPool);
         mTaskPanelInfoRepository.addChangeListener(mTaskPanelChangeListener);
     }
 
     @After
     public void tearDown() {
-        if (mMockingSession != null) {
-            mMockingSession.finishMocking();
-        }
         mTaskPanelInfoRepository.removeChangeListener(mTaskPanelChangeListener);
     }
 

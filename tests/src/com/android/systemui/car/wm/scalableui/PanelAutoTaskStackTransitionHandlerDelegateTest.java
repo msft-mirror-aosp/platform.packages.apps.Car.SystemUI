@@ -107,7 +107,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
 
         AutoTaskStackTransaction autoTaskStackTransaction = mDelegate.handleRequest(
                 mock(IBinder.class), request);
-        assertThat(autoTaskStackTransaction).isNull();
+        assertThat(autoTaskStackTransaction).isNotNull();
     }
 
     @Test

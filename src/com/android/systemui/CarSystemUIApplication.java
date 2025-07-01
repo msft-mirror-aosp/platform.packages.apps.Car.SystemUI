@@ -31,6 +31,7 @@ import android.view.WindowManager;
 
 import com.android.car.oem.tokens.Token;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
+import com.android.systemui.scene.shared.flag.SceneContainerFlag;
 
 /**
  * Application class for CarSystemUI.
@@ -38,6 +39,11 @@ import com.android.systemui.car.users.CarSystemUIUserUtil;
 public class CarSystemUIApplication extends SystemUIApplication {
 
     private boolean mIsVisibleBackgroundUserSysUI;
+
+    public CarSystemUIApplication() {
+        super();
+        SceneContainerFlag.isEnabledOnVariant = false;
+    }
 
     @Override
     public void onCreate() {

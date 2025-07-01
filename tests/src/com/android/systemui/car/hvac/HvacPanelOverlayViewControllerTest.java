@@ -156,6 +156,8 @@ public class HvacPanelOverlayViewControllerTest extends CarSysuiTestCase {
         when(mockHvacPanelParentView.indexOfChild(mockHvacPanelView)).thenReturn(mockIndex);
         when(mockHvacPanelParentView.generateLayoutParams(any())).thenReturn(
                 mock(ViewGroup.LayoutParams.class));
+        when(mockHvacPanelParentView.generateLayoutParams(any(), any())).thenReturn(
+                mock(ViewGroup.LayoutParams.class));
         when(mockHvacPanelView.getParent()).thenReturn(mockHvacPanelParentView);
         when(mockHvacPanelView.getLayoutParams()).thenReturn(mock(ViewGroup.LayoutParams.class));
         when(mockHvacPanelView.findViewById(R.id.hvac_temperature_text)).thenReturn(

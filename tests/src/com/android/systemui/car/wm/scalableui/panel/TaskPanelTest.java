@@ -203,6 +203,6 @@ public class TaskPanelTest extends CarSysuiTestCase {
 
         mTaskPanel.scheduleRestartAttempt(mRunningTaskInfo);
 
-        verify(mEventDispatcher).executeTransaction(any(Event.class));
+        verify(mEventDispatcher).executeEvent(any(Event.class));
     }
 }

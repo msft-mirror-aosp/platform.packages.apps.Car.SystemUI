@@ -299,14 +299,14 @@ public final class TaskPanel extends BasePanel {
             } else {
                 logIfDebuggable(
                         "scheduleRestartAttempt: Max retries reached, sending empty event.");
-                mEventDispatcher.executeTransaction(new Event.Builder(
+                mEventDispatcher.executeEvent(new Event.Builder(
                         SYSTEM_TASK_PANEL_EMPTY_EVENT_ID)
                         .setPanelId(getPanelId()).build());
             }
         } else {
             logIfDebuggable(
                     "scheduleRestartAttempt: No restart policy found, sending empty event.");
-            mEventDispatcher.executeTransaction(new Event.Builder(
+            mEventDispatcher.executeEvent(new Event.Builder(
                     SYSTEM_TASK_PANEL_EMPTY_EVENT_ID)
                     .setPanelId(getPanelId()).build());
         }

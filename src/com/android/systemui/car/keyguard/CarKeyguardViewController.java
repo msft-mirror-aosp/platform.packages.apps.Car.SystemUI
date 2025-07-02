@@ -466,10 +466,18 @@ public class CarKeyguardViewController extends OverlayViewController implements
     }
 
     @Override
+    public void onWindowFocusableChanged(boolean focusable) {
+        super.onWindowFocusableChanged(focusable);
+        if (focusable && mBouncerView.getDelegate() != null) {
+            mBouncerView.getDelegate().resume();
+        }
+    }
+
+    @Override
     public boolean setAllowRotaryFocus(boolean allowRotaryFocus) {
         boolean changed = super.setAllowRotaryFocus(allowRotaryFocus);
         if (changed && allowRotaryFocus && mBouncerView.getDelegate() != null) {
-            // Resume the view so it can regain focus
+            // Resume the view so it can gain rotary focus
             mBouncerView.getDelegate().resume();
         }
         return changed;

@@ -26,6 +26,7 @@
         android:layout_height="match_parent"
         android:layout_marginHorizontal="@dimen/car_padding_1"
         android:layout_gravity="center"
+        android:tint="@color/system_bar_icon_color"
         systemui:controller="com.android.systemui.car.statusicon.ui.LocationStatusIconController"
         systemui:systemBarDisable2Flags="systemIcons"
         systemui:disableForLockTaskModeLocked="true"/>
@@ -35,6 +36,7 @@
         android:layout_height="match_parent"
         android:layout_marginHorizontal="@dimen/car_padding_1"
         android:layout_gravity="center"
+        android:tint="@color/system_bar_icon_color"
         systemui:controller="com.android.systemui.car.statusicon.ui.PhoneCallStatusIconController"
         systemui:systemBarDisable2Flags="systemIcons"
         systemui:disableForLockTaskModeLocked="true"/>

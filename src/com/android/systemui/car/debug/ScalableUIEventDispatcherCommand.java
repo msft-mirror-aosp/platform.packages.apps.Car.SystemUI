@@ -56,7 +56,7 @@ public class ScalableUIEventDispatcherCommand extends CarSystemUIShellCommand {
             event.addTokensFromString(args.get(1));
         }
 
-        mEventDispatcher.executeTransaction(event.build());
+        mEventDispatcher.executeEvent(event.build());
     }
 
     @Override

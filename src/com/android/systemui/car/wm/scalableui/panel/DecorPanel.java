@@ -30,6 +30,7 @@ import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.car.scalableui.panel.Panel;
+import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.view.DecorPanelControllerBase;
 import com.android.wm.shell.automotive.AutoDecor;
@@ -42,6 +43,8 @@ import com.android.wm.shell.shared.annotations.ExternalMainThread;
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
+
+import java.util.Optional;
 
 /**
  * A {@link AutoDecor} based implementation of a {@link Panel}.
@@ -70,9 +73,10 @@ public final class DecorPanel extends BasePanel {
             PanelUtils panelUtils,
             @ExternalMainThread ShellExecutor mainExecutor,
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
+            Optional<PanelUpdatePublisher> panelUpdatePublisherOptional,
             @Assisted String id
     ) {
-        super(context, id);
+        super(context, id, panelUpdatePublisherOptional);
         mAutoDecorManager = autoDecorManager;
         mPanelUtils = panelUtils;
         mMainExecutor = mainExecutor;

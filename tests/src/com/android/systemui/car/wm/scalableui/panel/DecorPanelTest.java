@@ -36,6 +36,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.scalableui.model.Role;
+import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
@@ -52,6 +53,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
 
 @CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
@@ -92,6 +95,8 @@ public class DecorPanelTest extends CarSysuiTestCase {
     private AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
     @Mock
     private AutoSurfaceTransaction mAutoSurfaceTransaction;
+    @Mock
+    private PanelUpdatePublisher mPanelUpdatePublisher;
 
     // --- Captors ---
     @Captor
@@ -111,6 +116,7 @@ public class DecorPanelTest extends CarSysuiTestCase {
                 mPanelUtils,
                 mShellExecutor,
                 mAutoSurfaceTransactionFactory,
+                Optional.of(mPanelUpdatePublisher),
                 TEST_PANEL_ID
         ));
 

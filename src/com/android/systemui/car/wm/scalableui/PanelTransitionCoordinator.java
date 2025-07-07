@@ -386,6 +386,10 @@ public class PanelTransitionCoordinator {
         }
     }
 
+    private static boolean displayCompatibilityAutoDecorSafeRegion() {
+        return Build.isDebuggable();
+    }
+
     private AutoTaskStackTransaction createAutoTaskStackTransaction(
             PanelTransaction panelTransaction, @Nullable Event event) {
         AutoTaskStackTransaction autoTaskStackTransaction = new AutoTaskStackTransaction();
@@ -404,6 +408,10 @@ public class PanelTransitionCoordinator {
                     toVariant.getLayer());
             autoTaskStackTransaction.setTaskStackState(taskPanel.getRootStack().getId(),
                     autoTaskStackState);
+            if (displayCompatibilityAutoDecorSafeRegion()) {
+                autoTaskStackTransaction.setSafeRegionBounds(taskPanel.getRootStack().getId(),
+                        toVariant.getSafeBounds());
+            }
 
             if (toVariant.isVisible() && taskPanel.isRootTaskEmpty()
                     && mPanelUtils.isUserUnlocked()) {

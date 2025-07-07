@@ -16,6 +16,7 @@
 package com.android.systemui.car.wm.scalableui.panel.controller;
 
 import android.annotation.NonNull;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 
@@ -37,7 +38,7 @@ public final class MapsPanelController extends BaseTaskPanelController {
     public Intent getDefaultComponent() {
         Intent mapIntent = super.getDefaultComponent();
         Intent result = TosHelper.maybeReplaceWithTosMapIntent(mContext, mapIntent,
-                R.string.config_tosMapIntent);
+                R.string.config_tosMapIntent, ActivityManager.getCurrentUser());
         logIfDebuggable(TAG + ", getDefaultComponent =  " + result);
         return result;
     }

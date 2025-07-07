@@ -84,18 +84,6 @@ public final class DecorPanel extends BasePanel {
         mAutoSurfaceTransactionFactory = autoSurfaceTransactionFactory;
     }
 
-    @NonNull
-    @Override
-    public Rect getSafeBounds() {
-        // no-op
-        return new Rect();
-    }
-
-    @Override
-    public void setSafeBounds(@NonNull Rect safeBounds) {
-        // no-op
-    }
-
     @VisibleForTesting
     @Nullable
     View inflateDecorView() {

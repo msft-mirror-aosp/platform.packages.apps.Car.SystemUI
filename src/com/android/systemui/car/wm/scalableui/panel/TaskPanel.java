@@ -211,7 +211,7 @@ public final class TaskPanel extends BasePanel {
                                     getDisplayId(),
                                     mRootTaskId);
                         }
-                        setupToolbarAndSafeRegion();
+                        setupToolbarRegion();
                         setLeash(mRootTaskStack.getLeash());
 
                         if (mPanelUtils.isUserUnlocked()) {
@@ -227,7 +227,7 @@ public final class TaskPanel extends BasePanel {
 
                     @Override
                     public void onRootTaskStackDestroyed(@NonNull RootTaskStack rootTaskStack) {
-                        mAutoCaptionController.removeSafeRegionAndCaptionRegion(rootTaskStack);
+                        mAutoCaptionController.removeCaptionRegion(rootTaskStack);
                         mRootTaskStack = null;
                         mRootTaskId = -1;
                     }
@@ -331,6 +331,9 @@ public final class TaskPanel extends BasePanel {
         AutoTaskStackState autoTaskStackState = new AutoTaskStackState(getBounds(), isVisible(),
                 getLayer());
         autoTaskStackTransaction.setTaskStackState(getRootStack().getId(), autoTaskStackState);
+        if (displayCompatibilityAutoDecorSafeRegion()) {
+            autoTaskStackTransaction.setSafeRegionBounds(getRootStack().getId(), getSafeBounds());
+        }
         if (isVisible()) {
             setBaseIntent(autoTaskStackTransaction);
         }
@@ -525,7 +528,7 @@ public final class TaskPanel extends BasePanel {
                             + getPanelId());
         }
         mSafeBounds = safeBounds;
-        setupToolbarAndSafeRegion();
+        setupToolbarRegion();
     }
 
     @Override
@@ -696,7 +699,7 @@ public final class TaskPanel extends BasePanel {
         return StateManager.getPanelState(getPanelId());
     }
 
-    private void setupToolbarAndSafeRegion() {
+    private void setupToolbarRegion() {
         if (!displayCompatibilityAutoDecorSafeRegion()) {
             return;
         }
@@ -707,7 +710,8 @@ public final class TaskPanel extends BasePanel {
         if (mSafeBounds.isEmpty()) {
             // TODO(b/409067170): update AutoCaptionController API to be able to set these values
             //  independently
-            logVerbose("Invalid Safe Bounds, not setting safe region for panel: " + getPanelId());
+            logVerbose(
+                    "Invalid Safe Bounds, not setting toolbar region for panel: " + getPanelId());
             return;
         }
         if (getBounds() == null || getBounds().isEmpty()) {
@@ -716,8 +720,9 @@ public final class TaskPanel extends BasePanel {
             return;
         }
         if (mSafeBounds.equals(getBounds())) {
-            logVerbose("SafeBounds equivalent to panel bounds, not setting safe region for panel: "
-                    + getPanelId());
+            logVerbose(
+                    "SafeBounds equivalent to panel bounds, not setting toolbar region for panel: "
+                            + getPanelId());
             return;
         }
 
@@ -729,13 +734,12 @@ public final class TaskPanel extends BasePanel {
         }
         toolbarBounds.offset(-getBounds().left, -getBounds().top);
 
-        logVerbose("Setting up toolbar and safe region with following values: "
+        logVerbose("Setting up toolbar region with following values: "
                 + "rootTaskStack = " + mRootTaskStack
-                + ", safe bounds = " + mSafeBounds
                 + ", toolbar bounds = " + toolbarBounds
                 + ", panel bounds = " + getBounds());
 
-        mAutoCaptionController.setSafeRegionAndCaptionRegion(mRootTaskStack, mSafeBounds,
+        mAutoCaptionController.setCaptionRegion(mRootTaskStack,
                 toolbarBounds, mAutoCaptionBarViewFactoryImpl);
     }
 

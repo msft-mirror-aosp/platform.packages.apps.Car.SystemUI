@@ -42,7 +42,7 @@ import com.android.wm.shell.automotive.RootTaskStack;
 
 /**
  * Factory to provide views for caption bar. See
- * {@link com.android.wm.shell.automotive.AutoCaptionController#setSafeRegionAndCaptionRegion(RootTaskStack, Rect, Rect, AutoCaptionBarViewFactory)}
+ * {@link com.android.wm.shell.automotive.AutoCaptionController#setCaptionRegion(RootTaskStack, Rect, AutoCaptionBarViewFactory)}
  * for more details.
  */
 public class AutoCaptionBarViewFactoryImpl extends AutoCaptionBarViewFactory {

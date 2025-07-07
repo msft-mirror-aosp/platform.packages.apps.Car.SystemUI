@@ -19,6 +19,7 @@ import static android.view.WindowManager.TRANSIT_CLOSE;
 
 import static com.android.car.scalableui.Flags.enableAnimationEndEvent;
 import static com.android.car.scalableui.Flags.scalableUiTaskFocus;
+import static com.android.systemui.car.Flags.displayCompatibilityAutoDecorSafeRegion;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_HOME_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_ON_ANIMATION_END_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_CLOSE_EVENT_ID;
@@ -518,6 +519,11 @@ public class PanelTransitionCoordinator {
                     toVariant.getLayer());
             autoTaskStackTransaction.setTaskStackState(taskPanel.getRootStack().getId(),
                     autoTaskStackState);
+            if (displayCompatibilityAutoDecorSafeRegion()) {
+                // TODO (b/431223025): Add warnings about using caption and safe region separately
+                autoTaskStackTransaction.setSafeRegionBounds(taskPanel.getRootStack().getId(),
+                        toVariant.getSafeBounds());
+            }
 
             if (toVariant.isVisible() && taskPanel.isRootTaskEmpty()
                     && mPanelUtils.isUserUnlocked()) {

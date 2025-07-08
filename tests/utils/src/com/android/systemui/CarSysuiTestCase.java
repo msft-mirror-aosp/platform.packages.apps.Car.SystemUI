@@ -21,6 +21,7 @@ import android.content.res.Resources;
 import android.os.Handler;
 import android.os.HandlerExecutor;
 import android.os.Looper;
+import android.platform.test.annotations.DisableFlags;
 import android.test.mock.MockContext;
 import android.util.Singleton;
 
@@ -28,12 +29,15 @@ import androidx.annotation.NonNull;
 import androidx.test.InstrumentationRegistry;
 
 import com.android.car.oem.tokens.Token;
+import com.android.systemui.Flags;
 
 import org.junit.Rule;
 import org.mockito.Mockito;
 
 import java.util.concurrent.Executor;
 
+//TODO(b/430358177) Re-enable this flag
+@DisableFlags(Flags.FLAG_SCENE_CONTAINER)
 public class CarSysuiTestCase extends SysuiTestCase {
 
     @Rule

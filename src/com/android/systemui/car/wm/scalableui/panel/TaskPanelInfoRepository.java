@@ -20,6 +20,8 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.util.ArraySet;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.PanelPool;
 import com.android.systemui.dagger.qualifiers.UiBackground;
@@ -44,6 +46,7 @@ public class TaskPanelInfoRepository {
     @GuardedBy("mLock")
     private final Set<TaskPanelChangeListener> mListeners = new ArraySet<>();
     private final Executor mUiBackgroundExecutor;
+    private final PanelPool mPanelPool;
 
     @GuardedBy("mLock")
     private boolean mHasPendingTaskChanges = false;
@@ -51,6 +54,13 @@ public class TaskPanelInfoRepository {
     @Inject
     public TaskPanelInfoRepository(@UiBackground Executor executor) {
         mUiBackgroundExecutor = executor;
+        mPanelPool = PanelPool.getInstance();
+    }
+
+    @VisibleForTesting
+    TaskPanelInfoRepository(Executor executor, PanelPool panelPool) {
+        mUiBackgroundExecutor = executor;
+        mPanelPool = panelPool;
     }
 
     /**
@@ -146,7 +156,7 @@ public class TaskPanelInfoRepository {
      * Query if a specific panel is currently visible.
      */
     private boolean isPanelVisible(String panelId) {
-        Panel panel = PanelPool.getInstance().getPanel(panelId);
+        Panel panel = mPanelPool.getPanel(panelId);
         if (panel == null) {
             return false;
         }

@@ -35,14 +35,18 @@ import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.wm.shell.automotive.AutoSurfaceTransaction;
 
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
+
 import java.util.Optional;
 
 /**
- * Abstract base class for implementing a {@link Panel}.
+ * A base class for implementing a {@link Panel}.
  *
  * <p>Provides common functionality and state management for different types of panels
  */
-public abstract class BasePanel implements Panel {
+public class BasePanel implements Panel {
     protected static final boolean DEBUG = Build.isDebuggable();
     private static final String TAG = BasePanel.class.getSimpleName();
     protected static final String RESET_TRANSACTION = "Reset : ";
@@ -52,7 +56,7 @@ public abstract class BasePanel implements Panel {
     private int mLayer = -1;
     private boolean mCanFocusOnTransition = DEFAULT_FOCUS_ON_TRANSITION;
 
-    @NonNull
+    @Nullable
     private Role mRole;
     @NonNull
     private Rect mBounds = new Rect();
@@ -67,7 +71,8 @@ public abstract class BasePanel implements Panel {
     private PanelControllerMetadata mPanelControllerMetadata;
     private final Optional<PanelUpdatePublisher> mPanelUpdatePublisherOptional;
 
-    public BasePanel(@NonNull Context context, String panelId,
+    @AssistedInject
+    public BasePanel(@NonNull Context context, @Assisted String panelId,
             Optional<PanelUpdatePublisher> panelUpdatePublisherOptional) {
         mContext = context;
         mPanelId = panelId;
@@ -81,7 +86,7 @@ public abstract class BasePanel implements Panel {
     }
 
     @Override
-    @NonNull
+    @Nullable
     public Role getRole() {
         return mRole;
     }
@@ -240,7 +245,7 @@ public abstract class BasePanel implements Panel {
     }
 
     @Override
-    public void setRole(@NonNull Role role) {
+    public void setRole(@Nullable Role role) {
         mRole = role;
     }
 
@@ -281,11 +286,23 @@ public abstract class BasePanel implements Panel {
      * @param updateChildren         Update the children components used in this panel, should only
      *                               set to true on animationEnd or reset.
      */
-    public abstract void update(
-            @NonNull AutoSurfaceTransaction autoSurfaceTransaction,
-            @Nullable SurfaceControl.Transaction tx,
-            @Nullable Variant variant,
-            boolean updateChildren);
+    public void update(@NonNull AutoSurfaceTransaction autoSurfaceTransaction,
+            @Nullable SurfaceControl.Transaction tx, @Nullable Variant variant,
+            boolean updateChildren) {
+        if (getPanelUpdateObserver() == null) {
+            return;
+        }
+        getPanelUpdateObserver().postVisibility(getPanelId(),
+                variant == null ? isVisible() : variant.isVisible());
+        getPanelUpdateObserver().postAlpha(getPanelId(),
+                variant == null ? getAlpha() : variant.getAlpha());
+        getPanelUpdateObserver().postCornerRadius(getPanelId(),
+                variant == null ? getCornerRadius() : variant.getCornerRadius());
+        getPanelUpdateObserver().postBounds(getPanelId(),
+                variant == null ? getBounds() : variant.getBounds());
+        getPanelUpdateObserver().postInsets(getPanelId(),
+                variant == null ? getInsets() : variant.getInsets());
+    }
 
     /**
      * Updates surface of the {@link BasePanel} based on the provided {@link Variant} without update
@@ -324,9 +341,32 @@ public abstract class BasePanel implements Panel {
         return mPanelUpdatePublisherOptional.orElse(null);
     }
 
+    @Override
+    public void refreshTheme() {
+        // no-op
+    }
+
+    @Override
+    public String toString() {
+        return "BasePanel{"
+                + "mId='" + getPanelId() + '\''
+                + ", mBounds=" + getBounds()
+                + ", mIsVisible=" + isVisible()
+                + ", mAlpha=" + getAlpha()
+                + ", mInsets=" + getInsets()
+                + ", mMetaData=" + getPanelControllerMetadata()
+                + ", mCornerRadius=" + getCornerRadius() + '}';
+    }
+
     protected static void logIfDebuggable(String msg) {
         if (DEBUG) {
             Log.d(TAG, msg);
         }
+    }
+
+    @AssistedFactory
+    public interface Factory {
+        /** Create instance of {@link BasePanel} with specified id */
+        BasePanel create(String id);
     }
 }

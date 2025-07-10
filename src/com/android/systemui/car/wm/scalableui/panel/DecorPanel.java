@@ -87,7 +87,7 @@ public final class DecorPanel extends BasePanel {
     @VisibleForTesting
     @Nullable
     View inflateDecorView() {
-        View view = getRole().getView(getContext());
+        View view = getRole() != null ? getRole().getView(getContext()) : null;
         return view != null ? view : initFromController();
     }
 

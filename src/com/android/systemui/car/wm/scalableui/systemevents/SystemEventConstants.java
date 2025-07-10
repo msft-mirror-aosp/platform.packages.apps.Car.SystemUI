@@ -25,6 +25,8 @@ public class SystemEventConstants {
     public static final String SYSTEM_ENTER_SUW_EVENT_ID = "_System_EnterSuwEvent";
     public static final String SYSTEM_EXIT_SUW_EVENT_ID = "_System_ExitSuwEvent";
     public static final String SYSTEM_ON_ANIMATION_END_EVENT_ID = "_System_OnAnimationEndEvent";
+    public static final String HIDE_EVENT_PREFIX = "_System_Hide";
+    public static final String SHOW_EVENT_PREFIX = "_System_Show";
 
     /**
      * Represents the variant at the end of the animation.

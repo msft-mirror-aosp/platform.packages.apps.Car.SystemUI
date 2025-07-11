@@ -40,6 +40,7 @@ import androidx.annotation.NonNull;
 
 import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser;
 import com.android.car.scalableui.model.PanelControllerMetadata;
+import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer;
 
@@ -48,6 +49,9 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+/**
+ * An implementation of {@link SystemUiWindow} specifically for system bars.
+ */
 public class SystemBarWindow implements SystemUiWindow {
     private static final Binder INSETS_OWNER = new Binder();
     private static final Map<String, InsetsFrameProvider> BAR_GESTURE_MAP = new ArrayMap<>();
@@ -63,8 +67,9 @@ public class SystemBarWindow implements SystemUiWindow {
             new InsetsFrameProvider(INSETS_OWNER, 1 /* index */, statusBars()),
             new InsetsFrameProvider(INSETS_OWNER, 1 /* index */, navigationBars()),
     };
-    private static final int HUN_Z_ORDER = 10;
-    private final String mId;
+    @VisibleForTesting
+    static final int HUN_Z_ORDER = 10;
+    private String mId;
     private final PanelUpdateConsumer mPanelUpdateConsumer;
     private final EventDispatcher mEventDispatcher;
     private final WindowManager mWindowManager;
@@ -114,6 +119,11 @@ public class SystemBarWindow implements SystemUiWindow {
         });
     }
 
+    @VisibleForTesting
+    void setId(String id) {
+        mId = id;
+    }
+
     private static void populateMaps() {
         BAR_GRAVITY_MAP.put(SystemBarTagXmlParser.SYSTEM_BAR_PANEL_TOP_ID, Gravity.TOP);
         BAR_GRAVITY_MAP.put(SystemBarTagXmlParser.SYSTEM_BAR_PANEL_BOTTOM_ID, Gravity.BOTTOM);
@@ -146,7 +156,7 @@ public class SystemBarWindow implements SystemUiWindow {
 
     @Override
     public void setRootView(View view, WindowManager.LayoutParams layoutParams) {
-        if (mRootView == null) {
+        if (mRootView != null) {
             removeRootView();
         }
         mRootView = view;

@@ -318,4 +318,7 @@
 
     <!-- Figma file ID for the DCF file used to load system ui -->
     <string name="config_scalableUiDcfFileId">cydzv1nh1pZBdFmZAbdFQU</string>
+
+    <!-- Whether the size compat restart button should be enabled -->
+    <bool name="config_isSizeCompatRestartButtonEnabled">false</bool>
 </resources>

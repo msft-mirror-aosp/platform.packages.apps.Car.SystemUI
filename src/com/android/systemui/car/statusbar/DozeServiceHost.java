@@ -100,12 +100,7 @@ public class DozeServiceHost implements DozeHost {
     }
 
     @Override
-    public void setDozeScreenBrightness(int value) {
-        // No op.
-    }
-
-    @Override
-    public void setDozeScreenBrightnessFloat(float value) {
+    public void setDozeScreenBrightness(float value) {
         // No op.
     }
 

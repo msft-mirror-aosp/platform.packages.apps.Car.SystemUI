@@ -16,19 +16,14 @@
 
 package com.android.systemui.wmshell;
 
-import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_BOTTOM_ID;
-import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_LEFT_ID;
-import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_RIGHT_ID;
-import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_TOP_ID;
-
 import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.CarSystemUIProxyImpl;
 import com.android.systemui.car.wm.displayarea.DaViewTransitions;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
-import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;
-import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow.SystemBarConfiguration;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiConfigurationProvider;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.car.wm.taskview.RemoteCarTaskViewTransitions;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
@@ -41,8 +36,6 @@ import com.android.wm.shell.dagger.WMSingleton;
 import dagger.Subcomponent;
 
 import java.util.Optional;
-
-import javax.inject.Named;
 
 /**
  * Dagger Subcomponent for WindowManager.
@@ -117,43 +110,11 @@ public interface CarWMComponent extends WMComponent {
     @WMSingleton
     AutoLayoutManager getAutoLayoutManager();
 
-    /** Provides the {@link SystemBarWindow} for the left side  */
+    /** Provides the {@link SystemUiWindowProvider} */
     @WMSingleton
-    @Named(SYSTEM_BAR_PANEL_LEFT_ID)
-    Optional<SystemBarWindow> getLeftSystemBarWindow();
+    SystemUiWindowProvider getSystemUiWindowProvider();
 
-    /** Provides the {@link SystemBarWindow} for the top side  */
+    /** Provides the {@link SystemUiConfigurationProvider} */
     @WMSingleton
-    @Named(SYSTEM_BAR_PANEL_TOP_ID)
-    Optional<SystemBarWindow> getTopSystemBarWindow();
-
-    /** Provides the {@link SystemBarWindow} for the right side  */
-    @WMSingleton
-    @Named(SYSTEM_BAR_PANEL_RIGHT_ID)
-    Optional<SystemBarWindow> getRightSystemBarWindow();
-
-    /** Provides the {@link SystemBarWindow} for the bottom side  */
-    @WMSingleton
-    @Named(SYSTEM_BAR_PANEL_BOTTOM_ID)
-    Optional<SystemBarWindow> getBottomSystemBarWindow();
-
-    /** Provides the {@link SystemBarConfiguration} for the left side  */
-    @WMSingleton
-    @Named(SYSTEM_BAR_PANEL_LEFT_ID)
-    Optional<SystemBarConfiguration> getLeftSystemBarConfiguration();
-
-    /** Provides the {@link SystemBarConfiguration} for the top side  */
-    @WMSingleton
-    @Named(SYSTEM_BAR_PANEL_TOP_ID)
-    Optional<SystemBarConfiguration> getTopSystemBarConfiguration();
-
-    /** Provides the {@link SystemBarConfiguration} for the right side  */
-    @WMSingleton
-    @Named(SYSTEM_BAR_PANEL_RIGHT_ID)
-    Optional<SystemBarConfiguration> getRightSystemBarConfiguration();
-
-    /** Provides the {@link SystemBarConfiguration} for the bottom side  */
-    @WMSingleton
-    @Named(SYSTEM_BAR_PANEL_BOTTOM_ID)
-    Optional<SystemBarConfiguration> getBottomSystemBarConfiguration();
+    SystemUiConfigurationProvider getSystemUiConfigurationProvider();
 }

@@ -27,6 +27,7 @@ import com.android.systemui.R;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionController;
+import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.common.DisplayController;
 
 /**
@@ -43,13 +44,15 @@ public class AutoCaptionPerDisplayInitializer implements
     private final RootTaskDisplayAreaOrganizer mRootTaskDisplayAreaOrganizer;
     private final SparseArray<RootTaskDisplayAreaOrganizer.RootTaskDisplayAreaListener>
             mDisplayIdToListenerMap = new SparseArray<>();
+    private final AutoLayoutManager mAutoLayoutManager;
 
     public AutoCaptionPerDisplayInitializer(
             Context context,
             ShellTaskOrganizer shellTaskOrganizer,
             AutoCaptionController autoCaptionController,
             DisplayController displayController,
-            RootTaskDisplayAreaOrganizer rootTaskDisplayAreaOrganizer) {
+            RootTaskDisplayAreaOrganizer rootTaskDisplayAreaOrganizer,
+            AutoLayoutManager autoLayoutManager) {
         mAutoCaptionController = autoCaptionController;
         mAutoCaptionBarViewFactoryImpl =
                 new AutoCaptionBarViewFactoryImpl(context, shellTaskOrganizer);
@@ -68,6 +71,7 @@ public class AutoCaptionPerDisplayInitializer implements
                 context.getResources().getDimensionPixelSize(R.dimen.caption_region_bottom)
         );
         mRootTaskDisplayAreaOrganizer = rootTaskDisplayAreaOrganizer;
+        mAutoLayoutManager = autoLayoutManager;
         if (!mEnableSafeAreaAndToolbarPerDisplay) {
             return;
         }
@@ -96,7 +100,8 @@ public class AutoCaptionPerDisplayInitializer implements
         if (listener != null) {
             mRootTaskDisplayAreaOrganizer.unregisterListener(listener);
         }
-        mAutoCaptionController.removeSafeRegionAndCaptionRegion(displayId);
+        mAutoCaptionController.removeCaptionRegion(displayId);
+        mAutoLayoutManager.setOrUpdateSafeRegion(displayId, mSafeRegion);
     }
 
     /**
@@ -110,8 +115,8 @@ public class AutoCaptionPerDisplayInitializer implements
             if (displayAreaInfo == null) {
                 return;
             }
-            mAutoCaptionController.setSafeRegionAndCaptionRegion(displayAreaInfo.displayId,
-                    mSafeRegion,
+            mAutoLayoutManager.setOrUpdateSafeRegion(displayAreaInfo.displayId, mSafeRegion);
+            mAutoCaptionController.setCaptionRegion(displayAreaInfo.displayId,
                     mCaptionRegion,
                     mAutoCaptionBarViewFactoryImpl
             );

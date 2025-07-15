@@ -35,6 +35,7 @@ import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionController;
+import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoShellModule;
 import com.android.wm.shell.automotive.AutoTaskRepository;
 import com.android.wm.shell.common.DisplayController;
@@ -77,10 +78,12 @@ public abstract class CarWMShellModule {
             ShellTaskOrganizer shellTaskOrganizer,
             AutoCaptionController autoCaptionController,
             DisplayController displayController,
-            RootTaskDisplayAreaOrganizer rootTaskDisplayAreaOrganizer) {
+            RootTaskDisplayAreaOrganizer rootTaskDisplayAreaOrganizer,
+            AutoLayoutManager autoLayoutManager) {
         return Optional.of(
                 new AutoCaptionPerDisplayInitializer(context, shellTaskOrganizer,
-                        autoCaptionController, displayController, rootTaskDisplayAreaOrganizer));
+                        autoCaptionController, displayController, rootTaskDisplayAreaOrganizer,
+                        autoLayoutManager));
     }
 
     @BindsOptionalOf

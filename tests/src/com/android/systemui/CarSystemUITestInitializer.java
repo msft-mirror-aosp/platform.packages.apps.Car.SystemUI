@@ -24,6 +24,8 @@ import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiConfigurationProvider;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.dagger.SysUIComponent;
 import com.android.systemui.dagger.WMComponent;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
@@ -43,17 +45,7 @@ public class CarSystemUITestInitializer extends CarSystemUIInitializer {
                 .setScalableUIWMInitializer(Optional.of(mock(ScalableUIWMInitializer.class)))
                 .setTaskPanelInfoRepository(mock(TaskPanelInfoRepository.class))
                 .setScalableUIEventDispatcher(mock(EventDispatcher.class))
-                .setLeftSystemBarWindow(Optional.of(mock(SystemBarWindow.class)))
-                .setTopSystemBarWindow(Optional.of(mock(SystemBarWindow.class)))
-                .setRightSystemBarWindow(Optional.of(mock(SystemBarWindow.class)))
-                .setBottomSystemBarWindow(Optional.of(mock(SystemBarWindow.class)))
-                .setLeftSystemBarConfiguration(
-                        Optional.of(mock(SystemBarWindow.SystemBarConfiguration.class)))
-                .setTopSystemBarConfiguration(
-                        Optional.of(mock(SystemBarWindow.SystemBarConfiguration.class)))
-                .setRightSystemBarConfiguration(
-                        Optional.of(mock(SystemBarWindow.SystemBarConfiguration.class)))
-                .setBottomSystemBarConfiguration(
-                        Optional.of(mock(SystemBarWindow.SystemBarConfiguration.class)));
+                .setSystemUiWindowProvider(mock(SystemUiWindowProvider.class))
+                .setSystemUiConfigurationProvider(mock(SystemUiConfigurationProvider.class));
     }
 }

@@ -45,6 +45,7 @@ import androidx.annotation.VisibleForTesting;
 import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.Event;
+import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.PanelTransaction;
 import com.android.car.scalableui.model.Transition;
 import com.android.car.scalableui.model.Variant;
@@ -71,6 +72,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.annotation.concurrent.GuardedBy;
@@ -184,7 +186,7 @@ public class PanelTransitionCoordinator {
             Panel panel = PanelPool.getInstance().getPanel(
                     p -> p.getPanelId().equals(unchangedPanelId));
             if (panel instanceof BasePanel basePanel) {
-                basePanel.update(autoSurfaceTransaction, tx, /* variant= */ null);
+                basePanel.update(autoSurfaceTransaction, tx);
             }
         }
         autoSurfaceTransaction.apply();
@@ -291,18 +293,31 @@ public class PanelTransitionCoordinator {
     }
 
     /**
+     * See {@link #playPendingAnimations}
+     */
+    @ShellMainThread
+    boolean playPendingAnimations(IBinder transition) {
+        return playPendingAnimations(transition, /* finishCallback= */ null,
+                /* finishTransaction= */ null, /* info */ null);
+    }
+
+    /**
      * Plays the animation in the pending list.
      *
      * @return true if any animations were started
      */
+    @ShellMainThread
     boolean playPendingAnimations(IBinder transition,
-            @Nullable Transitions.TransitionFinishCallback finishCallback) {
+            @Nullable Transitions.TransitionFinishCallback finishCallback,
+            @Nullable SurfaceControl.Transaction finishTransaction,
+            @Nullable TransitionInfo info) {
         PanelTransaction panelTransaction;
         synchronized (mPendingPanelTransactions) {
             panelTransaction = mPendingPanelTransactions.get(transition);
         }
         if (panelTransaction == null || panelTransaction.getAnimators().isEmpty()) {
             logIfDebuggable("No animations for transition " + transition);
+            calculateFinishTransaction(finishTransaction, info, panelTransaction);
             return false;
         }
         logIfDebuggable("playPendingAnimations: " + panelTransaction.getAnimators().size());
@@ -344,7 +359,8 @@ public class PanelTransitionCoordinator {
             public void onAnimationEnd(Animator animation) {
                 Trace.beginSection(TAG + "#onAnimationEnd");
                 super.onAnimationEnd(animation);
-                mayFinishTransaction(finishCallback, panelTransaction, transition);
+                mayFinishTransaction(finishCallback, panelTransaction, transition,
+                        finishTransaction, info);
             }
         });
         mRunningAnimatorSet.start();
@@ -353,13 +369,10 @@ public class PanelTransitionCoordinator {
     }
 
     private void mayFinishTransaction(Transitions.TransitionFinishCallback finishCallback,
-            PanelTransaction panelTransaction, IBinder transition) {
+            PanelTransaction panelTransaction, IBinder transition,
+            @Nullable SurfaceControl.Transaction finishTransaction,
+            @Nullable TransitionInfo info) {
         logIfDebuggable("Animation set finished " + finishCallback);
-
-        if (finishCallback != null) {
-            logIfDebuggable("Finish the transition");
-            finishCallback.onTransitionFinished(/* wct= */ null);
-        }
 
         // Enforce the surface state for panels.
         AutoSurfaceTransaction autoSurfaceTransaction =
@@ -371,15 +384,26 @@ public class PanelTransitionCoordinator {
             if (basePanel == null) {
                 continue;
             }
-            Variant toVariant = entry.getValue().getToVariant();
-            basePanel.update(autoSurfaceTransaction, /* tx= */ null,
-                    toVariant, /* updateChildren= */ true);
+            if (panelTransaction.shouldMergePanelAnimation(entry.getKey())) {
+                // update to the current state of the panel
+                basePanel.update(autoSurfaceTransaction, /* variant= */ null,
+                        /* updateChildren= */ true);
+            } else {
+                Variant toVariant = entry.getValue().getToVariant();
+                basePanel.update(autoSurfaceTransaction, toVariant,
+                        /* updateChildren= */ true);
+            }
         }
+        calculateFinishTransaction(finishTransaction, info, panelTransaction);
         autoSurfaceTransaction.apply();
 
         synchronized (mPendingPanelTransactions) {
             mPendingPanelTransactions.remove(transition);
             mActiveTransition = null;
+        }
+        if (finishCallback != null) {
+            logIfDebuggable("Finish the transition");
+            finishCallback.onTransitionFinished(/* wct= */ null);
         }
         if (panelTransaction.getAnimationEndCallbackRunnable() != null) {
             panelTransaction.getAnimationEndCallbackRunnable().run();
@@ -409,6 +433,40 @@ public class PanelTransitionCoordinator {
         startTransition(transaction);
     }
 
+    @ShellMainThread
+    void mergeAnimation(@NonNull IBinder transition, @NonNull IBinder mergeTarget) {
+        if (!isAnimationRunning() || mergeTarget != mActiveTransition) {
+            stopRunningAnimations(mergeTarget);
+            return;
+        }
+        PanelTransaction transactionTransaction = getPendingPanelTransaction(transition);
+        PanelTransaction mergeTransaction = getPendingPanelTransaction(mergeTarget);
+        if (transactionTransaction == null || mergeTransaction == null
+                || mRunningAnimatorSet == null) {
+            stopRunningAnimations(mergeTarget);
+            return;
+        }
+        mRunningAnimatorSet.pause();
+        for (Map.Entry<String, Transition> entry :
+                transactionTransaction.getPanelTransactionStates()) {
+            Animator animator = mergeTransaction.getAnimators().stream()
+                    .filter(mergeEntry -> mergeEntry.getKey().equals(entry.getKey()))
+                    .map(Map.Entry::getValue)
+                    .findFirst()
+                    .orElse(null);
+            if (animator != null) {
+                // merged animations should freeze their state and should no longer update - remove
+                // all listeners.
+                animator.removeAllListeners();
+                if (animator instanceof ValueAnimator valueAnimator) {
+                    valueAnimator.removeAllUpdateListeners();
+                }
+            }
+            mergeTransaction.addPanelIdToAnimationMerge(entry.getKey());
+        }
+        mRunningAnimatorSet.cancel();
+    }
+
     /**
      * Stops any currently running animation if it belongs to a transition different from the
      * provided one.If an animation is running and its associated transition does not match the
@@ -429,6 +487,64 @@ public class PanelTransitionCoordinator {
             return true;
         }
         return false;
+    }
+
+    void calculateStartTransaction(@NonNull SurfaceControl.Transaction transaction,
+            @NonNull TransitionInfo info) {
+        calculateTransaction(transaction, info, /* useCurrentState= */ panelId -> true);
+    }
+
+    void calculateFinishTransaction(@Nullable SurfaceControl.Transaction transaction,
+            @Nullable TransitionInfo info, @Nullable PanelTransaction panelTransaction) {
+        if (transaction == null || info == null) {
+            return;
+        }
+
+        // If PanelTransaction not supplied, assume false to use final variant for all panels
+        Predicate<String> useCurrentState =
+                panelTransaction != null ? panelTransaction::shouldMergePanelAnimation
+                        : panelId -> false;
+        calculateTransaction(transaction, info, useCurrentState);
+    }
+
+    private void calculateTransaction(SurfaceControl.Transaction transaction,
+            @NonNull TransitionInfo info, Predicate<String> useCurrentState) {
+        Variant variant = null;
+        for (TransitionInfo.Change change : info.getChanges()) {
+            if (change.getTaskInfo() == null) {
+                continue;
+            }
+            TaskPanel taskPanel = mPanelUtils.getTaskPanel(
+                    tp -> tp.getRootTaskId() == change.getTaskInfo().taskId);
+            if (taskPanel == null || taskPanel.getLeash() == null) {
+                Log.e(TAG, "TaskPanel is null " + change.getTaskInfo() + ", or leash is null"
+                        + taskPanel);
+                continue;
+            }
+
+            SurfaceControl leash = taskPanel.getLeash();
+            taskPanel.setLeash(leash);
+            if (!useCurrentState.test(taskPanel.getPanelId())) {
+                // Use the PanelState is up to date even before animation, but not Panel.
+                PanelState ps = StateManager.getPanelState(
+                        taskPanel.getPanelId());
+                if (ps == null) {
+                    Log.e(TAG, "PanelState is null " + taskPanel.getPanelId());
+                    continue;
+                }
+                variant = ps.getCurrentVariant();
+                if (variant == null) {
+                    Log.e(TAG, "Current Variant for panelState is null " + taskPanel.getPanelId());
+                    continue;
+                }
+            }
+            if (DEBUG) {
+                Log.d(TAG, taskPanel.getPanelId()
+                        + (useCurrentState.test(taskPanel.getPanelId())
+                        ? "currentState" : "toVariant"));
+            }
+            taskPanel.update(transaction, variant);
+        }
     }
 
     /**
@@ -655,7 +771,7 @@ public class PanelTransitionCoordinator {
                 String id = entry.getKey();
                 Panel panel = PanelPool.getInstance().getPanel(p -> p.getPanelId().equals(id));
                 if (panel instanceof BasePanel basePanel) {
-                    basePanel.update(autoSurfaceTransaction, tx, /* variant= */ null);
+                    basePanel.update(autoSurfaceTransaction, tx);
                 }
             }
             //TODO(b/404959846): migrate to autoSurfaceTransaction here once api is added.

@@ -116,7 +116,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
         TransitionInfo info = mock(TransitionInfo.class);
         SurfaceControl.Transaction startTransaction = mock(SurfaceControl.Transaction.class);
         SurfaceControl.Transaction finishTransaction = mock(SurfaceControl.Transaction.class);
-        when(mPanelTransitionCoordinator.playPendingAnimations(any(), any())).thenReturn(true);
+        when(mPanelTransitionCoordinator.playPendingAnimations(any(), any(), any(),
+                any())).thenReturn(true);
 
         boolean result = mDelegate.startAnimation(
                 mock(IBinder.class),
@@ -135,7 +136,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
         TransitionInfo info = mock(TransitionInfo.class);
         SurfaceControl.Transaction startTransaction = mock(SurfaceControl.Transaction.class);
         SurfaceControl.Transaction finishTransaction = mock(SurfaceControl.Transaction.class);
-        when(mPanelTransitionCoordinator.playPendingAnimations(any(), any())).thenReturn(false);
+        when(mPanelTransitionCoordinator.playPendingAnimations(any(), any(), any(),
+                any())).thenReturn(false);
 
         boolean result = mDelegate.startAnimation(
                 mock(IBinder.class),
@@ -169,6 +171,6 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
                 mock(IBinder.class),
                 mock(Transitions.TransitionFinishCallback.class));
 
-        verify(mPanelTransitionCoordinator).stopRunningAnimations(any());
+        verify(mPanelTransitionCoordinator).mergeAnimation(any(), any());
     }
 }

@@ -142,8 +142,7 @@ public final class DecorPanel extends BasePanel {
             PanelState panelState = StateManager.getPanelState(getPanelId());
             Variant currentVariant = panelState == null ? null : panelState.getCurrentVariant();
 
-            update(autoSurfaceTransaction, /* tx= */ null, currentVariant,
-                    /* updateChildren= */ true);
+            update(autoSurfaceTransaction, currentVariant, /* updateChildren= */ true);
             autoSurfaceTransaction.apply();
         });
     }
@@ -175,13 +174,22 @@ public final class DecorPanel extends BasePanel {
     }
 
     @Override
-    public void update(
-            @NonNull AutoSurfaceTransaction autoSurfaceTransaction,
+    public void update(@NonNull SurfaceControl.Transaction tx, @Nullable Variant variant) {
+        Log.e(TAG, "Cannot update DecorPanel without AutoSurfaceTransaction");
+    }
+
+    @Override
+    protected void updateInternal(
+            @Nullable AutoSurfaceTransaction autoSurfaceTransaction,
             @Nullable SurfaceControl.Transaction tx,
             @Nullable Variant variant,
             boolean updateChildren) {
         if (getAutoDecor() == null) {
             Log.e(TAG, "AutoDecor is null for " + getPanelId());
+            return;
+        }
+        if (autoSurfaceTransaction == null) {
+            Log.e(TAG, "AutoSurfaceTransaction cannot be null for DecorPanel updates");
             return;
         }
         logIfDebuggable("updateDecorPanelSurface:" + this);

@@ -29,6 +29,8 @@ import android.animation.ValueAnimator;
 import android.os.Binder;
 import android.os.IBinder;
 import android.testing.TestableLooper;
+import android.view.SurfaceControl;
+import android.window.TransitionInfo;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -66,6 +68,10 @@ public class PanelTransitionCoordinatorTest extends SysuiTestCase {
 
     @Mock
     private Transitions.TransitionFinishCallback mFinishCallback;
+    @Mock
+    private SurfaceControl.Transaction mFinishTransaction;
+    @Mock
+    private TransitionInfo mInfo;
     @Mock
     private AutoTaskStackController mAutoTaskStackController;
     @Mock
@@ -111,7 +117,7 @@ public class PanelTransitionCoordinatorTest extends SysuiTestCase {
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             animationStarted.set(mPanelTransitionCoordinator.playPendingAnimations(binder,
-                    mFinishCallback));
+                    mFinishCallback, mFinishTransaction, mInfo));
         });
 
         assertThat(animationStarted.get()).isFalse();
@@ -138,7 +144,7 @@ public class PanelTransitionCoordinatorTest extends SysuiTestCase {
         AtomicBoolean animationStarted = new AtomicBoolean(false);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             animationStarted.set(mPanelTransitionCoordinator.playPendingAnimations(binder,
-                    mFinishCallback));
+                    mFinishCallback, mFinishTransaction, mInfo));
         });
 
         assertThat(animationStarted.get()).isTrue();
@@ -172,7 +178,8 @@ public class PanelTransitionCoordinatorTest extends SysuiTestCase {
 
         // Run the animation on the main looper
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            mPanelTransitionCoordinator.playPendingAnimations(binder, mFinishCallback);
+            mPanelTransitionCoordinator.playPendingAnimations(binder, mFinishCallback,
+                    mFinishTransaction, mInfo);
         });
 
         mPanelTransitionCoordinator.stopRunningAnimations(binder2);
@@ -206,7 +213,8 @@ public class PanelTransitionCoordinatorTest extends SysuiTestCase {
 
         // Run the animation on the main looper
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            mPanelTransitionCoordinator.playPendingAnimations(binder, mFinishCallback);
+            mPanelTransitionCoordinator.playPendingAnimations(binder, mFinishCallback,
+                    mFinishTransaction, mInfo);
         });
 
         mPanelTransitionCoordinator.stopRunningAnimations(binder);

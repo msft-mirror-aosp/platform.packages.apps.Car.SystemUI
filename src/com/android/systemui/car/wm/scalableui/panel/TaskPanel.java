@@ -594,8 +594,8 @@ public final class TaskPanel extends BasePanel {
     }
 
     @Override
-    public void update(
-            @NonNull AutoSurfaceTransaction autoSurfaceTransaction,
+    protected void updateInternal(
+            @Nullable AutoSurfaceTransaction autoSurfaceTransaction,
             @Nullable SurfaceControl.Transaction tx,
             @Nullable Variant variant,
             boolean updateChildren) {
@@ -603,23 +603,37 @@ public final class TaskPanel extends BasePanel {
             Log.e(TAG, "RootStack is null for " + getPanelId());
             return;
         }
+        if (autoSurfaceTransaction == null && tx == null) {
+            // Both parameters being null should not be possible if the caller is properly
+            // using the update methods rather than directly calling internal method.
+            throw new IllegalArgumentException(
+                    "AutoSurfaceTransaction and SurfaceControl.Transaction cannot both be null");
+        }
         logIfDebuggable(
                 "update TaskPanel:" + getPanelId() + ", updateChildren =" + updateChildren + ", "
                         + "variant" + variant);
         int taskId = getRootTaskId();
         Rect bounds = variant == null ? getBounds() : variant.getBounds();
-        autoSurfaceTransaction.setTaskSurfaceCrop(taskId,
-                new Rect(0, 0, bounds.width(), bounds.height()));
-        autoSurfaceTransaction.setTaskSurfacePosition(taskId, bounds.left,
-                bounds.top);
-        autoSurfaceTransaction.setTaskSurfaceCornerRadius(taskId,
-                variant == null ? getCornerRadius() : variant.getCornerRadius());
+        if (autoSurfaceTransaction != null) {
+            autoSurfaceTransaction.setTaskSurfaceCrop(taskId,
+                    new Rect(0, 0, bounds.width(), bounds.height()));
+            autoSurfaceTransaction.setTaskSurfacePosition(taskId, bounds.left,
+                    bounds.top);
+            autoSurfaceTransaction.setTaskSurfaceCornerRadius(taskId,
+                    variant == null ? getCornerRadius() : variant.getCornerRadius());
+        }
 
-        //TODO(b/404959846): move following to AutoSurfaceTransaction
         if (tx != null && getLeash() != null) {
+            //TODO(b/404959846): move following to AutoSurfaceTransaction
             tx.setVisibility(getLeash(), variant == null ? isVisible() : variant.isVisible());
             tx.setAlpha(getLeash(), variant == null ? getAlpha() : variant.getAlpha());
             tx.setLayer(getLeash(), variant == null ? getLayer() : variant.getLayer());
+            if (autoSurfaceTransaction == null) {
+                tx.setCrop(getLeash(), new Rect(0, 0, bounds.width(), bounds.height()));
+                tx.setPosition(getLeash(), bounds.left, bounds.top);
+                tx.setCornerRadius(getLeash(),
+                        variant == null ? getCornerRadius() : variant.getCornerRadius());
+            }
         } else {
             Log.e(TAG, "leash is " + getLeash() + ", tx is " + tx);
         }
@@ -630,6 +644,10 @@ public final class TaskPanel extends BasePanel {
                     systemOverlays(), panelInsets[sideIndex]);
         });
         if (updateChildren) {
+            // autoSurfaceTransaction being null should not be possible if the caller is properly
+            // using the update methods rather than directly calling internal method.
+            Objects.requireNonNull(autoSurfaceTransaction,
+                    "AutoSurfaceTransaction must be supplied to update child decors");
             mMainExecutor.execute(() -> updateDecors(autoSurfaceTransaction, variant));
         }
     }

@@ -26,6 +26,7 @@ import static com.android.wm.shell.Flags.enableAutoTaskStackController;
 
 import android.car.user.CarUserManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.util.Log;
@@ -96,6 +97,12 @@ public class SystemEventHandler implements CoreStartable,
 
                     if (event.getEventType() == USER_LIFECYCLE_EVENT_TYPE_UNLOCKED) {
                         if (event.getUserId() == mUserTracker.getUserId()) {
+                            // TODO(b/432217693): remove once visibility barrier is not home
+                            Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+                            homeIntent.addCategory(Intent.CATEGORY_HOME);
+                            homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivityAsUser(homeIntent, mUserTracker.getUserHandle());
+
                             StateManager.handlePanelReset();
                         } else {
                             Log.i(TAG, "Not current user" + event.getUserId());

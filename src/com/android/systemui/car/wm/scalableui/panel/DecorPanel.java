@@ -31,8 +31,7 @@ import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.PanelUpdatePublisher;
-import com.android.systemui.car.wm.scalableui.EventDispatcher;
-import com.android.systemui.car.wm.scalableui.view.DecorPanelControllerBase;
+import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerInitializer;
 import com.android.wm.shell.automotive.AutoDecor;
 import com.android.wm.shell.automotive.AutoDecorManager;
 import com.android.wm.shell.automotive.AutoSurfaceTransaction;
@@ -54,8 +53,8 @@ public final class DecorPanel extends BasePanel {
 
     private final AutoDecorManager mAutoDecorManager;
     private final PanelUtils mPanelUtils;
+    private final PanelControllerInitializer mPanelControllerInitializer;
     private final ShellExecutor mMainExecutor;
-    private final EventDispatcher mEventDispatcher;
     private final AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
     @VisibleForTesting
     AutoDecor mAutoDecor;
@@ -69,8 +68,8 @@ public final class DecorPanel extends BasePanel {
     public DecorPanel(
             @NonNull Context context,
             AutoDecorManager autoDecorManager,
-            EventDispatcher eventDispatcher,
             PanelUtils panelUtils,
+            PanelControllerInitializer panelControllerInitializer,
             @ExternalMainThread ShellExecutor mainExecutor,
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
             Optional<PanelUpdatePublisher> panelUpdatePublisherOptional,
@@ -79,8 +78,8 @@ public final class DecorPanel extends BasePanel {
         super(context, id, panelUpdatePublisherOptional);
         mAutoDecorManager = autoDecorManager;
         mPanelUtils = panelUtils;
+        mPanelControllerInitializer = panelControllerInitializer;
         mMainExecutor = mainExecutor;
-        mEventDispatcher = eventDispatcher;
         mAutoSurfaceTransactionFactory = autoSurfaceTransactionFactory;
     }
 
@@ -93,11 +92,8 @@ public final class DecorPanel extends BasePanel {
 
     @Nullable
     private View initFromController() {
-        mDecorPanelController = DecorPanelControllerBase.createDecorPanelController(
-                getContext(), getPanelControllerMetadata());
-        if (mDecorPanelController instanceof EventDispatcher.EventProducer eventProducer) {
-            eventProducer.setEventDispatcher(mEventDispatcher);
-        }
+        mDecorPanelController = mPanelControllerInitializer.createDecorPanelController(
+                getPanelControllerMetadata());
         return mDecorPanelController == null ? null : mDecorPanelController.getView();
     }
 

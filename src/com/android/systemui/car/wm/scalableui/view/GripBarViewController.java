@@ -20,7 +20,6 @@ import static com.android.car.scalableui.model.PanelControllerMetadata.DRAG_INC_
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_DRAG_DIRECTION_ID;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,11 +30,20 @@ import com.android.car.scalableui.model.BreakPoint;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.KeyFrameEvent;
 import com.android.car.scalableui.model.PanelControllerMetadata;
+import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
+import com.android.systemui.car.wm.scalableui.panel.controller.DecorPanelViewMap;
+
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.inject.Provider;
 
 /**
  * A Controller for the {@link GripBar}
@@ -55,7 +63,7 @@ import java.util.stream.Collectors;
  * </ul>
  */
 public class GripBarViewController extends DecorPanelControllerBase implements
-        EventDispatcher.EventProducer, GripBar.GripBarEventHandler {
+        GripBar.GripBarEventHandler {
     private static final String TAG = GripBarViewController.class.getSimpleName();
     private static final String DRAG_NO_CHANGE = "noChange";
     private static final String DRAG_INCREASE = "increase";
@@ -84,19 +92,20 @@ public class GripBarViewController extends DecorPanelControllerBase implements
         logIfDebuggable("onclick " + event);
     }
 
-    /**
-     * Sets the {@link EventDispatcher} for the controller.
-     *
-     * @param eventDispatcher The {@link EventDispatcher} to set. Must not be null.
-     */
-    public void setEventDispatcher(EventDispatcher eventDispatcher) {
+    @AssistedInject
+    public GripBarViewController(@Assisted PanelControllerMetadata metadata,
+            @DecorPanelViewMap Map<Class<?>, Provider<View>> decorPanelViewMap,
+            EventDispatcher eventDispatcher) {
+        super(metadata, decorPanelViewMap);
         mEventDispatcher = eventDispatcher;
-    }
-
-    public GripBarViewController(Context context, PanelControllerMetadata metadata) {
-        super(context, metadata);
         mBreakPoints = new ArrayList<>();
         init(metadata);
+    }
+
+    @AssistedFactory
+    public interface Factory extends DecorPanelController.Factory<GripBarViewController> {
+        /** Create an instance of GripBarViewController with the provided PanelControllerMetadata */
+        GripBarViewController create(PanelControllerMetadata metadata);
     }
 
     @SuppressLint("ClickableViewAccessibility")

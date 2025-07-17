@@ -15,7 +15,6 @@
  */
 package com.android.systemui.car.wm.scalableui.view;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.View;
 
@@ -25,99 +24,62 @@ import androidx.annotation.Nullable;
 import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.panel.DecorPanelController;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+
+import javax.inject.Provider;
 
 public abstract class DecorPanelControllerBase implements DecorPanelController {
     private static final String TAG = DecorPanelControllerBase.class.getSimpleName();
     private static final boolean DEBUG = true;
-    protected final Context mContext;
-    protected final String mViewName;
+    @Nullable
+    private final Provider<View> mViewProvider;
+    @Nullable
+    private View mView;
     protected final PanelControllerMetadata mMetadata;
-    protected View mView;
 
-    protected DecorPanelControllerBase(Context context, PanelControllerMetadata metadata) {
-        mContext = context;
+    protected DecorPanelControllerBase(PanelControllerMetadata metadata,
+            Map<Class<?>, Provider<View>> decorPanelViewMap) {
         mMetadata = metadata;
-        mViewName = metadata.getStringConfiguration(PanelControllerMetadata.VIEW_TAG);
-        if (mViewName == null) {
+        String viewName = metadata.getStringConfiguration(PanelControllerMetadata.VIEW_TAG);
+        if (viewName == null) {
             throw new RuntimeException("ViewName must be set " + metadata);
         }
+        mViewProvider = getViewProvider(decorPanelViewMap, viewName);
     }
 
-    private static View initView(Context context, String viewClassName) {
-        if (viewClassName == null) {
-            Log.e(TAG, "viewClassName is null");
-            return null;
-        }
-        try {
-            //TODO(b/422493779): replace the reflection to reduce the security risk.
-            Class<?> clazz = Class.forName(viewClassName);
-            if (View.class.isAssignableFrom(clazz)) {
-                Constructor<?> constructor = clazz.getConstructor(Context.class);
-                return (View) constructor.newInstance(context);
-            }
-        } catch (ClassNotFoundException | NoSuchMethodException e) {
-            // Handle the case where the class is not found
-            Log.e(TAG, "Class or method not found not found: " + viewClassName, e);
-        } catch (InvocationTargetException e) {
-            Log.e(TAG, "InvocationTargetException: " + viewClassName, e);
-        } catch (InstantiationException e) {
-            Log.e(TAG, "InstantiationException: " + viewClassName, e);
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, "IllegalAccessException: " + viewClassName, e);
-        }
-        return null;
-    }
-
-    /**
-     * Initialized a {@link DecorPanelController}.
-     */
     @Nullable
-    public static DecorPanelController createDecorPanelController(@NonNull Context context,
-            @Nullable PanelControllerMetadata metadata) {
-        if (metadata == null) {
-            logIfDebuggable("Metadata is null");
-            return null;
-        }
-        String controllerName = metadata.getControllerName();
-
-        logIfDebuggable("Init view provider with class name" + controllerName);
+    private Provider<View> getViewProvider(Map<Class<?>, Provider<View>> decorPanelViewMap,
+            @NonNull String viewName) {
         try {
-            //TODO(b/422493779): replace the reflection to reduce the security risk.
-            Class<?> clazz = Class.forName(controllerName);
-            if (DecorPanelControllerBase.class.isAssignableFrom(clazz)) {
-                Constructor<?> constructor = clazz.getConstructor(Context.class,
-                        PanelControllerMetadata.class);
-                return (DecorPanelControllerBase) constructor.newInstance(context, metadata);
-            }
-        } catch (ClassNotFoundException | NoSuchMethodException e) {
+            Class<?> clazz = Class.forName(viewName);
+            return decorPanelViewMap.get(clazz);
+        } catch (ClassNotFoundException e) {
             // Handle the case where the class is not found
-            Log.e(TAG, "Class not found: " + controllerName, e);
-        } catch (InvocationTargetException e) {
-            Log.e(TAG, "InvocationTargetException: " + controllerName, e);
-        } catch (InstantiationException e) {
-            Log.e(TAG, "InstantiationException: " + controllerName, e);
-        } catch (IllegalAccessException e) {
-            Log.e(TAG, "IllegalAccessException: " + controllerName, e);
+            Log.e(TAG, "Class not found: " + viewName, e);
         }
+        Log.e(TAG, "Unable to create DecorPanelView: " + viewName);
         return null;
     }
 
-    protected Context getContext() {
-        return mContext;
+    @Nullable
+    private View initView() {
+        if (mViewProvider != null) {
+            return mViewProvider.get();
+        }
+
+        return null;
     }
 
     @Override
     @Nullable
     public View getView() {
-        mView = mView == null ? initView(mContext, mViewName) : mView;
+        mView = mView == null ? initView() : mView;
         return mView;
     }
 
     @Override
     public void refreshTheme() {
-        mView = initView(mContext, mViewName);
+        mView = initView();
     }
 
     protected static void logIfDebuggable(String msg) {

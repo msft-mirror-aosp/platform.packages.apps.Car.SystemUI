@@ -142,6 +142,7 @@ public class CarVolumeDialogImpl
     private View mExpandIcon;
     private boolean mHomeButtonPressedBroadcastReceiverRegistered;
     private boolean mIsUiModeNight;
+    private boolean mIsDragging;
 
     private final CarAudioManager.CarVolumeCallback mVolumeChangeCallback =
             new CarAudioManager.CarVolumeCallback() {
@@ -857,10 +858,12 @@ public class CarVolumeDialogImpl
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
+            mIsDragging = true;
         }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
+            mIsDragging = false;
         }
     }
 
@@ -919,6 +922,9 @@ public class CarVolumeDialogImpl
             }
         }
 
+        if (mIsDragging) {
+            return;
+        }
         if (extraInfos.contains(EXTRA_INFO_SHOW_UI)
                 || extraInfos.contains(EXTRA_INFO_VOLUME_INDEX_CHANGED_BY_AUDIO_SYSTEM)) {
             mPreviouslyDisplayingGroupId = mCurrentlyDisplayingGroupId;

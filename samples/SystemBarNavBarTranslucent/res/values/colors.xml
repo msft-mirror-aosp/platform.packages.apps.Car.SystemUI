@@ -16,5 +16,5 @@
   -->
 
 <resources>
-    <drawable name="nav_bar_background">#2196F3</drawable>
+    <drawable name="nav_bar_background">#55000000</drawable>
 </resources>

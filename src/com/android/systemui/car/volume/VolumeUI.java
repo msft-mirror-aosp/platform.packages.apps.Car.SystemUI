@@ -154,7 +154,9 @@ public class VolumeUI implements CoreStartable, ConfigurationController.Configur
         if (!mEnabled) return;
 
         mCarServiceProvider.addListener(car -> {
-            if (mCarAudioManager != null) {
+            // This null check ensures the volume callback will be registered to the newest
+            // CarAudioManager instance until the volume dialog is initialized.
+            if (mVolumeDialogComponent != null) {
                 // already initialized
                 return;
             }

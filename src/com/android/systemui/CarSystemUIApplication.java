@@ -73,6 +73,8 @@ public class CarSystemUIApplication extends SystemUIApplicationImpl {
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        getTheme().applyStyle(R.style.Theme_SystemUI, true);
+        getTheme().applyStyle(R.style.CarSystemUIThemeOverlay, true);
         Token.applyOemTokenStyle(this);
         super.onConfigurationChanged(newConfig);
     }

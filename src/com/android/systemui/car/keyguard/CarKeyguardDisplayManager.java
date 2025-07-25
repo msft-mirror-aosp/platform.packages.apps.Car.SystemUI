@@ -48,17 +48,15 @@ import kotlinx.coroutines.CoroutineScope;
 public class CarKeyguardDisplayManager extends KeyguardDisplayManager {
     public CarKeyguardDisplayManager(Context context,
             Lazy<NavigationBarController> navigationBarControllerLazy,
-            DisplayTracker displayTracker,
-            Executor mainExecutor, Executor uiBgExecutor,
+            DisplayTracker displayTracker, Executor mainExecutor, Executor uiBgExecutor,
             KeyguardDisplayManager.DeviceStateHelper deviceStateHelper,
             KeyguardStateController keyguardStateController,
-            ConnectedDisplayKeyguardPresentationFactory
-                    connectedDisplayKeyguardPresentationFactory,
+            ConnectedDisplayKeyguardPresentationFactory connectedDisplayKeyguardPresentationFactory,
             Provider<ShadeDisplaysRepository> shadeDisplaysRepositoryProvider,
-            @Application CoroutineScope appScope) {
+            @Application CoroutineScope appScope, boolean isWallpaperPresentationEnabled) {
         super(context, navigationBarControllerLazy, displayTracker, mainExecutor, uiBgExecutor,
                 deviceStateHelper, keyguardStateController,
                 connectedDisplayKeyguardPresentationFactory, shadeDisplaysRepositoryProvider,
-                appScope);
+                appScope, isWallpaperPresentationEnabled);
     }
 }

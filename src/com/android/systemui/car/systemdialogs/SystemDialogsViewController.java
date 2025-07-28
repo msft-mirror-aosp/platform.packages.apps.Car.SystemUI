@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.systemdialogs;
 
-import static android.app.admin.DevicePolicyManager.DEVICE_OWNER_TYPE_FINANCED;
 import static android.view.WindowInsets.Type.statusBars;
 
 import android.app.AlertDialog;
@@ -136,7 +135,7 @@ public class SystemDialogsViewController {
     }
 
     private CharSequence getDeviceMonitoringTitle(CharSequence deviceOwnerOrganization) {
-        if (deviceOwnerOrganization != null && isFinancedDevice()) {
+        if (deviceOwnerOrganization != null && mSecurityController.isFinancedDevice()) {
             return mContext.getString(R.string.monitoring_title_financed_device,
                     deviceOwnerOrganization);
         } else {
@@ -146,7 +145,7 @@ public class SystemDialogsViewController {
 
     private CharSequence getDeviceMonitoringMessage(CharSequence deviceOwnerOrganization) {
         if (deviceOwnerOrganization != null) {
-            if (isFinancedDevice()) {
+            if (mSecurityController.isFinancedDevice()) {
                 return mContext.getString(R.string.monitoring_financed_description_named_management,
                         deviceOwnerOrganization, deviceOwnerOrganization);
             } else {
@@ -212,13 +211,6 @@ public class SystemDialogsViewController {
                 return mContext.getString(R.string.monitoring_description_named_vpn, vpnName);
             }
         }
-    }
-
-    private boolean isFinancedDevice() {
-        return mSecurityController.isDeviceManaged()
-                && mSecurityController.getDeviceOwnerType(
-                mSecurityController.getDeviceOwnerComponentOnAnyUser())
-                == DEVICE_OWNER_TYPE_FINANCED;
     }
 
     private void applyCarSysUIDialogFlags(AlertDialog dialog) {

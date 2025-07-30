@@ -16,7 +16,6 @@
 package com.android.systemui.car.wm.scalableui;
 
 import static com.android.car.scalableui.panel.ReservedIdProvider.SYSTEM_PANEL_IDS;
-import static com.android.systemui.car.Flags.scalableUiDesignCompose;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -32,6 +31,8 @@ import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.PanelPool;
 import com.android.systemui.R;
+import com.android.systemui.car.flags.Flag;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.panel.BasePanel;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
@@ -48,9 +49,12 @@ public class PanelConfigReader {
     private final TaskPanel.Factory mTaskPanelFactory;
     private final DecorPanel.Factory mDecorPanelFactory;
     private final BasePanel.Factory mBasePanelFactory;
+    private final FlagManager mFlagManager;
 
     public PanelConfigReader(Context context, TaskPanel.Factory taskPanelFactory,
-            DecorPanel.Factory decorPanelFactory, BasePanel.Factory basePanelFactory) {
+            DecorPanel.Factory decorPanelFactory, BasePanel.Factory basePanelFactory,
+            FlagManager flagManager) {
+        mFlagManager = flagManager;
         debugLog("PanelConfig initialized user: " + ActivityManager.getCurrentUser());
         mContext = context;
         mTaskPanelFactory = taskPanelFactory;
@@ -77,7 +81,7 @@ public class PanelConfigReader {
             Trace.beginSection(TAG + "#init");
             StateManager.clearStates();
 
-            if (scalableUiDesignCompose()) {
+            if (mFlagManager.isEnabled(Flag.ScalableUiDesignCompose)) {
                 loadFromDcf();
             } else {
                 loadFromXml();

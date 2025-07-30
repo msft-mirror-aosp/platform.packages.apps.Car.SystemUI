@@ -18,6 +18,7 @@ package com.android.systemui.car.wm.scalableui.panel;
 import static com.android.car.scalableui.model.Restart.RESTART_POLICY_DEFAULT;
 import static com.android.car.scalableui.model.Restart.RESTART_POLICY_LAST;
 
+import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -30,14 +31,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.UserHandle;
-import android.platform.test.annotations.RequiresFlagsEnabled;
 import android.platform.test.flag.junit.CheckFlagsRule;
 import android.platform.test.flag.junit.DeviceFlagsValueProvider;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import com.android.car.scalableui.Flags;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.Restart;
@@ -46,6 +45,8 @@ import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.ShellSyncExecutor;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.flags.Flag;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerInitializer;
@@ -125,6 +126,8 @@ public class TaskPanelTest extends CarSysuiTestCase {
     private ActivityManager.RunningTaskInfo mRunningTaskInfo;
     @Mock
     private PanelUpdatePublisher mPanelUpdatePublisher;
+    @Mock
+    private FlagManager mFlagManager;
 
     @Before
     public void setUp() {
@@ -136,9 +139,9 @@ public class TaskPanelTest extends CarSysuiTestCase {
                         mPanelUtils, mTaskPanelInfoRepository, mAutoDecorManager, mEventDispatcher,
                         mPanelControllerInitializer, mAutoLayoutManager, mMainExecutor,
                         mAutoSurfaceTransactionFactory, Optional.of(mPanelUpdatePublisher),
+                        mFlagManager,
                         TASK_PANEL_ID));
         when(mFactory.create(any())).thenReturn(mTaskPanel);
-
         when(mAutoSurfaceTransactionFactory.createTransaction(any())).thenReturn(
                 mAutoSurfaceTransaction);
 
@@ -174,8 +177,8 @@ public class TaskPanelTest extends CarSysuiTestCase {
     }
 
     @Test
-    @RequiresFlagsEnabled(Flags.FLAG_SCALABLE_UI_TASK_AUTO_RESTART)
     public void scheduleRestartAttempt_withLastPolicy_restartsLastTask() {
+        assumeTrue(mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart));
         Intent intent = new Intent("TEST_ACTION");
         mRunningTaskInfo.baseIntent = intent;
         when(mPanelState.getRestart()).thenReturn(mRestart);
@@ -188,8 +191,8 @@ public class TaskPanelTest extends CarSysuiTestCase {
     }
 
     @Test
-    @RequiresFlagsEnabled(Flags.FLAG_SCALABLE_UI_TASK_AUTO_RESTART)
     public void scheduleRestartAttempt_withDefaultPolicy_restartsDefaultTask() {
+        assumeTrue(mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart));
         Intent intent = new Intent("DEFAULT_ACTION");
         doReturn(intent).when(mTaskPanel).getDefaultIntent();
         when(mPanelState.getRestart()).thenReturn(mRestart);
@@ -202,8 +205,8 @@ public class TaskPanelTest extends CarSysuiTestCase {
     }
 
     @Test
-    @RequiresFlagsEnabled(Flags.FLAG_SCALABLE_UI_TASK_AUTO_RESTART)
     public void scheduleRestartAttempt_maxRetriesReached_sendsEmptyEvent() {
+        assumeTrue(mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart));
         when(mPanelState.getRestart()).thenReturn(mRestart);
         when(mRestart.getMaxRetry()).thenReturn(0);
 

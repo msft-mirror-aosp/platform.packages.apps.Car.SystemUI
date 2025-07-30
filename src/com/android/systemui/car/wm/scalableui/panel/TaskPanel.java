@@ -17,11 +17,8 @@ package com.android.systemui.car.wm.scalableui.panel;
 
 import static android.view.WindowInsets.Type.systemOverlays;
 
-import static com.android.car.scalableui.Flags.enableDecor;
-import static com.android.car.scalableui.Flags.scalableUiTaskAutoRestart;
 import static com.android.car.scalableui.model.Restart.RESTART_POLICY_DEFAULT;
 import static com.android.car.scalableui.model.Restart.RESTART_POLICY_LAST;
-import static com.android.systemui.car.Flags.displayCompatibilityAutoDecorSafeRegion;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_PANEL_EMPTY_EVENT_ID;
 
 import android.annotation.SuppressLint;
@@ -56,6 +53,8 @@ import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.car.scalableui.panel.TaskPanelController;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.flags.Flag;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.AutoCaptionBarViewFactoryImpl;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
@@ -145,6 +144,8 @@ public final class TaskPanel extends BasePanel {
     private final ShellExecutor mMainExecutor;
     @NonNull
     private final AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
+    @NonNull
+    private final FlagManager mFlagManager;
 
     @AssistedInject
     public TaskPanel(AutoTaskStackController autoTaskStackController,
@@ -162,6 +163,7 @@ public final class TaskPanel extends BasePanel {
             @ShellMainThread ShellExecutor mainExecutor,
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
             Optional<PanelUpdatePublisher> panelUpdatePublisherOptional,
+            FlagManager flagManager,
             @Assisted String id) {
         super(context, id, panelUpdatePublisherOptional);
         mAutoTaskStackController = autoTaskStackController;
@@ -169,6 +171,7 @@ public final class TaskPanel extends BasePanel {
         mAutoTaskStackHelper = autoTaskStackHelper;
         mTaskPanelInfoRepository = taskPanelInfoRepository;
         mEventDispatcher = dispatcher;
+        mFlagManager = flagManager;
         mPersistedActivities = new ArraySet<>();
         mPanelUtils = panelUtils;
         mAutoCaptionController = autoCaptionController;
@@ -317,7 +320,8 @@ public final class TaskPanel extends BasePanel {
      */
     public boolean hasRestart() {
         PanelState panelState = getPanelState();
-        return scalableUiTaskAutoRestart() && panelState != null && panelState.getRestart() != null;
+        return mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart) && panelState != null
+                && panelState.getRestart() != null;
     }
 
     @Override
@@ -331,7 +335,7 @@ public final class TaskPanel extends BasePanel {
         AutoTaskStackState autoTaskStackState = new AutoTaskStackState(getBounds(), isVisible(),
                 getLayer());
         autoTaskStackTransaction.setTaskStackState(getRootStack().getId(), autoTaskStackState);
-        if (displayCompatibilityAutoDecorSafeRegion()) {
+        if (mFlagManager.isEnabled(Flag.DisplayCompatibilityAutoDecorSafeRegion)) {
             autoTaskStackTransaction.setSafeRegionBounds(getRootStack().getId(), getSafeBounds());
         }
         if (isVisible()) {
@@ -357,10 +361,9 @@ public final class TaskPanel extends BasePanel {
     private void updateDecors(@NonNull AutoSurfaceTransaction autoSurfaceTransaction,
             @Nullable Variant variant) {
         logIfDebuggable("Update " + getPanelId() + " decors, with variant" + variant);
-        if (!enableDecor()) {
+        if (!mFlagManager.isEnabled(Flag.EnableDecor)) {
             return;
         }
-
 
         if (getRootStack() == null) {
             return;
@@ -719,7 +722,7 @@ public final class TaskPanel extends BasePanel {
     }
 
     private void setupToolbarRegion() {
-        if (!displayCompatibilityAutoDecorSafeRegion()) {
+        if (!mFlagManager.isEnabled(Flag.DisplayCompatibilityAutoDecorSafeRegion)) {
             return;
         }
         if (mRootTaskStack == null) {
@@ -733,7 +736,7 @@ public final class TaskPanel extends BasePanel {
                     "Invalid Safe Bounds, not setting toolbar region for panel: " + getPanelId());
             return;
         }
-        if (getBounds() == null || getBounds().isEmpty()) {
+        if (getBounds().isEmpty()) {
             logVerbose("Null or invalid panel bounds, not setting safe region for panel: "
                     + getPanelId());
             return;

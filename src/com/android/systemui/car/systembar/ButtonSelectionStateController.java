@@ -21,9 +21,6 @@ import static android.app.WindowConfiguration.WINDOWING_MODE_FULLSCREEN;
 import static android.app.WindowConfiguration.WINDOWING_MODE_MULTI_WINDOW;
 import static android.window.DisplayAreaOrganizer.FEATURE_DEFAULT_TASK_CONTAINER;
 
-import static com.android.systemui.car.Flags.scalableUi;
-import static com.android.wm.shell.Flags.enableAutoTaskStackController;
-
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.app.ActivityTaskManager;
@@ -42,7 +39,8 @@ import android.view.ViewGroup;
 
 import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.PanelState;
-import com.android.systemui.R;
+import com.android.systemui.car.flags.Flag;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.dagger.SysUISingleton;
 
@@ -69,6 +67,7 @@ public class ButtonSelectionStateController {
 
     protected final Context mContext;
     protected final TaskPanelInfoRepository mTaskPanelInfoRepository;
+    private final FlagManager mFlagManager;
     protected ButtonMap mButtonsByCategory = new ButtonMap();
     protected ButtonMap mButtonsByPackage = new ButtonMap();
     protected ButtonMap mButtonsByComponentName = new ButtonMap();
@@ -100,17 +99,19 @@ public class ButtonSelectionStateController {
                 }
             };
 
-    public ButtonSelectionStateController(Context context) {
-        this(context, null);
+    public ButtonSelectionStateController(Context context, FlagManager flagManager) {
+        this(context, null, flagManager);
     }
 
     public ButtonSelectionStateController(Context context,
-            TaskPanelInfoRepository taskPanelInfoRepository) {
+            TaskPanelInfoRepository taskPanelInfoRepository,
+            FlagManager flagManager) {
         mContext = context;
         mTaskPanelInfoRepository = taskPanelInfoRepository;
         mSelectedButtons = new HashSet<>();
         mSelectedButtonsForPanelApp = new HashSet<>();
         mSelectedButtonsForPanelVisibility = new HashSet<>();
+        mFlagManager = flagManager;
         if (isScalableUIEnabled() && mTaskPanelInfoRepository != null) {
             mTaskPanelInfoRepository.addChangeListener(mTaskPanelListener);
             StateManager.getInstance().addPanelStateObserver(mPanelStateObserver);
@@ -142,7 +143,9 @@ public class ButtonSelectionStateController {
         mButtonsByPackage.values().forEach(set -> set.remove(button));
         mButtonsByComponentName.values().forEach(set -> set.remove(button));
         mSelectedButtons.remove(button);
-        mRegisteredViews.remove(button);
+        synchronized (mRegisteredViews) {
+            mRegisteredViews.remove(button);
+        }
     }
 
     /**
@@ -318,16 +321,18 @@ public class ButtonSelectionStateController {
 
     protected void updatePanelButtonsSelection() {
         mContext.getMainExecutor().execute(() -> {
-            mRegisteredViews.forEach(button -> {
-                if (mSelectedButtonsForPanelVisibility.contains(button)
-                        || mSelectedButtonsForPanelApp.contains(button)) {
-                    button.setSelected(true);
-                    mSelectedButtons.add(button);
-                } else {
-                    button.setSelected(false);
-                    mSelectedButtons.remove(button);
-                }
-            });
+            synchronized (mRegisteredViews) {
+                mRegisteredViews.forEach(button -> {
+                    if (mSelectedButtonsForPanelVisibility.contains(button)
+                            || mSelectedButtonsForPanelApp.contains(button)) {
+                        button.setSelected(true);
+                        mSelectedButtons.add(button);
+                    } else {
+                        button.setSelected(false);
+                        mSelectedButtons.remove(button);
+                    }
+                });
+            }
         });
     }
 
@@ -353,24 +358,26 @@ public class ButtonSelectionStateController {
      * Add navigation button to this controller if it uses selection state.
      */
     private void addButtonWithSelectionState(CarSystemBarButton carSystemBarButton) {
-        if (mRegisteredViews.contains(carSystemBarButton)) {
-            return;
-        }
-        String[] categories = carSystemBarButton.getCategories();
-        for (int i = 0; i < categories.length; i++) {
-            mButtonsByCategory.add(categories[i], carSystemBarButton);
-        }
+        synchronized (mRegisteredViews) {
+            if (mRegisteredViews.contains(carSystemBarButton)) {
+                return;
+            }
+            String[] categories = carSystemBarButton.getCategories();
+            for (int i = 0; i < categories.length; i++) {
+                mButtonsByCategory.add(categories[i], carSystemBarButton);
+            }
 
-        String[] packages = carSystemBarButton.getPackages();
-        for (int i = 0; i < packages.length; i++) {
-            mButtonsByPackage.add(packages[i], carSystemBarButton);
-        }
-        String[] componentNames = carSystemBarButton.getComponentName();
-        for (int i = 0; i < componentNames.length; i++) {
-            mButtonsByComponentName.add(componentNames[i], carSystemBarButton);
-        }
+            String[] packages = carSystemBarButton.getPackages();
+            for (int i = 0; i < packages.length; i++) {
+                mButtonsByPackage.add(packages[i], carSystemBarButton);
+            }
+            String[] componentNames = carSystemBarButton.getComponentName();
+            for (int i = 0; i < componentNames.length; i++) {
+                mButtonsByComponentName.add(componentNames[i], carSystemBarButton);
+            }
 
-        mRegisteredViews.add(carSystemBarButton);
+            mRegisteredViews.add(carSystemBarButton);
+        }
 
         if (isScalableUIEnabled() && mTaskPanelInfoRepository != null) {
             selectForInitialPanelTaskState(carSystemBarButton);
@@ -449,8 +456,7 @@ public class ButtonSelectionStateController {
     }
 
     private boolean isScalableUIEnabled() {
-        return scalableUi() && enableAutoTaskStackController()
-                && mContext.getResources().getBoolean(R.bool.config_enableScalableUI);
+        return mFlagManager.isEnabled(Flag.ScalableUIEnabled);
     }
 
     // simple multi-map

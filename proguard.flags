@@ -22,3 +22,6 @@
 -keep class com.android.systemui.car.wm.scalableui.view.ViewProvider { *; }
 -keep class com.android.systemui.car.wm.scalableui.view.GripBar { *; }
 -keep class com.android.systemui.car.wm.scalableui.view.PanelOverlay { *; }
+
+-keep class com.android.systemui.car.Flags { *; }
+-keep class com.android.car.scalableui.Flags { *; }

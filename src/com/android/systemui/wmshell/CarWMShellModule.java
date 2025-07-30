@@ -16,13 +16,10 @@
 
 package com.android.systemui.wmshell;
 
-import static com.android.car.scalableui.Flags.enableExtPanelUpdates;
 import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_BOTTOM_ID;
 import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_LEFT_ID;
 import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_RIGHT_ID;
 import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_TOP_ID;
-import static com.android.systemui.car.Flags.scalableUi;
-import static com.android.wm.shell.Flags.enableAutoTaskStackController;
 
 import android.content.Context;
 import android.os.Handler;
@@ -31,8 +28,9 @@ import android.view.IWindowManager;
 import androidx.annotation.NonNull;
 
 import com.android.car.scalableui.panel.PanelUpdatePublisher;
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.flags.Flag;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.AutoDisplayCompatWindowDecorViewModel;
 import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
@@ -199,23 +197,26 @@ public abstract class CarWMShellModule {
             Context context,
             TaskPanel.Factory taskPanelFactory,
             DecorPanel.Factory decorPanelFactory,
-            BasePanel.Factory basePanelFactory
+            BasePanel.Factory basePanelFactory,
+            FlagManager flagManager
     ) {
-        if (isScalableUIEnabled(context)) {
+        if (flagManager.isEnabled(Flag.ScalableUIEnabled)) {
             return Optional.of(new PanelConfigReader(
                     context,
                     taskPanelFactory,
                     decorPanelFactory,
-                    basePanelFactory));
+                    basePanelFactory,
+                    flagManager));
         }
         return Optional.empty();
     }
 
     @WMSingleton
     @Provides
-    static Optional<ActionConfigReader> providesActionConfigReader(Context context) {
-        if (isScalableUIEnabled(context)) {
-            return Optional.of(new ActionConfigReader(context));
+    static Optional<ActionConfigReader> providesActionConfigReader(Context context,
+            FlagManager flagManager) {
+        if (flagManager.isEnabled(Flag.ScalableUIEnabled)) {
+            return Optional.of(new ActionConfigReader(context, flagManager));
         }
         return Optional.empty();
     }
@@ -226,8 +227,10 @@ public abstract class CarWMShellModule {
             Context context,
             Optional<ActionConfigReader> actionConfigReaderOptional,
             Optional<PanelConfigReader> panelConfigReaderOptional,
-            Lazy<PanelAutoTaskStackTransitionHandlerDelegate> delegate) {
-        if (isScalableUIEnabled(context) && panelConfigReaderOptional.isPresent()) {
+            Lazy<PanelAutoTaskStackTransitionHandlerDelegate> delegate,
+            FlagManager flagManager) {
+        if (flagManager.isEnabled(Flag.ScalableUIEnabled)
+                && panelConfigReaderOptional.isPresent()) {
             return Optional.of(
                     new ScalableUIWMInitializer(shellInit, actionConfigReaderOptional.get(),
                             panelConfigReaderOptional.get(), delegate.get()));
@@ -235,15 +238,18 @@ public abstract class CarWMShellModule {
         return Optional.empty();
     }
 
-    private static boolean isScalableUIEnabled(Context context) {
-        return scalableUi() && enableAutoTaskStackController()
-                && context.getResources().getBoolean(R.bool.config_enableScalableUI);
+    @WMSingleton
+    @Provides
+    static FlagManager provideFlagManager(Context context) {
+        return new FlagManager(context);
     }
 
     @WMSingleton
     @Provides
-    static Optional<ScalableUIPanelUpdateImpl> provideScalableUIPanelUpdateImpl(Context context) {
-        if (isScalableUIEnabled(context) && enableExtPanelUpdates()) {
+    static Optional<ScalableUIPanelUpdateImpl> provideScalableUIPanelUpdateImpl(
+            FlagManager flagManager) {
+        if (flagManager.isEnabled(Flag.ScalableUIEnabled) && flagManager.isEnabled(
+                Flag.EnableExtPanelUpdates)) {
             return Optional.of(new ScalableUIPanelUpdateImpl());
         }
         return Optional.empty();

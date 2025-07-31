@@ -38,6 +38,7 @@ import com.android.systemui.car.wm.scalableui.ActionConfigReader;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.PanelAutoTaskStackTransitionHandlerDelegate;
 import com.android.systemui.car.wm.scalableui.PanelConfigReader;
+import com.android.systemui.car.wm.scalableui.ScalableUIDumpsys;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.scalableui.panel.BasePanel;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
@@ -228,12 +229,13 @@ public abstract class CarWMShellModule {
             Optional<ActionConfigReader> actionConfigReaderOptional,
             Optional<PanelConfigReader> panelConfigReaderOptional,
             Lazy<PanelAutoTaskStackTransitionHandlerDelegate> delegate,
+            ScalableUIDumpsys scalableUIDumpsys,
             FlagManager flagManager) {
         if (flagManager.isEnabled(Flag.ScalableUIEnabled)
                 && panelConfigReaderOptional.isPresent()) {
             return Optional.of(
                     new ScalableUIWMInitializer(shellInit, actionConfigReaderOptional.get(),
-                            panelConfigReaderOptional.get(), delegate.get()));
+                            panelConfigReaderOptional.get(), delegate.get(), scalableUIDumpsys));
         }
         return Optional.empty();
     }

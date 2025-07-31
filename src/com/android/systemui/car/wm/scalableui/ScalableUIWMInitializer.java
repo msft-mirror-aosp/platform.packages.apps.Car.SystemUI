@@ -28,20 +28,24 @@ public class ScalableUIWMInitializer {
     private final PanelConfigReader mPanelConfigReader;
     private final PanelAutoTaskStackTransitionHandlerDelegate
             mPanelAutoTaskStackTransitionHandlerDelegate;
+    private final ScalableUIDumpsys mScalableUIDumpsys;
 
     public ScalableUIWMInitializer(ShellInit shellInit,
             ActionConfigReader actionConfigReader,
             PanelConfigReader panelConfigReader,
-            PanelAutoTaskStackTransitionHandlerDelegate delegate) {
+            PanelAutoTaskStackTransitionHandlerDelegate delegate,
+            ScalableUIDumpsys scalableUIDumpsys) {
         shellInit.addInitCallback(this::onInit, this);
         mActionConfigReader = actionConfigReader;
         mPanelConfigReader = panelConfigReader;
         mPanelAutoTaskStackTransitionHandlerDelegate = delegate;
+        mScalableUIDumpsys = scalableUIDumpsys;
     }
 
     private void onInit() {
         mPanelAutoTaskStackTransitionHandlerDelegate.init();
         mPanelConfigReader.init();
         mActionConfigReader.init();
+        mScalableUIDumpsys.init();
     }
 }

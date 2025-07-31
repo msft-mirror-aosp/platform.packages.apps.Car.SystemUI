@@ -124,10 +124,14 @@ import javax.inject.Provider;
                 WindowRootViewBlurNotSupportedModule.class
         },
         subcomponents = {
-                SystemUIDisplaySubcomponent.class
+                CarSysUIDisplaySubcomponent.class
         }
 )
 abstract class CarSystemUIModule {
+
+    @Binds
+    abstract SystemUIDisplaySubcomponent.Factory displaySubComponentFactory(
+            CarSysUIDisplaySubcomponent.Factory factory);
 
     @SysUISingleton
     @Provides

@@ -16,13 +16,9 @@
 package com.android.systemui.car.wm.scalableui;
 
 import static android.app.WindowConfiguration.ACTIVITY_TYPE_HOME;
-import static android.view.WindowInsets.Type.systemOverlays;
 import static android.view.WindowManager.TRANSIT_FLAG_AVOID_MOVE_TO_FRONT;
 
-import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.COMPONENT_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.EMPTY_EVENT_ID;
-import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PACKAGE_TOKEN_ID;
-import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_TOKEN_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_HOME_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_CLOSE_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_OPEN_EVENT_ID;
@@ -30,7 +26,6 @@ import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventCon
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
@@ -42,11 +37,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.car.internal.dep.Trace;
-import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.Event;
-import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.PanelTransaction;
-import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.R;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
@@ -61,7 +53,6 @@ import com.android.wm.shell.shared.TransitionUtil;
 import com.android.wm.shell.transition.Transitions;
 
 import java.util.Map;
-import java.util.stream.IntStream;
 
 import javax.inject.Inject;
 
@@ -77,26 +68,26 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
 
     private final AutoTaskStackController mAutoTaskStackController;
-    private final TaskPanelTransitionCoordinator mTaskPanelTransitionCoordinator;
+    private final PanelTransitionCoordinator mPanelTransitionCoordinator;
     private final Context mContext;
     private final PanelUtils mPanelUtils;
-    private final TaskPanelInfoRepository mTaskPanelInfoRepository;
+    private final TaskPanelInfoRepository mPanelInfoRepository;
     private final AutoLayoutManager mAutoLayoutManager;
 
     @Inject
     public PanelAutoTaskStackTransitionHandlerDelegate(
             Context context,
             AutoTaskStackController autoTaskStackController,
-            TaskPanelTransitionCoordinator taskPanelTransitionCoordinator,
+            PanelTransitionCoordinator panelTransitionCoordinator,
             PanelUtils panelUtils,
-            TaskPanelInfoRepository taskPanelInfoRepository,
+            TaskPanelInfoRepository panelInfoRepository,
             AutoLayoutManager autoLayoutManager
     ) {
         mAutoTaskStackController = autoTaskStackController;
-        mTaskPanelTransitionCoordinator = taskPanelTransitionCoordinator;
+        mPanelTransitionCoordinator = panelTransitionCoordinator;
         mContext = context;
         mPanelUtils = panelUtils;
-        mTaskPanelInfoRepository = taskPanelInfoRepository;
+        mPanelInfoRepository = panelInfoRepository;
         mAutoLayoutManager = autoLayoutManager;
     }
 
@@ -123,8 +114,9 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             Event event = calculateEvent(request);
             PanelTransaction panelTransaction = EventDispatcher.getTransaction(event);
             AutoTaskStackTransaction wct =
-                    mTaskPanelTransitionCoordinator.createAutoTaskStackTransaction(transition,
-                            panelTransaction);
+                    mPanelTransitionCoordinator.createAutoTaskStackTransaction(transition,
+                            panelTransaction, event);
+            mPanelTransitionCoordinator.resetUnpreparedDecorPanel(panelTransaction);
             if (DEBUG) {
                 Log.d(TAG, "handleRequest: COMPLETED " + wct);
             }
@@ -132,7 +124,9 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             return wct;
         }
         Trace.endSection();
-        return null;
+        // return empty transaction so the delegate still gets a start animation callback to
+        // apply the relevant changes in startAnimation.
+        return new AutoTaskStackTransaction();
     }
 
     private boolean shouldHandleByPanels(@NonNull TransitionRequestInfo request) {
@@ -152,85 +146,26 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             @NonNull Transitions.TransitionFinishCallback finishCallback) {
         if (DEBUG) {
             Log.d(TAG, "startAnimation INFO = " + info
-                    + ", changedTaskStacks" + changedTaskStacks
-                    + ", start transaction" + startTransaction.getId()
-                    + ", finishTransaction" + finishTransaction.getId());
+                    + ", changedTaskStacks=" + changedTaskStacks
+                    + ", start transaction=" + startTransaction.getId()
+                    + ", finishTransaction=" + finishTransaction.getId());
         }
 
-        mTaskPanelTransitionCoordinator.maybeResolveConflict(changedTaskStacks, transition);
-        mTaskPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
+        mPanelTransitionCoordinator.reconcileAutoTaskStackState(transition, changedTaskStacks,
+                info);
+        mPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
 
         Trace.beginSection(TAG + "#startAnimation");
 
-        calculateTransaction(startTransaction, info, /* isFinish= */ false);
-        calculateTransaction(finishTransaction, info, /* isFinish= */ true);
+        mPanelTransitionCoordinator.calculateStartTransaction(startTransaction, info);
+        // Its expected for the auto transition handler delegate to apply startTransaction for now.
+        // TODO(b/421966313) Think about applying this in car-wm-shell instead.
         startTransaction.apply();
 
-        boolean animationStarted = mTaskPanelTransitionCoordinator.playPendingAnimations(transition,
-                finishCallback);
+        boolean animationStarted = mPanelTransitionCoordinator.playPendingAnimations(transition,
+                finishCallback, finishTransaction, info);
         Trace.endSection();
         return animationStarted;
-    }
-
-    private void calculateTransaction(SurfaceControl.Transaction transaction,
-            @NonNull TransitionInfo info, boolean isFinish) {
-        SurfaceControl leash = null;
-        Rect pos = null;
-        boolean visibility;
-        float cornerRadius;
-        int layer;
-        for (TransitionInfo.Change change : info.getChanges()) {
-            if (change.getTaskInfo() == null) {
-                continue;
-            }
-            TaskPanel taskPanel = mPanelUtils.getTaskPanel(
-                    tp -> tp.getRootTaskId() == change.getTaskInfo().taskId);
-            if (taskPanel == null) {
-                continue;
-            }
-
-            leash = change.getLeash();
-            if (isFinish) {
-                // Use the PanelState is up to date even before animation, but not Panel.
-                PanelState ps = StateManager.getPanelState(
-                        taskPanel.getPanelId());
-                if (ps == null) {
-                    Log.e(TAG, "PanelState is null " + taskPanel.getPanelId());
-                    continue;
-                }
-                Variant currentVariant = ps.getCurrentVariant();
-                if (currentVariant == null) {
-                    Log.e(TAG, "Current Variant for panelState is null " + taskPanel.getPanelId());
-                    continue;
-                }
-                pos = currentVariant.getBounds();
-                visibility = currentVariant.isVisible();
-                cornerRadius = currentVariant.getCornerRadius();
-                layer = currentVariant.getLayer();
-            } else {
-                // Start from current panel surface bounds rather than using window bounds from
-                // change.
-                pos = taskPanel.getBounds();
-                visibility = taskPanel.isVisible();
-                cornerRadius = taskPanel.getCornerRadius();
-                layer = taskPanel.getLayer();
-            }
-            if (DEBUG) {
-                Log.d(TAG, taskPanel.getPanelId() + (isFinish ? "end" : "start") + " bounds=" + pos
-                        + ", visibility=" + visibility + ", cornerRadius" + cornerRadius
-                        + ", layer=" + layer);
-            }
-            transaction.setPosition(leash, pos.left, pos.top);
-            transaction.setCornerRadius(leash, cornerRadius);
-            transaction.setVisibility(leash, visibility);
-            transaction.setLayer(leash, layer);
-            taskPanel.setLeash(leash);
-            Rect[] panelInsets = mPanelUtils.getTaskPanelInsets(taskPanel);
-            IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
-                mAutoLayoutManager.addOrUpdateInsets(taskPanel.getRootStack(), sideIndex,
-                        systemOverlays(), panelInsets[sideIndex]);
-            });
-        }
     }
 
     private Event calculateEvent(TransitionRequestInfo request) {
@@ -244,8 +179,9 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             ComponentName component = request.getTriggerTask().baseActivity;
             String packageString = component != null ? component.getPackageName() : null;
             // Multiple SUW activities have home as categories. Panels should treat them the same.
-            return new Event.Builder(SYSTEM_HOME_EVENT_ID).addToken(PACKAGE_TOKEN_ID,
-                    packageString).build();
+            return new Event.Builder(SYSTEM_HOME_EVENT_ID)
+                    .setPackageName(packageString)
+                    .build();
         }
 
         if ((request.getFlags() & TRANSIT_FLAG_AVOID_MOVE_TO_FRONT)
@@ -281,13 +217,13 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
 
         if (TransitionUtil.isClosingType(request.getType())) {
             return new Event.Builder(SYSTEM_TASK_CLOSE_EVENT_ID)
-                    .addToken(PANEL_TOKEN_ID, panelId)
-                    .addToken(COMPONENT_TOKEN_ID, componentString)
+                    .setPanelId(panelId)
+                    .setComponentName(componentString)
                     .build();
         } else if (TransitionUtil.isOpeningType(request.getType())) {
             return new Event.Builder(SYSTEM_TASK_OPEN_EVENT_ID)
-                    .addToken(PANEL_TOKEN_ID, panelId)
-                    .addToken(COMPONENT_TOKEN_ID, componentString)
+                    .setPanelId(panelId)
+                    .setComponentName(componentString)
                     .build();
         } else {
             Log.e(TAG, "Unknown transition type " + request.getType());
@@ -301,11 +237,15 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             @Nullable SurfaceControl.Transaction finishTransaction) {
         if (DEBUG) {
             Log.d(TAG, "onTransitionConsumed=" + aborted + ", transition=" + transition
-                    + ", changedTaskStacks" + changedTaskStacks + ", finishTransaction="
-                    + finishTransaction);
+                    + ", changedTaskStacks" + changedTaskStacks);
         }
         Trace.beginSection(TAG + "#onTransitionConsumed");
-        mTaskPanelTransitionCoordinator.stopRunningAnimations(transition);
+        boolean stopped = mPanelTransitionCoordinator.stopRunningAnimations(transition);
+        if (!stopped && aborted) {
+            // If the transition was aborted and the animation was never run, this transition likely
+            // had no shell-related changes. Run the animations now to apply non-shell changes.
+            mPanelTransitionCoordinator.playPendingAnimations(transition);
+        }
         Trace.endSection();
     }
 
@@ -319,7 +259,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             Log.d(TAG, "mergeAnimation " + transition);
         }
         Trace.beginSection(TAG + "#mergeAnimation");
-        mTaskPanelTransitionCoordinator.stopRunningAnimations(transition);
+        mPanelTransitionCoordinator.mergeAnimation(transition, mergeTarget);
         Trace.endSection();
     }
 }

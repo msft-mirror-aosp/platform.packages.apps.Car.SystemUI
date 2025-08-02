@@ -285,4 +285,7 @@
 
     <!-- Setup and add safe area and toolbar per display on for Display Compat apps . -->
     <bool name="config_enableSafeAreaAndToolbarPerDisplay">true</bool>
+
+    <!-- Whether the size compat restart button should be enabled -->
+    <bool name="config_isSizeCompatRestartButtonEnabled">false</bool>
 </resources>

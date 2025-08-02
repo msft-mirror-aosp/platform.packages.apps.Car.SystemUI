@@ -428,7 +428,7 @@ public class CarSystemBarButton extends LinearLayout implements
             mContext.sendBroadcastAsUser(intent, getCurrentUserHandle(mContext, mUserTracker));
 
             if (getEvent() != null && mEventDispatcher != null) {
-                mEventDispatcher.executeTransaction(getEvent());
+                mEventDispatcher.executeEvent(getEvent());
             }
 
             if (getIntent() == null) {

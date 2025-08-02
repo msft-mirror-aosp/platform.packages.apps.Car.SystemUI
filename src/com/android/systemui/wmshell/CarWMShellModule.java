@@ -24,6 +24,7 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
+import com.android.systemui.car.wm.scalableui.ActionConfigReader;
 import com.android.systemui.car.wm.scalableui.PanelAutoTaskStackTransitionHandlerDelegate;
 import com.android.systemui.car.wm.scalableui.PanelConfigReader;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
@@ -34,6 +35,7 @@ import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionController;
+import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoShellModule;
 import com.android.wm.shell.automotive.AutoTaskRepository;
 import com.android.wm.shell.common.DisplayController;
@@ -76,10 +78,12 @@ public abstract class CarWMShellModule {
             ShellTaskOrganizer shellTaskOrganizer,
             AutoCaptionController autoCaptionController,
             DisplayController displayController,
-            RootTaskDisplayAreaOrganizer rootTaskDisplayAreaOrganizer) {
+            RootTaskDisplayAreaOrganizer rootTaskDisplayAreaOrganizer,
+            AutoLayoutManager autoLayoutManager) {
         return Optional.of(
                 new AutoCaptionPerDisplayInitializer(context, shellTaskOrganizer,
-                        autoCaptionController, displayController, rootTaskDisplayAreaOrganizer));
+                        autoCaptionController, displayController, rootTaskDisplayAreaOrganizer,
+                        autoLayoutManager));
     }
 
     @BindsOptionalOf
@@ -126,14 +130,24 @@ public abstract class CarWMShellModule {
 
     @WMSingleton
     @Provides
+    static Optional<ActionConfigReader> providesActionConfigReader(Context context) {
+        if (isScalableUIEnabled(context)) {
+            return Optional.of(new ActionConfigReader(context));
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
     static Optional<ScalableUIWMInitializer> provideScalableUIInitializer(ShellInit shellInit,
             Context context,
+            Optional<ActionConfigReader> actionConfigReaderOptional,
             Optional<PanelConfigReader> panelConfigReaderOptional,
             PanelAutoTaskStackTransitionHandlerDelegate delegate) {
         if (isScalableUIEnabled(context) && panelConfigReaderOptional.isPresent()) {
             return Optional.of(
-                    new ScalableUIWMInitializer(shellInit, panelConfigReaderOptional.get(),
-                            delegate));
+                    new ScalableUIWMInitializer(shellInit, actionConfigReaderOptional.get(),
+                            panelConfigReaderOptional.get(), delegate));
         }
         return Optional.empty();
     }

@@ -41,7 +41,7 @@ import com.android.systemui.classifier.FalsingCollector;
 import com.android.systemui.communal.domain.interactor.CommunalSceneInteractor;
 import com.android.systemui.communal.domain.interactor.CommunalSettingsInteractor;
 import com.android.systemui.communal.ui.viewmodel.CommunalTransitionViewModel;
-import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.dagger.qualifiers.Application;
 import com.android.systemui.dreams.DreamOverlayStateController;
 import com.android.systemui.dreams.ui.viewmodel.DreamViewModel;
 import com.android.systemui.dump.DumpManager;
@@ -78,7 +78,7 @@ import com.android.wm.shell.keyguard.KeyguardTransitions;
 
 import dagger.Lazy;
 
-import kotlinx.coroutines.CoroutineDispatcher;
+import kotlinx.coroutines.CoroutineScope;
 
 import java.util.concurrent.Executor;
 
@@ -140,7 +140,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             SystemSettings systemSettings,
             SystemClock systemClock,
             ProcessWrapper processWrapper,
-            @Main CoroutineDispatcher mainDispatcher,
+            @Application CoroutineScope applicationScope,
             Lazy<DreamViewModel> dreamViewModel,
             Lazy<CommunalTransitionViewModel> communalTransitionViewModel,
             SystemPropertiesHelper systemPropertiesHelper,
@@ -169,7 +169,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 activityTaskManagerService,
                 statusBarService,
                 featureFlags, secureSettings, systemSettings, systemClock, processWrapper,
-                mainDispatcher,
+                applicationScope,
                 dreamViewModel,
                 communalTransitionViewModel,
                 systemPropertiesHelper,

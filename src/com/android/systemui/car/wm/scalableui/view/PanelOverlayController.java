@@ -83,11 +83,12 @@ public class PanelOverlayController extends DecorPanelControllerBase {
         init(metadata);
     }
 
+    /**
+     * Create an instance of {@link PanelOverlayController} with the provided
+     * {@link PanelControllerMetadata}.
+     */
     @AssistedFactory
     public interface Factory extends DecorPanelController.Factory<PanelOverlayController> {
-        /**
-         * Create an instance of PanelOverlayController with the provided PanelControllerMetadata
-         */
         PanelOverlayController create(PanelControllerMetadata metadata);
     }
 

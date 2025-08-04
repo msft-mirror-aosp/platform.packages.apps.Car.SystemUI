@@ -39,9 +39,9 @@ public final class MapsPanelController extends BaseTaskPanelController {
         super(context, panelControllerMetadata, panelUtils);
     }
 
+    /** Creates an instance of MapsPanelController using the provided PanelControllerMetadata. */
     @AssistedFactory
     public interface Factory extends TaskPanelController.Factory<MapsPanelController> {
-        /** Create an instance of MapsPanelController using the provided PanelControllerMetadata */
         MapsPanelController create(PanelControllerMetadata metadata);
     }
 

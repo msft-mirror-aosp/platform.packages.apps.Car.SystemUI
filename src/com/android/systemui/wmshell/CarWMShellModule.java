@@ -61,15 +61,7 @@ import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.common.SyncTransactionQueue;
-import com.android.wm.shell.compatui.letterbox.DelegateLetterboxTransitionObserver;
-import com.android.wm.shell.compatui.letterbox.LetterboxCommandHandler;
-import com.android.wm.shell.compatui.letterbox.config.IgnoreLetterboxDependenciesHelper;
-import com.android.wm.shell.compatui.letterbox.config.LetterboxDependenciesHelper;
-import com.android.wm.shell.compatui.letterbox.lifecycle.LetterboxCleanupAdapter;
-import com.android.wm.shell.compatui.letterbox.state.LetterboxTaskListenerAdapter;
 import com.android.wm.shell.dagger.DynamicOverride;
-import com.android.wm.shell.dagger.LetterboxModule;
-import com.android.wm.shell.dagger.ShellCreateTriggerOverride;
 import com.android.wm.shell.dagger.WMShellBaseModule;
 import com.android.wm.shell.dagger.WMSingleton;
 import com.android.wm.shell.fullscreen.FullscreenTaskListener;
@@ -98,8 +90,7 @@ import java.util.Optional;
 import javax.inject.Named;
 
 /** Provides dependencies from {@link com.android.wm.shell} for CarSystemUI. */
-@Module(includes = {WMShellBaseModule.class, AutoShellModule.class, LetterboxModule.class,
-        PanelControllerModule.class})
+@Module(includes = {WMShellBaseModule.class, AutoShellModule.class, PanelControllerModule.class})
 public abstract class CarWMShellModule {
 
     @WMSingleton
@@ -276,23 +267,6 @@ public abstract class CarWMShellModule {
             return Optional.of(scalableUIPanelUpdateOptional.get());
         }
         return Optional.empty();
-    }
-
-    @WMSingleton
-    @ShellCreateTriggerOverride
-    @Provides
-    static Object provideIndependentShellComponentsToCreate(
-            @NonNull DelegateLetterboxTransitionObserver letterboxTransitionObserver,
-            @NonNull LetterboxCommandHandler letterboxCommandHandler,
-            @NonNull LetterboxTaskListenerAdapter letterboxTaskListenerAdapter,
-            @NonNull LetterboxCleanupAdapter letterboxCleanupAdapter) {
-        return new Object();
-    }
-
-    @WMSingleton
-    @Provides
-    static LetterboxDependenciesHelper provideLetterboxDependenciesHelper() {
-        return new IgnoreLetterboxDependenciesHelper();
     }
 
     @WMSingleton

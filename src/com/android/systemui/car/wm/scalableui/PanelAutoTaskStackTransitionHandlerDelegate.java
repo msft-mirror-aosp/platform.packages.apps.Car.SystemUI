@@ -35,6 +35,7 @@ import android.window.TransitionRequestInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.model.Event;
@@ -168,7 +169,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         return animationStarted;
     }
 
-    private Event calculateEvent(TransitionRequestInfo request) {
+    @VisibleForTesting
+    Event calculateEvent(TransitionRequestInfo request) {
         if (request.getTriggerTask() == null) {
             return EMPTY_EVENT;
         }
@@ -192,43 +194,35 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             return EMPTY_EVENT;
         }
 
+        if (!TransitionUtil.isClosingType(request.getType())
+                && !TransitionUtil.isOpeningType(request.getType())) {
+            Log.e(TAG, "Unknown transition type " + request.getType());
+            return EMPTY_EVENT;
+        }
+
         ComponentName component = mPanelUtils.getTaskComponentName(request.getTriggerTask());
         if (DEBUG) {
             Log.d(TAG, "Transition type=" + request.getType()
                     + " using component=" + component);
         }
+
         String componentString = component != null ? component.flattenToString() : null;
-        String panelId;
-        TaskPanel panel = null;
-        if (component != null) {
-            panel = mPanelUtils.getTaskPanel(tp -> tp.handles(component));
-        }
+        TaskPanel panel = mPanelUtils.getTaskPanel(
+                tp -> tp.getRootTaskId() == request.getTriggerTask().parentTaskId);
         if (panel == null) {
-            panel = mPanelUtils.getTaskPanel(TaskPanel::isLaunchRoot);
-        }
-        if (panel != null) {
-            panelId = panel.getPanelId();
-        } else {
             // There is no panel ready to handle this event
             // TODO(b/392694590): determine if/how this case should be handled
             Log.e(TAG, "No panel present to handle component " + component);
             return EMPTY_EVENT;
         }
-
-        if (TransitionUtil.isClosingType(request.getType())) {
-            return new Event.Builder(SYSTEM_TASK_CLOSE_EVENT_ID)
-                    .setPanelId(panelId)
-                    .setComponentName(componentString)
-                    .build();
-        } else if (TransitionUtil.isOpeningType(request.getType())) {
-            return new Event.Builder(SYSTEM_TASK_OPEN_EVENT_ID)
-                    .setPanelId(panelId)
-                    .setComponentName(componentString)
-                    .build();
-        } else {
-            Log.e(TAG, "Unknown transition type " + request.getType());
-            return EMPTY_EVENT;
+        String panelId = panel.getPanelId();
+        String eventName = TransitionUtil.isClosingType(request.getType())
+                ? SYSTEM_TASK_CLOSE_EVENT_ID : SYSTEM_TASK_OPEN_EVENT_ID;
+        Event.Builder builder = new Event.Builder(eventName).setPanelId(panelId);
+        if (componentString != null) {
+            builder.setComponentName(componentString);
         }
+        return builder.build();
     }
 
     @Override

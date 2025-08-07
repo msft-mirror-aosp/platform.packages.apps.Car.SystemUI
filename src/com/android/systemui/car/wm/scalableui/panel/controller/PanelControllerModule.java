@@ -37,28 +37,35 @@ import dagger.multibindings.IntoMap;
  */
 @Module
 public abstract class PanelControllerModule {
-    /** Bind MapsPanelController.Factory */
+    /** Binds MapsPanelController.Factory. */
     @Binds
     @IntoMap
     @ClassKey(MapsPanelController.class)
     public abstract TaskPanelController.Factory bindMapsPanelControllerFactory(
             MapsPanelController.Factory factory);
 
-    /** Bind GripBarViewController.Factory */
+    /** Binds BaseTaskPanelController.Factory. */
+    @Binds
+    @IntoMap
+    @ClassKey(BaseTaskPanelController.class)
+    public abstract TaskPanelController.Factory bindsBaseTaskPanelControllerFactory(
+            BaseTaskPanelController.Factory factory);
+
+    /** Binds GripBarViewController.Factory. */
     @Binds
     @IntoMap
     @ClassKey(GripBarViewController.class)
     public abstract DecorPanelController.Factory bindGripBarControllerFactory(
             GripBarViewController.Factory factory);
 
-    /** Bind PanelOverlayController.Factory */
+    /** Binds PanelOverlayController.Factory. */
     @Binds
     @IntoMap
     @ClassKey(PanelOverlayController.class)
     public abstract DecorPanelController.Factory bindPanelOverlayControllerFactory(
             PanelOverlayController.Factory factory);
 
-    /** Bind {@link GripBar} as a decor panel view */
+    /** Binds {@link GripBar} as a decor panel view. */
     @Provides
     @IntoMap
     @ClassKey(GripBar.class)
@@ -67,7 +74,7 @@ public abstract class PanelControllerModule {
         return new GripBar(context);
     }
 
-    /** Bind {@link PanelOverlay} as a decor panel view */
+    /** Binds {@link PanelOverlay} as a decor panel view. */
     @Provides
     @IntoMap
     @ClassKey(PanelOverlay.class)

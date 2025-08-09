@@ -37,6 +37,10 @@ import com.android.car.scalableui.panel.TaskPanelController;
 import com.android.car.scalableui.panel.TaskPanelHandler;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
+
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.List;
@@ -80,14 +84,23 @@ public class BaseTaskPanelController implements TaskPanelController {
      * @param panelControllerMetadata The metadata associated with this panel controller,
      *                                containing configuration information.
      */
+    @AssistedInject
     public BaseTaskPanelController(@NonNull Context context,
-            @NonNull PanelControllerMetadata panelControllerMetadata,
+            @NonNull @Assisted PanelControllerMetadata panelControllerMetadata,
             @NonNull PanelUtils panelUtils) {
         mContext = context;
         mPanelControllerMetadata = panelControllerMetadata;
         mPersistentActivities = new HashSet<>();
         mPanelUtils = panelUtils;
         init(panelControllerMetadata);
+    }
+
+    /**
+     * Creates an instance of BaseTaskPanelController using the provided PanelControllerMetadata.
+     */
+    @AssistedFactory
+    public interface Factory extends TaskPanelController.Factory<BaseTaskPanelController> {
+        BaseTaskPanelController create(PanelControllerMetadata metadata);
     }
 
     private void init(PanelControllerMetadata metadata) {

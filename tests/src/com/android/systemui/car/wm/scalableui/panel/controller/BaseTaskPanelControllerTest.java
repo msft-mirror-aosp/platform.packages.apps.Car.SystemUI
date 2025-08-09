@@ -144,7 +144,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
                 eq(Context.RECEIVER_EXPORTED));
 
         IntentFilter filter = filterCaptor.getValue();
-        assertEquals(2, filter.countActions());
+        assertEquals(3, filter.countActions());
         assertTrue(filter.hasAction(Intent.ACTION_PACKAGE_ADDED));
         assertTrue(filter.hasAction(Intent.ACTION_PACKAGE_REMOVED));
         assertEquals("package", filter.getDataScheme(0));

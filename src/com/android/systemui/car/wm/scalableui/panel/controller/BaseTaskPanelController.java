@@ -131,6 +131,7 @@ public class BaseTaskPanelController implements TaskPanelController {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_PACKAGE_ADDED);
         filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
         filter.addDataScheme(PACKAGE_DATA_SCHEME);
         mContext.registerReceiver(new BroadcastReceiver() {
             @Override
@@ -146,7 +147,9 @@ public class BaseTaskPanelController implements TaskPanelController {
         mPersistentActivities.clear();
         if (mUpdateFilter != null) {
             List<ResolveInfo> result = mContext.getPackageManager().queryIntentActivitiesAsUser(
-                    mUpdateFilter, PackageManager.MATCH_ALL, ActivityManager.getCurrentUser());
+                    mUpdateFilter, PackageManager.MATCH_DIRECT_BOOT_AWARE
+                            | PackageManager.MATCH_DIRECT_BOOT_UNAWARE,
+                    ActivityManager.getCurrentUser());
             for (ResolveInfo info : result) {
                 if (info == null || info.activityInfo == null
                         || info.activityInfo.getComponentName() == null) {

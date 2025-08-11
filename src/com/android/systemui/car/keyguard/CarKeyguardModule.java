@@ -98,7 +98,6 @@ import dagger.Provides;
 import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
 
-import kotlinx.coroutines.CoroutineDispatcher;
 import kotlinx.coroutines.CoroutineScope;
 
 import java.util.concurrent.Executor;
@@ -169,7 +168,7 @@ public interface CarKeyguardModule {
             SystemSettings systemSettings,
             SystemClock systemClock,
             ProcessWrapper processWrapper,
-            @Main CoroutineDispatcher mainDispatcher,
+            @Application CoroutineScope applicationScope,
             Lazy<DreamViewModel> dreamViewModel,
             Lazy<CommunalTransitionViewModel> communalTransitionViewModel,
             SystemPropertiesHelper systemPropertiesHelper,
@@ -222,7 +221,7 @@ public interface CarKeyguardModule {
                 systemSettings,
                 systemClock,
                 processWrapper,
-                mainDispatcher,
+                applicationScope,
                 dreamViewModel,
                 communalTransitionViewModel,
                 systemPropertiesHelper,

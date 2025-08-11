@@ -30,6 +30,8 @@ import java.util.List;
  * Interface for classes that provide system bar configurations.
  */
 public interface SystemBarConfigs {
+    int TYPE_STATUS_BAR = 0;
+    int TYPE_NAVIGATION_BAR = 1;
 
     /**
      * Invalidate cached resources and fetch from resources config file.

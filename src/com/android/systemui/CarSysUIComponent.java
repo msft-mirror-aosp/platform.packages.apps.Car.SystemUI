@@ -18,8 +18,8 @@ package com.android.systemui;
 
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
+import com.android.systemui.car.wm.scalableui.configuration.SystemUiConfigurationProvider;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
-import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiConfigurationProvider;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.dagger.DependencyProvider;
 import com.android.systemui.dagger.SysUIComponent;

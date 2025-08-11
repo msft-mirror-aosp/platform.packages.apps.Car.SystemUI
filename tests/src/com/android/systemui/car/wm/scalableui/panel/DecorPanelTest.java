@@ -38,7 +38,7 @@ import androidx.test.filters.SmallTest;
 import com.android.car.scalableui.model.Role;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.wm.scalableui.EventDispatcher;
+import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerInitializer;
 import com.android.wm.shell.automotive.AutoDecor;
 import com.android.wm.shell.automotive.AutoDecorManager;
 import com.android.wm.shell.automotive.AutoSurfaceTransaction;
@@ -71,9 +71,9 @@ public class DecorPanelTest extends SysuiTestCase {
     @Mock
     private AutoDecorManager mAutoDecorManager;
     @Mock
-    private EventDispatcher mEventDispatcher;
-    @Mock
     private PanelUtils mPanelUtils;
+    @Mock
+    private PanelControllerInitializer mPanelControllerInitializer;
     @Mock
     private ShellExecutor mShellExecutor;
     @Mock
@@ -107,8 +107,8 @@ public class DecorPanelTest extends SysuiTestCase {
         mDecorPanel = spy(new DecorPanel(
                 mMockContext,
                 mAutoDecorManager,
-                mEventDispatcher,
                 mPanelUtils,
+                mPanelControllerInitializer,
                 mShellExecutor,
                 mAutoSurfaceTransactionFactory,
                 TEST_PANEL_ID

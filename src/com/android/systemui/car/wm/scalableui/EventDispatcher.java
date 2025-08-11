@@ -85,16 +85,4 @@ public class EventDispatcher {
     private boolean isScalableUIEnabled() {
         return mContext.getResources().getBoolean(R.bool.config_enableScalableUI);
     }
-
-    /**
-     * An interface representing an object that can produce {@link Event} and dispatch them.
-     *
-     * TODO(b/409615558): Create a broadcast receiver to receive event from other system components.
-     */
-    public interface EventProducer {
-        /**
-         * Sets the {@link EventDispatcher} that this producer should use to dispatch events.
-         */
-        void setEventDispatcher(EventDispatcher eventDispatcher);
-    }
 }

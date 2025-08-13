@@ -138,6 +138,14 @@ enum class Flag(
     ScalableUiTaskFocus(
         "com.android.car.scalableui.Flags.scalableUiTaskFocus",
         R.bool.scalable_ui_task_focus
+    ),
+
+    /**
+     * Checks if the Scalable UI task focus feature is enabled.
+     */
+    ScalableUiHandleConfigurationChange(
+        "com.android.car.scalableui.Flags.scalableUiHandleConfigurationChange",
+        R.bool.scalable_ui_handle_configuration_change
     );
 
     // These properties are now calculated from the fullFlagIdentifier.

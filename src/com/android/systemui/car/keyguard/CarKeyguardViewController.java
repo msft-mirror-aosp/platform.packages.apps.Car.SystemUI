@@ -35,6 +35,7 @@ import androidx.annotation.MainThread;
 import com.android.car.ui.FocusParkingView;
 import com.android.internal.widget.LockPatternView;
 import com.android.keyguard.KeyguardMessageAreaController;
+import com.android.keyguard.KeyguardSecurityContainer;
 import com.android.keyguard.KeyguardSecurityModel;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardViewController;
@@ -263,6 +264,12 @@ public class CarKeyguardViewController extends OverlayViewController implements
                 mBouncerLogger,
                 mSelectedUserInteractor, null /* plugins */);
         mBiometricUnlockControllerLazy.get().setKeyguardViewController(this);
+
+        KeyguardSecurityContainer securityContainer =
+                getLayout().findViewById(R.id.keyguard_security_container);
+        if (securityContainer != null) {
+            securityContainer.enableTransparentMode();
+        }
     }
 
     @Override

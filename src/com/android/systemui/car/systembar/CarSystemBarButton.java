@@ -450,38 +450,36 @@ public class CarSystemBarButton extends LinearLayout implements
                 mEventDispatcher.executeEvent(getEvent());
             }
 
-            if (getIntent() == null) {
-                return;
-            }
-
-            boolean intentLaunched = false;
-            try {
-                if (mBroadcastIntent) {
-                    mContext.sendBroadcastAsUser(getIntent(),
-                            getCurrentUserHandle(mContext, mUserTracker));
-                    return;
-                }
-                ActivityOptions options = ActivityOptions.makeBasic();
-                options.setLaunchDisplayId(mContext.getDisplayId());
-                mContext.startActivityAsUser(getIntent(), options.toBundle(),
-                        getCurrentUserHandle(mContext, mUserTracker));
-                intentLaunched = true;
-            } catch (Exception e) {
-                Log.e(TAG, "Failed to launch intent", e);
-            }
-
-            if (intentLaunched && mClearBackStack) {
+            if (getIntent() != null) {
+                boolean intentLaunched = false;
                 try {
-                    ActivityTaskManager.RootTaskInfo rootTaskInfo =
-                            ActivityTaskManager.getService().getRootTaskInfoOnDisplay(
-                                    WINDOWING_MODE_FULLSCREEN, ACTIVITY_TYPE_UNDEFINED,
-                                    mContext.getDisplayId());
-                    if (rootTaskInfo != null) {
-                        mActivityManager.moveTaskToFront(rootTaskInfo.taskId,
-                                ActivityManager.MOVE_TASK_WITH_HOME);
+                    if (mBroadcastIntent) {
+                        mContext.sendBroadcastAsUser(getIntent(),
+                                getCurrentUserHandle(mContext, mUserTracker));
+                        return;
                     }
-                } catch (RemoteException e) {
-                    Log.e(TAG, "Failed getting root task info", e);
+                    ActivityOptions options = ActivityOptions.makeBasic();
+                    options.setLaunchDisplayId(mContext.getDisplayId());
+                    mContext.startActivityAsUser(getIntent(), options.toBundle(),
+                            getCurrentUserHandle(mContext, mUserTracker));
+                    intentLaunched = true;
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to launch intent", e);
+                }
+
+                if (intentLaunched && mClearBackStack) {
+                    try {
+                        ActivityTaskManager.RootTaskInfo rootTaskInfo =
+                                ActivityTaskManager.getService().getRootTaskInfoOnDisplay(
+                                        WINDOWING_MODE_FULLSCREEN, ACTIVITY_TYPE_UNDEFINED,
+                                        mContext.getDisplayId());
+                        if (rootTaskInfo != null) {
+                            mActivityManager.moveTaskToFront(rootTaskInfo.taskId,
+                                    ActivityManager.MOVE_TASK_WITH_HOME);
+                        }
+                    } catch (RemoteException e) {
+                        Log.e(TAG, "Failed getting root task info", e);
+                    }
                 }
             }
 

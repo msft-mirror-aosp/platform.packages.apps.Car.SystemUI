@@ -29,6 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -329,6 +330,43 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
         waitForIdleSync();
 
         verify(mEventDispatcher).executeEvent("close_app_grid");
+    }
+
+    @Test
+    public void onClick_selectionEventsDefined_toggleDefined_firesEvents() {
+        mDefaultButton.performClick();
+
+        CarSystemBarButton appGridButton =
+                mTestView.findViewById(R.id.app_grid_toggle_button_with_selection_events);
+        appGridButton.setEventDispatcher(mEventDispatcher);
+        appGridButton.performClick();
+        waitForIdleSync();
+
+        verify(mEventDispatcher).executeEvent("close_app_grid");
+
+        appGridButton.performClick();
+        waitForIdleSync();
+
+        verify(mEventDispatcher).executeEvent("open_app_grid");
+    }
+
+    @Test
+    public void onClick_selectionEventsDefined_noToggleDefined_firesOnlyUnSelectedEvent() {
+        mDefaultButton.performClick();
+
+        CarSystemBarButton appGridButton =
+                mTestView.findViewById(R.id.app_grid_button_with_selection_events);
+        appGridButton.setEventDispatcher(mEventDispatcher);
+        appGridButton.performClick();
+        waitForIdleSync();
+
+        verify(mEventDispatcher, times(1)).executeEvent("open_app_grid");
+
+        // Button doesn't get selected, therefore second click equals first click.
+        appGridButton.performClick();
+        waitForIdleSync();
+
+        verify(mEventDispatcher, times(2)).executeEvent("open_app_grid");
     }
 
     @Test

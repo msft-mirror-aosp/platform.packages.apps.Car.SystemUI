@@ -87,6 +87,17 @@
         />
 
     <com.android.systemui.car.systembar.CarSystemBarButton
+        android:id="@+id/app_grid_toggle_button_with_selection_events"
+        style="@style/SystemBarButton"
+        systemui:icon="@drawable/car_ic_apps"
+        systemui:selectedEvent="open_app_grid"
+        systemui:unselectedEvent="close_app_grid"
+        systemui:toggleSelected="true"
+        systemui:selectedIcon="@drawable/car_ic_apps_selected"
+        systemui:highlightWhenSelected="true"
+        />
+
+    <com.android.systemui.car.systembar.CarSystemBarButton
         android:id="@+id/dialer_activity_clear_backstack"
         style="@style/SystemBarButton"
         systemui:componentNames="com.android.car.dialer/.ui.TelecomActivity"

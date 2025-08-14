@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import androidx.test.filters.SmallTest;
@@ -32,12 +33,16 @@ import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
+import com.android.systemui.car.wm.scalableui.systemwindow.HunWindow;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -50,8 +55,9 @@ public class CarHeadsUpNotificationSystemContainerTest extends CarSysuiTestCase 
     @Mock
     private OverlayViewGlobalStateController mOverlayViewGlobalStateController;
     @Mock
-    private WindowManager mWindowManager;
-
+    private SystemUiWindowProvider mSystemUiWindowProvider;
+    @Mock
+    private HunWindow mHunWindow;
     @Mock
     private View mNotificationView;
     @Mock
@@ -63,11 +69,22 @@ public class CarHeadsUpNotificationSystemContainerTest extends CarSysuiTestCase 
 
         when(mOverlayViewGlobalStateController.shouldShowHUN()).thenReturn(true);
         when(mCarDeviceProvisionedController.isCurrentUserFullySetup()).thenReturn(true);
+        when(mSystemUiWindowProvider.getHunWindow()).thenReturn(Optional.of(mHunWindow));
+        when(mHunWindow.getLayoutParams()).thenReturn(new WindowManager.LayoutParams());
+        when(mNotificationView.getLayoutParams()).thenReturn(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
+        when(mNotificationView2.getLayoutParams()).thenReturn(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mContext.ensureTestableResources();
 
         mCarHeadsUpNotificationSystemContainer = new CarHeadsUpNotificationSystemContainer(mContext,
-                mCarDeviceProvisionedController, mWindowManager, mOverlayViewGlobalStateController);
+                mCarDeviceProvisionedController, mOverlayViewGlobalStateController,
+                mSystemUiWindowProvider);
     }
 
     @Test

@@ -16,16 +16,30 @@
 
 package com.android.systemui.car.notification;
 
+import static com.android.systemui.car.wm.scalableui.systemwindow.HunWindow.WINDOW_TITLE;
+
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.android.car.notification.R;
 import com.android.car.notification.headsup.CarHeadsUpNotificationContainer;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
+import com.android.systemui.car.wm.scalableui.systemwindow.HunWindow;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindow;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.dagger.SysUISingleton;
+
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -35,25 +49,61 @@ import javax.inject.Inject;
  * Used to attach HUNs views to window and determine whether to show HUN panel.
  */
 @SysUISingleton
-public class CarHeadsUpNotificationSystemContainer extends CarHeadsUpNotificationContainer {
-    private static final String WINDOW_TITLE = "HeadsUpNotification";
+public class CarHeadsUpNotificationSystemContainer extends CarHeadsUpNotificationContainer
+        implements SystemUiWindow.WindowUpdateCallback {
+    private static final String TAG = "CarHeadsUpNotificationSystemContainer";
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final OverlayViewGlobalStateController mOverlayViewGlobalStateController;
+    private final Optional<HunWindow> mHunWindow;
 
     @Inject
     CarHeadsUpNotificationSystemContainer(Context context,
-            CarDeviceProvisionedController deviceProvisionedController,
-            WindowManager windowManager,
-            OverlayViewGlobalStateController overlayViewGlobalStateController) {
-        super(context, windowManager);
+             CarDeviceProvisionedController deviceProvisionedController,
+             OverlayViewGlobalStateController overlayViewGlobalStateController,
+             SystemUiWindowProvider systemUiWindowProvider) {
+        super(context);
         mCarDeviceProvisionedController = deviceProvisionedController;
         mOverlayViewGlobalStateController = overlayViewGlobalStateController;
+        mHunWindow = systemUiWindowProvider.getHunWindow();
+
+        if (mHunWindow.isPresent()) {
+            mHunWindow.get().addCallback(/* callback= */ this);
+        }
+        attachToWindow();
     }
 
-    @Override
-    protected WindowManager.LayoutParams getWindowManagerLayoutParams() {
-        // Use TYPE_STATUS_BAR_SUB_PANEL window type since we need to find a window that is above
-        // status bar but below navigation bar.
+     /**
+     * Attaches the Heads-Up Notification (HUN) container view to the window.
+     *
+     * <p>If a dedicated {@link HunWindow} is available, the HUN container's root view is set on
+     * that window. Otherwise, it falls back to adding the view directly to the
+     * {@link WindowManager} using the default layout parameters.
+     */
+    private void attachToWindow() {
+        if (mHunWindow.isPresent()) {
+            WindowManager.LayoutParams lp = mHunWindow.get().getLayoutParams();
+            if (lp == null) {
+                Log.e(TAG, "HUN window layout params are null, can't attach to window");
+                return;
+            }
+            mHunWindow.get().setRootView(getHunRootView(), lp);
+            return;
+        }
+        WindowManager wm = getContext().getSystemService(WindowManager.class);
+        wm.addView(getHunRootView(), getWindowManagerLayoutParams());
+        return;
+    }
+
+    /**
+     * @return {@link WindowManager.LayoutParams} to be used when adding HUN Window to {@link
+     * WindowManager}.
+     */
+     private WindowManager.LayoutParams getWindowManagerLayoutParams() {
+        if (mHunWindow.isPresent()) {
+            return mHunWindow.get().getLayoutParams();
+        }
+        // Use TYPE_STATUS_BAR_SUB_PANEL window type since we need to find a window that is
+        // above status bar but below navigation bar.
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -62,7 +112,8 @@ public class CarHeadsUpNotificationSystemContainer extends CarHeadsUpNotificatio
                         | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                 PixelFormat.TRANSLUCENT);
 
-        // Needed for passing through touches through HUN's scrim to application content underneath
+        // Needed for passing through touches through HUN's scrim to application content
+        // underneath
         lp.privateFlags = WindowManager.LayoutParams.PRIVATE_FLAG_TRUSTED_OVERLAY;
 
         lp.gravity = getShowHunOnBottom() ? Gravity.BOTTOM : Gravity.TOP;
@@ -76,4 +127,31 @@ public class CarHeadsUpNotificationSystemContainer extends CarHeadsUpNotificatio
         return mCarDeviceProvisionedController.isCurrentUserFullySetup()
                 && mOverlayViewGlobalStateController.shouldShowHUN();
     }
+
+    @Override
+    public void onAlphaChange(@NonNull String panelId, float alpha) {
+        if (getHunRootView() != null) {
+            getHunRootView().setAlpha(alpha);
+        }
+    }
+
+    @Override
+    public void onVisibilityChange(@NonNull String panelId, boolean isVisible) {
+        if (getHunRootView() != null) {
+            getHunRootView().setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    @Override
+    public void onScrimChange(@NonNull String panelId, @Nullable Drawable scrim) {
+        if (getHunRootView() == null) {
+            return;
+        }
+        View scrimView = getHunRootView().findViewById(R.id.scrim);
+        if (scrimView == null) {
+            return;
+        }
+        scrimView.setBackground(scrim);
+    }
 }
+

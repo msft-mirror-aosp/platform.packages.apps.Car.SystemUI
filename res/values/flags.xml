@@ -35,4 +35,6 @@
     <bool name="enable_ext_panel_updates">true</bool>
     <!-- Controls enabling task focus for ScalableUI. -->
     <bool name="scalable_ui_task_focus">true</bool>
+    <!-- Controls enabling configuration change handling for ScalableUI. -->
+    <bool name="scalable_ui_handle_configuration_change">true</bool>
 </resources>

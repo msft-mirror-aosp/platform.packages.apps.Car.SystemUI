@@ -41,6 +41,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,8 +74,6 @@ import java.util.Optional;
 @RunWith(AndroidJUnit4.class)
 @SmallTest
 public class SystemBarWindowTest extends CarSysuiTestCase {
-    private static final float TEST_ALPHA = 0.2f;
-    private static final boolean TEST_VISIBILITY = true;
     private static final int TEST_DISPLAY_HEIGHT = 1000;
     private static final int TEST_DISPLAY_WIDTH = 1000;
     private static final int TEST_GIRTH = 100;
@@ -92,6 +91,8 @@ public class SystemBarWindowTest extends CarSysuiTestCase {
     private Resources mResources;
     @Mock
     private SystemUiWindow.WindowUpdateCallback mWindowUpdateCallback;
+    @Mock
+    private Display mMockDisplay;
     private SystemBarWindow mSystemBarWindow;
     private Bundle mBundle;
     private DisplayMetrics mDisplayMetrics;
@@ -110,6 +111,8 @@ public class SystemBarWindowTest extends CarSysuiTestCase {
         when(mPanelUpdateConsumer.getPanelControllerMetadata(anyString()))
                 .thenReturn(mPanelControllerMetadata);
         when(mPanelControllerMetadata.getConfigurations()).thenReturn(mBundle);
+        when(mMockContext.getDisplay()).thenReturn(mMockDisplay);
+        when(mMockContext.createDisplayContext(any(Display.class))).thenReturn(mMockContext);
         when(mMockContext.getSystemService(WindowManager.class)).thenReturn(mWindowManager);
         when(mMockContext.getResources()).thenReturn(mResources);
         when(mResources.getDisplayMetrics()).thenReturn(mDisplayMetrics);
@@ -125,6 +128,7 @@ public class SystemBarWindowTest extends CarSysuiTestCase {
 
     @Test
     public void constructor_panelUpdateConsumer_onBoundsChange_updateViewLayoutCalled() {
+        when(mPanelUpdateConsumer.getBounds(anyString())).thenReturn(new Rect());
         ArgumentCaptor<PanelUpdateConsumer.PanelUpdateCallback> callbackCaptor =
                 ArgumentCaptor.forClass(PanelUpdateConsumer.PanelUpdateCallback.class);
         verify(mPanelUpdateConsumer).registerCallback(eq(SYSTEM_BAR_PANEL_TOP_ID),
@@ -135,32 +139,6 @@ public class SystemBarWindowTest extends CarSysuiTestCase {
 
         verify(mWindowManager).updateViewLayout(any(View.class),
                 any(WindowManager.LayoutParams.class));
-    }
-
-    @Test
-    public void constructor_panelUpdateConsumer_onAlphaChange_correctAlphaSet() {
-        ArgumentCaptor<PanelUpdateConsumer.PanelUpdateCallback> callbackCaptor =
-                ArgumentCaptor.forClass(PanelUpdateConsumer.PanelUpdateCallback.class);
-        verify(mPanelUpdateConsumer).registerCallback(eq(SYSTEM_BAR_PANEL_TOP_ID),
-                callbackCaptor.capture());
-        mSystemBarWindow.setRootView(mSystemBarView);
-
-        callbackCaptor.getValue().onAlphaChange(SYSTEM_BAR_PANEL_TOP_ID, TEST_ALPHA);
-
-        assertThat(mSystemBarView.getAlpha()).isEqualTo(TEST_ALPHA);
-    }
-
-    @Test
-    public void constructor_panelUpdateConsumer_onVisibilityChange_correctVisibilitySet() {
-        ArgumentCaptor<PanelUpdateConsumer.PanelUpdateCallback> callbackCaptor =
-                ArgumentCaptor.forClass(PanelUpdateConsumer.PanelUpdateCallback.class);
-        verify(mPanelUpdateConsumer).registerCallback(eq(SYSTEM_BAR_PANEL_TOP_ID),
-                callbackCaptor.capture());
-        mSystemBarWindow.setRootView(mSystemBarView);
-
-        callbackCaptor.getValue().onVisibilityChange(SYSTEM_BAR_PANEL_TOP_ID, TEST_VISIBILITY);
-
-        assertThat(mSystemBarView.getVisibility()).isEqualTo(View.VISIBLE);
     }
 
     @Test
@@ -187,13 +165,6 @@ public class SystemBarWindowTest extends CarSysuiTestCase {
         mSystemBarWindow.removeRootView();
 
         verify(mWindowManager).removeView(any(View.class));
-    }
-
-    @Test
-    public void isVisible_panelUpdateConsumerCalled() {
-        mSystemBarWindow.isVisible();
-
-        verify(mPanelUpdateConsumer).isVisible(eq(SYSTEM_BAR_PANEL_TOP_ID));
     }
 
     @Test
@@ -405,13 +376,6 @@ public class SystemBarWindowTest extends CarSysuiTestCase {
     }
 
     @Test
-    public void getAlpha_panelUpdateConsumerCalled() {
-        mSystemBarWindow.getAlpha();
-
-        verify(mPanelUpdateConsumer).getAlpha(eq(SYSTEM_BAR_PANEL_TOP_ID));
-    }
-
-    @Test
     public void getInsets_panelUpdateConsumerCalled() {
         mSystemBarWindow.getInsets();
 
@@ -437,7 +401,8 @@ public class SystemBarWindowTest extends CarSysuiTestCase {
     public void removeCallback_unregisterCallbackCalled() {
         mSystemBarWindow.removeCallback(mWindowUpdateCallback);
 
-        verify(mPanelUpdateConsumer).unregisterCallback(eq(mWindowUpdateCallback));
+        verify(mPanelUpdateConsumer).unregisterCallback(eq(SYSTEM_BAR_PANEL_TOP_ID),
+                eq(mWindowUpdateCallback));
     }
 
     @Test

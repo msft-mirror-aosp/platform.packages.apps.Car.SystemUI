@@ -46,6 +46,7 @@ import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerModule;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.ScalableUIPanelUpdateImpl;
+import com.android.systemui.car.wm.scalableui.systemwindow.HunWindow;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow.SystemBarConfiguration;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -416,6 +417,21 @@ public abstract class CarWMShellModule {
             try {
                 return Optional.of(
                         new SystemBarConfiguration(consumer, SYSTEM_BAR_PANEL_BOTTOM_ID));
+            } catch (IllegalStateException e) {
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<HunWindow> provideHunWindow(Context context,
+            Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
+        if (consumer.isPresent()) {
+            try {
+                return Optional.of(
+                        new HunWindow(context, consumer.get(), dispatcher));
             } catch (IllegalStateException e) {
                 return Optional.empty();
             }

@@ -36,16 +36,19 @@ class SystemUiWindowProvider @Inject constructor(
     @Named(SystemBarTagXmlParser.SYSTEM_BAR_PANEL_RIGHT_ID)
     rightSystemBarWindow: Lazy<Optional<SystemBarWindow>>,
     @Named(SystemBarTagXmlParser.SYSTEM_BAR_PANEL_BOTTOM_ID)
-    bottomSystemBarWindow: Lazy<Optional<SystemBarWindow>>
+    bottomSystemBarWindow: Lazy<Optional<SystemBarWindow>>,
+    hunWindow: Lazy<Optional<HunWindow>>
 ) {
     private val mSystemBarWindowMap: MutableMap<Int, Lazy<Optional<SystemBarWindow>>> =
         HashMap()
+    private val mHunWindow: Lazy<Optional<HunWindow>>
 
     init {
         mSystemBarWindowMap[CarSystemBarController.LEFT] = leftSystemBarWindow
         mSystemBarWindowMap[CarSystemBarController.TOP] = topSystemBarWindow
         mSystemBarWindowMap[CarSystemBarController.RIGHT] = rightSystemBarWindow
         mSystemBarWindowMap[CarSystemBarController.BOTTOM] = bottomSystemBarWindow
+        mHunWindow = hunWindow
     }
 
     /**
@@ -55,5 +58,12 @@ class SystemUiWindowProvider @Inject constructor(
         side: @SystemBarSide Int
     ): Optional<SystemBarWindow> {
         return mSystemBarWindowMap[side]?.get() ?: Optional.empty()
+    }
+
+    /**
+     * @return [HunWindow]
+     */
+    fun getHunWindow(): Optional<HunWindow> {
+        return mHunWindow.get()
     }
 }

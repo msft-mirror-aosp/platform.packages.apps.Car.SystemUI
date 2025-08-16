@@ -19,24 +19,16 @@ import static android.view.WindowInsets.Type.navigationBars;
 import static android.view.WindowInsets.Type.statusBars;
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
 
-import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.HIDE_EVENT_PREFIX;
-import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SHOW_EVENT_PREFIX;
-
 import android.content.Context;
-import android.graphics.Insets;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.os.Binder;
 import android.os.Bundle;
 import android.util.ArrayMap;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.InsetsFrameProvider;
-import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowManager;
-
-import androidx.annotation.NonNull;
 
 import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser;
 import com.android.car.scalableui.model.PanelControllerMetadata;
@@ -52,7 +44,7 @@ import javax.inject.Inject;
 /**
  * An implementation of {@link SystemUiWindow} specifically for system bars.
  */
-public class SystemBarWindow implements SystemUiWindow {
+public class SystemBarWindow extends SystemUiWindowBase {
     private static final Binder INSETS_OWNER = new Binder();
     private static final Map<String, InsetsFrameProvider> BAR_GESTURE_MAP = new ArrayMap<>();
     private static final Map<String, Integer> BAR_GRAVITY_MAP = new ArrayMap<>();
@@ -69,59 +61,14 @@ public class SystemBarWindow implements SystemUiWindow {
     };
     @VisibleForTesting
     static final int HUN_Z_ORDER = 10;
-    private String mId;
-    private final PanelUpdateConsumer mPanelUpdateConsumer;
-    private final EventDispatcher mEventDispatcher;
-    private final WindowManager mWindowManager;
-    private final DisplayMetrics mDisplayMetrics;
     private final SystemBarConfiguration mConfiguration;
-    private View mRootView;
 
     @Inject
     public SystemBarWindow(Context context, Optional<PanelUpdateConsumer> consumer,
             EventDispatcher dispatcher, String id) {
-        if (consumer.isEmpty()) {
-            throw new IllegalStateException("PanelUpdateConsumer must be present");
-        }
-        mPanelUpdateConsumer = consumer.get();
-        mEventDispatcher = dispatcher;
-        mId = id;
-        mWindowManager = context.getSystemService(WindowManager.class);
-        mDisplayMetrics = context.getResources().getDisplayMetrics();
-        mConfiguration = new SystemBarConfiguration(consumer, mId);
-
+        super(context, consumer.get(), dispatcher, id);
+        mConfiguration = new SystemBarConfiguration(consumer, getId());
         populateMaps();
-
-        mPanelUpdateConsumer.registerCallback(mId, new PanelUpdateConsumer.PanelUpdateCallback() {
-            @Override
-            public void onBoundsChange(@NonNull String panelId, @NonNull Rect bounds) {
-                if (mRootView == null) {
-                    return;
-                }
-                mWindowManager.updateViewLayout(mRootView, getLayoutParamsFromBounds(bounds));
-            }
-
-            @Override
-            public void onAlphaChange(@NonNull String panelId, float alpha) {
-                if (mRootView == null) {
-                    return;
-                }
-                mRootView.setAlpha(alpha);
-            }
-
-            @Override
-            public void onVisibilityChange(@NonNull String panelId, boolean isVisible) {
-                if (mRootView == null) {
-                    return;
-                }
-                mRootView.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
-            }
-        });
-    }
-
-    @VisibleForTesting
-    void setId(String id) {
-        mId = id;
     }
 
     private static void populateMaps() {
@@ -155,37 +102,8 @@ public class SystemBarWindow implements SystemUiWindow {
     }
 
     @Override
-    public void setRootView(View view, WindowManager.LayoutParams layoutParams) {
-        if (mRootView != null) {
-            removeRootView();
-        }
-        mRootView = view;
-        mWindowManager.addView(view, layoutParams);
-    }
-
-    @Override
-    public void removeRootView() {
-        mWindowManager.removeView(mRootView);
-    }
-
-    @Override
-    public boolean isVisible() {
-        return mPanelUpdateConsumer.isVisible(mId);
-    }
-
-    @Override
-    public void hide() {
-        mEventDispatcher.executeEvent(HIDE_EVENT_PREFIX + mId);
-    }
-
-    @Override
-    public void show() {
-        mEventDispatcher.executeEvent(SHOW_EVENT_PREFIX + mId);
-    }
-
-    @Override
     public WindowManager.LayoutParams getLayoutParams() {
-        Rect bounds = mPanelUpdateConsumer.getBounds(mId);
+        Rect bounds = getPanelUpdateConsumer().getBounds(getId());
         if (bounds == null) {
             return null;
         }
@@ -199,60 +117,17 @@ public class SystemBarWindow implements SystemUiWindow {
                         | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                         | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
                         | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH, PixelFormat.TRANSLUCENT);
-        SystemUiWindow.updateLayoutParams(lp, bounds, mDisplayMetrics);
-        lp.setTitle(BAR_TITLE_MAP.get(mId));
+        SystemUiWindow.updateLayoutParams(lp, bounds, getDisplayMetrics());
+        lp.setTitle(BAR_TITLE_MAP.get(getId()));
         lp.providedInsets = new InsetsFrameProvider[]{BAR_PROVIDER_MAP[mConfiguration.getType()],
-                BAR_GESTURE_MAP.get(mId)};
+                BAR_GESTURE_MAP.get(getId())};
         lp.setFitInsetsTypes(0);
         lp.windowAnimations = 0;
-        lp.gravity = BAR_GRAVITY_MAP.get(mId);
+        lp.gravity = BAR_GRAVITY_MAP.get(getId());
         lp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
         lp.privateFlags = lp.privateFlags
                 | WindowManager.LayoutParams.PRIVATE_FLAG_INTERCEPT_GLOBAL_DRAG_AND_DROP;
         return lp;
-    }
-
-    @Override
-    public int getHeight() {
-        Rect bounds = mPanelUpdateConsumer.getBounds(mId);
-        if (bounds == null) {
-            return 0;
-        }
-        return bounds.height();
-    }
-
-    @Override
-    public int getWidth() {
-        Rect bounds = mPanelUpdateConsumer.getBounds(mId);
-        if (bounds == null) {
-            return 0;
-        }
-        return bounds.width();
-    }
-
-    @Override
-    public float getAlpha() {
-        return mPanelUpdateConsumer.getAlpha(mId);
-    }
-
-    @Override
-    public Insets getInsets() {
-        return mPanelUpdateConsumer.getInsets(mId);
-    }
-
-    @Override
-    public int getCornerRadius() {
-        return mPanelUpdateConsumer.getCornerRadius(mId);
-    }
-
-    @Override
-    public void addCallback(WindowUpdateCallback callback) {
-        mPanelUpdateConsumer.registerCallback(mId, callback);
-    }
-
-    @Override
-    public void removeCallback(WindowUpdateCallback callback) {
-        mPanelUpdateConsumer.unregisterCallback(callback);
     }
 
     public static class SystemBarConfiguration {

@@ -59,6 +59,7 @@ import com.android.systemui.car.wm.AutoCaptionBarViewFactoryImpl;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerInitializer;
+import com.android.systemui.car.wm.scalableui.panel.controller.TaskToolbarController;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionController;
 import com.android.wm.shell.automotive.AutoDecor;
@@ -90,6 +91,7 @@ import java.util.stream.IntStream;
 /**
  * A {@link RootTaskStack} based implementation of a {@link Panel}.
  */
+@SuppressLint("MissingPermission")
 public final class TaskPanel extends BasePanel {
     private static final String TAG = TaskPanel.class.getSimpleName();
     private static final long INITIAL_RETRY_DELAY_MS = 1000;
@@ -130,6 +132,8 @@ public final class TaskPanel extends BasePanel {
     private boolean mIsLaunchRoot;
     @NonNull
     private Rect mSafeBounds = new Rect();
+    @NonNull
+    private Rect mTaskToolbarBounds = new Rect();
     @Nullable
     private RootTaskStack mRootTaskStack;
     @NonNull
@@ -146,6 +150,8 @@ public final class TaskPanel extends BasePanel {
     private final AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
     @NonNull
     private final FlagManager mFlagManager;
+    @NonNull
+    private Rect mRelativeToolbarBounds = new Rect();
 
     @AssistedInject
     public TaskPanel(AutoTaskStackController autoTaskStackController,
@@ -203,9 +209,7 @@ public final class TaskPanel extends BasePanel {
                 new RootTaskStackListener() {
                     @Override
                     public void onRootTaskStackCreated(@NonNull RootTaskStack rootTaskStack) {
-                        if (DEBUG) {
-                            Log.d(TAG, getPanelId() + ", onRootTaskStackCreated " + rootTaskStack);
-                        }
+                        logIfDebuggable(getPanelId() + ", onRootTaskStackCreated " + rootTaskStack);
                         mRootTaskStack = rootTaskStack;
                         mRootTaskId = mRootTaskStack.getRootTaskInfo().taskId;
                         trySetPersistentActivity();
@@ -214,7 +218,13 @@ public final class TaskPanel extends BasePanel {
                                     getDisplayId(),
                                     mRootTaskId);
                         }
-                        setupToolbarRegion();
+
+                        if (mFlagManager.isEnabled(Flag.DisplayCompatibilityV2)) {
+                            setupTaskToolbar(mRootTaskStack,
+                                    getRelativeBounds(getTaskToolbarBounds(), getBounds()));
+                        } else {
+                            setupToolbarRegion();
+                        }
                         setLeash(mRootTaskStack.getLeash());
 
                         if (mPanelUtils.isUserUnlocked()) {
@@ -316,6 +326,7 @@ public final class TaskPanel extends BasePanel {
 
     /**
      * Whether or not this task panel has {@link Restart} set and enabled on it.
+     *
      * @return true if the panel has task restart enabled
      */
     public boolean hasRestart() {
@@ -337,6 +348,10 @@ public final class TaskPanel extends BasePanel {
         autoTaskStackTransaction.setTaskStackState(getRootStack().getId(), autoTaskStackState);
         if (mFlagManager.isEnabled(Flag.DisplayCompatibilityAutoDecorSafeRegion)) {
             autoTaskStackTransaction.setSafeRegionBounds(getRootStack().getId(), getSafeBounds());
+        }
+        if (mFlagManager.isEnabled(Flag.DisplayCompatibilityV2)) {
+            setupTaskToolbar(mRootTaskStack,
+                    getRelativeBounds(getTaskToolbarBounds(), getBounds()));
         }
         if (isVisible()) {
             setBaseIntent(autoTaskStackTransaction);
@@ -534,6 +549,37 @@ public final class TaskPanel extends BasePanel {
         setupToolbarRegion();
     }
 
+    @NonNull
+    @Override
+    public Rect getTaskToolbarBounds() {
+        return mTaskToolbarBounds;
+    }
+
+    @Override
+    public void setTaskToolbarBounds(@NonNull Rect bounds) {
+        if (!mFlagManager.isEnabled(Flag.DisplayCompatibilityV2)) {
+            logIfDebuggable("Task toolbar is disabled, not setting bounds");
+            return;
+        }
+        if (bounds.isEmpty() && !getBounds().isEmpty()) {
+            Log.e(TAG,
+                    "Tried setting incorrect task tool bar bounds: " + bounds + "on panel: "
+                            + getPanelId());
+        }
+        mTaskToolbarBounds = bounds;
+        mRelativeToolbarBounds = getRelativeBounds(bounds, getBounds());
+        logIfDebuggable("mRelativeToolbarBounds: " + mRelativeToolbarBounds);
+        setupTaskToolbar(mRootTaskStack, mRelativeToolbarBounds);
+    }
+
+    private Rect getRelativeBounds(@NonNull Rect bounds, @NonNull Rect parentBounds) {
+        int left = bounds.left - parentBounds.left;
+        int right = bounds.width() + left;
+        int top = bounds.top - parentBounds.top;
+        int bottom = top + bounds.height();
+        return new Rect(left, top, right, bottom);
+    }
+
     @Override
     public void setRole(@Nullable Role role) {
         if (getRole() == role) return;
@@ -543,7 +589,6 @@ public final class TaskPanel extends BasePanel {
 
         if (getRole().isDefault()) {
             mIsLaunchRoot = true;
-            return;
         } else {
             ComponentName[] persistedActivities = getRole().getPersistedActivities();
             if (persistedActivities != null) {
@@ -669,26 +714,19 @@ public final class TaskPanel extends BasePanel {
     @SuppressLint("MissingPermission")
     private void trySetPersistentActivity() {
         if (mCarActivityManager == null || mRootTaskStack == null) {
-            if (DEBUG) {
-                Log.d(TAG,
-                        "mCarActivityManager or mRootTaskStack is null, [" + getPanelId() + ","
-                                + mCarActivityManager + ", " + mRootTaskStack + "]");
-            }
+            logIfDebuggable("mCarActivityManager or mRootTaskStack is null, [" + getPanelId() + ","
+                    + mCarActivityManager + ", " + mRootTaskStack + "]");
             return;
         }
 
         if (getRole() != null && (getRole().getPersistedActivities() == null
                 || getRole().getPersistedActivities().length == 0)) {
-            if (DEBUG) {
-                Log.d(TAG, "Persistent Activities is empty, [" + getPanelId() + "]");
-            }
+            logIfDebuggable("Persistent Activities is empty, [" + getPanelId() + "]");
             return;
         }
 
         if (mIsLaunchRoot) {
-            if (DEBUG) {
-                Log.d(TAG, "mIsLaunchRoot is true, [" + getPanelId() + "]");
-            }
+            logIfDebuggable("mIsLaunchRoot is true, [" + getPanelId() + "]");
             return;
         }
 
@@ -725,10 +763,15 @@ public final class TaskPanel extends BasePanel {
         if (!mFlagManager.isEnabled(Flag.DisplayCompatibilityAutoDecorSafeRegion)) {
             return;
         }
-        if (mRootTaskStack == null) {
-            logVerbose("Root TaskStack not set for panel: " + getPanelId());
+        logIfDebuggable("setupToolbarRegion: " + getPanelId());
+        if (mFlagManager.isEnabled(Flag.DisplayCompatibilityV2)) {
+            logVerbose("Skip setting up the toolbar");
             return;
         }
+        if (mRootTaskStack == null) {
+            return;
+        }
+
         if (mSafeBounds.isEmpty()) {
             // TODO(b/409067170): update AutoCaptionController API to be able to set these values
             //  independently
@@ -763,6 +806,25 @@ public final class TaskPanel extends BasePanel {
 
         mAutoCaptionController.setCaptionRegion(mRootTaskStack,
                 toolbarBounds, mAutoCaptionBarViewFactoryImpl);
+    }
+
+    private void setupTaskToolbar(RootTaskStack rootTaskStack, Rect taskToolbarBounds) {
+        TaskToolbarController taskToolBarController =
+                mPanelControllerInitializer.createTaskToolBarController(
+                        getPanelControllerMetadata(), getPanelId());
+
+        if (rootTaskStack == null || taskToolBarController == null) {
+            Log.e(TAG, "rootTaskStack or taskToolBarController is null, not setting toolbar"
+                    + rootTaskStack + ", " + taskToolBarController);
+            return;
+        }
+        logIfDebuggable("setCaptionRegion" + rootTaskStack
+                + ", taskToolbarBounds " + taskToolbarBounds
+                + ", taskToolBarController" + taskToolBarController
+        );
+
+        mAutoCaptionController.setCaptionRegion(rootTaskStack, taskToolbarBounds,
+                taskToolBarController);
     }
 
     @NonNull

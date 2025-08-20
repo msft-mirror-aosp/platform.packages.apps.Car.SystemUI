@@ -26,7 +26,6 @@ import com.android.systemui.dagger.qualifiers.PerUser
 import com.android.systemui.keyguard.KeyguardViewMediator
 import com.android.systemui.log.SessionTracker
 import com.android.systemui.media.RingtonePlayer
-import com.android.systemui.theme.ThemeOverlayController
 import com.android.systemui.usb.StorageNotification
 import com.android.systemui.util.NotificationChannels
 import com.android.systemui.wmshell.WMShell
@@ -115,12 +114,6 @@ abstract class CarSystemUICoreStartableModule {
     abstract fun bindSystemUIOverlayWindowManager(
             sysui: SystemUIOverlayWindowManager
     ): CoreStartable
-
-    /** Inject into ThemeOverlayController.  */
-    @Binds
-    @IntoMap
-    @ClassKey(ThemeOverlayController::class)
-    abstract fun bindThemeOverlayController(sysui: ThemeOverlayController): CoreStartable
 
     /** Inject into WMShell.  */
     @Binds

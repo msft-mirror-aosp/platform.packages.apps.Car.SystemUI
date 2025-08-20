@@ -34,6 +34,7 @@ import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.AutoDisplayCompatWindowDecorViewModel;
 import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
+import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.car.wm.scalableui.ActionConfigReader;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.PanelAutoTaskStackTransitionHandlerDelegate;
@@ -106,9 +107,9 @@ public abstract class CarWMShellModule {
     static DisplaySystemBarsController provideDisplaySystemBarsController(Context context,
             IWindowManager wmService, DisplayController displayController,
             DisplayInsetsController displayInsetsController,
-            @Main Handler mainHandler) {
+            @Main Handler mainHandler, CarWMUserHelper userHelper) {
         return new DisplaySystemBarsController(context, wmService, displayController,
-                displayInsetsController, mainHandler);
+                displayInsetsController, mainHandler, userHelper);
     }
 
     @WMSingleton

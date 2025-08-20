@@ -20,17 +20,14 @@ import static com.android.systemui.car.wm.scalableui.systemwindow.HunWindow.WIND
 
 import android.content.Context;
 import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import com.android.car.notification.R;
 import com.android.car.notification.headsup.CarHeadsUpNotificationContainer;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
@@ -91,7 +88,6 @@ public class CarHeadsUpNotificationSystemContainer extends CarHeadsUpNotificatio
         }
         WindowManager wm = getContext().getSystemService(WindowManager.class);
         wm.addView(getHunRootView(), getWindowManagerLayoutParams());
-        return;
     }
 
     /**
@@ -140,18 +136,6 @@ public class CarHeadsUpNotificationSystemContainer extends CarHeadsUpNotificatio
         if (getHunRootView() != null) {
             getHunRootView().setVisibility(isVisible ? View.VISIBLE : View.GONE);
         }
-    }
-
-    @Override
-    public void onScrimChange(@NonNull String panelId, @Nullable Drawable scrim) {
-        if (getHunRootView() == null) {
-            return;
-        }
-        View scrimView = getHunRootView().findViewById(R.id.scrim);
-        if (scrimView == null) {
-            return;
-        }
-        scrimView.setBackground(scrim);
     }
 }
 

@@ -17,7 +17,6 @@ package com.android.systemui.car.wm.scalableui.systemwindow
 
 import android.content.Context
 import android.graphics.PixelFormat
-import android.graphics.drawable.Drawable
 import android.view.ViewGroup
 import android.view.WindowManager
 import com.android.car.scalableui.loader.xml.HUN_PANEL_ID
@@ -65,10 +64,6 @@ class HunWindow @Inject constructor(
         lp.gravity = panelUpdateConsumer.getGravity(id)
         return lp
     }
-
-    /** Returns the scrim for the Hun window. */
-    val scrim: Drawable?
-        get() = panelUpdateConsumer.getScrim(id)
 
     /** Returns the gravity for the Hun window. */
     val gravity: Int

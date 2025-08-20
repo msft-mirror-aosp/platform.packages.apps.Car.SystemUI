@@ -20,7 +20,7 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.view.ViewGroup
 import android.view.WindowManager
-import com.android.car.scalableui.loader.xml.HunTagXmlParser.Companion.HUN_PANEL_ID
+import com.android.car.scalableui.loader.xml.HUN_PANEL_ID
 import com.android.systemui.car.wm.scalableui.EventDispatcher
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
 import javax.inject.Inject

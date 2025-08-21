@@ -53,6 +53,8 @@ abstract class SystemUiWindowBase(
         })
     }
 
+    override fun getName(): String = id
+
     override fun getBounds(): Rect? {
         return panelUpdateConsumer.getBounds(id)
     }

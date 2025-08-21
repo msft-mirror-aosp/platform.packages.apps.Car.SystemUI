@@ -19,11 +19,10 @@ package com.android.systemui.car.wm.scalableui.configuration
 import android.os.Bundle
 import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser
 import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.TYPE_NAVIGATION
-import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.TYPE_STATUS
-import com.android.systemui.car.systembar.SystemBarConfigs.TYPE_NAVIGATION_BAR
-import com.android.systemui.car.systembar.SystemBarConfigs.TYPE_STATUS_BAR
+import com.android.systemui.car.systembar.CarSystemBarController.NAVIGATION_BAR
+import com.android.systemui.car.systembar.CarSystemBarController.STATUS_BAR
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
-import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow
+import com.android.systemui.car.wm.scalableui.systemwindow.HUN_Z_ORDER
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -55,15 +54,14 @@ class SystemBarConfiguration(
         /**
          * @return System bar type name
          */
-        get() =
-            when (configuration.getString(SystemBarTagXmlParser.TYPE_ATTRIBUTE)) {
-                TYPE_NAVIGATION -> {
-                    TYPE_NAVIGATION_BAR
-                }
-                else -> {
-                    TYPE_STATUS_BAR
-                }
+        get() = when (configuration.getString(SystemBarTagXmlParser.TYPE_ATTRIBUTE)) {
+            TYPE_NAVIGATION -> {
+                NAVIGATION_BAR
             }
+            else -> {
+                STATUS_BAR
+            }
+        }
 
     val zOrder: Int
         /**
@@ -75,7 +73,7 @@ class SystemBarConfiguration(
         /**
          * @return `true` if SystemBar should be displayed above HUN
          */
-        get() = SystemBarWindow.HUN_Z_ORDER >= zOrder
+        get() = HUN_Z_ORDER >= zOrder
 
     val isHiddenForKeyboard: Boolean
         /**
@@ -101,8 +99,5 @@ class SystemBarConfiguration(
             checkNotNull(metadata) { "PanelControllerMetadata must be present" }
             return metadata.configurations
         }
-
-        const val STATUS_BAR = TYPE_STATUS
-        const val NAVIGATION_BAR = TYPE_NAVIGATION
     }
 }

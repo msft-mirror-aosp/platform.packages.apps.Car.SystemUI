@@ -16,10 +16,10 @@
 
 package com.android.systemui.car.systembar;
 
-import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
-import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
-import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
-import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
+import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM_BAR_NAME;
+import static com.android.systemui.car.systembar.CarSystemBarController.LEFT_BAR_NAME;
+import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT_BAR_NAME;
+import static com.android.systemui.car.systembar.CarSystemBarController.TOP_BAR_NAME;
 
 import android.annotation.Nullable;
 import android.content.Context;
@@ -61,10 +61,10 @@ import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.ClassKey;
-import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.IntoSet;
 import dagger.multibindings.Multibinds;
+import dagger.multibindings.StringKey;
 
 import java.util.Map;
 import java.util.Optional;
@@ -264,31 +264,31 @@ public abstract class CarSystemBarModule {
     public abstract CarSystemBarViewFactory bindCarSystemBarViewFactory(
             CarSystemBarViewFactoryImpl impl);
 
-    /** Injects CarSystemBarViewController for @SystemBarSide LEFT */
+    /** Injects CarSystemBarViewController for LEFT_BAR_NAME */
     @Binds
     @IntoMap
-    @IntKey(LEFT)
+    @StringKey(LEFT_BAR_NAME)
     public abstract CarSystemBarViewControllerFactory bindLeftCarSystemBarViewFactory(
             CarSystemBarViewControllerImpl.Factory factory);
 
-    /** Injects CarSystemBarViewController for @SystemBarSide TOP */
+    /** Injects CarSystemBarViewController for TOP_BAR_NAME */
     @Binds
     @IntoMap
-    @IntKey(TOP)
+    @StringKey(TOP_BAR_NAME)
     public abstract CarSystemBarViewControllerFactory bindTopCarSystemBarViewFactory(
             CarSystemBarViewControllerImpl.Factory factory);
 
-    /** Injects CarSystemBarViewController for @SystemBarSide RIGHT */
+    /** Injects CarSystemBarViewController for RIGHT_BAR_NAME */
     @Binds
     @IntoMap
-    @IntKey(RIGHT)
+    @StringKey(RIGHT_BAR_NAME)
     public abstract CarSystemBarViewControllerFactory bindRightCarSystemBarViewFactory(
             CarSystemBarViewControllerImpl.Factory factory);
 
-    /** Injects CarSystemBarViewController for @SystemBarSide BOTTOM */
+    /** Injects CarSystemBarViewController for BOTTOM_BAR_NAME */
     @Binds
     @IntoMap
-    @IntKey(BOTTOM)
+    @StringKey(BOTTOM_BAR_NAME)
     public abstract CarSystemBarViewControllerFactory bindBottomCarSystemBarViewFactory(
             CarSystemBarViewControllerImpl.Factory factory);
 

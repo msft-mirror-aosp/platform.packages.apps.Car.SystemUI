@@ -16,7 +16,7 @@
 
 package com.android.systemui.car.notification;
 
-import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
+import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM_BAR_NAME;
 
 import android.content.Context;
 
@@ -58,7 +58,7 @@ public class BottomNotificationPanelViewMediator extends NotificationPanelViewMe
 
     @Override
     protected void registerBottomBarTouchListener() {
-        getCarSystemBarController().registerBarTouchListener(BOTTOM,
+        getCarSystemBarController().registerBarTouchListener(BOTTOM_BAR_NAME,
                 getNotificationPanelViewController().getDragOpenTouchListener());
     }
 }

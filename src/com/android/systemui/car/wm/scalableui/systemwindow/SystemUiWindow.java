@@ -57,6 +57,12 @@ public interface SystemUiWindow {
     }
 
     /**
+     * @return name of the {@link SystemUiWindow}
+     */
+    @NonNull
+    String getName();
+
+    /**
      * Attaches {@link View} to WindowManager with the provided {@link WindowManager.LayoutParams}
      */
     void setRootView(@NonNull View view, @Nullable WindowManager.LayoutParams layoutParams);

@@ -28,21 +28,19 @@
     <bool name="config_enableRightSystemBar">false</bool>
     <bool name="config_enableBottomSystemBar">true</bool>
 
-    <!-- Configure the type of each system bar. Each system bar must have a unique type. -->
+    <!-- Configure the type of each system bar. -->
     <!--    STATUS_BAR = 0-->
     <!--    NAVIGATION_BAR = 1-->
-    <!--    STATUS_BAR_EXTRA = 2-->
-    <!--    NAVIGATION_BAR_EXTRA = 3-->
     <integer name="config_topSystemBarType">0</integer>
-    <integer name="config_leftSystemBarType">2</integer>
-    <integer name="config_rightSystemBarType">3</integer>
+    <integer name="config_leftSystemBarType">0</integer>
+    <integer name="config_rightSystemBarType">1</integer>
     <integer name="config_bottomSystemBarType">1</integer>
 
     <!-- Location of the system bar privacy indicator. This value should be consistent with the
-         layout file where the view for system bar privacy indicator is put. -->
-    <!-- For example the view is put car_top_system_bar.xml, this value should be
-         config_topSystemBarType. -->
-    <integer name="config_privacyIndicatorLocation">@integer/config_topSystemBarType</integer>
+         system  bar where the view for system bar privacy indicator is put. -->
+    <!-- For example the view is put in system bar with the name "status", this value should be
+         status. -->
+    <string name="config_privacyIndicatorLocation">TopCarSystemBar</string>
 
     <!-- Configure the relative z-order among the system bars. When two system bars overlap (e.g.
          if both top bar and left bar are enabled, it creates an overlapping space in the upper left

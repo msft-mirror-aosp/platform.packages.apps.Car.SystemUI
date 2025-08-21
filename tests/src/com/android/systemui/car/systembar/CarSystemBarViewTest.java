@@ -34,6 +34,8 @@ import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.window.OverlayVisibilityMediator;
+import com.android.systemui.car.wm.scalableui.configuration.SystemUiConfigurationProvider;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.settings.UserTracker;
 
 import org.junit.After;
@@ -50,6 +52,7 @@ import java.util.Collections;
 @TestableLooper.RunWithLooper
 @SmallTest
 public class CarSystemBarViewTest extends CarSysuiTestCase {
+    private static final String TEST_SYSTEM_BAR_NAME = "TEST_SYSTEM_BAR_NAME";
 
     private CarSystemBarView mNavBarView;
 
@@ -66,11 +69,11 @@ public class CarSystemBarViewTest extends CarSysuiTestCase {
     @Mock
     private ButtonRoleHolderController mButtonRoleHolderController;
     @Mock
-    private MicPrivacyChipViewController mMicPrivacyChipViewController;
-    @Mock
-    private CameraPrivacyChipViewController mCameraPrivacyChipViewController;
-    @Mock
     private OverlayVisibilityMediator mOverlayVisibilityMediator;
+    @Mock
+    private SystemUiWindowProvider mWindowProvider;
+    @Mock
+    private SystemUiConfigurationProvider mConfigProvider;
 
     @Before
     public void setUp() {
@@ -134,14 +137,14 @@ public class CarSystemBarViewTest extends CarSysuiTestCase {
 
     private CarSystemBarViewControllerImpl getSystemBarViewController(CarSystemBarView view) {
         SystemBarConfigs systemBarConfigs = new SystemBarConfigsImpl(getContext(),
-                getContext().getOrCreateTestableResources().getResources());
+                getContext().getOrCreateTestableResources().getResources(), mWindowProvider);
         return new CarSystemBarViewControllerImpl(getContext(),
                 mUserTracker,
                 mCarSystemBarElementInitializer,
                 systemBarConfigs,
                 mButtonRoleHolderController,
                 mOverlayVisibilityMediator,
-                0,
+                TEST_SYSTEM_BAR_NAME,
                 view);
     }
 }

@@ -16,7 +16,7 @@
 
 package com.android.systemui.car.notification;
 
-import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
+import static com.android.systemui.car.systembar.CarSystemBarController.TOP_BAR_NAME;
 
 import android.content.Context;
 
@@ -58,7 +58,7 @@ public class TopNotificationPanelViewMediator extends NotificationPanelViewMedia
 
     @Override
     protected void registerTopBarTouchListener() {
-        getCarSystemBarController().registerBarTouchListener(TOP,
+        getCarSystemBarController().registerBarTouchListener(TOP_BAR_NAME,
                 getNotificationPanelViewController().getDragOpenTouchListener());
     }
 }

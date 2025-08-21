@@ -16,10 +16,10 @@
 
 package com.android.systemui.car.notification;
 
-import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
-import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
-import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
-import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
+import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM_BAR_NAME;
+import static com.android.systemui.car.systembar.CarSystemBarController.LEFT_BAR_NAME;
+import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT_BAR_NAME;
+import static com.android.systemui.car.systembar.CarSystemBarController.TOP_BAR_NAME;
 
 import android.car.hardware.power.CarPowerManager;
 import android.content.BroadcastReceiver;
@@ -167,22 +167,22 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
     }
 
     protected void registerTopBarTouchListener() {
-        mCarSystemBarController.registerBarTouchListener(TOP,
+        mCarSystemBarController.registerBarTouchListener(TOP_BAR_NAME,
                 mNotificationPanelViewController.getDragCloseTouchListener());
     }
 
     protected void registerBottomBarTouchListener() {
-        mCarSystemBarController.registerBarTouchListener(BOTTOM,
+        mCarSystemBarController.registerBarTouchListener(BOTTOM_BAR_NAME,
                 mNotificationPanelViewController.getDragCloseTouchListener());
     }
 
     protected void registerLeftBarTouchListener() {
-        mCarSystemBarController.registerBarTouchListener(LEFT,
+        mCarSystemBarController.registerBarTouchListener(LEFT_BAR_NAME,
                 mNotificationPanelViewController.getDragCloseTouchListener());
     }
 
     protected void registerRightBarTouchListener() {
-        mCarSystemBarController.registerBarTouchListener(RIGHT,
+        mCarSystemBarController.registerBarTouchListener(RIGHT_BAR_NAME,
                 mNotificationPanelViewController.getDragCloseTouchListener());
     }
 

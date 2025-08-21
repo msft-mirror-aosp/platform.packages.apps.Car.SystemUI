@@ -16,10 +16,10 @@
 
 package com.android.systemui.car.hvac;
 
-import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
-import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
-import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
-import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
+import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM_BAR_NAME;
+import static com.android.systemui.car.systembar.CarSystemBarController.LEFT_BAR_NAME;
+import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT_BAR_NAME;
+import static com.android.systemui.car.systembar.CarSystemBarController.TOP_BAR_NAME;
 import static com.android.systemui.car.window.OverlayPanelViewController.OVERLAY_FROM_BOTTOM_BAR;
 
 import android.content.BroadcastReceiver;
@@ -89,13 +89,13 @@ public class HvacPanelOverlayViewMediator implements OverlayViewMediator {
 
     @Override
     public void registerListeners() {
-        mCarSystemBarController.registerBarTouchListener(TOP,
+        mCarSystemBarController.registerBarTouchListener(TOP_BAR_NAME,
                 mHvacPanelOverlayViewController.getDragCloseTouchListener());
-        mCarSystemBarController.registerBarTouchListener(BOTTOM,
+        mCarSystemBarController.registerBarTouchListener(BOTTOM_BAR_NAME,
                 mHvacPanelOverlayViewController.getDragCloseTouchListener());
-        mCarSystemBarController.registerBarTouchListener(LEFT,
+        mCarSystemBarController.registerBarTouchListener(LEFT_BAR_NAME,
                 mHvacPanelOverlayViewController.getDragCloseTouchListener());
-        mCarSystemBarController.registerBarTouchListener(RIGHT,
+        mCarSystemBarController.registerBarTouchListener(RIGHT_BAR_NAME,
                 mHvacPanelOverlayViewController.getDragCloseTouchListener());
 
         mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,

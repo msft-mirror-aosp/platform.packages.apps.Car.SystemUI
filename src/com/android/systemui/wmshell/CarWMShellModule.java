@@ -16,11 +16,6 @@
 
 package com.android.systemui.wmshell;
 
-import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_BOTTOM_ID;
-import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_LEFT_ID;
-import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_RIGHT_ID;
-import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_TOP_ID;
-
 import android.content.Context;
 import android.os.Handler;
 import android.view.IWindowManager;
@@ -47,8 +42,6 @@ import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerMo
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.ScalableUIPanelUpdateImpl;
 import com.android.systemui.car.wm.scalableui.systemwindow.HunWindow;
-import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;
-import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow.SystemBarConfiguration;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
@@ -94,8 +87,6 @@ import dagger.Provides;
 import kotlinx.coroutines.CoroutineScope;
 
 import java.util.Optional;
-
-import javax.inject.Named;
 
 /** Provides dependencies from {@link com.android.wm.shell} for CarSystemUI. */
 @Module(includes = {WMShellBaseModule.class, AutoShellModule.class, LetterboxModule.class,
@@ -293,135 +284,6 @@ public abstract class CarWMShellModule {
     @Provides
     static LetterboxDependenciesHelper provideLetterboxDependenciesHelper() {
         return new IgnoreLetterboxDependenciesHelper();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_LEFT_ID)
-    static Optional<SystemBarWindow> provideLeftSystemBarWindow(Context context,
-            Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(
-                        new SystemBarWindow(context, consumer, dispatcher,
-                                SYSTEM_BAR_PANEL_LEFT_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_TOP_ID)
-    static Optional<SystemBarWindow> provideTopSystemBarWindow(Context context,
-            Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(
-                        new SystemBarWindow(context, consumer, dispatcher,
-                                SYSTEM_BAR_PANEL_TOP_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_RIGHT_ID)
-    static Optional<SystemBarWindow> provideRightSystemBarWindow(Context context,
-            Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(
-                        new SystemBarWindow(context, consumer, dispatcher,
-                                SYSTEM_BAR_PANEL_RIGHT_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_BOTTOM_ID)
-    static Optional<SystemBarWindow> provideBottomSystemBarWindow(Context context,
-            Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(
-                        new SystemBarWindow(context, consumer, dispatcher,
-                                SYSTEM_BAR_PANEL_BOTTOM_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_LEFT_ID)
-    static Optional<SystemBarConfiguration> provideLeftSystemBarConfiguration(
-            Optional<PanelUpdateConsumer> consumer) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(new SystemBarConfiguration(consumer, SYSTEM_BAR_PANEL_LEFT_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_TOP_ID)
-    static Optional<SystemBarConfiguration> provideTopSystemBarConfiguration(
-            Optional<PanelUpdateConsumer> consumer) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(new SystemBarConfiguration(consumer, SYSTEM_BAR_PANEL_TOP_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_RIGHT_ID)
-    static Optional<SystemBarConfiguration> provideRightSystemBarConfiguration(
-            Optional<PanelUpdateConsumer> consumer) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(new SystemBarConfiguration(consumer, SYSTEM_BAR_PANEL_RIGHT_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_BOTTOM_ID)
-    static Optional<SystemBarConfiguration> provideBottomSystemBarConfiguration(
-            Optional<PanelUpdateConsumer> consumer) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(
-                        new SystemBarConfiguration(consumer, SYSTEM_BAR_PANEL_BOTTOM_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
     }
 
     @WMSingleton

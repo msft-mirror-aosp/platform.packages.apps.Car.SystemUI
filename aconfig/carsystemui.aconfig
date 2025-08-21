@@ -65,13 +65,6 @@ flag {
 }
 
 flag {
-    name: "auto_task_stack_windowing"
-    namespace: "car_framework"
-    description: "Flag to enable the AutoTaskStackController in WmShell."
-    bug: "384082238"
-}
-
-flag {
     name: "package_level_system_bar_visibility"
     namespace: "car_sys_exp"
     description: "Allow per-package persistent system bar visibility control."

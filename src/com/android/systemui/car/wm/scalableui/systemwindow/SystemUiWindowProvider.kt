@@ -15,55 +15,49 @@
  */
 package com.android.systemui.car.wm.scalableui.systemwindow
 
-import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser
-import com.android.systemui.car.systembar.CarSystemBarController
-import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide
+import com.android.systemui.car.systembar.SystemBarConfigs.TYPE_NAVIGATION_BAR
+import com.android.systemui.car.systembar.SystemBarConfigs.TYPE_STATUS_BAR
+import com.android.systemui.car.wm.scalableui.configuration.SystemUiConfigurationProvider
+import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
 import com.android.wm.shell.dagger.WMSingleton
 import dagger.Lazy
 import java.util.Optional
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * Provides access to all [SystemUiWindow] objects.
  */
 @WMSingleton
 class SystemUiWindowProvider @Inject constructor(
-    @Named(SystemBarTagXmlParser.SYSTEM_BAR_PANEL_LEFT_ID)
-    leftSystemBarWindow: Lazy<Optional<SystemBarWindow>>,
-    @Named(SystemBarTagXmlParser.SYSTEM_BAR_PANEL_TOP_ID)
-    topSystemBarWindow: Lazy<Optional<SystemBarWindow>>,
-    @Named(SystemBarTagXmlParser.SYSTEM_BAR_PANEL_RIGHT_ID)
-    rightSystemBarWindow: Lazy<Optional<SystemBarWindow>>,
-    @Named(SystemBarTagXmlParser.SYSTEM_BAR_PANEL_BOTTOM_ID)
-    bottomSystemBarWindow: Lazy<Optional<SystemBarWindow>>,
-    hunWindow: Lazy<Optional<HunWindow>>
+    private val consumer: Optional<PanelUpdateConsumer>,
+    private val windowFactory: SystemBarWindow.Factory,
+    private val configurationProvider: SystemUiConfigurationProvider,
+    private val hunWindow: Lazy<Optional<HunWindow>>
 ) {
-    private val mSystemBarWindowMap: MutableMap<Int, Lazy<Optional<SystemBarWindow>>> =
-        HashMap()
-    private val mHunWindow: Lazy<Optional<HunWindow>>
+    val navBarWindows: List<SystemUiWindow> by lazy { getBarWindows(TYPE_NAVIGATION_BAR) }
+    val statusBarWindows: List<SystemUiWindow> by lazy { getBarWindows(TYPE_STATUS_BAR) }
+    val systemBarWindows: List<SystemUiWindow> by lazy { statusBarWindows + navBarWindows }
 
-    init {
-        mSystemBarWindowMap[CarSystemBarController.LEFT] = leftSystemBarWindow
-        mSystemBarWindowMap[CarSystemBarController.TOP] = topSystemBarWindow
-        mSystemBarWindowMap[CarSystemBarController.RIGHT] = rightSystemBarWindow
-        mSystemBarWindowMap[CarSystemBarController.BOTTOM] = bottomSystemBarWindow
-        mHunWindow = hunWindow
-    }
+    private fun getBarWindows(type: Int): List<SystemUiWindow> {
+        if (consumer.isEmpty) {
+            return emptyList()
+        }
 
-    /**
-     * @return [SystemBarWindow] according to [CarSystemBarController.SystemBarSide]
-     */
-    fun getSystemBarWindow(
-        side: @SystemBarSide Int
-    ): Optional<SystemBarWindow> {
-        return mSystemBarWindowMap[side]?.get() ?: Optional.empty()
+        val configs = if (type == TYPE_STATUS_BAR) {
+            configurationProvider.statusBarConfigs
+        } else {
+            configurationProvider.navBarConfigs
+        }
+
+        return configs.map { config ->
+            windowFactory.create(consumer.get(), config)
+        }.toList()
     }
 
     /**
      * @return [HunWindow]
      */
     fun getHunWindow(): Optional<HunWindow> {
-        return mHunWindow.get()
+        return hunWindow.get()
     }
 }

@@ -53,6 +53,10 @@ abstract class SystemUiWindowBase(
         })
     }
 
+    override fun getBounds(): Rect? {
+        return panelUpdateConsumer.getBounds(id)
+    }
+
     override fun setRootView(view: View, layoutParams: WindowManager.LayoutParams?) {
         if (_rootView != null) {
             removeRootView()
@@ -64,6 +68,13 @@ abstract class SystemUiWindowBase(
     override fun removeRootView() {
         _rootView?.let {
             windowManager.removeView(it)
+            _rootView = null
+        }
+    }
+
+    override fun removeRootViewImmediate() {
+        _rootView?.let {
+            windowManager.removeViewImmediate(it)
             _rootView = null
         }
     }

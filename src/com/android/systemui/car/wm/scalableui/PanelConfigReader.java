@@ -15,8 +15,6 @@
  */
 package com.android.systemui.car.wm.scalableui;
 
-import static com.android.car.scalableui.panel.ReservedIdProvider.SYSTEM_PANEL_IDS;
-
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.res.Resources;
@@ -29,6 +27,7 @@ import com.android.car.scalableui.designcompose.PanelStateDocLoader;
 import com.android.car.scalableui.loader.xml.XmlModelLoader;
 import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.PanelState;
+import com.android.car.scalableui.model.PanelType;
 import com.android.car.scalableui.panel.PanelPool;
 import com.android.systemui.R;
 import com.android.systemui.car.flags.Flag;
@@ -67,10 +66,10 @@ public class PanelConfigReader {
      */
     public void init() {
         PanelPool.getInstance().clearPanels();
-        PanelPool.getInstance().setDelegate(id -> {
-            if (id.startsWith(PanelState.DECOR_PANEL_ID_PREFIX)) {
+        PanelPool.getInstance().setDelegate((id, type) -> {
+            if (type == PanelType.DECOR) {
                 return mDecorPanelFactory.create(id);
-            } else if (SYSTEM_PANEL_IDS.contains(id)) {
+            } else if (type == PanelType.SYSTEM_BAR) {
                 return mBasePanelFactory.create(id);
             } else {
                 return mTaskPanelFactory.create(id);
@@ -127,7 +126,9 @@ public class PanelConfigReader {
                 debugLog("PanelConfig adding state: " + xmlResId);
                 XmlModelLoader loader = new XmlModelLoader(mContext);
                 PanelState panelState = loader.createPanelState(xmlResId);
-                StateManager.addState(panelState);
+                if (panelState != null) {
+                    StateManager.addState(panelState);
+                }
             }
         }
     }

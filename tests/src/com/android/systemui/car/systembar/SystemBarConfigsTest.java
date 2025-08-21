@@ -379,7 +379,7 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
                 ConfigurationController configurationController) {
             super(context, carSystemBarController, notificationPanelViewController,
                     powerManagerHelper, broadcastDispatcher, userTracker,
-                    configurationController);
+                    configurationController, new ArrayList<>(), new ArrayList<>());
         }
     }
 }

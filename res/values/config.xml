@@ -304,6 +304,24 @@
     </string-array>
 
     <!--
+        List of system bar names that should register NotificationPanelViewController's
+        DragOpenTouchListener
+    -->
+    <string-array name="config_notificationDragOpenListener" translatable="false">
+        <item>TopCarSystemBar</item>
+    </string-array>
+
+    <!--
+        List of system bar names that should register NotificationPanelViewController's
+        DragCloseTouchListener
+    -->
+    <string-array name="config_notificationDragCloseListener" translatable="false">
+        <item>BottomCarSystemBar</item>
+        <item>LeftCarSystemBar</item>
+        <item>RightCarSystemBar</item>
+    </string-array>
+
+    <!--
         Specifies the default activities associated with different panel IDs.
 
         This string array defines the default activity to launch for panels. Each item in the array

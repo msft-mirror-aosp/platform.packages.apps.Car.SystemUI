@@ -16,10 +16,7 @@
 
 package com.android.systemui.car.hvac;
 
-import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM_BAR_NAME;
-import static com.android.systemui.car.systembar.CarSystemBarController.LEFT_BAR_NAME;
-import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT_BAR_NAME;
-import static com.android.systemui.car.systembar.CarSystemBarController.TOP_BAR_NAME;
+import static com.android.systemui.car.hvac.HvacModule.HVAC_SYSTEM_BAR_NAMES;
 import static com.android.systemui.car.window.OverlayPanelViewController.OVERLAY_FROM_BOTTOM_BAR;
 
 import android.content.BroadcastReceiver;
@@ -36,7 +33,10 @@ import com.android.systemui.car.window.OverlayViewMediator;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;
 
+import java.util.List;
+
 import javax.inject.Inject;
+import javax.inject.Named;
 
 @SysUISingleton
 public class HvacPanelOverlayViewMediator implements OverlayViewMediator {
@@ -48,6 +48,7 @@ public class HvacPanelOverlayViewMediator implements OverlayViewMediator {
     private final HvacPanelOverlayViewController mHvacPanelOverlayViewController;
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final UserTracker mUserTracker;
+    private final List<String> mSystemBarNames;
 
     @VisibleForTesting
     final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -79,24 +80,20 @@ public class HvacPanelOverlayViewMediator implements OverlayViewMediator {
             CarSystemBarController carSystemBarController,
             HvacPanelOverlayViewController hvacPanelOverlayViewController,
             BroadcastDispatcher broadcastDispatcher,
-            UserTracker userTracker) {
+            UserTracker userTracker,
+            @Named(HVAC_SYSTEM_BAR_NAMES) List<String> systemBarNames) {
         mContext = context;
         mCarSystemBarController = carSystemBarController;
         mHvacPanelOverlayViewController = hvacPanelOverlayViewController;
         mBroadcastDispatcher = broadcastDispatcher;
         mUserTracker = userTracker;
+        mSystemBarNames = systemBarNames;
     }
 
     @Override
     public void registerListeners() {
-        mCarSystemBarController.registerBarTouchListener(TOP_BAR_NAME,
-                mHvacPanelOverlayViewController.getDragCloseTouchListener());
-        mCarSystemBarController.registerBarTouchListener(BOTTOM_BAR_NAME,
-                mHvacPanelOverlayViewController.getDragCloseTouchListener());
-        mCarSystemBarController.registerBarTouchListener(LEFT_BAR_NAME,
-                mHvacPanelOverlayViewController.getDragCloseTouchListener());
-        mCarSystemBarController.registerBarTouchListener(RIGHT_BAR_NAME,
-                mHvacPanelOverlayViewController.getDragCloseTouchListener());
+        mSystemBarNames.forEach(systemBarName -> mCarSystemBarController.registerBarTouchListener(
+                systemBarName, mHvacPanelOverlayViewController.getDragCloseTouchListener()));
 
         mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), /* executor= */ null,

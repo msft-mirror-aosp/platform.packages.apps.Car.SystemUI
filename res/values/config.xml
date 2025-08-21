@@ -293,6 +293,17 @@
     </string-array>
 
     <!--
+        List of system bar names that should register HvacPanelOverlayViewController's
+        DragCloseTouchListener
+    -->
+    <string-array name="config_registerHvacDragCloseListener" translatable="false">
+        <item>TopCarSystemBar</item>
+        <item>BottomCarSystemBar</item>
+        <item>LeftCarSystemBar</item>
+        <item>RightCarSystemBar</item>
+    </string-array>
+
+    <!--
         Specifies the default activities associated with different panel IDs.
 
         This string array defines the default activity to launch for panels. Each item in the array

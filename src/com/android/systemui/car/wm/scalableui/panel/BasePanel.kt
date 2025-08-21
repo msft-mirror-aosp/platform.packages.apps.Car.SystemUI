@@ -148,6 +148,12 @@ open class BasePanel @AssistedInject constructor(
         // no-op
     }
 
+    override fun getTaskToolbarBounds() = Rect()
+
+    override fun setTaskToolbarBounds(safeBounds: Rect) {
+        // no-op
+    }
+
     override fun setRole(role: Role?) {
         this.role = role
     }

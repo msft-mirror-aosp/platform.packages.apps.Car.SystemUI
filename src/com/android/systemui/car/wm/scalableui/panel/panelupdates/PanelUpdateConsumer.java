@@ -160,6 +160,17 @@ public interface PanelUpdateConsumer {
         }
 
         /**
+         * Called when the panel's task toolbar bounds are updated.
+         *
+         * @param panelId The associated panelId for the bounds change
+         * @param rect    The new (or last known replayed) bounds of the panel.
+         */
+        @FlaggedApi(Flags.FLAG_ENABLE_EXT_PANEL_UPDATES)
+        default void onTaskToolbarBoundsChange(@NonNull String panelId, @NonNull Rect rect) {
+            // Default implementation does nothing, allowing selective overriding.
+        }
+
+        /**
          * Called when the panel's alpha is updated.
          *
          * @param panelId The associated panelId for the alpha change

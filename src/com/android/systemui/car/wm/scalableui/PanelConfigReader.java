@@ -42,9 +42,7 @@ public class PanelConfigReader {
 
     public PanelConfigReader(Context context, TaskPanel.Factory taskPanelFactory,
             DecorPanel.Factory decorPanelFactory) {
-        if (DEBUG) {
-            Log.d(TAG, "PanelConfig initialized user: " + ActivityManager.getCurrentUser());
-        }
+        debugLog("PanelConfig initialized user: " + ActivityManager.getCurrentUser());
         mContext = context;
         mTaskPanelFactory = taskPanelFactory;
         mDecorPanelFactory = decorPanelFactory;
@@ -65,21 +63,31 @@ public class PanelConfigReader {
 
         try {
             Trace.beginSection(TAG + "#init");
-            Resources res = mContext.getResources();
             StateManager.clearStates();
-            try (TypedArray states = res.obtainTypedArray(R.array.window_states)) {
-                for (int i = 0; i < states.length(); i++) {
-                    int xmlResId = states.getResourceId(i, 0);
-                    if (DEBUG) {
-                        Log.d(TAG, "PanelConfig adding state: " + xmlResId);
-                    }
-                    XmlModelLoader loader = new XmlModelLoader(mContext);
-                    PanelState panelState = loader.createPanelState(xmlResId);
-                    StateManager.addState(panelState);
-                }
-            }
+
+            loadFromXml();
         } finally {
             Trace.endSection();
+        }
+    }
+
+    private void loadFromXml() {
+        debugLog("Loading panel states from XML");
+        Resources res = mContext.getResources();
+        try (TypedArray states = res.obtainTypedArray(R.array.window_states)) {
+            for (int i = 0; i < states.length(); i++) {
+                int xmlResId = states.getResourceId(i, 0);
+                debugLog("PanelConfig adding state: " + xmlResId);
+                XmlModelLoader loader = new XmlModelLoader(mContext);
+                PanelState panelState = loader.createPanelState(xmlResId);
+                StateManager.addState(panelState);
+            }
+        }
+    }
+
+    private void debugLog(String logMsg) {
+        if (DEBUG) {
+            Log.d(TAG, logMsg);
         }
     }
 }

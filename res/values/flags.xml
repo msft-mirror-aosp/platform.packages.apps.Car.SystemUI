@@ -37,4 +37,6 @@
     <bool name="scalable_ui_task_focus">true</bool>
     <!-- Controls enabling configuration change handling for ScalableUI. -->
     <bool name="scalable_ui_handle_configuration_change">true</bool>
+    <!-- Controls enabling display compatibility V2. -->
+    <bool name="display_compatibility_v2">true</bool>
 </resources>

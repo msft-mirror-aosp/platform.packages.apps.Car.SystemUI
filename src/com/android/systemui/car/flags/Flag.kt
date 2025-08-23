@@ -146,6 +146,14 @@ enum class Flag(
     ScalableUiHandleConfigurationChange(
         "com.android.car.scalableui.Flags.scalableUiHandleConfigurationChange",
         R.bool.scalable_ui_handle_configuration_change
+    ),
+
+    /**
+     * Checks if the DisplayCompatibilityV2 is enabled.
+     */
+    DisplayCompatibilityV2(
+        "com.android.systemui.car.display_compatibility_v2",
+        R.bool.display_compatibility_v2
     );
 
     // These properties are now calculated from the fullFlagIdentifier.

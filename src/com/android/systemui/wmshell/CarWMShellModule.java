@@ -29,6 +29,7 @@ import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.AutoDisplayCompatWindowDecorViewModel;
 import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
+import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.car.wm.scalableui.ActionConfigReader;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.PanelAutoTaskStackTransitionHandlerDelegate;
@@ -54,15 +55,7 @@ import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.common.SyncTransactionQueue;
-import com.android.wm.shell.compatui.letterbox.DelegateLetterboxTransitionObserver;
-import com.android.wm.shell.compatui.letterbox.LetterboxCommandHandler;
-import com.android.wm.shell.compatui.letterbox.config.IgnoreLetterboxDependenciesHelper;
-import com.android.wm.shell.compatui.letterbox.config.LetterboxDependenciesHelper;
-import com.android.wm.shell.compatui.letterbox.lifecycle.LetterboxCleanupAdapter;
-import com.android.wm.shell.compatui.letterbox.state.LetterboxTaskListenerAdapter;
 import com.android.wm.shell.dagger.DynamicOverride;
-import com.android.wm.shell.dagger.LetterboxModule;
-import com.android.wm.shell.dagger.ShellCreateTriggerOverride;
 import com.android.wm.shell.dagger.WMShellBaseModule;
 import com.android.wm.shell.dagger.WMSingleton;
 import com.android.wm.shell.fullscreen.FullscreenTaskListener;
@@ -89,8 +82,7 @@ import kotlinx.coroutines.CoroutineScope;
 import java.util.Optional;
 
 /** Provides dependencies from {@link com.android.wm.shell} for CarSystemUI. */
-@Module(includes = {WMShellBaseModule.class, AutoShellModule.class, LetterboxModule.class,
-        PanelControllerModule.class})
+@Module(includes = {WMShellBaseModule.class, AutoShellModule.class, PanelControllerModule.class})
 public abstract class CarWMShellModule {
 
     @WMSingleton
@@ -98,9 +90,9 @@ public abstract class CarWMShellModule {
     static DisplaySystemBarsController provideDisplaySystemBarsController(Context context,
             IWindowManager wmService, DisplayController displayController,
             DisplayInsetsController displayInsetsController,
-            @Main Handler mainHandler) {
+            @Main Handler mainHandler, CarWMUserHelper userHelper) {
         return new DisplaySystemBarsController(context, wmService, displayController,
-                displayInsetsController, mainHandler);
+                displayInsetsController, mainHandler, userHelper);
     }
 
     @WMSingleton
@@ -267,23 +259,6 @@ public abstract class CarWMShellModule {
             return Optional.of(scalableUIPanelUpdateOptional.get());
         }
         return Optional.empty();
-    }
-
-    @WMSingleton
-    @ShellCreateTriggerOverride
-    @Provides
-    static Object provideIndependentShellComponentsToCreate(
-            @NonNull DelegateLetterboxTransitionObserver letterboxTransitionObserver,
-            @NonNull LetterboxCommandHandler letterboxCommandHandler,
-            @NonNull LetterboxTaskListenerAdapter letterboxTaskListenerAdapter,
-            @NonNull LetterboxCleanupAdapter letterboxCleanupAdapter) {
-        return new Object();
-    }
-
-    @WMSingleton
-    @Provides
-    static LetterboxDependenciesHelper provideLetterboxDependenciesHelper() {
-        return new IgnoreLetterboxDependenciesHelper();
     }
 
     @WMSingleton

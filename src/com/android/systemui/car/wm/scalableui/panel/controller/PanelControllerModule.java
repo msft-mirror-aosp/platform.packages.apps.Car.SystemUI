@@ -65,6 +65,14 @@ public abstract class PanelControllerModule {
     public abstract DecorPanelController.Factory bindPanelOverlayControllerFactory(
             PanelOverlayController.Factory factory);
 
+    /** Binds TaskToolBarController.Factory. */
+    @Binds
+    @IntoMap
+    @ClassKey(CompatibilityToolbarController.class)
+    public abstract TaskToolbarController.Factory bindTCompatibilityToolBarControllerFactory(
+            CompatibilityToolbarController.Factory factory
+    );
+
     /** Binds {@link GripBar} as a decor panel view. */
     @Provides
     @IntoMap

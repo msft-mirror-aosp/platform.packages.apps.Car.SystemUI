@@ -21,6 +21,8 @@ import android.view.View;
 
 import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.car.scalableui.panel.TaskPanelController;
+import com.android.systemui.car.wm.scalableui.view.AppStyledViewController;
+import com.android.systemui.car.wm.scalableui.view.AppStyledViewScrim;
 import com.android.systemui.car.wm.scalableui.view.GripBar;
 import com.android.systemui.car.wm.scalableui.view.GripBarViewController;
 import com.android.systemui.car.wm.scalableui.view.PanelOverlay;
@@ -58,6 +60,13 @@ public abstract class PanelControllerModule {
     public abstract DecorPanelController.Factory bindGripBarControllerFactory(
             GripBarViewController.Factory factory);
 
+    /** Binds AppStyledViewController.Factory. */
+    @Binds
+    @IntoMap
+    @ClassKey(AppStyledViewController.class)
+    public abstract DecorPanelController.Factory bindAppStyledViewControllerFactory(
+            AppStyledViewController.Factory factory);
+
     /** Binds PanelOverlayController.Factory. */
     @Binds
     @IntoMap
@@ -81,6 +90,16 @@ public abstract class PanelControllerModule {
     static View bindGripBarView(Context context) {
         return new GripBar(context);
     }
+
+    /** Binds {@link AppStyledViewScrim} as a decor panel view. */
+    @Provides
+    @IntoMap
+    @ClassKey(AppStyledViewScrim.class)
+    @DecorPanelViewMap
+    static View bindAppStyledScrimView(Context context) {
+        return new AppStyledViewScrim(context);
+    }
+
 
     /** Binds {@link PanelOverlay} as a decor panel view. */
     @Provides

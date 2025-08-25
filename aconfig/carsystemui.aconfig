@@ -92,3 +92,10 @@ flag {
     bug: "423995605"
 }
 
+flag {
+    name: "show_media_projection_indicator"
+    namespace: "car_sys_exp"
+    description: "This flag controls enabling an indicator for Media Projection API"
+    bug: "435279151"
+}
+

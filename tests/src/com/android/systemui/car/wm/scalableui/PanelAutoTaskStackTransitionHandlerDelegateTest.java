@@ -43,10 +43,11 @@ import android.window.TransitionRequestInfo;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.CarSysuiTestCase;
 import com.android.car.scalableui.model.Event;
+import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.flags.FlagManager;
+import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
@@ -89,6 +90,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
     private AutoLayoutManager mAutoLayoutManager;
     @Mock
     private FlagManager mFlagManager;
+    @Mock
+    private CarWMUserHelper mCarWMUserHelper;
 
     @Before
     public void setUp() {
@@ -97,7 +100,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
                 any(), any())).thenReturn(new AutoTaskStackTransaction());
         mDelegate = new PanelAutoTaskStackTransitionHandlerDelegate(mContext,
                 mAutoTaskStackController, mPanelTransitionCoordinator, mPanelUtils,
-                mTaskPanelInfoRepository, mAutoLayoutManager, mFlagManager);
+                mCarWMUserHelper, mTaskPanelInfoRepository, mAutoLayoutManager, mFlagManager);
     }
 
     @Test

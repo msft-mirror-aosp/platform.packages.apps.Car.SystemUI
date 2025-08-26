@@ -30,7 +30,6 @@ import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT_BA
 import static com.android.systemui.car.systembar.CarSystemBarController.STATUS_BAR;
 import static com.android.systemui.car.systembar.CarSystemBarController.TOP_BAR_NAME;
 
-import android.annotation.IdRes;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
@@ -105,6 +104,8 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
     /** Maps @WindowManager.LayoutParams.WindowType to window contexts for that type. */
     private final Map<Integer, Context> mWindowContexts = new ArrayMap<>();
     private final SystemUiWindowProvider mWindowProvider;
+    private final Map<String, CarSystemBarViewSupplier> mViewSupplierMap;
+    private final Map<String, CarSystemBarWindowSupplier> mWindowSupplierMap;
     Map<String, SystemBarWindow> mSystemBars = new ArrayMap<>();
     private boolean mTopNavBarEnabled;
     private boolean mBottomNavBarEnabled;
@@ -114,10 +115,14 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
 
     @Inject
     public SystemBarConfigsImpl(Context context, @Main Resources resources,
-            SystemUiWindowProvider windowProvider) {
+            SystemUiWindowProvider windowProvider,
+            Map<String, CarSystemBarViewSupplier> viewSupplerMap,
+            Map<String, CarSystemBarWindowSupplier> windowSupplierMap) {
         mContext = context;
         mResources = resources;
         mWindowProvider = windowProvider;
+        mViewSupplierMap = viewSupplerMap;
+        mWindowSupplierMap = windowSupplierMap;
         init();
     }
 
@@ -197,81 +202,36 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
      * Returns the system bar layout. {@code null} if side is unknown.
      */
     @Override
-    public ViewGroup getSystemBarLayoutByName(String name, boolean isSetUp) {
-        int layoutId = getSystemBarLayoutResByName(name, isSetUp);
-        if (layoutId == 0) {
+    public ViewGroup getSystemBarLayoutByName(@NonNull String name, boolean isSetUp) {
+        CarSystemBarViewSupplier supplier = mViewSupplierMap.get(name);
+        if (supplier == null) {
+            Log.e(TAG, "CarSystemBarViewSupplier not injected into map for: " + name);
             return null;
         }
-
-        return (ViewGroup) View.inflate(getWindowContextByName(name), layoutId, /* root= */ null);
-    }
-
-    private int getSystemBarLayoutResByName(String name, boolean isSetUp) {
-        switch (name) {
-            case LEFT_BAR_NAME -> {
-                if (!isSetUp) {
-                    return R.layout.car_left_system_bar_unprovisioned;
-                } else {
-                    return R.layout.car_left_system_bar;
-                }
-            }
-            case TOP_BAR_NAME -> {
-                if (!isSetUp) {
-                    return R.layout.car_top_system_bar_unprovisioned;
-                } else {
-                    return R.layout.car_top_system_bar;
-                }
-            }
-            case RIGHT_BAR_NAME -> {
-                if (!isSetUp) {
-                    return R.layout.car_right_system_bar_unprovisioned;
-                } else {
-                    return R.layout.car_right_system_bar;
-                }
-            }
-            case BOTTOM_BAR_NAME -> {
-                if (!isSetUp) {
-                    return R.layout.car_bottom_system_bar_unprovisioned;
-                } else {
-                    return R.layout.car_bottom_system_bar;
-                }
-            }
-            default -> {
-                return 0;
-            }
+        Context windowContext = getWindowContextByName(name);
+        if (windowContext == null) {
+            Log.e(TAG, "Window context doesn't exist for name: " + name);
+            return null;
         }
+        return supplier.getSystemBarView(windowContext, isSetUp);
     }
 
     /**
      * Returns the system bar window for the given side.
      */
     @Override
-    public ViewGroup getWindowLayoutByName(String name) {
-        int windowId = getWindowIdByName(name);
-        if (windowId == 0) {
+    public ViewGroup getWindowLayoutByName(@NonNull String name) {
+        CarSystemBarWindowSupplier supplier = mWindowSupplierMap.get(name);
+        if (supplier == null) {
+            Log.e(TAG, "CarSystemBarWindowSupplier not injected into map for: " + name);
             return null;
         }
-        ViewGroup window = (ViewGroup) View.inflate(getWindowContextByName(name),
-                R.layout.navigation_bar_window, /* root= */ null);
-        // Setting a new id to each window because we're inflating the same layout and that layout
-        // already has an id. and we don't want to have the same id on all the system bar windows.
-        window.setId(windowId);
-        return window;
-    }
-
-    /**
-     * Returns an id for the given side that can be set on the system bar window.
-     * 0 means the side is unknown.
-     */
-    @IdRes
-    private int getWindowIdByName(String name) {
-        return switch (name) {
-            case TOP_BAR_NAME -> R.id.car_top_bar_window;
-            case BOTTOM_BAR_NAME -> R.id.car_bottom_bar_window;
-            case LEFT_BAR_NAME -> R.id.car_left_bar_window;
-            case RIGHT_BAR_NAME -> R.id.car_right_bar_window;
-            default -> 0;
-        };
+        Context windowContext = getWindowContextByName(name);
+        if (windowContext == null) {
+            Log.e(TAG, "Window context doesn't exist for name: " + name);
+            return null;
+        }
+        return supplier.getSystemBarWindow(windowContext);
     }
 
     @Override
@@ -281,7 +241,10 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
     }
 
     @Override
-    public boolean getEnabledStatusByName(String name) {
+    public boolean getEnabledStatusByName(@NonNull String name) {
+        if (mSystemBars.containsKey(name)) {
+            return true;
+        }
         return switch (name) {
             case TOP_BAR_NAME -> mTopNavBarEnabled;
             case BOTTOM_BAR_NAME -> mBottomNavBarEnabled;

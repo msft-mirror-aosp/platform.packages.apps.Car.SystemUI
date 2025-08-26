@@ -46,6 +46,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -55,6 +57,8 @@ public class CarSystemBarViewTest extends CarSysuiTestCase {
     private static final String TEST_SYSTEM_BAR_NAME = "TEST_SYSTEM_BAR_NAME";
 
     private CarSystemBarView mNavBarView;
+    private Map<String, CarSystemBarViewSupplier> mViewSupplierMap;
+    private Map<String, CarSystemBarWindowSupplier> mWindowSupplierMap;
 
     @Mock
     private NotificationPanelViewController mNotificationPanelViewController;
@@ -78,6 +82,8 @@ public class CarSystemBarViewTest extends CarSysuiTestCase {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mViewSupplierMap = new HashMap<>();
+        mWindowSupplierMap = new HashMap<>();
     }
 
     @After
@@ -137,7 +143,8 @@ public class CarSystemBarViewTest extends CarSysuiTestCase {
 
     private CarSystemBarViewControllerImpl getSystemBarViewController(CarSystemBarView view) {
         SystemBarConfigs systemBarConfigs = new SystemBarConfigsImpl(getContext(),
-                getContext().getOrCreateTestableResources().getResources(), mWindowProvider);
+                getContext().getOrCreateTestableResources().getResources(), mWindowProvider,
+                mViewSupplierMap, mWindowSupplierMap);
         return new CarSystemBarViewControllerImpl(getContext(),
                 mUserTracker,
                 mCarSystemBarElementInitializer,

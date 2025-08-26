@@ -292,6 +292,20 @@ public abstract class CarSystemBarModule {
     public abstract CarSystemBarViewControllerFactory bindBottomCarSystemBarViewFactory(
             CarSystemBarViewControllerImpl.Factory factory);
 
+    /** Injects CarSystemBarViewController for nav */
+    @Binds
+    @IntoMap
+    @StringKey("nav")
+    public abstract CarSystemBarViewControllerFactory bindNavCarSystemBarViewFactory(
+            CarSystemBarViewControllerImpl.Factory factory);
+
+    /** Injects CarSystemBarViewController for status */
+    @Binds
+    @IntoMap
+    @StringKey("status")
+    public abstract CarSystemBarViewControllerFactory bindStatusCarSystemBarViewFactory(
+            CarSystemBarViewControllerImpl.Factory factory);
+
     /** Injects CarSystemBarButtonController */
     @Binds
     @IntoMap
@@ -362,6 +376,102 @@ public abstract class CarSystemBarModule {
     @ClassKey(AaosStudioButtonController.class)
     public abstract CarSystemBarElementController.Factory bindAaosStudioButtonControllerFactory(
             AaosStudioButtonController.Factory factory);
+
+    @Provides
+    @IntoMap
+    @StringKey(TOP_BAR_NAME)
+    static CarSystemBarViewSupplier bindTopCarSystemBarViewSupplier() {
+        return new CarSystemBarViewSupplierUsingLayout(R.layout.car_top_system_bar,
+                R.layout.car_top_system_bar_unprovisioned);
+    }
+
+    @Provides
+    @IntoMap
+    @StringKey(TOP_BAR_NAME)
+    static CarSystemBarWindowSupplier bindTopCarSystemBarWindowSupplier() {
+        return new CarSystemBarWindowSupplierUsingLayout(R.layout.navigation_bar_window,
+                R.id.car_top_bar_window);
+    }
+
+    @Provides
+    @IntoMap
+    @StringKey(LEFT_BAR_NAME)
+    static CarSystemBarViewSupplier bindLeftCarSystemBarViewSupplier() {
+        return new CarSystemBarViewSupplierUsingLayout(R.layout.car_left_system_bar,
+                R.layout.car_left_system_bar_unprovisioned);
+    }
+
+    @Provides
+    @IntoMap
+    @StringKey(LEFT_BAR_NAME)
+    static CarSystemBarWindowSupplier bindLeftCarSystemBarWindowSupplier() {
+        return new CarSystemBarWindowSupplierUsingLayout(R.layout.navigation_bar_window,
+                R.id.car_left_bar_window);
+    }
+
+    @Provides
+    @IntoMap
+    @StringKey(RIGHT_BAR_NAME)
+    static CarSystemBarViewSupplier bindRightCarSystemBarViewSupplier() {
+        return new CarSystemBarViewSupplierUsingLayout(R.layout.car_right_system_bar,
+                R.layout.car_right_system_bar_unprovisioned);
+    }
+
+    @Provides
+    @IntoMap
+    @StringKey(RIGHT_BAR_NAME)
+    static CarSystemBarWindowSupplier bindRightCarSystemBarWindowSupplier() {
+        return new CarSystemBarWindowSupplierUsingLayout(R.layout.navigation_bar_window,
+                R.id.car_right_bar_window);
+    }
+
+    @Provides
+    @IntoMap
+    @StringKey(BOTTOM_BAR_NAME)
+    static CarSystemBarViewSupplier bindBottomCarSystemBarViewSupplier() {
+        return new CarSystemBarViewSupplierUsingLayout(R.layout.car_bottom_system_bar,
+                R.layout.car_bottom_system_bar_unprovisioned);
+    }
+
+    @Provides
+    @IntoMap
+    @StringKey(BOTTOM_BAR_NAME)
+    static CarSystemBarWindowSupplier bindBottomCarSystemBarWindowSupplier() {
+        return new CarSystemBarWindowSupplierUsingLayout(R.layout.navigation_bar_window,
+                R.id.car_bottom_bar_window);
+    }
+
+    @Provides
+    @IntoMap
+    @StringKey("nav")
+    static CarSystemBarViewSupplier bindNavCarSystemBarViewSupplier() {
+        return new CarSystemBarViewSupplierUsingLayout(R.layout.car_bottom_system_bar,
+                R.layout.car_bottom_system_bar_unprovisioned);
+    }
+
+    @Provides
+    @IntoMap
+    @StringKey("nav")
+    static CarSystemBarWindowSupplier bindNavCarSystemBarWindowSupplier() {
+        return new CarSystemBarWindowSupplierUsingLayout(R.layout.navigation_bar_window,
+                R.id.car_bottom_bar_window);
+    }
+
+    @Provides
+    @IntoMap
+    @StringKey("status")
+    static CarSystemBarViewSupplier bindStatusCarSystemBarViewSupplier() {
+        return new CarSystemBarViewSupplierUsingLayout(R.layout.car_top_system_bar,
+                R.layout.car_top_system_bar_unprovisioned);
+    }
+
+    @Provides
+    @IntoMap
+    @StringKey("status")
+    static CarSystemBarWindowSupplier bindStatusCarSystemBarWindowSupplier() {
+        return new CarSystemBarWindowSupplierUsingLayout(R.layout.navigation_bar_window,
+                R.id.car_top_bar_window);
+    }
 
     /** Injects SystemBarConfigs */
     @SysUISingleton

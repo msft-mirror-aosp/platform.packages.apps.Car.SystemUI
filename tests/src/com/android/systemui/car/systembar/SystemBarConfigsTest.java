@@ -47,7 +47,6 @@ import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationPanelViewMediator;
 import com.android.systemui.car.notification.PowerManagerHelper;
 import com.android.systemui.car.notification.TopNotificationPanelViewMediator;
-import com.android.systemui.car.wm.scalableui.configuration.SystemUiConfigurationProvider;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
@@ -59,6 +58,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -74,11 +74,13 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
     private Resources mResources;
     @Mock
     private SystemUiWindowProvider mWindowProvider;
-    @Mock
-    private SystemUiConfigurationProvider mConfigProvider;
+    private Map<String, CarSystemBarViewSupplier> mViewSupplierMap;
+    private Map<String, CarSystemBarWindowSupplier> mWindowSupplierMap;
 
     @Before
     public void setUp() {
+        mViewSupplierMap = new HashMap<>();
+        mWindowSupplierMap = new HashMap<>();
         MockitoAnnotations.initMocks(this);
         setDefaultValidConfig();
     }
@@ -86,13 +88,15 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
     @Test
     public void onInit_allSystemBarsEnabled_eachHasUniqueBarTypes_doesNotThrowException() {
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
     }
 
     @Test
     public void onInit_allSystemBarsEnabled_systemBarTypesSortedByZOrder() {
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
         List<String> actualOrder = mSystemBarConfigs.getSystemBarNamesByZOrder();
         List<String> expectedOrder = new ArrayList<>();
         expectedOrder.add(LEFT_BAR_NAME);
@@ -109,7 +113,8 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
         when(mResources.getInteger(R.integer.config_leftSystemBarZOrder)).thenReturn(33);
 
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
     }
 
     @Test(expected = RuntimeException.class)
@@ -120,7 +125,8 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
                 true);
 
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
     }
 
     @Test
@@ -130,7 +136,8 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
                 TestTopNotificationPanelViewMediator.class.getName());
 
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
     }
 
     @Test
@@ -140,13 +147,15 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
                 NotificationPanelViewMediator.class.getName());
 
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
     }
 
     @Test
     public void getTopSystemBarLayoutParams_topBarEnabled_returnsTopSystemBarLayoutParams() {
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
         WindowManager.LayoutParams lp = mSystemBarConfigs.getLayoutParamsByName(TOP_BAR_NAME);
 
         assertNotNull(lp);
@@ -155,7 +164,8 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
     @Test
     public void getTopSystemBarLayoutParams_containsLayoutInDisplayCutoutMode() {
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
         WindowManager.LayoutParams lp = mSystemBarConfigs.getLayoutParamsByName(TOP_BAR_NAME);
 
         assertNotNull(lp);
@@ -166,7 +176,8 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
     public void getTopSystemBarLayoutParams_topBarNotEnabled_returnsNull() {
         when(mResources.getBoolean(R.bool.config_enableTopSystemBar)).thenReturn(false);
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
         WindowManager.LayoutParams lp = mSystemBarConfigs.getLayoutParamsByName(TOP_BAR_NAME);
 
         assertNull(lp);
@@ -176,7 +187,8 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
     public void getTopSystemBarHideForKeyboard_hideBarForKeyboard_returnsTrue() {
         when(mResources.getBoolean(R.bool.config_hideTopSystemBarForKeyboard)).thenReturn(true);
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
         boolean hideKeyboard = mSystemBarConfigs.getHideForKeyboardByName(TOP_BAR_NAME);
 
         assertTrue(hideKeyboard);
@@ -186,7 +198,8 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
     public void getTopSystemBarHideForKeyboard_topBarNotEnabled_returnsFalse() {
         when(mResources.getBoolean(R.bool.config_enableTopSystemBar)).thenReturn(false);
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
         boolean hideKeyboard = mSystemBarConfigs.getHideForKeyboardByName(TOP_BAR_NAME);
 
         assertFalse(hideKeyboard);
@@ -197,7 +210,8 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
         when(mResources.getInteger(R.integer.config_topSystemBarZOrder)).thenReturn(
                 SystemBarConfigsImpl.HUN_Z_ORDER + 1);
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
         WindowManager.LayoutParams lp = mSystemBarConfigs.getLayoutParamsByName(TOP_BAR_NAME);
 
         assertEquals(lp.type, WindowManager.LayoutParams.TYPE_NAVIGATION_BAR_PANEL);
@@ -208,7 +222,8 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
         when(mResources.getInteger(R.integer.config_topSystemBarZOrder)).thenReturn(
                 SystemBarConfigsImpl.HUN_Z_ORDER - 1);
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
         WindowManager.LayoutParams lp = mSystemBarConfigs.getLayoutParamsByName(TOP_BAR_NAME);
 
         assertEquals(lp.type, WindowManager.LayoutParams.TYPE_STATUS_BAR_ADDITIONAL);
@@ -217,7 +232,8 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
     @Test
     public void updateInsetPaddings_overlappingBarWithHigherZOrderDisappeared_removesInset() {
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
         CarSystemBarView leftBar = new CarSystemBarView(mContext, /* attrs= */ null);
         Map<String, Boolean> visibilities = new ArrayMap<>();
         visibilities.put(TOP_BAR_NAME, false);
@@ -234,7 +250,8 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
     @Test
     public void updateInsetPaddings_overlappingBarWithHigherZOrderReappeared_addsInset() {
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
         CarSystemBarView leftBar = new CarSystemBarView(mContext, /* attrs= */ null);
         Map<String, Boolean> visibilities = new ArrayMap<>();
         visibilities.put(TOP_BAR_NAME, false);
@@ -298,7 +315,8 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
         when(mResources.getInteger(R.integer.config_rightSystemBarZOrder)).thenReturn(6);
 
         mSystemBarConfigs =
-                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider);
+                new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
+                        mWindowSupplierMap);
         CarSystemBarView topBar = new CarSystemBarView(mContext, /* attrs= */ null);
         CarSystemBarView bottomBar = new CarSystemBarView(mContext, /* attrs= */ null);
         CarSystemBarView leftBar = new CarSystemBarView(mContext, /* attrs= */ null);

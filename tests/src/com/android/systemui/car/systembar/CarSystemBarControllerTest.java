@@ -44,6 +44,7 @@ import android.testing.TestableLooper;
 import android.testing.TestableResources;
 import android.util.ArrayMap;
 import android.util.ArraySet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -115,6 +116,8 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
     private TestableResources mTestableResources;
     private SysuiTestableContext mSpiedContext;
     private MockitoSession mSession;
+    private Map<String, CarSystemBarViewSupplier> mViewSupplierMap;
+    private Map<String, CarSystemBarWindowSupplier> mWindowSupplierMap;
 
     @Mock
     private UserTracker mUserTracker;
@@ -160,6 +163,8 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
 
     @Before
     public void setUp() throws Exception {
+        mViewSupplierMap = new HashMap<>();
+        mWindowSupplierMap = new HashMap<>();
         mSession = ExtendedMockito.mockitoSession()
             .initMocks(this)
             .spyStatic(CarSystemUIUserUtil.class)
@@ -167,6 +172,23 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
             .startMocking();
         mTestableResources = mContext.getOrCreateTestableResources();
         mSpiedContext = spy(mContext);
+        LayoutInflater inflater = LayoutInflater.from(mSpiedContext);
+        CarSystemBarViewSupplier viewSupplier = (ctx, isSetUp) -> (ViewGroup) inflater.inflate(
+                R.layout.car_top_system_bar, null);
+        CarSystemBarWindowSupplier windowSupplier = ctx -> (ViewGroup) inflater.inflate(
+                R.layout.car_top_system_bar, null);
+        CarSystemBarViewSupplier bottomViewSupplier = (ctx, isSetUp) ->
+                (ViewGroup) inflater.inflate(R.layout.car_bottom_system_bar, null);
+        CarSystemBarWindowSupplier bottomWindowSupplier = ctx -> (ViewGroup) inflater.inflate(
+                R.layout.car_bottom_system_bar, null);
+        mViewSupplierMap.put(TOP_BAR_NAME, viewSupplier);
+        mWindowSupplierMap.put(TOP_BAR_NAME, windowSupplier);
+        mViewSupplierMap.put(BOTTOM_BAR_NAME, bottomViewSupplier);
+        mWindowSupplierMap.put(BOTTOM_BAR_NAME, bottomWindowSupplier);
+        mViewSupplierMap.put(LEFT_BAR_NAME, viewSupplier);
+        mWindowSupplierMap.put(LEFT_BAR_NAME, windowSupplier);
+        mViewSupplierMap.put(RIGHT_BAR_NAME, viewSupplier);
+        mWindowSupplierMap.put(RIGHT_BAR_NAME, windowSupplier);
         mSpiedContext.addMockSystemService(ActivityManager.class, mActivityManager);
         mSpiedContext.addMockSystemService(WindowManager.class, mWindowManager);
         when(mSpiedContext.createWindowContext(anyInt(), any())).thenReturn(mSpiedContext);
@@ -204,7 +226,8 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
         when(mWindowManager.getCurrentWindowMetrics()).thenReturn(mWindowMetrics);
         when(mWindowMetrics.getBounds()).thenReturn(new Rect(0, 0, 1920, 1080));
         mSystemBarConfigs = new SystemBarConfigsImpl(mSpiedContext,
-                mTestableResources.getResources(), mWindowProvider);
+                mTestableResources.getResources(), mWindowProvider, mViewSupplierMap,
+                mWindowSupplierMap);
         mThread = new HandlerThread("TestThread");
         mThread.start();
         mHandler = Handler.createAsync(mThread.getLooper());

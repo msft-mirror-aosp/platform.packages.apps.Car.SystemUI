@@ -62,7 +62,6 @@ import com.android.systemui.R;
 import com.android.systemui.SysuiTestableContext;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.wm.scalableui.configuration.SystemUiConfigurationProvider;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.settings.FakeDisplayTracker;
@@ -86,6 +85,9 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * TODO(b/362280147): move related tests to CarSystemBarControllerTest.
@@ -150,8 +152,6 @@ public class CarSystemBarTest extends CarSysuiTestCase {
     @Mock
     private SystemUiWindowProvider mWindowProvider;
     @Mock
-    private SystemUiConfigurationProvider mConfigProvider;
-    @Mock
     private WindowMetrics mWindowMetrics;
 
     private RegisterStatusBarResult mBarResult;
@@ -159,10 +159,14 @@ public class CarSystemBarTest extends CarSysuiTestCase {
     private FakeExecutor mUiBgExecutor;
     private SystemBarConfigs mSystemBarConfigs;
     private Handler mHandler;
+    private Map<String, CarSystemBarViewSupplier> mViewSupplierMap;
+    private Map<String, CarSystemBarWindowSupplier> mWindowSupplierMap;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mViewSupplierMap = new HashMap<>();
+        mWindowSupplierMap = new HashMap<>();
         mTestableResources = mContext.getOrCreateTestableResources();
         mExecutor = new FakeExecutor(new FakeSystemClock());
         mUiBgExecutor = new FakeExecutor(new FakeSystemClock());
@@ -230,7 +234,7 @@ public class CarSystemBarTest extends CarSysuiTestCase {
     private void initCarSystemBar() {
         SystemBarConfigs systemBarConfigs =
                 new SystemBarConfigsImpl(mSpiedContext, mTestableResources.getResources(),
-                        mWindowProvider);
+                        mWindowProvider, mViewSupplierMap, mWindowSupplierMap);
         FakeDisplayTracker displayTracker = new FakeDisplayTracker(mContext);
         mCarSystemBarController = spy(new CarSystemBarControllerImpl(mSpiedContext,
                 mUserTracker,
@@ -529,7 +533,8 @@ public class CarSystemBarTest extends CarSysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, true);
         mTestableResources.addOverride(R.bool.config_enableRightSystemBar, true);
         mSystemBarConfigs = new SystemBarConfigsImpl(mSpiedContext,
-                mTestableResources.getResources(), mWindowProvider);
+                mTestableResources.getResources(), mWindowProvider, mViewSupplierMap,
+                mWindowSupplierMap);
         when(mCarSystemBarController.getBarWindow(TOP_BAR_NAME)).thenReturn(mock(ViewGroup.class));
         when(mCarSystemBarController.getBarWindow(BOTTOM_BAR_NAME)).thenReturn(null);
         when(mCarSystemBarController.getBarWindow(LEFT_BAR_NAME)).thenReturn(

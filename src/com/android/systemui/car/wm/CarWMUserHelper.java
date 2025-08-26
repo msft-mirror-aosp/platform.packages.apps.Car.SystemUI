@@ -15,10 +15,14 @@
  */
 package com.android.systemui.car.wm;
 
+import android.annotation.NonNull;
 import android.annotation.UserIdInt;
 import android.app.ActivityManager;
 import android.car.CarOccupantZoneManager;
+import android.hardware.display.DisplayManager;
+import android.os.UserHandle;
 import android.util.ArraySet;
+import android.view.Display;
 
 import com.android.internal.annotations.GuardedBy;
 import com.android.internal.annotations.VisibleForTesting;
@@ -26,7 +30,11 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.wm.shell.dagger.WMSingleton;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -36,6 +44,7 @@ import javax.inject.Inject;
 @WMSingleton
 public class CarWMUserHelper {
     private final CarServiceProvider mCarServiceProvider;
+    private final DisplayManager mDisplayManager;
     private final CarServiceProvider.CarServiceOnConnectedListener mCarServiceLifecycleListener;
     private final boolean mIsMUMDSystem;
     @GuardedBy("mListeners")
@@ -51,13 +60,15 @@ public class CarWMUserHelper {
             };
 
     @Inject
-    public CarWMUserHelper(CarServiceProvider carServiceProvider) {
-        this(carServiceProvider, CarSystemUIUserUtil.isMUMDSystemUI());
+    public CarWMUserHelper(CarServiceProvider carServiceProvider, DisplayManager displayManager) {
+        this(carServiceProvider, displayManager, CarSystemUIUserUtil.isMUMDSystemUI());
     }
 
     @VisibleForTesting
-    CarWMUserHelper(CarServiceProvider carServiceProvider, boolean isMUMDSystem) {
+    CarWMUserHelper(CarServiceProvider carServiceProvider, DisplayManager displayManager,
+            boolean isMUMDSystem) {
         mCarServiceProvider = carServiceProvider;
+        mDisplayManager = displayManager;
         mIsMUMDSystem = isMUMDSystem;
         mCarServiceLifecycleListener = car -> {
             mCarOccupantZoneManager = car.getCarManager(CarOccupantZoneManager.class);
@@ -87,6 +98,28 @@ public class CarWMUserHelper {
             return CarOccupantZoneManager.INVALID_USER_ID;
         }
         return mCarOccupantZoneManager.getUserForDisplayId(displayId);
+    }
+
+    /**
+     * Get the displayIds currently assigned to this user id. If this is a non-MUMD system, return
+     * all displays.
+     */
+    @NonNull
+    public List<Integer> getDisplayIdsForUser(int userId) {
+        if (!mIsMUMDSystem) {
+            return Arrays.stream(mDisplayManager.getDisplays()).map(Display::getDisplayId).collect(
+                    Collectors.toList());
+        }
+        if (mCarOccupantZoneManager == null) {
+            return new ArrayList<>();
+        }
+        CarOccupantZoneManager.OccupantZoneInfo info =
+                mCarOccupantZoneManager.getOccupantZoneForUser(UserHandle.of(userId));
+        if (info == null) {
+            return new ArrayList<>();
+        }
+        List<Display> displays = mCarOccupantZoneManager.getAllDisplaysForOccupant(info);
+        return displays.stream().map(Display::getDisplayId).collect(Collectors.toList());
     }
 
     /**

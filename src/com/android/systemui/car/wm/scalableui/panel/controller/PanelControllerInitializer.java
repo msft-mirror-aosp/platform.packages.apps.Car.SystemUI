@@ -83,8 +83,13 @@ public class PanelControllerInitializer {
             return null;
         }
         String controllerName = metadata.getControllerName();
+        if (controllerName == null) {
+            logIfDebuggable("Controller name is null for " + metadata.getId());
+            return null;
+        }
 
-        logIfDebuggable("Init TaskPanelController with class name" + controllerName);
+        logIfDebuggable("Init TaskPanelController with class name" + controllerName + " for "
+                + metadata.getId());
         try {
             Class<?> clazz = Class.forName(controllerName);
             Provider<TaskPanelController.Factory> factoryProvider =
@@ -94,9 +99,10 @@ public class PanelControllerInitializer {
             }
         } catch (ClassNotFoundException e) {
             // Handle the case where the class is not found
-            Log.e(TAG, "Class not found: " + controllerName, e);
+            Log.e(TAG, "Class not found: " + controllerName + " for " + metadata.getId(), e);
         }
-        Log.e(TAG, "Unable to create TaskPanelController: " + controllerName);
+        Log.e(TAG, "Unable to create TaskPanelController: " + controllerName + " for "
+                + metadata.getId());
         return null;
     }
 
@@ -119,8 +125,13 @@ public class PanelControllerInitializer {
             return null;
         }
         String controllerName = metadata.getControllerName();
+        if (controllerName == null) {
+            logIfDebuggable("Controller name is null for " + metadata.getId());
+            return null;
+        }
 
-        logIfDebuggable("Init view provider with class name" + controllerName);
+        logIfDebuggable("Init view provider with class name" + controllerName + " for "
+                + metadata.getId());
         try {
             Class<?> clazz = Class.forName(controllerName);
             Provider<DecorPanelController.Factory> factoryProvider =
@@ -130,9 +141,10 @@ public class PanelControllerInitializer {
             }
         } catch (ClassNotFoundException e) {
             // Handle the case where the class is not found
-            Log.e(TAG, "Class not found: " + controllerName, e);
+            Log.e(TAG, "Class not found: " + controllerName + " for " + metadata.getId(), e);
         }
-        Log.e(TAG, "Unable to create DecorPanelController: " + controllerName);
+        Log.e(TAG, "Unable to create DecorPanelController: " + controllerName + " for "
+                + metadata.getId());
         return null;
     }
 
@@ -165,7 +177,9 @@ public class PanelControllerInitializer {
             controllerName = metadata.getTaskToolBarControllerName();
         }
 
-        logIfDebuggable("Init TaskToolbarController with class name " + controllerName);
+        String metadataId = metadata == null ? "null" : metadata.getId();
+        logIfDebuggable("Init TaskToolbarController with class name " + controllerName
+                + " for " + metadataId);
         try {
             Class<?> clazz = Class.forName(controllerName);
             Provider<TaskToolbarController.Factory> factoryProvider =
@@ -175,9 +189,10 @@ public class PanelControllerInitializer {
             }
         } catch (ClassNotFoundException | NullPointerException e) {
             // Handle the case where the class is not found
-            Log.e(TAG, "Class not found: " + controllerName, e);
+            Log.e(TAG, "Class not found: " + controllerName + " for " + metadataId, e);
         }
-        Log.e(TAG, "Unable to create TaskPanelController: " + controllerName);
+        Log.e(TAG, "Unable to create TaskPanelController: " + controllerName + " for "
+                + metadataId);
         return null;
     }
 }

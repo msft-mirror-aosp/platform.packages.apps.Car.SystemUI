@@ -93,6 +93,7 @@ public final class TaskPanel extends BasePanel {
     private static final long INITIAL_RETRY_DELAY_MS = 1000;
     private static final long CHECK_RESTART_SUCCESS_DELAY_MS = 500;
     private static final boolean DEBUG = Build.isDebuggable();
+
     @NonNull
     private final AutoTaskStackController mAutoTaskStackController;
     @NonNull
@@ -140,6 +141,8 @@ public final class TaskPanel extends BasePanel {
     @NonNull
     private final AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
     private int mCurrentRetryCount = 0;
+    // TODO(b/440364117): remove once task ordering is consistent
+    private boolean mWasRootTaskPreviouslyNonEmpty = false;
     @NonNull
     private final FlagManager mFlagManager;
 
@@ -229,6 +232,20 @@ public final class TaskPanel extends BasePanel {
                     public void onRootTaskStackInfoChanged(@NonNull RootTaskStack rootTaskStack) {
                         mRootTaskStack = rootTaskStack;
                         mRootTaskId = mRootTaskStack.getRootTaskInfo().taskId;
+                        // TODO(b/440364117): move to onTaskVanished once ordering is consistent
+                        if (isRootTaskEmpty() && mWasRootTaskPreviouslyNonEmpty) {
+                            ActivityManager.RunningTaskInfo lastTask =
+                                    mTaskPanelInfoRepository.getLastTopTaskOnPanel(getPanelId());
+                            if (lastTask != null) {
+                                mWasRootTaskPreviouslyNonEmpty = false;
+                                logIfDebuggable(
+                                        "onRootTaskStackInfoChanged: Root task is empty, "
+                                                + "scheduling restart.");
+                                scheduleRestartAttempt(lastTask);
+                            }
+                        } else {
+                            mWasRootTaskPreviouslyNonEmpty = !isRootTaskEmpty();
+                        }
                     }
 
                     @Override
@@ -268,11 +285,6 @@ public final class TaskPanel extends BasePanel {
                                 "onTaskVanished: " + taskInfo.taskId + " isRootTaskEmpty(): "
                                         + isRootTaskEmpty());
                         mTaskPanelInfoRepository.onTaskVanishedOnPanel(getPanelId(), taskInfo);
-                        if (isRootTaskEmpty()) {
-                            logIfDebuggable(
-                                    "onTaskVanished: Root task is empty, scheduling restart.");
-                            scheduleRestartAttempt(taskInfo);
-                        }
                     }
                 });
     }

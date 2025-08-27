@@ -16,9 +16,12 @@
 
 package com.android.systemui.car.wm;
 
+import static android.car.VehicleAreaSeat.SEAT_UNKNOWN;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,7 +30,10 @@ import static org.mockito.Mockito.when;
 import android.app.ActivityManager;
 import android.car.Car;
 import android.car.CarOccupantZoneManager;
+import android.hardware.display.DisplayManager;
+import android.os.UserHandle;
 import android.testing.TestableLooper;
+import android.view.Display;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -43,14 +49,21 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Collections;
+import java.util.List;
+
 @CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
 @TestableLooper.RunWithLooper
 @SmallTest
 public class CarWMUserHelperTest extends SysuiTestCase {
+    private static final int TEST_DRIVER_USER_ID = 800;
+    private static final int TEST_DRIVER_DISPLAY_ID = 100;
     private static final int TEST_PASSENGER_USER_ID = 1000;
     private static final int TEST_PASSENGER_DISPLAY_ID = 101;
 
+    @Mock
+    private DisplayManager mDisplayManager;
     @Mock
     private CarServiceProvider mCarServiceProvider;
     @Mock
@@ -66,6 +79,11 @@ public class CarWMUserHelperTest extends SysuiTestCase {
 
         when(mCarOccupantZoneManager.getUserForDisplayId(TEST_PASSENGER_DISPLAY_ID)).thenReturn(
                 TEST_PASSENGER_USER_ID);
+        Display display1 = mock(Display.class);
+        Display display2 = mock(Display.class);
+        when(display1.getDisplayId()).thenReturn(TEST_DRIVER_DISPLAY_ID);
+        when(display2.getDisplayId()).thenReturn(TEST_PASSENGER_DISPLAY_ID);
+        when(mDisplayManager.getDisplays()).thenReturn(new Display[]{display1, display2});
     }
 
     @Test
@@ -102,6 +120,33 @@ public class CarWMUserHelperTest extends SysuiTestCase {
     }
 
     @Test
+    public void getDisplayIdsForUser_nonMumd_returnsAllDisplays() {
+        createUserHelper(/* isMUMDSystem= */ false);
+
+        List<Integer> displayIds = mUserHelper.getDisplayIdsForUser(TEST_DRIVER_USER_ID);
+
+        assertThat(displayIds).containsExactly(TEST_DRIVER_DISPLAY_ID, TEST_PASSENGER_DISPLAY_ID);
+    }
+
+    @Test
+    public void getDisplayIdsForUser_mumd_returnsDisplaysForUser() {
+        createUserHelper(/* isMUMDSystem= */ true);
+        setupAndVerifyCarConnection();
+        Display display = mock(Display.class);
+        when(display.getDisplayId()).thenReturn(TEST_PASSENGER_DISPLAY_ID);
+        CarOccupantZoneManager.OccupantZoneInfo info = new CarOccupantZoneManager.OccupantZoneInfo(
+                0, CarOccupantZoneManager.OCCUPANT_TYPE_FRONT_PASSENGER, SEAT_UNKNOWN);
+        when(mCarOccupantZoneManager.getOccupantZoneForUser(
+                UserHandle.of(TEST_PASSENGER_USER_ID))).thenReturn(info);
+        when(mCarOccupantZoneManager.getAllDisplaysForOccupant(info))
+                .thenReturn(Collections.singletonList(display));
+
+        List<Integer> displayIds = mUserHelper.getDisplayIdsForUser(TEST_PASSENGER_USER_ID);
+
+        assertThat(displayIds).containsExactly(TEST_PASSENGER_DISPLAY_ID);
+    }
+
+    @Test
     public void addOccupantZoneChangeListener_firstListener_registers() {
         createUserHelper(/* isMUMDSystem= */ true);
         setupAndVerifyCarConnection();
@@ -132,7 +177,7 @@ public class CarWMUserHelperTest extends SysuiTestCase {
     }
 
     private void createUserHelper(boolean isMUMDSystem) {
-        mUserHelper = new CarWMUserHelper(mCarServiceProvider, isMUMDSystem);
+        mUserHelper = new CarWMUserHelper(mCarServiceProvider, mDisplayManager, isMUMDSystem);
     }
 
     private void setupAndVerifyCarConnection() {

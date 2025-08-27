@@ -43,6 +43,7 @@ import com.android.car.scalableui.model.PanelTransaction;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
+import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
@@ -73,6 +74,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     private final PanelTransitionCoordinator mPanelTransitionCoordinator;
     private final Context mContext;
     private final PanelUtils mPanelUtils;
+    private final CarWMUserHelper mUserHelper;
     private final TaskPanelInfoRepository mPanelInfoRepository;
     private final AutoLayoutManager mAutoLayoutManager;
     private final FlagManager mFlagManager;
@@ -83,6 +85,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             AutoTaskStackController autoTaskStackController,
             PanelTransitionCoordinator panelTransitionCoordinator,
             PanelUtils panelUtils,
+            CarWMUserHelper userHelper,
             TaskPanelInfoRepository panelInfoRepository,
             AutoLayoutManager autoLayoutManager,
             FlagManager flagManager
@@ -91,6 +94,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         mPanelTransitionCoordinator = panelTransitionCoordinator;
         mContext = context;
         mPanelUtils = panelUtils;
+        mUserHelper = userHelper;
         mPanelInfoRepository = panelInfoRepository;
         mAutoLayoutManager = autoLayoutManager;
         mFlagManager = flagManager;
@@ -185,9 +189,13 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             ComponentName component = request.getTriggerTask().baseActivity;
             String packageString = component != null ? component.getPackageName() : null;
             // Multiple SUW activities have home as categories. Panels should treat them the same.
-            return new Event.Builder(SYSTEM_HOME_EVENT_ID)
-                    .setPackageName(packageString)
-                    .build();
+            Event.Builder homeEventBuilder = new Event.Builder(SYSTEM_HOME_EVENT_ID)
+                    .setPackageName(packageString);
+            if (mFlagManager.isEnabled(Flag.ScalableUiApplicableDisplays)) {
+                homeEventBuilder.addApplicableDisplays(
+                        mUserHelper.getDisplayIdsForUser(request.getTriggerTask().userId));
+            }
+            return homeEventBuilder.build();
         }
 
         if ((request.getFlags() & TRANSIT_FLAG_AVOID_MOVE_TO_FRONT)
@@ -223,6 +231,10 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         String eventName = TransitionUtil.isClosingType(request.getType())
                 ? SYSTEM_TASK_CLOSE_EVENT_ID : SYSTEM_TASK_OPEN_EVENT_ID;
         Event.Builder builder = new Event.Builder(eventName).setPanelId(panelId);
+        if (mFlagManager.isEnabled(Flag.ScalableUiApplicableDisplays)) {
+            builder.addApplicableDisplays(
+                    mUserHelper.getDisplayIdsForUser(request.getTriggerTask().userId));
+        }
         if (componentString != null) {
             builder.setComponentName(componentString);
         }

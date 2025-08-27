@@ -138,6 +138,11 @@ enum class Flag(
     ScalableUiTaskFocus(
         "com.android.car.scalableui.Flags.scalableUiTaskFocus",
         R.bool.scalable_ui_task_focus
+    ),
+
+    ScalableUiApplicableDisplays(
+        "com.android.car.scalableui.Flags.scalableUiApplicableDisplays",
+        R.bool.scalable_ui_applicable_displays
     );
 
     // These properties are now calculated from the fullFlagIdentifier.

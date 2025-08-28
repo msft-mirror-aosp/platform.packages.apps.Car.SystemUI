@@ -18,7 +18,6 @@ package com.android.systemui.car.wm.scalableui.panel.panelupdates;
 import android.annotation.FlaggedApi;
 import android.graphics.Insets;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -122,17 +121,6 @@ public interface PanelUpdateConsumer {
     PanelControllerMetadata getPanelControllerMetadata(String panelId);
 
     /**
-     * Returns the last known scrim drawable for a given panel ID.
-     *
-     * @param panelId The ID of the panel to query.
-     * @return The last known scrim {@link Drawable} for the panel, or {@code null} if no scrim has
-     * been recorded yet or the panel ID is unknown.
-     */
-    @FlaggedApi(Flags.FLAG_ENABLE_EXT_PANEL_UPDATES)
-    @Nullable
-    Drawable getScrim(@NonNull String panelId);
-
-    /**
      * Returns the last known gravity value for a given panel ID.
      *
      * @param panelId The ID of the panel to query.
@@ -212,15 +200,6 @@ public interface PanelUpdateConsumer {
         @FlaggedApi(Flags.FLAG_ENABLE_EXT_PANEL_UPDATES)
         default void onInsetsChange(@NonNull String panelId, @NonNull Insets insets) {
             // Default implementation does nothing, allowing selective overriding.
-        }
-
-        /**
-         * Called when the panel's scrim is updated.
-         *
-         * @param panelId The associated panelId for the scrim change.
-         * @param scrim   The new (or last known replayed) scrim of the panel.
-         */
-        default void onScrimChange(@NonNull String panelId, @Nullable Drawable scrim) {
         }
 
         /**

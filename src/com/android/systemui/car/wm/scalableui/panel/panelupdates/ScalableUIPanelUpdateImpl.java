@@ -17,7 +17,6 @@ package com.android.systemui.car.wm.scalableui.panel.panelupdates;
 
 import android.graphics.Insets;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
@@ -98,9 +97,6 @@ public class ScalableUIPanelUpdateImpl implements PanelUpdatePublisher, PanelUpd
         if (insets != null) {
             callback.onInsetsChange(panelId, insets);
         }
-
-        Drawable scrim = getScrim(panelId);
-        callback.onScrimChange(panelId, scrim);
 
         int gravity = getGravity(panelId);
         callback.onGravityChange(panelId, gravity);
@@ -204,20 +200,6 @@ public class ScalableUIPanelUpdateImpl implements PanelUpdatePublisher, PanelUpd
     }
 
     @Override
-    public void postScrim(String panelId, @Nullable Drawable scrim) {
-        PanelState panelState = mLastKnownPanelState.getOrDefault(panelId, new PanelState());
-        panelState.setScrim(scrim);
-        mLastKnownPanelState.put(panelId, panelState);
-        LinkedHashSet<PanelUpdateCallback> callbacks = mPanelUpdateListenersPerPanelMap.get(
-                panelId);
-        if (callbacks == null) {
-            return;
-        }
-        mMainThreadHandler.post(() -> callbacks.forEach(
-                updateCallback -> updateCallback.onScrimChange(panelId, scrim)));
-    }
-
-    @Override
     public void postGravity(String panelId, int gravity) {
         PanelState panelState = mLastKnownPanelState.getOrDefault(panelId, new PanelState());
         panelState.setGravity(gravity);
@@ -282,15 +264,6 @@ public class ScalableUIPanelUpdateImpl implements PanelUpdatePublisher, PanelUpd
         return null;
     }
 
-    @Nullable
-    @Override
-    public Drawable getScrim(String panelId) {
-        if (mLastKnownPanelState.get(panelId) != null) {
-            return mLastKnownPanelState.get(panelId).getScrim();
-        }
-        return null;
-    }
-
     @Override
     public int getGravity(String panelId) {
         if (mLastKnownPanelState.get(panelId) != null) {
@@ -315,8 +288,6 @@ public class ScalableUIPanelUpdateImpl implements PanelUpdatePublisher, PanelUpd
         private Insets mInsets;
         @Nullable
         private PanelControllerMetadata mMetadata;
-        @Nullable
-        private Drawable mScrim;
         private int mGravity = Gravity.NO_GRAVITY;
 
         @Nullable
@@ -371,15 +342,6 @@ public class ScalableUIPanelUpdateImpl implements PanelUpdatePublisher, PanelUpd
 
         void setBounds(@Nullable Rect bounds) {
             mBounds = bounds;
-        }
-
-        @Nullable
-        Drawable getScrim() {
-            return mScrim;
-        }
-
-        void setScrim(@Nullable Drawable scrim) {
-            mScrim = scrim;
         }
 
         int getGravity() {

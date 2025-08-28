@@ -20,9 +20,10 @@ import android.view.InsetsFrameProvider;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindow;
 
 import java.util.List;
 
@@ -30,9 +31,6 @@ import java.util.List;
  * Interface for classes that provide system bar configurations.
  */
 public interface SystemBarConfigs {
-    int TYPE_STATUS_BAR = 0;
-    int TYPE_NAVIGATION_BAR = 1;
-
     /**
      * Invalidate cached resources and fetch from resources config file.
      *
@@ -47,67 +45,59 @@ public interface SystemBarConfigs {
      * When creating system bars or overlay windows, use a WindowContext
      * for that particular window type to ensure proper display metrics.
      */
-    Context getWindowContextBySide(@SystemBarSide int side);
+    @Nullable
+    Context getWindowContextByName(@NonNull String name);
 
     /**
-     * @return The system bar view for the given side. {@code null} if side is unknown.
+     * @return The system bar view for the given name. {@code null} if name is unknown.
      */
     @Nullable
-    ViewGroup getSystemBarLayoutBySide(@SystemBarSide int side, boolean isSetUp);
+    ViewGroup getSystemBarLayoutByName(@NonNull String name, boolean isSetUp);
 
     /**
-     * @return the systembar window for the given side. {@code null} if side is unknown.
+     * @return the systembar window for the given name. {@code null} if name is unknown.
      */
     @Nullable
-    ViewGroup getWindowLayoutBySide(@SystemBarSide int side);
+    ViewGroup getWindowLayoutByName(@NonNull String name);
 
     /**
-     * @return The {@link WindowManager.LayoutParams}, or {@code null} if the side is unknown
-     * or the system bar is not enabled.
+     * @return The {@link WindowManager.LayoutParams}, or {@code null} if the name is unknown
      */
-    WindowManager.LayoutParams getLayoutParamsBySide(@SystemBarSide int side);
+    @Nullable
+    WindowManager.LayoutParams getLayoutParamsByName(@NonNull String name);
 
     /**
      * @return {@code true} if the system bar is enabled, {@code false} otherwise.
      */
-    boolean getEnabledStatusBySide(@SystemBarSide int side);
+    boolean getEnabledStatusByName(@NonNull String name);
 
     /**
      * @return {@code true} if the system bar should be hidden, {@code false} otherwise.
      */
-    boolean getHideForKeyboardBySide(@SystemBarSide int side);
+    boolean getHideForKeyboardByName(@NonNull String name);
 
     /**
      * Applies padding to the given system bar view.
      *
      * @param view The system bar view
      */
-    void insetSystemBar(@SystemBarSide int side, ViewGroup view);
+    void insetSystemBar(@NonNull String name, ViewGroup view);
 
     /**
-     * @return A list of system bar sides sorted by their Z order.
+     * @return A list of system bar names sorted by their Z order.
      */
-    List<@SystemBarSide Integer> getSystemBarSidesByZOrder();
+    List<String> getSystemBarNamesByZOrder();
 
     /**
-     * @return one of the following values, or {@code -1} if the side is unknown
-     * STATUS_BAR = 0
-     * NAVIGATION_BAR = 1
-     * STATUS_BAR_EXTRA = 2
-     * NAVIGATION_BAR_EXTRA = 3
+     * @return one of the following values, or {@code -1} if the name is unknown
      */
-    int getSystemBarInsetTypeBySide(@SystemBarSide int side);
+    int getSystemBarInsetTypeByName(@NonNull String name);
 
     /**
-     * @param index must be one of the following values
-     *              STATUS_BAR = 0
-     *              NAVIGATION_BAR = 1
-     *              STATUS_BAR_EXTRA = 2
-     *              NAVIGATION_BAR_EXTRA = 3
-     *              see {@link #getSystemBarInsetTypeBySide(int)}
-     * @return The {@link InsetsFrameProvider}, or {@code null} if the side is unknown
+     * @return The {@link InsetsFrameProvider}, or {@code null} if the name is unknown
      */
-    InsetsFrameProvider getInsetsFrameProvider(int index);
+    @Nullable
+    InsetsFrameProvider getInsetsFrameProviderByName(@NonNull String name);
 
     /**
      * @return whether the left toolbar is used for display compat.
@@ -118,4 +108,10 @@ public interface SystemBarConfigs {
      * @return whether the right toolbar is used for display compat.
      */
     boolean isRightDisplayCompatToolbarEnabled();
+
+    /**
+     * @return {@link SystemUiWindow} for name.
+     */
+    @Nullable
+    SystemUiWindow getWindowForName(@NonNull String name);
 }

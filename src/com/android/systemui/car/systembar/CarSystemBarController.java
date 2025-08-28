@@ -19,6 +19,8 @@ package com.android.systemui.car.systembar;
 import android.annotation.IntDef;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import java.lang.annotation.ElementType;
@@ -30,16 +32,18 @@ import java.lang.annotation.Target;
  * An interface for controlling system bars.
  */
 public interface CarSystemBarController extends ConfigurationController.ConfigurationListener {
+    String TOP_BAR_NAME = "TopCarSystemBar";
+    String BOTTOM_BAR_NAME = "BottomCarSystemBar";
+    String LEFT_BAR_NAME = "LeftCarSystemBar";
+    String RIGHT_BAR_NAME = "RightCarSystemBar";
 
-    int LEFT = 0;
-    int TOP = 1;
-    int RIGHT = 2;
-    int BOTTOM = 3;
+    int STATUS_BAR = 0;
+    int NAVIGATION_BAR = 1;
 
-    @IntDef(value = {LEFT, TOP, RIGHT, BOTTOM})
+    @IntDef(value = {STATUS_BAR, NAVIGATION_BAR})
     @Target({ElementType.TYPE_PARAMETER, ElementType.TYPE_USE})
     @Retention(RetentionPolicy.SOURCE)
-    @interface SystemBarSide {
+    @interface SystemBarType {
     }
 
     /**
@@ -50,5 +54,5 @@ public interface CarSystemBarController extends ConfigurationController.Configur
     /**
      * Registers a touch listener callbar for the given system bar side.
      */
-    void registerBarTouchListener(@SystemBarSide int side, View.OnTouchListener listener);
+    void registerBarTouchListener(@NonNull String name, View.OnTouchListener listener);
 }

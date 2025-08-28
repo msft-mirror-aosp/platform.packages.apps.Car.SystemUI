@@ -15,8 +15,8 @@
  */
 package com.android.systemui.car.wm.scalableui.systemwindow
 
-import com.android.systemui.car.systembar.SystemBarConfigs.TYPE_NAVIGATION_BAR
-import com.android.systemui.car.systembar.SystemBarConfigs.TYPE_STATUS_BAR
+import com.android.systemui.car.systembar.CarSystemBarController.NAVIGATION_BAR
+import com.android.systemui.car.systembar.CarSystemBarController.STATUS_BAR
 import com.android.systemui.car.wm.scalableui.configuration.SystemUiConfigurationProvider
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
 import com.android.wm.shell.dagger.WMSingleton
@@ -30,12 +30,12 @@ import javax.inject.Inject
 @WMSingleton
 class SystemUiWindowProvider @Inject constructor(
     private val consumer: Optional<PanelUpdateConsumer>,
-    private val windowFactory: SystemBarWindow.Factory,
+    private val windowFactory: SystemBarWindowImpl.Factory,
     private val configurationProvider: SystemUiConfigurationProvider,
     private val hunWindow: Lazy<Optional<HunWindow>>
 ) {
-    val navBarWindows: List<SystemUiWindow> by lazy { getBarWindows(TYPE_NAVIGATION_BAR) }
-    val statusBarWindows: List<SystemUiWindow> by lazy { getBarWindows(TYPE_STATUS_BAR) }
+    val navBarWindows: List<SystemUiWindow> by lazy { getBarWindows(NAVIGATION_BAR) }
+    val statusBarWindows: List<SystemUiWindow> by lazy { getBarWindows(STATUS_BAR) }
     val systemBarWindows: List<SystemUiWindow> by lazy { statusBarWindows + navBarWindows }
 
     private fun getBarWindows(type: Int): List<SystemUiWindow> {
@@ -43,7 +43,7 @@ class SystemUiWindowProvider @Inject constructor(
             return emptyList()
         }
 
-        val configs = if (type == TYPE_STATUS_BAR) {
+        val configs = if (type == STATUS_BAR) {
             configurationProvider.statusBarConfigs
         } else {
             configurationProvider.navBarConfigs

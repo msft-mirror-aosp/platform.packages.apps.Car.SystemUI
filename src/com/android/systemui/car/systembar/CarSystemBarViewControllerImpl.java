@@ -30,7 +30,6 @@ import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.ViewUtils;
 import com.android.systemui.Gefingerpoken;
 import com.android.systemui.R;
-import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.window.OverlayPanelViewController;
 import com.android.systemui.car.window.OverlayViewController;
@@ -59,7 +58,7 @@ public class CarSystemBarViewControllerImpl
     private final CarSystemBarElementInitializer mCarSystemBarElementInitializer;
     private final SystemBarConfigs mSystemBarConfigs;
     private final ButtonRoleHolderController mButtonRoleHolderController;
-    private final @SystemBarSide int mSide;
+    private final String mName;
     private final OverlayVisibilityMediator mOverlayVisibilityMediator;
 
     private final boolean mConsumeTouchWhenPanelOpen;
@@ -77,7 +76,7 @@ public class CarSystemBarViewControllerImpl
             SystemBarConfigs systemBarConfigs,
             ButtonRoleHolderController buttonRoleHolderController,
             OverlayVisibilityMediator overlayVisibilityMediator,
-            @Assisted @SystemBarSide int side,
+            @Assisted String name,
             @Assisted ViewGroup systemBarView) {
         super(new TouchInterceptingFrameLayout(context, systemBarView));
 
@@ -86,7 +85,7 @@ public class CarSystemBarViewControllerImpl
         mCarSystemBarElementInitializer = elementInitializer;
         mSystemBarConfigs = systemBarConfigs;
         mButtonRoleHolderController = buttonRoleHolderController;
-        mSide = side;
+        mName = name;
         mOverlayVisibilityMediator = overlayVisibilityMediator;
 
         mConsumeTouchWhenPanelOpen = getResources().getBoolean(
@@ -197,7 +196,7 @@ public class CarSystemBarViewControllerImpl
 
     @Override
     protected void onViewAttached() {
-        mSystemBarConfigs.insetSystemBar(mSide, mView);
+        mSystemBarConfigs.insetSystemBar(mName, mView);
 
         mButtonRoleHolderController.addAllButtonsWithRoleName(mView);
     }

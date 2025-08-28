@@ -37,7 +37,9 @@ import com.android.systemui.car.decor.CarPrivacyChipViewController;
 import com.android.systemui.car.displayconfig.ExternalDisplayController;
 import com.android.systemui.car.drivemode.DriveModeModule;
 import com.android.systemui.car.flags.FlagManager;
+import com.android.systemui.car.hvac.HvacModule;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
+import com.android.systemui.car.notification.NotificationModule;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
 import com.android.systemui.car.statusbar.DozeServiceHost;
 import com.android.systemui.car.users.CarMultiUserUtilsModule;
@@ -110,6 +112,7 @@ import javax.inject.Provider;
                 DriveModeModule.class,
                 GestureModule.class,
                 HeadsUpEmptyImplModule.class,
+                HvacModule.class,
                 KeyguardDisplayModule.class,
                 MediaMuteAwaitConnectionCli.StartableModule.class,
                 NearbyMediaDevicesManager.StartableModule.class,
@@ -118,6 +121,7 @@ import javax.inject.Provider;
                 NoopPosturingModule.class,
                 NoopAmbientLightModeMonitorModule.class,
                 NoopWallpaperModule.class,
+                NotificationModule.class,
                 PowerModule.class,
                 QSModule.class,
                 RecentsModule.class,

@@ -3,6 +3,7 @@ alexstetson@google.com
 
 # Secondary
 babakbo@google.com
+farivar@google.com
 
 # For scalable UI changes.
 include platform/packages/apps/Car/systemlibs:car-scalable-ui-lib/OWNERS

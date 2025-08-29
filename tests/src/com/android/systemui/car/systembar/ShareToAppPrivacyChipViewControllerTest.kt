@@ -25,7 +25,7 @@ import com.android.internal.logging.InstanceId
 import com.android.systemui.CarSysuiTestCase
 import com.android.systemui.car.CarSystemUiTest
 import com.android.systemui.car.Flags.FLAG_SHOW_MEDIA_PROJECTION_INDICATOR
-import com.android.systemui.car.privacy.PrivacyChip
+import com.android.systemui.car.privacy.ShareToAppPrivacyChip
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController
 import com.android.systemui.statusbar.chips.sharetoapp.ui.viewmodel.ShareToAppChipViewModel
@@ -64,7 +64,7 @@ class ShareToAppPrivacyChipViewControllerTest : CarSysuiTestCase() {
     private val chipModelFlow: MutableStateFlow<OngoingActivityChipModel> =
         MutableStateFlow(OngoingActivityChipModel.Inactive())
     private val instanceId = mock<InstanceId>()
-    private val privacyChip = mock<PrivacyChip>()
+    private val shareToAppPrivacyChip = mock<ShareToAppPrivacyChip>()
     private val barElementDisableController = mock<CarSystemBarElementStatusBarDisableController>()
     private val barElementStateController = mock<CarSystemBarElementStateController>()
     private val shareToAppChipViewModel =
@@ -79,7 +79,7 @@ class ShareToAppPrivacyChipViewControllerTest : CarSysuiTestCase() {
         val context = spy(mContext).stub { on { mainExecutor } doReturn executor }
         shareToAppPrivacyChipViewController =
             ShareToAppPrivacyChipViewController(
-                privacyChip,
+                shareToAppPrivacyChip,
                 barElementDisableController,
                 barElementStateController,
                 context,
@@ -98,7 +98,7 @@ class ShareToAppPrivacyChipViewControllerTest : CarSysuiTestCase() {
             verify(executor).execute(runnableArgumentCaptor.capture())
             runnableArgumentCaptor.firstValue.run()
 
-            verify(privacyChip).animateIn()
+            verify(shareToAppPrivacyChip).animateIn()
         }
 
     @Test
@@ -111,7 +111,7 @@ class ShareToAppPrivacyChipViewControllerTest : CarSysuiTestCase() {
             verify(executor).execute(runnableArgumentCaptor.capture())
             runnableArgumentCaptor.firstValue.run()
 
-            verify(privacyChip).animateOut()
+            verify(shareToAppPrivacyChip).animateOut()
         }
 
     @Test

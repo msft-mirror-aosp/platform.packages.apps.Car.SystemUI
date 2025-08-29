@@ -25,7 +25,7 @@ import com.android.internal.logging.InstanceId
 import com.android.systemui.CarSysuiTestCase
 import com.android.systemui.car.CarSystemUiTest
 import com.android.systemui.car.Flags.FLAG_SHOW_MEDIA_PROJECTION_INDICATOR
-import com.android.systemui.car.privacy.PrivacyChip
+import com.android.systemui.car.privacy.CastToOtherDevicePrivacyChip
 import com.android.systemui.car.systembar.element.CarSystemBarElementStateController
 import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController
 import com.android.systemui.statusbar.chips.casttootherdevice.ui.viewmodel.CastToOtherDeviceChipViewModel
@@ -66,7 +66,7 @@ class CastToOtherDevicePrivacyChipViewControllerTest : CarSysuiTestCase() {
         MutableStateFlow(OngoingActivityChipModel.Inactive())
     private val executor = mock<Executor>()
     private val instanceId = mock<InstanceId>()
-    private val privacyChip = mock<PrivacyChip>()
+    private val castToOtherDevicePrivacyChip = mock<CastToOtherDevicePrivacyChip>()
     private val barElementDisableController = mock<CarSystemBarElementStatusBarDisableController>()
     private val barElementStateController = mock<CarSystemBarElementStateController>()
     private val castToOtherDeviceChipViewModel =
@@ -80,7 +80,7 @@ class CastToOtherDevicePrivacyChipViewControllerTest : CarSysuiTestCase() {
         val context = spy(mContext).stub { on { mainExecutor } doReturn executor }
         castToOtherDevicePrivacyChipViewController =
             CastToOtherDevicePrivacyChipViewController(
-                privacyChip,
+                castToOtherDevicePrivacyChip,
                 barElementDisableController,
                 barElementStateController,
                 context,
@@ -99,7 +99,7 @@ class CastToOtherDevicePrivacyChipViewControllerTest : CarSysuiTestCase() {
             verify(executor).execute(runnableArgumentCaptor.capture())
             runnableArgumentCaptor.firstValue.run()
 
-            verify(privacyChip).animateIn()
+            verify(castToOtherDevicePrivacyChip).animateIn()
         }
 
     @Test
@@ -112,7 +112,7 @@ class CastToOtherDevicePrivacyChipViewControllerTest : CarSysuiTestCase() {
             verify(executor).execute(runnableArgumentCaptor.capture())
             runnableArgumentCaptor.firstValue.run()
 
-            verify(privacyChip).animateOut()
+            verify(castToOtherDevicePrivacyChip).animateOut()
         }
 
     @Test

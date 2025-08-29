@@ -18,7 +18,6 @@ package com.android.systemui.wmshell;
 
 import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.CarSystemUIProxyImpl;
-import com.android.systemui.car.wm.displayarea.DaViewTransitions;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.scalableui.configuration.SystemUiConfigurationProvider;
@@ -77,9 +76,7 @@ public interface CarWMComponent extends WMComponent {
     @WMSingleton
     RemoteCarTaskViewTransitions getRemoteCarTaskViewTransitions();
 
-    /** Provides the {@link DaViewTransitions} used to animate DaViews. */
-    @WMSingleton
-    DaViewTransitions getDaViewTransitions();
+
 
     /**
      * Provides the {@link AutoTaskStackController} used to implement custom

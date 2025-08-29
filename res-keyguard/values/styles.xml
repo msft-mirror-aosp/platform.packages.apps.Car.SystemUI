@@ -47,6 +47,6 @@
     </style>
 
     <style name="Widget.TextView.NumPadKey" parent="@android:style/Widget.TextView">
-        android:textAppearance="?oemTextAppearanceTitleLarge"
+        <item name="android:textAppearance">?oemTextAppearanceTitleLarge</item>
     </style>
 </resources>

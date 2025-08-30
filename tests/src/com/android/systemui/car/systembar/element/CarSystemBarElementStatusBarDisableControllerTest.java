@@ -114,6 +114,31 @@ public class CarSystemBarElementStatusBarDisableControllerTest extends CarSysuiT
     }
 
     @Test
+    public void onListenerAddedRemovedAndAdded_callbackRegisteredUnregisteredAndReregistered() {
+        // Verifies the complete lifecycle of the CommandQueue callback registration.
+        // The callback should be added only when the first listener is added, removed when the
+        // last listener is removed, and re-added if a new listener is added after all previous
+        // ones were removed.
+
+        // 1. Add the first listener.
+        // Expect that the CommandQueue callback is registered.
+        mController.addListener(mMockListener, Display.DEFAULT_DISPLAY,
+                StatusBarManager.DISABLE_HOME, StatusBarManager.DISABLE2_NONE, false);
+        verify(mCommandQueue).addCallback(any());
+
+        // 2. Remove the only listener.
+        // Expect that the CommandQueue callback is unregistered.
+        mController.removeListener(mMockListener);
+        verify(mCommandQueue).removeCallback(any());
+
+        // 3. Add a listener again.
+        // Expect that the CommandQueue callback is registered again.
+        mController.addListener(mMockListener2, Display.DEFAULT_DISPLAY,
+                StatusBarManager.DISABLE_NONE, StatusBarManager.DISABLE2_NONE, true);
+        verify(mCommandQueue, times(2)).addCallback(any());
+    }
+
+    @Test
     public void onStatusBarDisableChanged_doesNotAffectListener_listenerNotNotified() {
         mController.addListener(mMockListener, Display.DEFAULT_DISPLAY,
                 StatusBarManager.DISABLE_HOME, StatusBarManager.DISABLE2_NONE, false);

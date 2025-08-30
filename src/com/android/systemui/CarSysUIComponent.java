@@ -26,6 +26,7 @@ import com.android.systemui.dagger.SysUIComponent;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.SystemUIModule;
 import com.android.systemui.scene.ShadelessSceneContainerFrameworkModule;
+import com.android.systemui.shade.ShadeDisplayAwareWindowWithoutShadeModule;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
 
 import dagger.BindsInstance;
@@ -44,7 +45,9 @@ import java.util.Optional;
         CarSystemUICoreStartableModule.class,
         CarSystemUIModule.class,
         CarSystemUIBinder.class,
-        ShadelessSceneContainerFrameworkModule.class})
+        ShadelessSceneContainerFrameworkModule.class,
+        ShadeDisplayAwareWindowWithoutShadeModule.class
+})
 public interface CarSysUIComponent extends SysUIComponent {
 
     /**

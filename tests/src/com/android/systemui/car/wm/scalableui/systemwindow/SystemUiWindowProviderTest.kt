@@ -44,9 +44,9 @@ class SystemUiWindowProviderTest : CarSysuiTestCase() {
     private val mMockHunWindow = mock<HunWindow>()
     private val mMockStatusBarConfiguration = mock<SystemBarConfiguration>()
     private val mMockNavBarConfiguration = mock<SystemBarConfiguration>()
-    private val mMockStatusBarWindow = mock<SystemBarWindow>()
-    private val mMockNavBarWindow = mock<SystemBarWindow>()
-    private val mMockWindowFactory = mock<SystemBarWindow.Factory> {
+    private val mMockStatusBarWindow = mock<SystemBarWindowImpl>()
+    private val mMockNavBarWindow = mock<SystemBarWindowImpl>()
+    private val mMockWindowFactory = mock<SystemBarWindowImpl.Factory> {
         on {
             create(
                 mPanelUpdateConsumer,

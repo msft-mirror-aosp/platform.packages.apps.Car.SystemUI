@@ -15,6 +15,8 @@
  */
 package com.android.systemui.car.wm.scalableui.systemwindow;
 
+import static com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindowKt.HUN_Z_ORDER;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.Mockito.when;
@@ -46,14 +48,14 @@ import org.mockito.junit.MockitoRule;
 @CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
 @SmallTest
-public class SystemBarWindowTest extends CarSysuiTestCase {
+public class SystemBarWindowImplTest extends CarSysuiTestCase {
 
     private static final String TEST_PANEL_ID = "test";
 
     @Rule
     public MockitoRule mRule = MockitoJUnit.rule();
 
-    private SystemBarWindow mSystemBarWindow;
+    private SystemBarWindowImpl mSystemBarWindow;
 
     @Mock
     private Context mContext;
@@ -80,13 +82,13 @@ public class SystemBarWindowTest extends CarSysuiTestCase {
         when(mSystemBarConfiguration.getName()).thenReturn(TEST_PANEL_ID);
         when(mPanelUpdateConsumer.getBounds(TEST_PANEL_ID)).thenReturn(new Rect(0, 0, 100, 100));
 
-        mSystemBarWindow = new SystemBarWindow(mContext, mEventDispatcher, mPanelUpdateConsumer,
+        mSystemBarWindow = new SystemBarWindowImpl(mContext, mEventDispatcher, mPanelUpdateConsumer,
                 mSystemBarConfiguration);
     }
 
     @Test
     public void getLayoutParams_zOrderAboveHun_returnsNavBarPanelType() {
-        when(mSystemBarConfiguration.getZOrder()).thenReturn(SystemBarWindow.HUN_Z_ORDER);
+        when(mSystemBarConfiguration.getZOrder()).thenReturn(HUN_Z_ORDER);
 
         WindowManager.LayoutParams params = mSystemBarWindow.getLayoutParams();
 
@@ -95,7 +97,7 @@ public class SystemBarWindowTest extends CarSysuiTestCase {
 
     @Test
     public void getLayoutParams_zOrderBelowHun_returnsStatusBarAdditionalType() {
-        when(mSystemBarConfiguration.getZOrder()).thenReturn(SystemBarWindow.HUN_Z_ORDER - 1);
+        when(mSystemBarConfiguration.getZOrder()).thenReturn(HUN_Z_ORDER - 1);
 
         WindowManager.LayoutParams params = mSystemBarWindow.getLayoutParams();
 

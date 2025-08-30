@@ -23,9 +23,9 @@ import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser
 import com.android.car.scalableui.model.PanelControllerMetadata
 import com.android.systemui.CarSysuiTestCase
 import com.android.systemui.car.CarSystemUiTest
-import com.android.systemui.car.systembar.SystemBarConfigs
+import com.android.systemui.car.systembar.CarSystemBarController
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
-import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow
+import com.android.systemui.car.wm.scalableui.systemwindow.HUN_Z_ORDER
 import com.google.common.truth.Truth.assertThat
 import java.util.Optional
 import org.junit.Test
@@ -89,7 +89,8 @@ class SystemBarConfigurationTest : CarSysuiTestCase() {
             INDEX,
             INDEX_OFFSET
         )
-        assertThat(systemBarConfiguration.type).isEqualTo(SystemBarConfigs.TYPE_NAVIGATION_BAR)
+        assertThat(systemBarConfiguration.type)
+            .isEqualTo(CarSystemBarController.NAVIGATION_BAR)
     }
 
     @Test
@@ -104,7 +105,7 @@ class SystemBarConfigurationTest : CarSysuiTestCase() {
             INDEX,
             INDEX_OFFSET
         )
-        assertThat(systemBarConfiguration.type).isEqualTo(SystemBarConfigs.TYPE_STATUS_BAR)
+        assertThat(systemBarConfiguration.type).isEqualTo(CarSystemBarController.STATUS_BAR)
     }
 
     @Test
@@ -124,7 +125,7 @@ class SystemBarConfigurationTest : CarSysuiTestCase() {
     fun isAboveHun_isTrue() {
         testBundle.putInt(
             SystemBarTagXmlParser.BAR_Z_ORDER_ATTRIBUTE,
-            SystemBarWindow.HUN_Z_ORDER
+            HUN_Z_ORDER
         )
         val systemBarConfiguration = SystemBarConfiguration(
             Optional.of(mockPanelUpdateConsumer),
@@ -139,7 +140,7 @@ class SystemBarConfigurationTest : CarSysuiTestCase() {
     fun isAboveHun_isFalse() {
         testBundle.putInt(
             SystemBarTagXmlParser.BAR_Z_ORDER_ATTRIBUTE,
-            SystemBarWindow.HUN_Z_ORDER + 1
+            HUN_Z_ORDER + 1
         )
         val systemBarConfiguration = SystemBarConfiguration(
             Optional.of(mockPanelUpdateConsumer),

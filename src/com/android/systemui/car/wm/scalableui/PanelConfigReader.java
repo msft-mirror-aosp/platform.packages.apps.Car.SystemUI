@@ -69,7 +69,7 @@ public class PanelConfigReader {
         PanelPool.getInstance().setDelegate((id, type) -> {
             if (type == PanelType.DECOR) {
                 return mDecorPanelFactory.create(id);
-            } else if (type == PanelType.SYSTEM_BAR) {
+            } else if (type == PanelType.SYSTEM_BAR || type == PanelType.HUN) {
                 return mBasePanelFactory.create(id);
             } else {
                 return mTaskPanelFactory.create(id);

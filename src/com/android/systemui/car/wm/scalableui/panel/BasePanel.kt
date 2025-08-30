@@ -20,9 +20,11 @@ import android.graphics.Insets
 import android.graphics.Rect
 import android.os.Build
 import android.util.Log
+import android.view.Gravity
 import android.view.SurfaceControl
 import androidx.annotation.CallSuper
 import com.android.car.scalableui.model.Focus
+import com.android.car.scalableui.model.GravityVariant
 import com.android.car.scalableui.model.PanelControllerMetadata
 import com.android.car.scalableui.model.Role
 import com.android.car.scalableui.model.Variant
@@ -54,6 +56,7 @@ open class BasePanel @AssistedInject constructor(
     private var cornerRadius = 0
     private var insets = Insets.NONE
     private var panelControllerMetadata: PanelControllerMetadata? = null
+    private var gravity: Int = Gravity.NO_GRAVITY
 
     override fun getContext() = context
 
@@ -165,6 +168,13 @@ open class BasePanel @AssistedInject constructor(
 
     override fun getInsets() = insets
 
+    override fun getGravity() = gravity
+
+    override fun setGravity(gravity: Int) {
+        this.gravity = gravity
+        panelUpdateObserver?.postGravity(panelId, gravity)
+    }
+
     override fun getPanelControllerMetadata(): PanelControllerMetadata? = panelControllerMetadata
 
     /**
@@ -254,6 +264,13 @@ open class BasePanel @AssistedInject constructor(
             it.postCornerRadius(panelId, variant?.cornerRadius ?: cornerRadius)
             it.postBounds(panelId, variant?.bounds ?: bounds)
             it.postInsets(panelId, variant?.insets ?: insets)
+            val gravityVariant = variant as? GravityVariant
+            val targetGravity = gravityVariant?.gravity ?: if (variant == null) {
+                gravity
+            } else {
+                Gravity.NO_GRAVITY
+            }
+            it.postGravity(panelId, targetGravity)
         }
     }
 

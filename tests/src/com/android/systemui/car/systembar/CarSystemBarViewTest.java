@@ -34,6 +34,8 @@ import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.window.OverlayVisibilityMediator;
+import com.android.systemui.car.wm.scalableui.configuration.SystemUiConfigurationProvider;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.settings.UserTracker;
 
 import org.junit.After;
@@ -44,14 +46,19 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
 public class CarSystemBarViewTest extends CarSysuiTestCase {
+    private static final String TEST_SYSTEM_BAR_NAME = "TEST_SYSTEM_BAR_NAME";
 
     private CarSystemBarView mNavBarView;
+    private Map<String, CarSystemBarViewSupplier> mViewSupplierMap;
+    private Map<String, CarSystemBarWindowSupplier> mWindowSupplierMap;
 
     @Mock
     private NotificationPanelViewController mNotificationPanelViewController;
@@ -66,15 +73,17 @@ public class CarSystemBarViewTest extends CarSysuiTestCase {
     @Mock
     private ButtonRoleHolderController mButtonRoleHolderController;
     @Mock
-    private MicPrivacyChipViewController mMicPrivacyChipViewController;
-    @Mock
-    private CameraPrivacyChipViewController mCameraPrivacyChipViewController;
-    @Mock
     private OverlayVisibilityMediator mOverlayVisibilityMediator;
+    @Mock
+    private SystemUiWindowProvider mWindowProvider;
+    @Mock
+    private SystemUiConfigurationProvider mConfigProvider;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mViewSupplierMap = new HashMap<>();
+        mWindowSupplierMap = new HashMap<>();
     }
 
     @After
@@ -134,14 +143,15 @@ public class CarSystemBarViewTest extends CarSysuiTestCase {
 
     private CarSystemBarViewControllerImpl getSystemBarViewController(CarSystemBarView view) {
         SystemBarConfigs systemBarConfigs = new SystemBarConfigsImpl(getContext(),
-                getContext().getOrCreateTestableResources().getResources());
+                getContext().getOrCreateTestableResources().getResources(), mWindowProvider,
+                mViewSupplierMap, mWindowSupplierMap);
         return new CarSystemBarViewControllerImpl(getContext(),
                 mUserTracker,
                 mCarSystemBarElementInitializer,
                 systemBarConfigs,
                 mButtonRoleHolderController,
                 mOverlayVisibilityMediator,
-                0,
+                TEST_SYSTEM_BAR_NAME,
                 view);
     }
 }

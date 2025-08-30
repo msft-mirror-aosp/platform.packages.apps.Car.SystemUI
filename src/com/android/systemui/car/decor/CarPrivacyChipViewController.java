@@ -79,8 +79,8 @@ public class CarPrivacyChipViewController extends PrivacyDotViewControllerImpl
                 animationScheduler, null, null, uiExecutor, context.getDisplayId(), null);
         commandQueue.addCallback(this);
         mAnimationHelper = new CarPrivacyChipAnimationHelper(context);
-        mBarType = systemBarConfigs.getInsetsFrameProvider(context.getResources().getInteger(
-                R.integer.config_privacyIndicatorLocation)).getType();
+        mBarType = systemBarConfigs.getInsetsFrameProviderByName(context.getResources().getString(
+                R.string.config_privacyIndicatorLocation)).getType();
     }
 
     @Override

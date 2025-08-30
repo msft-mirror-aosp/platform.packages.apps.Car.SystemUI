@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 The Android Open Source Project
+ * Copyright (C) 2025 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar
 
-import android.view.ViewGroup;
+import android.content.Context
+import android.view.ViewGroup
 
-/**
- * A controller for initializing the system bar views.
- *
- * @param <T> type of the controller that will be created by this factory. needs to conform to
- * {@link CarSystemBarViewController} interface.
- */
-public interface CarSystemBarViewControllerFactory<T extends CarSystemBarViewController> {
-    /** Create instance of CarSystemBarViewController for the system bar view */
-    T create(String name, ViewGroup view);
+/** Supplies the window for a car system bar. */
+interface CarSystemBarWindowSupplier {
+    /** @return view for the system bar window */
+    fun getSystemBarWindow(ctx: Context): ViewGroup
 }

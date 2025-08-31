@@ -327,6 +327,21 @@ public abstract class CarSystemBarModule {
     public abstract CarSystemBarElementController.Factory bindCameraChipViewControllerFactory(
             CameraPrivacyChipViewController.Factory factory);
 
+    /** Injects ShareToAppPrivacyChipViewController */
+    @Binds
+    @IntoMap
+    @ClassKey(ShareToAppPrivacyChipViewController.class)
+    public abstract CarSystemBarElementController.Factory bindShareToAppChipViewControllerFactory(
+            ShareToAppPrivacyChipViewController.Factory factory);
+
+    /** Injects CastToOtherDevicePrivacyChipViewController */
+    @Binds
+    @IntoMap
+    @ClassKey(CastToOtherDevicePrivacyChipViewController.class)
+    public abstract CarSystemBarElementController.Factory
+            bindCastToOtherDeviceChipViewControllerFactory(
+                    CastToOtherDevicePrivacyChipViewController.Factory factory);
+
     /** Injects NotificationButtonController */
     @Binds
     @IntoMap

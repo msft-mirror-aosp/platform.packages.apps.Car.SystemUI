@@ -20,9 +20,11 @@ import android.platform.test.annotations.EnableFlags
 import android.platform.test.flag.junit.SetFlagsRule
 import android.testing.AndroidTestingRunner
 import android.testing.TestableLooper.RunWithLooper
+import android.view.LayoutInflater
 import androidx.test.filters.SmallTest
 import com.android.internal.logging.InstanceId
 import com.android.systemui.CarSysuiTestCase
+import com.android.systemui.R
 import com.android.systemui.car.CarSystemUiTest
 import com.android.systemui.car.Flags.FLAG_SHOW_MEDIA_PROJECTION_INDICATOR
 import com.android.systemui.car.privacy.CastToOtherDevicePrivacyChip
@@ -66,18 +68,24 @@ class CastToOtherDevicePrivacyChipViewControllerTest : CarSysuiTestCase() {
         MutableStateFlow(OngoingActivityChipModel.Inactive())
     private val executor = mock<Executor>()
     private val instanceId = mock<InstanceId>()
-    private val castToOtherDevicePrivacyChip = mock<CastToOtherDevicePrivacyChip>()
     private val barElementDisableController = mock<CarSystemBarElementStatusBarDisableController>()
     private val barElementStateController = mock<CarSystemBarElementStateController>()
     private val castToOtherDeviceChipViewModel =
         mock<CastToOtherDeviceChipViewModel> { on { chip } doReturn chipModelFlow }
 
+    private lateinit var castToOtherDevicePrivacyChip: CastToOtherDevicePrivacyChip
     private lateinit var castToOtherDevicePrivacyChipViewController:
         CastToOtherDevicePrivacyChipViewController
 
     @Before
     fun setUp() {
         val context = spy(mContext).stub { on { mainExecutor } doReturn executor }
+        castToOtherDevicePrivacyChip =
+            spy(
+                LayoutInflater.from(mContext)
+                    .inflate(R.layout.cast_to_other_device_privacy_chip, null)
+                    as CastToOtherDevicePrivacyChip
+            )
         castToOtherDevicePrivacyChipViewController =
             CastToOtherDevicePrivacyChipViewController(
                 castToOtherDevicePrivacyChip,

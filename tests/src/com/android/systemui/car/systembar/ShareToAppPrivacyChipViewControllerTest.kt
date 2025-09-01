@@ -20,9 +20,11 @@ import android.platform.test.annotations.EnableFlags
 import android.platform.test.flag.junit.SetFlagsRule
 import android.testing.AndroidTestingRunner
 import android.testing.TestableLooper.RunWithLooper
+import android.view.LayoutInflater
 import androidx.test.filters.SmallTest
 import com.android.internal.logging.InstanceId
 import com.android.systemui.CarSysuiTestCase
+import com.android.systemui.R
 import com.android.systemui.car.CarSystemUiTest
 import com.android.systemui.car.Flags.FLAG_SHOW_MEDIA_PROJECTION_INDICATOR
 import com.android.systemui.car.privacy.ShareToAppPrivacyChip
@@ -64,7 +66,6 @@ class ShareToAppPrivacyChipViewControllerTest : CarSysuiTestCase() {
     private val chipModelFlow: MutableStateFlow<OngoingActivityChipModel> =
         MutableStateFlow(OngoingActivityChipModel.Inactive())
     private val instanceId = mock<InstanceId>()
-    private val shareToAppPrivacyChip = mock<ShareToAppPrivacyChip>()
     private val barElementDisableController = mock<CarSystemBarElementStatusBarDisableController>()
     private val barElementStateController = mock<CarSystemBarElementStateController>()
     private val shareToAppChipViewModel =
@@ -72,11 +73,17 @@ class ShareToAppPrivacyChipViewControllerTest : CarSysuiTestCase() {
     private val executor = mock<Executor>()
     private val runnableArgumentCaptor = argumentCaptor<Runnable>()
 
+    private lateinit var shareToAppPrivacyChip: ShareToAppPrivacyChip
     private lateinit var shareToAppPrivacyChipViewController: ShareToAppPrivacyChipViewController
 
     @Before
     fun setUp() {
         val context = spy(mContext).stub { on { mainExecutor } doReturn executor }
+        shareToAppPrivacyChip =
+            spy(
+                LayoutInflater.from(mContext).inflate(R.layout.share_to_app_privacy_chip, null)
+                    as ShareToAppPrivacyChip
+            )
         shareToAppPrivacyChipViewController =
             ShareToAppPrivacyChipViewController(
                 shareToAppPrivacyChip,

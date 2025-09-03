@@ -58,13 +58,6 @@ public abstract class QuickControlsEntryPointsModule {
     public abstract CarSystemBarElementController.Factory bindPhoneCallStatusIconController(
             PhoneCallStatusIconController.Factory phoneCallStatusIconController);
 
-    /** Injects ThemeSwitchStatusIconController. */
-    @Binds
-    @IntoMap
-    @ClassKey(DriveModeStatusIconController.class)
-    public abstract CarSystemBarElementController.Factory bindDriveModeStatusIconController(
-            DriveModeStatusIconController.Factory driveModeStatusIconController);
-
     /** Injects MediaVolumeStatusIconController. */
     @Binds
     @IntoMap

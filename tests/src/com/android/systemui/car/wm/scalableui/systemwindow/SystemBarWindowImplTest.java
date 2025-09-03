@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.hardware.display.DisplayManager;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
@@ -51,6 +52,7 @@ import org.mockito.junit.MockitoRule;
 public class SystemBarWindowImplTest extends CarSysuiTestCase {
 
     private static final String TEST_PANEL_ID = "test";
+    private static final int TEST_DISPLAY_ID = 1;
 
     @Rule
     public MockitoRule mRule = MockitoJUnit.rule();
@@ -66,6 +68,8 @@ public class SystemBarWindowImplTest extends CarSysuiTestCase {
     @Mock
     private WindowManager mWindowManager;
     @Mock
+    private DisplayManager mDisplayManager;
+    @Mock
     private EventDispatcher mEventDispatcher;
     @Mock
     private PanelUpdateConsumer mPanelUpdateConsumer;
@@ -78,12 +82,14 @@ public class SystemBarWindowImplTest extends CarSysuiTestCase {
         when(mResources.getDisplayMetrics()).thenReturn(new DisplayMetrics());
         when(mContext.getDisplay()).thenReturn(mDisplay);
         when(mContext.createDisplayContext(mDisplay)).thenReturn(mContext);
+        when(mContext.getSystemService(DisplayManager.class)).thenReturn(mDisplayManager);
         when(mContext.getSystemService(WindowManager.class)).thenReturn(mWindowManager);
+        when(mDisplayManager.getDisplay(TEST_DISPLAY_ID)).thenReturn(mDisplay);
         when(mSystemBarConfiguration.getName()).thenReturn(TEST_PANEL_ID);
         when(mPanelUpdateConsumer.getBounds(TEST_PANEL_ID)).thenReturn(new Rect(0, 0, 100, 100));
 
-        mSystemBarWindow = new SystemBarWindowImpl(mContext, mEventDispatcher, mPanelUpdateConsumer,
-                mSystemBarConfiguration);
+        mSystemBarWindow = new SystemBarWindowImpl(mContext, mDisplayManager, mEventDispatcher,
+                mPanelUpdateConsumer, mSystemBarConfiguration, TEST_DISPLAY_ID);
     }
 
     @Test

@@ -15,6 +15,7 @@
  */
 package com.android.systemui.car.wm.scalableui.systemwindow
 
+import com.android.car.scalableui.manager.StateManager
 import com.android.systemui.car.systembar.CarSystemBarController.NAVIGATION_BAR
 import com.android.systemui.car.systembar.CarSystemBarController.STATUS_BAR
 import com.android.systemui.car.wm.scalableui.configuration.SystemUiConfigurationProvider
@@ -50,7 +51,9 @@ class SystemUiWindowProvider @Inject constructor(
         }
 
         return configs.map { config ->
-            windowFactory.create(consumer.get(), config)
+            val panelState = StateManager.getPanelState(config.name)
+            checkNotNull(panelState) { "PanelState must not be null for ${config.name}" }
+            windowFactory.create(consumer.get(), config, panelState.displayId)
         }.toList()
     }
 

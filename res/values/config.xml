@@ -228,7 +228,7 @@
     <!-- 0 disabled -->
     <!-- 1 left -->
     <!-- 2 right -->
-    <integer name="config_showDisplayCompatToolbarOnSystemBar">1</integer>
+    <integer name="config_showDisplayCompatToolbarOnSystemBar">0</integer>
 
     <!-- Determines how to show navigation bar and status bar on app's immersive request, only
         works if config_remoteInsetsControllerControlsSystemBars is set to true-->
@@ -345,4 +345,7 @@
 
     <!-- Whether the size compat restart button should be enabled -->
     <bool name="config_isSizeCompatRestartButtonEnabled">false</bool>
+
+    <!-- Settings package name to be used as a default/fallback if no other settings packages are found -->
+    <string name="config_defaultSettingsPackage">com.android.car.settings</string>
 </resources>

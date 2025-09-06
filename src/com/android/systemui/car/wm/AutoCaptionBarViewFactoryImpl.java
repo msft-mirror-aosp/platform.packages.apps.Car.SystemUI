@@ -16,10 +16,17 @@
 
 package com.android.systemui.car.wm;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
+import static com.android.systemui.car.Flags.displayCompatibilityV2;
+
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
 import android.hardware.input.InputManager;
 import android.net.Uri;
@@ -35,6 +42,8 @@ import android.view.View;
 import android.widget.Button;
 import android.window.WindowContainerTransaction;
 
+import androidx.annotation.NonNull;
+
 import com.android.systemui.R;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionBarViewFactory;
@@ -42,12 +51,20 @@ import com.android.wm.shell.automotive.RootTaskStack;
 
 /**
  * Factory to provide views for caption bar. See
- * {@link com.android.wm.shell.automotive.AutoCaptionController#setCaptionRegion(RootTaskStack, Rect, AutoCaptionBarViewFactory)}
+ * {@link com.android.wm.shell.automotive.AutoCaptionController#setCaptionRegion(RootTaskStack,
+ * Rect, AutoCaptionBarViewFactory)}
  * for more details.
  */
+@SuppressLint("MissingPermission")
 public class AutoCaptionBarViewFactoryImpl extends AutoCaptionBarViewFactory {
-
     private static final String TAG = AutoCaptionBarViewFactoryImpl.class.getSimpleName();
+    private static final String ASPECT_RATIO_SHOW_DIALOG_ACTION =
+            "com.android.car.settings.aspectRatio.action.SHOW_DIALOG";
+    private static final String ASPECT_RATIO_SHOW_DIALOG_EXTRA_KEY_CMP_NAME =
+            "com.android.car.settings.aspectRatio.extra.COMPONENT_NAME";
+    private static final String ASPECT_RATIO_SHOW_DIALOG_EXTRA_KEY_UID =
+            "com.android.car.settings.aspectRatio.extra.USER_ID";
+
     private final Context mContext;
     private final ShellTaskOrganizer mShellTaskOrganizer;
 
@@ -73,6 +90,16 @@ public class AutoCaptionBarViewFactoryImpl extends AutoCaptionBarViewFactory {
                 aspectRatioButton.setVisibility(View.GONE);
             } else {
                 aspectRatioButton.setOnClickListener(view -> {
+                    if (displayCompatibilityV2()) {
+                        String settingsPackageName = getSettingsPackageName();
+                        Intent intent = new Intent(ASPECT_RATIO_SHOW_DIALOG_ACTION);
+                        intent.setPackage(settingsPackageName);
+                        intent.putExtra(ASPECT_RATIO_SHOW_DIALOG_EXTRA_KEY_CMP_NAME, topActivity);
+                        intent.putExtra(ASPECT_RATIO_SHOW_DIALOG_EXTRA_KEY_UID, taskInfo.userId);
+                        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivityAsUser(intent, UserHandle.of(taskInfo.userId));
+                        return;
+                    }
                     Intent intent =
                             new Intent(Settings.ACTION_MANAGE_USER_ASPECT_RATIO_SETTINGS);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
@@ -115,5 +142,23 @@ public class AutoCaptionBarViewFactoryImpl extends AutoCaptionBarViewFactory {
                 .injectInputEvent(ev, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC)) {
             Log.e(TAG, "Inject input event fail");
         }
+    }
+
+    @NonNull
+    private String getSettingsPackageName() {
+        Intent settingsIntent = new Intent(Settings.ACTION_SETTINGS);
+        int flags = PackageManager.MATCH_DIRECT_BOOT_AWARE
+                | PackageManager.MATCH_DIRECT_BOOT_UNAWARE
+                | PackageManager.MATCH_DEFAULT_ONLY;
+        ResolveInfo resolveInfo = mContext.getPackageManager().resolveActivityAsUser(
+                settingsIntent, flags, ActivityManager.getCurrentUser());
+
+        if (resolveInfo == null
+                || resolveInfo.activityInfo == null
+                || resolveInfo.activityInfo.packageName == null) {
+            return mContext.getResources().getString(R.string.config_defaultSettingsPackage);
+        }
+
+        return resolveInfo.activityInfo.packageName;
     }
 }

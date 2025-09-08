@@ -63,6 +63,7 @@ import com.android.wm.shell.pip.Pip;
 import com.android.wm.shell.recents.RecentTasksController;
 import com.android.wm.shell.shared.annotations.ShellBackgroundThread;
 import com.android.wm.shell.shared.annotations.ShellMainThread;
+import com.android.wm.shell.sysui.ShellController;
 import com.android.wm.shell.sysui.ShellInit;
 import com.android.wm.shell.taskview.TaskViewTransitions;
 import com.android.wm.shell.transition.FocusTransitionObserver;
@@ -90,9 +91,10 @@ public abstract class CarWMShellModule {
     static DisplaySystemBarsController provideDisplaySystemBarsController(Context context,
             IWindowManager wmService, DisplayController displayController,
             DisplayInsetsController displayInsetsController,
-            @Main Handler mainHandler, CarWMUserHelper userHelper) {
+            @Main Handler mainHandler, CarWMUserHelper userHelper,
+            ShellController shellController) {
         return new DisplaySystemBarsController(context, wmService, displayController,
-                displayInsetsController, mainHandler, userHelper);
+                displayInsetsController, mainHandler, userHelper, shellController);
     }
 
     @WMSingleton

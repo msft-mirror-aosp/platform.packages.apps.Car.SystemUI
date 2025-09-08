@@ -70,6 +70,8 @@ import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
+import com.android.wm.shell.sysui.ShellController;
+import com.android.wm.shell.sysui.UserChangeListener;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -120,6 +122,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
     private int mSuwBehavior;
     private BroadcastReceiver mOverlayChangeBroadcastReceiver;
     private CarWMUserHelper.OccupantZoneChangeListener mOccupantChangeListener;
+    private final ShellController mShellController;
 
     @GuardedBy("mPerDisplaySparseArrayLock")
     @VisibleForTesting
@@ -131,7 +134,8 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             DisplayController displayController,
             DisplayInsetsController displayInsetsController,
             @Main Handler mainHandler,
-            CarWMUserHelper carWMUserHelper) {
+            CarWMUserHelper carWMUserHelper,
+            ShellController shellController) {
         mContext = context;
         mWmService = wmService;
         mDisplayInsetsController = displayInsetsController;
@@ -141,21 +145,21 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
                 R.integer.config_systemBarPersistency);
         mSuwBehavior = mContext.getResources().getInteger(
                 R.integer.config_systemBarSuwBehavior);
+        mShellController = shellController;
 
         mSuwSettingsObserver = new ContentObserver(mHandler) {
             @Override
-            public void onChange(boolean selfChange, @Nullable Uri uri,
-                    int flags) {
-                synchronized (mPerDisplaySparseArrayLock) {
-                    if (mPerDisplaySparseArray == null) {
-                        return;
-                    }
-                    for (int i = 0; i < mPerDisplaySparseArray.size(); i++) {
-                        mPerDisplaySparseArray.valueAt(i).onUserSetupInProgressChanged();
-                    }
-                }
+            public void onChange(boolean selfChange, @Nullable Uri uri, int flags) {
+                onUserSetupInProgressChangedPerDisplay();
             }
         };
+
+        mShellController.addUserChangeListener(new UserChangeListener() {
+            @Override
+            public void onUserChanged(int newUserId, @NonNull Context userContext) {
+                onUserSetupInProgressChangedPerDisplay();
+            }
+        });
 
         if (!isSecondaryMUMDSystemUI()) {
             // This WM controller should only be initialized once for the primary SystemUI, as it
@@ -167,6 +171,17 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
                     /* notifyForDescendants= */ true, mSuwSettingsObserver, UserHandle.USER_ALL);
             registerOverlayChangeBroadcastReceiver();
             registerOccupantZoneChangeListener();
+        }
+    }
+
+    private void onUserSetupInProgressChangedPerDisplay() {
+        synchronized (mPerDisplaySparseArrayLock) {
+            if (mPerDisplaySparseArray == null) {
+                return;
+            }
+            for (int i = 0; i < mPerDisplaySparseArray.size(); i++) {
+                mPerDisplaySparseArray.valueAt(i).onUserSetupInProgressChanged();
+            }
         }
     }
 

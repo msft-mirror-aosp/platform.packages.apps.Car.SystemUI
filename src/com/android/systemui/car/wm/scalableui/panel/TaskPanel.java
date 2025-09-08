@@ -15,10 +15,16 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
+import static android.car.app.CarActivityManager.LAUNCH_BEHAVIOR_DEFAULT;
+import static android.car.app.CarActivityManager.LAUNCH_BEHAVIOR_REMAIN_IN_SOURCE_ROOT_TASK;
+import static android.car.app.CarActivityManager.LAUNCH_BEHAVIOR_REPARENT_TO_SOURCE_ROOT_TASK;
 import static android.view.WindowInsets.Type.systemOverlays;
 
 import static com.android.car.scalableui.model.Restart.RESTART_POLICY_DEFAULT;
 import static com.android.car.scalableui.model.Restart.RESTART_POLICY_LAST;
+import static com.android.car.scalableui.model.TaskBehavior.NEW_TASK_LAUNCH_POLICY_DEFAULT;
+import static com.android.car.scalableui.model.TaskBehavior.NEW_TASK_LAUNCH_POLICY_REMAIN_IN_SOURCE;
+import static com.android.car.scalableui.model.TaskBehavior.NEW_TASK_LAUNCH_POLICY_REPARENT_TO_SOURCE;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_PANEL_EMPTY_EVENT_ID;
 
 import android.annotation.SuppressLint;
@@ -206,6 +212,7 @@ public final class TaskPanel extends BasePanel {
                     logIfDebuggable("On car connected:" + this);
                     mCarActivityManager = car.getCarManager(CarActivityManager.class);
                     trySetPersistentActivity();
+                    trySetRootTaskLaunchBehavior();
                 });
 
         mAutoTaskStackController.createRootTaskStack(getDisplayId(), getPanelId(),
@@ -218,6 +225,7 @@ public final class TaskPanel extends BasePanel {
                         mRootTaskStack = rootTaskStack;
                         mRootTaskId = mRootTaskStack.getRootTaskInfo().taskId;
                         trySetPersistentActivity();
+                        trySetRootTaskLaunchBehavior();
                         if (mIsLaunchRoot) {
                             mAutoTaskStackController.setDefaultRootTaskStackOnDisplay(
                                     getDisplayId(),
@@ -717,6 +725,38 @@ public final class TaskPanel extends BasePanel {
             mCarActivityManager.setPersistentActivitiesOnRootTask(
                     mPersistedActivities.stream().toList(),
                     mRootTaskStack.getRootTaskInfo().token.asBinder());
+        }
+    }
+
+    @VisibleForTesting
+    @SuppressLint("MissingPermission")
+    void trySetRootTaskLaunchBehavior() {
+        if (mCarActivityManager == null || mRootTaskStack == null) {
+            logIfDebuggable("mCarActivityManager or mRootTaskStack is null, [" + getPanelId() + ","
+                    + mCarActivityManager + ", " + mRootTaskStack + "]");
+            return;
+        }
+
+        if (getPanelState() == null || getPanelState().getTaskBehavior() == null) {
+            logIfDebuggable("PanelState or PanelState TaskBehavior is null, ["
+                    + getPanelId() + "]");
+            return;
+        }
+
+        String launchPolicy = getPanelState().getTaskBehavior().getNewTaskLaunchPolicy();
+        int launchBehavior = -1;
+        switch (launchPolicy) {
+            case NEW_TASK_LAUNCH_POLICY_DEFAULT ->
+                    launchBehavior = LAUNCH_BEHAVIOR_DEFAULT;
+            case NEW_TASK_LAUNCH_POLICY_REMAIN_IN_SOURCE ->
+                    launchBehavior = LAUNCH_BEHAVIOR_REMAIN_IN_SOURCE_ROOT_TASK;
+            case NEW_TASK_LAUNCH_POLICY_REPARENT_TO_SOURCE ->
+                    launchBehavior = LAUNCH_BEHAVIOR_REPARENT_TO_SOURCE_ROOT_TASK;
+        }
+        if (launchBehavior != -1) {
+            mCarActivityManager.setLaunchBehaviorForRootTask(
+                    mRootTaskStack.getRootTaskInfo().getToken().asBinder(),
+                    launchBehavior);
         }
     }
 

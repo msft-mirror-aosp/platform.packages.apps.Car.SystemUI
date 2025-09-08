@@ -15,22 +15,33 @@
  */
 package com.android.systemui.car.wm.scalableui.panel;
 
+import static android.car.app.CarActivityManager.LAUNCH_BEHAVIOR_REMAIN_IN_SOURCE_ROOT_TASK;
+
 import static com.android.car.scalableui.model.Restart.RESTART_POLICY_DEFAULT;
 import static com.android.car.scalableui.model.Restart.RESTART_POLICY_LAST;
+import static com.android.car.scalableui.model.TaskBehavior.NEW_TASK_LAUNCH_POLICY_REMAIN_IN_SOURCE;
 
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
+import android.car.Car;
+import android.car.app.CarActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.os.Binder;
+import android.os.IBinder;
 import android.os.UserHandle;
+import android.window.WindowContainerToken;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -38,6 +49,7 @@ import androidx.test.filters.SmallTest;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.Restart;
+import com.android.car.scalableui.model.TaskBehavior;
 import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.systemui.ShellSyncExecutor;
 import com.android.systemui.SysuiTestCase;
@@ -84,6 +96,8 @@ public class TaskPanelTest extends SysuiTestCase {
     private AutoTaskStackController mAutoTaskStackController;
     @Mock
     private CarServiceProvider mCarServiceProvider;
+    @Mock
+    private CarActivityManager mCarActivityManager;
     @Mock
     private AutoTaskStackHelper mAutoTaskStackHelper;
     @Mock
@@ -141,6 +155,12 @@ public class TaskPanelTest extends SysuiTestCase {
 
         mTaskPanel.setDisplayId(0);
         mTaskPanel.init();
+        ArgumentCaptor<CarServiceProvider.CarServiceOnConnectedListener> carServiceConnectCaptor =
+                ArgumentCaptor.forClass(CarServiceProvider.CarServiceOnConnectedListener.class);
+        verify(mCarServiceProvider).addListener(carServiceConnectCaptor.capture());
+        Car car = mock(Car.class);
+        when(car.getCarManager(CarActivityManager.class)).thenReturn(mCarActivityManager);
+        carServiceConnectCaptor.getValue().onConnected(car);
         ArgumentCaptor<RootTaskStackListener> listenerArgumentCaptor =
                 ArgumentCaptor.forClass(RootTaskStackListener.class);
         verify(mAutoTaskStackController).createRootTaskStack(anyInt(), anyString(),
@@ -207,5 +227,40 @@ public class TaskPanelTest extends SysuiTestCase {
         mTaskPanel.scheduleRestartAttempt(mRunningTaskInfo);
 
         verify(mEventDispatcher).executeEvent(any(Event.class));
+    }
+
+    @Test
+    public void trySetRootTaskLaunchBehavior_noRootTask_doesNothing() {
+        mTaskPanel.setRootTaskStack(null);
+
+        mTaskPanel.trySetRootTaskLaunchBehavior();
+
+        verify(mCarActivityManager, never()).setLaunchBehaviorForRootTask(any(), anyInt());
+    }
+
+    @Test
+    public void trySetRootTaskLaunchBehavior_nullLaunchBehavior_doesNothing() {
+        when(mPanelState.getTaskBehavior()).thenReturn(null);
+
+        mTaskPanel.trySetRootTaskLaunchBehavior();
+
+        verify(mCarActivityManager, never()).setLaunchBehaviorForRootTask(any(), anyInt());
+    }
+
+    @Test
+    public void trySetRootTaskLaunchBehavior_setsLaunchBehavior() {
+        IBinder binder = new Binder();
+        WindowContainerToken wct = mock(WindowContainerToken.class);
+        when(wct.asBinder()).thenReturn(binder);
+        when(mRunningTaskInfo.getToken()).thenReturn(wct);
+        TaskBehavior taskBehavior = mock(TaskBehavior.class);
+        when(taskBehavior.getNewTaskLaunchPolicy()).thenReturn(
+                NEW_TASK_LAUNCH_POLICY_REMAIN_IN_SOURCE);
+        when(mPanelState.getTaskBehavior()).thenReturn(taskBehavior);
+
+        mTaskPanel.trySetRootTaskLaunchBehavior();
+
+        verify(mCarActivityManager).setLaunchBehaviorForRootTask(any(),
+                eq(LAUNCH_BEHAVIOR_REMAIN_IN_SOURCE_ROOT_TASK));
     }
 }

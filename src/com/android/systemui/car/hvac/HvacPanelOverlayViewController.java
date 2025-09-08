@@ -311,6 +311,9 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
             mHvacPanelView.setLayoutParams(layoutParams);
             mHvacController.registerHvacViews(mHvacPanelView);
             mHvacPanelView.setKeyEventHandler(hvacKeyEventHandler);
+
+            // register handleBar again for reinflated {@link HvacPanelView}
+            setUpHandleBar();
         }
     }
 }

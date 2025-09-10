@@ -275,6 +275,15 @@
     </string-array>
 
     <!--
+        Component names that will not trigger events by default when launched.
+        Used when scalableUi feature is enabled.
+    -->
+    <string-array name="config_ignoredEventActivities" translatable="false">
+        <item>com.android.systemui/.car.wm.activity.ActivityBlockingActivity</item>
+        <item>@string/config_mediaBlockingActivity</item>
+    </string-array>
+
+    <!--
         Specifies the default activities associated with different panel IDs.
 
         This string array defines the default activity to launch for panels. Each item in the array

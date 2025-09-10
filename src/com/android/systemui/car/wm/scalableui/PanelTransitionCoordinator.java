@@ -28,6 +28,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.IBinder;
 import android.text.TextUtils;
@@ -255,13 +256,11 @@ public class PanelTransitionCoordinator {
                 continue;
             }
 
-            // If there is no recorded pending transaction for the changed rootTask, treat it as
-            // conflict.
             AutoTaskStackState changedState = entry.getValue();
-            boolean findConflict = transaction == null
-                    || !isEqual(changedState,
-                    transaction.getPanelTransactionState(tp.getPanelId()));
-            if (findConflict) {
+            Transition panelTransition = transaction != null
+                    ? transaction.getPanelTransactionState(tp.getPanelId())
+                    : null;
+            if (!isEqual(changedState, tp, panelTransition)) {
                 Log.e(TAG, "Transition conflicts found on launch root task - " + changedState);
                 return new Event.Builder(
                         changedState.getChildrenTasksVisible() ? SYSTEM_TASK_OPEN_EVENT_ID
@@ -274,14 +273,14 @@ public class PanelTransitionCoordinator {
     }
 
     private boolean isEqual(@NonNull AutoTaskStackState changedState,
-            @Nullable Transition panelTransition) {
-        if (panelTransition == null) {
-            return false;
-        }
-        Variant toVariant = panelTransition.getToVariant();
-        return changedState.getChildrenTasksVisible() == toVariant.isVisible()
-                && changedState.getLayer() == toVariant.getLayer()
-                && changedState.getBounds().equals(toVariant.getBounds());
+            @NonNull TaskPanel tp, @Nullable Transition panelTransition) {
+        Variant toVariant = panelTransition != null ? panelTransition.getToVariant() : null;
+        boolean isVisible = toVariant != null ? toVariant.isVisible() : tp.isVisible();
+        int layer = toVariant != null ? toVariant.getLayer() : tp.getLayer();
+        Rect bounds = toVariant != null ? toVariant.getBounds() : tp.getBounds();
+        return changedState.getChildrenTasksVisible() == isVisible
+                && changedState.getLayer() == layer
+                && changedState.getBounds().equals(bounds);
     }
 
     /**

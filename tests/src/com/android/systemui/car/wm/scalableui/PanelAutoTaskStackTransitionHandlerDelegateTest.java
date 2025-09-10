@@ -73,6 +73,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
 
     private static final String TEST_PANEL_ID = "test_panel";
     private static final String TEST_COMPONENT_NAME = "com.test/com.test.TestActivity";
+    private static final int TEST_ROOT_TASK_ID = 100;
 
     private PanelAutoTaskStackTransitionHandlerDelegate mDelegate;
 
@@ -98,6 +99,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
         MockitoAnnotations.initMocks(this);
         when(mPanelTransitionCoordinator.createAutoTaskStackTransaction(any(),
                 any(), any())).thenReturn(new AutoTaskStackTransaction());
+        when(mPanelUtils.handles(TEST_ROOT_TASK_ID)).thenReturn(true);
         mDelegate = new PanelAutoTaskStackTransitionHandlerDelegate(mContext,
                 mAutoTaskStackController, mPanelTransitionCoordinator, mPanelUtils,
                 mCarWMUserHelper, mTaskPanelInfoRepository, mAutoLayoutManager, mFlagManager);
@@ -210,6 +212,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
         ActivityManager.RunningTaskInfo taskInfo = new ActivityManager.RunningTaskInfo();
         taskInfo.baseIntent = new Intent();
         taskInfo.baseIntent.addCategory(Intent.CATEGORY_HOME);
+        taskInfo.topActivityType = ACTIVITY_TYPE_HOME;
         when(request.getType()).thenReturn(TRANSIT_OPEN);
         when(request.getTriggerTask()).thenReturn(taskInfo);
 
@@ -223,6 +226,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
         TransitionRequestInfo request = mock(TransitionRequestInfo.class);
         ActivityManager.RunningTaskInfo taskInfo = new ActivityManager.RunningTaskInfo();
         taskInfo.baseIntent = new Intent();
+        taskInfo.parentTaskId = TEST_ROOT_TASK_ID;
         when(request.getType()).thenReturn(TRANSIT_OPEN);
         when(request.getTriggerTask()).thenReturn(taskInfo);
         when(request.getFlags()).thenReturn(WindowManager.TRANSIT_FLAG_AVOID_MOVE_TO_FRONT);
@@ -239,6 +243,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
         TaskPanel panel = mock(TaskPanel.class);
         ActivityManager.RunningTaskInfo taskInfo = new ActivityManager.RunningTaskInfo();
         taskInfo.baseIntent = new Intent();
+        taskInfo.parentTaskId = TEST_ROOT_TASK_ID;
         when(request.getType()).thenReturn(TRANSIT_OPEN);
         when(request.getTriggerTask()).thenReturn(taskInfo);
         ComponentName componentName = ComponentName.unflattenFromString(TEST_COMPONENT_NAME);
@@ -259,6 +264,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
         TaskPanel panel = mock(TaskPanel.class);
         ActivityManager.RunningTaskInfo taskInfo = new ActivityManager.RunningTaskInfo();
         taskInfo.baseIntent = new Intent();
+        taskInfo.parentTaskId = TEST_ROOT_TASK_ID;
         when(request.getType()).thenReturn(TRANSIT_CLOSE);
         when(request.getTriggerTask()).thenReturn(taskInfo);
         ComponentName componentName = ComponentName.unflattenFromString(TEST_COMPONENT_NAME);
@@ -278,6 +284,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
         TransitionRequestInfo request = mock(TransitionRequestInfo.class);
         ActivityManager.RunningTaskInfo taskInfo = new ActivityManager.RunningTaskInfo();
         taskInfo.baseIntent = new Intent();
+        taskInfo.parentTaskId = TEST_ROOT_TASK_ID;
         when(request.getType()).thenReturn(TRANSIT_CLOSE);
         when(request.getTriggerTask()).thenReturn(taskInfo);
         ComponentName componentName = ComponentName.unflattenFromString(TEST_COMPONENT_NAME);

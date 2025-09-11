@@ -13,7 +13,6 @@
 -keep class com.android.systemui.car.privacy.MicQcPanel { *; }
 -keep class com.android.systemui.car.privacy.SensorQcPanel { *; }
 -keep class com.android.systemui.car.qc.ProfileSwitcher { *; }
--keep class com.android.systemui.car.qc.DriveModeQcPanel { *; }
 -keep class com.android.systemui.car.qc.QCFooterView { *; }
 -keep class com.android.systemui.car.wm.scalableui.panel.controller.BaseTaskPanelController { *; }
 -keep class com.android.systemui.car.wm.scalableui.panel.controller.AppStyledViewController { *; }

@@ -26,8 +26,8 @@ import static com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindo
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.hardware.display.DisplayManager;
 import android.os.Binder;
-import android.util.DisplayMetrics;
 import android.view.InsetsFrameProvider;
 import android.view.View;
 import android.view.WindowManager;
@@ -47,14 +47,14 @@ import dagger.assisted.AssistedInject;
  */
 public class SystemBarWindowImpl extends SystemUiWindowBase implements SystemBarWindow {
     private static final Binder INSETS_OWNER = new Binder();
-    private final DisplayMetrics mDisplayMetrics;
     private final SystemBarConfiguration mConfiguration;
 
     @AssistedInject
-    public SystemBarWindowImpl(Context context, EventDispatcher dispatcher,
-            @Assisted PanelUpdateConsumer consumer, @Assisted SystemBarConfiguration config) {
-        super(context, consumer, dispatcher, config.getName());
-        mDisplayMetrics = context.getResources().getDisplayMetrics();
+    public SystemBarWindowImpl(Context context, DisplayManager displayManager,
+            EventDispatcher dispatcher,
+            @Assisted PanelUpdateConsumer consumer, @Assisted SystemBarConfiguration config,
+            @Assisted int displayId) {
+        super(context, displayManager, consumer, dispatcher, config.getName(), displayId);
         mConfiguration = config;
 
         consumer.registerCallback(mConfiguration.getName(),
@@ -98,7 +98,7 @@ public class SystemBarWindowImpl extends SystemUiWindowBase implements SystemBar
                         | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                         | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
                         | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH, PixelFormat.TRANSLUCENT);
-        SystemUiWindow.updateLayoutParams(lp, bounds, mDisplayMetrics);
+        SystemUiWindow.updateLayoutParams(lp, bounds, getDisplayMetrics());
         lp.setTitle(mConfiguration.getName());
         lp.providedInsets = new InsetsFrameProvider[]{new InsetsFrameProvider(INSETS_OWNER,
                 mConfiguration.getIndex(),
@@ -139,8 +139,9 @@ public class SystemBarWindowImpl extends SystemUiWindowBase implements SystemBar
     public interface Factory {
         /**
          * Create instance of {@link SystemBarWindowImpl} with specified
-         * {@link SystemBarConfiguration}and a {@link PanelUpdateConsumer}
+         * {@link SystemBarConfiguration}and a {@link PanelUpdateConsumer} and a display Id
          */
-        SystemBarWindowImpl create(PanelUpdateConsumer consumer, SystemBarConfiguration config);
+        SystemBarWindowImpl create(PanelUpdateConsumer consumer, SystemBarConfiguration config,
+                int displayId);
     }
 }

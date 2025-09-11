@@ -36,6 +36,7 @@ import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.common.DisplayLayout;
+import com.android.wm.shell.sysui.ShellController;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -65,6 +66,8 @@ public class DisplaySystemBarsControllerTest extends CarSysuiTestCase {
     private Handler mHandler;
     @Mock
     private CarWMUserHelper mUserHelper;
+    @Mock
+    private ShellController mShellController;
 
     @Before
     public void setUp() {
@@ -78,7 +81,8 @@ public class DisplaySystemBarsControllerTest extends CarSysuiTestCase {
                 mDisplayController,
                 mDisplayInsetsController,
                 mHandler,
-                mUserHelper
+                mUserHelper,
+                mShellController
         );
     }
 

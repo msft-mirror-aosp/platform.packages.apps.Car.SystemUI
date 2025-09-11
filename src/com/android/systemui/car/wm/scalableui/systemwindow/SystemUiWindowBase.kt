@@ -18,6 +18,9 @@ package com.android.systemui.car.wm.scalableui.systemwindow
 import android.content.Context
 import android.graphics.Insets
 import android.graphics.Rect
+import android.hardware.display.DisplayManager
+import android.util.DisplayMetrics
+import android.util.Log
 import android.view.Display
 import android.view.View
 import android.view.WindowManager
@@ -30,29 +33,59 @@ import com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.
  * A base class for [SystemUiWindow] implementations, providing common functionality.
  */
 abstract class SystemUiWindowBase(
-    context: Context,
+    private val context: Context,
+    private val displayManager: DisplayManager,
     protected val panelUpdateConsumer: PanelUpdateConsumer,
     protected val eventDispatcher: EventDispatcher,
-    protected var id: String
+    protected var id: String,
+    protected val displayId: Int
+
 ) : SystemUiWindow {
-    protected val display: Display = context.display
-    protected val displayContext: Context = context.createDisplayContext(display)
-    protected val windowManager: WindowManager = displayContext.getSystemService(
-        WindowManager::class.java
-    )
-    protected val displayMetrics = displayContext.resources.displayMetrics
+    protected var display: Display? = null
+    protected var displayContext: Context? = null
+    protected var windowManager: WindowManager? = null
+    protected var displayMetrics: DisplayMetrics? = null
     protected var _rootView: View? = null
 
     init {
-        panelUpdateConsumer.registerCallback(id, object : PanelUpdateConsumer.PanelUpdateCallback {
-            override fun onBoundsChange(panelId: String, bounds: Rect) {
-                _rootView?.let {
-                    windowManager.updateViewLayout(it, getLayoutParams())
+        initializeDisplay()
+        windowManager?.let { wm ->
+            panelUpdateConsumer.registerCallback(id, object :
+                PanelUpdateConsumer.PanelUpdateCallback {
+                override fun onBoundsChange(panelId: String, bounds: Rect) {
+                    _rootView?.let {
+                        wm.updateViewLayout(it, getLayoutParams())
+                    }
                 }
-            }
-        })
+            })
+        } ?: run {
+            Log.e(TAG, "Window manager is null, cannot register panel update callback for $id")
+        }
     }
 
+    private fun initializeDisplay() {
+        if (displayId == Display.INVALID_DISPLAY) {
+            Log.w(TAG, "Invalid display ID (-1) for $id")
+            return
+        }
+
+        val localDisplay = displayManager.getDisplay(displayId) ?: run {
+            Log.e(TAG, "Cannot find display for id: $displayId for $id")
+            return
+        }
+
+        display = localDisplay
+        val localDisplayContext = context.createDisplayContext(localDisplay)
+        displayContext = localDisplayContext
+        windowManager = displayContext?.getSystemService(WindowManager::class.java) ?: run {
+            Log.e(TAG, "Cannot obtain WindowManager for $id on display $displayId")
+            return
+        }
+        displayMetrics = localDisplayContext.resources.displayMetrics ?: run {
+            Log.w(TAG, "Cannot find displayMetrics for id: $displayId for $id")
+            return
+        }
+    }
     override fun getName(): String = id
 
     override fun getBounds(): Rect? {
@@ -64,19 +97,19 @@ abstract class SystemUiWindowBase(
             removeRootView()
         }
         this._rootView = view
-        windowManager.addView(this._rootView, layoutParams)
+        windowManager?.addView(this._rootView, layoutParams)
     }
 
     override fun removeRootView() {
         _rootView?.let {
-            windowManager.removeView(it)
+            windowManager?.removeView(it)
             _rootView = null
         }
     }
 
     override fun removeRootViewImmediate() {
         _rootView?.let {
-            windowManager.removeViewImmediate(it)
+            windowManager?.removeViewImmediate(it)
             _rootView = null
         }
     }
@@ -119,5 +152,9 @@ abstract class SystemUiWindowBase(
 
     override fun removeCallback(callback: SystemUiWindow.WindowUpdateCallback) {
         panelUpdateConsumer.unregisterCallback(id, callback)
+    }
+
+    companion object {
+        private val TAG = SystemUiWindowBase::class.simpleName
     }
 }

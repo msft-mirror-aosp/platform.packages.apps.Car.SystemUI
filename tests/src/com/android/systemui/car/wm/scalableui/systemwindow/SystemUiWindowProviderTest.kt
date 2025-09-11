@@ -17,6 +17,11 @@ package com.android.systemui.car.wm.scalableui.systemwindow
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
+import com.android.car.scalableui.manager.StateManager
+import com.android.car.scalableui.model.PanelState
+import com.android.car.scalableui.model.Variant
+import com.android.car.scalableui.panel.Panel
+import com.android.car.scalableui.panel.PanelPool
 import com.android.systemui.CarSysuiTestCase
 import com.android.systemui.car.CarSystemUiTest
 import com.android.systemui.car.wm.scalableui.configuration.SystemBarConfiguration
@@ -25,9 +30,11 @@ import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateCons
 import com.google.common.truth.Truth.assertThat
 import dagger.Lazy
 import java.util.Optional
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 
@@ -42,18 +49,25 @@ class SystemUiWindowProviderTest : CarSysuiTestCase() {
         on { get() } doReturn mPanelUpdateConsumer
     }
     private val mMockHunWindow = mock<HunWindow>()
-    private val mMockStatusBarConfiguration = mock<SystemBarConfiguration>()
-    private val mMockNavBarConfiguration = mock<SystemBarConfiguration>()
+    private val mMockStatusBarConfiguration = mock<SystemBarConfiguration> {
+        on { name } doReturn "TestStatusBar"
+    }
+    private val mMockNavBarConfiguration = mock<SystemBarConfiguration> {
+        on { name } doReturn "TestNavBar"
+    }
     private val mMockStatusBarWindow = mock<SystemBarWindowImpl>()
     private val mMockNavBarWindow = mock<SystemBarWindowImpl>()
     private val mMockWindowFactory = mock<SystemBarWindowImpl.Factory> {
         on {
             create(
                 mPanelUpdateConsumer,
-                mMockStatusBarConfiguration
+                mMockStatusBarConfiguration,
+                TEST_DISPLAY_ID
             )
         } doReturn mMockStatusBarWindow
-        on { create(mPanelUpdateConsumer, mMockNavBarConfiguration) } doReturn mMockNavBarWindow
+        on {
+            create(mPanelUpdateConsumer, mMockNavBarConfiguration, TEST_DISPLAY_ID)
+        } doReturn mMockNavBarWindow
     }
     private val mMockConfigurationProvider = mock<SystemUiConfigurationProvider> {
         on { statusBarConfigs } doReturn listOf(mMockStatusBarConfiguration)
@@ -62,14 +76,45 @@ class SystemUiWindowProviderTest : CarSysuiTestCase() {
 
     private lateinit var mProvider: SystemUiWindowProvider
 
+    private companion object {
+        const val TEST_DISPLAY_ID = 0
+        val mockVariant = mock<Variant>()
+        val mockPanel = mock<Panel>()
+        val mockDelegate = mock<PanelPool.PanelCreatorDelegate> {
+            on { createPanel(any(), any()) } doReturn mockPanel
+        }
+
+        val statusBarPanelState = mock<PanelState> {
+            on { getId() } doReturn "TestStatusBar"
+            on { getDisplayId() } doReturn TEST_DISPLAY_ID
+            on { getCurrentVariant() } doReturn mockVariant
+        }
+
+        val navBarPanelState = mock<PanelState> {
+            on { getId() } doReturn "TestNavBar"
+            on { getDisplayId() } doReturn TEST_DISPLAY_ID
+            on { getCurrentVariant() } doReturn mockVariant
+        }
+    }
+
     @Before
     fun setUp() {
+        PanelPool.getInstance().setDelegate(mockDelegate)
+        StateManager.addState(statusBarPanelState)
+        StateManager.addState(navBarPanelState)
+
         mProvider = SystemUiWindowProvider(
             mMockConsumer,
             mMockWindowFactory,
             mMockConfigurationProvider,
             Lazy { Optional.of(mMockHunWindow) }
         )
+    }
+
+    @After
+    fun tearDown() {
+        StateManager.clearStates()
+        PanelPool.getInstance().clearPanels()
     }
 
     @Test

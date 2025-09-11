@@ -16,6 +16,8 @@
 package com.android.systemui.car.wm.scalableui.systemwindow
 
 import android.content.Context
+import android.content.res.Resources
+import android.hardware.display.DisplayManager
 import android.testing.TestableContext
 import android.testing.TestableLooper.RunWithLooper
 import android.view.Display
@@ -44,10 +46,14 @@ class SystemUiWindowBaseTest : CarSysuiTestCase() {
     private val display = mock<Display> {
         on { displayAdjustments } doReturn DisplayAdjustments()
     }
+    private val resources = mock<Resources>()
     private val windowManager = mock<WindowManager>()
     private val panelUpdateConsumer = mock<PanelUpdateConsumer>()
     private val eventDispatcher = mock<EventDispatcher>()
     private val view = mock<View>()
+    private val displayManager = mock<DisplayManager> {
+        on { getDisplay(TEST_DISPLAY_ID) } doReturn display
+    }
 
     private lateinit var systemUiWindowBase: SystemUiWindowBase
     private lateinit var testableContext: TestableContext
@@ -68,12 +74,15 @@ class SystemUiWindowBaseTest : CarSysuiTestCase() {
             }
         }
         testableContext.addMockSystemService(WindowManager::class.java, windowManager)
+        testableContext.addMockSystemService(DisplayManager::class.java, displayManager)
 
         systemUiWindowBase = object : SystemUiWindowBase(
             testableContext,
+            displayManager,
             panelUpdateConsumer,
             eventDispatcher,
-            TEST_ID
+            TEST_ID,
+            TEST_DISPLAY_ID
         ) {
             override fun getLayoutParams(): WindowManager.LayoutParams {
                 return this@SystemUiWindowBaseTest.layoutParams
@@ -106,5 +115,6 @@ class SystemUiWindowBaseTest : CarSysuiTestCase() {
 
     companion object {
         private const val TEST_ID = "test_id"
+        private const val TEST_DISPLAY_ID = 1
     }
 }

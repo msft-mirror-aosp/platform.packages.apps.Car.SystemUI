@@ -16,12 +16,18 @@
 
 package com.android.systemui.wmshell;
 
+import static com.android.car.scalableui.loader.xml.HunTagXmlParserKt.HUN_PANEL_ID;
+
 import android.content.Context;
+import android.hardware.display.DisplayManager;
 import android.os.Handler;
+import android.util.Log;
 import android.view.IWindowManager;
 
 import androidx.annotation.NonNull;
 
+import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.flags.Flag;
@@ -85,6 +91,7 @@ import java.util.Optional;
 /** Provides dependencies from {@link com.android.wm.shell} for CarSystemUI. */
 @Module(includes = {WMShellBaseModule.class, AutoShellModule.class, PanelControllerModule.class})
 public abstract class CarWMShellModule {
+    private static final String TAG = CarWMShellModule.class.getSimpleName();
 
     @WMSingleton
     @Provides
@@ -265,12 +272,19 @@ public abstract class CarWMShellModule {
 
     @WMSingleton
     @Provides
-    static Optional<HunWindow> provideHunWindow(Context context,
+    static Optional<HunWindow> provideHunWindow(Context context, DisplayManager displayManager,
             Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
         if (consumer.isPresent()) {
+            PanelState panelState = StateManager.getPanelState(HUN_PANEL_ID);
+            if (panelState == null) {
+                Log.w(TAG, "HunWindow not initialized because PanelState for HUN_PANEL_ID "
+                        + "is null.");
+                return Optional.empty();
+            }
             try {
                 return Optional.of(
-                        new HunWindow(context, consumer.get(), dispatcher));
+                        new HunWindow(context, displayManager, consumer.get(), dispatcher,
+                                panelState.getDisplayId()));
             } catch (IllegalStateException e) {
                 return Optional.empty();
             }

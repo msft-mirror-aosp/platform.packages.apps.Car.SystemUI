@@ -46,6 +46,7 @@ import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Application;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.dagger.qualifiers.UiBackground;
+import com.android.systemui.display.data.repository.DisplayRepository;
 import com.android.systemui.dreams.DreamOverlayStateController;
 import com.android.systemui.dreams.ui.viewmodel.DreamViewModel;
 import com.android.systemui.dump.DumpManager;
@@ -255,14 +256,16 @@ public interface CarKeyguardModule {
                     connectedDisplayKeyguardPresentationFactory,
             Provider<ShadeDisplaysRepository> shadeDisplaysRepositoryProvider,
             @Application CoroutineScope appScope,
-            @WallpaperPresentationEnabled boolean isWallpaperPresentationEnabled) {
+            @WallpaperPresentationEnabled boolean isWallpaperPresentationEnabled,
+            DisplayRepository displayRepository) {
         DisplayTracker finalDisplayTracker =
                 CarSystemUIUserUtil.isDriverMUMDSystemUI() ? displayTrackerImpl.get()
                         : defaultDisplayTracker;
         return new CarKeyguardDisplayManager(context, navigationBarControllerLazy,
                 finalDisplayTracker, mainExecutor, uiBgExecutor, deviceStateHelper,
                 keyguardStateController, connectedDisplayKeyguardPresentationFactory,
-                shadeDisplaysRepositoryProvider, appScope, isWallpaperPresentationEnabled);
+                shadeDisplaysRepositoryProvider, appScope, isWallpaperPresentationEnabled,
+                displayRepository);
     }
 
     /** Binds {@link KeyguardUpdateMonitor} as a {@link CoreStartable}. */

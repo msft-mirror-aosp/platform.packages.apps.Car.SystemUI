@@ -22,6 +22,7 @@ import com.android.keyguard.ConnectedDisplayKeyguardPresentationFactory;
 import com.android.keyguard.KeyguardDisplayManager;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Application;
+import com.android.systemui.display.data.repository.DisplayRepository;
 import com.android.systemui.navigationbar.NavigationBarController;
 import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.shade.data.repository.ShadeDisplaysRepository;
@@ -53,10 +54,11 @@ public class CarKeyguardDisplayManager extends KeyguardDisplayManager {
             KeyguardStateController keyguardStateController,
             ConnectedDisplayKeyguardPresentationFactory connectedDisplayKeyguardPresentationFactory,
             Provider<ShadeDisplaysRepository> shadeDisplaysRepositoryProvider,
-            @Application CoroutineScope appScope, boolean isWallpaperPresentationEnabled) {
+            @Application CoroutineScope appScope, boolean isWallpaperPresentationEnabled,
+            DisplayRepository displayRepository) {
         super(context, navigationBarControllerLazy, displayTracker, mainExecutor, uiBgExecutor,
                 deviceStateHelper, keyguardStateController,
                 connectedDisplayKeyguardPresentationFactory, shadeDisplaysRepositoryProvider,
-                appScope, isWallpaperPresentationEnabled);
+                appScope, isWallpaperPresentationEnabled, displayRepository);
     }
 }

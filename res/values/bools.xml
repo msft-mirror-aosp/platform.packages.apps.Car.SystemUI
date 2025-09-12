@@ -23,4 +23,6 @@
     <!-- Will display the bouncer on one side of the display, and the current user icon and
          user switcher on the other side -->
     <bool name="bouncer_display_user_switcher">false</bool>
+
+    <bool name="flag_monet">false</bool>
 </resources>

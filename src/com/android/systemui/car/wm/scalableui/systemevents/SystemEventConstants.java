@@ -24,6 +24,20 @@ public class SystemEventConstants {
     public static final String SYSTEM_TASK_PANEL_EMPTY_EVENT_ID = "_System_TaskPanelEmptyEvent";
     public static final String SYSTEM_ENTER_SUW_EVENT_ID = "_System_EnterSuwEvent";
     public static final String SYSTEM_EXIT_SUW_EVENT_ID = "_System_ExitSuwEvent";
+    public static final String SYSTEM_BEFORE_USER_SWITCH_EVENT_ID = "_System_BeforeUserSwitch";
+    public static final String SYSTEM_USER_SWITCH_COMPLETE_EVENT_ID = "_System_UserSwitchComplete";
+    public static final String SYSTEM_KEYGUARD_SHOWN_EVENT_ID = "_System_KeyguardShown";
+    public static final String SYSTEM_KEYGUARD_HIDDEN_EVENT_ID = "_System_KeyguardHidden";
+    /**
+     * UserAuthenticated event ID is fired when all of the following are true:
+     * - Display is on
+     * - User storage is unlocked
+     * - Keyguard is not showing
+     * The event will include the userSwitch token with "true" or "false" depending on if this
+     * user is newly being switched to or not.
+     */
+    public static final String SYSTEM_USER_AUTHENTICATED_EVENT_ID = "_System_UserAuthenticated";
+    public static final String SYSTEM_USER_SWITCH_ON_AUTHENTICATED_TOKEN_ID = "userSwitch";
     public static final String HIDE_EVENT_PREFIX = "_System_Hide";
     public static final String SHOW_EVENT_PREFIX = "_System_Show";
 }

@@ -18,6 +18,7 @@ package com.android.systemui.car.decor;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.InsetsFrameProvider;
 import android.view.View;
 import android.view.WindowInsets.Type.InsetsType;
 import android.view.WindowInsetsController;
@@ -79,8 +80,9 @@ public class CarPrivacyChipViewController extends PrivacyDotViewControllerImpl
                 animationScheduler, null, null, uiExecutor, context.getDisplayId(), null);
         commandQueue.addCallback(this);
         mAnimationHelper = new CarPrivacyChipAnimationHelper(context);
-        mBarType = systemBarConfigs.getInsetsFrameProviderByName(context.getResources().getString(
-                R.string.config_privacyIndicatorLocation)).getType();
+        InsetsFrameProvider provider = systemBarConfigs.getInsetsFrameProviderByName(
+                context.getResources().getString(R.string.config_privacyIndicatorLocation));
+        mBarType = provider != null ? provider.getType() : -1;
     }
 
     @Override

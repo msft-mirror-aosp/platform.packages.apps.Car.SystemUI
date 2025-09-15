@@ -106,14 +106,21 @@ public abstract class PrivacyChip extends MotionLayout implements AnimatedStatus
                         attrs);
 
         mDelayPillToCircle = getResources().getInteger(R.integer.privacy_chip_pill_to_circle_delay);
-        mDelayToNoSensorUsage =
-                getResources().getInteger(R.integer.privacy_chip_no_sensor_usage_delay);
+        mDelayToNoSensorUsage = getNoSensorUsageDelay();
 
         mExecutor = Executors.newSingleThreadScheduledExecutor();
         mIsInflated = false;
 
         // The sensor is enabled by default (invisible state).
         mIsSensorEnabled = true;
+    }
+
+    /**
+     * Returns the delay in milliseconds before the chip transitions from an inactive state
+     * to an invisible state when no sensor is in use.
+     */
+    protected int getNoSensorUsageDelay() {
+        return getResources().getInteger(R.integer.privacy_chip_no_sensor_usage_delay);
     }
 
     @Override

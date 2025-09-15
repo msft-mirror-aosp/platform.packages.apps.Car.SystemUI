@@ -293,6 +293,15 @@
     </string-array>
 
     <!--
+        Component names that will not trigger events by default when launched.
+        Used when scalableUi feature is enabled.
+    -->
+    <string-array name="config_ignoredEventActivities" translatable="false">
+        <item>com.android.systemui/.car.wm.activity.ActivityBlockingActivity</item>
+        <item>@string/config_mediaBlockingActivity</item>
+    </string-array>
+
+    <!--
         List of system bar names that should register HvacPanelOverlayViewController's
         DragCloseTouchListener
     -->

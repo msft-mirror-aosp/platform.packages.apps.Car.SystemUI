@@ -730,7 +730,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
         if (!isProvisionedStateChange) {
             mCarSystemBarViewFactory.resetSystemBarViewCache();
-            mSystemBarConfigs.resetSystemBarConfigs();
         }
         clearSystemBarWindow(/* removeUnusedWindow= */ false);
 

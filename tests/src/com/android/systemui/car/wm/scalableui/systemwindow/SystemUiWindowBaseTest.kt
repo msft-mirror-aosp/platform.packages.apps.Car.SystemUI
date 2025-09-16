@@ -26,13 +26,18 @@ import android.view.View
 import android.view.WindowManager
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
+import com.android.car.scalableui.model.Event
 import com.android.systemui.CarSysuiTestCase
 import com.android.systemui.car.CarSystemUiTest
 import com.android.systemui.car.wm.scalableui.EventDispatcher
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
+import com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_HIDE_PANEL_EVENT_ID
+import com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_SHOW_PANEL_EVENT_ID
+import com.google.common.truth.Truth.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentCaptor
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
@@ -127,6 +132,26 @@ class SystemUiWindowBaseTest : CarSysuiTestCase() {
             eq(TEST_ID),
             any<PanelUpdateConsumer.PanelUpdateCallback>()
         )
+    }
+
+    @Test
+    fun show_dispatchesShowEvent() {
+        systemUiWindowBase.show()
+
+        val captor = ArgumentCaptor.forClass(Event::class.java)
+        verify(eventDispatcher).executeEvent(captor.capture())
+        assertThat(captor.value.id).isEqualTo(SYSTEM_SHOW_PANEL_EVENT_ID)
+        assertThat(captor.value.panelId).isEqualTo(TEST_ID)
+    }
+
+    @Test
+    fun hide_dispatchesHideEvent() {
+        systemUiWindowBase.hide()
+
+        val captor = ArgumentCaptor.forClass(Event::class.java)
+        verify(eventDispatcher).executeEvent(captor.capture())
+        assertThat(captor.value.id).isEqualTo(SYSTEM_HIDE_PANEL_EVENT_ID)
+        assertThat(captor.value.panelId).isEqualTo(TEST_ID)
     }
 
     companion object {

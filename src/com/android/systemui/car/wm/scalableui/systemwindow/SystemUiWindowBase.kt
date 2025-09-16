@@ -24,10 +24,11 @@ import android.util.Log
 import android.view.Display
 import android.view.View
 import android.view.WindowManager
+import com.android.car.scalableui.model.Event
 import com.android.systemui.car.wm.scalableui.EventDispatcher
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
-import com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.HIDE_EVENT_PREFIX
-import com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SHOW_EVENT_PREFIX
+import com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_HIDE_PANEL_EVENT_ID
+import com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_SHOW_PANEL_EVENT_ID
 
 /**
  * A base class for [SystemUiWindow] implementations, providing common functionality.
@@ -136,11 +137,13 @@ abstract class SystemUiWindowBase(
     }
 
     override fun hide() {
-        eventDispatcher.executeEvent(HIDE_EVENT_PREFIX + id)
+        val event = Event.Builder(SYSTEM_HIDE_PANEL_EVENT_ID).setPanelId(id).build()
+        eventDispatcher.executeEvent(event)
     }
 
     override fun show() {
-        eventDispatcher.executeEvent(SHOW_EVENT_PREFIX + id)
+        val event = Event.Builder(SYSTEM_SHOW_PANEL_EVENT_ID).setPanelId(id).build()
+        eventDispatcher.executeEvent(event)
     }
 
     override fun getHeight(): Int {

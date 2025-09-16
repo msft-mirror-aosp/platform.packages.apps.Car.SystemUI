@@ -79,14 +79,9 @@
     <string name="status_icon_display_status" msgid="2970020923181359144">"Էկրանի կարգավորումներ"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"Վրիպազերծման կարգավորումներ"</string>
     <string name="status_icon_sound_status" msgid="4923149230650995670">"Ձայնի կարգավորումներ"</string>
-    <string name="status_icon_drive_mode" msgid="3938622431486261076">"«Մեքենայով» ռեժիմ"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Դուք չեք կարող օգտագործել այս գործառույթը մեքենա վարելիս"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Փակել հավելվածը"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Հետ"</string>
-    <string name="drive_mode_modes_comfort" msgid="628724737960743004">"Կոմֆորտ"</string>
-    <string name="drive_mode_modes_eco" msgid="7694931508925737653">"Էկո"</string>
-    <string name="drive_mode_modes_sport" msgid="7664603138389270601">"Սպորտ"</string>
-    <string name="qc_drive_mode_active_subtitle" msgid="3667965966971747414">"Ակտիվ ռեժիմ"</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"Կարգավորումներ"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Bluetooth-ի կարգավորումներ"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"Ցանցի և ինտերնետի կարգավորումներ"</string>

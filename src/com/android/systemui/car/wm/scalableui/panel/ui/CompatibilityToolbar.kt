@@ -59,7 +59,11 @@ constructor(
             setOnClickListener { onBackButtonClick?.invoke() }
         }
         fullscreenButton = findViewById<Button>(R.id.fullscreen_button)?.apply {
-            setOnClickListener { onFullscreenButtonClick?.invoke() }
+            if (context.resources.getBoolean(R.bool.show_toolbar_fullscreen_button)) {
+                setOnClickListener { onFullscreenButtonClick?.invoke() }
+            } else {
+                visibility = GONE
+            }
         }
         aspectRatioButton = findViewById<Button>(R.id.aspect_ratio)?.apply {
             setOnClickListener { onAspectRatioButtonClick?.invoke() }

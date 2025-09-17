@@ -33,6 +33,7 @@ import android.app.KeyguardManager;
 import android.car.user.CarUserManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.UserManager;
@@ -283,7 +284,7 @@ public class SystemEventHandler implements CoreStartable,
     }
 
     @Override
-    public void onUiModeChanged() {
+    public void onConfigChanged(Configuration newConfig) {
         PanelPool.getInstance().forEach(Panel::refreshTheme);
     }
 

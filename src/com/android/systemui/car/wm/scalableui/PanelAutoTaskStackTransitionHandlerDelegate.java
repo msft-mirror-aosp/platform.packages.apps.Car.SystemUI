@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.ArraySet;
 import android.util.Log;
 import android.view.SurfaceControl;
 import android.window.TransitionInfo;
@@ -41,6 +42,7 @@ import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelTransaction;
 import com.android.car.scalableui.panel.Panel;
+import com.android.systemui.R;
 import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.CarWMUserHelper;
@@ -56,6 +58,7 @@ import com.android.wm.shell.shared.TransitionUtil;
 import com.android.wm.shell.transition.Transitions;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -78,6 +81,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     private final TaskPanelInfoRepository mPanelInfoRepository;
     private final AutoLayoutManager mAutoLayoutManager;
     private final FlagManager mFlagManager;
+    private final Set<ComponentName> mIgnoredActivities = new ArraySet<>();
 
     @Inject
     public PanelAutoTaskStackTransitionHandlerDelegate(
@@ -98,6 +102,13 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         mPanelInfoRepository = panelInfoRepository;
         mAutoLayoutManager = autoLayoutManager;
         mFlagManager = flagManager;
+
+        String[] componentNameStrings = mContext.getResources().getStringArray(
+                R.array.config_ignoredEventActivities);
+        for (int i = componentNameStrings.length - 1; i >= 0; i--) {
+            mIgnoredActivities.add(
+                    ComponentName.unflattenFromString(componentNameStrings[i]));
+        }
     }
 
     /**
@@ -119,27 +130,25 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             Log.d(TAG, "handleRequest: " + request);
         }
 
-        if (shouldHandleByPanels(request)) {
-            Event event = calculateEvent(request);
-            PanelTransaction panelTransaction = EventDispatcher.getTransaction(event);
-            AutoTaskStackTransaction wct =
-                    mPanelTransitionCoordinator.createAutoTaskStackTransaction(transition,
-                            panelTransaction, event);
-            mPanelTransitionCoordinator.resetUnpreparedDecorPanel(panelTransaction);
-            if (DEBUG) {
-                Log.d(TAG, "handleRequest: COMPLETED " + wct);
-            }
-            Trace.endSection();
-            return wct;
+        Event event = calculateEvent(request);
+        PanelTransaction panelTransaction = EventDispatcher.getTransaction(event);
+        AutoTaskStackTransaction wct =
+                mPanelTransitionCoordinator.createAutoTaskStackTransaction(transition,
+                        panelTransaction, event);
+        mPanelTransitionCoordinator.resetUnpreparedDecorPanel(panelTransaction);
+        if (DEBUG) {
+            Log.d(TAG, "handleRequest: COMPLETED " + wct);
         }
         Trace.endSection();
-        // return empty transaction so the delegate still gets a start animation callback to
-        // apply the relevant changes in startAnimation.
-        return new AutoTaskStackTransaction();
+        return wct;
     }
 
     private boolean shouldHandleByPanels(@NonNull TransitionRequestInfo request) {
         if (request.getTriggerTask() == null) {
+            return false;
+        }
+        ComponentName component = mPanelUtils.getTaskComponentName(request.getTriggerTask());
+        if (mIgnoredActivities.contains(component)) {
             return false;
         }
         return mPanelUtils.handles(request.getTriggerTask().parentTaskId)
@@ -179,7 +188,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
 
     @VisibleForTesting
     Event calculateEvent(TransitionRequestInfo request) {
-        if (request.getTriggerTask() == null) {
+        if (!shouldHandleByPanels(request)) {
             return EMPTY_EVENT;
         }
 

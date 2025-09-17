@@ -357,4 +357,7 @@
 
     <!-- Settings package name to be used as a default/fallback if no other settings packages are found -->
     <string name="config_defaultSettingsPackage">com.android.car.settings</string>
+
+    <!-- Whether to show the fullscreen button in the task toolbar or not -->
+    <bool name="show_toolbar_fullscreen_button">true</bool>
 </resources>

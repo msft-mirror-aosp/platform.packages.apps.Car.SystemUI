@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
 
+import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -63,154 +64,191 @@ public class ScalableUIPanelUpdateImpl implements PanelUpdatePublisher, PanelUpd
     private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
     @Override
+    @GuardedBy("mPanelUpdateListenersPerPanelMap")
     public void registerCallback(@NonNull String panelId, @NonNull PanelUpdateCallback callback) {
-        LinkedHashSet<PanelUpdateCallback> callbacks =
-                mPanelUpdateListenersPerPanelMap.getOrDefault(panelId, new LinkedHashSet<>());
-        callbacks.add(callback);
-        mPanelUpdateListenersPerPanelMap.put(panelId, callbacks);
+        synchronized (mPanelUpdateListenersPerPanelMap) {
+            LinkedHashSet<PanelUpdateCallback> callbacks =
+                    mPanelUpdateListenersPerPanelMap.computeIfAbsent(panelId,
+                            k -> new LinkedHashSet<>());
+            callbacks.add(callback);
 
-        if (!mLastKnownPanelState.containsKey(panelId)) {
-            return;
+            if (!mLastKnownPanelState.containsKey(panelId)) {
+                return;
+            }
+
+            Rect bounds = getBounds(panelId);
+            if (bounds != null) {
+                callback.onBoundsChange(panelId, bounds);
+            }
+
+            Float alpha = getAlpha(panelId);
+            if (alpha != null) {
+                callback.onAlphaChange(panelId, alpha);
+            }
+
+            Integer radius = getCornerRadius(panelId);
+            if (radius != null) {
+                callback.onCornerRadiusChange(panelId, radius);
+            }
+
+            Boolean visibility = isVisible(panelId);
+            if (visibility != null) {
+                callback.onVisibilityChange(panelId, visibility);
+            }
+
+            Insets insets = getInsets(panelId);
+            if (insets != null) {
+                callback.onInsetsChange(panelId, insets);
+            }
+
+            int gravity = getGravity(panelId);
+            callback.onGravityChange(panelId, gravity);
         }
-
-        Rect bounds = getBounds(panelId);
-        if (bounds != null) {
-            callback.onBoundsChange(panelId, bounds);
-        }
-
-        Float alpha = getAlpha(panelId);
-        if (alpha != null) {
-            callback.onAlphaChange(panelId, alpha);
-        }
-
-        Integer radius = getCornerRadius(panelId);
-        if (radius != null) {
-            callback.onCornerRadiusChange(panelId, radius);
-        }
-
-        Boolean visibility = isVisible(panelId);
-        if (visibility != null) {
-            callback.onVisibilityChange(panelId, visibility);
-        }
-
-        Insets insets = getInsets(panelId);
-        if (insets != null) {
-            callback.onInsetsChange(panelId, insets);
-        }
-
-        int gravity = getGravity(panelId);
-        callback.onGravityChange(panelId, gravity);
     }
 
     @Override
+    @GuardedBy("mPanelUpdateListenersPerPanelMap")
     public void unregisterCallback(@NonNull PanelUpdateCallback callback) {
-        for (Map.Entry<String, LinkedHashSet<PanelUpdateCallback>> entry :
-                mPanelUpdateListenersPerPanelMap.entrySet()) {
-            unregisterCallback(entry.getKey(), callback);
+        synchronized (mPanelUpdateListenersPerPanelMap) {
+            for (Map.Entry<String, LinkedHashSet<PanelUpdateCallback>> entry :
+                    new HashMap<>(mPanelUpdateListenersPerPanelMap).entrySet()) {
+                unregisterCallback(entry.getKey(), callback);
+            }
         }
     }
 
     @Override
+    @GuardedBy("mPanelUpdateListenersPerPanelMap")
     public void unregisterCallback(@NonNull String panelId, @NonNull PanelUpdateCallback callback) {
-        LinkedHashSet<PanelUpdateCallback> callbacksSet = mPanelUpdateListenersPerPanelMap.get(
-                panelId);
-        boolean removed = callbacksSet.remove(callback);
-        if (removed && callbacksSet.isEmpty()) {
-            mPanelUpdateListenersPerPanelMap.remove(panelId); // Clean up map if set becomes empty
+        synchronized (mPanelUpdateListenersPerPanelMap) {
+            LinkedHashSet<PanelUpdateCallback> callbacksSet =
+                    mPanelUpdateListenersPerPanelMap.get(panelId);
+            if (callbacksSet == null) {
+                return;
+            }
+            boolean removed = callbacksSet.remove(callback);
+            if (removed && callbacksSet.isEmpty()) {
+                // Clean up map if set becomes empty
+                mPanelUpdateListenersPerPanelMap.remove(panelId);
+            }
         }
     }
 
     @Override
+    @GuardedBy("mPanelUpdateListenersPerPanelMap")
     public void postBounds(String panelId, Rect bounds) {
-        PanelState panelState = mLastKnownPanelState.getOrDefault(panelId, new PanelState());
+        PanelState panelState =
+                mLastKnownPanelState.computeIfAbsent(panelId, k -> new PanelState());
         panelState.setBounds(bounds);
         mLastKnownPanelState.put(panelId, panelState);
-        LinkedHashSet<PanelUpdateCallback> callbacks = mPanelUpdateListenersPerPanelMap.get(
-                panelId);
-        if (callbacks == null) {
-            return;
+        synchronized (mPanelUpdateListenersPerPanelMap) {
+            LinkedHashSet<PanelUpdateCallback> callbacks =
+                    mPanelUpdateListenersPerPanelMap.get(panelId);
+            if (callbacks == null) {
+                return;
+            }
+            mMainThreadHandler.post(() ->
+                    callbacks.forEach(cb -> cb.onBoundsChange(panelId, bounds)));
         }
-        mMainThreadHandler.post(() -> callbacks.forEach(
-                boundsUpdateCallback -> boundsUpdateCallback.onBoundsChange(panelId, bounds)));
     }
 
     @Override
+    @GuardedBy("mPanelUpdateListenersPerPanelMap")
     public void postAlpha(String panelId, float alpha) {
-        PanelState panelState = mLastKnownPanelState.getOrDefault(panelId, new PanelState());
+        PanelState panelState =
+                mLastKnownPanelState.computeIfAbsent(panelId, k -> new PanelState());
         panelState.setAlpha(alpha);
         mLastKnownPanelState.put(panelId, panelState);
-        LinkedHashSet<PanelUpdateCallback> callbacks = mPanelUpdateListenersPerPanelMap.get(
-                panelId);
-        if (callbacks == null) {
-            return;
+        synchronized (mPanelUpdateListenersPerPanelMap) {
+            LinkedHashSet<PanelUpdateCallback> callbacks =
+                    mPanelUpdateListenersPerPanelMap.get(panelId);
+            if (callbacks == null) {
+                return;
+            }
+            mMainThreadHandler.post(() ->
+                    callbacks.forEach(cb -> cb.onAlphaChange(panelId, alpha)));
         }
-        mMainThreadHandler.post(() -> callbacks.forEach(
-                boundsUpdateCallback -> boundsUpdateCallback.onAlphaChange(panelId, alpha)));
     }
 
     @Override
+    @GuardedBy("mPanelUpdateListenersPerPanelMap")
     public void postCornerRadius(String panelId, int radius) {
-        PanelState panelState = mLastKnownPanelState.getOrDefault(panelId, new PanelState());
+        PanelState panelState =
+                mLastKnownPanelState.computeIfAbsent(panelId, k -> new PanelState());
         panelState.setRadius(radius);
         mLastKnownPanelState.put(panelId, panelState);
-        LinkedHashSet<PanelUpdateCallback> callbacks = mPanelUpdateListenersPerPanelMap.get(
-                panelId);
-        if (callbacks == null) {
-            return;
+        synchronized (mPanelUpdateListenersPerPanelMap) {
+            LinkedHashSet<PanelUpdateCallback> callbacks =
+                    mPanelUpdateListenersPerPanelMap.get(panelId);
+            if (callbacks == null) {
+                return;
+            }
+            mMainThreadHandler.post(() ->
+                    callbacks.forEach(cb -> cb.onCornerRadiusChange(panelId, radius)));
         }
-        mMainThreadHandler.post(() -> callbacks.forEach(
-                boundsUpdateCallback -> boundsUpdateCallback.onCornerRadiusChange(panelId,
-                        radius)));
     }
 
     @Override
+    @GuardedBy("mPanelUpdateListenersPerPanelMap")
     public void postVisibility(String panelId, boolean isVisible) {
-        PanelState panelState = mLastKnownPanelState.getOrDefault(panelId, new PanelState());
+        PanelState panelState =
+                mLastKnownPanelState.computeIfAbsent(panelId, k -> new PanelState());
         panelState.setVisible(isVisible);
         mLastKnownPanelState.put(panelId, panelState);
-        LinkedHashSet<PanelUpdateCallback> callbacks = mPanelUpdateListenersPerPanelMap.get(
-                panelId);
-        if (callbacks == null) {
-            return;
+        synchronized (mPanelUpdateListenersPerPanelMap) {
+            LinkedHashSet<PanelUpdateCallback> callbacks =
+                    mPanelUpdateListenersPerPanelMap.get(panelId);
+            if (callbacks == null) {
+                return;
+            }
+            mMainThreadHandler.post(() ->
+                    callbacks.forEach(cb -> cb.onVisibilityChange(panelId, isVisible)));
         }
-        mMainThreadHandler.post(() -> callbacks.forEach(
-                boundsUpdateCallback -> boundsUpdateCallback.onVisibilityChange(panelId,
-                        isVisible)));
     }
 
     @Override
+    @GuardedBy("mPanelUpdateListenersPerPanelMap")
     public void postInsets(String panelId, Insets insets) {
-        PanelState panelState = mLastKnownPanelState.getOrDefault(panelId, new PanelState());
+        PanelState panelState =
+                mLastKnownPanelState.computeIfAbsent(panelId, k -> new PanelState());
         panelState.setInsets(insets);
         mLastKnownPanelState.put(panelId, panelState);
-        LinkedHashSet<PanelUpdateCallback> callbacks = mPanelUpdateListenersPerPanelMap.get(
-                panelId);
-        if (callbacks == null) {
-            return;
+        synchronized (mPanelUpdateListenersPerPanelMap) {
+            LinkedHashSet<PanelUpdateCallback> callbacks =
+                    mPanelUpdateListenersPerPanelMap.get(panelId);
+            if (callbacks == null) {
+                return;
+            }
+            mMainThreadHandler.post(() ->
+                    callbacks.forEach(cb -> cb.onInsetsChange(panelId, insets)));
         }
-        mMainThreadHandler.post(() -> callbacks.forEach(
-                boundsUpdateCallback -> boundsUpdateCallback.onInsetsChange(panelId, insets)));
     }
 
     @Override
+    @GuardedBy("mPanelUpdateListenersPerPanelMap")
     public void postControllerMetadata(String panelId, PanelControllerMetadata metadata) {
-        PanelState panelState = mLastKnownPanelState.getOrDefault(panelId, new PanelState());
+        PanelState panelState =
+                mLastKnownPanelState.computeIfAbsent(panelId, k -> new PanelState());
         panelState.setMetadata(metadata);
         mLastKnownPanelState.put(panelId, panelState);
     }
 
     @Override
+    @GuardedBy("mPanelUpdateListenersPerPanelMap")
     public void postGravity(String panelId, int gravity) {
-        PanelState panelState = mLastKnownPanelState.getOrDefault(panelId, new PanelState());
+        PanelState panelState =
+                mLastKnownPanelState.computeIfAbsent(panelId, k -> new PanelState());
         panelState.setGravity(gravity);
         mLastKnownPanelState.put(panelId, panelState);
-        LinkedHashSet<PanelUpdateCallback> callbacks = mPanelUpdateListenersPerPanelMap.get(
-                panelId);
-        if (callbacks == null) {
-            return;
+        synchronized (mPanelUpdateListenersPerPanelMap) {
+            LinkedHashSet<PanelUpdateCallback> callbacks =
+                    mPanelUpdateListenersPerPanelMap.get(panelId);
+            if (callbacks == null) {
+                return;
+            }
+            mMainThreadHandler.post(() ->
+                    callbacks.forEach(cb -> cb.onGravityChange(panelId, gravity)));
         }
-        mMainThreadHandler.post(() -> callbacks.forEach(
-                updateCallback -> updateCallback.onGravityChange(panelId, gravity)));
     }
 
     @Override

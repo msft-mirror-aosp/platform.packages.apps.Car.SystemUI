@@ -29,6 +29,7 @@ import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventCon
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_USER_SWITCH_COMPLETE_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_USER_SWITCH_ON_AUTHENTICATED_TOKEN_ID;
 
+import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.car.user.CarUserManager;
 import android.content.Context;
@@ -83,6 +84,7 @@ import javax.inject.Inject;
  * the device
  * is being set up.
  */
+@SuppressLint("MissingPermission")
 @SysUISingleton
 public class SystemEventHandler implements CoreStartable,
         ConfigurationController.ConfigurationListener {

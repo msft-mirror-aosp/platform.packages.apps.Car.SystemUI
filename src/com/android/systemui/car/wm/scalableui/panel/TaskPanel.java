@@ -356,6 +356,14 @@ public final class TaskPanel extends BasePanel {
     }
 
     @Override
+    public void destroy() {
+        if (mRootTaskStack != null) {
+            mAutoTaskStackController.destroyTaskStack(mRootTaskStack.getId());
+        }
+        super.destroy();
+    }
+
+    @Override
     public void reset() {
         super.reset();
         if (getRootStack() == null) {

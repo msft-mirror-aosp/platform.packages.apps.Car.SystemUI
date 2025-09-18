@@ -106,6 +106,16 @@ public final class DecorPanel extends BasePanel {
     }
 
     @Override
+    public void destroy() {
+        mMainExecutor.execute(() -> {
+            if (mAutoDecor != null) {
+                mAutoDecorManager.removeAutoDecor(mAutoDecor);
+            }
+        });
+        super.destroy();
+    }
+
+    @Override
     public void reset() {
         super.reset();
         // Only modify the view and window on the main thread to prevent thread-based exceptions

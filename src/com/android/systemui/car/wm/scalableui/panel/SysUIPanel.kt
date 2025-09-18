@@ -41,7 +41,7 @@ import java.util.Optional
  *
  * Provides common functionality and state management for different types of panels
  */
-open class BasePanel @AssistedInject constructor(
+open class SysUIPanel @AssistedInject constructor(
     private val context: Context,
     @Assisted private val panelId: String,
     private val panelUpdatePublisherOptional: Optional<PanelUpdatePublisher>
@@ -178,7 +178,7 @@ open class BasePanel @AssistedInject constructor(
     override fun getPanelControllerMetadata(): PanelControllerMetadata? = panelControllerMetadata
 
     /**
-     * Updates surface of the [BasePanel] based on the provided [Variant] using
+     * Updates surface of the [SysUIPanel] based on the provided [Variant] using
      * AutoSurfaceTransaction.
      * See [updateInternal] for more details.
      */
@@ -197,7 +197,7 @@ open class BasePanel @AssistedInject constructor(
     }
 
     /**
-     * Updates surface of the [BasePanel] based on the provided [Variant] using
+     * Updates surface of the [SysUIPanel] based on the provided [Variant] using
      * SurfaceControl.Transaction.
      * Note that without an AutoSurfaceTransaction, the child decors cannot be updated.
      * See [updateInternal] for more details.
@@ -213,7 +213,7 @@ open class BasePanel @AssistedInject constructor(
     }
 
     /**
-     * Updates surface of the [BasePanel] based on the provided [Variant] using
+     * Updates surface of the [SysUIPanel] based on the provided [Variant] using
      * AutoSurfaceTransaction and SurfaceControl.Transaction. For attributes that are part of both
      * interfaces, AutoSurfaceTransaction will be preferred.
      * See [updateInternal] for more details.
@@ -229,7 +229,7 @@ open class BasePanel @AssistedInject constructor(
     }
 
     /**
-     * Updates surface of the [BasePanel] based on the provided [Variant].
+     * Updates surface of the [SysUIPanel] based on the provided [Variant].
      *
      * <p> This should not be called directly but should be called through an [#update]
      * method to ensure the correct parameter state.
@@ -294,7 +294,7 @@ open class BasePanel @AssistedInject constructor(
     }
 
     override fun toString(): String {
-        return ("BasePanel{" +
+        return ("SysUIPanel{" +
                 "panelId='$panelId'" +
                 ", bounds=$bounds" +
                 ", isVisible=$isVisible" +
@@ -306,15 +306,15 @@ open class BasePanel @AssistedInject constructor(
 
     @AssistedFactory
     fun interface Factory {
-        /** Create instance of [BasePanel] with specified id  */
-        fun create(id: String): BasePanel
+        /** Create instance of [SysUIPanel] with specified id  */
+        fun create(id: String): SysUIPanel
     }
 
     companion object {
         protected val DEBUG = Build.isDebuggable()
         protected const val RESET_TRANSACTION = "Reset : "
         protected const val REFRESH_TRANSACTION = "Refresh : "
-        private val TAG = BasePanel::class.simpleName.orEmpty()
+        private val TAG = SysUIPanel::class.simpleName.orEmpty()
 
         @JvmStatic
         protected fun logIfDebuggable(msg: String) {

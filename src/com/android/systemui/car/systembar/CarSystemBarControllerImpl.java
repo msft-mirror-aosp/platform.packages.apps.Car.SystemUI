@@ -675,7 +675,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             if (barWindow != null && !isBarAttached && isBarEnabled) {
                 SystemUiWindow window = mSystemBarConfigs.getWindowForName(name);
                 if (window != null) {
-                    window.setRootView(barWindow);
+                    window.setRootView(barWindow, window.getLayoutParams());
                     mSystemBarAttachedMap.put(name, true);
                 }
 

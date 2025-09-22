@@ -152,7 +152,7 @@ enum class Flag(
      * Checks if the DisplayCompatibilityV2 is enabled.
      */
     DisplayCompatibilityV2(
-        "com.android.systemui.car.display_compatibility_v2",
+        "com.android.systemui.car.Flags.displayCompatibilityV2",
         R.bool.display_compatibility_v2
     ),
 

@@ -416,7 +416,7 @@ public final class TaskPanel extends BasePanel {
         // Remove the AutoDecor that is no longer there.
         Set<Map.Entry<String, AutoDecor>> decorToRemove =
                 mExistingAutoDecors.entrySet().stream()
-                        .filter(entry -> decors.containsKey(entry.getKey()))
+                        .filter(entry -> !decors.containsKey(entry.getKey()))
                         .peek(entry -> {
                             logIfDebuggable("Remove decor" + entry.getKey());
                             mAutoDecorManager.removeAutoDecor(entry.getValue());

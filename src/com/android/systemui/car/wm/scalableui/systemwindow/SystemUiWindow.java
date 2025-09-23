@@ -68,14 +68,6 @@ public interface SystemUiWindow {
     void setRootView(@NonNull View view, @Nullable WindowManager.LayoutParams layoutParams);
 
     /**
-     * Attaches {@link View} to WindowManager with the provided by
-     * {@link SystemUiWindow#getLayoutParams()}
-     */
-    default void setRootView(@NonNull View view) {
-        setRootView(view, getLayoutParams());
-    }
-
-    /**
      * Detaches the root view
      */
     void removeRootView();

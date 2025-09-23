@@ -369,7 +369,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     public void onConfigChanged(Configuration newConfig) {
         // cache the current state
         Map<String, Bundle> cachedSystemBarCurrentState = cacheSystemBarCurrentState();
-        resetSystemBarContent(/* isProvisionedStateChange= */ false);
+        restartSystemBars();
         // retrieve the previous state
         restoreSystemBarSavedState(cachedSystemBarCurrentState);
     }
@@ -716,7 +716,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
                 || mDeviceIsSetUpForUser != currentUserSetup) {
             mDeviceIsSetUpForUser = currentUserSetup;
             mIsUserSetupInProgress = currentUserSetupInProgress;
-            resetSystemBarContent(/* isProvisionedStateChange= */ true);
+            resetSystemBarContentForProvisionStateChange();
         }
     }
 
@@ -724,13 +724,10 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      * Remove all content from navbars and rebuild them. Used to allow for different nav bars
      * before and after the device is provisioned. . Also for change of density and font size.
      */
-    private void resetSystemBarContent(boolean isProvisionedStateChange) {
+    private void resetSystemBarContentForProvisionStateChange() {
         mCarSystemBarRestartTracker.notifyPendingRestart(/* recreateWindows= */ false,
-                isProvisionedStateChange);
+                /* provisionedStateChange= */ true);
 
-        if (!isProvisionedStateChange) {
-            mCarSystemBarViewFactory.resetSystemBarViewCache();
-        }
         clearSystemBarWindow(/* removeUnusedWindow= */ false);
 
         buildNavBarContent();
@@ -747,7 +744,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mButtonSelectionStateListener.onTaskStackChanged();
 
         mCarSystemBarRestartTracker.notifyRestartComplete(/* windowRecreated= */ false,
-                isProvisionedStateChange);
+                /* provisionedStateChange= */ true);
     }
 
     private boolean isDeviceSetupForUser() {
@@ -816,8 +813,8 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mCarSystemBarRestartTracker.notifyPendingRestart(/* recreateWindows= */ true,
                 /* provisionedStateChanged= */ false);
 
-        resetSystemBarConfigs();
         clearSystemBarWindow(/* removeUnusedWindow= */ true);
+        resetSystemBarConfigs();
         buildNavBarWindows();
         buildNavBarContent();
         attachNavBarWindows();

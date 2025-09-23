@@ -54,7 +54,6 @@ public class PanelConfigReader {
             DecorPanel.Factory decorPanelFactory, BasePanel.Factory basePanelFactory,
             FlagManager flagManager) {
         mFlagManager = flagManager;
-        debugLog("PanelConfig initialized user: " + ActivityManager.getCurrentUser());
         mContext = context;
         mTaskPanelFactory = taskPanelFactory;
         mDecorPanelFactory = decorPanelFactory;
@@ -75,11 +74,20 @@ public class PanelConfigReader {
                 return mTaskPanelFactory.create(id);
             }
         });
+        loadConfig();
+    }
 
+    /**
+     * Loads the panel configurations.
+     *
+     * <p>This method clears any existing panel states and then loads the new configurations from
+     * either a Design Compose file (.dcf) or XML files, depending on whether the
+     * {@link Flag#ScalableUiDesignCompose} flag is enabled.
+     */
+    public void loadConfig() {
+        debugLog("PanelConfig initialized for user: " + ActivityManager.getCurrentUser());
         try {
-            Trace.beginSection(TAG + "#init");
-            StateManager.clearStates();
-
+            Trace.beginSection(TAG + "#load");
             if (mFlagManager.isEnabled(Flag.ScalableUiDesignCompose)) {
                 loadFromDcf();
             } else {
@@ -88,6 +96,21 @@ public class PanelConfigReader {
         } finally {
             Trace.endSection();
         }
+    }
+
+    private void clearPanelAndConfig() {
+        //TODO(b/444533472):reuse the existing or panel
+        StateManager.clearStates();
+        PanelPool.getInstance().clearPanels();
+    }
+
+    /**
+     * Clears and reloads the panel configuration. This is intended to be called when a
+     * configuration change, such as an orientation change, requires resources to be reloaded.
+     */
+    public void reloadConfig() {
+        clearPanelAndConfig();
+        loadConfig();
     }
 
     private void loadFromDcf() {
@@ -121,15 +144,20 @@ public class PanelConfigReader {
         debugLog("Loading panel states from XML");
         Resources res = mContext.getResources();
         try (TypedArray states = res.obtainTypedArray(R.array.window_states)) {
+            debugLog("Found win state length = " + states.length());
             for (int i = 0; i < states.length(); i++) {
                 int xmlResId = states.getResourceId(i, 0);
-                debugLog("PanelConfig adding state: " + xmlResId);
                 XmlModelLoader loader = new XmlModelLoader(mContext);
                 PanelState panelState = loader.createPanelState(xmlResId);
+                debugLog("PanelConfig loaded Panel state " + panelState);
                 if (panelState != null) {
                     StateManager.addState(panelState);
                 }
             }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "window_states no found " + e);
+        } catch (RuntimeException runtimeException) {
+            Log.e(TAG, "fail to get res for state" + runtimeException);
         }
     }
 

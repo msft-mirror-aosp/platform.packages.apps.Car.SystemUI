@@ -15,6 +15,7 @@
  */
 package com.android.systemui.car.wm.scalableui;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.res.Resources;
@@ -40,6 +41,7 @@ public class ActionConfigReader {
     private final Context mContext;
     private final FlagManager mFlagManager;
 
+    @SuppressLint("MissingPermission")
     public ActionConfigReader(@NonNull Context context, @NonNull FlagManager flagManager) {
         debugLog("ActionConfig initialized user: " + ActivityManager.getCurrentUser());
         mContext = context;

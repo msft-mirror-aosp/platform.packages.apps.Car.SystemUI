@@ -56,6 +56,14 @@ public final class AutoTaskStackHelper {
     }
 
     /**
+     * Reloads the untrimmable task set and default task map.
+     */
+    public void reloadTaskConfigs() {
+        initUntrimmableTaskSet();
+        initDefaultTaskMap();
+    }
+
+    /**
      * Checks if a given running task is trimmable.
      *
      * <p> A task is trimmable if it's configured in config_untrimmable_activities
@@ -92,6 +100,7 @@ public final class AutoTaskStackHelper {
      * 2. panel_id;com.example.app/.activity
      */
     private void initDefaultTaskMap() {
+        mDefaultComponentsMap.clear();
         String[] configStrings = mContext.getResources().getStringArray(
                 R.array.config_default_activities);
         for (int i = configStrings.length - 1; i >= 0; i--) {
@@ -113,6 +122,7 @@ public final class AutoTaskStackHelper {
      * config_untrimmable_activities string array resource.
      */
     private void initUntrimmableTaskSet() {
+        mNonTrimmableComponentSet.clear();
         String[] componentNameStrings = mContext.getResources().getStringArray(
                 R.array.config_untrimmable_activities);
         for (int i = componentNameStrings.length - 1; i >= 0; i--) {

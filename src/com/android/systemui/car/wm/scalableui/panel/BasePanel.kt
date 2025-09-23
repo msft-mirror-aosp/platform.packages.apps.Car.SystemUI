@@ -289,6 +289,10 @@ open class BasePanel @AssistedInject constructor(
         // no-op
     }
 
+    override fun destroy() {
+        logIfDebuggable("Panel destroyed $this")
+    }
+
     override fun toString(): String {
         return ("BasePanel{" +
                 "panelId='$panelId'" +

@@ -29,10 +29,7 @@ import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.os.Binder;
 import android.view.InsetsFrameProvider;
-import android.view.View;
 import android.view.WindowManager;
-
-import androidx.annotation.NonNull;
 
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.configuration.SystemBarConfiguration;
@@ -56,25 +53,6 @@ public class SystemBarWindowImpl extends SystemUiWindowBase implements SystemBar
             @Assisted int displayId) {
         super(context, displayManager, consumer, dispatcher, config.getName(), displayId);
         mConfiguration = config;
-
-        consumer.registerCallback(mConfiguration.getName(),
-                new PanelUpdateConsumer.PanelUpdateCallback() {
-                    @Override
-                    public void onAlphaChange(@NonNull String panelId, float alpha) {
-                        if (get_rootView() == null) {
-                            return;
-                        }
-                        get_rootView().setAlpha(alpha);
-                    }
-
-                    @Override
-                    public void onVisibilityChange(@NonNull String panelId, boolean isVisible) {
-                        if (get_rootView() == null) {
-                            return;
-                        }
-                        get_rootView().setVisibility(isVisible ? View.VISIBLE : View.GONE);
-                    }
-                });
     }
 
     private static int mapZOrderToBarType(int zOrder) {

@@ -65,6 +65,7 @@ import com.android.systemui.dagger.qualifiers.Background;
 import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
+import com.android.window.flags.Flags;
 
 import dagger.Lazy;
 
@@ -135,13 +136,13 @@ public class SystemEventHandler implements CoreStartable,
                     } else if (event.getEventType() == USER_LIFECYCLE_EVENT_TYPE_UNLOCKED) {
                         if (shouldResetPanels()) {
                             Log.d(TAG, "Resetting panels during user unlock");
-                            // TODO(b/432217693): remove once visibility barrier is not home
-                            Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-                            homeIntent.addCategory(Intent.CATEGORY_HOME);
-                            homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            mContext.startActivityAsUser(homeIntent,
-                                    mUserTracker.getUserHandle());
-
+                            if (!Flags.homeActivityAlwaysPresent()) {
+                                Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+                                homeIntent.addCategory(Intent.CATEGORY_HOME);
+                                homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                mContext.startActivityAsUser(homeIntent,
+                                        mUserTracker.getUserHandle());
+                            }
                             StateManager.handlePanelReset();
                             mResetCalledForUser = true;
 

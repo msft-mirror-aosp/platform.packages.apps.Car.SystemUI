@@ -15,16 +15,18 @@
  */
 package com.android.systemui.car.wm.scalableui.systemwindow
 
-import com.android.systemui.car.wm.scalableui.configuration.SystemBarConfiguration
-
 /**
  * An implementation of [SystemUiWindow] specifically for system bars.
  */
 interface SystemBarWindow : SystemUiWindow {
-    /**
-     * Returns the [SystemBarConfiguration] for this window.
-     */
-    fun getConfiguration(): SystemBarConfiguration
+    /** System bar type name, e.g. status or navigation */
+    val type: Int
+
+    /** The relative Z-order of the SystemBar */
+    val zOrder: Int
+
+    /** `true` if this system bar should be hidden when keyboard is visible. */
+    val isHiddenForKeyboard: Boolean
 }
 
 /**

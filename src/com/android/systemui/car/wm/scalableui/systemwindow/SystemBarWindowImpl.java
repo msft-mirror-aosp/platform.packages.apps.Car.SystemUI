@@ -114,8 +114,18 @@ public class SystemBarWindowImpl extends SystemUiWindowBase implements SystemBar
     }
 
     @Override
-    public SystemBarConfiguration getConfiguration() {
-        return mConfiguration;
+    public int getType() {
+        return mConfiguration.getType();
+    }
+
+    @Override
+    public int getZOrder() {
+        return mConfiguration.getZOrder();
+    }
+
+    @Override
+    public boolean isHiddenForKeyboard() {
+        return mConfiguration.isHiddenForKeyboard();
     }
 
     /**

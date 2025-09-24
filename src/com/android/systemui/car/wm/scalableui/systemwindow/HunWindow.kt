@@ -43,16 +43,6 @@ class HunWindow constructor(
     displayId
 ) {
 
-    init {
-        panelUpdateConsumer.registerCallback(id, object : PanelUpdateConsumer.PanelUpdateCallback {
-            override fun onGravityChange(panelId: String, gravity: Int) {
-                _rootView?.let {
-                    windowManager?.updateViewLayout(it, getLayoutParams())
-                }
-            }
-        })
-    }
-
     override fun getLayoutParams(): WindowManager.LayoutParams? {
         val bounds = panelUpdateConsumer.getBounds(id) ?: return null
         val metrics = displayMetrics ?: return null

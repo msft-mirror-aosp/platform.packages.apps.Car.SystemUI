@@ -67,6 +67,12 @@ abstract class SystemUiWindowBase(
             override fun onVisibilityChange(panelId: String, visible: Boolean) {
                 _rootView?.visibility = if (visible) View.VISIBLE else View.GONE
             }
+
+            override fun onGravityChange(panelId: String, gravity: Int) {
+                _rootView?.let {
+                    windowManager?.updateViewLayout(it, getLayoutParams())
+                }
+            }
         }
     }
 

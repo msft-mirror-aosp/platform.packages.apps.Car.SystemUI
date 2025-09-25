@@ -31,7 +31,7 @@ import java.util.Optional
 /**
  * An object that stores configuration values for system bars.
  */
-class SystemBarConfiguration(
+data class SystemBarConfiguration(
     /** a [Bundle] that contains all of the configuration values */
     val configuration: Bundle,
     /** System bar name/id **/

@@ -33,7 +33,9 @@ import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateCons
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
@@ -66,9 +68,11 @@ class SystemUiWindowBaseTest : CarSysuiTestCase() {
             override fun getBasePackageName(): String {
                 return "test.pkg"
             }
+
             override fun createDisplayContext(display: Display): Context {
                 return this
             }
+
             override fun getDisplay(): Display {
                 return this@SystemUiWindowBaseTest.display
             }
@@ -95,22 +99,34 @@ class SystemUiWindowBaseTest : CarSysuiTestCase() {
         systemUiWindowBase.setRootView(view, layoutParams)
 
         verify(windowManager).addView(view, layoutParams)
+        verify(panelUpdateConsumer).registerCallback(
+            eq(TEST_ID),
+            any<PanelUpdateConsumer.PanelUpdateCallback>()
+        )
     }
 
     @Test
     fun removeRootView_removesViewFromWindowManager() {
-        systemUiWindowBase.setRootView(view, layoutParams)
+        systemUiWindowBase.setRootView(view, layoutParams) // Ensure callback is registered first
         systemUiWindowBase.removeRootView()
 
         verify(windowManager).removeView(view)
+        verify(panelUpdateConsumer).unregisterCallback(
+            eq(TEST_ID),
+            any<PanelUpdateConsumer.PanelUpdateCallback>()
+        )
     }
 
     @Test
     fun removeRootViewImmediate_removesViewImmediateFromWindowManager() {
-        systemUiWindowBase.setRootView(view, layoutParams)
+        systemUiWindowBase.setRootView(view, layoutParams) // Ensure callback is registered first
         systemUiWindowBase.removeRootViewImmediate()
 
         verify(windowManager).removeViewImmediate(view)
+        verify(panelUpdateConsumer).unregisterCallback(
+            eq(TEST_ID),
+            any<PanelUpdateConsumer.PanelUpdateCallback>()
+        )
     }
 
     companion object {

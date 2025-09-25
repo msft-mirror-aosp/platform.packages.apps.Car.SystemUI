@@ -262,7 +262,11 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
 
     @Override
     public void insetSystemBar(@NonNull String name, ViewGroup view) {
-        if (mSystemBars.get(name) == null) return;
+        if (mSystemBars.get(name) == null || !(mSystemBars.get(
+                name) instanceof InternalSystemBarWindow)) {
+            //This method only applies padding to InternalSystemBarWindow instances.
+            return;
+        }
 
         Insets insets = mSystemBars.get(name).getInsets();
         if (insets == null) {

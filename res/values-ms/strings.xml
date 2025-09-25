@@ -79,14 +79,9 @@
     <string name="status_icon_display_status" msgid="2970020923181359144">"Tetapan Paparan"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"Tetapan Nyahpepijat"</string>
     <string name="status_icon_sound_status" msgid="4923149230650995670">"Tetapan Bunyi"</string>
-    <string name="status_icon_drive_mode" msgid="3938622431486261076">"Mod Memandu"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Anda tidak boleh menggunakan ciri ini semasa memandu"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Tutup apl"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Kembali"</string>
-    <string name="drive_mode_modes_comfort" msgid="628724737960743004">"Selesa"</string>
-    <string name="drive_mode_modes_eco" msgid="7694931508925737653">"Eko"</string>
-    <string name="drive_mode_modes_sport" msgid="7664603138389270601">"Sukan"</string>
-    <string name="qc_drive_mode_active_subtitle" msgid="3667965966971747414">"Aktif"</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"Tetapan"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Tetapan Bluetooth"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"Tetapan rangkaian &amp; Internet"</string>

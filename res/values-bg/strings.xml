@@ -79,14 +79,9 @@
     <string name="status_icon_display_status" msgid="2970020923181359144">"Настройки за дисплея"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"Настройки за отстраняване на грешки"</string>
     <string name="status_icon_sound_status" msgid="4923149230650995670">"Настройки за звука"</string>
-    <string name="status_icon_drive_mode" msgid="3938622431486261076">"Режим за шофиране"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Не можете да използвате тази функция по време на шофиране"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Затваряне на прилож."</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Назад"</string>
-    <string name="drive_mode_modes_comfort" msgid="628724737960743004">"Комфортен"</string>
-    <string name="drive_mode_modes_eco" msgid="7694931508925737653">"Икономичен"</string>
-    <string name="drive_mode_modes_sport" msgid="7664603138389270601">"Спортен"</string>
-    <string name="qc_drive_mode_active_subtitle" msgid="3667965966971747414">"Активен"</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"Настройки"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Настройки за Bluetooth"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"Настройки за мрежата и интернет"</string>

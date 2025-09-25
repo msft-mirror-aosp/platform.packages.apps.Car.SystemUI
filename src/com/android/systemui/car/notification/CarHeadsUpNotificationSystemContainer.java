@@ -22,17 +22,13 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-
-import androidx.annotation.NonNull;
 
 import com.android.car.notification.headsup.CarHeadsUpNotificationContainer;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.wm.scalableui.systemwindow.HunWindow;
-import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindow;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.dagger.SysUISingleton;
 
@@ -46,8 +42,7 @@ import javax.inject.Inject;
  * Used to attach HUNs views to window and determine whether to show HUN panel.
  */
 @SysUISingleton
-public class CarHeadsUpNotificationSystemContainer extends CarHeadsUpNotificationContainer
-        implements SystemUiWindow.WindowUpdateCallback {
+public class CarHeadsUpNotificationSystemContainer extends CarHeadsUpNotificationContainer {
     private static final String TAG = "CarHeadsUpNotificationSystemContainer";
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final OverlayViewGlobalStateController mOverlayViewGlobalStateController;
@@ -62,10 +57,6 @@ public class CarHeadsUpNotificationSystemContainer extends CarHeadsUpNotificatio
         mCarDeviceProvisionedController = deviceProvisionedController;
         mOverlayViewGlobalStateController = overlayViewGlobalStateController;
         mHunWindow = systemUiWindowProvider.getHunWindow();
-
-        if (mHunWindow.isPresent()) {
-            mHunWindow.get().addCallback(/* callback= */ this);
-        }
         attachToWindow();
     }
 
@@ -124,18 +115,4 @@ public class CarHeadsUpNotificationSystemContainer extends CarHeadsUpNotificatio
                 && mOverlayViewGlobalStateController.shouldShowHUN();
     }
 
-    @Override
-    public void onAlphaChange(@NonNull String panelId, float alpha) {
-        if (getHunRootView() != null) {
-            getHunRootView().setAlpha(alpha);
-        }
-    }
-
-    @Override
-    public void onVisibilityChange(@NonNull String panelId, boolean isVisible) {
-        if (getHunRootView() != null) {
-            getHunRootView().setVisibility(isVisible ? View.VISIBLE : View.GONE);
-        }
-    }
 }
-

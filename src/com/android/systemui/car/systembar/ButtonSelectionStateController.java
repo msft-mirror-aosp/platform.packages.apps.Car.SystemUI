@@ -41,6 +41,7 @@ import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.PanelState;
 import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
+import com.android.systemui.car.wm.scalableui.ScalableUIUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.dagger.SysUISingleton;
 
@@ -114,7 +115,8 @@ public class ButtonSelectionStateController {
         mSelectedButtonsForPanelApp = new HashSet<>();
         mSelectedButtonsForPanelVisibility = new HashSet<>();
         mFlagManager = flagManager;
-        if (isScalableUIEnabled() && mTaskPanelInfoRepository != null) {
+        if (ScalableUIUtils.isScalableUIEnabled(mContext, mFlagManager)
+                && mTaskPanelInfoRepository != null) {
             mTaskPanelInfoRepository.addChangeListener(mTaskPanelListener);
             StateManager.getInstance().addPanelStateObserver(mPanelStateObserver);
         }
@@ -171,7 +173,7 @@ public class ButtonSelectionStateController {
      * @param validDisplay index of the valid display
      */
     protected void taskChanged(List<RootTaskInfo> taskInfoList, int validDisplay) {
-        if (isScalableUIEnabled()) {
+        if (ScalableUIUtils.isScalableUIEnabled(mContext, mFlagManager)) {
             return;
         }
         RootTaskInfo validTaskInfo = null;
@@ -402,7 +404,8 @@ public class ButtonSelectionStateController {
             }
         });
 
-        if (isScalableUIEnabled() && mTaskPanelInfoRepository != null) {
+        if (ScalableUIUtils.isScalableUIEnabled(mContext, mFlagManager)
+                && mTaskPanelInfoRepository != null) {
             if (carSystemBarButton.isAttachedToWindow()) {
                 selectForInitialPanelTaskState(carSystemBarButton);
             } else {
@@ -495,10 +498,6 @@ public class ButtonSelectionStateController {
             }
         }
         return null;
-    }
-
-    private boolean isScalableUIEnabled() {
-        return mFlagManager.isEnabled(Flag.ScalableUIEnabled);
     }
 
     // simple multi-map

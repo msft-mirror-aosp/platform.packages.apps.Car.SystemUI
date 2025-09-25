@@ -44,7 +44,9 @@ import android.window.WindowContainerTransaction;
 import com.android.internal.annotations.Keep;
 import com.android.systemui.car.wm.CarSystemUIProxyImpl;
 import com.android.wm.shell.ShellTaskOrganizer;
+import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.common.SyncTransactionQueue;
+import com.android.wm.shell.shared.annotations.ShellMainThread;
 import com.android.wm.shell.taskview.TaskViewBase;
 import com.android.wm.shell.taskview.TaskViewTaskController;
 import com.android.wm.shell.taskview.TaskViewTransitions;
@@ -66,6 +68,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
     private final CarActivityManager mCarActivityManager;
     private final TaskViewTransitions mTaskViewTransitions;
     private final Optional<WindowDecorViewModel> mWindowDecorViewModelOptional;
+    private final ShellExecutor mMainExecutor;
 
     private RootTaskMediator mRootTaskMediator;
     private boolean mReleased;
@@ -202,8 +205,9 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             if (taskInfo == null) {
                 return;
             }
-            mTaskViewTransitions.setTaskViewVisible(mTaskViewTaskController, /* visible= */
-                    true, /* reorder= */ true);
+            mMainExecutor.execute(() ->
+                    mTaskViewTransitions.setTaskViewVisible(mTaskViewTaskController, /* visible= */
+                    true, /* reorder= */ true));
         }
 
         @Override
@@ -217,7 +221,8 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             if (taskInfo == null) {
                 return;
             }
-            mTaskViewTransitions.setTaskViewVisible(mTaskViewTaskController, visibility);
+            mMainExecutor.execute(() ->
+                    mTaskViewTransitions.setTaskViewVisible(mTaskViewTaskController, visibility));
         }
 
         @Override
@@ -232,7 +237,8 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
                 return;
             }
 
-            mTaskViewTransitions.reorderTaskViewTask(mTaskViewTaskController, onTop);
+            mMainExecutor.execute(() ->
+                    mTaskViewTransitions.reorderTaskViewTask(mTaskViewTaskController, onTop));
         }
 
         @Override
@@ -285,6 +291,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
             CarSystemUIProxyImpl carSystemUIProxy,
             TaskViewTransitions taskViewTransitions,
             CarActivityManager carActivityManager,
+            @ShellMainThread ShellExecutor mainExecutor,
             Optional<WindowDecorViewModel> windowDecorViewModelOptional) {
         mContext = context;
         mCarTaskViewClient = carTaskViewClient;
@@ -292,6 +299,7 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         mShellTaskOrganizer = organizer;
         mCarActivityManager = carActivityManager;
         mTaskViewTransitions = taskViewTransitions;
+        mMainExecutor = mainExecutor;
         mWindowDecorViewModelOptional = windowDecorViewModelOptional;
 
         mTaskViewTaskController =

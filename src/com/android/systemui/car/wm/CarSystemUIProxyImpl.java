@@ -42,8 +42,10 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.wm.taskview.RemoteCarTaskViewServerImpl;
 import com.android.systemui.dump.DumpManager;
 import com.android.wm.shell.ShellTaskOrganizer;
+import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.common.SyncTransactionQueue;
 import com.android.wm.shell.dagger.WMSingleton;
+import com.android.wm.shell.shared.annotations.ShellMainThread;
 import com.android.wm.shell.taskview.TaskViewTransitions;
 import com.android.wm.shell.windowdecor.WindowDecorViewModel;
 
@@ -69,6 +71,7 @@ public final class CarSystemUIProxyImpl
     private final ArraySet<RemoteCarTaskViewServerImpl> mRemoteCarTaskViewServerSet =
             new ArraySet<>();
     private final DisplayManager mDisplayManager;
+    private final ShellExecutor mMainExecutor;
     private final Optional<WindowDecorViewModel> mWindowDecorViewModelOptional;
 
     private boolean mConnected;
@@ -102,11 +105,13 @@ public final class CarSystemUIProxyImpl
             ShellTaskOrganizer taskOrganizer,
             TaskViewTransitions taskViewTransitions,
             DumpManager dumpManager,
+            @ShellMainThread ShellExecutor mainExecutor,
             Optional<WindowDecorViewModel> windowDecorViewModelOptional) {
         mContext = context;
         mTaskOrganizer = taskOrganizer;
         mSyncQueue = syncTransactionQueue;
         mTaskViewTransitions = taskViewTransitions;
+        mMainExecutor = mainExecutor;
         mWindowDecorViewModelOptional = windowDecorViewModelOptional;
         mDisplayManager = mContext.getSystemService(DisplayManager.class);
         dumpManager.registerDumpable(this);
@@ -150,6 +155,7 @@ public final class CarSystemUIProxyImpl
                         this,
                         mTaskViewTransitions,
                         mCarActivityManager,
+                        mMainExecutor,
                         mWindowDecorViewModelOptional);
         mRemoteCarTaskViewServerSet.add(remoteCarTaskViewServerImpl);
         return remoteCarTaskViewServerImpl.getHostImpl();

@@ -115,7 +115,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
      * Init the {@link PanelAutoTaskStackTransitionHandlerDelegate}.
      */
     public void init() {
-        if (mFlagManager.isEnabled(Flag.ScalableUIEnabled)) {
+        if (ScalableUIUtils.isScalableUIEnabled(mContext, mFlagManager)) {
             Log.i(TAG, "ScalableUI is enabled");
             mAutoTaskStackController.setAutoTransitionHandlerDelegate(this);
         }

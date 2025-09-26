@@ -79,14 +79,9 @@
     <string name="status_icon_display_status" msgid="2970020923181359144">"डिस्प्लेसम्बन्धी सेटिङ"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"डिबग सेटिङ"</string>
     <string name="status_icon_sound_status" msgid="4923149230650995670">"साउन्डसम्बन्धी सेटिङ"</string>
-    <string name="status_icon_drive_mode" msgid="3938622431486261076">"ड्राइभ मोड"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"तपाईं सवारी साधन चलाइरहेका बेला यो सुविधा प्रयोग गर्न सक्नुहुन्न"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"एप बन्द गर्नुहोस्"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"पछाडि"</string>
-    <string name="drive_mode_modes_comfort" msgid="628724737960743004">"आरामदायी मोड"</string>
-    <string name="drive_mode_modes_eco" msgid="7694931508925737653">"इको मोड"</string>
-    <string name="drive_mode_modes_sport" msgid="7664603138389270601">"खेलकुद मोड"</string>
-    <string name="qc_drive_mode_active_subtitle" msgid="3667965966971747414">"सक्रिय"</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"सेटिङ"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"ब्लुटुथका सेटिङ"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"नेटवर्क तथा इन्टरनेटसम्बन्धी सेटिङ"</string>

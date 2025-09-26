@@ -46,7 +46,7 @@
     <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Микрофон өшірілді"</string>
     <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"Жарайды"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Көлік микрофоны қосылсын ба?"</string>
-    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Жалғастыру үшін ақпараттық-сауықтық жүйе микрофонын қосыңыз. Рұқсаты бар барлық қолданба үшін микрофон қосылады."</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Жалғастыру үшін ақпарат және ойын-сауық жүйесі микрофонын қосыңыз. Рұқсаты бар барлық қолданба үшін микрофон қосылады."</string>
     <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"<xliff:g id="APP">%s</xliff:g> камераны пайдалануда."</string>
     <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"<xliff:g id="APP_LIST">%s</xliff:g> камераны пайдалануда."</string>
     <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"<xliff:g id="APP">%s</xliff:g> жақында камераны пайдаланды."</string>
@@ -55,7 +55,7 @@
     <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"Камера өшірілді."</string>
     <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"Жарайды"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Көлік камерасын қосу керек пе?"</string>
-    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Жалғастыру үшін ақпараттық-сауықтық жүйе камерасын қосыңыз. Рұқсаты бар барлық қолданба үшін камера қосылады."</string>
+    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Жалғастыру үшін ақпарат және ойын-сауық жүйесі камерасын қосыңыз. Рұқсаты бар барлық қолданба үшін камера қосылады."</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"Негізгі экран"</string>
     <string name="system_bar_phone_label" msgid="5664288201806823777">"Телефон"</string>
     <string name="system_bar_applications_label" msgid="7081862804211786227">"Қолданбалар"</string>
@@ -79,14 +79,9 @@
     <string name="status_icon_display_status" msgid="2970020923181359144">"Дисплей параметрлері"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"Түзету параметрлері"</string>
     <string name="status_icon_sound_status" msgid="4923149230650995670">"Дыбыс параметрлері"</string>
-    <string name="status_icon_drive_mode" msgid="3938622431486261076">"Автокөлік режимі"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Бұл функцияны көлік жүргізген кезде пайдалана алмайсыз."</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Қолданбаны жабу"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Артқа"</string>
-    <string name="drive_mode_modes_comfort" msgid="628724737960743004">"Комфорт"</string>
-    <string name="drive_mode_modes_eco" msgid="7694931508925737653">"Eco"</string>
-    <string name="drive_mode_modes_sport" msgid="7664603138389270601">"Спорт"</string>
-    <string name="qc_drive_mode_active_subtitle" msgid="3667965966971747414">"Қосулы"</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"Параметрлер"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Bluetooth параметрлері"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"Желі мен интернет параметрлері"</string>

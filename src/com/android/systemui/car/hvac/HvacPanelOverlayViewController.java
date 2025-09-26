@@ -58,8 +58,6 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
     private final HvacController mHvacController;
     private final float mFullyOpenDimAmount;
     private final int mAutoDismissDurationMs;
-
-    private boolean mIsUiModeNight;
     private float mCurrentDimAmount = 0f;
     @Nullable
     private Animator mOpenAnimator;
@@ -280,40 +278,33 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
 
     @Override
     public void onConfigChanged(Configuration newConfig) {
-        boolean isConfigNightMode = newConfig.isNightModeActive();
+        if (getLayout() == null) return;
+        mHvacPanelView = getLayout().findViewById(R.id.hvac_panel);
+        if (mHvacPanelView == null) return;
+        ViewGroup hvacViewGroupParent = (ViewGroup) mHvacPanelView.getParent();
 
-        // Only refresh UI on Night mode changes
-        if (isConfigNightMode != mIsUiModeNight) {
-            mIsUiModeNight = isConfigNightMode;
+        // cache properties of {@link HvacPanelView}
+        int inflatedId = mHvacPanelView.getId();
+        ViewGroup.LayoutParams layoutParams = mHvacPanelView.getLayoutParams();
+        HvacPanelView.KeyEventHandler hvacKeyEventHandler = mHvacPanelView
+                .getKeyEventHandler();
+        int indexOfView = hvacViewGroupParent.indexOfChild(mHvacPanelView);
 
-            if (getLayout() == null) return;
-            mHvacPanelView = getLayout().findViewById(R.id.hvac_panel);
-            if (mHvacPanelView == null) return;
-            ViewGroup hvacViewGroupParent = (ViewGroup) mHvacPanelView.getParent();
+        // remove {@link HvacPanelView} from its parent and reinflate it
+        hvacViewGroupParent.removeView(mHvacPanelView);
+        HvacPanelView newHvacPanelView = (HvacPanelView) LayoutInflater.from(mContext).inflate(
+                R.layout.hvac_panel, /* root= */ hvacViewGroupParent,
+                /* attachToRoot= */ false);
+        hvacViewGroupParent.addView(newHvacPanelView, indexOfView);
+        mHvacPanelView = newHvacPanelView;
 
-            // cache properties of {@link HvacPanelView}
-            int inflatedId = mHvacPanelView.getId();
-            ViewGroup.LayoutParams layoutParams = mHvacPanelView.getLayoutParams();
-            HvacPanelView.KeyEventHandler hvacKeyEventHandler = mHvacPanelView
-                    .getKeyEventHandler();
-            int indexOfView = hvacViewGroupParent.indexOfChild(mHvacPanelView);
+        // reset {@link HvacPanelView} cached properties
+        mHvacPanelView.setId(inflatedId);
+        mHvacPanelView.setLayoutParams(layoutParams);
+        mHvacController.registerHvacViews(mHvacPanelView);
+        mHvacPanelView.setKeyEventHandler(hvacKeyEventHandler);
 
-            // remove {@link HvacPanelView} from its parent and reinflate it
-            hvacViewGroupParent.removeView(mHvacPanelView);
-            HvacPanelView newHvacPanelView = (HvacPanelView) LayoutInflater.from(mContext).inflate(
-                    R.layout.hvac_panel, /* root= */ hvacViewGroupParent,
-                    /* attachToRoot= */ false);
-            hvacViewGroupParent.addView(newHvacPanelView, indexOfView);
-            mHvacPanelView = newHvacPanelView;
-
-            // reset {@link HvacPanelView} cached properties
-            mHvacPanelView.setId(inflatedId);
-            mHvacPanelView.setLayoutParams(layoutParams);
-            mHvacController.registerHvacViews(mHvacPanelView);
-            mHvacPanelView.setKeyEventHandler(hvacKeyEventHandler);
-
-            // register handleBar again for reinflated {@link HvacPanelView}
-            setUpHandleBar();
-        }
+        // register handleBar again for reinflated {@link HvacPanelView}
+        setUpHandleBar();
     }
 }

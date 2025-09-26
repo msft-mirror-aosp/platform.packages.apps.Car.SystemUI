@@ -263,6 +263,7 @@
     <style name="CarSystemUIThemeOverlay">
         <item name="systemBarPillRadius">?oemShapeCornerFull</item>
         <item name="systemBarPillSelectedRadius">?oemShapeCornerSmall</item>
+        <item name="appPanelBackgroundRadius">?oemShapeCornerExtraLarge</item>
         <item name="hvacPanelBackgroundRadius">?oemShapeCornerExtraLarge</item>
         <item name="notificationShadeHandleBarRadius">?oemShapeCornerMedium</item>
         <item name="notificationShadowRadius">?oemShapeCornerSmall</item>

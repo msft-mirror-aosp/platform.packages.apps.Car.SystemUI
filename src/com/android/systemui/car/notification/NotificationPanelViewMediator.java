@@ -91,8 +91,6 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         }
     };
 
-    private boolean mIsUiModeNight;
-
     @Inject
     public NotificationPanelViewMediator(
             Context context,
@@ -145,13 +143,8 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
 
     @Override
     public void onConfigChanged(Configuration newConfig) {
-        boolean isConfigNightMode = newConfig.isNightModeActive();
-        // Only refresh UI on Night mode changes
-        if (isConfigNightMode != mIsUiModeNight) {
-            mIsUiModeNight = isConfigNightMode;
-            mNotificationPanelViewController.reinflate();
-            registerListeners();
-        }
+        mNotificationPanelViewController.reinflate();
+        registerListeners();
     }
 
     @Override

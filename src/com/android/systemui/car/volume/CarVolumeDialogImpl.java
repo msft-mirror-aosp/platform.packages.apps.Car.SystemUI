@@ -141,7 +141,6 @@ public class CarVolumeDialogImpl
     private boolean mExpanded;
     private View mExpandIcon;
     private boolean mHomeButtonPressedBroadcastReceiverRegistered;
-    private boolean mIsUiModeNight;
     private boolean mIsDragging;
 
     private final CarAudioManager.CarVolumeCallback mVolumeChangeCallback =
@@ -296,7 +295,6 @@ public class CarVolumeDialogImpl
                 R.integer.car_volume_dialog_display_expanded_hovering_timeout);
         mController = volumeDialogController;
         mConfigurationController = configurationController;
-        mIsUiModeNight = mContext.getResources().getConfiguration().isNightModeActive();
         mExecutor = context.getMainExecutor();
     }
 
@@ -364,14 +362,9 @@ public class CarVolumeDialogImpl
     @Override
     public void onConfigChanged(Configuration newConfig) {
         ConfigurationController.ConfigurationListener.super.onConfigChanged(newConfig);
-        boolean isConfigNightMode = newConfig.isNightModeActive();
-
-        if (isConfigNightMode != mIsUiModeNight) {
-            mIsUiModeNight = isConfigNightMode;
-            // Call notifyDataSetChanged to force trigger the mVolumeItemsAdapter#onBindViewHolder
-            // and reset items background color. notify() or invalidate() don't work here.
-            mVolumeItemsAdapter.notifyDataSetChanged();
-        }
+        // Call notifyDataSetChanged to force trigger the mVolumeItemsAdapter#onBindViewHolder
+        // and reset items background color. notify() or invalidate() don't work here.
+        mVolumeItemsAdapter.notifyDataSetChanged();
     }
 
     /**

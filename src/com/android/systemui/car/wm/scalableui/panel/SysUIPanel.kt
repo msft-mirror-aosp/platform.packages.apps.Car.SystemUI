@@ -50,7 +50,7 @@ open class SysUIPanel @AssistedInject constructor(
     private var canFocusOnTransition = Focus.Companion.DEFAULT_FOCUS_ON_TRANSITION
     private var role = Role.DEFAULT_ROLE
     private var bounds = Rect()
-    private var isVisible = false
+    private var isVisible: Boolean? = null
     private var alpha = 0f
     private var displayId = 0
     private var cornerRadius = 0
@@ -102,7 +102,9 @@ open class SysUIPanel @AssistedInject constructor(
         setBounds(Rect(x1, y1, x2, y))
     }
 
-    override fun isVisible() = isVisible
+    override fun isVisible(): Boolean {
+        return isVisible == true
+    }
 
     override fun reset() {
         logIfDebuggable("Reset panel $panelId")
@@ -113,7 +115,7 @@ open class SysUIPanel @AssistedInject constructor(
     }
 
     override fun setVisibility(isVisible: Boolean) {
-        if (this.isVisible == isVisible) {
+        if (this.isVisible?.let { it == isVisible } == true) {
             return
         }
         this.isVisible = isVisible
@@ -259,7 +261,9 @@ open class SysUIPanel @AssistedInject constructor(
         updateChildren: Boolean
     ) {
         panelUpdateObserver?.let {
-            it.postVisibility(panelId, variant?.isVisible ?: isVisible)
+            (variant?.isVisible ?: isVisible)?.let { nonNullVisibility ->
+                it.postVisibility(panelId, nonNullVisibility)
+            }
             it.postAlpha(panelId, variant?.alpha ?: alpha)
             it.postCornerRadius(panelId, variant?.cornerRadius ?: cornerRadius)
             it.postBounds(panelId, variant?.bounds ?: bounds)

@@ -57,7 +57,6 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.display.DisplayStateHelper;
-import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIUtils;

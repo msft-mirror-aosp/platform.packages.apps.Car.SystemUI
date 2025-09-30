@@ -90,15 +90,15 @@ public class PanelUtils {
     }
 
     /**
-     * Retrieves a {@link BasePanel} that satisfies the given {@link Predicate}.
+     * Retrieves a {@link SysUIPanel} that satisfies the given {@link Predicate}.
      *
-     * @param predicate The predicate to test against potential {@link BasePanel} instances.
-     * @return The matching {@link BasePanel}, or null if none is found.
+     * @param predicate The predicate to test against potential {@link SysUIPanel} instances.
+     * @return The matching {@link SysUIPanel}, or null if none is found.
      */
     @Nullable
-    public BasePanel getBasePanel(Predicate<BasePanel> predicate) {
-        return (BasePanel) PanelPool.getInstance().getPanel(
-                p -> (p instanceof BasePanel basePanel) && predicate.test(basePanel));
+    public SysUIPanel getSysUiPanel(Predicate<SysUIPanel> predicate) {
+        return (SysUIPanel) PanelPool.getInstance().getPanel(
+                p -> (p instanceof SysUIPanel sysUiPanel) && predicate.test(sysUiPanel));
     }
 
     /**

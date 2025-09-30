@@ -98,7 +98,7 @@ import java.util.stream.IntStream;
  * A {@link RootTaskStack} based implementation of a {@link Panel}.
  */
 @SuppressLint("MissingPermission")
-public final class TaskPanel extends BasePanel {
+public final class TaskPanel extends SysUIPanel {
     private static final String TAG = TaskPanel.class.getSimpleName();
     private static final long INITIAL_RETRY_DELAY_MS = 1000;
     private static final long CHECK_RESTART_SUCCESS_DELAY_MS = 500;

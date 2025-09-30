@@ -51,9 +51,9 @@ import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.PanelPool;
 import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
-import com.android.systemui.car.wm.scalableui.panel.BasePanel;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
+import com.android.systemui.car.wm.scalableui.panel.SysUIPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoSurfaceTransaction;
@@ -180,8 +180,8 @@ public class PanelTransitionCoordinator {
             }
             Transition transition = entry.getValue();
             Variant toVariant = transition.getToVariant();
-            if (panel instanceof BasePanel basePanel) {
-                basePanel.update(autoSurfaceTransaction, tx, toVariant);
+            if (panel instanceof SysUIPanel sysUiPanel) {
+                sysUiPanel.update(autoSurfaceTransaction, tx, toVariant);
             } else {
                 Log.e(TAG, "Invalid panel " + panel);
             }
@@ -189,8 +189,8 @@ public class PanelTransitionCoordinator {
         for (String unchangedPanelId : panelTransaction.getLockededPanelIdSet()) {
             Panel panel = PanelPool.getInstance().getPanel(
                     p -> p.getPanelId().equals(unchangedPanelId));
-            if (panel instanceof BasePanel basePanel) {
-                basePanel.update(autoSurfaceTransaction, tx);
+            if (panel instanceof SysUIPanel sysUiPanel) {
+                sysUiPanel.update(autoSurfaceTransaction, tx);
             }
         }
         autoSurfaceTransaction.apply();
@@ -381,18 +381,18 @@ public class PanelTransitionCoordinator {
                 mAutoSurfaceTransactionFactory.createTransaction(PANEL_TRANSACTION);
         for (Map.Entry<String, Transition> entry :
                 panelTransaction.getPanelTransactionStates()) {
-            BasePanel basePanel = mPanelUtils.getBasePanel(
+            SysUIPanel sysUiPanel = mPanelUtils.getSysUiPanel(
                     dp -> dp.getPanelId().equals(entry.getKey()));
-            if (basePanel == null) {
+            if (sysUiPanel == null) {
                 continue;
             }
             if (panelTransaction.shouldMergePanelAnimation(entry.getKey())) {
                 // update to the current state of the panel
-                basePanel.update(autoSurfaceTransaction, /* variant= */ null,
+                sysUiPanel.update(autoSurfaceTransaction, /* variant= */ null,
                         /* updateChildren= */ true);
             } else {
                 Variant toVariant = entry.getValue().getToVariant();
-                basePanel.update(autoSurfaceTransaction, toVariant,
+                sysUiPanel.update(autoSurfaceTransaction, toVariant,
                         /* updateChildren= */ true);
             }
         }
@@ -771,9 +771,9 @@ public class PanelTransitionCoordinator {
             SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
             for (Map.Entry<String, Animator> entry : animators) {
                 String id = entry.getKey();
-                Panel panel = PanelPool.getInstance().getPanel(p -> p.getPanelId().equals(id));
-                if (panel instanceof BasePanel basePanel) {
-                    basePanel.update(autoSurfaceTransaction, tx);
+                Panel panel = PanelPool.getInstance().getPanel(p -> id.equals(p.getPanelId()));
+                if (panel instanceof SysUIPanel sysUiPanel) {
+                    sysUiPanel.update(autoSurfaceTransaction, tx);
                 }
             }
             //TODO(b/404959846): migrate to autoSurfaceTransaction here once api is added.

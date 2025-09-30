@@ -141,7 +141,7 @@ public class PanelConfigReader {
     }
 
     private void loadFromXml() {
-        debugLog("Loading panel states from XML");
+        debugLog("Loading panel states from XML" + mContext);
         Resources res = mContext.getResources();
         try (TypedArray states = res.obtainTypedArray(R.array.window_states)) {
             debugLog("Found win state length = " + states.length());

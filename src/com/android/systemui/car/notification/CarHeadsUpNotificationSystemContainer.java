@@ -57,7 +57,35 @@ public class CarHeadsUpNotificationSystemContainer extends CarHeadsUpNotificatio
         mCarDeviceProvisionedController = deviceProvisionedController;
         mOverlayViewGlobalStateController = overlayViewGlobalStateController;
         mHunWindow = systemUiWindowProvider.getHunWindow();
+        initializeVisibility();
         attachToWindow();
+    }
+
+    @Override
+    protected void initializeVisibility() {
+        // If the HunWindow is present, the Scalable UI framework is responsible for the initial
+        // visibility state, so we do nothing. Otherwise, we fall back to the default behavior.
+        if (!mHunWindow.isPresent()) {
+            super.initializeVisibility();
+        }
+    }
+
+    @Override
+    protected void presentContainer() {
+        if (mHunWindow.isPresent()) {
+            mHunWindow.get().show();
+        } else {
+            super.presentContainer();
+        }
+    }
+
+    @Override
+    protected void dismissContainer() {
+        if (mHunWindow.isPresent()) {
+            mHunWindow.get().hide();
+        } else {
+            super.dismissContainer();
+        }
     }
 
      /**

@@ -41,6 +41,7 @@
     <!-- For example the view is put in system bar with the name "status", this value should be
          status. -->
     <string name="config_privacyIndicatorLocation">TopCarSystemBar</string>
+    <string name="config_privacyIndicatorLocation_enable_ext_panel_updates">TopCarSystemBar</string>
 
     <!-- Configure the relative z-order among the system bars. When two system bars overlap (e.g.
          if both top bar and left bar are enabled, it creates an overlapping space in the upper left
@@ -287,6 +288,10 @@
 
     <!-- The entry point for panel definition of scalableUI feature.  -->
     <array name="window_states">
+    </array>
+
+    <!-- The entry point for panel definition of scalableUI feature if flag is enabled  -->
+    <array name="window_states_enable_ext_panel_updates">
     </array>
 
     <!--

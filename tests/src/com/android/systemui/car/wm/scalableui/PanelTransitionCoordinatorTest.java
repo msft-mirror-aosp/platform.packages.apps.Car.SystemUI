@@ -92,8 +92,8 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
         MockitoAnnotations.initMocks(this);
         mMainExecutor = new ShellSyncExecutor();
         mPanelTransitionCoordinator = new PanelTransitionCoordinator(
-                mAutoTaskStackController, mAutoSurfaceTransactionFactory, mPanelUtils,
-                mAutoLayoutManager, mMainExecutor, mFlagManager);
+            mAutoTaskStackController, mAutoSurfaceTransactionFactory, mPanelUtils,
+            mAutoLayoutManager, mMainExecutor, mFlagManager);
         when(mAutoSurfaceTransactionFactory.createTransaction(anyString())).thenReturn(
                 mAutoSurfaceTransaction);
     }
@@ -197,41 +197,39 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
     }
 
     @Test
-    public void testStopRunningAnimations_sameTransition_keepAnimation()
+    public void testStartTransition_nullTransition_runsAnimationDirectly()
             throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1); // Latch for waiting
-        IBinder binder = new Binder();
+        // This test covers the case where a transaction has window changes, but the shell
+        // does not create a transition for it, so it must be animated directly.
+        when(mAutoTaskStackController.startTransition(any())).thenReturn(null);
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicBoolean startCallbackCalled = new AtomicBoolean(false);
+        AtomicBoolean endCallbackCalled = new AtomicBoolean(false);
+
+        Runnable startCallback = () -> startCallbackCalled.set(true);
+        Runnable endCallback = () -> {
+            endCallbackCalled.set(true);
+            latch.countDown();
+        };
+
         ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
-        animator.setDuration(5000L);
-        animator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                latch.countDown();
-            }
-        });
+        animator.setDuration(100L);
+
         PanelTransaction panelTransaction = new PanelTransaction.Builder()
-                .addAnimator("testPanel", animator).build();
-        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction,
-                /* event= */ null);
+                .addAnimator("testPanel", animator)
+                .setAnimationStartCallbackRunnable(startCallback)
+                .setAnimationEndCallbackRunnable(endCallback)
+                .setHasWindowChanges(true)
+                .build();
 
-        // Run the animation on the main looper
+        mPanelTransitionCoordinator.startTransition(panelTransaction);
+
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            mPanelTransitionCoordinator.playPendingAnimations(binder, mFinishCallback,
-                    mFinishTransaction, mInfo);
+            mPanelTransitionCoordinator.startTransition(panelTransaction);
         });
 
-        mPanelTransitionCoordinator.stopRunningAnimations(binder);
-        // Animation should continue on the same binder
-        assertThat(latch.await(/* timeout= */ 1, TimeUnit.SECONDS)).isFalse();
-        assertThat(latch.getCount()).isEqualTo(1);
-        assertThat(mPanelTransitionCoordinator.isAnimationRunning()).isTrue();
-        // There may be a slight delay between the Animator receiving onAnimationEnd and the
-        // AnimatorSet receiving onAnimationEnd.
-
-        assertThat(latch.await(/* timeout= */ 5, TimeUnit.SECONDS)).isTrue();
-        assertThat(latch.getCount()).isEqualTo(0);
-        assertThat(mPanelTransitionCoordinator.isAnimationRunning()).isFalse();
-        verify(mFinishCallback, timeout(5000)).onTransitionFinished(null);
+        assertThat(latch.await(1, TimeUnit.SECONDS)).isTrue();
+        assertThat(startCallbackCalled.get()).isTrue();
+        assertThat(endCallbackCalled.get()).isTrue();
     }
 }

@@ -135,4 +135,8 @@
     <string name="back_btn" msgid="7774349944465667391">"मागे जा"</string>
     <string name="fullscreen" msgid="7648956467442135844">"फुल स्क्रीन"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"प्लॅन पहा"</string>
+    <string name="fab_drag_up" msgid="4784234653173032824">"वर ड्रॅग करा"</string>
+    <string name="fab_drag_down" msgid="3532464175471322923">"खाली ड्रॅग करा"</string>
+    <string name="fab_back_button" msgid="749968018728643829">"मागे जाण्याचे बटण"</string>
+    <string name="fab_tooltip" msgid="5609461882919044197">"अ‍ॅप बंद करण्यासाठी प्रेस करून ठेवा"</string>
 </resources>

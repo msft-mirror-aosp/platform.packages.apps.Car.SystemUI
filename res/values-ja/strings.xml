@@ -135,4 +135,8 @@
     <string name="back_btn" msgid="7774349944465667391">"戻る"</string>
     <string name="fullscreen" msgid="7648956467442135844">"全画面表示"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"プランを見る"</string>
+    <string name="fab_drag_up" msgid="4784234653173032824">"上にドラッグ"</string>
+    <string name="fab_drag_down" msgid="3532464175471322923">"下にドラッグ"</string>
+    <string name="fab_back_button" msgid="749968018728643829">"[戻る] ボタン"</string>
+    <string name="fab_tooltip" msgid="5609461882919044197">"アプリを閉じるには長押しします"</string>
 </resources>

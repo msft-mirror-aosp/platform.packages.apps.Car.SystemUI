@@ -135,4 +135,8 @@
     <string name="back_btn" msgid="7774349944465667391">"Atpakaļ"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Pilnekrāna režīms"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Skatīt plānus"</string>
+    <string name="fab_drag_up" msgid="4784234653173032824">"Vilkt augšup"</string>
+    <string name="fab_drag_down" msgid="3532464175471322923">"Vilkt lejup"</string>
+    <string name="fab_back_button" msgid="749968018728643829">"Poga Atpakaļ"</string>
+    <string name="fab_tooltip" msgid="5609461882919044197">"Nospiediet un turiet, lai aizvērtu lietotni."</string>
 </resources>

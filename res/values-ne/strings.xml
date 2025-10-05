@@ -135,4 +135,8 @@
     <string name="back_btn" msgid="7774349944465667391">"पछाडि"</string>
     <string name="fullscreen" msgid="7648956467442135844">"फुल स्क्रिन"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"योजनाहरू हेर्नुहोस्"</string>
+    <string name="fab_drag_up" msgid="4784234653173032824">"माथितिर ड्र्याग गर्नुहोस्"</string>
+    <string name="fab_drag_down" msgid="3532464175471322923">"तलतिर ड्र्याग गर्नुहोस्"</string>
+    <string name="fab_back_button" msgid="749968018728643829">"\"पछाडि\" बटन"</string>
+    <string name="fab_tooltip" msgid="5609461882919044197">"एप बन्द गर्न केही बेरसम्म थिच्नुहोस्"</string>
 </resources>

@@ -51,6 +51,7 @@ import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerMo
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.ScalableUIPanelUpdateImpl;
 import com.android.systemui.car.wm.scalableui.systemwindow.HunWindow;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
@@ -101,9 +102,11 @@ public abstract class CarWMShellModule {
             IWindowManager wmService, DisplayController displayController,
             DisplayInsetsController displayInsetsController,
             @Main Handler mainHandler, CarWMUserHelper userHelper,
-            ShellController shellController) {
+            ShellController shellController, SystemUiWindowProvider windowProvider,
+            EventDispatcher dispatcher) {
         return new DisplaySystemBarsController(context, wmService, displayController,
-                displayInsetsController, mainHandler, userHelper, shellController);
+                displayInsetsController, mainHandler, userHelper, shellController, windowProvider,
+                dispatcher);
     }
 
     @WMSingleton

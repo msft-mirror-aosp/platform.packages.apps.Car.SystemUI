@@ -58,6 +58,7 @@ import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindow;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.dagger.qualifiers.Main;
+import com.android.systemui.settings.DisplayTracker;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -98,6 +99,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
 
     private final Context mContext;
     private final Resources mResources;
+    private final int mDefaultDisplayId;
     private final List<String> mSystemBarNamesByZOrder = new ArrayList<>();
     /** Maps @WindowManager.LayoutParams.WindowType to window contexts for that type. */
     private final Map<Integer, Context> mWindowContexts = new ArrayMap<>();
@@ -115,12 +117,14 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
     public SystemBarConfigsImpl(Context context, @Main Resources resources,
             SystemUiWindowProvider windowProvider,
             Map<String, CarSystemBarViewSupplier> viewSupplerMap,
-            Map<String, CarSystemBarWindowSupplier> windowSupplierMap) {
+            Map<String, CarSystemBarWindowSupplier> windowSupplierMap,
+            DisplayTracker displayTracker) {
         mContext = context;
         mResources = resources;
         mWindowProvider = windowProvider;
         mViewSupplierMap = viewSupplerMap;
         mWindowSupplierMap = windowSupplierMap;
+        mDefaultDisplayId = displayTracker.getDefaultDisplayId();
         init();
     }
 
@@ -437,7 +441,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
                     .build();
             SystemBarWindow topBarWindow = new InternalSystemBarWindow(mContext,
                     mResources.getDimensionPixelSize(R.dimen.car_top_system_bar_height),
-                    topBarConfig, this::isHorizontalBar);
+                    topBarConfig, this::isHorizontalBar, mDefaultDisplayId);
 
             mSystemBars.put(TOP_BAR_NAME, topBarWindow);
         }
@@ -455,7 +459,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
                     .build();
             SystemBarWindow bottomBarWindow = new InternalSystemBarWindow(mContext,
                     mResources.getDimensionPixelSize(R.dimen.car_bottom_system_bar_height),
-                    bottomBarConfig, this::isHorizontalBar);
+                    bottomBarConfig, this::isHorizontalBar, mDefaultDisplayId);
 
             mSystemBars.put(BOTTOM_BAR_NAME, bottomBarWindow);
         }
@@ -473,7 +477,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
                     .build();
             SystemBarWindow leftBarWindow = new InternalSystemBarWindow(mContext,
                     mResources.getDimensionPixelSize(R.dimen.car_left_system_bar_width),
-                    leftBarConfig, this::isHorizontalBar);
+                    leftBarConfig, this::isHorizontalBar, mDefaultDisplayId);
 
             mSystemBars.put(LEFT_BAR_NAME, leftBarWindow);
         }
@@ -491,7 +495,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
                     .build();
             SystemBarWindow rightBarWindow = new InternalSystemBarWindow(mContext,
                     mResources.getDimensionPixelSize(R.dimen.car_right_system_bar_width),
-                    rightBarConfig, this::isHorizontalBar);
+                    rightBarConfig, this::isHorizontalBar, mDefaultDisplayId);
 
             mSystemBars.put(RIGHT_BAR_NAME, rightBarWindow);
         }
@@ -698,6 +702,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
 
     private static class InternalSystemBarWindow implements SystemBarWindow {
         private final int mGirth;
+        private final int mDefaultDisplayId;
         private final SystemBarConfiguration mConfig;
         private final WindowManager mWindowManager;
         private final Function<String, Boolean> mHorizontalChecker;
@@ -706,7 +711,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
         private Insets mInsets;
 
         private InternalSystemBarWindow(Context ctx, int girth, SystemBarConfiguration config,
-                Function<String, Boolean> horizontalChecker) {
+                Function<String, Boolean> horizontalChecker, int defaultDisplayId) {
             mGirth = girth;
             mConfig = config;
             Context context = ctx.createWindowContext(mapZOrderToBarType(mConfig.getZOrder()),
@@ -714,6 +719,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
             mWindowManager = context.getSystemService(WindowManager.class);
             mHorizontalChecker = horizontalChecker;
             mWindowBounds = mWindowManager.getCurrentWindowMetrics().getBounds();
+            mDefaultDisplayId = defaultDisplayId;
         }
 
         @NonNull
@@ -866,6 +872,11 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
         @Override
         public int getCornerRadius() {
             return 0;
+        }
+
+        @Override
+        public int getDisplayId() {
+            return mDefaultDisplayId;
         }
 
         @Override

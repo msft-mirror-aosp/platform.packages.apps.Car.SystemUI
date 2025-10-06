@@ -159,12 +159,14 @@ object SystemBarUtil {
     }
 
     private fun isBarVisibilityEnforcedByBarControlPolicy(context: Context, type: Int): Boolean {
+        val barControlPolicy = BarControlPolicy()
+        barControlPolicy.reloadFromSetting(context)
         val showTypes =
-            BarControlPolicy.getBarVisibilities(
+            barControlPolicy.getBarVisibilities(
                 context.packageName,
                 /* requestedVisibleTypes= */
                 0
-            )[VISIBLE_BAR_VISIBILITIES_TYPES_INDEX]
+            ).showTypes
         return (showTypes and type) != 0
     }
 }

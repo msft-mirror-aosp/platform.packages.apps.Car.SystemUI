@@ -118,6 +118,8 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
     private int mSuwBehavior;
     private BroadcastReceiver mOverlayChangeBroadcastReceiver;
     private CarWMUserHelper.OccupantZoneChangeListener mOccupantChangeListener;
+    private final BarControlPolicy mBarControlPolicy;
+
 
     @GuardedBy("mPerDisplaySparseArrayLock")
     @VisibleForTesting
@@ -139,6 +141,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
                 R.integer.config_systemBarPersistency);
         mSuwBehavior = mContext.getResources().getInteger(
                 R.integer.config_systemBarSuwBehavior);
+        mBarControlPolicy = new BarControlPolicy();
 
         mSuwSettingsObserver = new ContentObserver(mHandler) {
             @Override
@@ -161,7 +164,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             // TODO(b/262773276): support per-user remote inset controllers
             displayController.addDisplayWindowListener(this);
             mContext.getContentResolver().registerContentObserver(Settings.Secure.getUriFor(
-                    CarSettings.Secure.KEY_SETUP_WIZARD_IN_PROGRESS),
+                            CarSettings.Secure.KEY_SETUP_WIZARD_IN_PROGRESS),
                     /* notifyForDescendants= */ true, mSuwSettingsObserver, UserHandle.USER_ALL);
             registerOverlayChangeBroadcastReceiver();
             registerOccupantZoneChangeListener();
@@ -176,16 +179,21 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         synchronized (mPerDisplaySparseArrayLock) {
             if (mPerDisplaySparseArray == null) {
                 mPerDisplaySparseArray = new SparseArray<>();
-                BarControlPolicy.reloadFromSetting(mContext);
-                BarControlPolicy.registerContentObserver(mContext, mHandler, () -> {
-                    synchronized (mPerDisplaySparseArrayLock) {
-                        int size = mPerDisplaySparseArray.size();
-                        for (int i = 0; i < size; i++) {
-                            mPerDisplaySparseArray.valueAt(
-                                    i).updateDisplayWindowRequestedVisibleTypes();
-                        }
-                    }
-                });
+                mBarControlPolicy.reloadFromSetting(mContext);
+                mBarControlPolicy.registerSystemBarVisibilityOverrideObserver(mContext,
+                        mHandler,
+                        () -> {
+                            synchronized (mPerDisplaySparseArrayLock) {
+                                int size = mPerDisplaySparseArray.size();
+                                for (int i = 0; i < size; i++) {
+                                    mPerDisplaySparseArray.valueAt(
+                                            i).updateDisplayWindowRequestedVisibleTypes();
+                                }
+                            }
+                            // Add a return statement to satisfy the compiler's inferred return
+                            // type.
+                            return null;
+                        });
             }
             mPerDisplaySparseArray.put(displayId, pd);
         }
@@ -235,6 +243,11 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             }
         };
         mUserHelper.addOccupantZoneChangeListener(mOccupantChangeListener);
+    }
+
+    @VisibleForTesting
+    protected String getBarPolicyString() {
+        return mBarControlPolicy.getSettingValue();
     }
 
     private boolean isSuwInProgress(int userId) {
@@ -416,8 +429,10 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             if (mIsSuwInProgress && mSuwBehavior != SYSTEM_BAR_SUW_PERSISTENCY_CONFIG_DISABLED) {
                 barVisibilities = getBarVisibilitiesForSuw();
             } else if (mBehavior == SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY) {
-                barVisibilities = BarControlPolicy.getBarVisibilities(
+                BarVisibility barVis = mBarControlPolicy.getBarVisibilities(
                         mPackageName, mWindowRequestedVisibleTypes);
+                barVisibilities =
+                        new int[]{barVis.getShowTypes(), barVis.getHideTypes()};
             } else if (immersiveState == STATE_IMMERSIVE_WITH_NAV_BAR) {
                 barVisibilities = mImmersiveWithNavBarVisibilities;
             } else if (immersiveState == STATE_IMMERSIVE_WITH_STATUS_BAR) {

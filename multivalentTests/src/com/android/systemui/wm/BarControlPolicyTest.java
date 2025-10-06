@@ -24,11 +24,13 @@ import static com.google.common.truth.Truth.assertThat;
 import android.car.settings.CarSettings;
 import android.provider.Settings;
 import android.testing.TestableLooper;
+import android.testing.TestableResources;
 import android.view.WindowInsets.Type.InsetsType;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
+import com.android.systemui.R;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 
@@ -36,6 +38,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 
 @CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
@@ -56,10 +59,11 @@ public class BarControlPolicyTest extends SysuiTestCase {
     private static final int REQUESTED_VISIBILITY_NAVIGATION_BARS = navigationBars();
     @InsetsType
     private static final int REQUESTED_VISIBILITY_SHOW_ALL_BARS = statusBars() | navigationBars();
+    private BarControlPolicy mBarControlPolicy = new BarControlPolicy();
 
     @Before
     public void setUp() {
-        BarControlPolicy.reset();
+        mBarControlPolicy.reset();
     }
 
     @After
@@ -69,130 +73,207 @@ public class BarControlPolicyTest extends SysuiTestCase {
 
     @Test
     public void reloadFromSetting_notSet_doesNotSetFilters() {
-        BarControlPolicy.reloadFromSetting(mContext);
-
-        assertThat(BarControlPolicy.sImmersiveStatusFilter).isNull();
+        mBarControlPolicy.reloadFromSetting(mContext);
+        assertThat(mBarControlPolicy.getImmersiveStatusFilter()).isNull();
     }
 
     @Test
     public void reloadFromSetting_invalidPolicyControlString_doesNotSetFilters() {
-        configureBarPolicy("sample text");
-
-        BarControlPolicy.reloadFromSetting(mContext);
-
-        assertThat(BarControlPolicy.sImmersiveStatusFilter).isNull();
+        mBarControlPolicy.reloadFromSetting(mContext);
+        assertThat(mBarControlPolicy.getImmersiveStatusFilter()).isNull();
     }
 
     @Test
     public void reloadFromSetting_validPolicyControlString_setsFilters() {
         configureBarPolicy("immersive.status=" + PACKAGE_NAME);
 
-        BarControlPolicy.reloadFromSetting(mContext);
+        mBarControlPolicy.reloadFromSetting(mContext);
 
-        assertThat(BarControlPolicy.sImmersiveStatusFilter).isNotNull();
+        assertThat(mBarControlPolicy.getImmersiveStatusFilter()).isNotNull();
     }
 
     @Test
     public void reloadFromSetting_filtersSet_doesNotSetFiltersAgain() {
         configureBarPolicy("immersive.status=" + PACKAGE_NAME);
 
-        BarControlPolicy.reloadFromSetting(mContext);
+        mBarControlPolicy.reloadFromSetting(mContext);
 
-        assertThat(BarControlPolicy.reloadFromSetting(mContext)).isFalse();
+        assertThat(mBarControlPolicy.reloadFromSetting(mContext)).isFalse();
     }
 
     @Test
     public void getBarVisibilities_policyControlNotSet_showsSystemBars() {
-        int[] visibilities =
-                BarControlPolicy.getBarVisibilities(PACKAGE_NAME, REQUESTED_VISIBILITY_IRRELEVANT);
+        BarVisibility visibilities =
+                mBarControlPolicy.getBarVisibilities(PACKAGE_NAME, REQUESTED_VISIBILITY_IRRELEVANT);
 
-        assertThat(visibilities[0]).isEqualTo(statusBars() | navigationBars());
-        assertThat(visibilities[1]).isEqualTo(0);
+        assertThat(visibilities.getShowTypes()).isEqualTo(statusBars() | navigationBars());
+        assertThat(visibilities.getHideTypes()).isEqualTo(0);
     }
 
     @Test
     public void getBarVisibilities_immersiveStatusForAppAndMatchingApp_hidesStatusBar() {
         configureBarPolicy("immersive.status=" + PACKAGE_NAME);
-        BarControlPolicy.reloadFromSetting(mContext);
+        mBarControlPolicy.reloadFromSetting(mContext);
 
-        int[] visibilities =
-                BarControlPolicy.getBarVisibilities(PACKAGE_NAME, REQUESTED_VISIBILITY_IRRELEVANT);
+        BarVisibility visibilities = mBarControlPolicy.getBarVisibilities(PACKAGE_NAME,
+                REQUESTED_VISIBILITY_IRRELEVANT);
 
-        assertThat(visibilities[0]).isEqualTo(navigationBars());
-        assertThat(visibilities[1]).isEqualTo(statusBars());
+        assertThat(visibilities.getShowTypes()).isEqualTo(navigationBars());
+        assertThat(visibilities.getHideTypes()).isEqualTo(statusBars());
     }
 
     @Test
     public void getBarVisibilities_immersiveStatusForAppAndNonMatchingApp_showsSystemBars() {
         configureBarPolicy("immersive.status=" + PACKAGE_NAME);
-        BarControlPolicy.reloadFromSetting(mContext);
+        mBarControlPolicy.reloadFromSetting(mContext);
 
-        int[] visibilities =
-                BarControlPolicy.getBarVisibilities("sample2.app", REQUESTED_VISIBILITY_IRRELEVANT);
+        BarVisibility visibilities = mBarControlPolicy.getBarVisibilities("sample2.app",
+                REQUESTED_VISIBILITY_IRRELEVANT);
 
-        assertThat(visibilities[0]).isEqualTo(statusBars() | navigationBars());
-        assertThat(visibilities[1]).isEqualTo(0);
+        assertThat(visibilities.getShowTypes()).isEqualTo(statusBars() | navigationBars());
+        assertThat(visibilities.getHideTypes()).isEqualTo(0);
     }
 
     @Test
     public void getBarVisibilities_immersiveStatusForAppsAndNonApp_showsSystemBars() {
         configureBarPolicy("immersive.status=apps");
-        BarControlPolicy.reloadFromSetting(mContext);
+        mBarControlPolicy.reloadFromSetting(mContext);
 
-        int[] visibilities =
-                BarControlPolicy.getBarVisibilities(PACKAGE_NAME, REQUESTED_VISIBILITY_IRRELEVANT);
+        BarVisibility visibilities =
+                mBarControlPolicy.getBarVisibilities(PACKAGE_NAME, REQUESTED_VISIBILITY_IRRELEVANT);
 
-        assertThat(visibilities[0]).isEqualTo(statusBars() | navigationBars());
-        assertThat(visibilities[1]).isEqualTo(0);
+        assertThat(visibilities.getShowTypes()).isEqualTo(statusBars() | navigationBars());
+        assertThat(visibilities.getHideTypes()).isEqualTo(0);
     }
 
     @Test
     public void getBarVisibilities_immersiveFullForAppAndMatchingApp_hidesSystemBars() {
         configureBarPolicy("immersive.full=" + PACKAGE_NAME);
-        BarControlPolicy.reloadFromSetting(mContext);
+        mBarControlPolicy.reloadFromSetting(mContext);
 
-        int[] visibilities =
-                BarControlPolicy.getBarVisibilities(PACKAGE_NAME, REQUESTED_VISIBILITY_IRRELEVANT);
+        BarVisibility visibilities = mBarControlPolicy.getBarVisibilities(PACKAGE_NAME,
+                REQUESTED_VISIBILITY_IRRELEVANT);
 
-        assertThat(visibilities[0]).isEqualTo(0);
-        assertThat(visibilities[1]).isEqualTo(statusBars() | navigationBars());
+
+        assertThat(visibilities.getShowTypes()).isEqualTo(0);
+        assertThat(visibilities.getHideTypes()).isEqualTo(statusBars() | navigationBars());
     }
 
     @Test
     public void getBarVisibilities_immersiveFullForAppAndNonMatchingApp_showsSystemBars() {
         configureBarPolicy("immersive.full=" + PACKAGE_NAME);
-        BarControlPolicy.reloadFromSetting(mContext);
+        mBarControlPolicy.reloadFromSetting(mContext);
 
-        int[] visibilities =
-                BarControlPolicy.getBarVisibilities("sample2.app", REQUESTED_VISIBILITY_IRRELEVANT);
+        BarVisibility visibilities = mBarControlPolicy.getBarVisibilities("sample2.app",
+                REQUESTED_VISIBILITY_IRRELEVANT);
 
-        assertThat(visibilities[0]).isEqualTo(statusBars() | navigationBars());
-        assertThat(visibilities[1]).isEqualTo(0);
+
+        assertThat(visibilities.getShowTypes()).isEqualTo(statusBars() | navigationBars());
+        assertThat(visibilities.getHideTypes()).isEqualTo(0);
     }
 
     @Test
     public void getBarVisibilities_immersiveFullForAppsAndNonApp_showsSystemBars() {
         configureBarPolicy("immersive.full=apps");
-        BarControlPolicy.reloadFromSetting(mContext);
 
-        int[] visibilities =
-                BarControlPolicy.getBarVisibilities(PACKAGE_NAME, REQUESTED_VISIBILITY_IRRELEVANT);
+        mBarControlPolicy.reloadFromSetting(mContext);
 
-        assertThat(visibilities[0]).isEqualTo(statusBars() | navigationBars());
-        assertThat(visibilities[1]).isEqualTo(0);
+        BarVisibility visibilities = mBarControlPolicy.getBarVisibilities(PACKAGE_NAME,
+                REQUESTED_VISIBILITY_IRRELEVANT);
+
+        assertThat(visibilities.getShowTypes()).isEqualTo(statusBars() | navigationBars());
+        assertThat(visibilities.getHideTypes()).isEqualTo(0);
+    }
+
+    @Test
+    public void getBarVisibilities2_policyControlNotSet_showsSystemBars() {
+        BarVisibility visibilities =
+                mBarControlPolicy.getBarVisibilities(PACKAGE_NAME, REQUESTED_VISIBILITY_IRRELEVANT);
+
+        assertThat(visibilities.getShowTypes()).isEqualTo(statusBars() | navigationBars());
+        assertThat(visibilities.getHideTypes()).isEqualTo(0);
+    }
+
+    @Test
+    public void getBarVisibilities2_immersiveStatusForAppAndMatchingApp_hidesStatusBar() {
+        configureBarPolicy("immersive.status=" + PACKAGE_NAME);
+
+        BarVisibility visibilities =
+                mBarControlPolicy.getBarVisibilities(PACKAGE_NAME, REQUESTED_VISIBILITY_IRRELEVANT);
+
+        assertThat(visibilities.getShowTypes()).isEqualTo(navigationBars());
+        assertThat(visibilities.getHideTypes()).isEqualTo(statusBars());
+    }
+
+    @Test
+    public void getBarVisibilities2_immersiveStatusForAppAndNonMatchingApp_showsSystemBars() {
+        configureBarPolicy("immersive.status=" + PACKAGE_NAME);
+
+        BarVisibility visibilities =
+                mBarControlPolicy.getBarVisibilities(PACKAGE_NAME2,
+                        REQUESTED_VISIBILITY_IRRELEVANT);
+
+        assertThat(visibilities.getShowTypes()).isEqualTo(statusBars() | navigationBars());
+        assertThat(visibilities.getHideTypes()).isEqualTo(0);
+    }
+
+    @Test
+    public void getBarVisibilities2_immersiveStatusForAppsAndNonApp_showsSystemBars() {
+        configureBarPolicy("immersive.status=apps");
+
+        BarVisibility visibilities =
+                mBarControlPolicy.getBarVisibilities(PACKAGE_NAME, REQUESTED_VISIBILITY_IRRELEVANT);
+
+        assertThat(visibilities.getShowTypes()).isEqualTo(statusBars() | navigationBars());
+        assertThat(visibilities.getHideTypes()).isEqualTo(0);
+    }
+
+
+    @Test
+    public void getBarVisibilities2_immersiveFullForAppAndMatchingApp_hidesSystemBars() {
+        configureBarPolicy("immersive.full=" + PACKAGE_NAME);
+
+        BarVisibility visibilities =
+                mBarControlPolicy.getBarVisibilities(PACKAGE_NAME, REQUESTED_VISIBILITY_IRRELEVANT);
+
+        assertThat(visibilities.getShowTypes()).isEqualTo(0);
+        assertThat(visibilities.getHideTypes()).isEqualTo(statusBars() | navigationBars());
+    }
+
+    @Test
+    public void getBarVisibilities2_immersiveFullForAppAndNonMatchingApp_showsSystemBars() {
+        configureBarPolicy("immersive.full=" + PACKAGE_NAME);
+
+        BarVisibility visibilities =
+                mBarControlPolicy.getBarVisibilities(PACKAGE_NAME2,
+                        REQUESTED_VISIBILITY_IRRELEVANT);
+
+        assertThat(visibilities.getShowTypes()).isEqualTo(statusBars() | navigationBars());
+        assertThat(visibilities.getHideTypes()).isEqualTo(0);
+    }
+
+    @Test
+    public void getBarVisibilities2_immersiveFullForAppsAndNonApp_showsSystemBars() {
+        configureBarPolicy("immersive.full=apps");
+
+        BarVisibility visibilities =
+                mBarControlPolicy.getBarVisibilities(PACKAGE_NAME, REQUESTED_VISIBILITY_IRRELEVANT);
+
+        assertThat(visibilities.getShowTypes()).isEqualTo(statusBars() | navigationBars());
+        assertThat(visibilities.getHideTypes()).isEqualTo(0);
     }
 
     @Test
     public void getBarVisibilities_immersiveStatusWithAllowPolicy_allowsShowStatus() {
         configureBarPolicy("immersive.status=+" + PACKAGE_NAME);
 
-        @InsetsType int[] visibilitiesShowStatus = BarControlPolicy.getBarVisibilities(
+        BarVisibility visibilitiesShowStatus = mBarControlPolicy.getBarVisibilities(
                 PACKAGE_NAME, REQUESTED_VISIBILITY_STATUS_BARS);
 
         assertThat(barsShown(visibilitiesShowStatus, navigationBars() | statusBars())).isTrue();
         assertThat(barsHidden(visibilitiesShowStatus, /* barTypes= */ 0)).isTrue();
 
-        @InsetsType int[] visibilitiesShowAllBars = BarControlPolicy.getBarVisibilities(
+        BarVisibility visibilitiesShowAllBars = mBarControlPolicy.getBarVisibilities(
                 PACKAGE_NAME, REQUESTED_VISIBILITY_SHOW_ALL_BARS);
 
         assertThat(barsShown(visibilitiesShowAllBars, navigationBars() | statusBars())).isTrue();
@@ -203,13 +284,13 @@ public class BarControlPolicyTest extends SysuiTestCase {
     public void getBarVisibilities_immersiveStatusWithAllowPolicy_allowsHideStatus() {
         configureBarPolicy("immersive.status=+" + PACKAGE_NAME);
 
-        @InsetsType int[] visibilitiesShowStatus = BarControlPolicy.getBarVisibilities(
+        BarVisibility visibilitiesShowStatus = mBarControlPolicy.getBarVisibilities(
                 PACKAGE_NAME, REQUESTED_VISIBILITY_NAVIGATION_BARS);
 
         assertThat(barsShown(visibilitiesShowStatus, navigationBars())).isTrue();
         assertThat(barsHidden(visibilitiesShowStatus, statusBars())).isTrue();
 
-        @InsetsType int[] visibilitiesShowAllBars = BarControlPolicy.getBarVisibilities(
+        BarVisibility visibilitiesShowAllBars = mBarControlPolicy.getBarVisibilities(
                 PACKAGE_NAME, REQUESTED_VISIBILITY_HIDE_ALL_BARS);
 
         assertThat(barsShown(visibilitiesShowAllBars, navigationBars())).isTrue();
@@ -220,13 +301,13 @@ public class BarControlPolicyTest extends SysuiTestCase {
     public void getBarVisibilities_immersiveNavigationWithAllowPolicy_allowsShowNavigation() {
         configureBarPolicy("immersive.navigation=+" + PACKAGE_NAME);
 
-        @InsetsType int[] visibilitiesShowStatus = BarControlPolicy.getBarVisibilities(
+        BarVisibility visibilitiesShowStatus = mBarControlPolicy.getBarVisibilities(
                 PACKAGE_NAME, REQUESTED_VISIBILITY_NAVIGATION_BARS);
 
         assertThat(barsShown(visibilitiesShowStatus, navigationBars() | statusBars())).isTrue();
         assertThat(barsHidden(visibilitiesShowStatus, /* barTypes= */ 0)).isTrue();
 
-        @InsetsType int[] visibilitiesShowAllBars = BarControlPolicy.getBarVisibilities(
+        BarVisibility visibilitiesShowAllBars = mBarControlPolicy.getBarVisibilities(
                 PACKAGE_NAME, REQUESTED_VISIBILITY_SHOW_ALL_BARS);
 
         assertThat(barsShown(visibilitiesShowAllBars, navigationBars() | statusBars())).isTrue();
@@ -237,13 +318,13 @@ public class BarControlPolicyTest extends SysuiTestCase {
     public void getBarVisibilities_immersiveNavigationWithAllowPolicy_allowsHideNavigation() {
         configureBarPolicy("immersive.navigation=+" + PACKAGE_NAME);
 
-        @InsetsType int[] visibilitiesShowStatus = BarControlPolicy.getBarVisibilities(
+        BarVisibility visibilitiesShowStatus = mBarControlPolicy.getBarVisibilities(
                 PACKAGE_NAME, REQUESTED_VISIBILITY_STATUS_BARS);
 
         assertThat(barsShown(visibilitiesShowStatus, statusBars())).isTrue();
         assertThat(barsHidden(visibilitiesShowStatus, navigationBars())).isTrue();
 
-        @InsetsType int[] visibilitiesShowAllBars = BarControlPolicy.getBarVisibilities(
+        BarVisibility visibilitiesShowAllBars = mBarControlPolicy.getBarVisibilities(
                 PACKAGE_NAME, REQUESTED_VISIBILITY_SHOW_ALL_BARS);
 
         assertThat(barsShown(visibilitiesShowAllBars, navigationBars() | statusBars())).isTrue();
@@ -254,13 +335,13 @@ public class BarControlPolicyTest extends SysuiTestCase {
     public void getBarVisibilities_immersiveFullWithAllowPolicy_allowsShowAndHideBars() {
         configureBarPolicy("immersive.full=+" + PACKAGE_NAME);
 
-        @InsetsType int[] visibilitiesShowStatus = BarControlPolicy.getBarVisibilities(
+        BarVisibility visibilitiesShowStatus = mBarControlPolicy.getBarVisibilities(
                 PACKAGE_NAME, REQUESTED_VISIBILITY_SHOW_ALL_BARS);
 
         assertThat(barsShown(visibilitiesShowStatus, navigationBars() | statusBars())).isTrue();
         assertThat(barsHidden(visibilitiesShowStatus, /* barTypes= */ 0)).isTrue();
 
-        @InsetsType int[] visibilitiesShowAllBars = BarControlPolicy.getBarVisibilities(
+        BarVisibility visibilitiesShowAllBars = mBarControlPolicy.getBarVisibilities(
                 PACKAGE_NAME, REQUESTED_VISIBILITY_HIDE_ALL_BARS);
 
         assertThat(barsShown(visibilitiesShowAllBars, /* barTypes= */ 0)).isTrue();
@@ -271,13 +352,13 @@ public class BarControlPolicyTest extends SysuiTestCase {
     public void getBarVisibilities_combinedImmersiveStatusWithAllowPolicy_hidesSelectively() {
         configureBarPolicy(String.format("immersive.status=%s,+%s", PACKAGE_NAME, PACKAGE_NAME2));
 
-        @InsetsType int[] visibilities0 = BarControlPolicy.getBarVisibilities(
+        BarVisibility visibilities0 = mBarControlPolicy.getBarVisibilities(
                 PACKAGE_NAME, REQUESTED_VISIBILITY_SHOW_ALL_BARS);
 
         assertThat(barsShown(visibilities0, navigationBars())).isTrue();
         assertThat(barsHidden(visibilities0, statusBars())).isTrue();
 
-        @InsetsType int[] visibilities1 = BarControlPolicy.getBarVisibilities(
+        BarVisibility visibilities1 = mBarControlPolicy.getBarVisibilities(
                 PACKAGE_NAME2, REQUESTED_VISIBILITY_SHOW_ALL_BARS);
 
         assertThat(barsShown(visibilities1, statusBars() | navigationBars())).isTrue();
@@ -289,17 +370,39 @@ public class BarControlPolicyTest extends SysuiTestCase {
         configureBarPolicy(
                 String.format("immersive.navigation=+%s,%s", PACKAGE_NAME, PACKAGE_NAME2));
 
-        @InsetsType int[] visibilities0 = BarControlPolicy.getBarVisibilities(
+        BarVisibility visibilities0 = mBarControlPolicy.getBarVisibilities(
                 PACKAGE_NAME, REQUESTED_VISIBILITY_SHOW_ALL_BARS);
 
         assertThat(barsShown(visibilities0, statusBars() | navigationBars())).isTrue();
         assertThat(barsHidden(visibilities0, /* barTypes= */ 0)).isTrue();
 
-        @InsetsType int[] visibilities1 = BarControlPolicy.getBarVisibilities(
+        BarVisibility visibilities1 = mBarControlPolicy.getBarVisibilities(
                 PACKAGE_NAME2, REQUESTED_VISIBILITY_SHOW_ALL_BARS);
 
         assertThat(barsShown(visibilities1, statusBars())).isTrue();
         assertThat(barsHidden(visibilities1, navigationBars())).isTrue();
+    }
+
+    @Test
+    public void reloadFromSetting_settingNotSet_loadsBackupPolicy() {
+        TestableResources testableResources = mContext.getOrCreateTestableResources();
+
+        // GIVEN system bar persistency is set to barpolicy and the flag is enabled
+        testableResources.addOverride(R.integer.config_systemBarPersistency, 3);
+        String backupPolicy = "immersive.full=*";
+        testableResources.addOverride(
+                R.string.system_bar_visibility_override_backup, backupPolicy);
+        Settings.Global.putString(mContext.getContentResolver(),
+                CarSettings.Global.SYSTEM_BAR_VISIBILITY_OVERRIDE, null);
+
+        // WHEN reloadFromSetting is called
+        boolean reloaded = mBarControlPolicy.reloadFromSetting(mContext);
+
+        // THEN the backup policy is loaded and the method returns true
+        assertThat(reloaded).isTrue();
+        assertThat(mBarControlPolicy.getSettingValue()).isEqualTo(backupPolicy);
+        assertThat(mBarControlPolicy.getImmersiveStatusFilter()).isNotNull();
+        assertThat(mBarControlPolicy.getImmersiveNavigationFilter()).isNotNull();
     }
 
     private void configureBarPolicy(String configuration) {
@@ -307,14 +410,14 @@ public class BarControlPolicyTest extends SysuiTestCase {
                 mContext.getContentResolver(),
                 CarSettings.Global.SYSTEM_BAR_VISIBILITY_OVERRIDE,
                 configuration);
-        BarControlPolicy.reloadFromSetting(mContext);
+        mBarControlPolicy.reloadFromSetting(mContext);
     }
 
-    private static boolean barsShown(@InsetsType int[] visibilities, @InsetsType int barTypes) {
-        return visibilities[0] == barTypes;
+    private static boolean barsShown(BarVisibility visibilities, int barTypes) {
+        return visibilities.getShowTypes() == barTypes;
     }
 
-    private static boolean barsHidden(@InsetsType int[] visibilities, @InsetsType int barTypes) {
-        return visibilities[1] == barTypes;
+    private static boolean barsHidden(BarVisibility visibilities, @InsetsType int barTypes) {
+        return visibilities.getHideTypes() == barTypes;
     }
 }

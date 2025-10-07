@@ -58,6 +58,7 @@ import com.android.systemui.car.display.DisplayStateHelper;
 import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
+import com.android.systemui.car.wm.scalableui.ScalableUIUtils;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Background;
 import com.android.systemui.settings.DisplayTracker;
@@ -265,7 +266,7 @@ public class SystemEventHandler implements CoreStartable,
 
     @Override
     public void start() {
-        if (mFlagManager.isEnabled(Flag.ScalableUIEnabled)) {
+        if (ScalableUIUtils.isScalableUIEnabled(mContext, mFlagManager)) {
             registerUserEventListener();
             registerProvisionedStateListener();
             mUserTracker.addCallback(mUserTrackerCallback, mBackgroundExecutor);

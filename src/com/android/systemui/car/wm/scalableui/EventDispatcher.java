@@ -23,6 +23,7 @@ import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelTransaction;
 import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
+import com.android.systemui.car.wm.scalableui.ScalableUIUtils;
 import com.android.wm.shell.dagger.WMSingleton;
 
 import dagger.Lazy;
@@ -46,7 +47,7 @@ public class EventDispatcher {
             FlagManager flagManager) {
         mContext = context;
         mFlagManager = flagManager;
-        if (mFlagManager.isEnabled(Flag.ScalableUIEnabled)) {
+        if (ScalableUIUtils.isScalableUIEnabled(mContext, mFlagManager)) {
             mPanelTransitionCoordinator = panelTransitionCoordinator.get();
         } else {
             mPanelTransitionCoordinator = null;
@@ -79,7 +80,7 @@ public class EventDispatcher {
      * an Action.
      */
     public void executeEvent(Event event) {
-        if (!mFlagManager.isEnabled(Flag.ScalableUIEnabled)) {
+        if (!ScalableUIUtils.isScalableUIEnabled(mContext, mFlagManager)) {
             throw new IllegalStateException("ScalableUI disabled - cannot execute transaction");
         }
         mPanelTransitionCoordinator.startTransition(getTransaction(event));

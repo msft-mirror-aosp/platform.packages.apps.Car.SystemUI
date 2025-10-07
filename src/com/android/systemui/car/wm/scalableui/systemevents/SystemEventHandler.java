@@ -53,9 +53,13 @@ import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIUtils;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Background;
+import com.android.systemui.deviceentry.domain.interactor.DeviceEntryInteractor;
+import com.android.systemui.keyguard.KeyguardWmStateRefactor;
 import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
+import com.android.systemui.statusbar.policy.KeyguardStateController;
+import com.android.systemui.util.kotlin.JavaAdapter;
 import com.android.window.flags.Flags;
 
 import dagger.Lazy;
@@ -82,12 +86,14 @@ public class SystemEventHandler implements CoreStartable,
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
 
     private final Context mContext;
+    private final JavaAdapter mJavaAdapter;
     private final UserManager mUserManager;
     private final CarServiceProvider mCarServiceProvider;
     private final UserTracker mUserTracker;
     private final DisplayTracker mDisplayTracker;
     private final Lazy<DisplayStateHelper> mDisplayStateHelper;
-    private final KeyguardManager mKeyguardManager;
+    private final KeyguardStateController mKeyguardStateController;
+    private final Lazy<DeviceEntryInteractor> mDeviceEntryInteractor;
     private final Executor mBackgroundExecutor;
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final EventDispatcher mEventDispatcher;
@@ -134,12 +140,12 @@ public class SystemEventHandler implements CoreStartable,
                             }
                             StateManager.handlePanelReset();
                             mResetCalledForUser = true;
-
-                            if (!mIsKeyguardShowing) {
-                                sendUserAuthEvent();
-                            }
                         } else {
                             Log.d(TAG, "Received user unlock while user is not setup");
+                        }
+
+                        if (!mIsKeyguardShowing) {
+                            sendUserAuthEvent();
                         }
                     } else {
                         Log.i(TAG, "Ignore system event" + event.getEventType());
@@ -202,47 +208,33 @@ public class SystemEventHandler implements CoreStartable,
                 }
             };
 
-    private final KeyguardManager.KeyguardLockedStateListener mKeyguardListener =
-            new KeyguardManager.KeyguardLockedStateListener() {
-                @Override
-                public void onKeyguardLockedStateChanged(boolean isKeyguardLocked) {
-                    if (mIsKeyguardShowing == isKeyguardLocked) {
-                        return;
-                    }
-                    mIsKeyguardShowing = isKeyguardLocked;
-                    if (mIsKeyguardShowing) {
-                        sendEvent(new Event.Builder(SYSTEM_KEYGUARD_SHOWN_EVENT_ID));
-                    } else {
-                        sendEvent(new Event.Builder(SYSTEM_KEYGUARD_HIDDEN_EVENT_ID));
-                        if (mUserManager.isUserUnlocked(mUserTracker.getUserId())) {
-                            sendUserAuthEvent();
-                        }
-                    }
-                }
-            };
-
     @Inject
     public SystemEventHandler(
             Context context,
+            JavaAdapter javaAdapter,
             UserManager userManager,
             @Background Executor bgExecutor,
             CarServiceProvider carServiceProvider,
             UserTracker userTracker,
             DisplayTracker displayTracker,
             Lazy<DisplayStateHelper> displayStateHelper,
+            KeyguardStateController keyguardStateController,
+            Lazy<DeviceEntryInteractor> deviceEntryInteractor,
             KeyguardManager keyguardManager,
             CarDeviceProvisionedController carDeviceProvisionedController,
             EventDispatcher dispatcher,
             FlagManager flagManager
     ) {
         mContext = context;
+        mJavaAdapter = javaAdapter;
         mUserManager = userManager;
         mBackgroundExecutor = bgExecutor;
         mCarServiceProvider = carServiceProvider;
         mUserTracker = userTracker;
         mDisplayTracker = displayTracker;
         mDisplayStateHelper = displayStateHelper;
-        mKeyguardManager = keyguardManager;
+        mKeyguardStateController = keyguardStateController;
+        mDeviceEntryInteractor = deviceEntryInteractor;
         mCarDeviceProvisionedController = carDeviceProvisionedController;
         mEventDispatcher = dispatcher;
         mFlagManager = flagManager;
@@ -270,8 +262,7 @@ public class SystemEventHandler implements CoreStartable,
             registerProvisionedStateListener();
             mUserTracker.addCallback(mUserTrackerCallback, mBackgroundExecutor);
             mDisplayStateHelper.get().addListener(mDisplayStateListener);
-            mKeyguardManager.addKeyguardLockedStateListener(mBackgroundExecutor, mKeyguardListener);
-            mIsKeyguardShowing = mKeyguardManager.isKeyguardLocked();
+            registerKeyguardStateListener();
         }
     }
 
@@ -293,6 +284,45 @@ public class SystemEventHandler implements CoreStartable,
                 mCarUserManager.addListener(mBackgroundExecutor, mUserLifecycleListener);
             }
         });
+    }
+
+    private void registerKeyguardStateListener() {
+        mIsKeyguardShowing = isKeyguardShowing();
+        if (KeyguardWmStateRefactor.isEnabled()) {
+            mJavaAdapter.alwaysCollectFlow(
+                    mDeviceEntryInteractor.get().isDeviceEntered(),
+                    entered -> keyguardShowingChanged(!entered));
+        } else {
+            mKeyguardStateController.addCallback(new KeyguardStateController.Callback() {
+                @Override
+                public void onKeyguardShowingChanged() {
+                    keyguardShowingChanged(isKeyguardShowing());
+                }
+            });
+        }
+    }
+
+    private void keyguardShowingChanged(boolean showing) {
+        if (mIsKeyguardShowing == showing) {
+            return;
+        }
+        mIsKeyguardShowing = showing;
+        if (mIsKeyguardShowing) {
+            sendEvent(new Event.Builder(SYSTEM_KEYGUARD_SHOWN_EVENT_ID));
+        } else {
+            sendEvent(new Event.Builder(SYSTEM_KEYGUARD_HIDDEN_EVENT_ID));
+            if (mUserManager.isUserUnlocked(mUserTracker.getUserId())) {
+                sendUserAuthEvent();
+            }
+        }
+    }
+
+    private boolean isKeyguardShowing() {
+        if (KeyguardWmStateRefactor.isEnabled()) {
+            return !mDeviceEntryInteractor.get().isDeviceEntered().getValue();
+        } else {
+            return mKeyguardStateController.isShowing();
+        }
     }
 
     private boolean shouldResetPanels() {

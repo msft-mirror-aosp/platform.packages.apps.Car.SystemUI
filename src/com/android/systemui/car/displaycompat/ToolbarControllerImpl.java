@@ -175,14 +175,28 @@ public class ToolbarControllerImpl implements ToolbarController {
         }
 
         String packageName = getPackageName(taskInfo);
-        if (requiresBackAffordance(packageName, taskInfo.userId)
-                || requiresDisplayCompat(packageName, taskInfo.userId)) {
-            mCurrentTask = taskInfo;
-            mMainHandler.post(() -> show());
-            return;
+        Boolean backAffordance = requiresBackAffordance(packageName, taskInfo.userId);
+        boolean displayCompat = requiresDisplayCompat(packageName, taskInfo.userId);
+
+        if (backAffordance != null) {
+            // Manifest explicitly requested
+            if (backAffordance) {
+                mCurrentTask = taskInfo;
+                mMainHandler.post(this::show);
+            } else {
+                mCurrentTask = null;
+                mMainHandler.post(this::hide);
+            }
+        } else {
+            // Manifest did not set → fall back to displayCompat
+            if (displayCompat) {
+                mCurrentTask = taskInfo;
+                mMainHandler.post(this::show);
+            } else {
+                mCurrentTask = null;
+                mMainHandler.post(this::hide);
+            }
         }
-        mCurrentTask = null;
-        mMainHandler.post(() -> hide());
     }
 
     private boolean canLog() {
@@ -198,7 +212,7 @@ public class ToolbarControllerImpl implements ToolbarController {
      * @param userId The ID of the current user.
      * @return True if the package requires back affordance support; false otherwise.
      */
-    private boolean requiresBackAffordance(@NonNull String packageName, @UserIdInt int userId) {
+    private Boolean requiresBackAffordance(@NonNull String packageName, @UserIdInt int userId) {
 
         UserHandle userHandle = UserHandle.of(userId);
         PackageManager mPackageManager = mUserContext.getPackageManager();
@@ -209,7 +223,7 @@ public class ToolbarControllerImpl implements ToolbarController {
                     PackageManager.GET_META_DATA, userHandle);
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Package not found: " + packageName, e);
-            return false;
+            return null;
         }
 
         // Check for META_DATA_BACK_SUPPORT
@@ -223,7 +237,7 @@ public class ToolbarControllerImpl implements ToolbarController {
             }
             return requiresBackAffordance;
         }
-        return false;
+        return null;
     }
 
     private String getPackageName(RootTaskInfo taskInfo) {

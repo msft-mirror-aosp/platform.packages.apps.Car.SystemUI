@@ -167,7 +167,8 @@ public class PanelTransitionCoordinator {
             mActiveTransition = null;
         };
 
-        startAnimationSet(mRunningAnimatorSet, transaction, animators, onAnimationEnd);
+        startAnimationSet(mRunningAnimatorSet, transaction,
+                getAnimatorsToRun(transaction), onAnimationEnd);
     }
 
     private void startAnimationSet(
@@ -384,7 +385,20 @@ public class PanelTransitionCoordinator {
         mRunningAnimatorSet = new AnimatorSet();
         mActiveTransition = transition;
 
-        long totalDuration = Long.MIN_VALUE;
+        Runnable onAnimationEnd = () -> {
+            mayFinishTransaction(finishCallback, panelTransaction, transition,
+                    finishTransaction, info);
+        };
+
+        startAnimationSet(mRunningAnimatorSet, panelTransaction,
+                getAnimatorsToRun(panelTransaction), onAnimationEnd);
+        Trace.endSection();
+        return true;
+    }
+
+    @NonNull
+    private List<Animator> getAnimatorsToRun(PanelTransaction panelTransaction) {
+        long totalDuration = 0;
         List<Animator> animationToRun = new ArrayList<>();
         for (Map.Entry<String, Animator> entry : panelTransaction.getAnimators()) {
             Animator animator = entry.getValue();
@@ -394,19 +408,9 @@ public class PanelTransitionCoordinator {
             animationToRun.add(animator);
         }
 
-        totalDuration = Math.max(0, totalDuration);
-
         logIfDebuggable("total duration " + totalDuration);
         animationToRun.add(createSurfaceAnimator(totalDuration, panelTransaction.getAnimators()));
-
-        Runnable onAnimationEnd = () -> {
-            mayFinishTransaction(finishCallback, panelTransaction, transition,
-                    finishTransaction, info);
-        };
-
-        startAnimationSet(mRunningAnimatorSet, panelTransaction, animationToRun, onAnimationEnd);
-        Trace.endSection();
-        return true;
+        return animationToRun;
     }
 
     private void mayFinishTransaction(Transitions.TransitionFinishCallback finishCallback,

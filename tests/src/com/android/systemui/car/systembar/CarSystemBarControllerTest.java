@@ -70,9 +70,9 @@ import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDi
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.window.OverlayVisibilityMediator;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
-import com.android.systemui.car.wm.scalableui.configuration.SystemUiConfigurationProvider;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.plugins.DarkIconDispatcher;
+import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.FakeDisplayTracker;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.CommandQueue;
@@ -152,7 +152,7 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
     @Mock
     private SystemUiWindowProvider mWindowProvider;
     @Mock
-    private SystemUiConfigurationProvider mConfigProvider;
+    private DisplayTracker mDisplayTracker;
     @Mock
     private WindowMetrics mWindowMetrics;
 
@@ -227,7 +227,7 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
         when(mWindowMetrics.getBounds()).thenReturn(new Rect(0, 0, 1920, 1080));
         mSystemBarConfigs = new SystemBarConfigsImpl(mSpiedContext,
                 mTestableResources.getResources(), mWindowProvider, mViewSupplierMap,
-                mWindowSupplierMap);
+                mWindowSupplierMap, mDisplayTracker);
         mThread = new HandlerThread("TestThread");
         mThread.start();
         mHandler = Handler.createAsync(mThread.getLooper());

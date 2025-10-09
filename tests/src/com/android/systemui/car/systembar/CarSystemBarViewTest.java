@@ -34,8 +34,8 @@ import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.window.OverlayVisibilityMediator;
-import com.android.systemui.car.wm.scalableui.configuration.SystemUiConfigurationProvider;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
+import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.UserTracker;
 
 import org.junit.After;
@@ -77,7 +77,7 @@ public class CarSystemBarViewTest extends CarSysuiTestCase {
     @Mock
     private SystemUiWindowProvider mWindowProvider;
     @Mock
-    private SystemUiConfigurationProvider mConfigProvider;
+    private DisplayTracker mDisplayTracker;
 
     @Before
     public void setUp() {
@@ -144,7 +144,7 @@ public class CarSystemBarViewTest extends CarSysuiTestCase {
     private CarSystemBarViewControllerImpl getSystemBarViewController(CarSystemBarView view) {
         SystemBarConfigs systemBarConfigs = new SystemBarConfigsImpl(getContext(),
                 getContext().getOrCreateTestableResources().getResources(), mWindowProvider,
-                mViewSupplierMap, mWindowSupplierMap);
+                mViewSupplierMap, mWindowSupplierMap, mDisplayTracker);
         return new CarSystemBarViewControllerImpl(getContext(),
                 mUserTracker,
                 mCarSystemBarElementInitializer,

@@ -39,7 +39,7 @@ abstract class SystemUiWindowBase(
     protected val panelUpdateConsumer: PanelUpdateConsumer,
     protected val eventDispatcher: EventDispatcher,
     protected var id: String,
-    protected val displayId: Int
+    private val displayId: Int
 ) : SystemUiWindow {
     protected var display: Display? = null
     protected var displayContext: Context? = null
@@ -165,6 +165,8 @@ abstract class SystemUiWindowBase(
     override fun getCornerRadius(): Int {
         return panelUpdateConsumer.getCornerRadius(id) ?: 0
     }
+
+    override fun getDisplayId() = displayId
 
     override fun addCallback(callback: SystemUiWindow.WindowUpdateCallback) {
         panelUpdateConsumer.registerCallback(id, callback)

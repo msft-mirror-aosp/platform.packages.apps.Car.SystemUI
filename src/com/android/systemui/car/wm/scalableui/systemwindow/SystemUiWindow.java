@@ -131,6 +131,11 @@ public interface SystemUiWindow {
     int getCornerRadius();
 
     /**
+     * @return display ID of the window
+     */
+    int getDisplayId();
+
+    /**
      * Attach a {@link WindowUpdateCallback}
      */
     void addCallback(@NonNull WindowUpdateCallback callback);

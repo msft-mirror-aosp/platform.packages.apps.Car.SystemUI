@@ -64,6 +64,7 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.plugins.DarkIconDispatcher;
+import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.FakeDisplayTracker;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.CommandQueue;
@@ -153,6 +154,8 @@ public class CarSystemBarTest extends CarSysuiTestCase {
     private SystemUiWindowProvider mWindowProvider;
     @Mock
     private WindowMetrics mWindowMetrics;
+    @Mock
+    private DisplayTracker mDisplayTracker;
 
     private RegisterStatusBarResult mBarResult;
     private AppearanceRegion[] mAppearanceRegions;
@@ -234,7 +237,7 @@ public class CarSystemBarTest extends CarSysuiTestCase {
     private void initCarSystemBar() {
         SystemBarConfigs systemBarConfigs =
                 new SystemBarConfigsImpl(mSpiedContext, mTestableResources.getResources(),
-                        mWindowProvider, mViewSupplierMap, mWindowSupplierMap);
+                        mWindowProvider, mViewSupplierMap, mWindowSupplierMap, mDisplayTracker);
         FakeDisplayTracker displayTracker = new FakeDisplayTracker(mContext);
         mCarSystemBarController = spy(new CarSystemBarControllerImpl(mSpiedContext,
                 mUserTracker,
@@ -534,7 +537,7 @@ public class CarSystemBarTest extends CarSysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableRightSystemBar, true);
         mSystemBarConfigs = new SystemBarConfigsImpl(mSpiedContext,
                 mTestableResources.getResources(), mWindowProvider, mViewSupplierMap,
-                mWindowSupplierMap);
+                mWindowSupplierMap, mDisplayTracker);
         when(mCarSystemBarController.getBarWindow(TOP_BAR_NAME)).thenReturn(mock(ViewGroup.class));
         when(mCarSystemBarController.getBarWindow(BOTTOM_BAR_NAME)).thenReturn(null);
         when(mCarSystemBarController.getBarWindow(LEFT_BAR_NAME)).thenReturn(

@@ -98,6 +98,12 @@ public class ScalableUIWMInitializer implements OnDisplaysChangedListener {
             debugLog("Orientation has changed!" + mConfiguration.orientation);
             return true;
         }
+
+        if ((diff & ActivityInfo.CONFIG_ASSETS_PATHS) != 0) {
+            debugLog("Asset paths have changed!" + mConfiguration.assetsSeq);
+            return true;
+        }
+
         return false;
     }
 

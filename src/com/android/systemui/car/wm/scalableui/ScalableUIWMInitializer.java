@@ -21,6 +21,9 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.util.Log;
+import android.util.SparseArray;
+import android.view.Display;
+import android.view.DisplayInfo;
 
 import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
@@ -28,6 +31,8 @@ import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayController.OnDisplaysChangedListener;
 import com.android.wm.shell.dagger.WMSingleton;
 import com.android.wm.shell.sysui.ShellInit;
+
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * Class to include ScalableUI constructs that need to be initialized on startup.
@@ -41,31 +46,31 @@ public class ScalableUIWMInitializer implements OnDisplaysChangedListener {
     private final PanelAutoTaskStackTransitionHandlerDelegate
             mPanelAutoTaskStackTransitionHandlerDelegate;
     private final ScalableUIDumpsys mScalableUIDumpsys;
-    private final Configuration mConfiguration;
+    private final Object mLock = new Object();
+    @GuardedBy("mLock")
+    private final SparseArray<Configuration> mConfigurationMap;
     private final AutoTaskStackHelper mAutoTaskStackHelper;
     private final FlagManager mFlagManager;
     private final DisplayController mDisplayController;
 
-    public ScalableUIWMInitializer(
-            Context context,
-            ShellInit shellInit,
-            ActionConfigReader actionConfigReader,
-            PanelConfigReader panelConfigReader,
+    public ScalableUIWMInitializer(Context context, ShellInit shellInit,
+            ActionConfigReader actionConfigReader, PanelConfigReader panelConfigReader,
             PanelAutoTaskStackTransitionHandlerDelegate delegate,
-            ScalableUIDumpsys scalableUIDumpsys,
-            DisplayController displayController,
-            AutoTaskStackHelper autoTaskStackHelper,
-            FlagManager flagManager
-    ) {
+            ScalableUIDumpsys scalableUIDumpsys, DisplayController displayController,
+            AutoTaskStackHelper autoTaskStackHelper, FlagManager flagManager) {
         shellInit.addInitCallback(this::onInit, this);
         mActionConfigReader = actionConfigReader;
         mPanelConfigReader = panelConfigReader;
         mPanelAutoTaskStackTransitionHandlerDelegate = delegate;
         mScalableUIDumpsys = scalableUIDumpsys;
-        mConfiguration = new Configuration(context.getResources().getConfiguration());
         mAutoTaskStackHelper = autoTaskStackHelper;
         mFlagManager = flagManager;
         mDisplayController = displayController;
+        synchronized (mLock) {
+            mConfigurationMap = new SparseArray<>();
+            mConfigurationMap.put(context.getDisplayId(),
+                    new Configuration(context.getResources().getConfiguration()));
+        }
     }
 
     private void onInit() {
@@ -79,32 +84,53 @@ public class ScalableUIWMInitializer implements OnDisplaysChangedListener {
     @Override
     public void onDisplayConfigurationChanged(int displayId, Configuration newConfig) {
         OnDisplaysChangedListener.super.onDisplayConfigurationChanged(displayId, newConfig);
-        debugLog("onDisplayChange was" + mConfiguration);
-        debugLog("onDisplayChange change to" + newConfig);
-        if (!mFlagManager.isEnabled(Flag.ScalableUiHandleConfigurationChange)) {
-            return;
-        }
-        if (shouldReload(mConfiguration.updateFrom(newConfig))) {
-            mAutoTaskStackHelper.reloadTaskConfigs();
-            mPanelConfigReader.reloadConfig();
-            mActionConfigReader.init();
-            mScalableUIDumpsys.init();
+        synchronized (mLock) {
+            if (!mFlagManager.isEnabled(Flag.ScalableUiHandleConfigurationChange)) {
+                return;
+            }
+
+            if (!isSupportedDisplay(displayId)) {
+                debugLog("Skip reload for display " + displayId);
+                return;
+            }
+            Configuration prevConfig = mConfigurationMap.get(displayId, new Configuration());
+            debugLog(displayId + ", onDisplayChange was" + prevConfig);
+            debugLog(displayId + " onDisplayChange change to" + newConfig);
+
+            int delta = prevConfig.updateFrom(newConfig);
+            mConfigurationMap.put(displayId, prevConfig);
+            if (shouldReload(delta, displayId)) {
+                mAutoTaskStackHelper.reloadTaskConfigs();
+                mPanelConfigReader.reloadConfig();
+                mActionConfigReader.init();
+                mScalableUIDumpsys.init();
+            }
         }
     }
 
-    private boolean shouldReload(int diff) {
+    private boolean shouldReload(int diff, int displayId) {
         debugLog("onDisplayChange delta" + diff);
-        if ((diff & ActivityInfo.CONFIG_ORIENTATION) != 0) {
-            debugLog("Orientation has changed!" + mConfiguration.orientation);
-            return true;
+        synchronized (mLock) {
+            if ((diff & ActivityInfo.CONFIG_ORIENTATION) != 0) {
+                debugLog("Orientation has changed!" + mConfigurationMap.get(displayId).orientation);
+                return true;
+            }
+            if ((diff & ActivityInfo.CONFIG_ASSETS_PATHS) != 0) {
+                debugLog("Asset paths have changed!" + mConfigurationMap.get(displayId).assetsSeq);
+                return true;
+            }
+            return false;
         }
+    }
 
-        if ((diff & ActivityInfo.CONFIG_ASSETS_PATHS) != 0) {
-            debugLog("Asset paths have changed!" + mConfiguration.assetsSeq);
-            return true;
-        }
-
-        return false;
+    /**
+     * Check if the display is supported for scalableUI
+     */
+    private boolean isSupportedDisplay(int displayId) {
+        Display display = mDisplayController.getDisplay(displayId);
+        DisplayInfo displayInfo = new DisplayInfo();
+        display.getDisplayInfo(displayInfo);
+        return displayInfo.type != Display.TYPE_VIRTUAL;
     }
 
     private void debugLog(String logMsg) {

@@ -39,6 +39,8 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.util.ViewController;
 
+import java.time.Duration;
+
 /**
  * Base ViewController for PassengerKeyguard credential views.
  */
@@ -126,16 +128,16 @@ public abstract class PassengerKeyguardCredentialViewController extends ViewCont
         LockPatternChecker.verifyCredential(mLockPatternUtils, mEnteredPassword,
                 mUserTracker.getUserId(), /* flags= */ 0,
                 response -> {
-                    final int throttleTimeoutMs = response.getTimeout();
+                    final Duration throttleTimeout = response.getTimeout();
                     if (response.isMatched()) {
                         mTrustManager.reportEnabledTrustAgentsChanged(mUserTracker.getUserId());
                         if (mCallback != null) {
                             mCallback.onAuthSucceeded();
                         }
                     } else {
-                        if (throttleTimeoutMs > 0) {
+                        if (throttleTimeout.isPositive()) {
                             mMainHandler.post(() -> mLockoutHelper.onCheckCompletedWithTimeout(
-                                    throttleTimeoutMs));
+                                    throttleTimeout));
                         } else {
                             mMainHandler.post(onFailureUiRunnable);
                         }

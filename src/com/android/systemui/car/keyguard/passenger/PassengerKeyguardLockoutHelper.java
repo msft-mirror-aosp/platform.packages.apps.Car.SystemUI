@@ -29,6 +29,8 @@ import com.android.systemui.R;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;
 
+import java.time.Duration;
+
 import javax.inject.Inject;
 
 /**
@@ -62,7 +64,7 @@ public class PassengerKeyguardLockoutHelper {
     /** Called when lock UI is shown */
     void onUIShown() {
         if (isLockedOut()) {
-            handleAttemptLockout(mLockPatternUtils.getLockoutAttemptDeadline(mUserId));
+            handleAttemptLockout(mLockPatternUtils.getLockoutEndTime(mUserId).toMillis());
         } else {
             notifyRefresh(isLockedOut());
         }
@@ -77,12 +79,13 @@ public class PassengerKeyguardLockoutHelper {
     }
 
     /** Handles when the lock check is completed but returns a timeout. */
-    void onCheckCompletedWithTimeout(int timeoutMs) {
-        if (timeoutMs <= 0) {
+    void onCheckCompletedWithTimeout(Duration timeout) {
+        if (!timeout.isPositive()) {
             return;
         }
 
-        long deadline = mLockPatternUtils.setLockoutAttemptDeadline(mUserId, timeoutMs);
+        long deadline = mLockPatternUtils.setLockoutAttemptDeadline(
+                mUserId, timeout).toMillis();
         handleAttemptLockout(deadline);
     }
 
@@ -93,7 +96,7 @@ public class PassengerKeyguardLockoutHelper {
     }
 
     private boolean isLockedOut() {
-        return mLockPatternUtils.getLockoutAttemptDeadline(mUserId) != 0;
+        return !mLockPatternUtils.getLockoutEndTime(mUserId).isZero();
     }
 
     private void notifyRefresh(boolean isLockedOut) {

@@ -28,6 +28,7 @@ import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventCon
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_USER_SWITCH_ON_AUTHENTICATED_TOKEN_ID;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
 import android.app.KeyguardManager;
 import android.car.user.CarUserManager;
 import android.content.Context;
@@ -135,7 +136,9 @@ public class SystemEventHandler implements CoreStartable,
                                 Intent homeIntent = new Intent(Intent.ACTION_MAIN);
                                 homeIntent.addCategory(Intent.CATEGORY_HOME);
                                 homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                mContext.startActivityAsUser(homeIntent,
+                                ActivityOptions options = ActivityOptions.makeBasic();
+                                options.setAvoidMoveToFront();
+                                mContext.startActivityAsUser(homeIntent, options.toBundle(),
                                         mUserTracker.getUserHandle());
                             }
                             StateManager.handlePanelReset();

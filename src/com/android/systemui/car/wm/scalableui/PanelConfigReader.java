@@ -15,8 +15,8 @@
  */
 package com.android.systemui.car.wm.scalableui;
 
-import android.app.ActivityManager;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
@@ -44,7 +44,7 @@ import java.util.List;
 public class PanelConfigReader {
     private static final String TAG = PanelConfigReader.class.getSimpleName();
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
-    private final Context mContext;
+    private Context mContext;
     private final TaskPanel.Factory mTaskPanelFactory;
     private final DecorPanel.Factory mDecorPanelFactory;
     private final SysUIPanel.Factory mSysUiPanelFactory;
@@ -85,7 +85,6 @@ public class PanelConfigReader {
      * {@link Flag#ScalableUiDesignCompose} flag is enabled.
      */
     public void loadConfig() {
-        debugLog("PanelConfig initialized for user: " + ActivityManager.getCurrentUser());
         try {
             Trace.beginSection(TAG + "#load");
             if (mFlagManager.isEnabled(Flag.ScalableUiDesignCompose)) {
@@ -108,7 +107,8 @@ public class PanelConfigReader {
      * Clears and reloads the panel configuration. This is intended to be called when a
      * configuration change, such as an orientation change, requires resources to be reloaded.
      */
-    public void reloadConfig() {
+    public void reloadConfig(Configuration configuration) {
+        mContext = mContext.createConfigurationContext(configuration);
         clearPanelAndConfig();
         loadConfig();
     }

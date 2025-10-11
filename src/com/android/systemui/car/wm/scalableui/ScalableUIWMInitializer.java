@@ -100,8 +100,12 @@ public class ScalableUIWMInitializer implements OnDisplaysChangedListener {
             int delta = prevConfig.updateFrom(newConfig);
             mConfigurationMap.put(displayId, prevConfig);
             if (shouldReload(delta, displayId)) {
+                // The DisplayController#onDisplayConfigurationChanged callback can occur
+                // before the application context's resources are updated. Therefore, a new
+                // context must be created from the provided provided to ensure that
+                // the correct resources are loaded.
                 mAutoTaskStackHelper.reloadTaskConfigs();
-                mPanelConfigReader.reloadConfig();
+                mPanelConfigReader.reloadConfig(newConfig);
                 mActionConfigReader.init();
                 mScalableUIDumpsys.init();
             }

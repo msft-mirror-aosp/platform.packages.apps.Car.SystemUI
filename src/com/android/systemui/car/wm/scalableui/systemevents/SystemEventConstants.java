@@ -35,6 +35,8 @@ public class SystemEventConstants {
      * - Keyguard is not showing
      * The event will include the userSwitch token with "true" or "false" depending on if this
      * user is newly being switched to or not.
+     * Note: It's not recommended to consume both the KEYGUARD_HIDDEN_EVENT and this event in
+     * the defined panel transitions since they may be executed close together.
      */
     public static final String SYSTEM_USER_AUTHENTICATED_EVENT_ID = "_System_UserAuthenticated";
     public static final String SYSTEM_USER_SWITCH_ON_AUTHENTICATED_TOKEN_ID = "userSwitch";

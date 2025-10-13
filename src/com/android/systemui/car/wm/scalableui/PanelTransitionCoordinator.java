@@ -134,8 +134,14 @@ public class PanelTransitionCoordinator {
                 synchronized (mPendingPanelTransactions) {
                     IBinder transition = mAutoTaskStackController.startTransition(
                             createAutoTaskStackTransaction(transaction, /* event= */ null));
-                    mPendingPanelTransactions.put(transition, transaction);
-                    resetUnpreparedDecorPanel(transaction);
+                    if (transition != null) {
+                        mPendingPanelTransactions.put(transition, transaction);
+                        resetUnpreparedDecorPanel(transaction);
+                    } else {
+                        // This transaction does not result in shell transitions, so it needs to be
+                        // animated directly.
+                        startDirectAnimation(transaction);
+                    }
                 }
             });
         } else {
@@ -143,6 +149,58 @@ public class PanelTransitionCoordinator {
             // to the shell main thread could introduce unnecessary latency and visual lag.
             updatePanelSurface(transaction);
         }
+    }
+
+    private void startDirectAnimation(PanelTransaction transaction) {
+        if (transaction.getAnimators().isEmpty()) {
+            return;
+        }
+        endAnimationsWithoutTransition();
+
+        mRunningAnimatorSet = new AnimatorSet();
+        mActiveTransition = null;
+        List<Animator> animators = transaction.getAnimators().stream()
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+
+        Runnable onAnimationEnd = () -> {
+            if (transaction.getAnimationEndCallbackRunnable() != null) {
+                transaction.getAnimationEndCallbackRunnable().run();
+            }
+            mRunningAnimatorSet = null;
+            mActiveTransition = null;
+        };
+
+        startAnimationSet(mRunningAnimatorSet, transaction,
+                getAnimatorsToRun(transaction), onAnimationEnd);
+    }
+
+    private void startAnimationSet(
+            AnimatorSet animatorSet,
+            PanelTransaction transaction,
+            List<Animator> animators,
+            Runnable onAnimationEnd) {
+        animatorSet.playTogether(animators);
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                Trace.beginSection(TAG + "#onAnimationStart");
+                super.onAnimationStart(animation);
+                if (transaction.getAnimationStartCallbackRunnable() != null) {
+                    transaction.getAnimationStartCallbackRunnable().run();
+                }
+                Trace.endSection();
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                Trace.beginSection(TAG + "#onAnimationEnd");
+                super.onAnimationEnd(animation);
+                onAnimationEnd.run();
+                Trace.endSection();
+            }
+        });
+        animatorSet.start();
     }
 
     /**
@@ -335,78 +393,75 @@ public class PanelTransitionCoordinator {
         mRunningAnimatorSet = new AnimatorSet();
         mActiveTransition = transition;
 
-        long totalDuration = Long.MIN_VALUE;
+        Runnable onAnimationEnd = () -> {
+            mayFinishTransaction(finishCallback, panelTransaction, transition,
+                    finishTransaction, info);
+        };
+
+        startAnimationSet(mRunningAnimatorSet, panelTransaction,
+                getAnimatorsToRun(panelTransaction), onAnimationEnd);
+        Trace.endSection();
+        return true;
+    }
+
+    @NonNull
+    private List<Animator> getAnimatorsToRun(PanelTransaction panelTransaction) {
+        long totalDuration = 0;
         List<Animator> animationToRun = new ArrayList<>();
         for (Map.Entry<String, Animator> entry : panelTransaction.getAnimators()) {
             Animator animator = entry.getValue();
-            logIfDebuggable(entry.getKey() + "duration for animator" + animator.getTotalDuration());
+            logIfDebuggable(
+                    entry.getKey() + " duration for animator " + animator.getTotalDuration());
             totalDuration = Math.max(totalDuration, animator.getTotalDuration());
             animationToRun.add(animator);
         }
 
-        totalDuration = Math.max(0, totalDuration);
-
-        logIfDebuggable("total duration" + totalDuration);
+        logIfDebuggable("total duration " + totalDuration);
         animationToRun.add(createSurfaceAnimator(totalDuration, panelTransaction.getAnimators()));
-        mRunningAnimatorSet.playTogether(animationToRun);
-        mRunningAnimatorSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                Trace.beginSection(TAG + "#onAnimationStart");
-                super.onAnimationStart(animation);
-                if (panelTransaction.getAnimationStartCallbackRunnable() != null) {
-                    panelTransaction.getAnimationStartCallbackRunnable().run();
-                }
-                Trace.endSection();
+        return animationToRun;
+    }
+
+    private void mayFinishTransaction(Transitions.TransitionFinishCallback finishCallback,
+            PanelTransaction panelTransaction, IBinder transition,
+            @Nullable SurfaceControl.Transaction finishTransaction,
+            @Nullable TransitionInfo info) {
+        logIfDebuggable("Animation set finished " + finishCallback);
+
+        // Enforce the surface state for panels.
+        AutoSurfaceTransaction autoSurfaceTransaction =
+                mAutoSurfaceTransactionFactory.createTransaction(PANEL_TRANSACTION);
+        for (Map.Entry<String, Transition> entry :
+                panelTransaction.getPanelTransactionStates()) {
+            BasePanel basePanel = mPanelUtils.getBasePanel(
+                    dp -> dp.getPanelId().equals(entry.getKey()));
+            if (basePanel == null) {
+                continue;
             }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                Trace.beginSection(TAG + "#onAnimationEnd");
-                super.onAnimationEnd(animation);
-                logIfDebuggable("Animation set finished " + finishCallback);
-
-                // Enforce the surface state for panels.
-                AutoSurfaceTransaction autoSurfaceTransaction =
-                        mAutoSurfaceTransactionFactory.createTransaction(PANEL_TRANSACTION);
-                for (Map.Entry<String, Transition> entry :
-                        panelTransaction.getPanelTransactionStates()) {
-                    BasePanel basePanel = mPanelUtils.getBasePanel(
-                            dp -> dp.getPanelId().equals(entry.getKey()));
-                    if (basePanel == null) {
-                        continue;
-                    }
-                    if (panelTransaction.shouldMergePanelAnimation(entry.getKey())) {
-                        // update to the current state of the panel
-                        basePanel.update(autoSurfaceTransaction, /* variant= */ null,
-                                /* updateChildren= */ true);
-                    } else {
-                        Variant toVariant = entry.getValue().getToVariant();
-                        basePanel.update(autoSurfaceTransaction, toVariant,
-                                /* updateChildren= */ true);
-                    }
-                }
-                calculateFinishTransaction(finishTransaction, info, panelTransaction);
-                autoSurfaceTransaction.apply();
-
-                synchronized (mPendingPanelTransactions) {
-                    mPendingPanelTransactions.remove(transition);
-                    mActiveTransition = null;
-                }
-
-                if (finishCallback != null) {
-                    logIfDebuggable("Finish the transition");
-                    finishCallback.onTransitionFinished(/* wct= */ null);
-                }
-                if (panelTransaction.getAnimationEndCallbackRunnable() != null) {
-                    panelTransaction.getAnimationEndCallbackRunnable().run();
-                }
-                Trace.endSection();
+            if (panelTransaction.shouldMergePanelAnimation(entry.getKey())) {
+                // update to the current state of the panel
+                basePanel.update(autoSurfaceTransaction, /* variant= */ null,
+                        /* updateChildren= */ true);
+            } else {
+                Variant toVariant = entry.getValue().getToVariant();
+                basePanel.update(autoSurfaceTransaction, toVariant,
+                        /* updateChildren= */ true);
             }
-        });
-        mRunningAnimatorSet.start();
-        Trace.endSection();
-        return true;
+        }
+        calculateFinishTransaction(finishTransaction, info, panelTransaction);
+        autoSurfaceTransaction.apply();
+
+        synchronized (mPendingPanelTransactions) {
+            mPendingPanelTransactions.remove(transition);
+            mActiveTransition = null;
+        }
+
+        if (finishCallback != null) {
+            logIfDebuggable("Finish the transition");
+            finishCallback.onTransitionFinished(/* wct= */ null);
+        }
+        if (panelTransaction.getAnimationEndCallbackRunnable() != null) {
+            panelTransaction.getAnimationEndCallbackRunnable().run();
+        }
     }
 
     @ShellMainThread
@@ -441,6 +496,23 @@ public class PanelTransitionCoordinator {
             mergeTransaction.addPanelIdToAnimationMerge(entry.getKey());
         }
         mRunningAnimatorSet.cancel();
+    }
+
+    /**
+     * Immediately ends any currently running animation set. This method is used when a new
+     * animation needs to start and any existing one should be abruptly finished, for example,
+     * when starting a direct animation without a shell transition token.
+     */
+    private void endAnimationsWithoutTransition() {
+        logIfDebuggable("endAnimationsWithoutTransition");
+        if (isAnimationRunning()) {
+            logIfDebuggable("endAnimationsWithoutTransition: Ending running animatorSet "
+                    + mRunningAnimatorSet.getCurrentPlayTime()
+                    + ", active transition = " + mActiveTransition);
+            mRunningAnimatorSet.end();
+            // mRunningAnimatorSet and mActiveTransition will be nulled out
+            // in the onAnimationEnd listener
+        }
     }
 
     /**

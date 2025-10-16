@@ -385,6 +385,7 @@ android_ravenwood_test {
     static_libs: [
         "CarSystemUI-core",
         "CarSystemUI-tests-base",
+        "androidx.compose.ui_ui-test-junit4",
         "androidx.test.uiautomator_uiautomator",
         "androidx.core_core-animation-testing",
         "androidx.test.ext.junit",

@@ -48,6 +48,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoSession;
 import org.mockito.quality.Strictness;
 
+import java.time.Duration;
+
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @SmallTest
@@ -102,13 +104,13 @@ public class PassengerKeyguardCredentialViewControllerTest extends CarSysuiTestC
 
         ExtendedMockito.verify(() -> LockPatternChecker.verifyCredential(any(), any(), anyInt(),
                 anyInt(), captor.capture()));
-        captor.getValue().onVerified(VerifyCredentialResponse.OTHER_ERROR, 0);
+        captor.getValue().onVerified(VerifyCredentialResponse.credIncorrect());
         verify(mMainHandler).post(failureRunnable);
     }
 
     @Test
     public void verifyCredential_invalidCredential_timeout() {
-        int throttleTimeoutMs = 1000;
+        Duration throttleTimeout = Duration.ofSeconds(1);
         Runnable failureRunnable = mock(Runnable.class);
         ArgumentCaptor<LockPatternChecker.OnVerifyCallback> captor = ArgumentCaptor.forClass(
                 LockPatternChecker.OnVerifyCallback.class);
@@ -117,11 +119,11 @@ public class PassengerKeyguardCredentialViewControllerTest extends CarSysuiTestC
 
         ExtendedMockito.verify(() -> LockPatternChecker.verifyCredential(any(), any(), anyInt(),
                 anyInt(), captor.capture()));
-        captor.getValue().onVerified(VerifyCredentialResponse.OTHER_ERROR, throttleTimeoutMs);
+        captor.getValue().onVerified(VerifyCredentialResponse.credIncorrect(throttleTimeout));
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mMainHandler).post(runnableCaptor.capture());
         runnableCaptor.getValue().run();
-        verify(mLockoutHelper).onCheckCompletedWithTimeout(throttleTimeoutMs);
+        verify(mLockoutHelper).onCheckCompletedWithTimeout((int) throttleTimeout.toMillis());
     }
 
     @Test
@@ -134,7 +136,7 @@ public class PassengerKeyguardCredentialViewControllerTest extends CarSysuiTestC
 
         ExtendedMockito.verify(() -> LockPatternChecker.verifyCredential(any(), any(), anyInt(),
                 anyInt(), captor.capture()));
-        captor.getValue().onVerified(VerifyCredentialResponse.OK, /* throttleTimeoutMs= */ 0);
+        captor.getValue().onVerified(VerifyCredentialResponse.OK);
         verify(mMainHandler, never()).post(failureRunnable);
         verify(mTrustManager).reportEnabledTrustAgentsChanged(anyInt());
         verify(mCallback).onAuthSucceeded();

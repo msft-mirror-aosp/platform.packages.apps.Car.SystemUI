@@ -125,7 +125,8 @@ public abstract class PassengerKeyguardCredentialViewController extends ViewCont
         }
         LockPatternChecker.verifyCredential(mLockPatternUtils, mEnteredPassword,
                 mUserTracker.getUserId(), /* flags= */ 0,
-                (response, throttleTimeoutMs) -> {
+                response -> {
+                    final int throttleTimeoutMs = response.getTimeout();
                     if (response.isMatched()) {
                         mTrustManager.reportEnabledTrustAgentsChanged(mUserTracker.getUserId());
                         if (mCallback != null) {

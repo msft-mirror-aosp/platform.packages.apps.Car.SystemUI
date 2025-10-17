@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
+import com.android.systemui.car.systembar.CarSystemBarRestartTracker;
 import com.android.systemui.dagger.SysUISingleton;
 
 import java.util.ArrayList;
@@ -34,11 +35,12 @@ import javax.inject.Provider;
 
 /** Helper class for retrieving and initializing CarSystemBarElements and their controllers. */
 @SysUISingleton
-public class CarSystemBarElementInitializer {
+public class CarSystemBarElementInitializer implements CarSystemBarRestartTracker.Listener {
     private static final String TAG = CarSystemBarElementInitializer.class.getSimpleName();
 
     private final Map<Class<?>, Provider<CarSystemBarElementController.Factory>>
             mElementControllerFactories;
+    private final CarSystemBarElementStateController mStateController;
 
     /** Convert a class string to a class instance of CarSystemBarElementController */
     public static Class<?> getElementControllerClassFromString(String str) {
@@ -57,8 +59,12 @@ public class CarSystemBarElementInitializer {
 
     @Inject
     public CarSystemBarElementInitializer(
-            Map<Class<?>, Provider<CarSystemBarElementController.Factory>> factories) {
+            Map<Class<?>, Provider<CarSystemBarElementController.Factory>> factories,
+            CarSystemBarElementStateController stateController,
+            CarSystemBarRestartTracker restartTracker) {
         mElementControllerFactories = factories;
+        mStateController = stateController;
+        restartTracker.addListener(this);
     }
 
     /** Instantiate all CarSystemBarElements found within the provided rootView */
@@ -120,6 +126,20 @@ public class CarSystemBarElementInitializer {
         @Nullable
         Class<?> getControllerClass() {
             return mControllerClass;
+        }
+    }
+
+    @Override
+    public void onPendingRestart(boolean willRecreateWindows, boolean provisionedStateChanged) {
+        if (!willRecreateWindows && !provisionedStateChanged) {
+            mStateController.notifyPendingRestart();
+        }
+    }
+
+    @Override
+    public void onRestartComplete(boolean windowsRecreated, boolean provisionedStateChanged) {
+        if (!windowsRecreated && !provisionedStateChanged) {
+            mStateController.notifyRestartComplete();
         }
     }
 }

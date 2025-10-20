@@ -38,9 +38,9 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.statusicon.StatusIconView;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.settings.UserTracker;
 
 import org.junit.After;

@@ -14,44 +14,44 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar.element.layout;
+package com.android.systemui.car.flexibleui.layout;
 
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.TextView;
+import android.widget.ImageView;
 
-import com.android.systemui.car.systembar.element.CarSystemBarElement;
-import com.android.systemui.car.systembar.element.CarSystemBarElementFlags;
-import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
+import com.android.systemui.car.flexibleui.CarSystemBarElement;
+import com.android.systemui.car.flexibleui.CarSystemBarElementFlags;
+import com.android.systemui.car.flexibleui.CarSystemBarElementResolver;
 
-/** Implementation of TextView that supports {@link CarSystemBarElement} attributes */
-public class CarSystemBarTextView extends TextView implements CarSystemBarElement {
+/** Implementation of ImageView that supports {@link CarSystemBarElement} attributes */
+public class CarSystemBarImageView extends ImageView implements CarSystemBarElement {
     @Nullable
     private Class<?> mElementControllerClassAttr;
     private int mSystemBarDisableFlags;
     private int mSystemBarDisable2Flags;
     private boolean mDisableForLockTaskModeLocked;
 
-    public CarSystemBarTextView(@NonNull Context context) {
+    public CarSystemBarImageView(@NonNull Context context) {
         super(context);
         init(context, /* attrs= */ null);
     }
 
-    public CarSystemBarTextView(@NonNull Context context,
+    public CarSystemBarImageView(@NonNull Context context,
             @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public CarSystemBarTextView(@NonNull Context context, @Nullable AttributeSet attrs,
+    public CarSystemBarImageView(@NonNull Context context, @Nullable AttributeSet attrs,
             int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
 
-    public CarSystemBarTextView(@NonNull Context context, @Nullable AttributeSet attrs,
+    public CarSystemBarImageView(@NonNull Context context, @Nullable AttributeSet attrs,
             int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context, attrs);

@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+
+subdirs = ["pods"]
+
 package {
     default_applicable_licenses: ["Android-Apache-2.0"],
     default_team: "trendy_team_system_experience",
@@ -44,6 +47,7 @@ java_defaults {
     ],
 
     static_libs: [
+        "CarSystemUI-FlexibleUI",
         "SystemUI-application",
         "SystemUI-core",
         "CarNotificationLib",
@@ -219,6 +223,7 @@ android_library {
         "res",
     ],
     static_libs: [
+        "CarSystemUI-FlexibleUI",
         "SystemUI-tests-base",
         "CarNotificationLib",
         "android.car.test.utils",

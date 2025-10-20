@@ -15,6 +15,10 @@
  */
 package com.android.systemui.car.wm.scalableui.panel.controller;
 
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.DEFAULT_COMPONENT_TAG;
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.PERSISTENT_ACTIVITY_TAG;
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.UPDATABLE_INTENT_FILTER_TAG;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -84,7 +88,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
     @Test
     public void constructor_parsesDefaultComponent() {
         when(mPanelControllerMetadata.getStringConfiguration(
-                PanelControllerMetadata.DEFAULT_COMPONENT)).thenReturn(
+                DEFAULT_COMPONENT_TAG)).thenReturn(
                 DEFAULT_ACTIVITY.flattenToString());
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
                 mPanelControllerMetadata, mPanelUtils);
@@ -96,7 +100,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
     @Test
     public void constructor_noDefaultComponent() {
         when(mPanelControllerMetadata.getStringConfiguration(
-                PanelControllerMetadata.DEFAULT_COMPONENT)).thenReturn(null);
+                DEFAULT_COMPONENT_TAG)).thenReturn(null);
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
                 mPanelControllerMetadata, mPanelUtils);
         Intent defaultIntent = controller.getDefaultComponent();
@@ -107,10 +111,10 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
     @Test
     public void constructor_parsesPersistentActivities() {
         when(mPanelControllerMetadata.getListConfiguration(
-                PanelControllerMetadata.PERSISTENT_ACTIVITY)).thenReturn(
+                PERSISTENT_ACTIVITY_TAG)).thenReturn(
                 List.of(ACTIVITY_1.flattenToString(), ACTIVITY_2.flattenToString()));
         when(mPanelControllerMetadata.hasConfiguration(
-                PanelControllerMetadata.PERSISTENT_ACTIVITY)).thenReturn(true);
+                PERSISTENT_ACTIVITY_TAG)).thenReturn(true);
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
                 mPanelControllerMetadata, mPanelUtils);
         Set<ComponentName> persistentActivities = controller.getPersistentActivities();
@@ -122,7 +126,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
     @Test
     public void constructor_noPersistentActivities() {
         when(mPanelControllerMetadata.getStringConfiguration(
-                PanelControllerMetadata.PERSISTENT_ACTIVITY)).thenReturn(null);
+                PERSISTENT_ACTIVITY_TAG)).thenReturn(null);
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
                 mPanelControllerMetadata, mPanelUtils);
         Set<ComponentName> persistentActivities = controller.getPersistentActivities();
@@ -133,7 +137,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
     public void constructor_registersReceiverForUpdateFilter() throws URISyntaxException {
         String updateFilterString = "android-app://com.example.package/path";
         when(mPanelControllerMetadata.getStringConfiguration(
-                PanelControllerMetadata.UPDATABLE_INTENT_FILTER)).thenReturn(updateFilterString);
+                UPDATABLE_INTENT_FILTER_TAG)).thenReturn(updateFilterString);
 
         new BaseTaskPanelController(mMockContext, mPanelControllerMetadata, mPanelUtils);
 
@@ -153,7 +157,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
     @Test
     public void constructor_noUpdateFilter_doesNotRegisterReceiver() {
         when(mPanelControllerMetadata.getStringConfiguration(
-                PanelControllerMetadata.UPDATABLE_INTENT_FILTER)).thenReturn(null);
+                UPDATABLE_INTENT_FILTER_TAG)).thenReturn(null);
 
         new BaseTaskPanelController(mMockContext, mPanelControllerMetadata, mPanelUtils);
 
@@ -164,7 +168,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
     @Test
     public void updatePersistentActivities_addsStaticPersistentActivities() {
         mPanelControllerMetadata = PanelControllerMetadata.builder("id").addConfiguration(
-                PanelControllerMetadata.PERSISTENT_ACTIVITY,
+                PERSISTENT_ACTIVITY_TAG,
                 ACTIVITY_1.flattenToString()).build();
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
                 mPanelControllerMetadata, mPanelUtils);
@@ -180,7 +184,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
     @Test
     public void handles_returnsTrueIfPersistent() {
         mPanelControllerMetadata = PanelControllerMetadata.builder("id").addConfiguration(
-                PanelControllerMetadata.PERSISTENT_ACTIVITY,
+                PERSISTENT_ACTIVITY_TAG,
                 ACTIVITY_1.flattenToString()).build();
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
                 mPanelControllerMetadata, mPanelUtils);
@@ -190,7 +194,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
     @Test
     public void handles_returnsFalseIfNotPersistent() {
         mPanelControllerMetadata = PanelControllerMetadata.builder("id").addConfiguration(
-                PanelControllerMetadata.PERSISTENT_ACTIVITY,
+                PERSISTENT_ACTIVITY_TAG,
                 ACTIVITY_1.flattenToString()).build();
 
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
@@ -201,7 +205,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
     @Test
     public void getDefaultComponent_returnsIntentWithDefaultComponent() {
         when(mPanelControllerMetadata.getStringConfiguration(
-                PanelControllerMetadata.DEFAULT_COMPONENT)).thenReturn(
+                DEFAULT_COMPONENT_TAG)).thenReturn(
                 DEFAULT_ACTIVITY.flattenToString());
         BaseTaskPanelController controller = new BaseTaskPanelController(mMockContext,
                 mPanelControllerMetadata, mPanelUtils);

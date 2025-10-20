@@ -15,8 +15,8 @@
  */
 package com.android.systemui.car.wm.scalableui.view;
 
-import static com.android.car.scalableui.model.PanelControllerMetadata.BACKGROUND_COLOR;
-import static com.android.car.scalableui.model.PanelControllerMetadata.OVERLAY_PANEL_ID;
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.BACKGROUND_COLOR_TAG;
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.OVERLAY_PANEL_ID_TAG;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -130,8 +130,8 @@ public class PanelOverlayController extends DecorPanelControllerBase {
     }
 
     private void init(PanelControllerMetadata metadata) {
-        mOverlayPanelId = metadata.getStringConfiguration(OVERLAY_PANEL_ID);
-        mBackgroundColorHex = metadata.getStringConfiguration(BACKGROUND_COLOR);
+        mOverlayPanelId = metadata.getStringConfiguration(OVERLAY_PANEL_ID_TAG);
+        mBackgroundColorHex = metadata.getStringConfiguration(BACKGROUND_COLOR_TAG);
     }
 
     private void setVail(String packageName) {

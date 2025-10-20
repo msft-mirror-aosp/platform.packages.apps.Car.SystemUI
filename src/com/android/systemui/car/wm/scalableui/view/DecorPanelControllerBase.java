@@ -15,6 +15,8 @@
  */
 package com.android.systemui.car.wm.scalableui.view;
 
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.VIEW_TAG;
+
 import android.util.Log;
 import android.view.View;
 
@@ -40,7 +42,7 @@ public abstract class DecorPanelControllerBase implements DecorPanelController {
     protected DecorPanelControllerBase(PanelControllerMetadata metadata,
             Map<Class<?>, Provider<View>> decorPanelViewMap) {
         mMetadata = metadata;
-        String viewName = metadata.getStringConfiguration(PanelControllerMetadata.VIEW_TAG);
+        String viewName = metadata.getStringConfiguration(VIEW_TAG);
         if (viewName == null) {
             throw new RuntimeException("ViewName must be set " + metadata);
         }

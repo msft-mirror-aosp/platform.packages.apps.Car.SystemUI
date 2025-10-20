@@ -141,7 +141,7 @@ public class PanelConfigReader {
     }
 
     private void loadFromXml() {
-        debugLog("Loading panel states from XML");
+        debugLog("Loading panel states from XML" + mContext);
         Resources res = mContext.getResources();
         int windowStatesRes = mFlagManager.getResourceId(Flag.EnableExtPanelUpdates,
                 R.array.window_states);

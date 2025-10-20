@@ -39,7 +39,6 @@ import android.view.ViewGroup;
 
 import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.PanelState;
-import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.ScalableUIUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
@@ -49,6 +48,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -85,8 +85,12 @@ public class ButtonSelectionStateController {
                 public void onBeforePanelStateChanged(Set<String> changedPanelIds,
                         Map<String, PanelState> panelStates) {
                     if (DEBUG) {
+                        StringBuilder panelStatesString = new StringBuilder();
+                        changedPanelIds.stream().map(panelStates::get).filter(
+                                Objects::nonNull).forEach(
+                                    s -> panelStatesString.append(s.toShortString()).append("\n"));
                         Log.d(TAG, "onBeforePanelStateChanged: changedPanelIds="
-                                + changedPanelIds + " panelStates=" + panelStates);
+                                + changedPanelIds + " panelStates=" + panelStatesString);
                     }
                     panelVisibilityChanged(panelStates);
                     // also trigger task change since it depends on panel visibility

@@ -16,17 +16,18 @@
 
 package com.android.systemui.wmshell;
 
-import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_BOTTOM_ID;
-import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_LEFT_ID;
-import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_RIGHT_ID;
-import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_TOP_ID;
+import static com.android.car.scalableui.loader.xml.HunTagXmlParserKt.HUN_PANEL_ID;
 
 import android.content.Context;
+import android.hardware.display.DisplayManager;
 import android.os.Handler;
+import android.util.Log;
 import android.view.IWindowManager;
 
 import androidx.annotation.NonNull;
 
+import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.flags.Flag;
@@ -34,21 +35,23 @@ import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.AutoDisplayCompatWindowDecorViewModel;
 import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
+import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.car.wm.scalableui.ActionConfigReader;
+import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.PanelAutoTaskStackTransitionHandlerDelegate;
 import com.android.systemui.car.wm.scalableui.PanelConfigReader;
 import com.android.systemui.car.wm.scalableui.ScalableUIDumpsys;
+import com.android.systemui.car.wm.scalableui.ScalableUIUtils;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
-import com.android.systemui.car.wm.scalableui.panel.BasePanel;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
+import com.android.systemui.car.wm.scalableui.panel.SysUIPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerModule;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.ScalableUIPanelUpdateImpl;
 import com.android.systemui.car.wm.scalableui.systemwindow.HunWindow;
-import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;
-import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow.SystemBarConfiguration;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
@@ -61,15 +64,7 @@ import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
 import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.common.SyncTransactionQueue;
-import com.android.wm.shell.compatui.letterbox.DelegateLetterboxTransitionObserver;
-import com.android.wm.shell.compatui.letterbox.LetterboxCommandHandler;
-import com.android.wm.shell.compatui.letterbox.config.IgnoreLetterboxDependenciesHelper;
-import com.android.wm.shell.compatui.letterbox.config.LetterboxDependenciesHelper;
-import com.android.wm.shell.compatui.letterbox.lifecycle.LetterboxCleanupAdapter;
-import com.android.wm.shell.compatui.letterbox.state.LetterboxTaskListenerAdapter;
 import com.android.wm.shell.dagger.DynamicOverride;
-import com.android.wm.shell.dagger.LetterboxModule;
-import com.android.wm.shell.dagger.ShellCreateTriggerOverride;
 import com.android.wm.shell.dagger.WMShellBaseModule;
 import com.android.wm.shell.dagger.WMSingleton;
 import com.android.wm.shell.fullscreen.FullscreenTaskListener;
@@ -77,6 +72,7 @@ import com.android.wm.shell.pip.Pip;
 import com.android.wm.shell.recents.RecentTasksController;
 import com.android.wm.shell.shared.annotations.ShellBackgroundThread;
 import com.android.wm.shell.shared.annotations.ShellMainThread;
+import com.android.wm.shell.sysui.ShellController;
 import com.android.wm.shell.sysui.ShellInit;
 import com.android.wm.shell.taskview.TaskViewTransitions;
 import com.android.wm.shell.transition.FocusTransitionObserver;
@@ -95,21 +91,22 @@ import kotlinx.coroutines.CoroutineScope;
 
 import java.util.Optional;
 
-import javax.inject.Named;
-
 /** Provides dependencies from {@link com.android.wm.shell} for CarSystemUI. */
-@Module(includes = {WMShellBaseModule.class, AutoShellModule.class, LetterboxModule.class,
-        PanelControllerModule.class})
+@Module(includes = {WMShellBaseModule.class, AutoShellModule.class, PanelControllerModule.class})
 public abstract class CarWMShellModule {
+    private static final String TAG = CarWMShellModule.class.getSimpleName();
 
     @WMSingleton
     @Provides
     static DisplaySystemBarsController provideDisplaySystemBarsController(Context context,
             IWindowManager wmService, DisplayController displayController,
             DisplayInsetsController displayInsetsController,
-            @Main Handler mainHandler) {
+            @Main Handler mainHandler, CarWMUserHelper userHelper,
+            ShellController shellController, SystemUiWindowProvider windowProvider,
+            EventDispatcher dispatcher) {
         return new DisplaySystemBarsController(context, wmService, displayController,
-                displayInsetsController, mainHandler);
+                displayInsetsController, mainHandler, userHelper, shellController, windowProvider,
+                dispatcher);
     }
 
     @WMSingleton
@@ -199,15 +196,15 @@ public abstract class CarWMShellModule {
             Context context,
             TaskPanel.Factory taskPanelFactory,
             DecorPanel.Factory decorPanelFactory,
-            BasePanel.Factory basePanelFactory,
+            SysUIPanel.Factory sysUiPanelFactory,
             FlagManager flagManager
     ) {
-        if (flagManager.isEnabled(Flag.ScalableUIEnabled)) {
+        if (ScalableUIUtils.isScalableUIEnabled(context, flagManager)) {
             return Optional.of(new PanelConfigReader(
                     context,
                     taskPanelFactory,
                     decorPanelFactory,
-                    basePanelFactory,
+                    sysUiPanelFactory,
                     flagManager));
         }
         return Optional.empty();
@@ -217,7 +214,7 @@ public abstract class CarWMShellModule {
     @Provides
     static Optional<ActionConfigReader> providesActionConfigReader(Context context,
             FlagManager flagManager) {
-        if (flagManager.isEnabled(Flag.ScalableUIEnabled)) {
+        if (ScalableUIUtils.isScalableUIEnabled(context, flagManager)) {
             return Optional.of(new ActionConfigReader(context, flagManager));
         }
         return Optional.empty();
@@ -231,12 +228,16 @@ public abstract class CarWMShellModule {
             Optional<PanelConfigReader> panelConfigReaderOptional,
             Lazy<PanelAutoTaskStackTransitionHandlerDelegate> delegate,
             ScalableUIDumpsys scalableUIDumpsys,
-            FlagManager flagManager) {
-        if (flagManager.isEnabled(Flag.ScalableUIEnabled)
+            FlagManager flagManager,
+            DisplayController displayController,
+            AutoTaskStackHelper autoTaskStackHelper) {
+        if (ScalableUIUtils.isScalableUIEnabled(context, flagManager)
                 && panelConfigReaderOptional.isPresent()) {
             return Optional.of(
-                    new ScalableUIWMInitializer(shellInit, actionConfigReaderOptional.get(),
-                            panelConfigReaderOptional.get(), delegate.get(), scalableUIDumpsys));
+                    new ScalableUIWMInitializer(context, shellInit,
+                            actionConfigReaderOptional.get(),
+                            panelConfigReaderOptional.get(), delegate.get(), scalableUIDumpsys,
+                            displayController, autoTaskStackHelper, flagManager));
         }
         return Optional.empty();
     }
@@ -249,9 +250,9 @@ public abstract class CarWMShellModule {
 
     @WMSingleton
     @Provides
-    static Optional<ScalableUIPanelUpdateImpl> provideScalableUIPanelUpdateImpl(
+    static Optional<ScalableUIPanelUpdateImpl> provideScalableUIPanelUpdateImpl(Context context,
             FlagManager flagManager) {
-        if (flagManager.isEnabled(Flag.ScalableUIEnabled) && flagManager.isEnabled(
+        if (ScalableUIUtils.isScalableUIEnabled(context, flagManager) && flagManager.isEnabled(
                 Flag.EnableExtPanelUpdates)) {
             return Optional.of(new ScalableUIPanelUpdateImpl());
         }
@@ -279,159 +280,20 @@ public abstract class CarWMShellModule {
     }
 
     @WMSingleton
-    @ShellCreateTriggerOverride
     @Provides
-    static Object provideIndependentShellComponentsToCreate(
-            @NonNull DelegateLetterboxTransitionObserver letterboxTransitionObserver,
-            @NonNull LetterboxCommandHandler letterboxCommandHandler,
-            @NonNull LetterboxTaskListenerAdapter letterboxTaskListenerAdapter,
-            @NonNull LetterboxCleanupAdapter letterboxCleanupAdapter) {
-        return new Object();
-    }
-
-    @WMSingleton
-    @Provides
-    static LetterboxDependenciesHelper provideLetterboxDependenciesHelper() {
-        return new IgnoreLetterboxDependenciesHelper();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_LEFT_ID)
-    static Optional<SystemBarWindow> provideLeftSystemBarWindow(Context context,
+    static Optional<HunWindow> provideHunWindow(Context context, DisplayManager displayManager,
             Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
         if (consumer.isPresent()) {
+            PanelState panelState = StateManager.getPanelState(HUN_PANEL_ID);
+            if (panelState == null) {
+                Log.w(TAG, "HunWindow not initialized because PanelState for HUN_PANEL_ID "
+                        + "is null.");
+                return Optional.empty();
+            }
             try {
                 return Optional.of(
-                        new SystemBarWindow(context, consumer, dispatcher,
-                                SYSTEM_BAR_PANEL_LEFT_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_TOP_ID)
-    static Optional<SystemBarWindow> provideTopSystemBarWindow(Context context,
-            Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(
-                        new SystemBarWindow(context, consumer, dispatcher,
-                                SYSTEM_BAR_PANEL_TOP_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_RIGHT_ID)
-    static Optional<SystemBarWindow> provideRightSystemBarWindow(Context context,
-            Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(
-                        new SystemBarWindow(context, consumer, dispatcher,
-                                SYSTEM_BAR_PANEL_RIGHT_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_BOTTOM_ID)
-    static Optional<SystemBarWindow> provideBottomSystemBarWindow(Context context,
-            Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(
-                        new SystemBarWindow(context, consumer, dispatcher,
-                                SYSTEM_BAR_PANEL_BOTTOM_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_LEFT_ID)
-    static Optional<SystemBarConfiguration> provideLeftSystemBarConfiguration(
-            Optional<PanelUpdateConsumer> consumer) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(new SystemBarConfiguration(consumer, SYSTEM_BAR_PANEL_LEFT_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_TOP_ID)
-    static Optional<SystemBarConfiguration> provideTopSystemBarConfiguration(
-            Optional<PanelUpdateConsumer> consumer) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(new SystemBarConfiguration(consumer, SYSTEM_BAR_PANEL_TOP_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_RIGHT_ID)
-    static Optional<SystemBarConfiguration> provideRightSystemBarConfiguration(
-            Optional<PanelUpdateConsumer> consumer) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(new SystemBarConfiguration(consumer, SYSTEM_BAR_PANEL_RIGHT_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    @Named(SYSTEM_BAR_PANEL_BOTTOM_ID)
-    static Optional<SystemBarConfiguration> provideBottomSystemBarConfiguration(
-            Optional<PanelUpdateConsumer> consumer) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(
-                        new SystemBarConfiguration(consumer, SYSTEM_BAR_PANEL_BOTTOM_ID));
-            } catch (IllegalStateException e) {
-                return Optional.empty();
-            }
-        }
-        return Optional.empty();
-    }
-
-    @WMSingleton
-    @Provides
-    static Optional<HunWindow> provideHunWindow(Context context,
-            Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
-        if (consumer.isPresent()) {
-            try {
-                return Optional.of(
-                        new HunWindow(context, consumer.get(), dispatcher));
+                        new HunWindow(context, displayManager, consumer.get(), dispatcher,
+                                panelState.getDisplayId()));
             } catch (IllegalStateException e) {
                 return Optional.empty();
             }

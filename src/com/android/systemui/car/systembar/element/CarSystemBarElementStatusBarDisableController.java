@@ -20,6 +20,7 @@ import android.annotation.NonNull;
 import android.app.ActivityManager;
 import android.app.StatusBarManager;
 import android.content.Context;
+import android.util.Log;
 import android.util.SparseIntArray;
 
 import com.android.systemui.dagger.SysUISingleton;
@@ -43,6 +44,8 @@ public class CarSystemBarElementStatusBarDisableController {
     private final SparseIntArray mStatusBarStates = new SparseIntArray();
     private final SparseIntArray mStatusBar2States = new SparseIntArray();
     private boolean mLockTaskModeLocked = false;
+    private static final String TAG =
+            CarSystemBarElementStatusBarDisableController.class.getSimpleName();
 
     private final CommandQueue.Callbacks mCommandQueueCallback = new CommandQueue.Callbacks() {
         @Override
@@ -70,12 +73,13 @@ public class CarSystemBarElementStatusBarDisableController {
             @StatusBarManager.DisableFlags int disableFlags,
             @StatusBarManager.Disable2Flags int disable2Flags,
             boolean disableForLockTaskModeLocked) {
-        boolean wasEmpty = mListeners.isEmpty();
         DataItem item = new DataItem(listener, displayId, disableFlags, disable2Flags,
                 disableForLockTaskModeLocked);
         synchronized (mListeners) {
+            boolean wasEmpty = mListeners.isEmpty();
             mListeners.add(item);
             if (wasEmpty) {
+                Log.i(TAG, "addListener: registering CommandQueueCallback");
                 mCommandQueue.addCallback(mCommandQueueCallback);
             } else {
                 notifyDataItem(item);
@@ -88,6 +92,7 @@ public class CarSystemBarElementStatusBarDisableController {
         synchronized (mListeners) {
             mListeners.removeIf(item -> item.sameOrEmpty(listener));
             if (mListeners.isEmpty()) {
+                Log.i(TAG, "removeListener: unregistering CommandQueueCallback");
                 mCommandQueue.removeCallback(mCommandQueueCallback);
             }
         }

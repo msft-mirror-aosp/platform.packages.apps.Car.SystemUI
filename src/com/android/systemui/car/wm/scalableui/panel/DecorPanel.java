@@ -48,7 +48,7 @@ import java.util.Optional;
 /**
  * A {@link AutoDecor} based implementation of a {@link Panel}.
  */
-public final class DecorPanel extends BasePanel {
+public final class DecorPanel extends SysUIPanel {
     private static final String TAG = DecorPanel.class.getSimpleName();
 
     private final AutoDecorManager mAutoDecorManager;
@@ -103,6 +103,16 @@ public final class DecorPanel extends BasePanel {
         if (mPanelUtils.isUserUnlocked()) {
             reset();
         }
+    }
+
+    @Override
+    public void destroy() {
+        mMainExecutor.execute(() -> {
+            if (mAutoDecor != null) {
+                mAutoDecorManager.removeAutoDecor(mAutoDecor);
+            }
+        });
+        super.destroy();
     }
 
     @Override

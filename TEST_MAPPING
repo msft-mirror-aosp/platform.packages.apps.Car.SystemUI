@@ -1,17 +1,4 @@
 {
-  "auto-end-to-end-presubmit": [
-    {
-      "name": "AndroidAutomotiveHomeTests",
-      "options" : [
-        {
-          "include-filter": "android.platform.tests.HomeTest"
-        },
-        {
-          "exclude-filter": "android.platform.tests.HomeTest#testAssistantWidget"
-        }
-      ]
-    }
-  ],
   "carsysui-presubmit": [
     {
       "name": "CarSystemUITests",

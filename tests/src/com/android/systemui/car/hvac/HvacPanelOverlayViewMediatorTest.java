@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.hvac;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
+import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
@@ -39,11 +41,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
+
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
 public class HvacPanelOverlayViewMediatorTest extends CarSysuiTestCase {
+    private static final String SYSTEM_BAR_NAME_1 = "SYSTEM_BAR_NAME_1";
+    private static final String SYSTEM_BAR_NAME_2 = "SYSTEM_BAR_NAME_2";
 
     private HvacPanelOverlayViewMediator mHvacPanelOverlayViewMediator;
 
@@ -57,17 +63,33 @@ public class HvacPanelOverlayViewMediatorTest extends CarSysuiTestCase {
     private BroadcastDispatcher mBroadcastDispatcher;
     @Mock
     private UserTracker mUserTracker;
+    @Mock
+    private View.OnTouchListener mOnTouchListener;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        when(mHvacPanelOverlayViewController.getDragCloseTouchListener())
+                .thenReturn(mOnTouchListener);
 
         mHvacPanelOverlayViewMediator = new HvacPanelOverlayViewMediator(
                 mContext,
                 mCarSystemBarController,
                 mHvacPanelOverlayViewController,
                 mBroadcastDispatcher,
-                mUserTracker);
+                mUserTracker,
+                Arrays.asList(SYSTEM_BAR_NAME_1, SYSTEM_BAR_NAME_2));
+    }
+
+    @Test
+    public void registerListeners_touchListenersRegistered() {
+        mHvacPanelOverlayViewMediator.registerListeners();
+
+        verify(mCarSystemBarController)
+                .registerBarTouchListener(eq(SYSTEM_BAR_NAME_1), eq(mOnTouchListener));
+        verify(mCarSystemBarController)
+                .registerBarTouchListener(eq(SYSTEM_BAR_NAME_2), eq(mOnTouchListener));
     }
 
     @Test

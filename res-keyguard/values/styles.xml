@@ -25,11 +25,13 @@
         <item name="android:layout_height">0dp</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
         <item name="textView">@id/pinEntry</item>
+        <item name="android:textColor">?oemColorOnSurface</item>
     </style>
 
     <style name="NumPadKeyButton.land">
         <item name="android:layout_width">@dimen/num_pad_key_width</item>
         <item name="android:layout_height">@dimen/num_pad_key_height</item>
+        <item name="android:textColor">?oemColorOnSurface</item>
     </style>
 
     <style name="NumPadKeyButton.LastRow">
@@ -45,6 +47,6 @@
     </style>
 
     <style name="Widget.TextView.NumPadKey" parent="@android:style/Widget.TextView">
-        android:textAppearance="?oemTextAppearanceTitleLarge"
+        <item name="android:textAppearance">?oemTextAppearanceTitleLarge</item>
     </style>
 </resources>

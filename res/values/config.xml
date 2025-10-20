@@ -28,21 +28,20 @@
     <bool name="config_enableRightSystemBar">false</bool>
     <bool name="config_enableBottomSystemBar">true</bool>
 
-    <!-- Configure the type of each system bar. Each system bar must have a unique type. -->
+    <!-- Configure the type of each system bar. -->
     <!--    STATUS_BAR = 0-->
     <!--    NAVIGATION_BAR = 1-->
-    <!--    STATUS_BAR_EXTRA = 2-->
-    <!--    NAVIGATION_BAR_EXTRA = 3-->
     <integer name="config_topSystemBarType">0</integer>
-    <integer name="config_leftSystemBarType">2</integer>
-    <integer name="config_rightSystemBarType">3</integer>
+    <integer name="config_leftSystemBarType">0</integer>
+    <integer name="config_rightSystemBarType">1</integer>
     <integer name="config_bottomSystemBarType">1</integer>
 
     <!-- Location of the system bar privacy indicator. This value should be consistent with the
-         layout file where the view for system bar privacy indicator is put. -->
-    <!-- For example the view is put car_top_system_bar.xml, this value should be
-         config_topSystemBarType. -->
-    <integer name="config_privacyIndicatorLocation">@integer/config_topSystemBarType</integer>
+         system  bar where the view for system bar privacy indicator is put. -->
+    <!-- For example the view is put in system bar with the name "status", this value should be
+         status. -->
+    <string name="config_privacyIndicatorLocation">TopCarSystemBar</string>
+    <string name="config_privacyIndicatorLocation_enable_ext_panel_updates">TopCarSystemBar</string>
 
     <!-- Configure the relative z-order among the system bars. When two system bars overlap (e.g.
          if both top bar and left bar are enabled, it creates an overlapping space in the upper left
@@ -230,7 +229,7 @@
     <!-- 0 disabled -->
     <!-- 1 left -->
     <!-- 2 right -->
-    <integer name="config_showDisplayCompatToolbarOnSystemBar">1</integer>
+    <integer name="config_showDisplayCompatToolbarOnSystemBar">0</integer>
 
     <!-- Determines how to show navigation bar and status bar on app's immersive request, only
         works if config_remoteInsetsControllerControlsSystemBars is set to true-->
@@ -239,6 +238,14 @@
     <!-- 2 immersive_with_nav, show nav bar and hide status bar -->
     <!-- 3 immersive based on bar control policy  -->
     <integer name="config_systemBarPersistency">1</integer>
+
+    <!--
+        Provides a backup value for the system bar visibility override policy. This value is used
+        when config_systemBarPersistency is set to use the bar policy and the
+        CarSettings.Global.SYSTEM_BAR_VISIBILITY_OVERRIDE global setting is not configured.
+        The value should be a valid policy control string, e.g., "immersive.full=*".
+    -->
+    <string name="system_bar_visibility_override_backup" />
 
     <!-- Determines if the system bars should be forced into a particular system bar behavior when
          the Setup Wizard is currently in progress. This config only takes effect if
@@ -283,8 +290,16 @@
     -->
     <bool name="config_enableClearBackStack">true</bool>
 
+    <!-- Enable the ScalableUI feature - this configuration toggle is only valid if the ScalableUI
+         feature flag is also enabled. -->
+    <bool name="config_enableScalableUI">false</bool>
+
     <!-- The entry point for panel definition of scalableUI feature.  -->
     <array name="window_states">
+    </array>
+
+    <!-- The entry point for panel definition of scalableUI feature if flag is enabled  -->
+    <array name="window_states_enable_ext_panel_updates">
     </array>
 
     <!--
@@ -292,6 +307,44 @@
         Used when scalableUi feature is enabled.
     -->
     <string-array name="config_untrimmable_activities" translatable="false">
+    </string-array>
+
+    <!--
+        Component names that will not trigger events by default when launched.
+        Used when scalableUi feature is enabled.
+    -->
+    <string-array name="config_ignoredEventActivities" translatable="false">
+        <item>com.android.systemui/.car.wm.activity.ActivityBlockingActivity</item>
+        <item>@string/config_mediaBlockingActivity</item>
+    </string-array>
+
+    <!--
+        List of system bar names that should register HvacPanelOverlayViewController's
+        DragCloseTouchListener
+    -->
+    <string-array name="config_registerHvacDragCloseListener" translatable="false">
+        <item>TopCarSystemBar</item>
+        <item>BottomCarSystemBar</item>
+        <item>LeftCarSystemBar</item>
+        <item>RightCarSystemBar</item>
+    </string-array>
+
+    <!--
+        List of system bar names that should register NotificationPanelViewController's
+        DragOpenTouchListener
+    -->
+    <string-array name="config_notificationDragOpenListener" translatable="false">
+        <item>TopCarSystemBar</item>
+    </string-array>
+
+    <!--
+        List of system bar names that should register NotificationPanelViewController's
+        DragCloseTouchListener
+    -->
+    <string-array name="config_notificationDragCloseListener" translatable="false">
+        <item>BottomCarSystemBar</item>
+        <item>LeftCarSystemBar</item>
+        <item>RightCarSystemBar</item>
     </string-array>
 
     <!--
@@ -318,4 +371,10 @@
 
     <!-- Whether the size compat restart button should be enabled -->
     <bool name="config_isSizeCompatRestartButtonEnabled">false</bool>
+
+    <!-- Settings package name to be used as a default/fallback if no other settings packages are found -->
+    <string name="config_defaultSettingsPackage">com.android.car.settings</string>
+
+    <!-- Whether to show the fullscreen button in the task toolbar or not -->
+    <bool name="show_toolbar_fullscreen_button">true</bool>
 </resources>

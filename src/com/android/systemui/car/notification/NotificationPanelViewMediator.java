@@ -16,10 +16,8 @@
 
 package com.android.systemui.car.notification;
 
-import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM;
-import static com.android.systemui.car.systembar.CarSystemBarController.LEFT;
-import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT;
-import static com.android.systemui.car.systembar.CarSystemBarController.TOP;
+import static com.android.systemui.car.notification.NotificationModule.DRAG_CLOSE_NOTIFICATION_BAR_NAMES;
+import static com.android.systemui.car.notification.NotificationModule.DRAG_OPEN_NOTIFICATION_BAR_NAMES;
 
 import android.car.hardware.power.CarPowerManager;
 import android.content.BroadcastReceiver;
@@ -39,7 +37,10 @@ import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 
+import java.util.List;
+
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * The view mediator which attaches the view controller to other elements of the system ui. Disables
@@ -59,6 +60,8 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
     private final BroadcastDispatcher mBroadcastDispatcher;
     private final UserTracker mUserTracker;
     private final ConfigurationController mConfigurationController;
+    private final List<String> mDragOpenBarNames;
+    private final List<String> mDragCloseBarNames;
 
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -88,8 +91,6 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         }
     };
 
-    private boolean mIsUiModeNight;
-
     @Inject
     public NotificationPanelViewMediator(
             Context context,
@@ -98,7 +99,9 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
             PowerManagerHelper powerManagerHelper,
             BroadcastDispatcher broadcastDispatcher,
             UserTracker userTracker,
-            ConfigurationController configurationController) {
+            ConfigurationController configurationController,
+            @Named(DRAG_OPEN_NOTIFICATION_BAR_NAMES) List<String> dragOpenBarNames,
+            @Named(DRAG_CLOSE_NOTIFICATION_BAR_NAMES) List<String> dragCloseBarNames) {
         mContext = context;
         mCarSystemBarController = carSystemBarController;
         mNotificationPanelViewController = notificationPanelViewController;
@@ -106,15 +109,19 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
         mBroadcastDispatcher = broadcastDispatcher;
         mUserTracker = userTracker;
         mConfigurationController = configurationController;
+        mDragOpenBarNames = dragOpenBarNames;
+        mDragCloseBarNames = dragCloseBarNames;
     }
 
     @Override
     @CallSuper
     public void registerListeners() {
-        registerTopBarTouchListener();
-        registerBottomBarTouchListener();
-        registerLeftBarTouchListener();
-        registerRightBarTouchListener();
+        mDragOpenBarNames.forEach(systemBarName ->
+                mCarSystemBarController.registerBarTouchListener(systemBarName,
+                        mNotificationPanelViewController.getDragOpenTouchListener()));
+        mDragCloseBarNames.forEach(systemBarName ->
+                mCarSystemBarController.registerBarTouchListener(systemBarName,
+                        mNotificationPanelViewController.getDragCloseTouchListener()));
 
         mBroadcastDispatcher.registerReceiver(mBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS), null,
@@ -136,13 +143,8 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
 
     @Override
     public void onConfigChanged(Configuration newConfig) {
-        boolean isConfigNightMode = newConfig.isNightModeActive();
-        // Only refresh UI on Night mode changes
-        if (isConfigNightMode != mIsUiModeNight) {
-            mIsUiModeNight = isConfigNightMode;
-            mNotificationPanelViewController.reinflate();
-            registerListeners();
-        }
+        mNotificationPanelViewController.reinflate();
+        registerListeners();
     }
 
     @Override
@@ -164,33 +166,5 @@ public class NotificationPanelViewMediator implements OverlayViewMediator,
     public void onLocaleListChanged() {
         mNotificationPanelViewController.reinflate();
         registerListeners();
-    }
-
-    protected void registerTopBarTouchListener() {
-        mCarSystemBarController.registerBarTouchListener(TOP,
-                mNotificationPanelViewController.getDragCloseTouchListener());
-    }
-
-    protected void registerBottomBarTouchListener() {
-        mCarSystemBarController.registerBarTouchListener(BOTTOM,
-                mNotificationPanelViewController.getDragCloseTouchListener());
-    }
-
-    protected void registerLeftBarTouchListener() {
-        mCarSystemBarController.registerBarTouchListener(LEFT,
-                mNotificationPanelViewController.getDragCloseTouchListener());
-    }
-
-    protected void registerRightBarTouchListener() {
-        mCarSystemBarController.registerBarTouchListener(RIGHT,
-                mNotificationPanelViewController.getDragCloseTouchListener());
-    }
-
-    protected final CarSystemBarController getCarSystemBarController() {
-        return mCarSystemBarController;
-    }
-
-    protected final NotificationPanelViewController getNotificationPanelViewController() {
-        return mNotificationPanelViewController;
     }
 }

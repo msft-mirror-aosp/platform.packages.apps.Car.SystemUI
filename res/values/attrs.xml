@@ -271,6 +271,7 @@
     <attr name="carControlHighlight" format="color|reference"/>
     <attr name="systemBarPillRadius" format="dimension"/>
     <attr name="systemBarPillSelectedRadius" format="dimension"/>
+    <attr name="appPanelBackgroundRadius" format="dimension"/>
     <attr name="hvacPanelBackgroundRadius" format="dimension"/>
     <attr name="carVolumeItemCornerRadius" format="dimension"/>
     <attr name="notificationShadeHandleBarRadius" format="dimension"/>

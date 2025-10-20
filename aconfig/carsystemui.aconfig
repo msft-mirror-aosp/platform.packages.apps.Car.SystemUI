@@ -29,12 +29,7 @@ flag {
     bug: "341963483"
 }
 
-flag {
-    name: "daview_based_windowing"
-    namespace: "car_framework"
-    description: "Flag controlling the use of DaView and DaViewTransitions to implement windowing structure"
-    bug: "348502619"
-}
+
 
 flag {
     name: "show_qc_sound_panel"
@@ -65,13 +60,6 @@ flag {
 }
 
 flag {
-    name: "auto_task_stack_windowing"
-    namespace: "car_framework"
-    description: "Flag to enable the AutoTaskStackController in WmShell."
-    bug: "384082238"
-}
-
-flag {
     name: "package_level_system_bar_visibility"
     namespace: "car_sys_exp"
     description: "Allow per-package persistent system bar visibility control."
@@ -97,5 +85,12 @@ flag {
     namespace: "car_sys_exp"
     description: "This flag controls enabling scalable ui actions."
     bug: "423995605"
+}
+
+flag {
+    name: "show_media_projection_indicator"
+    namespace: "car_sys_exp"
+    description: "This flag controls enabling an indicator for Media Projection API"
+    bug: "435279151"
 }
 

@@ -17,36 +17,35 @@ package com.android.systemui.car.wm.scalableui.systemwindow
 
 import android.content.Context
 import android.graphics.PixelFormat
-import android.graphics.drawable.Drawable
+import android.hardware.display.DisplayManager
 import android.view.ViewGroup
 import android.view.WindowManager
-import com.android.car.scalableui.loader.xml.HunTagXmlParser.Companion.HUN_PANEL_ID
+import com.android.car.scalableui.loader.xml.HUN_PANEL_ID
 import com.android.systemui.car.wm.scalableui.EventDispatcher
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
-import javax.inject.Inject
 import kotlin.math.min
 
 /**
  * An implementation of [SystemUiWindow] for Heads-Up Notifications (Huns).
  */
-class HunWindow @Inject constructor(
+class HunWindow constructor(
     context: Context,
+    displayManager: DisplayManager,
     consumer: PanelUpdateConsumer,
-    eventDispatcher: EventDispatcher
-) : SystemUiWindowBase(context, consumer, eventDispatcher, HUN_PANEL_ID) {
-
-    init {
-        panelUpdateConsumer.registerCallback(id, object : PanelUpdateConsumer.PanelUpdateCallback {
-            override fun onGravityChange(panelId: String, gravity: Int) {
-                _rootView?.let {
-                    windowManager.updateViewLayout(it, getLayoutParams())
-                }
-            }
-        })
-    }
+    eventDispatcher: EventDispatcher,
+    displayId: Int
+) : SystemUiWindowBase(
+    context,
+    displayManager,
+    consumer,
+    eventDispatcher,
+    HUN_PANEL_ID,
+    displayId
+) {
 
     override fun getLayoutParams(): WindowManager.LayoutParams? {
         val bounds = panelUpdateConsumer.getBounds(id) ?: return null
+        val metrics = displayMetrics ?: return null
 
         val lp = WindowManager.LayoutParams(
             bounds.width(),
@@ -58,17 +57,13 @@ class HunWindow @Inject constructor(
         )
 
         val leftMargin = bounds.left
-        val rightMargin = displayMetrics.widthPixels - bounds.right
+        val rightMargin = metrics.widthPixels - bounds.right
         val marginHorizontalPx = min(leftMargin, rightMargin)
-        lp.horizontalMargin = marginHorizontalPx.toFloat() / displayMetrics.widthPixels
+        lp.horizontalMargin = marginHorizontalPx.toFloat() / metrics.widthPixels
         lp.title = WINDOW_TITLE
         lp.gravity = panelUpdateConsumer.getGravity(id)
         return lp
     }
-
-    /** Returns the scrim for the Hun window. */
-    val scrim: Drawable?
-        get() = panelUpdateConsumer.getScrim(id)
 
     /** Returns the gravity for the Hun window. */
     val gravity: Int

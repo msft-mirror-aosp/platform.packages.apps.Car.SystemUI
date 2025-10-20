@@ -19,19 +19,16 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
-
-
 /** A factory that creates and caches views for navigation bars. */
 public interface CarSystemBarViewFactory {
 
     /** Gets the window by side. */
     @NonNull
-    ViewGroup getSystemBarWindow(@SystemBarSide int side);
+    ViewGroup getSystemBarWindow(@NonNull String name);
 
     /** Gets the bar view by side. */
     @NonNull
-    CarSystemBarViewController getSystemBarViewController(@SystemBarSide int side, boolean isSetUp);
+    CarSystemBarViewController getSystemBarViewController(@NonNull String name, boolean isSetUp);
 
     /** Resets the cached system bar views. */
     void resetSystemBarViewCache();

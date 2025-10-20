@@ -18,39 +18,93 @@ package com.android.systemui.car.wm.scalableui.systemwindow
 import android.content.Context
 import android.graphics.Insets
 import android.graphics.Rect
+import android.hardware.display.DisplayManager
+import android.util.DisplayMetrics
+import android.util.Log
 import android.view.Display
 import android.view.View
 import android.view.WindowManager
+import com.android.car.scalableui.model.Event
 import com.android.systemui.car.wm.scalableui.EventDispatcher
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
-import com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.HIDE_EVENT_PREFIX
-import com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SHOW_EVENT_PREFIX
+import com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_HIDE_PANEL_EVENT_ID
+import com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_SHOW_PANEL_EVENT_ID
 
 /**
  * A base class for [SystemUiWindow] implementations, providing common functionality.
  */
 abstract class SystemUiWindowBase(
-    context: Context,
+    private val context: Context,
+    private val displayManager: DisplayManager,
     protected val panelUpdateConsumer: PanelUpdateConsumer,
     protected val eventDispatcher: EventDispatcher,
-    protected var id: String
+    protected var id: String,
+    private val displayId: Int
 ) : SystemUiWindow {
-    protected val display: Display = context.display
-    protected val displayContext: Context = context.createDisplayContext(display)
-    protected val windowManager: WindowManager = displayContext.getSystemService(
-        WindowManager::class.java
-    )
-    protected val displayMetrics = displayContext.resources.displayMetrics
+    protected var display: Display? = null
+    protected var displayContext: Context? = null
+    protected var windowManager: WindowManager? = null
+    protected var displayMetrics: DisplayMetrics? = null
     protected var _rootView: View? = null
+    private val panelUpdateCallback: PanelUpdateConsumer.PanelUpdateCallback
 
     init {
-        panelUpdateConsumer.registerCallback(id, object : PanelUpdateConsumer.PanelUpdateCallback {
+        initializeDisplay()
+        panelUpdateCallback = object : PanelUpdateConsumer.PanelUpdateCallback {
             override fun onBoundsChange(panelId: String, bounds: Rect) {
                 _rootView?.let {
-                    windowManager.updateViewLayout(it, getLayoutParams())
+                    windowManager?.updateViewLayout(it, getLayoutParams())
                 }
             }
-        })
+
+            override fun onInsetsChange(panelId: String, insets: Insets) {
+                _rootView?.setPadding(insets.left, insets.top, insets.right, insets.bottom)
+            }
+
+            override fun onAlphaChange(panelId: String, alpha: Float) {
+                _rootView?.alpha = alpha
+            }
+
+            override fun onVisibilityChange(panelId: String, visible: Boolean) {
+                _rootView?.visibility = if (visible) View.VISIBLE else View.GONE
+            }
+
+            override fun onGravityChange(panelId: String, gravity: Int) {
+                _rootView?.let {
+                    windowManager?.updateViewLayout(it, getLayoutParams())
+                }
+            }
+        }
+    }
+
+    private fun initializeDisplay() {
+        if (displayId == Display.INVALID_DISPLAY) {
+            Log.w(TAG, "Invalid display ID (-1) for $id")
+            return
+        }
+
+        val localDisplay = displayManager.getDisplay(displayId) ?: run {
+            Log.e(TAG, "Cannot find display for id: $displayId for $id")
+            return
+        }
+
+        display = localDisplay
+        val localDisplayContext = context.createDisplayContext(localDisplay)
+        displayContext = localDisplayContext
+        windowManager = displayContext?.getSystemService(WindowManager::class.java) ?: run {
+            Log.e(TAG, "Cannot obtain WindowManager for $id on display $displayId")
+            return
+        }
+        displayMetrics = localDisplayContext.resources.displayMetrics ?: run {
+            Log.w(TAG, "Cannot find displayMetrics for id: $displayId for $id")
+            return
+        }
+    }
+
+    override fun getName(): String = id
+
+    override fun getBounds(): Rect? {
+        return panelUpdateConsumer.getBounds(id)
     }
 
     override fun setRootView(view: View, layoutParams: WindowManager.LayoutParams?) {
@@ -58,14 +112,24 @@ abstract class SystemUiWindowBase(
             removeRootView()
         }
         this._rootView = view
-        windowManager.addView(this._rootView, layoutParams)
+        windowManager?.addView(this._rootView, layoutParams)
+        panelUpdateConsumer.registerCallback(id, panelUpdateCallback)
     }
 
     override fun removeRootView() {
         _rootView?.let {
-            windowManager.removeView(it)
+            windowManager?.removeView(it)
             _rootView = null
         }
+        panelUpdateConsumer.unregisterCallback(id, panelUpdateCallback)
+    }
+
+    override fun removeRootViewImmediate() {
+        _rootView?.let {
+            windowManager?.removeViewImmediate(it)
+            _rootView = null
+        }
+        panelUpdateConsumer.unregisterCallback(id, panelUpdateCallback)
     }
 
     override fun isVisible(): Boolean {
@@ -73,11 +137,13 @@ abstract class SystemUiWindowBase(
     }
 
     override fun hide() {
-        eventDispatcher.executeEvent(HIDE_EVENT_PREFIX + id)
+        val event = Event.Builder(SYSTEM_HIDE_PANEL_EVENT_ID).setPanelId(id).build()
+        eventDispatcher.executeEvent(event)
     }
 
     override fun show() {
-        eventDispatcher.executeEvent(SHOW_EVENT_PREFIX + id)
+        val event = Event.Builder(SYSTEM_SHOW_PANEL_EVENT_ID).setPanelId(id).build()
+        eventDispatcher.executeEvent(event)
     }
 
     override fun getHeight(): Int {
@@ -100,11 +166,17 @@ abstract class SystemUiWindowBase(
         return panelUpdateConsumer.getCornerRadius(id) ?: 0
     }
 
+    override fun getDisplayId() = displayId
+
     override fun addCallback(callback: SystemUiWindow.WindowUpdateCallback) {
         panelUpdateConsumer.registerCallback(id, callback)
     }
 
     override fun removeCallback(callback: SystemUiWindow.WindowUpdateCallback) {
         panelUpdateConsumer.unregisterCallback(id, callback)
+    }
+
+    companion object {
+        private val TAG = SystemUiWindowBase::class.simpleName
     }
 }

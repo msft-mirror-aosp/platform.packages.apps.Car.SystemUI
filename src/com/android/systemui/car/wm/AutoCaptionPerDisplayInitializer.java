@@ -21,6 +21,7 @@ import static com.android.systemui.car.users.CarSystemUIUserUtil.isSecondaryMUMD
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.UserManager;
 import android.util.SparseArray;
 import android.window.DisplayAreaInfo;
 
@@ -57,8 +58,10 @@ public class AutoCaptionPerDisplayInitializer implements
         mAutoCaptionController = autoCaptionController;
         mAutoCaptionBarViewFactoryImpl =
                 new AutoCaptionBarViewFactoryImpl(context, shellTaskOrganizer);
+        // TODO(b/443340830): enable safe region for mumd
         mEnableSafeAreaAndToolbarPerDisplay = context.getResources().getBoolean(
-                R.bool.config_enableSafeAreaAndToolbarPerDisplay);
+                R.bool.config_enableSafeAreaAndToolbarPerDisplay)
+                && !UserManager.isVisibleBackgroundUsersEnabled();
         mSafeRegion = new Rect(
                 context.getResources().getDimensionPixelSize(R.dimen.safe_region_left),
                 context.getResources().getDimensionPixelSize(R.dimen.safe_region_top),

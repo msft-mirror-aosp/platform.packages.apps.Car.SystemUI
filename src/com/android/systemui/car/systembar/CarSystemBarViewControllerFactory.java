@@ -17,8 +17,6 @@ package com.android.systemui.car.systembar;
 
 import android.view.ViewGroup;
 
-import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
-
 /**
  * A controller for initializing the system bar views.
  *
@@ -27,5 +25,5 @@ import com.android.systemui.car.systembar.CarSystemBarController.SystemBarSide;
  */
 public interface CarSystemBarViewControllerFactory<T extends CarSystemBarViewController> {
     /** Create instance of CarSystemBarViewController for the system bar view */
-    T create(@SystemBarSide int side, ViewGroup view);
+    T create(String name, ViewGroup view);
 }

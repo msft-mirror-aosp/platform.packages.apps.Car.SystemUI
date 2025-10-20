@@ -79,14 +79,9 @@
     <string name="status_icon_display_status" msgid="2970020923181359144">"Nastavení displeje"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"Nastavení ladění"</string>
     <string name="status_icon_sound_status" msgid="4923149230650995670">"Nastavení zvuku"</string>
-    <string name="status_icon_drive_mode" msgid="3938622431486261076">"Režim jízdy autem"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Tuto funkci nelze používat při řízení"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Zavřít aplikaci"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Zpět"</string>
-    <string name="drive_mode_modes_comfort" msgid="628724737960743004">"Komfort"</string>
-    <string name="drive_mode_modes_eco" msgid="7694931508925737653">"Eko"</string>
-    <string name="drive_mode_modes_sport" msgid="7664603138389270601">"Sport"</string>
-    <string name="qc_drive_mode_active_subtitle" msgid="3667965966971747414">"Aktivní"</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"Nastavení"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Nastavení Bluetooth"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"Nastavení sítě a internetu"</string>
@@ -118,7 +113,7 @@
     <string name="unavailable_secure_user_text" msgid="6029519754897637674">"Uživatel teď není k dispozici"</string>
     <string name="unavailable_secure_user_message" msgid="4358973342428603745">"Na displeji pasažéra se nepodařilo spustit bezpečného uživatele"</string>
     <string name="passenger_keyguard_wrong_pattern" msgid="2581060250152895646">"Nesprávné gesto"</string>
-    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Nesprávný kód PIN"</string>
+    <string name="passenger_keyguard_wrong_pin" msgid="8061593500590667531">"Nesprávný PIN"</string>
     <string name="passenger_keyguard_wrong_password" msgid="3742711889441714581">"Nesprávné heslo"</string>
     <string name="passenger_keyguard_too_many_failed_attempts" msgid="2948335020152945468">"{count,plural, =1{Příliš mnoho neplatných pokusů. Zkuste to znovu za # sekundu.}few{Příliš mnoho neplatných pokusů. Zkuste to znovu za # sekundy.}many{Příliš mnoho neplatných pokusů. Zkuste to znovu za # sekundy.}other{Příliš mnoho neplatných pokusů. Zkuste to znovu za # sekund.}}"</string>
     <string name="seat_driver" msgid="4502591979520445677">"řidiče"</string>

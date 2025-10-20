@@ -81,6 +81,10 @@ class FlagManager @Inject constructor (
         return result
     }
 
+    fun getResourceId(feature: Flag, resId: Int): Int {
+        return feature.resourceMap?.get(resId) ?: resId
+    }
+
     fun clearCache() {
         flagCache.clear()
     }

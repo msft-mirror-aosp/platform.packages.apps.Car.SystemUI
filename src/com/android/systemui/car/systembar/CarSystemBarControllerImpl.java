@@ -44,8 +44,6 @@ import android.os.PatternMatcher;
 import android.os.RemoteException;
 import android.util.ArraySet;
 import android.util.Log;
-import android.util.SparseArray;
-import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
@@ -54,6 +52,7 @@ import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -64,9 +63,8 @@ import com.android.internal.view.AppearanceRegion;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.displaycompat.ToolbarController;
-import com.android.systemui.car.hvac.HvacPanelOverlayViewController;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
-import com.android.systemui.car.notification.NotificationPanelViewController;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindow;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -124,34 +122,23 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     protected final UserTracker mUserTracker;
 
-    private HvacPanelOverlayViewController mHvacPanelOverlayViewController;
-    private NotificationPanelViewController mNotificationPanelViewController;
-
     // Saved StatusBarManager.DisableFlags
     private int mStatusBarState;
     // Saved StatusBarManager.Disable2Flags
     private int mStatusBarState2;
     private int mLockTaskMode;
 
-    // If the nav bar should be hidden when the soft keyboard is visible.
-    // contains: Map<@SystemBarSide Integer, Boolean>
-    private final SparseBooleanArray mHideBarForKeyboardMap = new SparseBooleanArray();
     // System bar windows.
-    // contains: Map<@SystemBarSide Integer, ViewGroup>
-    private final SparseArray<ViewGroup> mSystemBarWindowMap = new SparseArray<>();
+    private final Map<String, ViewGroup> mSystemBarWindowMap = new HashMap<>();
     // System bar views.
-    // contains: Map<@SystemBarSide Integer, CarSystemBarViewController>
-    private final SparseArray<CarSystemBarViewController> mSystemBarViewControllerMap =
-            new SparseArray<>();
+    private final Map<String, CarSystemBarViewController> mSystemBarViewControllerMap =
+            new HashMap<>();
     // If the system bar is attached to the window or not.
-    // contains: Map<@SystemBarSide Integer, Boolean>
-    private final SparseBooleanArray mSystemBarAttachedMap = new SparseBooleanArray();
+    private final Map<String, Boolean> mSystemBarAttachedMap = new HashMap<>();
     // If the system bar is enabled or not.
-    // contains: Map<@SystemBarSide Integer, Boolean>
-    private final SparseBooleanArray mSystemBarEnabledMap = new SparseBooleanArray();
+    private final Map<String, Boolean> mSystemBarEnabledMap = new HashMap<>();
     // Set of View.OnTouchListener on each system bar.
-    // contains: Map<@SystemBarSide Integer, Set<View.OnTouchListener>>
-    private final SparseArray<Set<View.OnTouchListener>> mBarTouchListenersMap = new SparseArray();
+    private final Map<String, Set<View.OnTouchListener>> mBarTouchListenersMap = new HashMap<>();
 
     // To be attached to the navigation bars such that they can close the notification panel if
     // it's open.
@@ -213,11 +200,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     public void init() {
 
         resetSystemBarConfigs();
-
-        // Set initial state.
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            mHideBarForKeyboardMap.put(side, mSystemBarConfigs.getHideForKeyboardBySide(side));
-        });
 
         // Connect into the status bar manager service
         mCommandQueue.addCallback(this);
@@ -386,35 +368,36 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     @Override
     public void onConfigChanged(Configuration newConfig) {
         // cache the current state
-        Map<Integer, Bundle> cachedSystemBarCurrentState = cacheSystemBarCurrentState();
-        resetSystemBarContent(/* isProvisionedStateChange= */ false);
+        Map<String, Bundle> cachedSystemBarCurrentState = cacheSystemBarCurrentState();
+        restartSystemBars();
         // retrieve the previous state
         restoreSystemBarSavedState(cachedSystemBarCurrentState);
     }
 
-    private Map<Integer, Bundle> cacheSystemBarCurrentState() {
-        Map<Integer, Bundle> savedStates = mSystemBarConfigs.getSystemBarSidesByZOrder().stream()
+    private Map<String, Bundle> cacheSystemBarCurrentState() {
+        Map<String, Bundle> savedStates = mSystemBarConfigs.getSystemBarNamesByZOrder().stream()
                 .collect(HashMap::new,
-                        (map, side) -> {
+                        (map, name) -> {
                             Bundle bundle = new Bundle();
-                            getBarViewController(side, isDeviceSetupForUser())
+                            getBarViewController(name, isDeviceSetupForUser())
                                     .onSaveInstanceState(bundle);
-                            map.put(side, bundle);
+                            map.put(name, bundle);
                         },
                         HashMap::putAll);
         return savedStates;
     }
 
-    private void restoreSystemBarSavedState(Map<Integer, Bundle> savedStates) {
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            getBarViewController(side, isDeviceSetupForUser())
-                    .onRestoreInstanceState(savedStates.get(side));
+    private void restoreSystemBarSavedState(Map<String, Bundle> savedStates) {
+        mSystemBarConfigs.getSystemBarNamesByZOrder().forEach(name -> {
+            getBarViewController(name, isDeviceSetupForUser())
+                    .onRestoreInstanceState(savedStates.get(name));
         });
     }
 
     private void readConfigs() {
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            mSystemBarEnabledMap.put(side, mSystemBarConfigs.getEnabledStatusBySide(side));
+        mSystemBarEnabledMap.clear();
+        mSystemBarConfigs.getSystemBarNamesByZOrder().forEach(name -> {
+            mSystemBarEnabledMap.put(name, mSystemBarConfigs.getEnabledStatusByName(name));
         });
     }
 
@@ -481,38 +464,38 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     @VisibleForTesting
     @Nullable
-    ViewGroup getBarWindow(@SystemBarSide int side) {
-        return mSystemBarEnabledMap.get(side) ? mCarSystemBarViewFactory
-                .getSystemBarWindow(side) : null;
+    ViewGroup getBarWindow(String name) {
+        Boolean enabled = mSystemBarEnabledMap.get(name);
+        return (enabled != null && enabled) ? mCarSystemBarViewFactory.getSystemBarWindow(name)
+                : null;
     }
 
     @VisibleForTesting
     @Nullable
-    CarSystemBarViewController getBarViewController(@SystemBarSide int side, boolean isSetUp) {
-
-        if (!mSystemBarEnabledMap.get(side)) {
+    CarSystemBarViewController getBarViewController(String name, boolean isSetUp) {
+        if (mSystemBarEnabledMap.get(name) == null || !mSystemBarEnabledMap.get(name)) {
             return null;
         }
 
         CarSystemBarViewController viewController = mCarSystemBarViewFactory
-                .getSystemBarViewController(side, isSetUp);
-        Set<View.OnTouchListener> statusBarTouchListeners = mBarTouchListenersMap.get(side);
+                .getSystemBarViewController(name, isSetUp);
+        Set<View.OnTouchListener> statusBarTouchListeners = mBarTouchListenersMap.get(name);
         viewController.setSystemBarTouchListeners(
                 statusBarTouchListeners != null ? statusBarTouchListeners : new ArraySet<>());
 
-        mSystemBarViewControllerMap.put(side, viewController);
+        mSystemBarViewControllerMap.put(name, viewController);
         return viewController;
     }
 
     @Override
-    public void registerBarTouchListener(@SystemBarSide int side, View.OnTouchListener listener) {
-        if (mBarTouchListenersMap.get(side) == null) {
-            mBarTouchListenersMap.put(side, new ArraySet<>());
+    public void registerBarTouchListener(@NonNull String name, View.OnTouchListener listener) {
+        if (mBarTouchListenersMap.get(name) == null) {
+            mBarTouchListenersMap.put(name, new ArraySet<>());
         }
-        boolean setModified = mBarTouchListenersMap.get(side).add(listener);
-        if (setModified && mSystemBarViewControllerMap.get(side) != null) {
-            mSystemBarViewControllerMap.get(side)
-                    .setSystemBarTouchListeners(mBarTouchListenersMap.get(side));
+        boolean setModified = mBarTouchListenersMap.get(name).add(listener);
+        if (setModified && mSystemBarViewControllerMap.get(name) != null) {
+            mSystemBarViewControllerMap.get(name)
+                    .setSystemBarTouchListeners(mBarTouchListenersMap.get(name));
         }
     }
 
@@ -528,9 +511,9 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     @VisibleForTesting
     void showAllNavigationButtons(boolean isSetup) {
         checkAllBars(isSetup);
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            if (mSystemBarViewControllerMap.get(side) != null) {
-                mSystemBarViewControllerMap.get(side)
+        mSystemBarConfigs.getSystemBarNamesByZOrder().forEach(name -> {
+            if (mSystemBarViewControllerMap.get(name) != null) {
+                mSystemBarViewControllerMap.get(name)
                         .showButtonsOfType(BUTTON_TYPE_NAVIGATION);
             }
         });
@@ -549,9 +532,9 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     @VisibleForTesting
     void showAllKeyguardButtons(boolean isSetUp) {
         checkAllBars(isSetUp);
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            if (mSystemBarViewControllerMap.get(side) != null) {
-                mSystemBarViewControllerMap.get(side)
+        mSystemBarConfigs.getSystemBarNamesByZOrder().forEach(name -> {
+            if (mSystemBarViewControllerMap.get(name) != null) {
+                mSystemBarViewControllerMap.get(name)
                         .showButtonsOfType(BUTTON_TYPE_KEYGUARD);
             }
         });
@@ -570,9 +553,9 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     @VisibleForTesting
     void showAllOcclusionButtons(boolean isSetUp) {
         checkAllBars(isSetUp);
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            if (mSystemBarViewControllerMap.get(side) != null) {
-                mSystemBarViewControllerMap.get(side)
+        mSystemBarConfigs.getSystemBarNamesByZOrder().forEach(name -> {
+            if (mSystemBarViewControllerMap.get(name) != null) {
+                mSystemBarViewControllerMap.get(name)
                         .showButtonsOfType(BUTTON_TYPE_OCCLUSION);
             }
         });
@@ -580,8 +563,8 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
     private void checkAllBars(boolean isSetUp) {
         mSystemBarViewControllerMap.clear();
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            mSystemBarViewControllerMap.put(side, getBarViewController(side, isSetUp));
+        mSystemBarConfigs.getSystemBarNamesByZOrder().forEach(name -> {
+            mSystemBarViewControllerMap.put(name, getBarViewController(name, isSetUp));
         });
     }
 
@@ -593,14 +576,21 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     void resetSystemBarConfigs() {
         mSystemBarConfigs.resetSystemBarConfigs();
         mCarSystemBarViewFactory.resetSystemBarWindowCache();
+        mSystemBarAttachedMap.clear();
         readConfigs();
     }
 
     protected void updateKeyboardVisibility(boolean isKeyboardVisible) {
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            if (mHideBarForKeyboardMap.get(side)) {
-                setWindowVisibility(getBarWindow(side),
-                        isKeyboardVisible ? View.GONE : View.VISIBLE);
+        mSystemBarConfigs.getSystemBarNamesByZOrder().forEach(name -> {
+            if (mSystemBarConfigs.getHideForKeyboardByName(name)) {
+                SystemUiWindow window = mSystemBarConfigs.getWindowForName(name);
+                if (window != null) {
+                    if (isKeyboardVisible) {
+                        window.hide();
+                    } else {
+                        window.show();
+                    }
+                }
             }
         });
     }
@@ -644,26 +634,26 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     private void buildNavBarWindows() {
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            mSystemBarWindowMap.put(side, getBarWindow(side));
+        mSystemBarConfigs.getSystemBarNamesByZOrder().forEach(name -> {
+            mSystemBarWindowMap.put(name, getBarWindow(name));
         });
 
         if (mDisplayCompatToolbarController != null) {
             if (mSystemBarConfigs
                     .isLeftDisplayCompatToolbarEnabled()) {
-                mDisplayCompatToolbarController.init(mSystemBarWindowMap.get(LEFT));
+                mDisplayCompatToolbarController.init(mSystemBarWindowMap.get(LEFT_BAR_NAME));
             } else if (mSystemBarConfigs
                     .isRightDisplayCompatToolbarEnabled()) {
-                mDisplayCompatToolbarController.init(mSystemBarWindowMap.get(RIGHT));
+                mDisplayCompatToolbarController.init(mSystemBarWindowMap.get(RIGHT_BAR_NAME));
             }
         }
     }
 
     private void buildNavBarContent() {
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            CarSystemBarViewController viewController = getBarViewController(side,
+        mSystemBarConfigs.getSystemBarNamesByZOrder().forEach(name -> {
+            CarSystemBarViewController viewController = getBarViewController(name,
                     isDeviceSetupForUser());
-            ViewGroup systemBarWindow = mSystemBarWindowMap.get(side);
+            ViewGroup systemBarWindow = mSystemBarWindowMap.get(name);
             if (viewController != null && systemBarWindow != null) {
                 systemBarWindow.addView(viewController.getView());
             }
@@ -671,33 +661,26 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     private void attachNavBarWindows() {
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            ViewGroup barWindow = mSystemBarWindowMap.get(side);
-            boolean isBarAttached = mSystemBarAttachedMap.get(side);
-            boolean isBarEnabled = mSystemBarConfigs.getEnabledStatusBySide(side);
+        mSystemBarConfigs.getSystemBarNamesByZOrder().forEach(name -> {
+            ViewGroup barWindow = mSystemBarWindowMap.get(name);
+            boolean isBarAttached = mSystemBarAttachedMap.get(name) != null
+                    && mSystemBarAttachedMap.get(name);
+            boolean isBarEnabled = mSystemBarConfigs.getEnabledStatusByName(name);
             if (DEBUG) {
-                Log.d(TAG, "Side = " + side
+                Log.d(TAG, "Name = " + name
                         + ", SystemBarWindow = " + barWindow
                         + ", SystemBarAttached=" + isBarAttached
                         + ", enabled=" + isBarEnabled);
             }
             if (barWindow != null && !isBarAttached && isBarEnabled) {
-                WindowManager wm = getWindowManagerForSide(side);
-                if (wm != null) {
-                    wm.addView(barWindow, mSystemBarConfigs.getLayoutParamsBySide(side));
-                    mSystemBarAttachedMap.put(side, true);
+                SystemUiWindow window = mSystemBarConfigs.getWindowForName(name);
+                if (window != null) {
+                    window.setRootView(barWindow, window.getLayoutParams());
+                    mSystemBarAttachedMap.put(name, true);
                 }
 
             }
         });
-    }
-
-    private WindowManager getWindowManagerForSide(@SystemBarSide int side) {
-        Context windowContext = mSystemBarConfigs.getWindowContextBySide(side);
-        if (windowContext == null) {
-            return null;
-        }
-        return windowContext.getSystemService(WindowManager.class);
     }
 
     private void registerOverlayChangeBroadcastReceiver() {
@@ -714,12 +697,11 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                for (int i = 0; i < mSystemBarAttachedMap.size(); i++) {
-                    if (mSystemBarAttachedMap.valueAt(i)) {
+                mSystemBarAttachedMap.values().forEach(enabled -> {
+                    if (enabled) {
                         restartSystemBars();
-                        break;
                     }
-                }
+                });
             }
         };
         mContext.registerReceiver(receiver, overlayFilter, /* broadcastPermission= */
@@ -734,7 +716,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
                 || mDeviceIsSetUpForUser != currentUserSetup) {
             mDeviceIsSetUpForUser = currentUserSetup;
             mIsUserSetupInProgress = currentUserSetupInProgress;
-            resetSystemBarContent(/* isProvisionedStateChange= */ true);
+            resetSystemBarContentForProvisionStateChange();
         }
     }
 
@@ -742,14 +724,10 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      * Remove all content from navbars and rebuild them. Used to allow for different nav bars
      * before and after the device is provisioned. . Also for change of density and font size.
      */
-    private void resetSystemBarContent(boolean isProvisionedStateChange) {
+    private void resetSystemBarContentForProvisionStateChange() {
         mCarSystemBarRestartTracker.notifyPendingRestart(/* recreateWindows= */ false,
-                isProvisionedStateChange);
+                /* provisionedStateChange= */ true);
 
-        if (!isProvisionedStateChange) {
-            mCarSystemBarViewFactory.resetSystemBarViewCache();
-            mSystemBarConfigs.resetSystemBarConfigs();
-        }
         clearSystemBarWindow(/* removeUnusedWindow= */ false);
 
         buildNavBarContent();
@@ -766,7 +744,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mButtonSelectionStateListener.onTaskStackChanged();
 
         mCarSystemBarRestartTracker.notifyRestartComplete(/* windowRecreated= */ false,
-                isProvisionedStateChange);
+                /* provisionedStateChange= */ true);
     }
 
     private boolean isDeviceSetupForUser() {
@@ -835,8 +813,8 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mCarSystemBarRestartTracker.notifyPendingRestart(/* recreateWindows= */ true,
                 /* provisionedStateChanged= */ false);
 
-        resetSystemBarConfigs();
         clearSystemBarWindow(/* removeUnusedWindow= */ true);
+        resetSystemBarConfigs();
         buildNavBarWindows();
         buildNavBarContent();
         attachNavBarWindows();
@@ -846,18 +824,18 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     }
 
     private void clearSystemBarWindow(boolean removeUnusedWindow) {
-        mSystemBarConfigs.getSystemBarSidesByZOrder().forEach(side -> {
-            ViewGroup barWindow = getBarWindow(side);
+        mSystemBarConfigs.getSystemBarNamesByZOrder().forEach(name -> {
+            ViewGroup barWindow = getBarWindow(name);
             if (barWindow != null) {
                 barWindow.removeAllViews();
                 if (removeUnusedWindow) {
-                    WindowManager wm = getWindowManagerForSide(side);
-                    if (wm != null) {
-                        wm.removeViewImmediate(barWindow);
+                    SystemUiWindow window = mSystemBarConfigs.getWindowForName(name);
+                    if (window != null) {
+                        window.removeRootViewImmediate();
                     }
-                    mSystemBarAttachedMap.put(side, false);
+                    mSystemBarAttachedMap.put(name, false);
                 }
-                mSystemBarViewControllerMap.remove(side);
+                mSystemBarViewControllerMap.remove(name);
             }
         });
     }

@@ -133,7 +133,7 @@ public class DecorPanelTest extends CarSysuiTestCase {
             return null;
         }).when(mShellExecutor).execute(any(Runnable.class));
 
-        // --- Stub BasePanel methods (called via spy) ---
+        // --- Stub SysUIPanel methods (called via spy) ---
         doReturn(TEST_LAYER).when(mDecorPanel).getLayer();
         doReturn(mMockBounds).when(mDecorPanel).getBounds();
         doReturn(TEST_PANEL_ID_NAME).when(mDecorPanel).getPanelId();

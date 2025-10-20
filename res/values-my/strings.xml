@@ -79,14 +79,9 @@
     <string name="status_icon_display_status" msgid="2970020923181359144">"ဖန်သားပြင်ပြသမှု ဆက်တင်များ"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"အမှားရှာပြင်သည့် ဆက်တင်များ"</string>
     <string name="status_icon_sound_status" msgid="4923149230650995670">"အသံဆက်တင်များ"</string>
-    <string name="status_icon_drive_mode" msgid="3938622431486261076">"မောင်းနှင်မုဒ်"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"ကားမောင်းနေစဉ် ဤဝန်ဆောင်မှုကို သုံး၍မရပါ"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"အက်ပ်ကိုပိတ်ရန်"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"နောက်သို့"</string>
-    <string name="drive_mode_modes_comfort" msgid="628724737960743004">"သက်သောင့်သက်သာ"</string>
-    <string name="drive_mode_modes_eco" msgid="7694931508925737653">"အီကို"</string>
-    <string name="drive_mode_modes_sport" msgid="7664603138389270601">"အားကစား"</string>
-    <string name="qc_drive_mode_active_subtitle" msgid="3667965966971747414">"သုံးနေသည်"</string>
     <string name="qc_footer_settings" msgid="5471523941092316743">"ဆက်တင်များ"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"ဘလူးတုသ် ဆက်တင်များ"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"ကွန်ရက်နှင့် အင်တာနက် ဆက်တင်များ"</string>

@@ -68,7 +68,12 @@ enum class Flag(
     /**
      * The resource ID for the legacy boolean flag, used as a fallback.
      */
-    @BoolRes val resourceId: Int
+    @BoolRes val resourceId: Int,
+
+    /**
+     * Resource map IDs for when this flag is enabled
+     */
+    var resourceMap: Map<Int, Int>? = null,
 ) {
 
     /**
@@ -129,7 +134,12 @@ enum class Flag(
      */
     EnableExtPanelUpdates(
         "com.android.car.scalableui.Flags.enableExtPanelUpdates",
-        R.bool.enable_ext_panel_updates
+        R.bool.enable_ext_panel_updates,
+        mapOf(
+            R.array.window_states to R.array.window_states_enable_ext_panel_updates,
+            R.string.config_privacyIndicatorLocation
+                    to R.string.config_privacyIndicatorLocation_enable_ext_panel_updates
+        )
     ),
 
     /**
@@ -146,6 +156,22 @@ enum class Flag(
     ScalableUiHandleConfigurationChange(
         "com.android.car.scalableui.Flags.scalableUiHandleConfigurationChange",
         R.bool.scalable_ui_handle_configuration_change
+    ),
+
+    /**
+     * Checks if the DisplayCompatibilityV2 is enabled.
+     */
+    DisplayCompatibilityV2(
+        "com.android.systemui.car.Flags.displayCompatibilityV2",
+        R.bool.display_compatibility_v2
+    ),
+
+    /**
+     * Checks if the Media Projection indicator feature is enabled.
+     */
+    ShowMediaProjectionIndicator(
+        "com.android.systemui.car.Flags.showMediaProjectionIndicator",
+        R.bool.show_media_projection_indicator
     );
 
     // These properties are now calculated from the fullFlagIdentifier.

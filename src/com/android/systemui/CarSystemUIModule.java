@@ -35,9 +35,10 @@ import com.android.systemui.car.decor.CarPolicyModule;
 import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
 import com.android.systemui.car.displayconfig.ExternalDisplayController;
-import com.android.systemui.car.drivemode.DriveModeModule;
 import com.android.systemui.car.flags.FlagManager;
+import com.android.systemui.car.hvac.HvacModule;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
+import com.android.systemui.car.notification.NotificationModule;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
 import com.android.systemui.car.statusbar.DozeServiceHost;
 import com.android.systemui.car.users.CarMultiUserUtilsModule;
@@ -69,7 +70,6 @@ import com.android.systemui.recents.RecentsImplementation;
 import com.android.systemui.recents.RecentsModule;
 import com.android.systemui.screenshot.ReferenceScreenshotModule;
 import com.android.systemui.settings.UserTracker;
-import com.android.systemui.settings.brightness.dagger.BrightnessSliderModule;
 import com.android.systemui.shade.ShadeEmptyImplModule;
 import com.android.systemui.statusbar.CommandQueue;
 import com.android.systemui.statusbar.NotificationLockscreenUserManager;
@@ -102,14 +102,13 @@ import javax.inject.Provider;
                 AccessibilityRepositoryModule.class,
                 ActivityWindowModule.class,
                 BiometricsModule.class,
-                BrightnessSliderModule.class,
                 CarMultiUserUtilsModule.class,
                 CarPolicyModule.class,
                 CarVolumeModule.class,
                 ExternalDisplayController.StartableModule.class,
-                DriveModeModule.class,
                 GestureModule.class,
                 HeadsUpEmptyImplModule.class,
+                HvacModule.class,
                 KeyguardDisplayModule.class,
                 MediaMuteAwaitConnectionCli.StartableModule.class,
                 NearbyMediaDevicesManager.StartableModule.class,
@@ -118,6 +117,7 @@ import javax.inject.Provider;
                 NoopPosturingModule.class,
                 NoopAmbientLightModeMonitorModule.class,
                 NoopWallpaperModule.class,
+                NotificationModule.class,
                 PowerModule.class,
                 QSModule.class,
                 RecentsModule.class,
@@ -128,10 +128,14 @@ import javax.inject.Provider;
                 WindowRootViewBlurNotSupportedModule.class
         },
         subcomponents = {
-                SystemUIDisplaySubcomponent.class
+                CarSysUIDisplaySubcomponent.class
         }
 )
 abstract class CarSystemUIModule {
+
+    @Binds
+    abstract SystemUIDisplaySubcomponent.Factory displaySubComponentFactory(
+            CarSysUIDisplaySubcomponent.Factory factory);
 
     @SysUISingleton
     @Provides

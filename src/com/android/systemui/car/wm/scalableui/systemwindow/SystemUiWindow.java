@@ -22,6 +22,9 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer;
 
 /**
@@ -33,8 +36,8 @@ public interface SystemUiWindow {
      * Update the given {@link WindowManager.LayoutParams} by translating {@link Rect} & display
      * size.
      */
-    static void updateLayoutParams(WindowManager.LayoutParams params, Rect bounds,
-            DisplayMetrics displayMetrics) {
+    static void updateLayoutParams(@NonNull WindowManager.LayoutParams params, @NonNull Rect bounds,
+            @NonNull DisplayMetrics displayMetrics) {
         int leftMargin = bounds.left;
         int rightMargin = displayMetrics.widthPixels - bounds.right;
 
@@ -54,22 +57,25 @@ public interface SystemUiWindow {
     }
 
     /**
-     * Attaches {@link View} to WindowManager with the provided {@link WindowManager.LayoutParams}
+     * @return name of the {@link SystemUiWindow}
      */
-    void setRootView(View view, WindowManager.LayoutParams layoutParams);
+    @NonNull
+    String getName();
 
     /**
-     * Attaches {@link View} to WindowManager with the provided by
-     * {@link SystemUiWindow#getLayoutParams()}
+     * Attaches {@link View} to WindowManager with the provided {@link WindowManager.LayoutParams}
      */
-    default void setRootView(View view) {
-        setRootView(view, getLayoutParams());
-    }
+    void setRootView(@NonNull View view, @Nullable WindowManager.LayoutParams layoutParams);
 
     /**
      * Detaches the root view
      */
     void removeRootView();
+
+    /**
+     * Detaches the root view immediately. See {@link WindowManager#removeViewImmediate}
+     */
+    void removeRootViewImmediate();
 
     /**
      * @return {@code true} if root view is visible
@@ -89,7 +95,14 @@ public interface SystemUiWindow {
     /**
      * @return {@link WindowManager.LayoutParams} that will be used to attach root view
      */
+    @Nullable
     WindowManager.LayoutParams getLayoutParams();
+
+    /**
+     * @return {@link Rect} of window
+     */
+    @Nullable
+    Rect getBounds();
 
     /**
      * @return height of the window
@@ -109,6 +122,7 @@ public interface SystemUiWindow {
     /**
      * @return {@link Insets} of the window
      */
+    @Nullable
     Insets getInsets();
 
     /**
@@ -117,14 +131,19 @@ public interface SystemUiWindow {
     int getCornerRadius();
 
     /**
+     * @return display ID of the window
+     */
+    int getDisplayId();
+
+    /**
      * Attach a {@link WindowUpdateCallback}
      */
-    void addCallback(WindowUpdateCallback callback);
+    void addCallback(@NonNull WindowUpdateCallback callback);
 
     /**
      * Removes a {@link WindowUpdateCallback}
      */
-    void removeCallback(WindowUpdateCallback callback);
+    void removeCallback(@NonNull WindowUpdateCallback callback);
 
     /**
      * An abstraction that hides the concept of {@link PanelUpdateConsumer.PanelUpdateCallback}s

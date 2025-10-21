@@ -229,15 +229,15 @@ public abstract class CarWMShellModule {
             Lazy<PanelAutoTaskStackTransitionHandlerDelegate> delegate,
             ScalableUIDumpsys scalableUIDumpsys,
             FlagManager flagManager,
-            DisplayController displayController,
-            AutoTaskStackHelper autoTaskStackHelper) {
+            AutoTaskStackHelper autoTaskStackHelper,
+            ShellController shellController) {
         if (ScalableUIUtils.isScalableUIEnabled(context, flagManager)
                 && panelConfigReaderOptional.isPresent()) {
             return Optional.of(
                     new ScalableUIWMInitializer(context, shellInit,
                             actionConfigReaderOptional.get(),
                             panelConfigReaderOptional.get(), delegate.get(), scalableUIDumpsys,
-                            displayController, autoTaskStackHelper, flagManager));
+                            autoTaskStackHelper, flagManager, shellController));
         }
         return Optional.empty();
     }

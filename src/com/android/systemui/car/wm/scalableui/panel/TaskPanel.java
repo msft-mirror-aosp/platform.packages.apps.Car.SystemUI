@@ -725,7 +725,7 @@ public final class TaskPanel extends SysUIPanel {
         }
         super.setPanelControllerMetadata(panelControllerMetadata);
         mTaskPanelController = mPanelControllerInitializer.createTaskPanelController(
-                panelControllerMetadata);
+                getPanelId(), panelControllerMetadata);
         if (mTaskPanelController != null) {
             mTaskPanelController.registerTaskPanelHandler(this::trySetPersistentActivity);
         }

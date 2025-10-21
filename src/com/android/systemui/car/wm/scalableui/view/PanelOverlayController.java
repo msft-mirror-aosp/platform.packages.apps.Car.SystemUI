@@ -75,7 +75,8 @@ public class PanelOverlayController extends DecorPanelControllerBase {
     private int mBlurRadius;
 
     @AssistedInject
-    public PanelOverlayController(@Assisted PanelControllerMetadata metadata,
+    public PanelOverlayController(@Assisted String panelId,
+            @Assisted PanelControllerMetadata metadata,
             @DecorPanelViewMap Map<Class<?>, Provider<View>> decorPanelViewMap,
             Context context) {
         super(metadata, decorPanelViewMap);
@@ -83,13 +84,13 @@ public class PanelOverlayController extends DecorPanelControllerBase {
         init(metadata);
     }
 
-    /**
-     * Create an instance of {@link PanelOverlayController} with the provided
-     * {@link PanelControllerMetadata}.
-     */
     @AssistedFactory
     public interface Factory extends DecorPanelController.Factory<PanelOverlayController> {
-        PanelOverlayController create(PanelControllerMetadata metadata);
+        /**
+         * Create an instance of {@link PanelOverlayController} with the provided
+         * {@link PanelControllerMetadata}.
+         */
+        PanelOverlayController create(String panelId, PanelControllerMetadata metadata);
     }
 
     @SuppressLint("ClickableViewAccessibility")

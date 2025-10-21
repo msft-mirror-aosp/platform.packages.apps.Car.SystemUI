@@ -93,7 +93,7 @@ public final class DecorPanel extends SysUIPanel {
     @Nullable
     private View initFromController() {
         mDecorPanelController = mPanelControllerInitializer.createDecorPanelController(
-                getPanelControllerMetadata());
+                getPanelId(), getPanelControllerMetadata());
         return mDecorPanelController == null ? null : mDecorPanelController.getView();
     }
 

@@ -172,6 +172,14 @@ enum class Flag(
     ShowMediaProjectionIndicator(
         "com.android.systemui.car.Flags.showMediaProjectionIndicator",
         R.bool.show_media_projection_indicator
+    ),
+
+    /**
+     * Checks if the SUW as non-home feature is enabled.
+     */
+    ScalableUiNoSuwHome(
+        "com.android.systemui.car.Flags.scalableUiNoSuwHome",
+        R.bool.scalable_ui_no_suw_home
     );
 
     // These properties are now calculated from the fullFlagIdentifier.

@@ -53,6 +53,13 @@ public abstract class PanelControllerModule {
     public abstract TaskPanelController.Factory bindsBaseTaskPanelControllerFactory(
             BaseTaskPanelController.Factory factory);
 
+    /** Binds SetupPanelController.Factory. */
+    @Binds
+    @IntoMap
+    @ClassKey(SetupPanelController.class)
+    public abstract TaskPanelController.Factory bindsSetupPanelControllerFactory(
+            SetupPanelController.Factory factory);
+
     /** Binds GripBarViewController.Factory. */
     @Binds
     @IntoMap

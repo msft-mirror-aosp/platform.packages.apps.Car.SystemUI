@@ -33,6 +33,7 @@ import android.app.KeyguardManager;
 import android.car.user.CarUserManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.UserManager;
 import android.util.Log;
@@ -49,6 +50,7 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.display.DisplayStateHelper;
+import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIUtils;
@@ -128,6 +130,7 @@ public class SystemEventHandler implements CoreStartable,
                         mResetCalledForUser = false;
                         mIsUserSwitching = true;
                     } else if (event.getEventType() == USER_LIFECYCLE_EVENT_TYPE_UNLOCKED) {
+                        handleSuwLaunchIfNecessary(event.getUserId());
                         if (shouldResetPanels()) {
                             Log.d(TAG, "Resetting panels during user unlock");
                             if (!Flags.homeActivityAlwaysPresent()) {
@@ -173,17 +176,17 @@ public class SystemEventHandler implements CoreStartable,
 
                 @Override
                 public void onUserSetupInProgressChanged() {
-                    updateUserSetupState();
+                    updateUserSetupState(/* force= */ false);
                 }
 
                 @Override
                 public void onDeviceProvisionedChanged() {
-                    updateUserSetupState();
+                    updateUserSetupState(/* force= */ false);
                 }
 
                 @Override
                 public void onUserSwitched() {
-                    updateUserSetupState();
+                    updateUserSetupState(/* force= */ true);
                 }
             };
 
@@ -244,9 +247,13 @@ public class SystemEventHandler implements CoreStartable,
         mCurrentOrientation = mContext.getResources().getConfiguration().orientation;
     }
 
-    private void updateUserSetupState() {
+    /**
+     * Update the current user setup state and send relevant events if necessary.
+     * @param force always send event regardless of if anything has changed
+     */
+    private void updateUserSetupState(boolean force) {
         boolean isUserSetupInProgress = !mCarDeviceProvisionedController.isCurrentUserFullySetup();
-        if (isUserSetupInProgress != mIsUserSetupInProgress) {
+        if (isUserSetupInProgress != mIsUserSetupInProgress || force) {
             mIsUserSetupInProgress = isUserSetupInProgress;
             notifySuwStateEvent();
         }
@@ -277,8 +284,40 @@ public class SystemEventHandler implements CoreStartable,
 
     private void registerProvisionedStateListener() {
         mIsUserSetupInProgress = !mCarDeviceProvisionedController.isCurrentUserFullySetup();
-        notifySuwStateEvent();
+        if (mIsUserSetupInProgress) {
+            notifySuwStateEvent();
+        }
         mCarDeviceProvisionedController.addCallback(mCarDeviceProvisionedListener);
+    }
+
+    private void handleSuwLaunchIfNecessary(int userId) {
+        if (!mFlagManager.isEnabled(Flag.ScalableUiNoSuwHome)) {
+            return;
+        }
+        if (!mCarDeviceProvisionedController.isUserSetup(userId)) {
+            Log.d(TAG, "Launch SUW intent for non-setup user");
+            Intent suwIntent = new Intent(Intent.ACTION_MAIN);
+            suwIntent.addCategory(Intent.CATEGORY_SETUP_WIZARD);
+            suwIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivityAsUser(suwIntent,
+                    mUserTracker.getUserHandle());
+        } else if (mIsUserSetupInProgress) {
+            // This is an unintended state - send the home event to the SUW
+            // to get it to reset itself.
+            Log.e(TAG, "Unlocked while SUW is already in progress");
+            Intent suwIntent = new Intent(Intent.ACTION_MAIN);
+            suwIntent.addCategory(Intent.CATEGORY_SETUP_WIZARD);
+            ResolveInfo info = mContext.getPackageManager()
+                    .resolveActivityAsUser(suwIntent, 0,
+                            mUserTracker.getUserId());
+            if (info != null && info.activityInfo != null) {
+                Intent suwHomeIntent = new Intent(Intent.ACTION_MAIN);
+                suwHomeIntent.addCategory(Intent.CATEGORY_HOME);
+                suwHomeIntent.setPackage(info.activityInfo.packageName);
+                mContext.startActivityAsUser(suwHomeIntent,
+                        mUserTracker.getUserHandle());
+            }
+        }
     }
 
     private void registerUserEventListener() {

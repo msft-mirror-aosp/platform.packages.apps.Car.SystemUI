@@ -27,11 +27,13 @@ import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventCon
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
+import android.app.role.RoleManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.IBinder;
@@ -63,6 +65,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,6 +80,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
 
     private PanelAutoTaskStackTransitionHandlerDelegate mDelegate;
 
+    @Mock
+    private RoleManager mRoleManager;
     @Mock
     private AutoTaskStackController mAutoTaskStackController;
     @Mock
@@ -100,7 +105,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
         when(mPanelTransitionCoordinator.createAutoTaskStackTransaction(any(),
                 any(), any())).thenReturn(new AutoTaskStackTransaction());
         when(mPanelUtils.handles(TEST_ROOT_TASK_ID)).thenReturn(true);
-        mDelegate = new PanelAutoTaskStackTransitionHandlerDelegate(mContext,
+        when(mRoleManager.getRoleHoldersAsUser(any(), any())).thenReturn(Collections.emptyList());
+        mDelegate = new PanelAutoTaskStackTransitionHandlerDelegate(mContext, mRoleManager,
                 mAutoTaskStackController, mPanelTransitionCoordinator, mPanelUtils,
                 mCarWMUserHelper, mTaskPanelInfoRepository, mAutoLayoutManager, mFlagManager);
     }
@@ -207,18 +213,51 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
     }
 
     @Test
-    public void calculateEvent_homeCategoryIntent_returnsSystemHomeEvent() {
+    public void calculateEvent_homeCategoryIntent_notHomeRole_returnsOpenEvent() {
+        TaskPanel panel = mock(TaskPanel.class);
         TransitionRequestInfo request = mock(TransitionRequestInfo.class);
         ActivityManager.RunningTaskInfo taskInfo = new ActivityManager.RunningTaskInfo();
         taskInfo.baseIntent = new Intent();
+        taskInfo.parentTaskId = TEST_ROOT_TASK_ID;
         taskInfo.baseIntent.addCategory(Intent.CATEGORY_HOME);
         taskInfo.topActivityType = ACTIVITY_TYPE_HOME;
         when(request.getType()).thenReturn(TRANSIT_OPEN);
         when(request.getTriggerTask()).thenReturn(taskInfo);
+        ComponentName componentName = ComponentName.unflattenFromString(TEST_COMPONENT_NAME);
+        when(mPanelUtils.getTaskComponentName(taskInfo)).thenReturn(componentName);
+        when(mPanelUtils.getTaskPanel(any())).thenReturn(panel);
+        when(panel.getPanelId()).thenReturn(TEST_PANEL_ID);
+
+        Event event = mDelegate.calculateEvent(request);
+
+        assertThat(event.getId()).isEqualTo(SYSTEM_TASK_OPEN_EVENT_ID);
+        assertThat(event.getPanelId()).isEqualTo(TEST_PANEL_ID);
+        assertThat(event.getTokens().get("component")).isEqualTo(TEST_COMPONENT_NAME);
+    }
+
+    @Test
+    public void calculateEvent_homeCategoryIntent_homeRole_returnsSystemHomeEvent() {
+        ComponentName componentName = ComponentName.unflattenFromString(TEST_COMPONENT_NAME);
+        when(mRoleManager.getRoleHoldersAsUser(eq(RoleManager.ROLE_HOME), any()))
+                .thenReturn(Collections.singletonList(componentName.getPackageName()));
+        TaskPanel panel = mock(TaskPanel.class);
+        TransitionRequestInfo request = mock(TransitionRequestInfo.class);
+        ActivityManager.RunningTaskInfo taskInfo = new ActivityManager.RunningTaskInfo();
+        taskInfo.baseIntent = new Intent();
+        taskInfo.baseActivity = componentName;
+        taskInfo.parentTaskId = TEST_ROOT_TASK_ID;
+        taskInfo.baseIntent.addCategory(Intent.CATEGORY_HOME);
+        taskInfo.topActivityType = ACTIVITY_TYPE_HOME;
+        when(request.getType()).thenReturn(TRANSIT_OPEN);
+        when(request.getTriggerTask()).thenReturn(taskInfo);
+        when(mPanelUtils.getTaskComponentName(taskInfo)).thenReturn(componentName);
+        when(mPanelUtils.getTaskPanel(any())).thenReturn(panel);
+        when(panel.getPanelId()).thenReturn(TEST_PANEL_ID);
 
         Event event = mDelegate.calculateEvent(request);
 
         assertThat(event.getId()).isEqualTo(SYSTEM_HOME_EVENT_ID);
+        assertThat(event.getTokens().get("package")).isEqualTo(componentName.getPackageName());
     }
 
     @Test

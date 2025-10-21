@@ -76,7 +76,7 @@ public class PanelControllerInitializer {
      * @return A new instance of {@link TaskPanelController} if successful, otherwise {@code null}.
      */
     @Nullable
-    public TaskPanelController createTaskPanelController(
+    public TaskPanelController createTaskPanelController(@NonNull String panelId,
             @Nullable PanelControllerMetadata metadata) {
         if (metadata == null) {
             logIfDebuggable("Metadata is null");
@@ -95,7 +95,9 @@ public class PanelControllerInitializer {
             Provider<TaskPanelController.Factory> factoryProvider =
                     mTaskPanelControllerMap.get(clazz);
             if (factoryProvider != null) {
-                return factoryProvider.get().create(metadata);
+                TaskPanelController controller = factoryProvider.get().create(panelId, metadata);
+                controller.init();
+                return controller;
             }
         } catch (ClassNotFoundException e) {
             // Handle the case where the class is not found
@@ -118,7 +120,7 @@ public class PanelControllerInitializer {
      * @return A new instance of {@link DecorPanelController} if successful, otherwise {@code null}.
      */
     @Nullable
-    public DecorPanelController createDecorPanelController(
+    public DecorPanelController createDecorPanelController(@NonNull String panelId,
             @Nullable PanelControllerMetadata metadata) {
         if (metadata == null) {
             logIfDebuggable("Metadata is null");
@@ -137,7 +139,7 @@ public class PanelControllerInitializer {
             Provider<DecorPanelController.Factory> factoryProvider =
                     mDecorPanelControllerMap.get(clazz);
             if (factoryProvider != null) {
-                return factoryProvider.get().create(metadata);
+                return factoryProvider.get().create(panelId, metadata);
             }
         } catch (ClassNotFoundException e) {
             // Handle the case where the class is not found

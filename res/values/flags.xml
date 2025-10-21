@@ -41,4 +41,6 @@
     <bool name="display_compatibility_v2">true</bool>
     <!-- Controls enabling Media Projection indicator. -->
     <bool name="show_media_projection_indicator">true</bool>
+    <!-- Controls removing SUW as the home activity and launching through alternative means. -->
+    <bool name="scalable_ui_no_suw_home">false</bool>
 </resources>

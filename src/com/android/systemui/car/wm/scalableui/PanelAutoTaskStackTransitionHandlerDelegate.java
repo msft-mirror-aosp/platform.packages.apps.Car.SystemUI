@@ -23,11 +23,14 @@ import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventCon
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_CLOSE_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_OPEN_EVENT_ID;
 
+import android.app.ActivityManager;
+import android.app.role.RoleManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.UserHandle;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.SurfaceControl;
@@ -43,7 +46,6 @@ import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelTransaction;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.R;
-import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
@@ -57,6 +59,7 @@ import com.android.wm.shell.automotive.AutoTaskStackTransitionHandlerDelegate;
 import com.android.wm.shell.shared.TransitionUtil;
 import com.android.wm.shell.transition.Transitions;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -76,6 +79,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     private final AutoTaskStackController mAutoTaskStackController;
     private final PanelTransitionCoordinator mPanelTransitionCoordinator;
     private final Context mContext;
+    private final RoleManager mRoleManager;
     private final PanelUtils mPanelUtils;
     private final CarWMUserHelper mUserHelper;
     private final TaskPanelInfoRepository mPanelInfoRepository;
@@ -86,6 +90,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     @Inject
     public PanelAutoTaskStackTransitionHandlerDelegate(
             Context context,
+            RoleManager roleManager,
             AutoTaskStackController autoTaskStackController,
             PanelTransitionCoordinator panelTransitionCoordinator,
             PanelUtils panelUtils,
@@ -97,6 +102,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         mAutoTaskStackController = autoTaskStackController;
         mPanelTransitionCoordinator = panelTransitionCoordinator;
         mContext = context;
+        mRoleManager = roleManager;
         mPanelUtils = panelUtils;
         mUserHelper = userHelper;
         mPanelInfoRepository = panelInfoRepository;
@@ -192,9 +198,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             return EMPTY_EVENT;
         }
 
-        if (request.getTriggerTask().baseIntent.getCategories() != null
-                && request.getTriggerTask().baseIntent.getCategories().contains(
-                Intent.CATEGORY_HOME)) {
+        if (isHomeActivityIntent(request.getTriggerTask())) {
             ComponentName component = request.getTriggerTask().baseActivity;
             String packageString = component != null ? component.getPackageName() : null;
             // Multiple SUW activities have home as categories. Panels should treat them the same.
@@ -244,6 +248,24 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             builder.setComponentName(componentString);
         }
         return builder.build();
+    }
+
+    private boolean isHomeActivityIntent(@Nullable ActivityManager.RunningTaskInfo taskInfo) {
+        if (taskInfo == null) {
+            return false;
+        }
+        if (taskInfo.baseIntent.getCategories() == null
+                || !taskInfo.baseIntent.getCategories().contains(Intent.CATEGORY_HOME)) {
+            return false;
+        }
+        ComponentName component = mPanelUtils.getTaskComponentName(taskInfo);
+        if (component == null) {
+            return false;
+        }
+
+        List<String> holders = mRoleManager
+                .getRoleHoldersAsUser(RoleManager.ROLE_HOME, UserHandle.of(taskInfo.userId));
+        return holders.contains(component.getPackageName());
     }
 
     @Override

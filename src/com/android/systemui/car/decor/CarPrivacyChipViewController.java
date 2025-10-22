@@ -34,6 +34,7 @@ import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.systembar.SystemBarConfigs;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Application;
+import com.android.systemui.dagger.qualifiers.Default;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.plugins.statusbar.StatusBarStateController;
 import com.android.systemui.privacy.PrivacyType;
@@ -74,7 +75,7 @@ public class CarPrivacyChipViewController extends PrivacyDotViewControllerImpl
             @NotNull StatusBarStateController stateController,
             @NotNull ConfigurationController configurationController,
             @NotNull StatusBarContentInsetsProvider contentInsetsProvider,
-            @NotNull SystemStatusAnimationScheduler animationScheduler,
+            @NotNull @Default SystemStatusAnimationScheduler animationScheduler,
             @NotNull @ScreenDecorationsThread DelayableExecutor uiExecutor,
             CommandQueue commandQueue,
             SystemBarConfigs systemBarConfigs,

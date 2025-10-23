@@ -96,7 +96,8 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     }
 
     @AssistedInject
-    public GripBarViewController(@Assisted PanelControllerMetadata metadata,
+    public GripBarViewController(@Assisted String panelId,
+            @Assisted PanelControllerMetadata metadata,
             @DecorPanelViewMap Map<Class<?>, Provider<View>> decorPanelViewMap,
             EventDispatcher eventDispatcher) {
         super(metadata, decorPanelViewMap);
@@ -108,7 +109,7 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     @AssistedFactory
     public interface Factory extends DecorPanelController.Factory<GripBarViewController> {
         /** Create an instance of GripBarViewController with the provided PanelControllerMetadata */
-        GripBarViewController create(PanelControllerMetadata metadata);
+        GripBarViewController create(String panelId, PanelControllerMetadata metadata);
     }
 
     @SuppressLint("ClickableViewAccessibility")

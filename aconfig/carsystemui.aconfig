@@ -94,3 +94,9 @@ flag {
     bug: "435279151"
 }
 
+flag {
+    name: "scalable_ui_no_suw_home"
+    namespace: "car_sys_exp"
+    description: "This flag controls removing SUW as the home activity and launching through alternative means."
+    bug: "435347522"
+}

@@ -48,10 +48,10 @@ public class CarSystemBarRestartTracker {
         }
     }
 
-    void notifyPendingRestart(boolean recreateWindows, boolean provisionedStateChanged) {
+    void notifyPendingRestart(boolean willRecreateWindows, boolean provisionedStateChanged) {
         synchronized (mListeners) {
             for (Listener listener : mListeners) {
-                listener.onPendingRestart(recreateWindows, provisionedStateChanged);
+                listener.onPendingRestart(willRecreateWindows, provisionedStateChanged);
             }
         }
     }
@@ -73,7 +73,7 @@ public class CarSystemBarRestartTracker {
          * @param provisionedStateChanged whether this restart was caused by a provisioned state
          *                                change
          */
-        void onPendingRestart(boolean recreateWindows, boolean provisionedStateChanged);
+        void onPendingRestart(boolean willRecreateWindows, boolean provisionedStateChanged);
         /**
          * Notify that a restart has just happened and the views (and potentially windows) were
          * recreated

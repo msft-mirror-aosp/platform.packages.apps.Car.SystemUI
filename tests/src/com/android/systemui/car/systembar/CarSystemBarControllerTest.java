@@ -222,7 +222,9 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
         controllerFactoryMap.put(PassengerHomeButtonController.class,
                 passengerHomeButtonControllerProvider);
         CarSystemBarElementInitializer carSystemBarElementInitializer =
-                new CarSystemBarElementInitializer(controllerFactoryMap);
+                new CarSystemBarElementInitializer(controllerFactoryMap,
+                        mock(CarSystemBarElementStateController.class),
+                        mock(CarSystemBarRestartTracker.class));
         when(mWindowManager.getCurrentWindowMetrics()).thenReturn(mWindowMetrics);
         when(mWindowMetrics.getBounds()).thenReturn(new Rect(0, 0, 1920, 1080));
         mSystemBarConfigs = new SystemBarConfigsImpl(mSpiedContext,

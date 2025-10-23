@@ -138,7 +138,6 @@ class ShareToAppPrivacyChipViewControllerTest : CarSysuiTestCase() {
             icon = null,
             content = OngoingActivityChipModel.Content.Text("ShareToApp"),
             colors = ColorsModel.Red,
-            onClickListenerLegacy = null,
             clickBehavior = OngoingActivityChipModel.ClickBehavior.None,
             instanceId = instanceId,
         )

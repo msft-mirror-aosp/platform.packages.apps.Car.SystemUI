@@ -140,7 +140,6 @@ class CastToOtherDevicePrivacyChipViewControllerTest : CarSysuiTestCase() {
             icon = null,
             content = OngoingActivityChipModel.Content.Text("CastToOtherDevice"),
             colors = ColorsModel.Red,
-            onClickListenerLegacy = null,
             clickBehavior = OngoingActivityChipModel.ClickBehavior.None,
             instanceId = instanceId,
         )

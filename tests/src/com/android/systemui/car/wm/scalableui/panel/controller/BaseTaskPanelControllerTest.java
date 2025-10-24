@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,6 +34,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.UserHandle;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -140,7 +142,9 @@ public class BaseTaskPanelControllerTest extends SysuiTestCase {
         ArgumentCaptor<BroadcastReceiver> receiverCaptor = ArgumentCaptor.forClass(
                 BroadcastReceiver.class);
         ArgumentCaptor<IntentFilter> filterCaptor = ArgumentCaptor.forClass(IntentFilter.class);
-        verify(mMockContext).registerReceiver(receiverCaptor.capture(), filterCaptor.capture(),
+
+        verify(mMockContext).registerReceiverAsUser(receiverCaptor.capture(), eq(UserHandle.ALL),
+                filterCaptor.capture(), isNull(), isNull(),
                 eq(Context.RECEIVER_EXPORTED));
 
         IntentFilter filter = filterCaptor.getValue();

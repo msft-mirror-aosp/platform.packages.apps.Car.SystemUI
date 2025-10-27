@@ -16,8 +16,8 @@
 
 package com.android.systemui.car.statusicon.ui;
 
+import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.statusicon.StatusIconViewController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 
 import dagger.Binds;
 import dagger.Module;

@@ -24,9 +24,9 @@ import androidx.annotation.Nullable;
 
 import com.android.car.qc.view.QCView;
 import com.android.systemui.R;
-import com.android.systemui.car.systembar.element.CarSystemBarElement;
-import com.android.systemui.car.systembar.element.CarSystemBarElementFlags;
-import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
+import com.android.systemui.car.flexibleui.CarSystemBarElement;
+import com.android.systemui.car.flexibleui.CarSystemBarElementFlags;
+import com.android.systemui.car.flexibleui.CarSystemBarElementResolver;
 
 /**
  * Quick Control View Element for CarSystemUI.

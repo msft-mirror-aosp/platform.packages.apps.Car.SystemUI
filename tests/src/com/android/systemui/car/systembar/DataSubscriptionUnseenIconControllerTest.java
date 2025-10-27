@@ -42,9 +42,9 @@ import com.android.car.datasubscription.DataSubscriptionConfig.DataSubscriptionS
 import com.android.car.datasubscription.DataSubscriptionConfigParser;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.systembar.element.layout.CarSystemBarImageView;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.car.flexibleui.layout.CarSystemBarImageView;
 
 import org.junit.After;
 import org.junit.Before;

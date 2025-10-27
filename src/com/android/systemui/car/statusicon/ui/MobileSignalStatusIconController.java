@@ -22,10 +22,10 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.settingslib.graph.SignalDrawable;
 import com.android.systemui.R;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.statusicon.StatusIconView;
 import com.android.systemui.car.statusicon.StatusIconViewController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.statusbar.connectivity.MobileDataIndicators;
 import com.android.systemui.statusbar.connectivity.NetworkController;
 import com.android.systemui.statusbar.connectivity.SignalCallback;
@@ -62,14 +62,14 @@ public class MobileSignalStatusIconController extends StatusIconViewController i
     }
 
     @Override
-    protected void onViewAttached() {
+    public void onViewAttached() {
         super.onViewAttached();
         mNetworkController.addCallback(this);
         updateStatus();
     }
 
     @Override
-    protected void onViewDetached() {
+    public void onViewDetached() {
         super.onViewDetached();
         mNetworkController.removeCallback(this);
     }

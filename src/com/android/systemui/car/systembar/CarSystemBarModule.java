@@ -33,12 +33,13 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.flags.FlagManager;
+import com.android.systemui.car.flexibleui.CarSystemBarElementController;
+import com.android.systemui.car.flexibleui.FlexibleUiModule;
 import com.android.systemui.car.hvac.HvacButtonController;
 import com.android.systemui.car.hvac.TemperatureControlViewController;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationButtonController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.dagger.SysUISingleton;
@@ -78,7 +79,7 @@ import javax.inject.Provider;
  * extensions of SystemUI to override and provide their own implementations without replacing the
  * default system bar class.
  */
-@Module
+@Module(includes = {FlexibleUiModule.class})
 public abstract class CarSystemBarModule {
 
     @Provides

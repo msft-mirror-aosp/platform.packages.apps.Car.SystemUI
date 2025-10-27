@@ -19,10 +19,10 @@ package com.android.systemui.car.systembar;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import com.android.systemui.car.systembar.element.CarSystemBarElementController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.systembar.element.layout.CarSystemBarImageView;
+import com.android.systemui.car.flexibleui.CarSystemBarElementController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.car.flexibleui.layout.CarSystemBarImageView;
 import com.android.systemui.car.users.CarProfileIconUpdater;
 import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.dagger.qualifiers.Main;

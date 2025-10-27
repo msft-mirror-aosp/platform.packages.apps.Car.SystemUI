@@ -32,7 +32,7 @@
         android:name="com.android.systemui.CarSystemUIApplication"
         android:debuggable="true"
         android:largeHeap="true"
-        tools:replace="android:appComponentFactory"
+        tools:replace="android:appComponentFactory, android:name"
         android:appComponentFactory="com.android.systemui.CarSystemUITestAppComponentFactory"
         android:testOnly="true">
         <uses-library android:name="android.test.runner"/>

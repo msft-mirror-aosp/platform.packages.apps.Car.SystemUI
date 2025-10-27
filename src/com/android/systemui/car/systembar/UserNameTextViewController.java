@@ -25,10 +25,10 @@ import android.os.UserHandle;
 import android.os.UserManager;
 
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.systembar.element.CarSystemBarElementController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.systembar.element.layout.CarSystemBarTextView;
+import com.android.systemui.car.flexibleui.CarSystemBarElementController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.car.flexibleui.layout.CarSystemBarTextView;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
 

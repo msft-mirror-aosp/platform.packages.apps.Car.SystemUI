@@ -48,6 +48,7 @@ import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.SysUIPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerModule;
+import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelConfigReadStateMonitor;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.ScalableUIPanelUpdateImpl;
 import com.android.systemui.car.wm.scalableui.systemwindow.HunWindow;
@@ -197,6 +198,7 @@ public abstract class CarWMShellModule {
             TaskPanel.Factory taskPanelFactory,
             DecorPanel.Factory decorPanelFactory,
             SysUIPanel.Factory sysUiPanelFactory,
+            PanelConfigReadStateMonitor panelConfigMonitor,
             FlagManager flagManager
     ) {
         if (ScalableUIUtils.isScalableUIEnabled(context, flagManager)) {
@@ -205,6 +207,7 @@ public abstract class CarWMShellModule {
                     taskPanelFactory,
                     decorPanelFactory,
                     sysUiPanelFactory,
+                    panelConfigMonitor,
                     flagManager));
         }
         return Optional.empty();

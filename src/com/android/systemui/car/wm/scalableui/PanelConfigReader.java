@@ -35,6 +35,7 @@ import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.SysUIPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
+import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelConfigReadStateMonitor;
 import com.android.wm.shell.dagger.WMSingleton;
 
 import java.io.InputStream;
@@ -43,6 +44,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Reads and loads panel configurations from various sources (XML or Design Compose files).
+ *
+ * This class is responsible for initializing and reloading the panel configurations used by the
+ * system UI. It interacts with {@link PanelConfigReadStateMonitor} to signal when the
+ * configurations have been successfully loaded and are ready for use by other components.
+ */
 @WMSingleton
 public class PanelConfigReader {
     private static final String TAG = PanelConfigReader.class.getSimpleName();
@@ -52,15 +60,17 @@ public class PanelConfigReader {
     private final DecorPanel.Factory mDecorPanelFactory;
     private final SysUIPanel.Factory mSysUiPanelFactory;
     private final FlagManager mFlagManager;
+    private final PanelConfigReadStateMonitor mMonitor;
 
     public PanelConfigReader(Context context, TaskPanel.Factory taskPanelFactory,
             DecorPanel.Factory decorPanelFactory, SysUIPanel.Factory sysUiPanelFactory,
-            FlagManager flagManager) {
+            PanelConfigReadStateMonitor monitor, FlagManager flagManager) {
         mFlagManager = flagManager;
         mContext = context;
         mTaskPanelFactory = taskPanelFactory;
         mDecorPanelFactory = decorPanelFactory;
         mSysUiPanelFactory = sysUiPanelFactory;
+        mMonitor = monitor;
     }
 
     /**
@@ -86,8 +96,12 @@ public class PanelConfigReader {
      * <p>This method clears any existing panel states and then loads the new configurations from
      * either a Design Compose file (.dcf) or XML files, depending on whether the
      * {@link Flag#ScalableUiDesignCompose} flag is enabled.
+     *
+     * <p>After successfully loading the configuration, it notifies the
+     * {@link PanelConfigReadStateMonitor} that the configuration is ready.
      */
     public void loadConfig() {
+        mMonitor.setReady(false);
         try {
             Map<String, PanelState> panelStates;
             Trace.beginSection(TAG + "#load");
@@ -102,6 +116,7 @@ public class PanelConfigReader {
         } finally {
             Trace.endSection();
         }
+        mMonitor.setReady(true);
     }
 
     /**
@@ -157,8 +172,10 @@ public class PanelConfigReader {
             }
         } catch (Resources.NotFoundException e) {
             Log.e(TAG, "window_states no found " + e);
+            throw new RuntimeException("window_states no found ", e);
         } catch (RuntimeException runtimeException) {
             Log.e(TAG, "fail to get res for state" + runtimeException);
+            throw new RuntimeException("fail to get res for state", runtimeException);
         }
         return panelStates;
     }

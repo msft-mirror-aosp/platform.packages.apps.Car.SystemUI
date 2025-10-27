@@ -298,6 +298,7 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
                 mCarSystemBarRestartTracker,
                 displayTracker,
                 null,
+                mWindowProvider,
                 mHandler);
     }
 

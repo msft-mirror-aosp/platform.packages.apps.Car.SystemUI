@@ -65,6 +65,7 @@ import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindow;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -121,6 +122,8 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     private final ToolbarController mDisplayCompatToolbarController;
 
     protected final UserTracker mUserTracker;
+    private final SystemUiWindowProvider mWindowProvider;
+    private final SystemUiWindowProvider.WindowReadyListener mWindowReadyListener;
 
     // Saved StatusBarManager.DisableFlags
     private int mStatusBarState;
@@ -173,6 +176,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
             @Nullable ToolbarController toolbarController,
+            SystemUiWindowProvider windowProvider,
             @Main Handler handler) {
         mContext = context;
         mUserTracker = userTracker;
@@ -192,12 +196,15 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mConfigurationController = configurationController;
         mCarSystemBarRestartTracker = restartTracker;
         mDisplayCompatToolbarController = toolbarController;
+        mWindowProvider = windowProvider;
+        mWindowReadyListener = () -> mExecutor.execute(this::restartSystemBars);
     }
 
     /**
      * Initializes the SystemBars
      */
     public void init() {
+        mWindowProvider.addReadinessListener(mWindowReadyListener);
 
         resetSystemBarConfigs();
 
@@ -675,7 +682,8 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             if (barWindow != null && !isBarAttached && isBarEnabled) {
                 SystemUiWindow window = mSystemBarConfigs.getWindowForName(name);
                 if (window != null) {
-                    window.setRootView(barWindow, window.getLayoutParams());
+                    WindowManager.LayoutParams lp = window.getLayoutParams();
+                    window.setRootView(barWindow, lp);
                     mSystemBarAttachedMap.put(name, true);
                 }
 

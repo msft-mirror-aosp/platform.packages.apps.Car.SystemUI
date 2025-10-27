@@ -194,19 +194,10 @@ public final class DecorPanel extends SysUIPanel {
                 variant == null ? getCornerRadius() : variant.getCornerRadius());
         autoSurfaceTransaction.setCrop(getAutoDecor(),
                 new Rect(0, 0, bounds.width(), bounds.height()));
-        //TODO(b/404959846): replace with autoSurfaceTransaction api if available.
-        if (mDecorView != null) {
-            mDecorView.setAlpha(variant == null ? getAlpha() : variant.getAlpha());
-            mDecorView.post(() -> {
-                int vis;
-                if (variant == null) {
-                    vis = isVisible() ? View.VISIBLE : View.GONE;
-                } else {
-                    vis = variant.isVisible() ? View.VISIBLE : View.GONE;
-                }
-                mDecorView.setVisibility(vis);
-            });
-        }
+        autoSurfaceTransaction.setAlpha(getAutoDecor(),
+                variant == null ? getAlpha() : variant.getAlpha());
+        autoSurfaceTransaction.setVisibility(getAutoDecor(),
+                variant == null ? isVisible() : variant.isVisible());
     }
 
     @AssistedFactory

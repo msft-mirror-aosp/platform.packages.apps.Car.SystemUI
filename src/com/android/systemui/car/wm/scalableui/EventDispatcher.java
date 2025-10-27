@@ -21,12 +21,13 @@ import com.android.car.scalableui.manager.ActionManager;
 import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelTransaction;
-import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
-import com.android.systemui.car.wm.scalableui.ScalableUIUtils;
 import com.android.wm.shell.dagger.WMSingleton;
 
 import dagger.Lazy;
+
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -55,17 +56,17 @@ public class EventDispatcher {
     }
 
     /**
-     * See {@link #getTransaction(Event)}
-     */
-    public static PanelTransaction getTransaction(String event) {
-        return getTransaction(new Event.Builder(event).build());
-    }
-
-    /**
      * Retrieve a panel transaction describing the provided event parameter.
      */
     public static PanelTransaction getTransaction(Event event) {
         return StateManager.handleEvent(event);
+    }
+
+    /**
+     * Retrieve a panel transaction describing the provided events.
+     */
+    public static PanelTransaction getTransaction(List<Event> events) {
+        return StateManager.handleEvents(events);
     }
 
     /**
@@ -76,14 +77,23 @@ public class EventDispatcher {
     }
 
     /**
-     * Executes the {@link Event} by getting a linked {@link PanelTransaction} and sending
-     * an Action.
+     * See {@link #executeEvents}
      */
     public void executeEvent(Event event) {
+        executeEvents(Collections.singletonList(event));
+    }
+
+    /**
+     * Executes one or more {@link Event} by getting a linked {@link PanelTransaction} and sending
+     * an Action.
+     */
+    public void executeEvents(List<Event> events) {
         if (!ScalableUIUtils.isScalableUIEnabled(mContext, mFlagManager)) {
             throw new IllegalStateException("ScalableUI disabled - cannot execute transaction");
         }
-        mPanelTransitionCoordinator.startTransition(getTransaction(event));
-        ActionManager.handleEvent(mContext, event);
+        mPanelTransitionCoordinator.startTransition(getTransaction(events));
+        for (Event event : events) {
+            ActionManager.handleEvent(mContext, event);
+        }
     }
 }

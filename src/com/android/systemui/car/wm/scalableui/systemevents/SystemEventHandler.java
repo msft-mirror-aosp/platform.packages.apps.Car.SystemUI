@@ -33,6 +33,7 @@ import android.app.KeyguardManager;
 import android.car.user.CarUserManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.UserManager;
 import android.util.Log;
@@ -49,22 +50,22 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.display.DisplayStateHelper;
+import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIUtils;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Background;
 import com.android.systemui.deviceentry.domain.interactor.DeviceEntryInteractor;
-import com.android.systemui.keyguard.KeyguardWmStateRefactor;
 import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.statusbar.policy.KeyguardStateController;
-import com.android.systemui.util.kotlin.JavaAdapter;
 import com.android.window.flags.Flags;
 
 import dagger.Lazy;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
@@ -87,7 +88,6 @@ public class SystemEventHandler implements CoreStartable,
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
 
     private final Context mContext;
-    private final JavaAdapter mJavaAdapter;
     private final UserManager mUserManager;
     private final CarServiceProvider mCarServiceProvider;
     private final UserTracker mUserTracker;
@@ -130,6 +130,7 @@ public class SystemEventHandler implements CoreStartable,
                         mResetCalledForUser = false;
                         mIsUserSwitching = true;
                     } else if (event.getEventType() == USER_LIFECYCLE_EVENT_TYPE_UNLOCKED) {
+                        handleSuwLaunchIfNecessary(event.getUserId());
                         if (shouldResetPanels()) {
                             Log.d(TAG, "Resetting panels during user unlock");
                             if (!Flags.homeActivityAlwaysPresent()) {
@@ -148,7 +149,8 @@ public class SystemEventHandler implements CoreStartable,
                         }
 
                         if (!mIsKeyguardShowing) {
-                            sendUserAuthEvent();
+                            mEventDispatcher.executeEvent(getUserAuthEvent());
+                            mIsUserSwitching = false;
                         }
                     } else {
                         Log.i(TAG, "Ignore system event" + event.getEventType());
@@ -174,29 +176,31 @@ public class SystemEventHandler implements CoreStartable,
 
                 @Override
                 public void onUserSetupInProgressChanged() {
-                    updateUserSetupState();
+                    updateUserSetupState(/* force= */ false);
                 }
 
                 @Override
                 public void onDeviceProvisionedChanged() {
-                    updateUserSetupState();
+                    updateUserSetupState(/* force= */ false);
                 }
 
                 @Override
                 public void onUserSwitched() {
-                    updateUserSetupState();
+                    updateUserSetupState(/* force= */ true);
                 }
             };
 
     private final UserTracker.Callback mUserTrackerCallback = new UserTracker.Callback() {
         @Override
         public void onBeforeUserSwitching(int newUser) {
-            sendEvent(new Event.Builder(SYSTEM_BEFORE_USER_SWITCH_EVENT_ID));
+            mEventDispatcher.executeEvent(
+                    getEventWithDisplays(new Event.Builder(SYSTEM_BEFORE_USER_SWITCH_EVENT_ID)));
         }
 
         @Override
         public void onUserChanged(int newUser, @NonNull Context userContext) {
-            sendEvent(new Event.Builder(SYSTEM_USER_SWITCH_COMPLETE_EVENT_ID));
+            mEventDispatcher.executeEvent(
+                    getEventWithDisplays(new Event.Builder(SYSTEM_USER_SWITCH_COMPLETE_EVENT_ID)));
         }
     };
 
@@ -206,7 +210,8 @@ public class SystemEventHandler implements CoreStartable,
                 public void onDisplayPowerStateChanged(int displayId, boolean isOn) {
                     if (isOn && mUserManager.isUserUnlocked(mUserTracker.getUserId())
                             && !mIsKeyguardShowing) {
-                        sendUserAuthEvent();
+                        mEventDispatcher.executeEvent(getUserAuthEvent());
+                        mIsUserSwitching = false;
                     }
                 }
             };
@@ -214,7 +219,6 @@ public class SystemEventHandler implements CoreStartable,
     @Inject
     public SystemEventHandler(
             Context context,
-            JavaAdapter javaAdapter,
             UserManager userManager,
             @Background Executor bgExecutor,
             CarServiceProvider carServiceProvider,
@@ -229,7 +233,6 @@ public class SystemEventHandler implements CoreStartable,
             FlagManager flagManager
     ) {
         mContext = context;
-        mJavaAdapter = javaAdapter;
         mUserManager = userManager;
         mBackgroundExecutor = bgExecutor;
         mCarServiceProvider = carServiceProvider;
@@ -244,9 +247,13 @@ public class SystemEventHandler implements CoreStartable,
         mCurrentOrientation = mContext.getResources().getConfiguration().orientation;
     }
 
-    private void updateUserSetupState() {
+    /**
+     * Update the current user setup state and send relevant events if necessary.
+     * @param force always send event regardless of if anything has changed
+     */
+    private void updateUserSetupState(boolean force) {
         boolean isUserSetupInProgress = !mCarDeviceProvisionedController.isCurrentUserFullySetup();
-        if (isUserSetupInProgress != mIsUserSetupInProgress) {
+        if (isUserSetupInProgress != mIsUserSetupInProgress || force) {
             mIsUserSetupInProgress = isUserSetupInProgress;
             notifySuwStateEvent();
         }
@@ -255,7 +262,8 @@ public class SystemEventHandler implements CoreStartable,
     private void notifySuwStateEvent() {
         String eventId =
                 mIsUserSetupInProgress ? SYSTEM_ENTER_SUW_EVENT_ID : SYSTEM_EXIT_SUW_EVENT_ID;
-        sendEvent(new Event.Builder(eventId));
+        mEventDispatcher.executeEvent(
+                getEventWithDisplays(new Event.Builder(eventId)));
     }
 
     @Override
@@ -276,8 +284,40 @@ public class SystemEventHandler implements CoreStartable,
 
     private void registerProvisionedStateListener() {
         mIsUserSetupInProgress = !mCarDeviceProvisionedController.isCurrentUserFullySetup();
-        notifySuwStateEvent();
+        if (mIsUserSetupInProgress) {
+            notifySuwStateEvent();
+        }
         mCarDeviceProvisionedController.addCallback(mCarDeviceProvisionedListener);
+    }
+
+    private void handleSuwLaunchIfNecessary(int userId) {
+        if (!mFlagManager.isEnabled(Flag.ScalableUiNoSuwHome)) {
+            return;
+        }
+        if (!mCarDeviceProvisionedController.isUserSetup(userId)) {
+            Log.d(TAG, "Launch SUW intent for non-setup user");
+            Intent suwIntent = new Intent(Intent.ACTION_MAIN);
+            suwIntent.addCategory(Intent.CATEGORY_SETUP_WIZARD);
+            suwIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mContext.startActivityAsUser(suwIntent,
+                    mUserTracker.getUserHandle());
+        } else if (mIsUserSetupInProgress) {
+            // This is an unintended state - send the home event to the SUW
+            // to get it to reset itself.
+            Log.e(TAG, "Unlocked while SUW is already in progress");
+            Intent suwIntent = new Intent(Intent.ACTION_MAIN);
+            suwIntent.addCategory(Intent.CATEGORY_SETUP_WIZARD);
+            ResolveInfo info = mContext.getPackageManager()
+                    .resolveActivityAsUser(suwIntent, 0,
+                            mUserTracker.getUserId());
+            if (info != null && info.activityInfo != null) {
+                Intent suwHomeIntent = new Intent(Intent.ACTION_MAIN);
+                suwHomeIntent.addCategory(Intent.CATEGORY_HOME);
+                suwHomeIntent.setPackage(info.activityInfo.packageName);
+                mContext.startActivityAsUser(suwHomeIntent,
+                        mUserTracker.getUserHandle());
+            }
+        }
     }
 
     private void registerUserEventListener() {
@@ -291,18 +331,12 @@ public class SystemEventHandler implements CoreStartable,
 
     private void registerKeyguardStateListener() {
         mIsKeyguardShowing = isKeyguardShowing();
-        if (KeyguardWmStateRefactor.isEnabled()) {
-            mJavaAdapter.alwaysCollectFlow(
-                    mDeviceEntryInteractor.get().isDeviceEntered(),
-                    entered -> keyguardShowingChanged(!entered));
-        } else {
-            mKeyguardStateController.addCallback(new KeyguardStateController.Callback() {
-                @Override
-                public void onKeyguardShowingChanged() {
-                    keyguardShowingChanged(isKeyguardShowing());
-                }
-            });
-        }
+        mKeyguardStateController.addCallback(new KeyguardStateController.Callback() {
+            @Override
+            public void onKeyguardShowingChanged() {
+                keyguardShowingChanged(isKeyguardShowing());
+            }
+        });
     }
 
     private void keyguardShowingChanged(boolean showing) {
@@ -311,21 +345,23 @@ public class SystemEventHandler implements CoreStartable,
         }
         mIsKeyguardShowing = showing;
         if (mIsKeyguardShowing) {
-            sendEvent(new Event.Builder(SYSTEM_KEYGUARD_SHOWN_EVENT_ID));
+            mEventDispatcher.executeEvent(
+                    getEventWithDisplays(new Event.Builder(SYSTEM_KEYGUARD_SHOWN_EVENT_ID)));
         } else {
-            sendEvent(new Event.Builder(SYSTEM_KEYGUARD_HIDDEN_EVENT_ID));
+            ArrayList<Event> eventsToSend = new ArrayList<>();
+            eventsToSend.add(
+                    getEventWithDisplays(new Event.Builder(SYSTEM_KEYGUARD_HIDDEN_EVENT_ID)));
+
             if (mUserManager.isUserUnlocked(mUserTracker.getUserId())) {
-                sendUserAuthEvent();
+                eventsToSend.add(getUserAuthEvent());
+                mIsUserSwitching = false;
             }
+            mEventDispatcher.executeEvents(eventsToSend);
         }
     }
 
     private boolean isKeyguardShowing() {
-        if (KeyguardWmStateRefactor.isEnabled()) {
-            return !mDeviceEntryInteractor.get().isDeviceEntered().getValue();
-        } else {
-            return mKeyguardStateController.isShowing();
-        }
+        return mKeyguardStateController.isShowing();
     }
 
     private boolean shouldResetPanels() {
@@ -333,18 +369,17 @@ public class SystemEventHandler implements CoreStartable,
                 && !mResetCalledForUser;
     }
 
-    private void sendEvent(Event.Builder builder) {
-        mEventDispatcher.executeEvent(builder.addApplicableDisplays(
+    private Event getEventWithDisplays(Event.Builder builder) {
+        return builder.addApplicableDisplays(
                 Arrays.stream(mDisplayTracker.getAllDisplays())
                         .map(Display::getDisplayId)
-                        .collect(Collectors.toList())).build());
+                        .collect(Collectors.toList())).build();
     }
 
-    private void sendUserAuthEvent() {
-        sendEvent(new Event.Builder(
+    private Event getUserAuthEvent() {
+        return getEventWithDisplays(new Event.Builder(
                 SYSTEM_USER_AUTHENTICATED_EVENT_ID)
                 .addToken(SYSTEM_USER_SWITCH_ON_AUTHENTICATED_TOKEN_ID,
                         Boolean.toString(mIsUserSwitching)));
-        mIsUserSwitching = false;
     }
 }

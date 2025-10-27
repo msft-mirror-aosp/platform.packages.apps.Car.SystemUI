@@ -85,7 +85,7 @@ import javax.inject.Inject;
  */
 @WMSingleton
 public class PanelTransitionCoordinator {
-    private static final String TAG = PanelTransitionCoordinator.class.getName();
+    private static final String TAG = PanelTransitionCoordinator.class.getSimpleName();
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
     private static final String DECOR_TRANSACTION = "DECOR_TRANSACTION";
     private static final String PANEL_TRANSACTION = "PANEL_TRANSACTION";
@@ -292,6 +292,7 @@ public class PanelTransitionCoordinator {
     private Event getConflitResolutionEvent(Map<Integer, AutoTaskStackState> changedTaskStacks,
             IBinder transition) {
         PanelTransaction transaction = null;
+        Event conflictResolutionEvent = null;
         synchronized (mPendingPanelTransactions) {
             transaction = mPendingPanelTransactions.get(transition);
         }
@@ -301,8 +302,8 @@ public class PanelTransitionCoordinator {
             TaskPanel tp = mPanelUtils.getTaskPanel(taskPanel ->
                     taskPanel.getRootStack() != null
                             && taskPanel.getRootStack().getId() == autoTaskStackId);
-            if (tp == null || !tp.isLaunchRoot()) {
-                logIfDebuggable("Panel is null or not launch root" + tp);
+            if (tp == null) {
+                logIfDebuggable("No panel found for auto task stack " + autoTaskStackId);
                 continue;
             }
 
@@ -310,27 +311,48 @@ public class PanelTransitionCoordinator {
             Transition panelTransition = transaction != null
                     ? transaction.getPanelTransactionState(tp.getPanelId())
                     : null;
-            if (!isEqual(changedState, tp, panelTransition)) {
-                Log.e(TAG, "Transition conflicts found on launch root task - " + changedState);
-                return new Event.Builder(
-                        changedState.getChildrenTasksVisible() ? SYSTEM_TASK_OPEN_EVENT_ID
-                                : SYSTEM_TASK_CLOSE_EVENT_ID)
-                        .setPanelId(tp.getPanelId())
-                        .build();
+            StringBuilder debugStringBuilder = new StringBuilder();
+            if (!isEqual(changedState, tp, panelTransition, debugStringBuilder)) {
+                Log.e(TAG, debugStringBuilder.toString());
+
+                if (conflictResolutionEvent == null && tp.isLaunchRoot()) {
+                    Log.e(TAG, "Sending conflict resolution event for launch root task");
+                    conflictResolutionEvent = new Event.Builder(
+                            changedState.getChildrenTasksVisible() ? SYSTEM_TASK_OPEN_EVENT_ID
+                                    : SYSTEM_TASK_CLOSE_EVENT_ID)
+                            .setPanelId(tp.getPanelId())
+                            .build();
+                }
             }
         }
-        return null;
+        return conflictResolutionEvent;
     }
 
     private boolean isEqual(@NonNull AutoTaskStackState changedState,
-            @NonNull TaskPanel tp, @Nullable Transition panelTransition) {
+            @NonNull TaskPanel tp, @Nullable Transition panelTransition,
+            @Nullable StringBuilder debugStringBuilder) {
         Variant toVariant = panelTransition != null ? panelTransition.getToVariant() : null;
         boolean isVisible = toVariant != null ? toVariant.isVisible() : tp.isVisible();
         int layer = toVariant != null ? toVariant.getLayer() : tp.getLayer();
         Rect bounds = toVariant != null ? toVariant.getBounds() : tp.getBounds();
-        return changedState.getChildrenTasksVisible() == isVisible
+        boolean isEqual = changedState.getChildrenTasksVisible() == isVisible
                 && changedState.getLayer() == layer
                 && changedState.getBounds().equals(bounds);
+        if (debugStringBuilder != null) {
+            if (isEqual) {
+                debugStringBuilder.append("No conflict found on panel ").append(tp.getPanelId());
+            } else {
+                debugStringBuilder.append("Transition conflict found on panel ").append(
+                        tp.getPanelId());
+                debugStringBuilder.append(" | changedState: getChildrenTasksVisible=").append(
+                        changedState.getChildrenTasksVisible()).append(" layer=").append(
+                        changedState.getLayer()).append(" bounds=").append(
+                        changedState.getBounds());
+                debugStringBuilder.append(" | panelState: isVisible=").append(isVisible)
+                        .append(" layer=").append(layer).append(" bounds=").append(bounds);
+            }
+        }
+        return isEqual;
     }
 
     /**
@@ -579,13 +601,15 @@ public class PanelTransitionCoordinator {
             }
             TaskPanel taskPanel = mPanelUtils.getTaskPanel(
                     tp -> tp.getRootTaskId() == change.getTaskInfo().taskId);
-            if (taskPanel == null || taskPanel.getLeash() == null) {
-                Log.e(TAG, "TaskPanel is null " + change.getTaskInfo() + ", or leash is null"
-                        + taskPanel);
+            if (taskPanel == null) {
+                logIfDebuggable("Change is not a TaskPanel change " + change.getTaskInfo());
                 continue;
             }
-
             SurfaceControl leash = taskPanel.getLeash();
+            if (leash == null) {
+                logIfDebuggable("No leash for TaskPanel " + taskPanel);
+                continue;
+            }
             taskPanel.setLeash(leash);
             if (!useCurrentState.test(taskPanel.getPanelId())) {
                 // Use the PanelState is up to date even before animation, but not Panel.

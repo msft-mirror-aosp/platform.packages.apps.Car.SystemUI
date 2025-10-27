@@ -19,7 +19,6 @@ package com.android.systemui.car.systembar.element;
 import android.os.Bundle;
 import android.view.View;
 
-import com.android.systemui.car.systembar.CarSystemBarRestartTracker;
 import com.android.systemui.dagger.SysUISingleton;
 
 import java.lang.ref.WeakReference;
@@ -35,28 +34,8 @@ public class CarSystemBarElementStateController {
             new HashMap<>();
     private final HashMap<Long, Bundle> mStates = new HashMap<>();
 
-    private final CarSystemBarRestartTracker.Listener mRestartListener =
-            new CarSystemBarRestartTracker.Listener() {
-                @Override
-                public void onPendingRestart(boolean recreateWindows,
-                        boolean provisionedStateChanged) {
-                    if (!recreateWindows && !provisionedStateChanged) {
-                        notifyPendingRestart();
-                    }
-                }
-
-                @Override
-                public void onRestartComplete(boolean windowsRecreated,
-                        boolean provisionedStateChanged) {
-                    if (!windowsRecreated && !provisionedStateChanged) {
-                        notifyRestartComplete();
-                    }
-                }
-            };
-
     @Inject
-    public CarSystemBarElementStateController(CarSystemBarRestartTracker restartTracker) {
-        restartTracker.addListener(mRestartListener);
+    public CarSystemBarElementStateController() {
     }
 
     void registerController(CarSystemBarElementController controller) {
@@ -86,7 +65,7 @@ public class CarSystemBarElementStateController {
         }
     }
 
-    private void notifyPendingRestart() {
+    void notifyPendingRestart() {
         synchronized (mControllers) {
             mStates.clear();
             for (Iterator<Map.Entry<Long, WeakReference<CarSystemBarElementController>>> iterator =
@@ -104,7 +83,7 @@ public class CarSystemBarElementStateController {
         }
     }
 
-    private void notifyRestartComplete() {
+    void notifyRestartComplete() {
         synchronized (mControllers) {
             for (Iterator<Map.Entry<Long, WeakReference<CarSystemBarElementController>>> iterator =
                     mControllers.entrySet().iterator(); iterator.hasNext(); ) {

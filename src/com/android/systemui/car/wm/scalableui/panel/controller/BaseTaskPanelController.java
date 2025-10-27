@@ -15,6 +15,11 @@
  */
 package com.android.systemui.car.wm.scalableui.panel.controller;
 
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.DEFAULT_COMPONENT_TAG;
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.PERSISTENT_ACTIVITY_TAG;
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.PERSISTENT_PACKAGE_TAG;
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.UPDATABLE_INTENT_FILTER_TAG;
+
 import android.annotation.NonNull;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -28,6 +33,7 @@ import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -64,6 +70,8 @@ public class BaseTaskPanelController implements TaskPanelController {
     @NonNull
     private final Object mLock = new Object();
     @NonNull
+    private final String mPanelId;
+    @NonNull
     private final PanelControllerMetadata mPanelControllerMetadata;
     @NonNull
     private final Set<ComponentName> mPersistentActivities;
@@ -85,27 +93,30 @@ public class BaseTaskPanelController implements TaskPanelController {
      *                                containing configuration information.
      */
     @AssistedInject
-    public BaseTaskPanelController(@NonNull Context context,
+    public BaseTaskPanelController(@NonNull Context context, @Assisted String panelId,
             @NonNull @Assisted PanelControllerMetadata panelControllerMetadata,
             @NonNull PanelUtils panelUtils) {
         mContext = context;
+        mPanelId = panelId;
         mPanelControllerMetadata = panelControllerMetadata;
         mPersistentActivities = new HashSet<>();
         mPanelUtils = panelUtils;
-        init(panelControllerMetadata);
     }
 
-    /**
-     * Creates an instance of BaseTaskPanelController using the provided PanelControllerMetadata.
-     */
     @AssistedFactory
     public interface Factory extends TaskPanelController.Factory<BaseTaskPanelController> {
-        BaseTaskPanelController create(PanelControllerMetadata metadata);
+        /**
+         * Creates an instance of BaseTaskPanelController using the provided
+         * PanelControllerMetadata.
+         */
+        BaseTaskPanelController create(String panelId, PanelControllerMetadata metadata);
     }
 
-    private void init(PanelControllerMetadata metadata) {
-        mDefaultComponent = parseDefaultComponent(metadata);
-        mUpdateFilter = parseUpdateFilter(metadata);
+    @Override
+    @CallSuper
+    public void init() {
+        mDefaultComponent = parseDefaultComponent(mPanelControllerMetadata);
+        mUpdateFilter = parseUpdateFilter(mPanelControllerMetadata);
         if (mUpdateFilter != null) {
             registerApplicationInstallUninstallReceiver();
         }
@@ -115,14 +126,13 @@ public class BaseTaskPanelController implements TaskPanelController {
 
     private Intent parseUpdateFilter(@NonNull PanelControllerMetadata metadata) {
         String intentString = metadata.getStringConfiguration(
-                PanelControllerMetadata.UPDATABLE_INTENT_FILTER);
+                UPDATABLE_INTENT_FILTER_TAG);
         return getIntentFromString(intentString);
     }
 
     private ComponentName parseDefaultComponent(@NonNull PanelControllerMetadata metadata) {
         String defaultIntentString =
-                metadata.getStringConfiguration(
-                        PanelControllerMetadata.DEFAULT_COMPONENT);
+                metadata.getStringConfiguration(DEFAULT_COMPONENT_TAG);
         return defaultIntentString == null ? null : ComponentName.unflattenFromString(
                 defaultIntentString);
     }
@@ -163,14 +173,19 @@ public class BaseTaskPanelController implements TaskPanelController {
         }
         mPersistentActivities.addAll(
                 mPanelUtils.parsePersistentActivitiesFromPackages(mPanelControllerMetadata,
-                        PanelControllerMetadata.PERSISTENT_PACKAGE));
+                        PERSISTENT_PACKAGE_TAG));
         mPersistentActivities.addAll(parsePersistentActivities(mPanelControllerMetadata,
-                PanelControllerMetadata.PERSISTENT_ACTIVITY));
+                PERSISTENT_ACTIVITY_TAG));
         synchronized (mLock) {
             if (mTaskPanelHandler != null) {
                 mTaskPanelHandler.onApplicationChanged();
             }
         }
+    }
+
+    @NonNull
+    protected String getPanelId() {
+        return mPanelId;
     }
 
     protected void logIfDebuggable(String s) {

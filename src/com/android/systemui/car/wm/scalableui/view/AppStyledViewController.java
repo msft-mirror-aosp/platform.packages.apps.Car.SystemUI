@@ -40,7 +40,8 @@ public class AppStyledViewController extends DecorPanelControllerBase {
 
     private final EventDispatcher mEventDispatcher;
     @AssistedInject
-    public AppStyledViewController(@Assisted PanelControllerMetadata metadata,
+    public AppStyledViewController(@Assisted String panelId,
+            @Assisted PanelControllerMetadata metadata,
             @DecorPanelViewMap Map<Class<?>, Provider<View>> decorPanelViewMap,
             EventDispatcher eventDispatcher) {
         super(metadata, decorPanelViewMap);
@@ -58,6 +59,6 @@ public class AppStyledViewController extends DecorPanelControllerBase {
          * Create an instance of AppStyledViewController2 with the provided
          * PanelControllerMetadata
          */
-        AppStyledViewController create(PanelControllerMetadata metadata);
+        AppStyledViewController create(String panelId, PanelControllerMetadata metadata);
     }
 }

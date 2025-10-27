@@ -15,8 +15,11 @@
  */
 package com.android.systemui.car.wm.scalableui.view;
 
-import static com.android.car.scalableui.model.PanelControllerMetadata.DRAG_DEC_EVENT_ID_TAG;
-import static com.android.car.scalableui.model.PanelControllerMetadata.DRAG_INC_EVENT_ID_TAG;
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.DRAG_DEC_EVENT_ID_TAG;
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.DRAG_INC_EVENT_ID_TAG;
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.EVENT_ID_TAG;
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.ORIENTATION_TAG;
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.SNAPTHREADHOLD_TAG;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_DRAG_DIRECTION_ID;
 
 import android.annotation.SuppressLint;
@@ -93,7 +96,8 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     }
 
     @AssistedInject
-    public GripBarViewController(@Assisted PanelControllerMetadata metadata,
+    public GripBarViewController(@Assisted String panelId,
+            @Assisted PanelControllerMetadata metadata,
             @DecorPanelViewMap Map<Class<?>, Provider<View>> decorPanelViewMap,
             EventDispatcher eventDispatcher) {
         super(metadata, decorPanelViewMap);
@@ -105,7 +109,7 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     @AssistedFactory
     public interface Factory extends DecorPanelController.Factory<GripBarViewController> {
         /** Create an instance of GripBarViewController with the provided PanelControllerMetadata */
-        GripBarViewController create(PanelControllerMetadata metadata);
+        GripBarViewController create(String panelId, PanelControllerMetadata metadata);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -123,13 +127,13 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     }
 
     private void init(PanelControllerMetadata metadata) {
-        mDragEventId = metadata.getStringConfiguration(PanelControllerMetadata.EVENT_ID_TAG);
+        mDragEventId = metadata.getStringConfiguration(EVENT_ID_TAG);
         mDragDecreaseEventId = metadata.getStringConfiguration(DRAG_DEC_EVENT_ID_TAG);
         mDragIncreaseEventId = metadata.getStringConfiguration(DRAG_INC_EVENT_ID_TAG);
         mIsHorizontal = Integer.parseInt(
-                metadata.getStringConfiguration(PanelControllerMetadata.ORIENTATION_TAG)) == 1;
+                metadata.getStringConfiguration(ORIENTATION_TAG)) == 1;
         mSnapThreshold = Integer.parseInt(
-                metadata.getStringConfiguration(PanelControllerMetadata.SNAPTHREADHOLD_TAG));
+                metadata.getStringConfiguration(SNAPTHREADHOLD_TAG));
         mBreakPoints.clear();
         mBreakPoints.addAll(metadata.getBreakPoints());
         logIfDebuggable("Parse array: " + this);

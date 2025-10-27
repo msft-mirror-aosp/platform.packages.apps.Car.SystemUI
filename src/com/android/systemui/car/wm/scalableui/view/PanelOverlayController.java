@@ -15,8 +15,8 @@
  */
 package com.android.systemui.car.wm.scalableui.view;
 
-import static com.android.car.scalableui.model.PanelControllerMetadata.BACKGROUND_COLOR;
-import static com.android.car.scalableui.model.PanelControllerMetadata.OVERLAY_PANEL_ID;
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.BACKGROUND_COLOR_TAG;
+import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.OVERLAY_PANEL_ID_TAG;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -75,7 +75,8 @@ public class PanelOverlayController extends DecorPanelControllerBase {
     private int mBlurRadius;
 
     @AssistedInject
-    public PanelOverlayController(@Assisted PanelControllerMetadata metadata,
+    public PanelOverlayController(@Assisted String panelId,
+            @Assisted PanelControllerMetadata metadata,
             @DecorPanelViewMap Map<Class<?>, Provider<View>> decorPanelViewMap,
             Context context) {
         super(metadata, decorPanelViewMap);
@@ -83,13 +84,13 @@ public class PanelOverlayController extends DecorPanelControllerBase {
         init(metadata);
     }
 
-    /**
-     * Create an instance of {@link PanelOverlayController} with the provided
-     * {@link PanelControllerMetadata}.
-     */
     @AssistedFactory
     public interface Factory extends DecorPanelController.Factory<PanelOverlayController> {
-        PanelOverlayController create(PanelControllerMetadata metadata);
+        /**
+         * Create an instance of {@link PanelOverlayController} with the provided
+         * {@link PanelControllerMetadata}.
+         */
+        PanelOverlayController create(String panelId, PanelControllerMetadata metadata);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -130,8 +131,8 @@ public class PanelOverlayController extends DecorPanelControllerBase {
     }
 
     private void init(PanelControllerMetadata metadata) {
-        mOverlayPanelId = metadata.getStringConfiguration(OVERLAY_PANEL_ID);
-        mBackgroundColorHex = metadata.getStringConfiguration(BACKGROUND_COLOR);
+        mOverlayPanelId = metadata.getStringConfiguration(OVERLAY_PANEL_ID_TAG);
+        mBackgroundColorHex = metadata.getStringConfiguration(BACKGROUND_COLOR_TAG);
     }
 
     private void setVail(String packageName) {

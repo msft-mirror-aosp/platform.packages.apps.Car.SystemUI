@@ -848,24 +848,35 @@ public class PanelTransitionCoordinator {
         ValueAnimator surfaceAnimator = ValueAnimator.ofFloat(0, 1f);
         surfaceAnimator.setDuration(duration);
         surfaceAnimator.addUpdateListener(animation -> {
-            Trace.beginSection(TAG + "#updatePanelSurface");
-            logIfDebuggable("Surface animation progress " + animation.getAnimatedFraction());
-            AutoSurfaceTransaction autoSurfaceTransaction =
-                    mAutoSurfaceTransactionFactory.createTransaction(DECOR_TRANSACTION);
-
-            SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
-            for (Map.Entry<String, Animator> entry : animators) {
-                String id = entry.getKey();
-                Panel panel = PanelPool.getInstance().getPanel(p -> id.equals(p.getPanelId()));
-                if (panel instanceof SysUIPanel sysUiPanel) {
-                    sysUiPanel.update(autoSurfaceTransaction, tx);
-                }
+            onSurfaceAnimatorProgress(animators, String.valueOf(animation.getAnimatedFraction()));
+        });
+        surfaceAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(@NonNull Animator animation) {
+                onSurfaceAnimatorProgress(animators, "Cancelled");
             }
-            //TODO(b/404959846): migrate to autoSurfaceTransaction here once api is added.
-            tx.apply();
-            autoSurfaceTransaction.apply();
-            Trace.endSection();
         });
         return surfaceAnimator;
+    }
+
+    private void onSurfaceAnimatorProgress(@NonNull Set<Map.Entry<String, Animator>> animators,
+            @NonNull String progress) {
+        Trace.beginSection(TAG + "#updatePanelSurface");
+        logIfDebuggable("Surface animation progress " + progress);
+        AutoSurfaceTransaction autoSurfaceTransaction =
+                mAutoSurfaceTransactionFactory.createTransaction(DECOR_TRANSACTION);
+
+        SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
+        for (Map.Entry<String, Animator> entry : animators) {
+            String id = entry.getKey();
+            Panel panel = PanelPool.getInstance().getPanel(p -> id.equals(p.getPanelId()));
+            if (panel instanceof SysUIPanel sysUiPanel) {
+                sysUiPanel.update(autoSurfaceTransaction, tx);
+            }
+        }
+        //TODO(b/404959846): migrate to autoSurfaceTransaction here once api is added.
+        tx.apply();
+        autoSurfaceTransaction.apply();
+        Trace.endSection();
     }
 }

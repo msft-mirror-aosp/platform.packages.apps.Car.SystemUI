@@ -38,13 +38,16 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.Duration;
+
 @CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
 @TestableLooper.RunWithLooper
 @SmallTest
 public class PassengerKeyguardLockoutHelperTest extends CarSysuiTestCase {
     private static final int TEST_USER_ID = 1000;
-    private static final int TEST_TIMEOUT_LENGTH_MS = 1000; // 1 second
+    private static final Duration TEST_TIMEOUT_LENGTH = Duration.ofSeconds(1);
+    private static final int TEST_TIMEOUT_LENGTH_MS = (int) TEST_TIMEOUT_LENGTH.toMillis();
 
     private PassengerKeyguardLockoutHelper mLockoutHelper;
 
@@ -66,7 +69,7 @@ public class PassengerKeyguardLockoutHelperTest extends CarSysuiTestCase {
 
     @Test
     public void onUIShown_lockedOut_notifiesLockState() {
-        when(mLockPatternUtils.getLockoutAttemptDeadline(TEST_USER_ID)).thenReturn(1L);
+        when(mLockPatternUtils.getLockoutEndTime(TEST_USER_ID)).thenReturn(Duration.ofSeconds(1));
 
         mLockoutHelper.onUIShown();
 
@@ -75,7 +78,7 @@ public class PassengerKeyguardLockoutHelperTest extends CarSysuiTestCase {
 
     @Test
     public void onUIShown_notLockedOut_notifiesLockState() {
-        when(mLockPatternUtils.getLockoutAttemptDeadline(TEST_USER_ID)).thenReturn(0L);
+        when(mLockPatternUtils.getLockoutEndTime(TEST_USER_ID)).thenReturn(Duration.ZERO);
 
         mLockoutHelper.onUIShown();
 
@@ -84,26 +87,28 @@ public class PassengerKeyguardLockoutHelperTest extends CarSysuiTestCase {
 
     @Test
     public void onCheckCompletedWithTimeout_setsTimeout() {
-        int timeoutMs = (int) SystemClock.elapsedRealtime() + TEST_TIMEOUT_LENGTH_MS;
-        when(mLockPatternUtils.getLockoutAttemptDeadline(TEST_USER_ID))
-                .thenReturn((long) timeoutMs);
+        Duration lockoutEndTime = Duration.ofMillis(SystemClock.elapsedRealtime())
+                .plus(TEST_TIMEOUT_LENGTH);
+        when(mLockPatternUtils.getLockoutEndTime(TEST_USER_ID))
+                .thenReturn(lockoutEndTime);
 
-        mLockoutHelper.onCheckCompletedWithTimeout(TEST_TIMEOUT_LENGTH_MS);
+        mLockoutHelper.onCheckCompletedWithTimeout(TEST_TIMEOUT_LENGTH);
 
-        verify(mLockPatternUtils).setLockoutAttemptDeadline(TEST_USER_ID, TEST_TIMEOUT_LENGTH_MS);
+        verify(mLockPatternUtils).setLockoutAttemptDeadline(TEST_USER_ID, TEST_TIMEOUT_LENGTH);
         verify(mCallback).refreshUI(true);
     }
 
     @Test
     public void onCountdown_setsErrorMessage() {
-        int timeoutMs = (int) SystemClock.elapsedRealtime() + TEST_TIMEOUT_LENGTH_MS;
-        when(mLockPatternUtils.getLockoutAttemptDeadline(TEST_USER_ID))
-                .thenReturn((long) timeoutMs);
+        Duration lockoutEndTime = Duration.ofMillis(SystemClock.elapsedRealtime())
+                .plus(TEST_TIMEOUT_LENGTH);
+        when(mLockPatternUtils.getLockoutEndTime(TEST_USER_ID))
+                .thenReturn(lockoutEndTime);
 
-        mLockoutHelper.onCheckCompletedWithTimeout(TEST_TIMEOUT_LENGTH_MS);
+        mLockoutHelper.onCheckCompletedWithTimeout(TEST_TIMEOUT_LENGTH);
         mLockoutHelper.getCountDownTimer().onTick(TEST_TIMEOUT_LENGTH_MS);
 
-        int testTimeoutLengthSeconds = TEST_TIMEOUT_LENGTH_MS / 1000;
+        int testTimeoutLengthSeconds = (int) TEST_TIMEOUT_LENGTH.toSeconds();
         verify(mCallback).setErrorText(StringUtil.getIcuPluralsString(mContext,
                 testTimeoutLengthSeconds, R.string.passenger_keyguard_too_many_failed_attempts));
     }

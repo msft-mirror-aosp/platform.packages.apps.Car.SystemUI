@@ -38,7 +38,10 @@ import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.wm.shell.dagger.WMSingleton;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @WMSingleton
 public class PanelConfigReader {
@@ -86,21 +89,19 @@ public class PanelConfigReader {
      */
     public void loadConfig() {
         try {
+            Map<String, PanelState> panelStates;
             Trace.beginSection(TAG + "#load");
             if (mFlagManager.isEnabled(Flag.ScalableUiDesignCompose)) {
-                loadFromDcf();
+                panelStates = loadFromDcf();
             } else {
-                loadFromXml();
+                panelStates = loadFromXml();
+            }
+            if (panelStates != null) {
+                StateManager.reloadPanelState(panelStates);
             }
         } finally {
             Trace.endSection();
         }
-    }
-
-    private void clearPanelAndConfig() {
-        //TODO(b/444533472):reuse the existing or panel
-        StateManager.clearStates();
-        PanelPool.getInstance().clearPanels();
     }
 
     /**
@@ -109,11 +110,10 @@ public class PanelConfigReader {
      */
     public void reloadConfig(Configuration configuration) {
         mContext = mContext.createConfigurationContext(configuration);
-        clearPanelAndConfig();
         loadConfig();
     }
 
-    private void loadFromDcf() {
+    private Map<String, PanelState> loadFromDcf() {
         try {
             InputStream dcfStream = mContext.getResources().openRawResource(R.raw.ScalableSystemUi);
             if (dcfStream == null) {
@@ -129,10 +129,8 @@ public class PanelConfigReader {
             List<PanelState> states = dcLoader.loadPanelStates(dcfStream, docId);
             debugLog("Loaded Panels: " + states.size());
 
-            for (PanelState panelState : states) {
-                debugLog("PanelConfig adding state: " + panelState.getId());
-                StateManager.addState(panelState);
-            }
+            return states.stream().collect(
+                    Collectors.toMap(PanelState::getId, panelState -> panelState));
         } catch (Exception e) {
             Log.e(TAG, "Error opening or processing DCF file: " + e);
             // Throw a runtime exception to cause a crash
@@ -140,9 +138,10 @@ public class PanelConfigReader {
         }
     }
 
-    private void loadFromXml() {
+    private Map<String, PanelState> loadFromXml() {
         debugLog("Loading panel states from XML" + mContext);
         Resources res = mContext.getResources();
+        Map<String, PanelState> panelStates = new HashMap<>();
         int windowStatesRes = mFlagManager.getResourceId(Flag.EnableExtPanelUpdates,
                 R.array.window_states);
         try (TypedArray states = res.obtainTypedArray(windowStatesRes)) {
@@ -153,7 +152,7 @@ public class PanelConfigReader {
                 PanelState panelState = loader.createPanelState(xmlResId);
                 debugLog("PanelConfig loaded Panel state " + panelState);
                 if (panelState != null) {
-                    StateManager.addState(panelState);
+                    panelStates.put(panelState.getId(), panelState);
                 }
             }
         } catch (Resources.NotFoundException e) {
@@ -161,6 +160,7 @@ public class PanelConfigReader {
         } catch (RuntimeException runtimeException) {
             Log.e(TAG, "fail to get res for state" + runtimeException);
         }
+        return panelStates;
     }
 
     private void debugLog(String logMsg) {

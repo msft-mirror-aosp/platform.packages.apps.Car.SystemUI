@@ -41,6 +41,7 @@ import android.os.UserHandle;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.SurfaceControl;
+import android.window.WindowContainerToken;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -517,6 +518,17 @@ public final class TaskPanel extends SysUIPanel {
      */
     public int getRootTaskId() {
         return mRootTaskId;
+    }
+
+    /**
+     * Returns the token of the root task associated with this panel.
+     */
+    @Nullable
+    public WindowContainerToken getRootTaskToken() {
+        if (mRootTaskStack == null) {
+            return null;
+        }
+        return mRootTaskStack.getRootTaskInfo().token;
     }
 
     /**

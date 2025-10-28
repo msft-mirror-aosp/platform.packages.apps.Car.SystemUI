@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.systembar;
 
-import android.annotation.Nullable;
 import android.content.Context;
 import android.content.om.OverlayManager;
 import android.content.res.Configuration;
@@ -29,7 +28,6 @@ import android.view.WindowManager;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
-import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -82,8 +80,7 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
             ConfigurationController configurationController,
             CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
-            SystemUiWindowProvider windowProvider,
-            @Nullable ToolbarController toolbarController) {
+            SystemUiWindowProvider windowProvider) {
         super(context,
                 userTracker,
                 carSystemBarViewFactory,
@@ -102,7 +99,6 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
                 configurationController,
                 restartTracker,
                 displayTracker,
-                toolbarController,
                 windowProvider,
                 mainHandler);
         mContext = context;

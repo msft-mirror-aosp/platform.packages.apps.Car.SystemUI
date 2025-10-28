@@ -257,7 +257,6 @@ public class CarSystemBarTest extends CarSysuiTestCase {
                 mConfigurationController,
                 mCarSystemBarRestartTracker,
                 displayTracker,
-                null,
                 mWindowProvider,
                 mHandler));
     }
@@ -514,7 +513,6 @@ public class CarSystemBarTest extends CarSysuiTestCase {
 
     @Test
     public void restartSystemBars_newSystemBarConfig_recreatesSystemBars() {
-        mTestableResources.addOverride(R.integer.config_showDisplayCompatToolbarOnSystemBar, 0);
         mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, false);

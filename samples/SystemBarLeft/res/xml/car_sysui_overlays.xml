@@ -72,7 +72,4 @@
     <item
         target="integer/config_systemBarPersistency"
         value="@integer/config_systemBarPersistency" />
-    <item
-        target="integer/config_showDisplayCompatToolbarOnSystemBar"
-        value="@integer/config_showDisplayCompatToolbarOnSystemBar" />
 </overlay>

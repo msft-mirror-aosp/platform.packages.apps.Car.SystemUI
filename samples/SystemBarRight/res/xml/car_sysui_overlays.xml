@@ -71,8 +71,4 @@
     <item
         target="string/config_notificationPanelViewMediator"
         value="@string/config_notificationPanelViewMediator" />
-
-    <item
-        target="integer/config_showDisplayCompatToolbarOnSystemBar"
-        value="@integer/config_showDisplayCompatToolbarOnSystemBar" />
 </overlay>

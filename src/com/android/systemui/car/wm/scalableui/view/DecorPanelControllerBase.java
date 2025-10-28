@@ -73,6 +73,11 @@ public abstract class DecorPanelControllerBase implements DecorPanelController {
     }
 
     @Override
+    public String toString() {
+        return mMetadata.toString();
+    }
+
+    @Override
     @Nullable
     public View getView() {
         mView = mView == null ? initView() : mView;

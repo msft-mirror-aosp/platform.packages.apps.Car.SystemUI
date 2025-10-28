@@ -31,6 +31,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
+import android.os.UserHandle;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
@@ -142,13 +143,21 @@ public class BaseTaskPanelController implements TaskPanelController {
         filter.addAction(Intent.ACTION_PACKAGE_ADDED);
         filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
         filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+        filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
         filter.addDataScheme(PACKAGE_DATA_SCHEME);
-        mContext.registerReceiver(new BroadcastReceiver() {
+        BroadcastReceiver mAppsUpdateReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 updatePersistentActivities();
             }
-        }, filter, Context.RECEIVER_EXPORTED);
+        };
+        mContext.registerReceiverAsUser(
+                mAppsUpdateReceiver,
+                UserHandle.ALL, // Necessary because CarSystemUi lives in User 0
+                filter,
+                /* broadcastPermission= */ null,
+                /* scheduler= */ null,
+                Context.RECEIVER_EXPORTED);
     }
 
     @SuppressLint("MissingPermission")

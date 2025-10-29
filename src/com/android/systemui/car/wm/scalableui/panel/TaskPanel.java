@@ -345,14 +345,15 @@ public final class TaskPanel extends SysUIPanel {
     }
 
     /**
-     * Whether or not this task panel has {@link Restart} set and enabled on it.
+     * Whether or not this task panel has {@link Restart} set and enabled on it. The restart should
+     * be inactive if the panel is invisible.
      *
      * @return true if the panel has task restart enabled
      */
     public boolean hasRestart() {
         PanelState panelState = getPanelState();
         return mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart) && panelState != null
-                && panelState.getRestart() != null;
+                && panelState.getRestart() != null && isVisible();
     }
 
     @Override
@@ -788,8 +789,7 @@ public final class TaskPanel extends SysUIPanel {
         String launchPolicy = getPanelState().getTaskBehavior().getNewTaskLaunchPolicy();
         int launchBehavior = -1;
         switch (launchPolicy) {
-            case NEW_TASK_LAUNCH_POLICY_DEFAULT ->
-                    launchBehavior = LAUNCH_BEHAVIOR_DEFAULT;
+            case NEW_TASK_LAUNCH_POLICY_DEFAULT -> launchBehavior = LAUNCH_BEHAVIOR_DEFAULT;
             case NEW_TASK_LAUNCH_POLICY_REMAIN_IN_SOURCE ->
                     launchBehavior = LAUNCH_BEHAVIOR_REMAIN_IN_SOURCE_ROOT_TASK;
             case NEW_TASK_LAUNCH_POLICY_REPARENT_TO_SOURCE ->

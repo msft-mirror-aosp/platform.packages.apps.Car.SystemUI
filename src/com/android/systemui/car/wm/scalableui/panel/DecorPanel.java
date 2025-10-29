@@ -43,6 +43,7 @@ import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
+import java.io.PrintWriter;
 import java.util.Optional;
 
 /**
@@ -204,6 +205,12 @@ public final class DecorPanel extends SysUIPanel {
     public interface Factory {
         /** Create instance of {@link DecorPanel} with specified id */
         DecorPanel create(String id);
+    }
+
+    @Override
+    public void dump(@NonNull PrintWriter pw) {
+        pw.print(this);
+        pw.print(mDecorPanelController);
     }
 
     @Override

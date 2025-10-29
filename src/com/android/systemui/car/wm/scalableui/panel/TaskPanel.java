@@ -85,6 +85,7 @@ import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -919,6 +920,12 @@ public final class TaskPanel extends SysUIPanel {
     }
 
     @Override
+    public void dump(@NonNull PrintWriter pw) {
+        pw.println(this);
+        pw.println(mTaskPanelController);
+    }
+
+    @Override
     public String toString() {
 
         String decorString = mExistingAutoDecors.isEmpty()
@@ -926,23 +933,23 @@ public final class TaskPanel extends SysUIPanel {
                 : mExistingAutoDecors.entrySet()
                         .stream()
                         .map(entry -> entry.getKey() + "=" + entry.getValue())
-                        .collect(Collectors.joining(" , "));
+                        .collect(Collectors.joining("\n , "));
 
         return "TaskPanel{"
                 + "mId='" + getPanelId()
-                + ", isRooTaskEmpty=" + isRootTaskEmpty()
-                + ", mBounds=" + getBounds()
-                + ", mAlpha=" + getAlpha()
-                + ", mIsVisible=" + isVisible()
-                + ", mRootTaskId=" + mRootTaskId
-                + ", mRole=" + getRole()
-                + ", mLayer=" + getLayer()
-                + ", mLeash=" + mLeash
-                + ", mRootTaskStack=" + mRootTaskStack
-                + ", mCornerRadius=" + getCornerRadius()
-                + ", mIsLaunchRoot=" + mIsLaunchRoot
-                + ", mDisplayId=" + getDisplayId()
-                + ", mDecors=" + decorString
+                + "\n, isRooTaskEmpty=" + isRootTaskEmpty()
+                + "\n, mBounds=" + getBounds()
+                + "\n, mAlpha=" + getAlpha()
+                + "\n, mIsVisible=" + isVisible()
+                + "\n, mRootTaskId=" + mRootTaskId
+                + "\n, mRole=" + getRole()
+                + "\n, mLayer=" + getLayer()
+                + "\n, mLeash=" + mLeash
+                + "\n, mRootTaskStack=" + mRootTaskStack
+                + "\n, mCornerRadius=" + getCornerRadius()
+                + "\n, mIsLaunchRoot=" + mIsLaunchRoot
+                + "\n, mDisplayId=" + getDisplayId()
+                + "\n, mDecors=" + decorString
                 + '}';
     }
 

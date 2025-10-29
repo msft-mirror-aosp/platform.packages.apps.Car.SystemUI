@@ -269,12 +269,12 @@ public class BaseTaskPanelController implements TaskPanelController {
     @Override
     public String toString() {
         String persistentActivities = mPersistentActivities.stream().map(
-                ComponentName::toString).collect(Collectors.joining(","));
+                ComponentName::toString).collect(Collectors.joining("\n,"));
         return "PanelController{"
                 + "mPanelControllerMetadata=" + mPanelControllerMetadata
-                + ", mPersistentActivities=" + persistentActivities
-                + ", mDefaultComponent=" + getDefaultComponent()
-                + ", mUpdateFilter=" + mUpdateFilter
+                + "\n, mPersistentActivities=" + persistentActivities
+                + "\n, mDefaultComponent=" + getDefaultComponent()
+                + "\n, mUpdateFilter=" + mUpdateFilter
                 + '}';
     }
 }

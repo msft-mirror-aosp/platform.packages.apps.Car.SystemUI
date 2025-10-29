@@ -34,6 +34,7 @@ import com.android.wm.shell.automotive.AutoSurfaceTransaction
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import java.io.PrintWriter
 import java.util.Optional
 
 /**
@@ -297,15 +298,19 @@ open class SysUIPanel @AssistedInject constructor(
         logIfDebuggable("Panel destroyed $this")
     }
 
+    override fun dump(pw: PrintWriter) {
+        pw.println(this)
+    }
+
     override fun toString(): String {
         return ("SysUIPanel{" +
                 "panelId='$panelId'" +
-                ", bounds=$bounds" +
-                ", isVisible=$isVisible" +
-                ", alpha=$alpha" +
-                ", insets=$insets" +
-                ", metaData=$panelControllerMetadata" +
-                ", cornerRadius=$cornerRadius}")
+                "\n, bounds=$bounds" +
+                "\n, isVisible=$isVisible" +
+                "\n, alpha=$alpha" +
+                "\n, insets=$insets" +
+                "\n, metaData=$panelControllerMetadata" +
+                "\n, cornerRadius=$cornerRadius}")
     }
 
     @AssistedFactory

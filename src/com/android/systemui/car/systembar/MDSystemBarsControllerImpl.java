@@ -31,6 +31,7 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.settings.DisplayTracker;
@@ -81,6 +82,7 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
             ConfigurationController configurationController,
             CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
+            SystemUiWindowProvider windowProvider,
             @Nullable ToolbarController toolbarController) {
         super(context,
                 userTracker,
@@ -101,6 +103,7 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
                 restartTracker,
                 displayTracker,
                 toolbarController,
+                windowProvider,
                 mainHandler);
         mContext = context;
         mOverlayManager = context.getSystemService(OverlayManager.class);

@@ -42,6 +42,7 @@ import com.android.systemui.car.notification.NotificationButtonController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.plugins.DarkIconDispatcher;
@@ -164,6 +165,7 @@ public abstract class CarSystemBarModule {
             ConfigurationController configurationController,
             CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
+            SystemUiWindowProvider windowProvider,
             @Nullable ToolbarController toolbarController) {
 
         if (carSystemBarController.isPresent()) {
@@ -181,14 +183,14 @@ public abstract class CarSystemBarModule {
                     darkIconDispatcher, windowManager, deviceProvisionedController, commandQueue,
                     autoHideController, buttonSelectionStateListener, mainExecutor, barService,
                     keyguardStateControllerLazy, iconPolicyLazy, configurationController,
-                    restartTracker, displayTracker, toolbarController);
+                    restartTracker, displayTracker, windowProvider, toolbarController);
         } else {
             return new CarSystemBarControllerImpl(context, userTracker, carSystemBarViewFactory,
                     systemBarConfigs, lightBarController, darkIconDispatcher, windowManager,
                     deviceProvisionedController, commandQueue, autoHideController,
                     buttonSelectionStateListener, mainExecutor, barService,
                     keyguardStateControllerLazy, iconPolicyLazy, configurationController,
-                    restartTracker, displayTracker, toolbarController, mainHandler);
+                    restartTracker, displayTracker, toolbarController, windowProvider, mainHandler);
         }
     }
 

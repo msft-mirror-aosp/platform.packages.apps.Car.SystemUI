@@ -63,6 +63,13 @@
             android:exported="false"
             android:enabled="false"
             android:multiprocess="true"/>
+
+        <provider android:name="com.android.systemui.people.PeopleProvider"
+            android:authorities="com.android.systemuig.test.people.disabled"
+            android:enabled="false"
+            tools:replace="android:authorities"
+            android:exported="true"
+            tools:node="remove" />
     </application>
 
     <instrumentation android:name="android.testing.TestableInstrumentation"

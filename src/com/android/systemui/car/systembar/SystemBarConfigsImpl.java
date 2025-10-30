@@ -22,7 +22,6 @@ import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_M
 
 import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.TYPE_NAVIGATION;
 import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.TYPE_STATUS;
-import static com.android.systemui.car.Flags.displayCompatibilityV2;
 import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM_BAR_NAME;
 import static com.android.systemui.car.systembar.CarSystemBarController.LEFT_BAR_NAME;
 import static com.android.systemui.car.systembar.CarSystemBarController.NAVIGATION_BAR;
@@ -111,7 +110,6 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
     private boolean mBottomNavBarEnabled;
     private boolean mLeftNavBarEnabled;
     private boolean mRightNavBarEnabled;
-    private int mDisplayCompatToolbarState = 0;
 
     @Inject
     public SystemBarConfigsImpl(Context context, @Main Resources resources,
@@ -155,7 +153,6 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
         populateMaps();
         readConfigs();
 
-        checkOnlyOneDisplayCompatIsEnabled();
         checkAllOverlappingBarsHaveDifferentZOrders();
         checkHideBottomBarForKeyboardConfigSync();
 
@@ -250,8 +247,8 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
         return switch (name) {
             case TOP_BAR_NAME -> mTopNavBarEnabled;
             case BOTTOM_BAR_NAME -> mBottomNavBarEnabled;
-            case LEFT_BAR_NAME -> mLeftNavBarEnabled || isLeftDisplayCompatToolbarEnabled();
-            case RIGHT_BAR_NAME -> mRightNavBarEnabled || isRightDisplayCompatToolbarEnabled();
+            case LEFT_BAR_NAME -> mLeftNavBarEnabled;
+            case RIGHT_BAR_NAME -> mRightNavBarEnabled;
             default -> false;
         };
     }
@@ -419,11 +416,8 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
         mBottomNavBarEnabled = mResources.getBoolean(R.bool.config_enableBottomSystemBar);
         mLeftNavBarEnabled = mResources.getBoolean(R.bool.config_enableLeftSystemBar);
         mRightNavBarEnabled = mResources.getBoolean(R.bool.config_enableRightSystemBar);
-        mDisplayCompatToolbarState = mResources.getInteger(
-                R.integer.config_showDisplayCompatToolbarOnSystemBar);
 
-        if ((mLeftNavBarEnabled && isLeftDisplayCompatToolbarEnabled()) || (mRightNavBarEnabled
-                && isRightDisplayCompatToolbarEnabled())) {
+        if (mLeftNavBarEnabled || mRightNavBarEnabled) {
             throw new IllegalStateException(
                     "Navigation Bar and Display Compat toolbar can't be " + "on the same side");
         }
@@ -464,7 +458,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
             mSystemBars.put(BOTTOM_BAR_NAME, bottomBarWindow);
         }
 
-        if (mLeftNavBarEnabled || isLeftDisplayCompatToolbarEnabled()) {
+        if (mLeftNavBarEnabled) {
             int type = mResources.getInteger(R.integer.config_leftSystemBarType);
             SystemBarConfiguration leftBarConfig = new SystemBarConfigBuilder()
                     .setBarType(type == 0 ? STATUS_BAR : NAVIGATION_BAR)
@@ -482,7 +476,7 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
             mSystemBars.put(LEFT_BAR_NAME, leftBarWindow);
         }
 
-        if (mRightNavBarEnabled || isRightDisplayCompatToolbarEnabled()) {
+        if (mRightNavBarEnabled) {
             int type = mResources.getInteger(R.integer.config_rightSystemBarType);
             SystemBarConfiguration rightBarConfig = new SystemBarConfigBuilder()
                     .setBarType(type == 0 ? STATUS_BAR : NAVIGATION_BAR)
@@ -498,17 +492,6 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
                     rightBarConfig, this::isHorizontalBar, mDefaultDisplayId);
 
             mSystemBars.put(RIGHT_BAR_NAME, rightBarWindow);
-        }
-    }
-
-    private void checkOnlyOneDisplayCompatIsEnabled() throws IllegalStateException {
-        boolean useRemoteLaunchTaskView = mResources.getBoolean(
-                R.bool.config_useRemoteLaunchTaskView);
-        int displayCompatEnabled = mResources.getInteger(
-                R.integer.config_showDisplayCompatToolbarOnSystemBar);
-        if (useRemoteLaunchTaskView && displayCompatEnabled != 0) {
-            throw new IllegalStateException("config_useRemoteLaunchTaskView is enabled but "
-                    + "config_showDisplayCompatToolbarOnSystemBar is non-zero");
         }
     }
 
@@ -579,9 +562,8 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
         ArrayMap<String, Boolean> visibilityMap = new ArrayMap<>();
         visibilityMap.put(TOP_BAR_NAME, mTopNavBarEnabled);
         visibilityMap.put(BOTTOM_BAR_NAME, mBottomNavBarEnabled);
-        visibilityMap.put(LEFT_BAR_NAME, mLeftNavBarEnabled || isLeftDisplayCompatToolbarEnabled());
-        visibilityMap.put(RIGHT_BAR_NAME,
-                mRightNavBarEnabled || isRightDisplayCompatToolbarEnabled());
+        visibilityMap.put(LEFT_BAR_NAME, mLeftNavBarEnabled);
+        visibilityMap.put(RIGHT_BAR_NAME, mRightNavBarEnabled);
         return visibilityMap;
     }
 
@@ -635,16 +617,6 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
         }
 
         return rect.width() < rect.height();
-    }
-
-    @Override
-    public boolean isLeftDisplayCompatToolbarEnabled() {
-        return displayCompatibilityV2() && mDisplayCompatToolbarState == 1;
-    }
-
-    @Override
-    public boolean isRightDisplayCompatToolbarEnabled() {
-        return displayCompatibilityV2() && mDisplayCompatToolbarState == 2;
     }
 
     @Override

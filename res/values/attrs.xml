@@ -219,16 +219,6 @@
         <attr name="layout" format="reference"/>
     </declare-styleable>
 
-    <!-- Attributes used for showing displaycompat toolbar on system bars. -->
-    <declare-styleable name="CarDisplayCompatSystemBarView">
-        <attr name="default_layout" format="reference"/>
-        <attr name="displaycompat_layout" format="reference"/>
-        <attr name="displaycompat_side" format="integer">
-            <enum name="left" value="1"/>
-            <enum name="right" value="2"/>
-        </attr>
-    </declare-styleable>
-
     <declare-styleable name="DisplayAreaView">
         <attr name="displayAreaFeatureId" format="integer" />
         <attr name="launchTaskDisplayAreaFeatureId" format="integer" />

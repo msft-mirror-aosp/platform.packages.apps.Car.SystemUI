@@ -27,7 +27,6 @@ import static com.android.systemui.shared.statusbar.phone.BarTransitions.MODE_SE
 import static com.android.systemui.shared.statusbar.phone.BarTransitions.MODE_TRANSPARENT;
 
 import android.app.ActivityManager;
-import android.app.ActivityManager.RunningTaskInfo;
 import android.app.StatusBarManager.Disable2Flags;
 import android.app.StatusBarManager.DisableFlags;
 import android.content.BroadcastReceiver;
@@ -62,7 +61,6 @@ import com.android.internal.statusbar.RegisterStatusBarResult;
 import com.android.internal.view.AppearanceRegion;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
-import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindow;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
@@ -72,7 +70,6 @@ import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shared.statusbar.phone.BarTransitions;
-import com.android.systemui.shared.system.TaskStackChangeListener;
 import com.android.systemui.shared.system.TaskStackChangeListeners;
 import com.android.systemui.statusbar.AutoHideUiElement;
 import com.android.systemui.statusbar.CommandQueue;
@@ -118,8 +115,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
     private final ConfigurationController mConfigurationController;
     private final CarSystemBarRestartTracker mCarSystemBarRestartTracker;
     private final int mDisplayId;
-    @Nullable
-    private final ToolbarController mDisplayCompatToolbarController;
 
     protected final UserTracker mUserTracker;
     private final SystemUiWindowProvider mWindowProvider;
@@ -175,7 +170,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
             ConfigurationController configurationController,
             CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
-            @Nullable ToolbarController toolbarController,
             SystemUiWindowProvider windowProvider,
             @Main Handler handler) {
         mContext = context;
@@ -195,7 +189,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mDisplayTracker = displayTracker;
         mConfigurationController = configurationController;
         mCarSystemBarRestartTracker = restartTracker;
-        mDisplayCompatToolbarController = toolbarController;
         mWindowProvider = windowProvider;
         mWindowReadyListener = () -> mExecutor.execute(this::restartSystemBars);
     }
@@ -272,15 +265,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
 
         TaskStackChangeListeners.getInstance().registerTaskStackListener(
                 mButtonSelectionStateListener);
-        TaskStackChangeListeners.getInstance().registerTaskStackListener(
-                new TaskStackChangeListener() {
-                    @Override
-                    public void onTaskMovedToFront(RunningTaskInfo taskInfo) {
-                        if (mDisplayCompatToolbarController != null) {
-                            mDisplayCompatToolbarController.update(taskInfo);
-                        }
-                    }
-                });
 
         // Lastly, call to the icon policy to install/update all the icons.
         // Must be called on the main thread due to the use of observeForever() in
@@ -644,16 +628,6 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         mSystemBarConfigs.getSystemBarNamesByZOrder().forEach(name -> {
             mSystemBarWindowMap.put(name, getBarWindow(name));
         });
-
-        if (mDisplayCompatToolbarController != null) {
-            if (mSystemBarConfigs
-                    .isLeftDisplayCompatToolbarEnabled()) {
-                mDisplayCompatToolbarController.init(mSystemBarWindowMap.get(LEFT_BAR_NAME));
-            } else if (mSystemBarConfigs
-                    .isRightDisplayCompatToolbarEnabled()) {
-                mDisplayCompatToolbarController.init(mSystemBarWindowMap.get(RIGHT_BAR_NAME));
-            }
-        }
     }
 
     private void buildNavBarContent() {

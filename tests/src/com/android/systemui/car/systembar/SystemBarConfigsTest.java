@@ -309,9 +309,6 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
         when(mResources.getBoolean(R.bool.config_enableLeftSystemBar)).thenReturn(true);
         when(mResources.getBoolean(R.bool.config_enableRightSystemBar)).thenReturn(true);
 
-        when(mResources.getInteger(R.integer.config_showDisplayCompatToolbarOnSystemBar))
-                .thenReturn(0);
-
         when(mResources.getInteger(R.integer.config_topSystemBarZOrder)).thenReturn(7);
         when(mResources.getInteger(R.integer.config_bottomSystemBarZOrder)).thenReturn(10);
         when(mResources.getInteger(R.integer.config_leftSystemBarZOrder)).thenReturn(8);

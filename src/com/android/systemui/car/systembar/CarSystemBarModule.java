@@ -21,7 +21,6 @@ import static com.android.systemui.car.systembar.CarSystemBarController.LEFT_BAR
 import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT_BAR_NAME;
 import static com.android.systemui.car.systembar.CarSystemBarController.TOP_BAR_NAME;
 
-import android.annotation.Nullable;
 import android.content.Context;
 import android.os.Handler;
 import android.view.WindowManager;
@@ -31,7 +30,6 @@ import com.android.systemui.CoreStartable;
 import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
-import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.FlexibleUiModule;
@@ -165,8 +163,7 @@ public abstract class CarSystemBarModule {
             ConfigurationController configurationController,
             CarSystemBarRestartTracker restartTracker,
             DisplayTracker displayTracker,
-            SystemUiWindowProvider windowProvider,
-            @Nullable ToolbarController toolbarController) {
+            SystemUiWindowProvider windowProvider) {
 
         if (carSystemBarController.isPresent()) {
             return carSystemBarController.get();
@@ -183,14 +180,14 @@ public abstract class CarSystemBarModule {
                     darkIconDispatcher, windowManager, deviceProvisionedController, commandQueue,
                     autoHideController, buttonSelectionStateListener, mainExecutor, barService,
                     keyguardStateControllerLazy, iconPolicyLazy, configurationController,
-                    restartTracker, displayTracker, windowProvider, toolbarController);
+                    restartTracker, displayTracker, windowProvider);
         } else {
             return new CarSystemBarControllerImpl(context, userTracker, carSystemBarViewFactory,
                     systemBarConfigs, lightBarController, darkIconDispatcher, windowManager,
                     deviceProvisionedController, commandQueue, autoHideController,
                     buttonSelectionStateListener, mainExecutor, barService,
                     keyguardStateControllerLazy, iconPolicyLazy, configurationController,
-                    restartTracker, displayTracker, toolbarController, windowProvider, mainHandler);
+                    restartTracker, displayTracker, windowProvider, mainHandler);
         }
     }
 

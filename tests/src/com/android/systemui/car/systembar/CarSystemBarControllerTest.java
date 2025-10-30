@@ -297,7 +297,6 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
                 mConfigurationController,
                 mCarSystemBarRestartTracker,
                 displayTracker,
-                null,
                 mWindowProvider,
                 mHandler);
     }
@@ -376,7 +375,6 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
 
     @Test
     public void testGetLeftWindow_leftDisabled_returnsNull() {
-        mTestableResources.addOverride(R.integer.config_showDisplayCompatToolbarOnSystemBar, 0);
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, false);
         mCarSystemBarController.init();
         ViewGroup window = mCarSystemBarController.getBarWindow(LEFT_BAR_NAME);
@@ -385,7 +383,6 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
 
     @Test
     public void testGetLeftWindow_leftEnabled_returnsWindow() {
-        mTestableResources.addOverride(R.integer.config_showDisplayCompatToolbarOnSystemBar, 0);
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, true);
         mCarSystemBarController.init();
 
@@ -396,7 +393,6 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
 
     @Test
     public void testGetLeftWindow_leftEnabled_calledTwice_returnsSameWindow() {
-        mTestableResources.addOverride(R.integer.config_showDisplayCompatToolbarOnSystemBar, 0);
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, true);
         mCarSystemBarController.init();
 
@@ -483,7 +479,6 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
 
     @Test
     public void testSetLeftWindowVisibility_setTrue_isVisible() {
-        mTestableResources.addOverride(R.integer.config_showDisplayCompatToolbarOnSystemBar, 0);
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, true);
         mCarSystemBarController.init();
 
@@ -495,7 +490,6 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
 
     @Test
     public void testSetLeftWindowVisibility_setFalse_isGone() {
-        mTestableResources.addOverride(R.integer.config_showDisplayCompatToolbarOnSystemBar, 0);
         mTestableResources.addOverride(R.bool.config_enableLeftSystemBar, true);
         mCarSystemBarController.init();
 

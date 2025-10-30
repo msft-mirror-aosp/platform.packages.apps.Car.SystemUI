@@ -18,8 +18,6 @@ package com.android.systemui.car.wm.activity.window;
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
 
 import android.annotation.NonNull;
-import android.annotation.Nullable;
-import android.app.ActivityManager.RunningTaskInfo;
 import android.car.app.CarActivityManager;
 import android.car.app.CarTaskViewController;
 import android.car.app.CarTaskViewControllerCallback;
@@ -41,10 +39,7 @@ import androidx.annotation.MainThread;
 
 import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
-import com.android.systemui.car.displaycompat.ToolbarController;
 import com.android.systemui.dagger.qualifiers.UiBackground;
-import com.android.systemui.shared.system.TaskStackChangeListener;
-import com.android.systemui.shared.system.TaskStackChangeListeners;
 
 import javax.inject.Inject;
 
@@ -82,19 +77,14 @@ public class ActivityWindowControllerImpl implements ActivityWindowController {
                 setupRemoteCarTaskView();
             };
 
-    @Nullable
-    private ToolbarController mToolbarController;
-
     @Inject
     public ActivityWindowControllerImpl(Context context, WindowManager windowManager,
             CarServiceProvider carServiceProvider,
-            CarTaskViewControllerHostLifecycle carTaskViewControllerHostLifecycle,
-            @Nullable ToolbarController toolbarController) {
+            CarTaskViewControllerHostLifecycle carTaskViewControllerHostLifecycle) {
         mContext = context;
         mWindowManager = windowManager;
         mCarServiceProvider = carServiceProvider;
         mCarTaskViewControllerHostLifecycle = carTaskViewControllerHostLifecycle;
-        mToolbarController = toolbarController;
     }
 
     /**
@@ -177,20 +167,6 @@ public class ActivityWindowControllerImpl implements ActivityWindowController {
                                             insets.getSystemWindowInsetBottom());
                                     return insets.replaceSystemWindowInsets(
                                         /* left */ 0, /* top */ 0, /* right */ 0, /* bottom */ 0);
-                                }
-                            });
-
-                        if (mToolbarController != null) {
-                            mToolbarController.init(mLayout);
-                        }
-
-                        TaskStackChangeListeners.getInstance().registerTaskStackListener(
-                                new TaskStackChangeListener() {
-                                @Override
-                                public void onTaskMovedToFront(RunningTaskInfo taskInfo) {
-                                    if (mToolbarController != null) {
-                                        mToolbarController.update(taskInfo);
-                                    }
                                 }
                             });
 

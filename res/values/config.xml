@@ -225,12 +225,6 @@
     <!-- TODO(b/300930725): launcher doesn't show until it's restarted -->
     <bool name="config_useRemoteLaunchTaskView">false</bool>
 
-    <!-- Determines which system bar to use for display compat toolbar. -->
-    <!-- 0 disabled -->
-    <!-- 1 left -->
-    <!-- 2 right -->
-    <integer name="config_showDisplayCompatToolbarOnSystemBar">0</integer>
-
     <!-- Determines how to show navigation bar and status bar on app's immersive request, only
         works if config_remoteInsetsControllerControlsSystemBars is set to true-->
     <!-- 0 non_immersive show all system bars on immersive request. -->

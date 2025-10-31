@@ -16,8 +16,8 @@
 
 package com.android.systemui.car.notification;
 
-import static com.android.systemui.car.notification.NotificationModule.DRAG_CLOSE_NOTIFICATION_BAR_NAMES;
-import static com.android.systemui.car.notification.NotificationModule.DRAG_OPEN_NOTIFICATION_BAR_NAMES;
+import static com.android.systemui.car.notification.NotificationConstants.DRAG_OPEN_NOTIFICATION_BAR_NAMES;
+import static com.android.systemui.car.notification.NotificationConstants.DRAG_CLOSE_NOTIFICATION_BAR_NAMES;
 
 import android.content.Context;
 

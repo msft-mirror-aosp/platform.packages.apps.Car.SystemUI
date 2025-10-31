@@ -16,7 +16,7 @@
 
 package com.android.systemui.car.hvac;
 
-import static com.android.systemui.car.hvac.HvacModule.HVAC_SYSTEM_BAR_NAMES;
+import static com.android.systemui.car.hvac.HvacConstants.HVAC_SYSTEM_BAR_NAMES;
 import static com.android.systemui.car.window.OverlayPanelViewController.OVERLAY_FROM_BOTTOM_BAR;
 
 import android.content.BroadcastReceiver;

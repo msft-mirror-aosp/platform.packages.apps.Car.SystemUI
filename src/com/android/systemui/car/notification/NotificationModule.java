@@ -16,6 +16,9 @@
 
 package com.android.systemui.car.notification;
 
+import static com.android.systemui.car.notification.NotificationConstants.DRAG_OPEN_NOTIFICATION_BAR_NAMES;
+import static com.android.systemui.car.notification.NotificationConstants.DRAG_CLOSE_NOTIFICATION_BAR_NAMES;
+
 import android.content.Context;
 
 import com.android.systemui.R;
@@ -31,14 +34,6 @@ import javax.inject.Named;
 /** Dagger module for Notifications. */
 @Module
 public class NotificationModule {
-    /**
-     * Dagger {@link Named} for a list of strings that listen to notification drag open listener.
-     */
-    public static final String DRAG_OPEN_NOTIFICATION_BAR_NAMES = "DragOpenNotificationBarNames";
-    /**
-     * Dagger {@link Named} for a list of strings that listen to notification drag close listener.
-     */
-    public static final String DRAG_CLOSE_NOTIFICATION_BAR_NAMES = "DragCloseNotificationBarNames";
 
     /** Provides the list of system bar names that the notification panel should register with. */
     @Provides

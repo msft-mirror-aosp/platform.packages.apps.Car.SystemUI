@@ -29,6 +29,31 @@ genrule {
     out: ["com/android/systemui/car/CarSystemUIStatsLog.java"],
 }
 
+// List of files that need to be available in CarSystemUI-core
+// Because they are
+// - related to dagger initialization
+// - depend on dagger components for initialization
+filegroup {
+    name: "CarSystemUI-application-srcs",
+    srcs: [
+        "src/**/*Module.java",
+        "src/**/*Module.kt",
+        "src/com/android/systemui/CarComponentBinder.java",
+        "src/com/android/systemui/CarGlobalRootComponent.java",
+        "src/com/android/systemui/CarSysUIComponent.java",
+        "src/com/android/systemui/CarSysUIDisplaySubcomponent.kt",
+        "src/com/android/systemui/CarSystemUIActivityBinder.java",
+        "src/com/android/systemui/CarSystemUIAppComponentFactory.java",
+        "src/com/android/systemui/CarSystemUIBinder.java",
+        "src/com/android/systemui/CarSystemUIInitializer.java",
+        "src/com/android/systemui/CarSystemUIServiceBinder.java",
+        "src/com/android/systemui/car/userpicker/ActivityHelper.java",
+        "src/com/android/systemui/car/userpicker/UserPickerActivity.java",
+        "src/com/android/systemui/car/userpicker/UserPickerActivityComponent.java",
+        "src/com/android/systemui/wmshell/CarWMComponent.java",
+    ],
+}
+
 carsystemui_srcs = [
     "src/**/*.java",
     "src/**/*.kt",
@@ -40,6 +65,9 @@ java_defaults {
     name: "CarSystemUI-core-defaults",
 
     srcs: carsystemui_srcs,
+    exclude_srcs: [
+        ":CarSystemUI-application-srcs",
+    ],
 
     resource_dirs: [
         "res-keyguard",
@@ -103,6 +131,10 @@ java_defaults {
 android_library {
     name: "CarSystemUI-core",
 
+    srcs: [
+        ":CarSystemUI-application-srcs",
+    ],
+
     resource_dirs: [],
     manifest: "AndroidManifest.xml",
 
@@ -110,6 +142,14 @@ android_library {
         "CarSystemUI-Shared",
         // pods go here
     ],
+
+    libs: [
+        "android.car",
+    ],
+    enforce_uses_libs: false,
+
+    javacflags: ["-Adagger.fastInit=enabled"],
+    plugins: ["dagger2-compiler"],
 }
 
 android_library {
@@ -122,11 +162,11 @@ android_library {
         "--no-resource-deduping",
     ],
 
-    javacflags: ["-Adagger.fastInit=enabled"],
-
     manifest: "AndroidManifest-shared.xml",
 
+    javacflags: ["-Adagger.fastInit=enabled"],
     plugins: ["dagger2-compiler"],
+
     // TODO(b/319708040): re-enable use_resource_processor
     use_resource_processor: false,
 }

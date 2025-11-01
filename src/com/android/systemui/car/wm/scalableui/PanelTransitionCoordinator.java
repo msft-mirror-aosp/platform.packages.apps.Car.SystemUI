@@ -17,6 +17,7 @@ package com.android.systemui.car.wm.scalableui;
 
 
 import static android.view.WindowManager.TRANSIT_CLOSE;
+import static android.view.WindowManager.TRANSIT_TO_BACK;
 
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_HOME_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_CLOSE_EVENT_ID;
@@ -28,6 +29,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.IBinder;
 import android.text.TextUtils;
@@ -49,7 +51,8 @@ import com.android.car.scalableui.model.Transition;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.PanelPool;
-import com.android.systemui.R;
+import com.android.systemui.car.flags.Flag;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.panel.BasePanel;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
@@ -93,6 +96,8 @@ public class PanelTransitionCoordinator {
     private final AutoTaskStackController mAutoTaskStackController;
     @GuardedBy("mPendingPanelTransactions")
     private final HashMap<IBinder, PanelTransaction> mPendingPanelTransactions = new HashMap<>();
+    @NonNull
+    private final FlagManager mFlagManager;
     private AnimatorSet mRunningAnimatorSet = null;
     private final AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
     private final PanelUtils mPanelUtils;
@@ -106,13 +111,15 @@ public class PanelTransitionCoordinator {
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
             PanelUtils panelUtils,
             AutoLayoutManager autoLayoutManager,
-            @ShellMainThread ShellExecutor mainExecutor) {
+            @ShellMainThread ShellExecutor mainExecutor,
+            FlagManager flagManager) {
         mContext = context;
         mAutoTaskStackController = autoTaskStackController;
         mAutoSurfaceTransactionFactory = autoSurfaceTransactionFactory;
         mPanelUtils = panelUtils;
         mAutoLayoutManager = autoLayoutManager;
         mMainExecutor = mainExecutor;
+        mFlagManager = flagManager;
     }
 
     /**
@@ -128,8 +135,14 @@ public class PanelTransitionCoordinator {
                 synchronized (mPendingPanelTransactions) {
                     IBinder transition = mAutoTaskStackController.startTransition(
                             createAutoTaskStackTransaction(transaction, /* event= */ null));
-                    mPendingPanelTransactions.put(transition, transaction);
-                    resetUnpreparedDecorPanel(transaction);
+                    if (transition != null) {
+                        mPendingPanelTransactions.put(transition, transaction);
+                        resetUnpreparedDecorPanel(transaction);
+                    } else {
+                        // This transaction does not result in shell transitions, so it needs to be
+                        // animated directly.
+                        startDirectAnimation(transaction);
+                    }
                 }
             });
         } else {
@@ -137,6 +150,58 @@ public class PanelTransitionCoordinator {
             // to the shell main thread could introduce unnecessary latency and visual lag.
             updatePanelSurface(transaction);
         }
+    }
+
+    private void startDirectAnimation(PanelTransaction transaction) {
+        if (transaction.getAnimators().isEmpty()) {
+            return;
+        }
+        endAnimationsWithoutTransition();
+
+        mRunningAnimatorSet = new AnimatorSet();
+        mActiveTransition = null;
+        List<Animator> animators = transaction.getAnimators().stream()
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+
+        Runnable onAnimationEnd = () -> {
+            if (transaction.getAnimationEndCallbackRunnable() != null) {
+                transaction.getAnimationEndCallbackRunnable().run();
+            }
+            mRunningAnimatorSet = null;
+            mActiveTransition = null;
+        };
+
+        startAnimationSet(mRunningAnimatorSet, transaction,
+                getAnimatorsToRun(transaction), onAnimationEnd);
+    }
+
+    private void startAnimationSet(
+            AnimatorSet animatorSet,
+            PanelTransaction transaction,
+            List<Animator> animators,
+            Runnable onAnimationEnd) {
+        animatorSet.playTogether(animators);
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                Trace.beginSection(TAG + "#onAnimationStart");
+                super.onAnimationStart(animation);
+                if (transaction.getAnimationStartCallbackRunnable() != null) {
+                    transaction.getAnimationStartCallbackRunnable().run();
+                }
+                Trace.endSection();
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                Trace.beginSection(TAG + "#onAnimationEnd");
+                super.onAnimationEnd(animation);
+                onAnimationEnd.run();
+                Trace.endSection();
+            }
+        });
+        animatorSet.start();
     }
 
     /**
@@ -250,13 +315,11 @@ public class PanelTransitionCoordinator {
                 continue;
             }
 
-            // If there is no recorded pending transaction for the changed rootTask, treat it as
-            // conflict.
             AutoTaskStackState changedState = entry.getValue();
-            boolean findConflict = transaction == null
-                    || !isEqual(changedState,
-                    transaction.getPanelTransactionState(tp.getPanelId()));
-            if (findConflict) {
+            Transition panelTransition = transaction != null
+                    ? transaction.getPanelTransactionState(tp.getPanelId())
+                    : null;
+            if (!isEqual(changedState, tp, panelTransition)) {
                 Log.e(TAG, "Transition conflicts found on launch root task - " + changedState);
                 return new Event.Builder(
                         changedState.getChildrenTasksVisible() ? SYSTEM_TASK_OPEN_EVENT_ID
@@ -269,14 +332,14 @@ public class PanelTransitionCoordinator {
     }
 
     private boolean isEqual(@NonNull AutoTaskStackState changedState,
-            @Nullable Transition panelTransition) {
-        if (panelTransition == null) {
-            return false;
-        }
-        Variant toVariant = panelTransition.getToVariant();
-        return changedState.getChildrenTasksVisible() == toVariant.isVisible()
-                && changedState.getLayer() == toVariant.getLayer()
-                && changedState.getBounds().equals(toVariant.getBounds());
+            @NonNull TaskPanel tp, @Nullable Transition panelTransition) {
+        Variant toVariant = panelTransition != null ? panelTransition.getToVariant() : null;
+        boolean isVisible = toVariant != null ? toVariant.isVisible() : tp.isVisible();
+        int layer = toVariant != null ? toVariant.getLayer() : tp.getLayer();
+        Rect bounds = toVariant != null ? toVariant.getBounds() : tp.getBounds();
+        return changedState.getChildrenTasksVisible() == isVisible
+                && changedState.getLayer() == layer
+                && changedState.getBounds().equals(bounds);
     }
 
     /**
@@ -331,78 +394,75 @@ public class PanelTransitionCoordinator {
         mRunningAnimatorSet = new AnimatorSet();
         mActiveTransition = transition;
 
-        long totalDuration = Long.MIN_VALUE;
+        Runnable onAnimationEnd = () -> {
+            mayFinishTransaction(finishCallback, panelTransaction, transition,
+                    finishTransaction, info);
+        };
+
+        startAnimationSet(mRunningAnimatorSet, panelTransaction,
+                getAnimatorsToRun(panelTransaction), onAnimationEnd);
+        Trace.endSection();
+        return true;
+    }
+
+    @NonNull
+    private List<Animator> getAnimatorsToRun(PanelTransaction panelTransaction) {
+        long totalDuration = 0;
         List<Animator> animationToRun = new ArrayList<>();
         for (Map.Entry<String, Animator> entry : panelTransaction.getAnimators()) {
             Animator animator = entry.getValue();
-            logIfDebuggable(entry.getKey() + "duration for animator" + animator.getTotalDuration());
+            logIfDebuggable(
+                    entry.getKey() + " duration for animator " + animator.getTotalDuration());
             totalDuration = Math.max(totalDuration, animator.getTotalDuration());
             animationToRun.add(animator);
         }
 
-        totalDuration = Math.max(0, totalDuration);
-
-        logIfDebuggable("total duration" + totalDuration);
+        logIfDebuggable("total duration " + totalDuration);
         animationToRun.add(createSurfaceAnimator(totalDuration, panelTransaction.getAnimators()));
-        mRunningAnimatorSet.playTogether(animationToRun);
-        mRunningAnimatorSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                Trace.beginSection(TAG + "#onAnimationStart");
-                super.onAnimationStart(animation);
-                if (panelTransaction.getAnimationStartCallbackRunnable() != null) {
-                    panelTransaction.getAnimationStartCallbackRunnable().run();
-                }
-                Trace.endSection();
+        return animationToRun;
+    }
+
+    private void mayFinishTransaction(Transitions.TransitionFinishCallback finishCallback,
+            PanelTransaction panelTransaction, IBinder transition,
+            @Nullable SurfaceControl.Transaction finishTransaction,
+            @Nullable TransitionInfo info) {
+        logIfDebuggable("Animation set finished " + finishCallback);
+
+        // Enforce the surface state for panels.
+        AutoSurfaceTransaction autoSurfaceTransaction =
+                mAutoSurfaceTransactionFactory.createTransaction(PANEL_TRANSACTION);
+        for (Map.Entry<String, Transition> entry :
+                panelTransaction.getPanelTransactionStates()) {
+            BasePanel basePanel = mPanelUtils.getBasePanel(
+                    dp -> dp.getPanelId().equals(entry.getKey()));
+            if (basePanel == null) {
+                continue;
             }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                Trace.beginSection(TAG + "#onAnimationEnd");
-                super.onAnimationEnd(animation);
-                logIfDebuggable("Animation set finished " + finishCallback);
-
-                // Enforce the surface state for panels.
-                AutoSurfaceTransaction autoSurfaceTransaction =
-                        mAutoSurfaceTransactionFactory.createTransaction(PANEL_TRANSACTION);
-                for (Map.Entry<String, Transition> entry :
-                        panelTransaction.getPanelTransactionStates()) {
-                    BasePanel basePanel = mPanelUtils.getBasePanel(
-                            dp -> dp.getPanelId().equals(entry.getKey()));
-                    if (basePanel == null) {
-                        continue;
-                    }
-                    if (panelTransaction.shouldMergePanelAnimation(entry.getKey())) {
-                        // update to the current state of the panel
-                        basePanel.update(autoSurfaceTransaction, /* variant= */ null,
-                                /* updateChildren= */ true);
-                    } else {
-                        Variant toVariant = entry.getValue().getToVariant();
-                        basePanel.update(autoSurfaceTransaction, toVariant,
-                                /* updateChildren= */ true);
-                    }
-                }
-                calculateFinishTransaction(finishTransaction, info, panelTransaction);
-                autoSurfaceTransaction.apply();
-
-                synchronized (mPendingPanelTransactions) {
-                    mPendingPanelTransactions.remove(transition);
-                    mActiveTransition = null;
-                }
-
-                if (finishCallback != null) {
-                    logIfDebuggable("Finish the transition");
-                    finishCallback.onTransitionFinished(/* wct= */ null);
-                }
-                if (panelTransaction.getAnimationEndCallbackRunnable() != null) {
-                    panelTransaction.getAnimationEndCallbackRunnable().run();
-                }
-                Trace.endSection();
+            if (panelTransaction.shouldMergePanelAnimation(entry.getKey())) {
+                // update to the current state of the panel
+                basePanel.update(autoSurfaceTransaction, /* variant= */ null,
+                        /* updateChildren= */ true);
+            } else {
+                Variant toVariant = entry.getValue().getToVariant();
+                basePanel.update(autoSurfaceTransaction, toVariant,
+                        /* updateChildren= */ true);
             }
-        });
-        mRunningAnimatorSet.start();
-        Trace.endSection();
-        return true;
+        }
+        calculateFinishTransaction(finishTransaction, info, panelTransaction);
+        autoSurfaceTransaction.apply();
+
+        synchronized (mPendingPanelTransactions) {
+            mPendingPanelTransactions.remove(transition);
+            mActiveTransition = null;
+        }
+
+        if (finishCallback != null) {
+            logIfDebuggable("Finish the transition");
+            finishCallback.onTransitionFinished(/* wct= */ null);
+        }
+        if (panelTransaction.getAnimationEndCallbackRunnable() != null) {
+            panelTransaction.getAnimationEndCallbackRunnable().run();
+        }
     }
 
     @ShellMainThread
@@ -437,6 +497,23 @@ public class PanelTransitionCoordinator {
             mergeTransaction.addPanelIdToAnimationMerge(entry.getKey());
         }
         mRunningAnimatorSet.cancel();
+    }
+
+    /**
+     * Immediately ends any currently running animation set. This method is used when a new
+     * animation needs to start and any existing one should be abruptly finished, for example,
+     * when starting a direct animation without a shell transition token.
+     */
+    private void endAnimationsWithoutTransition() {
+        logIfDebuggable("endAnimationsWithoutTransition");
+        if (isAnimationRunning()) {
+            logIfDebuggable("endAnimationsWithoutTransition: Ending running animatorSet "
+                    + mRunningAnimatorSet.getCurrentPlayTime()
+                    + ", active transition = " + mActiveTransition);
+            mRunningAnimatorSet.end();
+            // mRunningAnimatorSet and mActiveTransition will be nulled out
+            // in the onAnimationEnd listener
+        }
     }
 
     /**
@@ -531,26 +608,44 @@ public class PanelTransitionCoordinator {
         // If both are true, this means that the task close within the transition caused the panel
         // to become invisible, meaning there is nothing left for the panel to show and it is empty.
         HashMap<String, Pair<Boolean, Boolean>> taskPanelCloseMap = new HashMap<>();
-        info.getChanges().forEach(change -> {
-            if (TransitionUtil.isClosingType(change.getMode()) && change.getTaskInfo() != null) {
-                TaskPanel taskPanel = mPanelUtils.getTaskPanel(
-                        tp -> tp.getRootTaskId() == change.getTaskInfo().taskId);
-                if (taskPanel != null && !taskPanel.hasRestart()) {
-                    taskPanelCloseMap.compute(taskPanel.getPanelId(),
-                            (k, v) -> (v == null) ? new Pair<>(true, false)
-                                    : new Pair<>(true, v.second));
-                } else {
-                    TaskPanel parentTaskPanel = mPanelUtils.getTaskPanel(
-                            tp -> tp.getRootTaskId() == change.getTaskInfo().parentTaskId);
-                    if (parentTaskPanel != null && !parentTaskPanel.hasRestart()
-                            && change.getMode() == TRANSIT_CLOSE) {
-                        taskPanelCloseMap.compute(parentTaskPanel.getPanelId(),
-                                (k, v) -> (v == null) ? new Pair<>(false, true)
-                                        : new Pair<>(v.first, true));
-                    }
+        for (TransitionInfo.Change change : info.getChanges()) {
+            if (!TransitionUtil.isClosingType(change.getMode()) || change.getTaskInfo() == null) {
+                continue;
+            }
+
+            TaskPanel taskPanel;
+            Pair<Boolean, Boolean> newState = null;
+            taskPanel = mPanelUtils.getTaskPanel(
+                    tp -> tp.getRootTaskId() == change.getTaskInfo().taskId && !tp.hasRestart());
+            if (taskPanel != null) {
+                // Panel itself is hiding
+                newState = new Pair<>(true, false);
+            } else if (change.getMode() == TRANSIT_CLOSE) {
+                taskPanel = mPanelUtils.getTaskPanel(
+                        tp -> tp.getRootTaskId() == change.getTaskInfo().parentTaskId
+                                && !tp.hasRestart());
+                if (taskPanel != null) {
+                    // Child task is closing
+                    newState = new Pair<>(false, true);
+                }
+            } else if (change.getMode() == TRANSIT_TO_BACK && change.getLastParent() != null) {
+                taskPanel = mPanelUtils.getTaskPanel(
+                        tp -> change.getLastParent().equals(tp.getRootTaskToken())
+                                && !tp.hasRestart() && tp.isRootTaskEmpty());
+                if (taskPanel != null) {
+                    // Task has moved to back (and out of panel) and former parent panel is now
+                    // empty - both states are now true.
+                    newState = new Pair<>(true, true);
                 }
             }
-        });
+
+            if (taskPanel != null) {
+                Pair<Boolean, Boolean> finalState = newState;
+                taskPanelCloseMap.compute(taskPanel.getPanelId(), (k, v) -> (v == null) ? finalState
+                        : new Pair<>(v.first || finalState.first, v.second || finalState.second));
+            }
+        }
+
         Set<String> emptyPanelKeys = taskPanelCloseMap.entrySet().stream()
                 .filter(entry -> {
                     Pair<Boolean, Boolean> pair = entry.getValue();
@@ -589,10 +684,6 @@ public class PanelTransitionCoordinator {
         }
     }
 
-    private static boolean displayCompatibilityAutoDecorSafeRegion() {
-        return Build.isDebuggable();
-    }
-
     private AutoTaskStackTransaction createAutoTaskStackTransaction(
             PanelTransaction panelTransaction, @Nullable Event event) {
         AutoTaskStackTransaction autoTaskStackTransaction = new AutoTaskStackTransaction();
@@ -611,7 +702,7 @@ public class PanelTransitionCoordinator {
                     toVariant.getLayer());
             autoTaskStackTransaction.setTaskStackState(taskPanel.getRootStack().getId(),
                     autoTaskStackState);
-            if (displayCompatibilityAutoDecorSafeRegion()) {
+            if (mFlagManager.isEnabled(Flag.DisplayCompatibilityAutoDecorSafeRegion)) {
                 autoTaskStackTransaction.setSafeRegionBounds(taskPanel.getRootStack().getId(),
                         toVariant.getSafeBounds());
             }
@@ -623,7 +714,7 @@ public class PanelTransitionCoordinator {
             }
         }
 
-        if (mContext.getResources().getBoolean(R.bool.scalable_ui_enable_task_focus)) {
+        if (mFlagManager.isEnabled(Flag.ScalableUiTaskFocus)) {
             calculateFocusedTaskStack(panelTransaction, autoTaskStackTransaction, event);
         }
 
@@ -632,10 +723,10 @@ public class PanelTransitionCoordinator {
 
     /**
      * Determine focus using the following criteria (in order):
-     *   1. If the trigger is a task being opened on a visible panel, focus that panel
-     *   2. If one or more panels are becoming visible, focus the highest z-layer panel permitted
-     *   3. If the current focused panel is becoming invisible, focus the highest z-layer panel
-     *      permitted that is still visible.
+     * 1. If the trigger is a task being opened on a visible panel, focus that panel
+     * 2. If one or more panels are becoming visible, focus the highest z-layer panel permitted
+     * 3. If the current focused panel is becoming invisible, focus the highest z-layer panel
+     * permitted that is still visible.
      */
     private void calculateFocusedTaskStack(PanelTransaction panelTransaction,
             AutoTaskStackTransaction autoTaskStackTransaction,
@@ -736,24 +827,35 @@ public class PanelTransitionCoordinator {
         ValueAnimator surfaceAnimator = ValueAnimator.ofFloat(0, 1f);
         surfaceAnimator.setDuration(duration);
         surfaceAnimator.addUpdateListener(animation -> {
-            Trace.beginSection(TAG + "#updatePanelSurface");
-            logIfDebuggable("Surface animation progress " + animation.getAnimatedFraction());
-            AutoSurfaceTransaction autoSurfaceTransaction =
-                    mAutoSurfaceTransactionFactory.createTransaction(DECOR_TRANSACTION);
-
-            SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
-            for (Map.Entry<String, Animator> entry : animators) {
-                String id = entry.getKey();
-                Panel panel = PanelPool.getInstance().getPanel(p -> p.getPanelId().equals(id));
-                if (panel instanceof BasePanel basePanel) {
-                    basePanel.update(autoSurfaceTransaction, tx);
-                }
+            onSurfaceAnimatorProgress(animators, String.valueOf(animation.getAnimatedFraction()));
+        });
+        surfaceAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(@NonNull Animator animation) {
+                onSurfaceAnimatorProgress(animators, "Cancelled");
             }
-            //TODO(b/404959846): migrate to autoSurfaceTransaction here once api is added.
-            tx.apply();
-            autoSurfaceTransaction.apply();
-            Trace.endSection();
         });
         return surfaceAnimator;
+    }
+
+    private void onSurfaceAnimatorProgress(@NonNull Set<Map.Entry<String, Animator>> animators,
+            @NonNull String progress) {
+        Trace.beginSection(TAG + "#updatePanelSurface");
+        logIfDebuggable("Surface animation progress " + progress);
+        AutoSurfaceTransaction autoSurfaceTransaction =
+                mAutoSurfaceTransactionFactory.createTransaction(DECOR_TRANSACTION);
+
+        SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
+        for (Map.Entry<String, Animator> entry : animators) {
+            String id = entry.getKey();
+            Panel panel = PanelPool.getInstance().getPanel(p -> id.equals(p.getPanelId()));
+            if (panel instanceof BasePanel basePanel) {
+                basePanel.update(autoSurfaceTransaction, tx);
+            }
+        }
+        //TODO(b/404959846): migrate to autoSurfaceTransaction here once api is added.
+        tx.apply();
+        autoSurfaceTransaction.apply();
+        Trace.endSection();
     }
 }

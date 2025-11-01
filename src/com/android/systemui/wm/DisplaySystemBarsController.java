@@ -16,29 +16,39 @@
 
 package com.android.systemui.wm;
 
+import static android.car.CarOccupantZoneManager.INVALID_USER_ID;
 import static android.content.Intent.ACTION_OVERLAY_CHANGED;
 import static android.view.WindowInsets.Type.navigationBars;
 import static android.view.WindowInsets.Type.statusBars;
 import static android.view.WindowInsets.Type.systemBars;
 
+import static com.android.systemui.car.systembar.SystemBarUtil.INVISIBLE_BAR_VISIBILITIES_TYPES_INDEX;
 import static com.android.systemui.car.systembar.SystemBarUtil.SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY;
 import static com.android.systemui.car.systembar.SystemBarUtil.SYSTEM_BAR_PERSISTENCY_CONFIG_IMMERSIVE;
 import static com.android.systemui.car.systembar.SystemBarUtil.SYSTEM_BAR_PERSISTENCY_CONFIG_IMMERSIVE_WITH_NAV;
 import static com.android.systemui.car.systembar.SystemBarUtil.SYSTEM_BAR_PERSISTENCY_CONFIG_NON_IMMERSIVE;
+import static com.android.systemui.car.systembar.SystemBarUtil.SYSTEM_BAR_SUW_PERSISTENCY_CONFIG_DISABLED;
+import static com.android.systemui.car.systembar.SystemBarUtil.SYSTEM_BAR_SUW_PERSISTENCY_CONFIG_IMMERSIVE;
+import static com.android.systemui.car.systembar.SystemBarUtil.SYSTEM_BAR_SUW_PERSISTENCY_CONFIG_IMMERSIVE_WITH_NAV;
+import static com.android.systemui.car.systembar.SystemBarUtil.SYSTEM_BAR_SUW_PERSISTENCY_CONFIG_IMMERSIVE_WITH_STATUS;
 import static com.android.systemui.car.systembar.SystemBarUtil.VISIBLE_BAR_VISIBILITIES_TYPES_INDEX;
-import static com.android.systemui.car.systembar.SystemBarUtil.INVISIBLE_BAR_VISIBILITIES_TYPES_INDEX;
 import static com.android.systemui.car.users.CarSystemUIUserUtil.isSecondaryMUMDSystemUI;
 
 import android.annotation.Nullable;
+import android.car.settings.CarSettings;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.PatternMatcher;
 import android.os.RemoteException;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.util.Slog;
 import android.util.SparseArray;
 import android.view.IDisplayWindowInsetsController;
@@ -54,12 +64,15 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.systemui.R;
+import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.wm.shell.common.DisplayController;
 import com.android.wm.shell.common.DisplayInsetsController;
 
 import java.util.Arrays;
 import java.util.Objects;
+
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * Controller that maps between displays and {@link IDisplayWindowInsetsController} in order to
@@ -80,6 +93,8 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
     protected final IWindowManager mWmService;
     protected final DisplayInsetsController mDisplayInsetsController;
     protected final Handler mHandler;
+    protected final CarWMUserHelper mUserHelper;
+    protected final ContentObserver mSuwSettingsObserver;
 
     private final int[] mDefaultVisibilities =
             new int[]{WindowInsets.Type.systemBars(), 0};
@@ -95,31 +110,64 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
     };
     private final int[] mImmersiveVisibilities =
             new int[]{0, WindowInsets.Type.systemBars()};
+    private static final String OVERLAY_FILTER_DATA_SCHEME = "package";
 
+    private final Object mPerDisplaySparseArrayLock = new Object();
+
+    private int mBehavior;
+    private int mSuwBehavior;
+    private BroadcastReceiver mOverlayChangeBroadcastReceiver;
+    private CarWMUserHelper.OccupantZoneChangeListener mOccupantChangeListener;
+    private final BarControlPolicy mBarControlPolicy;
+
+
+    @GuardedBy("mPerDisplaySparseArrayLock")
     @VisibleForTesting
     SparseArray<PerDisplay> mPerDisplaySparseArray;
-    @InsetsType
-    private int mWindowRequestedVisibleTypes = WindowInsets.Type.defaultVisible();
-    @InsetsType
-    private int mAppRequestedVisibleTypes = WindowInsets.Type.defaultVisible();
-    @InsetsType
-    private int mImmersiveState = systemBars();
 
     public DisplaySystemBarsController(
             Context context,
             IWindowManager wmService,
             DisplayController displayController,
             DisplayInsetsController displayInsetsController,
-            @Main Handler mainHandler) {
+            @Main Handler mainHandler,
+            CarWMUserHelper carWMUserHelper) {
         mContext = context;
         mWmService = wmService;
         mDisplayInsetsController = displayInsetsController;
         mHandler = mainHandler;
+        mUserHelper = carWMUserHelper;
+        mBehavior = mContext.getResources().getInteger(
+                R.integer.config_systemBarPersistency);
+        mSuwBehavior = mContext.getResources().getInteger(
+                R.integer.config_systemBarSuwBehavior);
+        mBarControlPolicy = new BarControlPolicy();
+
+        mSuwSettingsObserver = new ContentObserver(mHandler) {
+            @Override
+            public void onChange(boolean selfChange, @Nullable Uri uri,
+                    int flags) {
+                synchronized (mPerDisplaySparseArrayLock) {
+                    if (mPerDisplaySparseArray == null) {
+                        return;
+                    }
+                    for (int i = 0; i < mPerDisplaySparseArray.size(); i++) {
+                        mPerDisplaySparseArray.valueAt(i).onUserSetupInProgressChanged();
+                    }
+                }
+            }
+        };
+
         if (!isSecondaryMUMDSystemUI()) {
             // This WM controller should only be initialized once for the primary SystemUI, as it
             // will affect insets on all displays.
             // TODO(b/262773276): support per-user remote inset controllers
             displayController.addDisplayWindowListener(this);
+            mContext.getContentResolver().registerContentObserver(Settings.Secure.getUriFor(
+                            CarSettings.Secure.KEY_SETUP_WIZARD_IN_PROGRESS),
+                    /* notifyForDescendants= */ true, mSuwSettingsObserver, UserHandle.USER_ALL);
+            registerOverlayChangeBroadcastReceiver();
+            registerOccupantZoneChangeListener();
         }
     }
 
@@ -128,36 +176,102 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         PerDisplay pd = new PerDisplay(displayId);
         pd.register();
         // Lazy loading policy control filters instead of during boot.
-        if (mPerDisplaySparseArray == null) {
-            mPerDisplaySparseArray = new SparseArray<>();
-            BarControlPolicy.reloadFromSetting(mContext);
-            BarControlPolicy.registerContentObserver(mContext, mHandler, () -> {
-                int size = mPerDisplaySparseArray.size();
-                for (int i = 0; i < size; i++) {
-                    mPerDisplaySparseArray.valueAt(i).updateDisplayWindowRequestedVisibleTypes();
-                }
-            });
+        synchronized (mPerDisplaySparseArrayLock) {
+            if (mPerDisplaySparseArray == null) {
+                mPerDisplaySparseArray = new SparseArray<>();
+                mBarControlPolicy.reloadFromSetting(mContext);
+                mBarControlPolicy.registerSystemBarVisibilityOverrideObserver(mContext,
+                        mHandler,
+                        () -> {
+                            synchronized (mPerDisplaySparseArrayLock) {
+                                int size = mPerDisplaySparseArray.size();
+                                for (int i = 0; i < size; i++) {
+                                    mPerDisplaySparseArray.valueAt(
+                                            i).updateDisplayWindowRequestedVisibleTypes();
+                                }
+                            }
+                            // Add a return statement to satisfy the compiler's inferred return
+                            // type.
+                            return null;
+                        });
+            }
+            mPerDisplaySparseArray.put(displayId, pd);
         }
-        mPerDisplaySparseArray.put(displayId, pd);
     }
 
     @Override
     public void onDisplayRemoved(int displayId) {
-        PerDisplay pd = mPerDisplaySparseArray.get(displayId);
-        pd.unregister();
-        mPerDisplaySparseArray.remove(displayId);
+        synchronized (mPerDisplaySparseArrayLock) {
+            PerDisplay pd = mPerDisplaySparseArray.get(displayId);
+            pd.unregister();
+            mPerDisplaySparseArray.remove(displayId);
+        }
+    }
+
+    private void registerOverlayChangeBroadcastReceiver() {
+        IntentFilter overlayFilter = new IntentFilter(ACTION_OVERLAY_CHANGED);
+        overlayFilter.addDataScheme(OVERLAY_FILTER_DATA_SCHEME);
+        overlayFilter.addDataSchemeSpecificPart(mContext.getPackageName(),
+                PatternMatcher.PATTERN_LITERAL);
+        mOverlayChangeBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                mBehavior = mContext.getResources().getInteger(
+                        R.integer.config_systemBarPersistency);
+                mSuwBehavior = mContext.getResources().getInteger(
+                        R.integer.config_systemBarSuwBehavior);
+                Slog.d(TAG, "Update system bar persistency behavior to" + mBehavior
+                        + " and suw behavior to " + mSuwBehavior
+                        + " on overlay change on userId = " + mContext.getUserId());
+            }
+        };
+        mContext.registerReceiver(mOverlayChangeBroadcastReceiver,
+                overlayFilter, /* broadcastPermission= */ null, /* handler= */ null);
+    }
+
+    private void registerOccupantZoneChangeListener() {
+        mOccupantChangeListener = () -> {
+            synchronized (mPerDisplaySparseArrayLock) {
+                if (mPerDisplaySparseArray == null) {
+                    return;
+                }
+                for (int i = 0; i < mPerDisplaySparseArray.size(); i++) {
+                    // SUW depends on user <-> display assignment and must be updated on
+                    // occupant zone changes.
+                    mPerDisplaySparseArray.valueAt(i).onUserSetupInProgressChanged();
+                }
+            }
+        };
+        mUserHelper.addOccupantZoneChangeListener(mOccupantChangeListener);
+    }
+
+    @VisibleForTesting
+    protected String getBarPolicyString() {
+        return mBarControlPolicy.getSettingValue();
+    }
+
+    private boolean isSuwInProgress(int userId) {
+        if (userId == INVALID_USER_ID) {
+            return false;
+        }
+        return Settings.Secure.getIntForUser(mContext.getContentResolver(),
+                CarSettings.Secure.KEY_SETUP_WIZARD_IN_PROGRESS, 0,
+                userId) != 0;
     }
 
     class PerDisplay implements DisplayInsetsController.OnInsetsChangedListener {
-        private static final String OVERLAY_FILTER_DATA_SCHEME = "package";
-
         int mDisplayId;
         InsetsController mInsetsController;
         @InsetsType
         int mRequestedVisibleTypes = WindowInsets.Type.defaultVisible();
+        @InsetsType
+        int mWindowRequestedVisibleTypes = WindowInsets.Type.defaultVisible();
+        @InsetsType
+        int mAppRequestedVisibleTypes = WindowInsets.Type.defaultVisible();
+        @InsetsType
+        int mImmersiveState = systemBars();
+        boolean mIsSuwInProgress;
         String mPackageName;
-        int mBehavior = 0;
-        BroadcastReceiver mOverlayChangeBroadcastReceiver;
 
         PerDisplay(int displayId) {
             mDisplayId = displayId;
@@ -169,18 +283,15 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
                         updateDisplayWindowRequestedVisibleTypes();
                     }, inputMethodManager)
             );
-            mBehavior = mContext.getResources().getInteger(
-                    R.integer.config_systemBarPersistency);
+            mIsSuwInProgress = isSuwInProgress(mUserHelper.getUserIdForDisplay(mDisplayId));
         }
 
         public void register() {
             mDisplayInsetsController.addInsetsChangedListener(mDisplayId, this);
-            registerOverlayChangeBroadcastReceiver();
         }
 
         public void unregister() {
             mDisplayInsetsController.removeInsetsChangedListener(mDisplayId, this);
-            unregisterOverlayChangeBroadcastReceiver();
         }
 
         @Override
@@ -280,31 +391,6 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             // TODO
         }
 
-        private void registerOverlayChangeBroadcastReceiver() {
-            IntentFilter overlayFilter = new IntentFilter(ACTION_OVERLAY_CHANGED);
-            overlayFilter.addDataScheme(OVERLAY_FILTER_DATA_SCHEME);
-            overlayFilter.addDataSchemeSpecificPart(mContext.getPackageName(),
-                    PatternMatcher.PATTERN_LITERAL);
-            mOverlayChangeBroadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    mBehavior = mContext.getResources().getInteger(
-                            R.integer.config_systemBarPersistency);
-                    Slog.d(TAG, "Update system bar persistency behavior to" + mBehavior
-                            + " on overlay change on userId = " + mContext.getUserId()
-                            + " on display = " + mDisplayId);
-                }
-            };
-            mContext.registerReceiver(mOverlayChangeBroadcastReceiver,
-                    overlayFilter, /* broadcastPermission= */ null, /* handler= */ null);
-        }
-
-        private void unregisterOverlayChangeBroadcastReceiver() {
-            if (mOverlayChangeBroadcastReceiver != null) {
-                mContext.unregisterReceiver(mOverlayChangeBroadcastReceiver);
-            }
-        }
-
         protected void updateDisplayWindowRequestedVisibleTypes() {
             if (mPackageName == null) {
                 return;
@@ -340,9 +426,13 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
 
         private int[] getBarVisibilities(int immersiveState) {
             int[] barVisibilities;
-            if (mBehavior == SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY) {
-                barVisibilities = BarControlPolicy.getBarVisibilities(
+            if (mIsSuwInProgress && mSuwBehavior != SYSTEM_BAR_SUW_PERSISTENCY_CONFIG_DISABLED) {
+                barVisibilities = getBarVisibilitiesForSuw();
+            } else if (mBehavior == SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY) {
+                BarVisibility barVis = mBarControlPolicy.getBarVisibilities(
                         mPackageName, mWindowRequestedVisibleTypes);
+                barVisibilities =
+                        new int[]{barVis.getShowTypes(), barVis.getHideTypes()};
             } else if (immersiveState == STATE_IMMERSIVE_WITH_NAV_BAR) {
                 barVisibilities = mImmersiveWithNavBarVisibilities;
             } else if (immersiveState == STATE_IMMERSIVE_WITH_STATUS_BAR) {
@@ -356,9 +446,35 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             }
             if (DEBUG) {
                 Slog.d(TAG, "mBehavior=" + mBehavior + ", mImmersiveState = " + immersiveState
+                        + ", mIsSuwInProgress = " + mIsSuwInProgress
+                        + ", mSuwBehavior = " + mSuwBehavior
+                        + ", mDisplayId = " + mDisplayId
                         + ", barVisibilities to " + Arrays.toString(barVisibilities));
             }
             return barVisibilities;
+        }
+
+        private int[] getBarVisibilitiesForSuw() {
+            if (mSuwBehavior == SYSTEM_BAR_SUW_PERSISTENCY_CONFIG_IMMERSIVE) {
+                return mImmersiveVisibilities;
+            } else if (mSuwBehavior == SYSTEM_BAR_SUW_PERSISTENCY_CONFIG_IMMERSIVE_WITH_NAV) {
+                return mImmersiveWithNavBarVisibilities;
+            } else if (mSuwBehavior == SYSTEM_BAR_SUW_PERSISTENCY_CONFIG_IMMERSIVE_WITH_STATUS) {
+                return mImmersiveWithStatusBarVisibilities;
+            } else {
+                Slog.e(TAG, "Invalid SUW visibility config " + mSuwBehavior
+                        + " - using default visibility");
+                return mDefaultVisibilities;
+            }
+        }
+
+        void onUserSetupInProgressChanged() {
+            boolean inProgress = isSuwInProgress(mUserHelper.getUserIdForDisplay(mDisplayId));
+            if (inProgress == mIsSuwInProgress) {
+                return;
+            }
+            mIsSuwInProgress = inProgress;
+            updateDisplayWindowRequestedVisibleTypes();
         }
 
         protected void updateRequestedVisibleTypes(@InsetsType int types, boolean visible) {

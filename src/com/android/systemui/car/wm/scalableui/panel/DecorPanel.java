@@ -30,6 +30,8 @@ import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.car.scalableui.panel.Panel;
+import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerInitializer;
+import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.view.DecorPanelControllerBase;
 import com.android.wm.shell.automotive.AutoDecor;
@@ -43,6 +45,8 @@ import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
+import java.util.Optional;
+
 /**
  * A {@link AutoDecor} based implementation of a {@link Panel}.
  */
@@ -51,8 +55,8 @@ public final class DecorPanel extends BasePanel {
 
     private final AutoDecorManager mAutoDecorManager;
     private final PanelUtils mPanelUtils;
+    private final PanelControllerInitializer mPanelControllerInitializer;
     private final ShellExecutor mMainExecutor;
-    private final EventDispatcher mEventDispatcher;
     private final AutoSurfaceTransactionFactory mAutoSurfaceTransactionFactory;
     @VisibleForTesting
     AutoDecor mAutoDecor;
@@ -66,46 +70,32 @@ public final class DecorPanel extends BasePanel {
     public DecorPanel(
             @NonNull Context context,
             AutoDecorManager autoDecorManager,
-            EventDispatcher eventDispatcher,
             PanelUtils panelUtils,
+            PanelControllerInitializer panelControllerInitializer,
             @ExternalMainThread ShellExecutor mainExecutor,
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
+            Optional<PanelUpdatePublisher> panelUpdatePublisherOptional,
             @Assisted String id
     ) {
-        super(context, id);
+        super(context, id, panelUpdatePublisherOptional);
         mAutoDecorManager = autoDecorManager;
         mPanelUtils = panelUtils;
+        mPanelControllerInitializer = panelControllerInitializer;
         mMainExecutor = mainExecutor;
-        mEventDispatcher = eventDispatcher;
         mAutoSurfaceTransactionFactory = autoSurfaceTransactionFactory;
-    }
-
-    @NonNull
-    @Override
-    public Rect getSafeBounds() {
-        // no-op
-        return new Rect();
-    }
-
-    @Override
-    public void setSafeBounds(@NonNull Rect safeBounds) {
-        // no-op
     }
 
     @VisibleForTesting
     @Nullable
     View inflateDecorView() {
-        View view = getRole().getView(getContext());
+        View view = getRole() != null ? getRole().getView(getContext()) : null;
         return view != null ? view : initFromController();
     }
 
     @Nullable
     private View initFromController() {
-        mDecorPanelController = DecorPanelControllerBase.createDecorPanelController(
-                getContext(), getPanelControllerMetadata());
-        if (mDecorPanelController instanceof EventDispatcher.EventProducer eventProducer) {
-            eventProducer.setEventDispatcher(mEventDispatcher);
-        }
+        mDecorPanelController = mPanelControllerInitializer.createDecorPanelController(
+                getPanelControllerMetadata());
         return mDecorPanelController == null ? null : mDecorPanelController.getView();
     }
 

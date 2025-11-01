@@ -29,6 +29,7 @@ import android.app.ActivityManager;
 import android.car.app.CarActivityManager;
 import android.util.Log;
 import android.view.SurfaceControl;
+import android.window.TaskOrganizer;
 import android.window.WindowContainerTransaction;
 
 import com.android.internal.annotations.VisibleForTesting;
@@ -88,9 +89,12 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         mCarActivityManager = carActivityManager;
         mTransitions = transitions;
 
-        mShellTaskOrganizer.createRootTask(displayId,
-                WINDOWING_MODE_MULTI_WINDOW,
-                this, /* removeWithTaskOrganizer= */ true);
+        mShellTaskOrganizer.createRootTask(
+                new TaskOrganizer.CreateRootTaskRequest()
+                        .setDisplayId(displayId)
+                        .setWindowingMode(WINDOWING_MODE_MULTI_WINDOW)
+                        .setRemoveWithTaskOrganizer(true),
+                this);
     }
 
     @VisibleForTesting

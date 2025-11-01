@@ -43,19 +43,4 @@ public abstract class ActivityWindowModule {
     static CarTaskViewControllerHostLifecycle provideCarTaskViewControllerHostLifecycle() {
         return new CarTaskViewControllerHostLifecycle();
     }
-
-    /**
-     * Injects ToolbarController
-     */
-    @Nullable
-    @Provides
-    static ToolbarController providesToolbarController(Context context,
-            ToolbarControllerImpl impl) {
-        if (context.getResources()
-                .getInteger(R.integer.config_showDisplayCompatToolbarOnSystemBar) == 0) {
-            return null;
-        } else {
-            return impl;
-        }
-    }
 }

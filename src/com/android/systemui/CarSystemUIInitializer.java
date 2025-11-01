@@ -51,7 +51,9 @@ public class CarSystemUIInitializer extends SystemUIInitializer {
                                 : Optional.empty())
                 .setScalableUIWMInitializer(carWm.getScalableUIWMInitializer())
                 .setTaskPanelInfoRepository(carWm.getTaskPanelInfoRepository())
-                .setScalableUIEventDispatcher(carWm.getScalableUIEventDispatcher());
+                .setScalableUIEventDispatcher(carWm.getScalableUIEventDispatcher())
+                .setSystemUiWindowProvider(carWm.getSystemUiWindowProvider())
+                .setSystemUiConfigurationProvider(carWm.getSystemUiConfigurationProvider());
     }
 
     private void initWmComponents(CarWMComponent carWm) {

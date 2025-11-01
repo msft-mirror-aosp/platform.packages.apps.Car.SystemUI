@@ -64,10 +64,7 @@ import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPanelController;
 import com.android.systemui.car.notification.NotificationsShadeController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
-import com.android.systemui.car.wm.scalableui.EventDispatcher;
-import com.android.systemui.flags.FeatureFlags;
 import com.android.systemui.plugins.DarkIconDispatcher;
 import com.android.systemui.settings.FakeDisplayTracker;
 import com.android.systemui.settings.UserTracker;
@@ -121,13 +118,9 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     @Mock
     private CameraPrivacyChipViewController mCameraPrivacyChipViewController;
     @Mock
-    private FeatureFlags mFeatureFlags;
-    @Mock
     private StatusIconPanelViewController.Builder mPanelControllerBuilder;
     @Mock
     private StatusIconPanelViewController mPanelController;
-    @Mock
-    private CarSystemBarElementInitializer mCarSystemBarElementInitializer;
     @Mock
     private LightBarController mLightBarController;
     @Mock
@@ -156,6 +149,8 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     private ConfigurationController mConfigurationController;
     @Mock
     private CarSystemBarRestartTracker mCarSystemBarRestartTracker;
+    @Mock
+    private CarSystemBarViewController.Factory mCarSystemBarViewControllerFactory;
     RegisterStatusBarResult mRegisterStatusBarResult;
 
     @Before
@@ -168,9 +163,10 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mTestableResources = mContext.getOrCreateTestableResources();
         mSpiedContext = spy(mContext);
         when(mSpiedContext.getSystemService(ActivityManager.class)).thenReturn(mActivityManager);
-        mCarSystemBarViewFactory = new CarSystemBarViewFactory(mSpiedContext, mFeatureFlags,
-                mock(UserTracker.class), mock(EventDispatcher.class),
-                mCarSystemBarElementInitializer);
+        when(mCarSystemBarViewControllerFactory.create(any()))
+                .thenReturn(mock(CarSystemBarViewController.class));
+        mCarSystemBarViewFactory = new CarSystemBarViewFactory(mSpiedContext,
+                () -> mCarSystemBarViewControllerFactory);
         setupPanelControllerBuilderMocks();
 
         mRegisterStatusBarResult = new RegisterStatusBarResult(new ArrayMap<>(), 0, 0,
@@ -393,7 +389,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBarController.init();
 
         ViewGroup window = mCarSystemBarController.getBarWindow(TOP);
-        mCarSystemBarController.setTopWindowVisibility(View.VISIBLE);
+        mCarSystemBarController.setWindowVisibility(window, View.VISIBLE);
 
         assertThat(window.getVisibility()).isEqualTo(View.VISIBLE);
     }
@@ -404,7 +400,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBarController.init();
 
         ViewGroup window = mCarSystemBarController.getBarWindow(TOP);
-        mCarSystemBarController.setTopWindowVisibility(View.GONE);
+        mCarSystemBarController.setWindowVisibility(window, View.GONE);
 
         assertThat(window.getVisibility()).isEqualTo(View.GONE);
     }
@@ -415,7 +411,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBarController.init();
 
         ViewGroup window = mCarSystemBarController.getBarWindow(BOTTOM);
-        mCarSystemBarController.setBottomWindowVisibility(View.VISIBLE);
+        mCarSystemBarController.setWindowVisibility(window, View.VISIBLE);
 
         assertThat(window.getVisibility()).isEqualTo(View.VISIBLE);
     }
@@ -426,7 +422,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBarController.init();
 
         ViewGroup window = mCarSystemBarController.getBarWindow(BOTTOM);
-        mCarSystemBarController.setBottomWindowVisibility(View.GONE);
+        mCarSystemBarController.setWindowVisibility(window, View.GONE);
 
         assertThat(window.getVisibility()).isEqualTo(View.GONE);
     }
@@ -438,7 +434,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBarController.init();
 
         ViewGroup window = mCarSystemBarController.getBarWindow(LEFT);
-        mCarSystemBarController.setLeftWindowVisibility(View.VISIBLE);
+        mCarSystemBarController.setWindowVisibility(window, View.VISIBLE);
 
         assertThat(window.getVisibility()).isEqualTo(View.VISIBLE);
     }
@@ -450,7 +446,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBarController.init();
 
         ViewGroup window = mCarSystemBarController.getBarWindow(LEFT);
-        mCarSystemBarController.setLeftWindowVisibility(View.GONE);
+        mCarSystemBarController.setWindowVisibility(window, View.GONE);
 
         assertThat(window.getVisibility()).isEqualTo(View.GONE);
     }
@@ -461,7 +457,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBarController.init();
 
         ViewGroup window = mCarSystemBarController.getBarWindow(RIGHT);
-        mCarSystemBarController.setRightWindowVisibility(View.VISIBLE);
+        mCarSystemBarController.setWindowVisibility(window, View.VISIBLE);
 
         assertThat(window.getVisibility()).isEqualTo(View.VISIBLE);
     }
@@ -472,7 +468,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mCarSystemBarController.init();
 
         ViewGroup window = mCarSystemBarController.getBarWindow(RIGHT);
-        mCarSystemBarController.setRightWindowVisibility(View.GONE);
+        mCarSystemBarController.setWindowVisibility(window, View.GONE);
 
         assertThat(window.getVisibility()).isEqualTo(View.GONE);
     }
@@ -487,7 +483,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         Set<View.OnTouchListener> controllers = bottomBar.getStatusBarWindowTouchListeners();
         assertThat(controllers).isNotNull();
         assertThat(controllers.size()).isEqualTo(0);
-        mCarSystemBarController.registerBottomBarTouchListener(mock(View.OnTouchListener.class));
+        mCarSystemBarController.registerBarTouchListener(BOTTOM, mock(View.OnTouchListener.class));
         controllers = bottomBar.getStatusBarWindowTouchListeners();
 
         assertThat(controllers).isNotNull();
@@ -499,7 +495,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         mCarSystemBarController.init();
 
-        mCarSystemBarController.registerBottomBarTouchListener(mock(View.OnTouchListener.class));
+        mCarSystemBarController.registerBarTouchListener(BOTTOM, mock(View.OnTouchListener.class));
         CarSystemBarView bottomBar = mCarSystemBarController.getBarView(BOTTOM,
                 /* isSetUp= */ true);
         Set<View.OnTouchListener> controllers = bottomBar.getStatusBarWindowTouchListeners();
@@ -509,7 +505,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void testRegisterNotificationController_createViewFirst_registrationSuccessful() {
+    public void testRegisterNotificationShadeController_createViewFirst_registrationSuccessful() {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         mCarSystemBarController.init();
 
@@ -518,7 +514,7 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
         NotificationsShadeController controller =
                 bottomBar.getNotificationsPanelController();
         assertThat(controller).isNull();
-        mCarSystemBarController.registerNotificationController(
+        mCarSystemBarController.registerNotificationShadeController(
                 mock(NotificationsShadeController.class));
         controller = bottomBar.getNotificationsPanelController();
 
@@ -526,11 +522,11 @@ public class CarSystemBarControllerTest extends SysuiTestCase {
     }
 
     @Test
-    public void testRegisterNotificationController_registerFirst_registrationSuccessful() {
+    public void testRegisterNotificationShadeController_registerFirst_registrationSuccessful() {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         mCarSystemBarController.init();
 
-        mCarSystemBarController.registerNotificationController(
+        mCarSystemBarController.registerNotificationShadeController(
                 mock(NotificationsShadeController.class));
         CarSystemBarView bottomBar = mCarSystemBarController.getBarView(BOTTOM,
                 /* isSetUp= */ true);

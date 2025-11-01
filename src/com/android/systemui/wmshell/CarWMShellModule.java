@@ -16,20 +16,38 @@
 
 package com.android.systemui.wmshell;
 
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_BOTTOM_ID;
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_LEFT_ID;
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_RIGHT_ID;
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_TOP_ID;
+
 import android.content.Context;
 import android.os.Handler;
 import android.view.IWindowManager;
 
-import com.android.systemui.R;
+import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.flags.Flag;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
+import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.car.wm.scalableui.ActionConfigReader;
+import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.PanelAutoTaskStackTransitionHandlerDelegate;
 import com.android.systemui.car.wm.scalableui.PanelConfigReader;
+import com.android.systemui.car.wm.scalableui.ScalableUIDumpsys;
+import com.android.systemui.car.wm.scalableui.ScalableUIUtils;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
+import com.android.systemui.car.wm.scalableui.panel.BasePanel;
 import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
+import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerModule;
+import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer;
+import com.android.systemui.car.wm.scalableui.panel.panelupdates.ScalableUIPanelUpdateImpl;
+import com.android.systemui.car.wm.scalableui.systemwindow.HunWindow;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow.SystemBarConfiguration;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.wm.DisplaySystemBarsController;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
@@ -57,8 +75,10 @@ import dagger.Provides;
 
 import java.util.Optional;
 
+import javax.inject.Named;
+
 /** Provides dependencies from {@link com.android.wm.shell} for CarSystemUI. */
-@Module(includes = {WMShellBaseModule.class, AutoShellModule.class})
+@Module(includes = {WMShellBaseModule.class, AutoShellModule.class, PanelControllerModule.class})
 public abstract class CarWMShellModule {
 
     @WMSingleton
@@ -66,9 +86,9 @@ public abstract class CarWMShellModule {
     static DisplaySystemBarsController provideDisplaySystemBarsController(Context context,
             IWindowManager wmService, DisplayController displayController,
             DisplayInsetsController displayInsetsController,
-            @Main Handler mainHandler) {
+            @Main Handler mainHandler, CarWMUserHelper userHelper) {
         return new DisplaySystemBarsController(context, wmService, displayController,
-                displayInsetsController, mainHandler);
+                displayInsetsController, mainHandler, userHelper);
     }
 
     @WMSingleton
@@ -117,22 +137,26 @@ public abstract class CarWMShellModule {
     static Optional<PanelConfigReader> providesPanelConfigReader(
             Context context,
             TaskPanel.Factory taskPanelFactory,
-            DecorPanel.Factory decorPanelFactory
+            DecorPanel.Factory decorPanelFactory,
+            BasePanel.Factory basePanelFactory,
+            FlagManager flagManager
     ) {
-        if (isScalableUIEnabled(context)) {
+        if (ScalableUIUtils.isScalableUIEnabled(context, flagManager)) {
             return Optional.of(new PanelConfigReader(
                     context,
                     taskPanelFactory,
-                    decorPanelFactory));
+                    decorPanelFactory,
+                    basePanelFactory));
         }
         return Optional.empty();
     }
 
     @WMSingleton
     @Provides
-    static Optional<ActionConfigReader> providesActionConfigReader(Context context) {
-        if (isScalableUIEnabled(context)) {
-            return Optional.of(new ActionConfigReader(context));
+    static Optional<ActionConfigReader> providesActionConfigReader(Context context,
+            FlagManager flagManager) {
+        if (ScalableUIUtils.isScalableUIEnabled(context, flagManager)) {
+            return Optional.of(new ActionConfigReader(context, flagManager));
         }
         return Optional.empty();
     }
@@ -143,16 +167,196 @@ public abstract class CarWMShellModule {
             Context context,
             Optional<ActionConfigReader> actionConfigReaderOptional,
             Optional<PanelConfigReader> panelConfigReaderOptional,
-            PanelAutoTaskStackTransitionHandlerDelegate delegate) {
-        if (isScalableUIEnabled(context) && panelConfigReaderOptional.isPresent()) {
+            PanelAutoTaskStackTransitionHandlerDelegate delegate,
+            ScalableUIDumpsys scalableUIDumpsys,
+            FlagManager flagManager) {
+        if (ScalableUIUtils.isScalableUIEnabled(context, flagManager)
+                && panelConfigReaderOptional.isPresent()) {
             return Optional.of(
                     new ScalableUIWMInitializer(shellInit, actionConfigReaderOptional.get(),
-                            panelConfigReaderOptional.get(), delegate));
+                            panelConfigReaderOptional.get(), delegate, scalableUIDumpsys));
         }
         return Optional.empty();
     }
 
-    private static boolean isScalableUIEnabled(Context context) {
-        return context.getResources().getBoolean(R.bool.config_enableScalableUI);
+    @WMSingleton
+    @Provides
+    static FlagManager provideFlagManager(Context context) {
+        return new FlagManager(context);
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<ScalableUIPanelUpdateImpl> provideScalableUIPanelUpdateImpl(Context context,
+            FlagManager flagManager) {
+        if (ScalableUIUtils.isScalableUIEnabled(context, flagManager) && flagManager.isEnabled(
+                Flag.EnableExtPanelUpdates)) {
+            return Optional.of(new ScalableUIPanelUpdateImpl());
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<PanelUpdatePublisher> providePanelUpdatePublisher(
+            Optional<ScalableUIPanelUpdateImpl> scalableUIPanelUpdateOptional) {
+        if (scalableUIPanelUpdateOptional.isPresent()) {
+            return Optional.of(scalableUIPanelUpdateOptional.get());
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<PanelUpdateConsumer> providePanelUpdateConsumer(
+            Optional<ScalableUIPanelUpdateImpl> scalableUIPanelUpdateOptional) {
+        if (scalableUIPanelUpdateOptional.isPresent()) {
+            return Optional.of(scalableUIPanelUpdateOptional.get());
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    @Named(SYSTEM_BAR_PANEL_LEFT_ID)
+    static Optional<SystemBarWindow> provideLeftSystemBarWindow(Context context,
+            Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
+        if (consumer.isPresent()) {
+            try {
+                return Optional.of(
+                        new SystemBarWindow(context, consumer, dispatcher,
+                                SYSTEM_BAR_PANEL_LEFT_ID));
+            } catch (IllegalStateException e) {
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    @Named(SYSTEM_BAR_PANEL_TOP_ID)
+    static Optional<SystemBarWindow> provideTopSystemBarWindow(Context context,
+            Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
+        if (consumer.isPresent()) {
+            try {
+                return Optional.of(
+                        new SystemBarWindow(context, consumer, dispatcher,
+                                SYSTEM_BAR_PANEL_TOP_ID));
+            } catch (IllegalStateException e) {
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    @Named(SYSTEM_BAR_PANEL_RIGHT_ID)
+    static Optional<SystemBarWindow> provideRightSystemBarWindow(Context context,
+            Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
+        if (consumer.isPresent()) {
+            try {
+                return Optional.of(
+                        new SystemBarWindow(context, consumer, dispatcher,
+                                SYSTEM_BAR_PANEL_RIGHT_ID));
+            } catch (IllegalStateException e) {
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    @Named(SYSTEM_BAR_PANEL_BOTTOM_ID)
+    static Optional<SystemBarWindow> provideBottomSystemBarWindow(Context context,
+            Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
+        if (consumer.isPresent()) {
+            try {
+                return Optional.of(
+                        new SystemBarWindow(context, consumer, dispatcher,
+                                SYSTEM_BAR_PANEL_BOTTOM_ID));
+            } catch (IllegalStateException e) {
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    @Named(SYSTEM_BAR_PANEL_LEFT_ID)
+    static Optional<SystemBarConfiguration> provideLeftSystemBarConfiguration(
+            Optional<PanelUpdateConsumer> consumer) {
+        if (consumer.isPresent()) {
+            try {
+                return Optional.of(new SystemBarConfiguration(consumer, SYSTEM_BAR_PANEL_LEFT_ID));
+            } catch (IllegalStateException e) {
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    @Named(SYSTEM_BAR_PANEL_TOP_ID)
+    static Optional<SystemBarConfiguration> provideTopSystemBarConfiguration(
+            Optional<PanelUpdateConsumer> consumer) {
+        if (consumer.isPresent()) {
+            try {
+                return Optional.of(new SystemBarConfiguration(consumer, SYSTEM_BAR_PANEL_TOP_ID));
+            } catch (IllegalStateException e) {
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    @Named(SYSTEM_BAR_PANEL_RIGHT_ID)
+    static Optional<SystemBarConfiguration> provideRightSystemBarConfiguration(
+            Optional<PanelUpdateConsumer> consumer) {
+        if (consumer.isPresent()) {
+            try {
+                return Optional.of(new SystemBarConfiguration(consumer, SYSTEM_BAR_PANEL_RIGHT_ID));
+            } catch (IllegalStateException e) {
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    @Named(SYSTEM_BAR_PANEL_BOTTOM_ID)
+    static Optional<SystemBarConfiguration> provideBottomSystemBarConfiguration(
+            Optional<PanelUpdateConsumer> consumer) {
+        if (consumer.isPresent()) {
+            try {
+                return Optional.of(
+                        new SystemBarConfiguration(consumer, SYSTEM_BAR_PANEL_BOTTOM_ID));
+            } catch (IllegalStateException e) {
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
+    }
+
+    @WMSingleton
+    @Provides
+    static Optional<HunWindow> provideHunWindow(Context context,
+            Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
+        if (consumer.isPresent()) {
+            try {
+                return Optional.of(
+                        new HunWindow(context, consumer.get(), dispatcher));
+            } catch (IllegalStateException e) {
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
     }
 }

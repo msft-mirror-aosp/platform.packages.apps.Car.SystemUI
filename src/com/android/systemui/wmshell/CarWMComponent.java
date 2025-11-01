@@ -16,11 +16,20 @@
 
 package com.android.systemui.wmshell;
 
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_BOTTOM_ID;
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_LEFT_ID;
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_RIGHT_ID;
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_TOP_ID;
+
 import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.CarSystemUIProxyImpl;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow.SystemBarConfiguration;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiConfigurationProvider;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.car.wm.taskview.RemoteCarTaskViewTransitions;
 import com.android.systemui.dagger.WMComponent;
 import com.android.systemui.wm.DisplaySystemBarsController;
@@ -33,6 +42,8 @@ import com.android.wm.shell.dagger.WMSingleton;
 import dagger.Subcomponent;
 
 import java.util.Optional;
+
+import javax.inject.Named;
 
 /**
  * Dagger Subcomponent for WindowManager.
@@ -102,4 +113,12 @@ public interface CarWMComponent extends WMComponent {
     /** Provides the {@link AutoLayoutManager} used to set ScalableUI Insets. */
     @WMSingleton
     AutoLayoutManager getAutoLayoutManager();
+
+    /** Provides the {@link SystemUiWindowProvider} */
+    @WMSingleton
+    SystemUiWindowProvider getSystemUiWindowProvider();
+
+    /** Provides the {@link SystemUiConfigurationProvider} */
+    @WMSingleton
+    SystemUiConfigurationProvider getSystemUiConfigurationProvider();
 }

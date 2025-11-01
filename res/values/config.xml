@@ -223,7 +223,7 @@
     <!-- 0 disabled -->
     <!-- 1 left -->
     <!-- 2 right -->
-    <integer name="config_showDisplayCompatToolbarOnSystemBar">1</integer>
+    <integer name="config_showDisplayCompatToolbarOnSystemBar">0</integer>
 
     <!-- Determines how to show navigation bar and status bar on app's immersive request, only
         works if config_remoteInsetsControllerControlsSystemBars is set to true-->
@@ -232,6 +232,24 @@
     <!-- 2 immersive_with_nav, show nav bar and hide status bar -->
     <!-- 3 immersive based on bar control policy  -->
     <integer name="config_systemBarPersistency">1</integer>
+
+    <!--
+        Provides a backup value for the system bar visibility override policy. This value is used
+        when config_systemBarPersistency is set to use the bar policy and the
+        CarSettings.Global.SYSTEM_BAR_VISIBILITY_OVERRIDE global setting is not configured.
+        The value should be a valid policy control string, e.g., "immersive.full=*".
+    -->
+    <string name="system_bar_visibility_override_backup" />
+
+    <!-- Determines if the system bars should be forced into a particular system bar behavior when
+         the Setup Wizard is currently in progress. This config only takes effect if
+         config_remoteInsetsControllerControlsSystemBars is set to true and will supplement the
+         behavior of config_systemBarPersistency. -->
+    <!-- 0 disabled - will not modify config_systemBarPersistency behavior for SUW. -->
+    <!-- 1 immersive, force hide both bars for SUW -->
+    <!-- 2 immersive_with_nav, force show nav bar and hide status bar for SUW -->
+    <!-- 3 immersive_with_status, force show status bar and hide nav bar for SUW  -->
+    <integer name="config_systemBarSuwBehavior">0</integer>
 
     <!-- Determines the orientation of the status icon. -->
     <!-- 0 horizontal. -->
@@ -253,7 +271,8 @@
     -->
     <bool name="config_enableClearBackStack">true</bool>
 
-    <!-- Enable the scalableUI feature. -->
+    <!-- Enable the ScalableUI feature - this configuration toggle is only valid if the ScalableUI
+         feature flag is also enabled. -->
     <bool name="config_enableScalableUI">false</bool>
 
     <!-- The entry point for panel definition of scalableUI feature.  -->
@@ -265,6 +284,15 @@
         Used when scalableUi feature is enabled.
     -->
     <string-array name="config_untrimmable_activities" translatable="false">
+    </string-array>
+
+    <!--
+        Component names that will not trigger events by default when launched.
+        Used when scalableUi feature is enabled.
+    -->
+    <string-array name="config_ignoredEventActivities" translatable="false">
+        <item>com.android.systemui/.car.wm.activity.ActivityBlockingActivity</item>
+        <item>@string/config_mediaBlockingActivity</item>
     </string-array>
 
     <!--
@@ -288,4 +316,10 @@
 
     <!-- Whether the size compat restart button should be enabled -->
     <bool name="config_isSizeCompatRestartButtonEnabled">false</bool>
+
+    <!-- Determines whether to show the display compatibility toolbar. -->
+    <!-- 0 disabled -->
+    <!-- 1 enabled -->
+    <integer name="config_showDisplayCompatToolbar">0</integer>
+
 </resources>

@@ -15,23 +15,34 @@
  */
 package com.android.systemui.car.wm.scalableui.panel.controller;
 
-import android.annotation.NonNull;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 
 import com.android.car.scalableui.model.PanelControllerMetadata;
+import com.android.car.scalableui.panel.TaskPanelController;
 import com.android.car.tos.TosHelper;
 import com.android.systemui.R;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
+
 public final class MapsPanelController extends BaseTaskPanelController {
     private static final String TAG = MapsPanelController.class.getSimpleName();
 
-    public MapsPanelController(@NonNull Context context,
-            @NonNull PanelControllerMetadata panelControllerMetadata,
-            @NonNull PanelUtils panelUtils) {
+    @AssistedInject
+    public MapsPanelController(Context context,
+            @Assisted PanelControllerMetadata panelControllerMetadata,
+            PanelUtils panelUtils) {
         super(context, panelControllerMetadata, panelUtils);
+    }
+
+    @AssistedFactory
+    public interface Factory extends TaskPanelController.Factory<MapsPanelController> {
+        /** Create an instance of MapsPanelController using the provided PanelControllerMetadata */
+        MapsPanelController create(PanelControllerMetadata metadata);
     }
 
     @Override

@@ -26,6 +26,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
+import android.os.UserHandle;
 import android.util.Log;
 
 import androidx.annotation.GuardedBy;
@@ -36,6 +37,10 @@ import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.panel.TaskPanelController;
 import com.android.car.scalableui.panel.TaskPanelHandler;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
+
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 import java.net.URISyntaxException;
 import java.util.HashSet;
@@ -80,14 +85,26 @@ public class BaseTaskPanelController implements TaskPanelController {
      * @param panelControllerMetadata The metadata associated with this panel controller,
      *                                containing configuration information.
      */
+    @AssistedInject
     public BaseTaskPanelController(@NonNull Context context,
-            @NonNull PanelControllerMetadata panelControllerMetadata,
+            @NonNull @Assisted PanelControllerMetadata panelControllerMetadata,
             @NonNull PanelUtils panelUtils) {
         mContext = context;
         mPanelControllerMetadata = panelControllerMetadata;
         mPersistentActivities = new HashSet<>();
         mPanelUtils = panelUtils;
         init(panelControllerMetadata);
+    }
+
+    /**
+     * An Factory of BaseTaskPanelController.
+     */
+    @AssistedFactory
+    public interface Factory extends TaskPanelController.Factory<BaseTaskPanelController> {
+        /**
+         * Create an instance of BaseTaskPanelController using the provided PanelControllerMetadata.
+         */
+        BaseTaskPanelController create(PanelControllerMetadata metadata);
     }
 
     private void init(PanelControllerMetadata metadata) {
@@ -118,13 +135,22 @@ public class BaseTaskPanelController implements TaskPanelController {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_PACKAGE_ADDED);
         filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+        filter.addAction(Intent.ACTION_PACKAGE_REPLACED);
         filter.addDataScheme(PACKAGE_DATA_SCHEME);
-        mContext.registerReceiver(new BroadcastReceiver() {
+        BroadcastReceiver mAppsUpdateReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 updatePersistentActivities();
             }
-        }, filter, Context.RECEIVER_EXPORTED);
+        };
+        mContext.registerReceiverAsUser(
+                mAppsUpdateReceiver,
+                UserHandle.ALL, // Necessary because CarSystemUi lives in User 0
+                filter,
+                /* broadcastPermission= */ null,
+                /* scheduler= */ null,
+                Context.RECEIVER_EXPORTED);
     }
 
     @SuppressLint("MissingPermission")

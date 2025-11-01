@@ -135,4 +135,8 @@
     <string name="back_btn" msgid="7774349944465667391">"返回"</string>
     <string name="fullscreen" msgid="7648956467442135844">"全螢幕"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"查看方案"</string>
+    <string name="fab_drag_up" msgid="4784234653173032824">"向上拖曳"</string>
+    <string name="fab_drag_down" msgid="3532464175471322923">"向下拖曳"</string>
+    <string name="fab_back_button" msgid="749968018728643829">"返回按鈕"</string>
+    <string name="fab_tooltip" msgid="5609461882919044197">"長按即可關閉應用程式"</string>
 </resources>

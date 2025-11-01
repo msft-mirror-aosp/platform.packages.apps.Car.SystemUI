@@ -23,6 +23,9 @@ import android.content.Context;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiConfigurationProvider;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.dagger.SysUIComponent;
 import com.android.systemui.dagger.WMComponent;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
@@ -41,6 +44,8 @@ public class CarSystemUITestInitializer extends CarSystemUIInitializer {
                 Optional.of(mock(RootTaskDisplayAreaOrganizer.class)))
                 .setScalableUIWMInitializer(Optional.of(mock(ScalableUIWMInitializer.class)))
                 .setTaskPanelInfoRepository(mock(TaskPanelInfoRepository.class))
-                .setScalableUIEventDispatcher(mock(EventDispatcher.class));
+                .setScalableUIEventDispatcher(mock(EventDispatcher.class))
+                .setSystemUiWindowProvider(mock(SystemUiWindowProvider.class))
+                .setSystemUiConfigurationProvider(mock(SystemUiConfigurationProvider.class));
     }
 }

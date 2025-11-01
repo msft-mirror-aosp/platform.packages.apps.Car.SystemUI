@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.ArraySet;
 import android.util.Log;
 import android.view.SurfaceControl;
 import android.window.TransitionInfo;
@@ -35,12 +36,16 @@ import android.window.TransitionRequestInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelTransaction;
 import com.android.car.scalableui.panel.Panel;
 import com.android.systemui.R;
+import com.android.systemui.car.flags.Flag;
+import com.android.systemui.car.flags.FlagManager;
+import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
@@ -53,6 +58,7 @@ import com.android.wm.shell.shared.TransitionUtil;
 import com.android.wm.shell.transition.Transitions;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -71,8 +77,11 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     private final PanelTransitionCoordinator mPanelTransitionCoordinator;
     private final Context mContext;
     private final PanelUtils mPanelUtils;
+    private final CarWMUserHelper mUserHelper;
     private final TaskPanelInfoRepository mPanelInfoRepository;
     private final AutoLayoutManager mAutoLayoutManager;
+    private final FlagManager mFlagManager;
+    private final Set<ComponentName> mIgnoredActivities = new ArraySet<>();
 
     @Inject
     public PanelAutoTaskStackTransitionHandlerDelegate(
@@ -80,22 +89,33 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             AutoTaskStackController autoTaskStackController,
             PanelTransitionCoordinator panelTransitionCoordinator,
             PanelUtils panelUtils,
+            CarWMUserHelper userHelper,
             TaskPanelInfoRepository panelInfoRepository,
-            AutoLayoutManager autoLayoutManager
+            AutoLayoutManager autoLayoutManager,
+            FlagManager flagManager
     ) {
         mAutoTaskStackController = autoTaskStackController;
         mPanelTransitionCoordinator = panelTransitionCoordinator;
         mContext = context;
         mPanelUtils = panelUtils;
+        mUserHelper = userHelper;
         mPanelInfoRepository = panelInfoRepository;
         mAutoLayoutManager = autoLayoutManager;
+        mFlagManager = flagManager;
+
+        String[] componentNameStrings = mContext.getResources().getStringArray(
+                R.array.config_ignoredEventActivities);
+        for (int i = componentNameStrings.length - 1; i >= 0; i--) {
+            mIgnoredActivities.add(
+                    ComponentName.unflattenFromString(componentNameStrings[i]));
+        }
     }
 
     /**
      * Init the {@link PanelAutoTaskStackTransitionHandlerDelegate}.
      */
     public void init() {
-        if (mContext.getResources().getBoolean(R.bool.config_enableScalableUI)) {
+        if (ScalableUIUtils.isScalableUIEnabled(mContext, mFlagManager)) {
             Log.i(TAG, "ScalableUI is enabled");
             mAutoTaskStackController.setAutoTransitionHandlerDelegate(this);
         }
@@ -110,27 +130,25 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             Log.d(TAG, "handleRequest: " + request);
         }
 
-        if (shouldHandleByPanels(request)) {
-            Event event = calculateEvent(request);
-            PanelTransaction panelTransaction = EventDispatcher.getTransaction(event);
-            AutoTaskStackTransaction wct =
-                    mPanelTransitionCoordinator.createAutoTaskStackTransaction(transition,
-                            panelTransaction, event);
-            mPanelTransitionCoordinator.resetUnpreparedDecorPanel(panelTransaction);
-            if (DEBUG) {
-                Log.d(TAG, "handleRequest: COMPLETED " + wct);
-            }
-            Trace.endSection();
-            return wct;
+        Event event = calculateEvent(request);
+        PanelTransaction panelTransaction = EventDispatcher.getTransaction(event);
+        AutoTaskStackTransaction wct =
+                mPanelTransitionCoordinator.createAutoTaskStackTransaction(transition,
+                        panelTransaction, event);
+        mPanelTransitionCoordinator.resetUnpreparedDecorPanel(panelTransaction);
+        if (DEBUG) {
+            Log.d(TAG, "handleRequest: COMPLETED " + wct);
         }
         Trace.endSection();
-        // return empty transaction so the delegate still gets a start animation callback to
-        // apply the relevant changes in startAnimation.
-        return new AutoTaskStackTransaction();
+        return wct;
     }
 
     private boolean shouldHandleByPanels(@NonNull TransitionRequestInfo request) {
         if (request.getTriggerTask() == null) {
+            return false;
+        }
+        ComponentName component = mPanelUtils.getTaskComponentName(request.getTriggerTask());
+        if (mIgnoredActivities.contains(component)) {
             return false;
         }
         return mPanelUtils.handles(request.getTriggerTask().parentTaskId)
@@ -168,8 +186,9 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         return animationStarted;
     }
 
-    private Event calculateEvent(TransitionRequestInfo request) {
-        if (request.getTriggerTask() == null) {
+    @VisibleForTesting
+    Event calculateEvent(TransitionRequestInfo request) {
+        if (!shouldHandleByPanels(request)) {
             return EMPTY_EVENT;
         }
 
@@ -179,9 +198,13 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             ComponentName component = request.getTriggerTask().baseActivity;
             String packageString = component != null ? component.getPackageName() : null;
             // Multiple SUW activities have home as categories. Panels should treat them the same.
-            return new Event.Builder(SYSTEM_HOME_EVENT_ID)
-                    .setPackageName(packageString)
-                    .build();
+            Event.Builder homeEventBuilder = new Event.Builder(SYSTEM_HOME_EVENT_ID)
+                    .setPackageName(packageString);
+            if (mFlagManager.isEnabled(Flag.ScalableUiApplicableDisplays)) {
+                homeEventBuilder.addApplicableDisplays(
+                        mUserHelper.getDisplayIdsForUser(request.getTriggerTask().userId));
+            }
+            return homeEventBuilder.build();
         }
 
         if ((request.getFlags() & TRANSIT_FLAG_AVOID_MOVE_TO_FRONT)
@@ -192,43 +215,39 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             return EMPTY_EVENT;
         }
 
+        if (!TransitionUtil.isClosingType(request.getType())
+                && !TransitionUtil.isOpeningType(request.getType())) {
+            Log.e(TAG, "Unknown transition type " + request.getType());
+            return EMPTY_EVENT;
+        }
+
         ComponentName component = mPanelUtils.getTaskComponentName(request.getTriggerTask());
         if (DEBUG) {
             Log.d(TAG, "Transition type=" + request.getType()
                     + " using component=" + component);
         }
+
         String componentString = component != null ? component.flattenToString() : null;
-        String panelId;
-        TaskPanel panel = null;
-        if (component != null) {
-            panel = mPanelUtils.getTaskPanel(tp -> tp.handles(component));
-        }
+        TaskPanel panel = mPanelUtils.getTaskPanel(
+                tp -> tp.getRootTaskId() == request.getTriggerTask().parentTaskId);
         if (panel == null) {
-            panel = mPanelUtils.getTaskPanel(TaskPanel::isLaunchRoot);
-        }
-        if (panel != null) {
-            panelId = panel.getPanelId();
-        } else {
             // There is no panel ready to handle this event
             // TODO(b/392694590): determine if/how this case should be handled
             Log.e(TAG, "No panel present to handle component " + component);
             return EMPTY_EVENT;
         }
-
-        if (TransitionUtil.isClosingType(request.getType())) {
-            return new Event.Builder(SYSTEM_TASK_CLOSE_EVENT_ID)
-                    .setPanelId(panelId)
-                    .setComponentName(componentString)
-                    .build();
-        } else if (TransitionUtil.isOpeningType(request.getType())) {
-            return new Event.Builder(SYSTEM_TASK_OPEN_EVENT_ID)
-                    .setPanelId(panelId)
-                    .setComponentName(componentString)
-                    .build();
-        } else {
-            Log.e(TAG, "Unknown transition type " + request.getType());
-            return EMPTY_EVENT;
+        String panelId = panel.getPanelId();
+        String eventName = TransitionUtil.isClosingType(request.getType())
+                ? SYSTEM_TASK_CLOSE_EVENT_ID : SYSTEM_TASK_OPEN_EVENT_ID;
+        Event.Builder builder = new Event.Builder(eventName).setPanelId(panelId);
+        if (mFlagManager.isEnabled(Flag.ScalableUiApplicableDisplays)) {
+            builder.addApplicableDisplays(
+                    mUserHelper.getDisplayIdsForUser(request.getTriggerTask().userId));
         }
+        if (componentString != null) {
+            builder.setComponentName(componentString);
+        }
+        return builder.build();
     }
 
     @Override

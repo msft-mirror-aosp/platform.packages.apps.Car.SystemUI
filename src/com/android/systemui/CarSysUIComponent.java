@@ -16,9 +16,18 @@
 
 package com.android.systemui;
 
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_BOTTOM_ID;
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_LEFT_ID;
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_RIGHT_ID;
+import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.SYSTEM_BAR_PANEL_TOP_ID;
+
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow.SystemBarConfiguration;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiConfigurationProvider;
+import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.dagger.DependencyProvider;
 import com.android.systemui.dagger.SysUIComponent;
 import com.android.systemui.dagger.SysUISingleton;
@@ -30,6 +39,8 @@ import dagger.BindsInstance;
 import dagger.Subcomponent;
 
 import java.util.Optional;
+
+import javax.inject.Named;
 
 /**
  * Dagger Subcomponent for Core SysUI.
@@ -70,6 +81,18 @@ public interface CarSysUIComponent extends SysUIComponent {
          */
         @BindsInstance
         Builder setScalableUIEventDispatcher(EventDispatcher dispatcher);
+
+        /**
+         * Sets the {@link SystemUiWindowProvider} for the builder.
+         */
+        @BindsInstance
+        Builder setSystemUiWindowProvider(SystemUiWindowProvider provider);
+
+        /**
+         * Sets the {@link SystemUiConfigurationProvider} for the builder.
+         */
+        @BindsInstance
+        Builder setSystemUiConfigurationProvider(SystemUiConfigurationProvider provider);
 
         CarSysUIComponent build();
     }

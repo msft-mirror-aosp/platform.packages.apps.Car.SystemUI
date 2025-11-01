@@ -39,6 +39,10 @@ object SystemBarUtil {
     const val SYSTEM_BAR_PERSISTENCY_CONFIG_IMMERSIVE = 1
     const val SYSTEM_BAR_PERSISTENCY_CONFIG_IMMERSIVE_WITH_NAV = 2
     const val SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY = 3
+    const val SYSTEM_BAR_SUW_PERSISTENCY_CONFIG_DISABLED = 0
+    const val SYSTEM_BAR_SUW_PERSISTENCY_CONFIG_IMMERSIVE = 1
+    const val SYSTEM_BAR_SUW_PERSISTENCY_CONFIG_IMMERSIVE_WITH_NAV = 2
+    const val SYSTEM_BAR_SUW_PERSISTENCY_CONFIG_IMMERSIVE_WITH_STATUS = 3
     const val VISIBLE_BAR_VISIBILITIES_TYPES_INDEX: Int = 0
     const val INVISIBLE_BAR_VISIBILITIES_TYPES_INDEX: Int = 1
 
@@ -155,11 +159,14 @@ object SystemBarUtil {
     }
 
     private fun isBarVisibilityEnforcedByBarControlPolicy(context: Context, type: Int): Boolean {
+        val barControlPolicy = BarControlPolicy()
+        barControlPolicy.reloadFromSetting(context)
         val showTypes =
-            BarControlPolicy.getBarVisibilities(
+            barControlPolicy.getBarVisibilities(
                 context.packageName,
-                /* requestedVisibleTypes= */ 0
-            )[VISIBLE_BAR_VISIBILITIES_TYPES_INDEX]
+                /* requestedVisibleTypes= */
+                0
+            ).showTypes
         return (showTypes and type) != 0
     }
 }

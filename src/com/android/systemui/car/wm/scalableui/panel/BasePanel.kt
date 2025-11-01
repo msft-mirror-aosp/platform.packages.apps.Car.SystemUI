@@ -26,16 +26,22 @@ import com.android.car.scalableui.model.PanelControllerMetadata
 import com.android.car.scalableui.model.Role
 import com.android.car.scalableui.model.Variant
 import com.android.car.scalableui.panel.Panel
+import com.android.car.scalableui.panel.PanelUpdatePublisher
 import com.android.wm.shell.automotive.AutoSurfaceTransaction
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import java.util.Optional
 
 /**
  * A base class for implementing a [Panel].
  *
  * Provides common functionality and state management for different types of panels
  */
-abstract class BasePanel constructor(
+open class BasePanel @AssistedInject constructor(
     private val context: Context,
-    private val panelId: String,
+    @Assisted private val panelId: String,
+    private val panelUpdatePublisherOptional: Optional<PanelUpdatePublisher>
 ) : Panel {
     private var layer = -1
     private var canFocusOnTransition = Focus.Companion.DEFAULT_FOCUS_ON_TRANSITION
@@ -50,7 +56,7 @@ abstract class BasePanel constructor(
 
     override fun getContext() = context
 
-    override fun getRole(): Role = role
+    override fun getRole(): Role? = role
 
     override fun getDisplayId() = displayId
 
@@ -107,16 +113,19 @@ abstract class BasePanel constructor(
             return
         }
         this.isVisible = isVisible
+        getPanelUpdateObserver()?.postVisibility(panelId, isVisible)
     }
 
     override fun getAlpha() = alpha
 
     override fun setAlpha(alpha: Float) {
         this.alpha = alpha
+        getPanelUpdateObserver()?.postAlpha(panelId, alpha)
     }
 
     override fun setCornerRadius(radius: Int) {
         this.cornerRadius = radius
+        getPanelUpdateObserver()?.postCornerRadius(panelId, radius)
     }
 
     override fun getCornerRadius() = cornerRadius
@@ -129,6 +138,7 @@ abstract class BasePanel constructor(
 
     override fun setBounds(bounds: Rect) {
         this.bounds = bounds
+        getPanelUpdateObserver()?.postBounds(panelId, bounds)
     }
 
     override fun getSafeBounds() = Rect()
@@ -137,12 +147,13 @@ abstract class BasePanel constructor(
         // no-op
     }
 
-    override fun setRole(role: Role) {
+    override fun setRole(role: Role?) {
         this.role = role
     }
 
     override fun setInsets(insets: Insets) {
         this.insets = insets
+        getPanelUpdateObserver()?.postInsets(panelId, insets)
     }
 
     override fun getInsets() = insets
@@ -223,17 +234,30 @@ abstract class BasePanel constructor(
      * @param updateChildren         Update the children components used in this panel, should only
      *                               set to true on animationEnd or reset.
      */
-    protected abstract fun updateInternal(
+    protected open fun updateInternal(
         autoSurfaceTransaction: AutoSurfaceTransaction?,
         tx: SurfaceControl.Transaction?,
         variant: Variant?,
         updateChildren: Boolean
-    )
+    ) {
+        panelUpdateObserver?.let {
+            it.postVisibility(panelId, variant?.isVisible ?: isVisible)
+            it.postAlpha(panelId, variant?.alpha ?: alpha)
+            it.postCornerRadius(panelId, variant?.cornerRadius ?: cornerRadius)
+            it.postBounds(panelId, variant?.bounds ?: bounds)
+            it.postInsets(panelId, variant?.insets ?: insets)
+        }
+    }
 
     override fun setPanelControllerMetadata(
         panelControllerMetadata: PanelControllerMetadata?
     ) {
         this.panelControllerMetadata = panelControllerMetadata
+        getPanelUpdateObserver()?.postControllerMetadata(panelId, panelControllerMetadata)
+    }
+
+    override fun getPanelUpdateObserver(): PanelUpdatePublisher? {
+        return panelUpdatePublisherOptional.orElse(null)
     }
 
     override fun refreshTheme() {
@@ -249,6 +273,12 @@ abstract class BasePanel constructor(
                 ", insets=$insets" +
                 ", metaData=$panelControllerMetadata" +
                 ", cornerRadius=$cornerRadius}")
+    }
+
+    @AssistedFactory
+    fun interface Factory {
+        /** Create instance of [BasePanel] with specified id  */
+        fun create(id: String): BasePanel
     }
 
     companion object {

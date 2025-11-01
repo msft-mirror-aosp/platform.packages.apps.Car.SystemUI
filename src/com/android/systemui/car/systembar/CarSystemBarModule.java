@@ -26,8 +26,11 @@ import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.car.displaycompat.ToolbarController;
+import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.hvac.HvacController;
+import com.android.systemui.car.hvac.HvacSystemBarPresenter;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
+import com.android.systemui.car.notification.NotificationSystemBarPresenter;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
@@ -108,11 +111,12 @@ public abstract class CarSystemBarModule {
     @Provides
     static ButtonSelectionStateController provideButtonSelectionStateController(Context context,
             TaskPanelInfoRepository infoRepository,
-            @CarSysUIDynamicOverride Optional<ButtonSelectionStateController> controller) {
+            @CarSysUIDynamicOverride Optional<ButtonSelectionStateController> controller,
+            FlagManager flagManager) {
         if (controller.isPresent()) {
             return controller.get();
         }
-        return new ButtonSelectionStateController(context, infoRepository);
+        return new ButtonSelectionStateController(context, infoRepository, flagManager);
     }
 
     @BindsOptionalOf
@@ -238,7 +242,7 @@ public abstract class CarSystemBarModule {
     /** Injects KeyguardSystemBarPresenter */
     @SysUISingleton
     @Provides
-    static Optional<KeyguardSystemBarPresenter> bindKeyguardSystemBarPresenter(
+    static Optional<KeyguardSystemBarPresenter> provideKeyguardSystemBarPresenter(
              CarSystemBarController controller) {
         if (controller instanceof KeyguardSystemBarPresenter) {
             return Optional.of((KeyguardSystemBarPresenter) controller);
@@ -253,4 +257,28 @@ public abstract class CarSystemBarModule {
     @ClassKey(DebugPanelButtonViewController.class)
     public abstract CarSystemBarElementController.Factory bindDebugPanelButtonViewController(
             DebugPanelButtonViewController.Factory factory);
+
+    /** Injects NotificationSystemBarPresenter */
+    @SysUISingleton
+    @Provides
+    static Optional<NotificationSystemBarPresenter> provideNotificationSystemBarPresenter(
+             CarSystemBarController controller) {
+        if (controller instanceof NotificationSystemBarPresenter) {
+            return Optional.of((NotificationSystemBarPresenter) controller);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /** Injects HvacSystemBarPresenter */
+    @SysUISingleton
+    @Provides
+    static Optional<HvacSystemBarPresenter> provideHvacSystemBarPresenter(
+             CarSystemBarController controller) {
+        if (controller instanceof HvacSystemBarPresenter) {
+            return Optional.of((HvacSystemBarPresenter) controller);
+        } else {
+            return Optional.empty();
+        }
+    }
 }

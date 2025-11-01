@@ -135,4 +135,8 @@
     <string name="back_btn" msgid="7774349944465667391">"Enrere"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Pantalla completa"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Mostra els plans"</string>
+    <string name="fab_drag_up" msgid="4784234653173032824">"Arrossega cap amunt"</string>
+    <string name="fab_drag_down" msgid="3532464175471322923">"Arrossega cap avall"</string>
+    <string name="fab_back_button" msgid="749968018728643829">"Botó Enrere"</string>
+    <string name="fab_tooltip" msgid="5609461882919044197">"Mantén premut per tancar l\'aplicació"</string>
 </resources>

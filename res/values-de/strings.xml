@@ -137,6 +137,6 @@
     <string name="data_subscription_button_text" msgid="6595983827855035949">"Tarife ansehen"</string>
     <string name="fab_drag_up" msgid="4784234653173032824">"Nach oben ziehen"</string>
     <string name="fab_drag_down" msgid="3532464175471322923">"Nach unten ziehen"</string>
-    <string name="fab_back_button" msgid="749968018728643829">"Schaltfläche „Zurück“"</string>
+    <string name="fab_back_button" msgid="749968018728643829">"Button „Zurück“"</string>
     <string name="fab_tooltip" msgid="5609461882919044197">"Zum Schließen der App lange drücken"</string>
 </resources>

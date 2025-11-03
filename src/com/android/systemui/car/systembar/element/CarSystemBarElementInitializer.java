@@ -23,6 +23,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
+import com.android.systemui.car.flexibleui.CarSystemBarElement;
+import com.android.systemui.car.flexibleui.CarSystemBarElementController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.systembar.CarSystemBarRestartTracker;
 import com.android.systemui.dagger.SysUISingleton;
 

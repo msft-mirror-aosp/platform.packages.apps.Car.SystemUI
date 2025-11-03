@@ -62,7 +62,7 @@
                 android:tint="@color/car_status_icon_color"
                 android:duplicateParentState="true"
                 systemui:controller="com.android.systemui.car.statusicon.ui.SignalStatusIconController"/>
-            <com.android.systemui.car.systembar.element.layout.CarSystemBarImageView
+            <com.android.systemui.car.flexibleui.layout.CarSystemBarImageView
                 android:id="@+id/qc_icon_button_unseen_icon"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"

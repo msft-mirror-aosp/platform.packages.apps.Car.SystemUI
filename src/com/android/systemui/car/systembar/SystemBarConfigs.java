@@ -100,16 +100,6 @@ public interface SystemBarConfigs {
     InsetsFrameProvider getInsetsFrameProviderByName(@NonNull String name);
 
     /**
-     * @return whether the left toolbar is used for display compat.
-     */
-    boolean isLeftDisplayCompatToolbarEnabled();
-
-    /**
-     * @return whether the right toolbar is used for display compat.
-     */
-    boolean isRightDisplayCompatToolbarEnabled();
-
-    /**
      * @return {@link SystemUiWindow} for name.
      */
     @Nullable

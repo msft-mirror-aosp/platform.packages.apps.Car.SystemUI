@@ -25,6 +25,7 @@ import com.android.car.scalableui.panel.Panel
 import com.android.car.scalableui.panel.PanelPool
 import com.android.systemui.CarSysuiTestCase
 import com.android.systemui.car.CarSystemUiTest
+import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelConfigReadStateMonitor
 import com.google.common.truth.Truth.assertThat
 import org.junit.After
 import org.junit.Before
@@ -34,6 +35,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 @CarSystemUiTest
 @RunWith(AndroidJUnit4::class)
@@ -45,7 +47,9 @@ class SystemUiConfigurationProviderTest : CarSysuiTestCase() {
 
     private val statusBundle = Bundle()
     private val navBundle = Bundle()
-
+    private val mockMonitor = mock<PanelConfigReadStateMonitor> {
+        on { isReady() } doReturn true
+    }
     private val mockStatusMetadata = mock<PanelControllerMetadata> {
         on { configurations } doReturn statusBundle
     }
@@ -73,7 +77,7 @@ class SystemUiConfigurationProviderTest : CarSysuiTestCase() {
     fun setUp() {
         panelPool = PanelPool.getInstance()
         panelPool.setDelegate(mockDelegate)
-        provider = SystemUiConfigurationProvider(mockFactory)
+        provider = SystemUiConfigurationProvider(mockFactory, mockMonitor)
 
         statusBundle.putString(
             SystemBarTagXmlParser.TYPE_ATTRIBUTE,
@@ -101,14 +105,23 @@ class SystemUiConfigurationProviderTest : CarSysuiTestCase() {
 
     @Test
     fun getStatusBarConfigs_returnsOnlyStatusBarConfigs() {
-        val configs = provider.statusBarConfigs
+        val configs = provider.getStatusBarConfigs()
         assertThat(configs).hasSize(1)
     }
 
     @Test
     fun getNavigationBarConfigs_returnsOnlyNavBarConfigs() {
-        val configs = provider.navBarConfigs
+        val configs = provider.getNavigationBarConfigs()
         assertThat(configs).hasSize(1)
+    }
+
+    @Test
+    fun getConfigs_whenNotReady_returnsEmptyLists() {
+        whenever(mockMonitor.isReady()) doReturn false
+
+        assertThat(provider.getSystemBarConfigs()).isEmpty()
+        assertThat(provider.getStatusBarConfigs()).isEmpty()
+        assertThat(provider.getNavigationBarConfigs()).isEmpty()
     }
 
     companion object {

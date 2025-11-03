@@ -23,9 +23,9 @@ import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
-import com.android.systemui.car.systembar.element.CarSystemBarElementController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 
 public abstract class StatusIconViewController extends
         CarSystemBarElementController<StatusIconView> {

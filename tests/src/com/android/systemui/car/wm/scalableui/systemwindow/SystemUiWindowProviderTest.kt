@@ -26,6 +26,7 @@ import com.android.systemui.CarSysuiTestCase
 import com.android.systemui.car.CarSystemUiTest
 import com.android.systemui.car.wm.scalableui.configuration.SystemBarConfiguration
 import com.android.systemui.car.wm.scalableui.configuration.SystemUiConfigurationProvider
+import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelConfigReadStateMonitor
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
 import com.google.common.truth.Truth.assertThat
 import dagger.Lazy
@@ -37,77 +38,82 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 @CarSystemUiTest
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 class SystemUiWindowProviderTest : CarSysuiTestCase() {
 
-    private val mPanelUpdateConsumer = mock<PanelUpdateConsumer>()
-    private val mMockConsumer = mock<Optional<PanelUpdateConsumer>> {
+    private val panelUpdateConsumer = mock<PanelUpdateConsumer>()
+    private val consumer = mock<Optional<PanelUpdateConsumer>> {
         on { isEmpty } doReturn false
-        on { get() } doReturn mPanelUpdateConsumer
+        on { get() } doReturn panelUpdateConsumer
     }
-    private val mMockHunWindow = mock<HunWindow>()
-    private val mMockStatusBarConfiguration = mock<SystemBarConfiguration> {
+    private val hunWindow = mock<HunWindow>()
+    private val statusBarConfiguration = mock<SystemBarConfiguration> {
         on { name } doReturn "TestStatusBar"
     }
-    private val mMockNavBarConfiguration = mock<SystemBarConfiguration> {
+    private val navBarConfiguration = mock<SystemBarConfiguration> {
         on { name } doReturn "TestNavBar"
     }
-    private val mMockStatusBarWindow = mock<SystemBarWindowImpl>()
-    private val mMockNavBarWindow = mock<SystemBarWindowImpl>()
-    private val mMockWindowFactory = mock<SystemBarWindowImpl.Factory> {
+    private val statusBarWindow = mock<SystemBarWindowImpl>()
+    private val navBarWindow = mock<SystemBarWindowImpl>()
+    private val windowFactory = mock<SystemBarWindowImpl.Factory> {
         on {
             create(
-                mPanelUpdateConsumer,
-                mMockStatusBarConfiguration,
+                panelUpdateConsumer,
+                statusBarConfiguration,
                 TEST_DISPLAY_ID
             )
-        } doReturn mMockStatusBarWindow
+        } doReturn statusBarWindow
         on {
-            create(mPanelUpdateConsumer, mMockNavBarConfiguration, TEST_DISPLAY_ID)
-        } doReturn mMockNavBarWindow
+            create(panelUpdateConsumer, navBarConfiguration, TEST_DISPLAY_ID)
+        } doReturn navBarWindow
     }
-    private val mMockConfigurationProvider = mock<SystemUiConfigurationProvider> {
-        on { statusBarConfigs } doReturn listOf(mMockStatusBarConfiguration)
-        on { navBarConfigs } doReturn listOf(mMockNavBarConfiguration)
+    private val configurationProvider = mock<SystemUiConfigurationProvider> {
+        on { getStatusBarConfigs() } doReturn listOf(statusBarConfiguration)
+        on { getNavigationBarConfigs() } doReturn listOf(navBarConfiguration)
+    }
+    private val monitor = mock<PanelConfigReadStateMonitor> {
+        on { isReady() } doReturn true
     }
 
-    private lateinit var mProvider: SystemUiWindowProvider
+    private lateinit var provider: SystemUiWindowProvider
 
     private companion object {
         const val TEST_DISPLAY_ID = 0
-        val mockVariant = mock<Variant>()
-        val mockPanel = mock<Panel>()
-        val mockDelegate = mock<PanelPool.PanelCreatorDelegate> {
-            on { createPanel(any(), any()) } doReturn mockPanel
+        val variant = mock<Variant>()
+        val panel = mock<Panel>()
+        val delegate = mock<PanelPool.PanelCreatorDelegate> {
+            on { createPanel(any(), any()) } doReturn panel
         }
 
         val statusBarPanelState = mock<PanelState> {
             on { getId() } doReturn "TestStatusBar"
             on { getDisplayId() } doReturn TEST_DISPLAY_ID
-            on { getCurrentVariant() } doReturn mockVariant
+            on { getCurrentVariant() } doReturn variant
         }
 
         val navBarPanelState = mock<PanelState> {
             on { getId() } doReturn "TestNavBar"
             on { getDisplayId() } doReturn TEST_DISPLAY_ID
-            on { getCurrentVariant() } doReturn mockVariant
+            on { getCurrentVariant() } doReturn variant
         }
     }
 
     @Before
     fun setUp() {
-        PanelPool.getInstance().setDelegate(mockDelegate)
+        PanelPool.getInstance().setDelegate(delegate)
         StateManager.addState(statusBarPanelState)
         StateManager.addState(navBarPanelState)
 
-        mProvider = SystemUiWindowProvider(
-            mMockConsumer,
-            mMockWindowFactory,
-            mMockConfigurationProvider,
-            Lazy { Optional.of(mMockHunWindow) }
+        provider = SystemUiWindowProvider(
+            consumer,
+            windowFactory,
+            configurationProvider,
+            Lazy { Optional.of(hunWindow) },
+            monitor
         )
     }
 
@@ -119,25 +125,35 @@ class SystemUiWindowProviderTest : CarSysuiTestCase() {
 
     @Test
     fun systemBarWindows_returnsAllSystemBarWindows() {
-        val windows = mProvider.systemBarWindows
-        assertThat(windows).containsExactly(mMockStatusBarWindow, mMockNavBarWindow)
+        val windows = provider.getSystemBarWindows()
+        assertThat(windows).containsExactly(statusBarWindow, navBarWindow)
     }
 
     @Test
     fun statusBarWindows_returnsOnlyStatusBarWindows() {
-        val windows = mProvider.statusBarWindows
-        assertThat(windows).containsExactly(mMockStatusBarWindow)
+        val windows = provider.getStatusBarWindows()
+        assertThat(windows).containsExactly(statusBarWindow)
     }
 
     @Test
     fun navigationBarWindows_returnsOnlyNavBarWindows() {
-        val windows = mProvider.navBarWindows
-        assertThat(windows).containsExactly(mMockNavBarWindow)
+        val windows = provider.getNavigationBarWindows()
+        assertThat(windows).containsExactly(navBarWindow)
     }
 
     @Test
     fun getHunWindow_returnsHunWindow() {
-        val hunWindow = mProvider.getHunWindow()
-        assertThat(hunWindow.get()).isEqualTo(mMockHunWindow)
+        val hunWindow = provider.getHunWindow()
+        assertThat(hunWindow.get()).isEqualTo(this@SystemUiWindowProviderTest.hunWindow)
+    }
+
+    @Test
+    fun getWindows_whenNotReady_returnsEmptyLists() {
+        whenever(monitor.isReady()) doReturn false
+
+        assertThat(provider.getSystemBarWindows()).isEmpty()
+        assertThat(provider.getStatusBarWindows()).isEmpty()
+        assertThat(provider.getNavigationBarWindows()).isEmpty()
+        assertThat(provider.getHunWindow()).isEqualTo(Optional.empty<HunWindow>())
     }
 }

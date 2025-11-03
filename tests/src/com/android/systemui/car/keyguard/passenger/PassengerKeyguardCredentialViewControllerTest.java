@@ -123,7 +123,7 @@ public class PassengerKeyguardCredentialViewControllerTest extends CarSysuiTestC
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(mMainHandler).post(runnableCaptor.capture());
         runnableCaptor.getValue().run();
-        verify(mLockoutHelper).onCheckCompletedWithTimeout((int) throttleTimeout.toMillis());
+        verify(mLockoutHelper).onCheckCompletedWithTimeout(throttleTimeout);
     }
 
     @Test

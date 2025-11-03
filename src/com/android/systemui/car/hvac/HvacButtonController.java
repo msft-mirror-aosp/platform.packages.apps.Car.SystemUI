@@ -17,12 +17,12 @@ package com.android.systemui.car.hvac;
 
 import android.view.View;
 
+import com.android.systemui.car.flexibleui.CarSystemBarElementController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.systembar.ButtonSelectionStateController;
 import com.android.systemui.car.systembar.CarSystemBarButton;
 import com.android.systemui.car.systembar.CarSystemBarButtonController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.settings.UserTracker;
 

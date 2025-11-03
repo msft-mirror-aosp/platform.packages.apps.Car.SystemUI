@@ -17,11 +17,11 @@
 package com.android.systemui.car.qc;
 
 import com.android.car.qc.provider.BaseLocalQCProvider;
+import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.privacy.CameraQcPanel;
 import com.android.systemui.car.privacy.MicQcPanel;
 import com.android.systemui.car.statusicon.ui.MobileSignalStatusIconController;
 import com.android.systemui.car.statusicon.ui.WifiSignalStatusIconController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementController;
 
 import dagger.Binds;
 import dagger.Module;

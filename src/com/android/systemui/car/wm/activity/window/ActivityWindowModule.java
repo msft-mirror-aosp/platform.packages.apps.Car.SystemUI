@@ -15,13 +15,7 @@
  */
 package com.android.systemui.car.wm.activity.window;
 
-import android.annotation.Nullable;
 import android.car.app.CarTaskViewControllerHostLifecycle;
-import android.content.Context;
-
-import com.android.systemui.R;
-import com.android.systemui.car.displaycompat.ToolbarController;
-import com.android.systemui.car.displaycompat.ToolbarControllerImpl;
 
 import dagger.Binds;
 import dagger.Module;
@@ -42,20 +36,5 @@ public abstract class ActivityWindowModule {
     @Provides
     static CarTaskViewControllerHostLifecycle provideCarTaskViewControllerHostLifecycle() {
         return new CarTaskViewControllerHostLifecycle();
-    }
-
-    /**
-     * Injects ToolbarController
-     */
-    @Nullable
-    @Provides
-    static ToolbarController providesToolbarController(Context context,
-            ToolbarControllerImpl impl) {
-        if (context.getResources()
-                .getInteger(R.integer.config_showDisplayCompatToolbarOnSystemBar) == 0) {
-            return null;
-        } else {
-            return impl;
-        }
     }
 }

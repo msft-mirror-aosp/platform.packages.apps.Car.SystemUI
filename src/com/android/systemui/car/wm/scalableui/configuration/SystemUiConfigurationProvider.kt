@@ -19,6 +19,7 @@ import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.TYPE_ATTRIBUT
 import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.TYPE_NAVIGATION
 import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.TYPE_STATUS
 import com.android.car.scalableui.panel.PanelPool
+import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelConfigReadStateMonitor
 import com.android.wm.shell.dagger.WMSingleton
 import javax.inject.Inject
 
@@ -27,33 +28,77 @@ import javax.inject.Inject
  */
 @WMSingleton
 class SystemUiConfigurationProvider @Inject constructor(
-    private val configurationFactory: SystemBarConfiguration.Factory
+    private val configurationFactory: SystemBarConfiguration.Factory,
+    private val panelConfigMonitor: PanelConfigReadStateMonitor
 ) {
-    val navBarConfigs: List<SystemBarConfiguration> by lazy {
-        getBarConfigs(TYPE_NAVIGATION)
+    private var navBarConfigs: List<SystemBarConfiguration> = emptyList()
+    private var statusBarConfigs: List<SystemBarConfiguration> = emptyList()
+
+    init {
+        panelConfigMonitor.addListener(object : PanelConfigReadStateMonitor.Listener {
+            override fun onReady() {
+                // clear cached values
+                navBarConfigs = emptyList()
+                statusBarConfigs = emptyList()
+            }
+        })
     }
-    val statusBarConfigs: List<SystemBarConfiguration> by lazy {
-        getBarConfigs(TYPE_STATUS)
+
+    /**
+     * @return status [SystemBarConfiguration]s
+     */
+    fun getStatusBarConfigs(): List<SystemBarConfiguration> = if (!panelConfigMonitor.isReady()) {
+        emptyList()
+    } else {
+        if (statusBarConfigs.isEmpty()) {
+            statusBarConfigs = getBarConfigs(TYPE_STATUS)
+        }
+        statusBarConfigs
     }
-    private val statusBarCount: Int by lazy {
-        PanelPool.getInstance()
-            .getPanels { panel ->
-                TYPE_STATUS ==
-                        panel.panelControllerMetadata?.configurations?.getString(TYPE_ATTRIBUTE)
-            }.size
+
+    /**
+     * @return navigation [SystemBarConfiguration]s
+     */
+    fun getNavigationBarConfigs(): List<SystemBarConfiguration> = if (!panelConfigMonitor.isReady())
+    {
+        emptyList()
+    } else {
+        if (navBarConfigs.isEmpty()) {
+            navBarConfigs = getBarConfigs(TYPE_NAVIGATION)
+        }
+        navBarConfigs
     }
 
     /**
      * @return status & navigation [SystemBarConfiguration]s
      */
     fun getSystemBarConfigs(): List<SystemBarConfiguration> {
-        return statusBarConfigs + navBarConfigs
+        return getStatusBarConfigs() + getNavigationBarConfigs()
+    }
+
+    /**
+     * Returns `true` if the system UI configurations have been populated and are ready for use.
+     */
+    fun isReady() = panelConfigMonitor.isReady()
+
+    /**
+     * Adds a [ConfigurationReadyListener] to be notified when the system UI configuration is ready.
+     */
+    fun addReadinessListener(listener: ConfigurationReadyListener) {
+        panelConfigMonitor.addListener(listener)
+    }
+
+    /**
+     * Removes a previously added [ConfigurationReadyListener].
+     */
+    fun removeReadinessListener(listener: ConfigurationReadyListener) {
+        panelConfigMonitor.removeListener(listener)
     }
 
     private fun getBarConfigs(type: String): List<SystemBarConfiguration> {
-        val indexOffset = if (type == TYPE_STATUS) 0 else statusBarCount
-        return PanelPool.getInstance()
-            .getPanels { panel ->
+        val indexOffset = if (type == TYPE_STATUS) 0 else getStatusBarConfigs().size
+
+        return PanelPool.getInstance().getPanels { panel ->
                 type == panel.panelControllerMetadata?.configurations?.getString(TYPE_ATTRIBUTE)
             }.mapIndexed { index, panel ->
                 configurationFactory.create(
@@ -62,5 +107,17 @@ class SystemUiConfigurationProvider @Inject constructor(
                     indexOffset
                 )
             }
+    }
+
+    /**
+     * A listener interface for receiving notifications about system UI configuration readiness.
+     *
+     * This abstracts away the concept of panels from System UI elements.
+     */
+    interface ConfigurationReadyListener : PanelConfigReadStateMonitor.Listener {
+        /**
+         * Called when the system UI configuration has been successfully read and is ready for use.
+         */
+        override fun onReady()
     }
 }

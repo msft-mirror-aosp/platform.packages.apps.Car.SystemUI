@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar.element;
+package com.android.systemui.car.flexibleui;
 
 import android.os.Bundle;
 import android.view.View;
@@ -65,7 +65,11 @@ public class CarSystemBarElementStateController {
         }
     }
 
-    void notifyPendingRestart() {
+    /**
+     * Notifies the state controller that a restart is about to occur. This will trigger the state
+     * controller to save the state of all registered controllers.
+     */
+    public void notifyPendingRestart() {
         synchronized (mControllers) {
             mStates.clear();
             for (Iterator<Map.Entry<Long, WeakReference<CarSystemBarElementController>>> iterator =
@@ -83,7 +87,11 @@ public class CarSystemBarElementStateController {
         }
     }
 
-    void notifyRestartComplete() {
+    /**
+     * Notifies the state controller that a restart has completed. This will trigger the state
+     * controller to restore the state of all registered controllers.
+     */
+    public void notifyRestartComplete() {
         synchronized (mControllers) {
             for (Iterator<Map.Entry<Long, WeakReference<CarSystemBarElementController>>> iterator =
                     mControllers.entrySet().iterator(); iterator.hasNext(); ) {

@@ -28,9 +28,9 @@ import com.android.car.qc.controller.LocalQCController;
 import com.android.car.qc.controller.RemoteQCController;
 import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.car.qc.view.QCView;
-import com.android.systemui.car.systembar.element.CarSystemBarElementController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.settings.UserTracker;
 
 import dagger.assisted.Assisted;

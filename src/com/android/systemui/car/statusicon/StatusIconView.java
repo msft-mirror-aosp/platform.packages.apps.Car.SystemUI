@@ -24,9 +24,9 @@ import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 
-import com.android.systemui.car.systembar.element.CarSystemBarElement;
-import com.android.systemui.car.systembar.element.CarSystemBarElementFlags;
-import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
+import com.android.systemui.car.flexibleui.CarSystemBarElement;
+import com.android.systemui.car.flexibleui.CarSystemBarElementFlags;
+import com.android.systemui.car.flexibleui.CarSystemBarElementResolver;
 
 public class StatusIconView extends ImageView implements CarSystemBarElement {
     private static final String TAG = StatusIconView.class.getSimpleName();

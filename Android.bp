@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+
+subdirs = ["pods"]
+
 package {
     default_applicable_licenses: ["Android-Apache-2.0"],
     default_team: "trendy_team_system_experience",
@@ -44,6 +47,7 @@ java_defaults {
     ],
 
     static_libs: [
+        "CarSystemUI-FlexibleUI",
         "SystemUI-application",
         "SystemUI-core",
         "CarNotificationLib",
@@ -99,6 +103,17 @@ java_defaults {
 android_library {
     name: "CarSystemUI-core",
 
+    resource_dirs: [],
+    manifest: "AndroidManifest.xml",
+
+    static_libs: [
+        "CarSystemUI-Shared",
+        // pods go here
+    ],
+}
+
+android_library {
+    name: "CarSystemUI-Shared",
     defaults: [
         "CarSystemUI-core-defaults",
     ],
@@ -109,7 +124,7 @@ android_library {
 
     javacflags: ["-Adagger.fastInit=enabled"],
 
-    manifest: "AndroidManifest.xml",
+    manifest: "AndroidManifest-shared.xml",
 
     plugins: ["dagger2-compiler"],
     // TODO(b/319708040): re-enable use_resource_processor
@@ -219,6 +234,8 @@ android_library {
         "res",
     ],
     static_libs: [
+        "CarSystemUI-Shared",
+        "CarSystemUI-FlexibleUI",
         "SystemUI-tests-base",
         "CarNotificationLib",
         "android.car.test.utils",

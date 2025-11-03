@@ -41,6 +41,7 @@ import android.os.UserHandle;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.SurfaceControl;
+import android.window.WindowContainerToken;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -85,6 +86,7 @@ import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -345,14 +347,15 @@ public final class TaskPanel extends SysUIPanel {
     }
 
     /**
-     * Whether or not this task panel has {@link Restart} set and enabled on it.
+     * Whether or not this task panel has {@link Restart} set and enabled on it. The restart should
+     * be inactive if the panel is invisible.
      *
      * @return true if the panel has task restart enabled
      */
     public boolean hasRestart() {
         PanelState panelState = getPanelState();
         return mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart) && panelState != null
-                && panelState.getRestart() != null;
+                && panelState.getRestart() != null && isVisible();
     }
 
     @Override
@@ -517,6 +520,17 @@ public final class TaskPanel extends SysUIPanel {
      */
     public int getRootTaskId() {
         return mRootTaskId;
+    }
+
+    /**
+     * Returns the token of the root task associated with this panel.
+     */
+    @Nullable
+    public WindowContainerToken getRootTaskToken() {
+        if (mRootTaskStack == null) {
+            return null;
+        }
+        return mRootTaskStack.getRootTaskInfo().token;
     }
 
     /**
@@ -788,8 +802,7 @@ public final class TaskPanel extends SysUIPanel {
         String launchPolicy = getPanelState().getTaskBehavior().getNewTaskLaunchPolicy();
         int launchBehavior = -1;
         switch (launchPolicy) {
-            case NEW_TASK_LAUNCH_POLICY_DEFAULT ->
-                    launchBehavior = LAUNCH_BEHAVIOR_DEFAULT;
+            case NEW_TASK_LAUNCH_POLICY_DEFAULT -> launchBehavior = LAUNCH_BEHAVIOR_DEFAULT;
             case NEW_TASK_LAUNCH_POLICY_REMAIN_IN_SOURCE ->
                     launchBehavior = LAUNCH_BEHAVIOR_REMAIN_IN_SOURCE_ROOT_TASK;
             case NEW_TASK_LAUNCH_POLICY_REPARENT_TO_SOURCE ->
@@ -919,6 +932,12 @@ public final class TaskPanel extends SysUIPanel {
     }
 
     @Override
+    public void dump(@NonNull PrintWriter pw) {
+        pw.println(this);
+        pw.println(mTaskPanelController);
+    }
+
+    @Override
     public String toString() {
 
         String decorString = mExistingAutoDecors.isEmpty()
@@ -926,23 +945,23 @@ public final class TaskPanel extends SysUIPanel {
                 : mExistingAutoDecors.entrySet()
                         .stream()
                         .map(entry -> entry.getKey() + "=" + entry.getValue())
-                        .collect(Collectors.joining(" , "));
+                        .collect(Collectors.joining("\n , "));
 
         return "TaskPanel{"
                 + "mId='" + getPanelId()
-                + ", isRooTaskEmpty=" + isRootTaskEmpty()
-                + ", mBounds=" + getBounds()
-                + ", mAlpha=" + getAlpha()
-                + ", mIsVisible=" + isVisible()
-                + ", mRootTaskId=" + mRootTaskId
-                + ", mRole=" + getRole()
-                + ", mLayer=" + getLayer()
-                + ", mLeash=" + mLeash
-                + ", mRootTaskStack=" + mRootTaskStack
-                + ", mCornerRadius=" + getCornerRadius()
-                + ", mIsLaunchRoot=" + mIsLaunchRoot
-                + ", mDisplayId=" + getDisplayId()
-                + ", mDecors=" + decorString
+                + "\n, isRooTaskEmpty=" + isRootTaskEmpty()
+                + "\n, mBounds=" + getBounds()
+                + "\n, mAlpha=" + getAlpha()
+                + "\n, mIsVisible=" + isVisible()
+                + "\n, mRootTaskId=" + mRootTaskId
+                + "\n, mRole=" + getRole()
+                + "\n, mLayer=" + getLayer()
+                + "\n, mLeash=" + mLeash
+                + "\n, mRootTaskStack=" + mRootTaskStack
+                + "\n, mCornerRadius=" + getCornerRadius()
+                + "\n, mIsLaunchRoot=" + mIsLaunchRoot
+                + "\n, mDisplayId=" + getDisplayId()
+                + "\n, mDecors=" + decorString
                 + '}';
     }
 

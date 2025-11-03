@@ -198,6 +198,7 @@ public class TaskPanelTest extends CarSysuiTestCase {
 
     @Test
     public void scheduleRestartAttempt_withLastPolicy_restartsLastTask() {
+        mTaskPanel.setVisibility(true);
         assumeTrue(mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart));
         Intent intent = new Intent("TEST_ACTION");
         mRunningTaskInfo.baseIntent = intent;
@@ -212,6 +213,7 @@ public class TaskPanelTest extends CarSysuiTestCase {
 
     @Test
     public void scheduleRestartAttempt_withDefaultPolicy_restartsDefaultTask() {
+        mTaskPanel.setVisibility(true);
         assumeTrue(mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart));
         Intent intent = new Intent("DEFAULT_ACTION");
         doReturn(intent).when(mTaskPanel).getDefaultIntent();
@@ -226,6 +228,7 @@ public class TaskPanelTest extends CarSysuiTestCase {
 
     @Test
     public void scheduleRestartAttempt_maxRetriesReached_sendsEmptyEvent() {
+        mTaskPanel.setVisibility(true);
         assumeTrue(mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart));
         when(mPanelState.getRestart()).thenReturn(mRestart);
         when(mRestart.getMaxRetry()).thenReturn(0);
@@ -233,6 +236,22 @@ public class TaskPanelTest extends CarSysuiTestCase {
         mTaskPanel.scheduleRestartAttempt(mRunningTaskInfo);
 
         verify(mEventDispatcher).executeEvent(any(Event.class));
+    }
+
+    @Test
+    public void scheduleRestartAttempt_invisiblePanel_skipped() {
+        mTaskPanel.setVisibility(false);
+        assumeTrue(mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart));
+        Intent intent = new Intent("DEFAULT_ACTION");
+        doReturn(intent).when(mTaskPanel).getDefaultIntent();
+        when(mPanelState.getRestart()).thenReturn(mRestart);
+        when(mRestart.getMaxRetry()).thenReturn(1);
+        when(mRestart.getPolicy()).thenReturn(RESTART_POLICY_DEFAULT);
+
+        mTaskPanel.scheduleRestartAttempt(mRunningTaskInfo);
+
+        verify(mUserContext, never()).startActivityAsUser(intent, UserHandle.CURRENT);
+        verify(mEventDispatcher, never()).executeEvent(any(Event.class));
     }
 
     @Test

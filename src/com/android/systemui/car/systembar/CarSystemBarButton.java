@@ -44,9 +44,9 @@ import androidx.annotation.Nullable;
 
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
-import com.android.systemui.car.systembar.element.CarSystemBarElement;
-import com.android.systemui.car.systembar.element.CarSystemBarElementFlags;
-import com.android.systemui.car.systembar.element.CarSystemBarElementResolver;
+import com.android.systemui.car.flexibleui.CarSystemBarElement;
+import com.android.systemui.car.flexibleui.CarSystemBarElementFlags;
+import com.android.systemui.car.flexibleui.CarSystemBarElementResolver;
 import com.android.systemui.car.window.OverlayViewController;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.settings.UserTracker;

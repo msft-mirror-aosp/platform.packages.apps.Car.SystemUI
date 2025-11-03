@@ -20,10 +20,10 @@ import static com.android.systemui.car.systembar.CarSystemBarPanelButtonView.INV
 
 import android.os.Bundle;
 
+import com.android.systemui.car.flexibleui.CarSystemBarElementController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
+import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStateController;
-import com.android.systemui.car.systembar.element.CarSystemBarElementStatusBarDisableController;
 
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;

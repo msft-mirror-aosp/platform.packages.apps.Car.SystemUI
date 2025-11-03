@@ -16,6 +16,7 @@
 package com.android.systemui.car.wm.scalableui;
 
 import static android.view.WindowManager.TRANSIT_CLOSE;
+import static android.view.WindowManager.TRANSIT_TO_BACK;
 
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_HOME_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_ON_ANIMATION_END_EVENT_ID;
@@ -646,26 +647,44 @@ public class PanelTransitionCoordinator {
         // If both are true, this means that the task close within the transition caused the panel
         // to become invisible, meaning there is nothing left for the panel to show and it is empty.
         HashMap<String, Pair<Boolean, Boolean>> taskPanelCloseMap = new HashMap<>();
-        info.getChanges().forEach(change -> {
-            if (TransitionUtil.isClosingType(change.getMode()) && change.getTaskInfo() != null) {
-                TaskPanel taskPanel = mPanelUtils.getTaskPanel(
-                        tp -> tp.getRootTaskId() == change.getTaskInfo().taskId);
-                if (taskPanel != null && !taskPanel.hasRestart()) {
-                    taskPanelCloseMap.compute(taskPanel.getPanelId(),
-                            (k, v) -> (v == null) ? new Pair<>(true, false)
-                                    : new Pair<>(true, v.second));
-                } else {
-                    TaskPanel parentTaskPanel = mPanelUtils.getTaskPanel(
-                            tp -> tp.getRootTaskId() == change.getTaskInfo().parentTaskId);
-                    if (parentTaskPanel != null && !parentTaskPanel.hasRestart()
-                            && change.getMode() == TRANSIT_CLOSE) {
-                        taskPanelCloseMap.compute(parentTaskPanel.getPanelId(),
-                                (k, v) -> (v == null) ? new Pair<>(false, true)
-                                        : new Pair<>(v.first, true));
-                    }
+        for (TransitionInfo.Change change : info.getChanges()) {
+            if (!TransitionUtil.isClosingType(change.getMode()) || change.getTaskInfo() == null) {
+                continue;
+            }
+
+            TaskPanel taskPanel;
+            Pair<Boolean, Boolean> newState = null;
+            taskPanel = mPanelUtils.getTaskPanel(
+                    tp -> tp.getRootTaskId() == change.getTaskInfo().taskId && !tp.hasRestart());
+            if (taskPanel != null) {
+                // Panel itself is hiding
+                newState = new Pair<>(true, false);
+            } else if (change.getMode() == TRANSIT_CLOSE) {
+                taskPanel = mPanelUtils.getTaskPanel(
+                        tp -> tp.getRootTaskId() == change.getTaskInfo().parentTaskId
+                                && !tp.hasRestart());
+                if (taskPanel != null) {
+                    // Child task is closing
+                    newState = new Pair<>(false, true);
+                }
+            } else if (change.getMode() == TRANSIT_TO_BACK && change.getLastParent() != null) {
+                taskPanel = mPanelUtils.getTaskPanel(
+                        tp -> change.getLastParent().equals(tp.getRootTaskToken())
+                                && !tp.hasRestart() && tp.isRootTaskEmpty());
+                if (taskPanel != null) {
+                    // Task has moved to back (and out of panel) and former parent panel is now
+                    // empty - both states are now true.
+                    newState = new Pair<>(true, true);
                 }
             }
-        });
+
+            if (taskPanel != null) {
+                Pair<Boolean, Boolean> finalState = newState;
+                taskPanelCloseMap.compute(taskPanel.getPanelId(), (k, v) -> (v == null) ? finalState
+                        : new Pair<>(v.first || finalState.first, v.second || finalState.second));
+            }
+        }
+
         Set<String> emptyPanelKeys = taskPanelCloseMap.entrySet().stream()
                 .filter(entry -> {
                     Pair<Boolean, Boolean> pair = entry.getValue();
@@ -848,24 +867,35 @@ public class PanelTransitionCoordinator {
         ValueAnimator surfaceAnimator = ValueAnimator.ofFloat(0, 1f);
         surfaceAnimator.setDuration(duration);
         surfaceAnimator.addUpdateListener(animation -> {
-            Trace.beginSection(TAG + "#updatePanelSurface");
-            logIfDebuggable("Surface animation progress " + animation.getAnimatedFraction());
-            AutoSurfaceTransaction autoSurfaceTransaction =
-                    mAutoSurfaceTransactionFactory.createTransaction(DECOR_TRANSACTION);
-
-            SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
-            for (Map.Entry<String, Animator> entry : animators) {
-                String id = entry.getKey();
-                Panel panel = PanelPool.getInstance().getPanel(p -> id.equals(p.getPanelId()));
-                if (panel instanceof SysUIPanel sysUiPanel) {
-                    sysUiPanel.update(autoSurfaceTransaction, tx);
-                }
+            onSurfaceAnimatorProgress(animators, String.valueOf(animation.getAnimatedFraction()));
+        });
+        surfaceAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(@NonNull Animator animation) {
+                onSurfaceAnimatorProgress(animators, "Cancelled");
             }
-            //TODO(b/404959846): migrate to autoSurfaceTransaction here once api is added.
-            tx.apply();
-            autoSurfaceTransaction.apply();
-            Trace.endSection();
         });
         return surfaceAnimator;
+    }
+
+    private void onSurfaceAnimatorProgress(@NonNull Set<Map.Entry<String, Animator>> animators,
+            @NonNull String progress) {
+        Trace.beginSection(TAG + "#updatePanelSurface");
+        logIfDebuggable("Surface animation progress " + progress);
+        AutoSurfaceTransaction autoSurfaceTransaction =
+                mAutoSurfaceTransactionFactory.createTransaction(DECOR_TRANSACTION);
+
+        SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
+        for (Map.Entry<String, Animator> entry : animators) {
+            String id = entry.getKey();
+            Panel panel = PanelPool.getInstance().getPanel(p -> id.equals(p.getPanelId()));
+            if (panel instanceof SysUIPanel sysUiPanel) {
+                sysUiPanel.update(autoSurfaceTransaction, tx);
+            }
+        }
+        //TODO(b/404959846): migrate to autoSurfaceTransaction here once api is added.
+        tx.apply();
+        autoSurfaceTransaction.apply();
+        Trace.endSection();
     }
 }

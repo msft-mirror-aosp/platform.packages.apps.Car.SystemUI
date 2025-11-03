@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar.element;
+package com.android.systemui.car.flexibleui;
 
 import android.annotation.NonNull;
 import android.annotation.Nullable;
@@ -24,7 +24,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 
-import com.android.systemui.R;
+
 
 /** Helper class for resolving element controllers */
 public class CarSystemBarElementResolver {

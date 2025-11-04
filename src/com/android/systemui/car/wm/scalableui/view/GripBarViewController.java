@@ -71,20 +71,18 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     private static final String DRAG_NO_CHANGE = "noChange";
     private static final String DRAG_INCREASE = "increase";
     private static final String DRAG_DECREASE = "decrease";
+    private final String mPanelId;
+    private final EventDispatcher mEventDispatcher;
+    private final List<BreakPoint> mBreakPoints;
     private GripBar mGripBar;
     private boolean mIsHorizontal;
-
     private String mDragEventId;
     private String mDragDecreaseEventId;
     private String mDragIncreaseEventId;
     private float mSnapThreshold;
     private float mDragStart;
-
     private int mState = 0;
-
-    private final List<BreakPoint> mBreakPoints;
     private BreakPoint mStartBreakPoint;
-    private EventDispatcher mEventDispatcher;
     private float mLastDispatchedProgress;
 
     @Override
@@ -101,6 +99,7 @@ public class GripBarViewController extends DecorPanelControllerBase implements
             @DecorPanelViewMap Map<Class<?>, Provider<View>> decorPanelViewMap,
             EventDispatcher eventDispatcher) {
         super(metadata, decorPanelViewMap);
+        mPanelId = panelId;
         mEventDispatcher = eventDispatcher;
         mBreakPoints = new ArrayList<>();
         init(metadata);
@@ -167,7 +166,7 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     @Override
     public void onTouch(MotionEvent event) {
         if (mBreakPoints.size() < 2) {
-            logIfDebuggable("break point not valid " + mBreakPoints.size());
+            Log.w(TAG, "break point not valid " + mBreakPoints.size());
             return;
         }
 
@@ -185,7 +184,6 @@ public class GripBarViewController extends DecorPanelControllerBase implements
         }
 
         float progress = (value - min) / (max - min);
-        logIfDebuggable("progress " + progress);
         if (progress < 0 || progress > 1) {
             progress = progress < 0 ? 0 : 1;
         }
@@ -212,31 +210,36 @@ public class GripBarViewController extends DecorPanelControllerBase implements
             return;
         }
         if (mDragDecreaseEventId != null && value < mDragStart) {
-            KeyFrameEvent keyFrameEvent = new KeyFrameEvent.Builder(mDragDecreaseEventId,
-                    progress).build();
+            Event keyFrameEvent = new KeyFrameEvent.Builder(mDragDecreaseEventId, progress)
+                    .setPanelId(mPanelId)
+                    .build();
             dispatchEvent(keyFrameEvent);
         } else if (mDragIncreaseEventId != null) {
-            KeyFrameEvent keyFrameEvent = new KeyFrameEvent.Builder(mDragIncreaseEventId,
-                    progress).build();
+            Event keyFrameEvent = new KeyFrameEvent.Builder(mDragIncreaseEventId, progress)
+                    .setPanelId(mPanelId)
+                    .build();
             dispatchEvent(keyFrameEvent);
         } else {
-            dispatchEvent(new KeyFrameEvent.Builder(mDragEventId,
-                    progress).build());
+            Event keyFrameEvent = new KeyFrameEvent.Builder(mDragEventId, progress)
+                    .setPanelId(mPanelId)
+                    .build();
+            dispatchEvent(keyFrameEvent);
         }
         mLastDispatchedProgress = progress;
     }
 
-    private void dispatchDirectionEvent(float value, BreakPoint breakPoin) {
+    private void dispatchDirectionEvent(float value, BreakPoint breakPoint) {
         String direction;
-        if (mStartBreakPoint.getEventId().equals(breakPoin.getEventId())) {
+        if (mStartBreakPoint.getEventId().equals(breakPoint.getEventId())) {
             direction = DRAG_NO_CHANGE;
         } else if (value < mDragStart) {
             direction = DRAG_DECREASE;
         } else {
             direction = DRAG_INCREASE;
         }
-        dispatchEvent(new Event.Builder(breakPoin.getEventId())
+        dispatchEvent(new Event.Builder(breakPoint.getEventId())
                 .addToken(PANEL_DRAG_DIRECTION_ID, direction)
+                .setPanelId(mPanelId)
                 .build());
     }
 
@@ -247,8 +250,12 @@ public class GripBarViewController extends DecorPanelControllerBase implements
                         .map(Object::toString)
                         .collect(Collectors.joining(", ", "[", "]"));
 
-        return "GripBarViewProvider{" + "mGripBar=" + mGripBar + ", mIsHorizontal=" + mIsHorizontal
-                + ", mDragEventId='" + mDragEventId + '\'' + ", mSnapThreshold=" + mSnapThreshold
+        return "GripBarViewProvider {"
+                + "mPanelId=" + mPanelId
+                + ", mGripBar=" + mGripBar
+                + ", mIsHorizontal=" + mIsHorizontal
+                + ", mDragEventId='" + mDragEventId + '\''
+                + ", mSnapThreshold=" + mSnapThreshold
                 + ", mBreakPoints=" + breakpointsString + '}';
     }
 }

@@ -20,6 +20,7 @@ import static android.car.app.CarActivityManager.LAUNCH_BEHAVIOR_REMAIN_IN_SOURC
 import static com.android.car.scalableui.model.Restart.RESTART_POLICY_DEFAULT;
 import static com.android.car.scalableui.model.Restart.RESTART_POLICY_LAST;
 import static com.android.car.scalableui.model.TaskBehavior.NEW_TASK_LAUNCH_POLICY_REMAIN_IN_SOURCE;
+import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -287,5 +288,26 @@ public class TaskPanelTest extends CarSysuiTestCase {
 
         verify(mCarActivityManager).setLaunchBehaviorForRootTask(any(),
                 eq(LAUNCH_BEHAVIOR_REMAIN_IN_SOURCE_ROOT_TASK));
+    }
+
+    @Test
+    public void getRootTaskToken_whenRootTaskStackIsNull_returnsNull() {
+        mTaskPanel.setRootTaskStack(null);
+
+        WindowContainerToken token = mTaskPanel.getRootTaskToken();
+
+        assertThat(token).isNull();
+    }
+
+    @Test
+    public void getRootTaskToken_whenRootTaskStackExists_returnsToken() {
+        WindowContainerToken expectedToken = mock(WindowContainerToken.class);
+        ActivityManager.RunningTaskInfo runningTaskInfo = new ActivityManager.RunningTaskInfo();
+        runningTaskInfo.token = expectedToken;
+        when(mRootTaskStack.getRootTaskInfo()).thenReturn(runningTaskInfo);
+
+        WindowContainerToken actualToken = mTaskPanel.getRootTaskToken();
+
+        assertThat(actualToken).isEqualTo(expectedToken);
     }
 }

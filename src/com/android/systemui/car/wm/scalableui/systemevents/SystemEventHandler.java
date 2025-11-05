@@ -33,7 +33,9 @@ import android.app.KeyguardManager;
 import android.car.user.CarUserManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.UserManager;
 import android.util.Log;
@@ -106,7 +108,7 @@ public class SystemEventHandler implements CoreStartable,
     private boolean mResetCalledForUser = false;
     private boolean mIsUserSwitching = true;
     private boolean mIsKeyguardShowing;
-    private int mCurrentOrientation;
+    private Configuration mConfiguration;
 
     private final CarUserManager.UserLifecycleListener mUserLifecycleListener =
             new CarUserManager.UserLifecycleListener() {
@@ -244,7 +246,7 @@ public class SystemEventHandler implements CoreStartable,
         mCarDeviceProvisionedController = carDeviceProvisionedController;
         mEventDispatcher = dispatcher;
         mFlagManager = flagManager;
-        mCurrentOrientation = mContext.getResources().getConfiguration().orientation;
+        mConfiguration = mContext.getResources().getConfiguration();
     }
 
     /**
@@ -278,8 +280,11 @@ public class SystemEventHandler implements CoreStartable,
     }
 
     @Override
-    public void onThemeChanged() {
-        PanelPool.getInstance().forEach(Panel::refreshTheme);
+    public void onConfigChanged(Configuration newConfig) {
+        int diff = mConfiguration.updateFrom(newConfig);
+        if ((diff & ActivityInfo.CONFIG_UI_MODE) != 0) {
+            PanelPool.getInstance().forEach(Panel::refreshTheme);
+        }
     }
 
     private void registerProvisionedStateListener() {

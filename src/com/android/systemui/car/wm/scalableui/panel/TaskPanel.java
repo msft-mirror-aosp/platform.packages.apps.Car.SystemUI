@@ -676,6 +676,7 @@ public final class TaskPanel extends SysUIPanel {
             @Nullable SurfaceControl.Transaction tx,
             @Nullable Variant variant,
             boolean updateChildren) {
+        Trace.beginSection(TAG + "#update");
         if (getRootStack() == null) {
             Log.e(TAG, "RootStack is null for " + getPanelId());
             return;
@@ -728,6 +729,7 @@ public final class TaskPanel extends SysUIPanel {
                     "AutoSurfaceTransaction must be supplied to update child decors");
             mMainExecutor.execute(() -> updateDecors(autoSurfaceTransaction, variant));
         }
+        Trace.endSection();
     }
 
     @Override

@@ -126,6 +126,8 @@ public class PanelTransitionCoordinator {
      *                    transition.
      */
     public void startTransition(PanelTransaction transaction) {
+        Trace.beginSection(
+                TAG + "#startTransition, windowChanges:" + transaction.hasWindowChanges());
         if (transaction.hasWindowChanges()) {
             mMainExecutor.execute(() -> {
                 synchronized (mPendingPanelTransactions) {
@@ -146,6 +148,7 @@ public class PanelTransitionCoordinator {
             // to the shell main thread could introduce unnecessary latency and visual lag.
             updatePanelSurface(transaction);
         }
+        Trace.endSection();
     }
 
     private void startDirectAnimation(PanelTransaction transaction) {

@@ -23,6 +23,7 @@ import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.SNAPTHREAD
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_DRAG_DIRECTION_ID;
 
 import android.annotation.SuppressLint;
+import android.os.Trace;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -188,10 +189,11 @@ public class GripBarViewController extends DecorPanelControllerBase implements
             progress = progress < 0 ? 0 : 1;
         }
 
+        Trace.beginSection("GripBar#onTouch " + MotionEvent.actionToString(event.getAction()));
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mDragStart = mIsHorizontal ? event.getRawX() : event.getRawY();
-                return;
+                break;
             case MotionEvent.ACTION_MOVE:
                 dispatchEvent(progress, value, event);
                 break;
@@ -202,6 +204,7 @@ public class GripBarViewController extends DecorPanelControllerBase implements
                 break;
             default:
         }
+        Trace.endSection();
     }
 
     private void dispatchEvent(float progress, float value, MotionEvent event) {

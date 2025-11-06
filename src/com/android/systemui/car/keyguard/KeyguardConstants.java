@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.hvac;
+package com.android.systemui.car.keyguard;
 
-/** Constants related to HVAC. */
-public class HvacConstants {
-    /** Qualifier name for the list of system bar names that host HVAC components. */
-    public static final String HVAC_SYSTEM_BAR_NAMES = "HvacSystemBarNames";
+/** Constants related to Keyguard. */
+public class KeyguardConstants {
+    /** Overlay type key for the Keyguard. */
+    public static final String OVERLAY_TYPE_KEYGUARD = "keyguard";
 
-    /** Overlay type key for the HVAC panel. */
-    public static final String OVERLAY_TYPE_HVAC_PANEL = "hvac_panel";
+    /** Overlay type key for the Passenger Keyguard. */
+    public static final String OVERLAY_TYPE_PASSENGER_KEYGUARD = "passenger_keyguard";
 }

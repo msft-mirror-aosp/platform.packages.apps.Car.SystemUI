@@ -101,7 +101,8 @@ public class OverlayVisibilityMediatorImpl implements OverlayVisibilityMediator 
             zOrder = mZOrderMap.get(viewController);
         } else {
             zOrder = mSystemUIOverlayWindowController.getBaseLayout().indexOfChild(
-                    viewController.getLayout());
+                    mSystemUIOverlayWindowController.getContainerForType(
+                            viewController.getOverlayType()));
             mZOrderMap.put(viewController, zOrder);
         }
 

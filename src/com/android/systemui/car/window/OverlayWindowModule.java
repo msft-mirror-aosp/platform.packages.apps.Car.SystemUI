@@ -16,14 +16,23 @@
 
 package com.android.systemui.car.window;
 
+import static com.android.systemui.car.keyguard.KeyguardConstants.OVERLAY_TYPE_KEYGUARD;
+import static com.android.systemui.car.keyguard.KeyguardConstants.OVERLAY_TYPE_PASSENGER_KEYGUARD;
+import static com.android.systemui.car.userswitcher.UserSwitcherConstants.OVERLAY_TYPE_FULLSCREEN_USER_SWITCHER;
+import static com.android.systemui.car.userswitcher.UserSwitcherConstants.OVERLAY_TYPE_USER_SWITCHING_DIALOG;
+
 import com.android.systemui.car.hvac.HvacPanelOverlayViewMediator;
 import com.android.systemui.car.keyguard.CarKeyguardOverlayViewMediator;
+import com.android.systemui.car.keyguard.CarKeyguardViewController;
+import com.android.systemui.car.keyguard.passenger.PassengerKeyguardOverlayViewController;
 import com.android.systemui.car.keyguard.passenger.PassengerKeyguardOverlayViewMediator;
 import com.android.systemui.car.notification.BottomNotificationPanelViewMediator;
 import com.android.systemui.car.notification.NotificationPanelViewMediator;
 import com.android.systemui.car.notification.TopNotificationPanelViewMediator;
 import com.android.systemui.car.systemdialogs.SystemDialogsViewMediator;
+import com.android.systemui.car.userswitcher.FullScreenUserSwitcherViewController;
 import com.android.systemui.car.userswitcher.FullscreenUserSwitcherViewMediator;
+import com.android.systemui.car.userswitcher.UserSwitchTransitionViewController;
 import com.android.systemui.car.userswitcher.UserSwitchTransitionViewMediator;
 import com.android.systemui.statusbar.policy.ConfigurationController.ConfigurationListener;
 
@@ -32,6 +41,7 @@ import dagger.Module;
 import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.IntoSet;
+import dagger.multibindings.StringKey;
 
 /**
  * Dagger injection module for {@link SystemUIOverlayWindowManager}
@@ -112,4 +122,28 @@ public abstract class OverlayWindowModule {
     @Binds
     public abstract OverlayVisibilityMediator bindOverlayVisibilityMediator(
             OverlayVisibilityMediatorImpl overlayVisibilityMediatorImpl);
+
+    @Binds
+    @IntoMap
+    @StringKey(OVERLAY_TYPE_FULLSCREEN_USER_SWITCHER)
+    abstract OverlayViewController bindFullScreenUserSwitcherViewController(
+            FullScreenUserSwitcherViewController controller);
+
+    @Binds
+    @IntoMap
+    @StringKey(OVERLAY_TYPE_USER_SWITCHING_DIALOG)
+    abstract OverlayViewController bindUserSwitchTransitionViewController(
+            UserSwitchTransitionViewController controller);
+
+    @Binds
+    @IntoMap
+    @StringKey(OVERLAY_TYPE_KEYGUARD)
+    abstract OverlayViewController bindCarKeyguardViewController(
+            CarKeyguardViewController controller);
+
+    @Binds
+    @IntoMap
+    @StringKey(OVERLAY_TYPE_PASSENGER_KEYGUARD)
+    abstract OverlayViewController bindPassengerKeyguardOverlayViewController(
+            PassengerKeyguardOverlayViewController controller);
 }

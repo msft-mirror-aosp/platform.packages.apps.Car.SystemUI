@@ -87,7 +87,6 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
         mOverlayPanelViewController = new TestOverlayPanelViewController(
                 getContext(),
                 getContext().getOrCreateTestableResources().getResources(),
-                R.id.overlay_view_controller_stub,
                 mOverlayViewGlobalStateController,
                 mFlingAnimationUtilsBuilder,
                 mCarDeviceProvisionedController);
@@ -99,22 +98,23 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
         mOverlayPanelViewController.toggle();
 
-        verify(mOverlayViewGlobalStateController).inflateView(mOverlayPanelViewController);
+        verify(mOverlayViewGlobalStateController).ensureInflated(mOverlayPanelViewController);
     }
 
     @Test
     public void toggle_inflated_doesNotInflate() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         assertThat(mOverlayPanelViewController.isInflated()).isTrue();
 
         mOverlayPanelViewController.toggle();
 
-        verify(mOverlayViewGlobalStateController, never()).inflateView(mOverlayPanelViewController);
+        verify(mOverlayViewGlobalStateController, never()).ensureInflated(
+                mOverlayPanelViewController);
     }
 
     @Test
     public void toggle_notExpanded_panelExpands() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.setPanelExpanded(false);
 
         mOverlayPanelViewController.toggle();
@@ -124,7 +124,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void toggle_expanded_panelCollapses() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.setPanelExpanded(true);
 
         mOverlayPanelViewController.toggle();
@@ -134,7 +134,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void animateCollapsePanel_shouldNotAnimateCollapsePanel_doesNotCollapse() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.setShouldAnimateCollapsePanel(false);
 
         mOverlayPanelViewController.animateCollapsePanel();
@@ -145,7 +145,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void animateCollapsePanel_isNotExpandedOrVisible_doesNotCollapse() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.setShouldAnimateCollapsePanel(true);
         mOverlayPanelViewController.setPanelExpanded(false);
         mOverlayPanelViewController.setPanelVisible(false);
@@ -158,7 +158,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void animateCollapsePanel_isNotVisible_collapses() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.setShouldAnimateCollapsePanel(true);
         mOverlayPanelViewController.setPanelExpanded(true);
         mOverlayPanelViewController.setPanelVisible(false);
@@ -171,7 +171,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void animateCollapsePanel_isNotExpanded_collapses() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.setShouldAnimateCollapsePanel(true);
         mOverlayPanelViewController.setPanelExpanded(false);
         mOverlayPanelViewController.setPanelVisible(true);
@@ -184,7 +184,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void animateCollapsePanel_collapses() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.setShouldAnimateCollapsePanel(true);
         mOverlayPanelViewController.setPanelExpanded(true);
         mOverlayPanelViewController.setPanelVisible(true);
@@ -196,7 +196,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void animateCollapsePanel_withOverlayFromTopBar_collapsesTowardsTopBar() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         // Mock a panel that has layout size 50 and where the panel is opened.
         int size = 50;
         mockPanelWithSize(size);
@@ -221,7 +221,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void animateCollapsePanel_withOverlayFromBottomBar_collapsesTowardsBottomBar() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         // Mock a panel that has layout size 50 and where the panel is opened.
         int size = 50;
         mockPanelWithSize(size);
@@ -247,7 +247,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void animateExpandPanel_shouldNotAnimateExpandPanel_doesNotExpand() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.setShouldAnimateExpandPanel(false);
 
         mOverlayPanelViewController.animateExpandPanel();
@@ -258,7 +258,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void animateExpandPanel_userNotSetup_doesNotExpand() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.setShouldAnimateExpandPanel(true);
         when(mCarDeviceProvisionedController.isCurrentUserFullySetup()).thenReturn(false);
 
@@ -270,7 +270,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void animateExpandPanel_expands() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.setShouldAnimateExpandPanel(true);
         when(mCarDeviceProvisionedController.isCurrentUserFullySetup()).thenReturn(true);
 
@@ -281,7 +281,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void animateExpandPanel_withOverlayFromTopBar_expandsToBottom() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         // Mock a panel that has layout size 50 and where the panel is not opened.
         int size = 50;
         mockPanelWithSize(size);
@@ -303,7 +303,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void animateExpandPanel_withOverlayFromBottomBar_expandsToTop() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         // Mock a panel that has layout size 50 and where the panel is not opened.
         int size = 50;
         mockPanelWithSize(size);
@@ -324,7 +324,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void animateExpandPanel_setsPanelVisible() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.setShouldAnimateExpandPanel(true);
         when(mCarDeviceProvisionedController.isCurrentUserFullySetup()).thenReturn(true);
 
@@ -335,7 +335,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void animateExpandPanel_setsPanelExpanded() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.setShouldAnimateExpandPanel(true);
         when(mCarDeviceProvisionedController.isCurrentUserFullySetup()).thenReturn(true);
 
@@ -346,7 +346,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void setPanelVisible_setTrue_showsView() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         when(mOverlayViewGlobalStateController.isWindowVisible()).thenReturn(false);
 
         mOverlayPanelViewController.setPanelVisible(true);
@@ -356,7 +356,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void setPanelVisible_setTrue_setLayoutVisible() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.getLayout().setVisibility(View.INVISIBLE);
 
         mOverlayPanelViewController.setPanelVisible(true);
@@ -366,7 +366,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void setPanelVisible_setFalse_windowVisible_setsWindowNotVisible() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         when(mOverlayViewGlobalStateController.isWindowVisible()).thenReturn(true);
 
         mOverlayPanelViewController.setPanelVisible(false);
@@ -376,7 +376,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void setPanelVisible_setFalse_windowNotVisible_doesNotSetWindowNotVisible() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         when(mOverlayViewGlobalStateController.isWindowVisible()).thenReturn(false);
 
         mOverlayPanelViewController.setPanelVisible(false);
@@ -386,7 +386,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void setPanelVisible_setFalse_setLayoutInvisible() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.getLayout().setVisibility(View.VISIBLE);
 
         mOverlayPanelViewController.setPanelVisible(false);
@@ -397,7 +397,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void setPanelVisible_setTrue_callsListenerOnVisibilityChangedTrue() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.getLayout().setVisibility(View.VISIBLE);
         mOverlayPanelViewController.registerViewStateListener(mOverlayViewStateListener);
 
@@ -408,7 +408,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void setPanelVisible_setFalse_callsListenerOnVisibilityChangedFalse() {
-        mOverlayPanelViewController.inflate(mBaseLayout);
+        mOverlayPanelViewController.inflate();
         mOverlayPanelViewController.registerViewStateListener(mOverlayViewStateListener);
 
         mOverlayPanelViewController.setPanelVisible(true);
@@ -426,7 +426,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
                 MotionEvent.obtain(/* downTime= */ 200, /* eventTime= */ 300,
                         MotionEvent.ACTION_MOVE, /* x= */ 0, /* y= */ 0, /* metaState= */ 0));
 
-        verify(mOverlayViewGlobalStateController).inflateView(mOverlayPanelViewController);
+        verify(mOverlayViewGlobalStateController).ensureInflated(mOverlayPanelViewController);
     }
 
     @Test
@@ -439,7 +439,8 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
                 MotionEvent.obtain(/* downTime= */ 200, /* eventTime= */ 300,
                         MotionEvent.ACTION_MOVE, /* x= */ 0, /* y= */ 0, /* metaState= */ 0));
 
-        verify(mOverlayViewGlobalStateController, never()).inflateView(mOverlayPanelViewController);
+        verify(mOverlayViewGlobalStateController, never()).ensureInflated(
+                mOverlayPanelViewController);
     }
 
     private void mockPanelWithSize(int size) {
@@ -448,6 +449,7 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
 
     private static class TestOverlayPanelViewController extends OverlayPanelViewController {
 
+        private final Context mContext;
         boolean mOnAnimateCollapsePanelCalled;
         boolean mAnimateCollapsePanelCalled;
         boolean mOnAnimateExpandPanelCalled;
@@ -463,15 +465,28 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
         TestOverlayPanelViewController(
                 Context context,
                 Resources resources,
-                int stubId,
                 OverlayViewGlobalStateController overlayViewGlobalStateController,
                 FlingAnimationUtils.Builder flingAnimationUtilsBuilder,
                 CarDeviceProvisionedController carDeviceProvisionedController) {
-            super(context, resources, stubId, overlayViewGlobalStateController,
+            super(context, resources, overlayViewGlobalStateController,
                     flingAnimationUtilsBuilder,
                     carDeviceProvisionedController);
+            mContext = context;
 
             mOnScrollHeights = new ArrayList<>();
+        }
+
+        public String getOverlayType() {
+            return "test_panel";
+        }
+
+        @Override
+        public View inflate() {
+            if (isInflated()) return mLayout;
+            mLayout = LayoutInflater.from(mContext).inflate(
+                    R.layout.overlay_view_controller_stub, /* root= */ null,
+                    /* attachToRoot= */ false);
+            return mLayout;
         }
 
         public void setShouldAnimateCollapsePanel(boolean shouldAnimate) {

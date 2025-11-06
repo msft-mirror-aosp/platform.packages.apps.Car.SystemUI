@@ -16,6 +16,12 @@
 
 package com.android.systemui.car.keyguard.passenger;
 
+import static com.android.systemui.car.keyguard.KeyguardConstants.OVERLAY_TYPE_PASSENGER_KEYGUARD;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+
 import com.android.systemui.R;
 import com.android.systemui.car.window.OverlayViewController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
@@ -28,23 +34,38 @@ import javax.inject.Inject;
  */
 @SysUISingleton
 public class PassengerKeyguardOverlayViewController extends OverlayViewController {
+    private final Context mContext;
     private final PassengerKeyguardCredentialViewControllerFactory mCredentialViewFactory;
 
     private PassengerKeyguardCredentialViewController mCredentialViewController;
 
     @Inject
     public PassengerKeyguardOverlayViewController(
+            Context context,
             OverlayViewGlobalStateController overlayViewGlobalStateController,
             PassengerKeyguardCredentialViewControllerFactory credentialViewFactory) {
-        super(R.id.passenger_keyguard_stub, overlayViewGlobalStateController);
+        super(overlayViewGlobalStateController);
+        mContext = context;
         mCredentialViewFactory = credentialViewFactory;
     }
 
     @Override
-    protected void onFinishInflate() {
+    public String getOverlayType() {
+        return OVERLAY_TYPE_PASSENGER_KEYGUARD;
+    }
+
+    @Override
+    public View inflate() {
+        if (isInflated()) return mLayout;
+
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        mLayout = inflater.inflate(R.layout.passenger_keyguard_overlay_window, /* root= */ null,
+                /* attachToRoot= */ false);
+
         mCredentialViewController = mCredentialViewFactory.create(
-                getLayout().requireViewById(R.id.passenger_keyguard_frame));
+                mLayout.requireViewById(R.id.passenger_keyguard_frame));
         mCredentialViewController.setAuthSucceededCallback(this::stop);
+        return mLayout;
     }
 
     @Override

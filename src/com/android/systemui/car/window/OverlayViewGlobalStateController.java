@@ -21,10 +21,11 @@ import static android.view.WindowInsets.Type.statusBars;
 
 import android.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowInsets.Side.InsetsSide;
 import android.view.WindowInsets.Type.InsetsType;
-import android.view.WindowInsetsController;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -50,7 +51,7 @@ public class OverlayViewGlobalStateController {
     private static final boolean DEBUG = false;
     private static final String TAG = OverlayViewGlobalStateController.class.getSimpleName();
     private final SystemUIOverlayWindowController mSystemUIOverlayWindowController;
-    private final WindowInsetsController mWindowInsetsController;
+
     private final OverlayVisibilityMediator mOverlayVisibilityMediator;
 
     @VisibleForTesting
@@ -63,15 +64,13 @@ public class OverlayViewGlobalStateController {
             OverlayVisibilityMediator overlayVisibilityMediator) {
         mSystemUIOverlayWindowController = systemUIOverlayWindowController;
         mOverlayVisibilityMediator = overlayVisibilityMediator;
-        mSystemUIOverlayWindowController.attach();
+
         mSystemUIOverlayWindowController.registerOutsideTouchListener((v, event) -> {
             if (mOverlayVisibilityMediator.getHighestZOrderOverlayViewController() != null) {
                 mOverlayVisibilityMediator.getHighestZOrderOverlayViewController()
                         .onTouchEvent(v, event);
             }
         });
-        mWindowInsetsController =
-                mSystemUIOverlayWindowController.getBaseLayout().getWindowInsetsController();
 
         mViewsHiddenForOcclusion = new HashSet<>();
     }
@@ -84,6 +83,25 @@ public class OverlayViewGlobalStateController {
 
         overlayViewMediator.registerListeners();
         overlayViewMediator.setUpOverlayContentViewControllers();
+    }
+
+    void ensureInflated(OverlayViewController viewController) {
+        if (viewController.isInflated()) {
+            return;
+        }
+
+        String type = viewController.getOverlayType();
+        ViewGroup placeholder = mSystemUIOverlayWindowController.getContainerForType(type);
+
+        if (placeholder != null) {
+            View view = viewController.inflate();
+            if (view != null) {
+                viewController.setLayout(view);
+                placeholder.addView(view);
+            }
+        } else {
+            Log.e(TAG, "Placeholder FrameLayout not found for type: " + type);
+        }
     }
 
     /**
@@ -106,12 +124,21 @@ public class OverlayViewGlobalStateController {
             mViewsHiddenForOcclusion.add(viewController);
             return;
         }
-        if (!mOverlayVisibilityMediator.isAnyOverlayViewVisible()) {
-            setWindowVisible(true);
+
+        ensureInflated(viewController);
+
+        ViewGroup placeholder = mSystemUIOverlayWindowController.getContainerForType(
+                viewController.getOverlayType());
+        if (placeholder != null) {
+            placeholder.setVisibility(View.VISIBLE);
+        } else {
+            Log.e(TAG, "Cannot show, placeholder not found for type: "
+                    + viewController.getOverlayType());
+            return;
         }
 
-        if (!(viewController instanceof OverlayPanelViewController)) {
-            inflateView(viewController);
+        if (!mOverlayVisibilityMediator.isAnyOverlayViewVisible()) {
+            setWindowVisible(true);
         }
 
         if (show != null) {
@@ -172,6 +199,13 @@ public class OverlayViewGlobalStateController {
         }
 
         mOverlayVisibilityMediator.hideView(viewController);
+
+        ViewGroup placeholder = mSystemUIOverlayWindowController.getContainerForType(
+                viewController.getOverlayType());
+        if (placeholder != null) {
+            placeholder.setVisibility(View.GONE);
+        }
+
         refreshUseStableInsets();
         refreshInsetsToFit();
         refreshWindowFocus();
@@ -206,7 +240,7 @@ public class OverlayViewGlobalStateController {
 
     private void refreshInsetTypeVisibility(@InsetsType int insetType) {
         if (!mOverlayVisibilityMediator.isAnyOverlayViewVisible()) {
-            mWindowInsetsController.show(insetType);
+            mSystemUIOverlayWindowController.showInsets(insetType);
             return;
         }
 
@@ -217,9 +251,9 @@ public class OverlayViewGlobalStateController {
                 (insetType == navigationBars() && highestZOrder.shouldShowNavigationBarInsets())
                 || (insetType == statusBars() && highestZOrder.shouldShowStatusBarInsets());
         if (highestZOrder.shouldFocusWindow() && !shouldShowInsets) {
-            mWindowInsetsController.hide(insetType);
+            mSystemUIOverlayWindowController.hideInsets(insetType);
         } else {
-            mWindowInsetsController.show(insetType);
+            mSystemUIOverlayWindowController.showInsets(insetType);
         }
     }
 
@@ -319,13 +353,6 @@ public class OverlayViewGlobalStateController {
         if (mOverlayVisibilityMediator.getHighestZOrderOverlayViewController() != null) {
             mOverlayVisibilityMediator.getHighestZOrderOverlayViewController()
                     .onWindowFocusableChanged(focusable);
-        }
-    }
-
-    /** Inflates the view controlled by the given view controller. */
-    public void inflateView(OverlayViewController viewController) {
-        if (!viewController.isInflated()) {
-            viewController.inflate(mSystemUIOverlayWindowController.getBaseLayout());
         }
     }
 

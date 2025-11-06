@@ -19,6 +19,7 @@ package com.android.systemui.car.userswitcher;
 import static android.car.settings.CarSettings.Global.ENABLE_USER_SWITCH_DEVELOPER_MESSAGE;
 
 import static com.android.systemui.car.Flags.userSwitchKeyguardShownTimeout;
+import static com.android.systemui.car.userswitcher.UserSwitcherConstants.OVERLAY_TYPE_USER_SWITCHING_DIALOG;
 
 import android.annotation.UserIdInt;
 import android.app.ActivityManager;
@@ -33,6 +34,8 @@ import android.os.UserManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.IWindowManager;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -103,7 +106,7 @@ public class UserSwitchTransitionViewController extends OverlayViewController {
             IWindowManager windowManagerService,
             OverlayViewGlobalStateController overlayViewGlobalStateController) {
 
-        super(R.id.user_switching_dialog_stub, overlayViewGlobalStateController);
+        super(overlayViewGlobalStateController);
 
         mContext = context;
         mResources = resources;
@@ -115,6 +118,21 @@ public class UserSwitchTransitionViewController extends OverlayViewController {
         mKeyguardManager = context.getSystemService(KeyguardManager.class);
         mWindowShownTimeoutMs = mResources.getInteger(
                 R.integer.config_userSwitchTransitionViewShownTimeoutMs);
+    }
+
+    @Override
+    public String getOverlayType() {
+        return OVERLAY_TYPE_USER_SWITCHING_DIALOG;
+    }
+
+    @Override
+    public View inflate() {
+        if (isInflated()) return mLayout;
+
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        mLayout = inflater.inflate(R.layout.car_user_switching_dialog, /* root= */ null,
+                /* attachToRoot= */ false);
+        return mLayout;
     }
 
     @Override

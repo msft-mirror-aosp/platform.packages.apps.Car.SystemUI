@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.hvac;
+package com.android.systemui.car.userswitcher;
 
-/** Constants related to HVAC. */
-public class HvacConstants {
-    /** Qualifier name for the list of system bar names that host HVAC components. */
-    public static final String HVAC_SYSTEM_BAR_NAMES = "HvacSystemBarNames";
+/** Constants related to User Switcher. */
+public class UserSwitcherConstants {
+    /** Overlay type key for the Fullscreen User Switcher. */
+    public static final String OVERLAY_TYPE_FULLSCREEN_USER_SWITCHER = "fullscreen_user_switcher";
 
-    /** Overlay type key for the HVAC panel. */
-    public static final String OVERLAY_TYPE_HVAC_PANEL = "hvac_panel";
+    /** Overlay type key for the User Switching Dialog. */
+    public static final String OVERLAY_TYPE_USER_SWITCHING_DIALOG = "user_switching_dialog";
 }

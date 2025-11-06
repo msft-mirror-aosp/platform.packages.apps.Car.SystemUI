@@ -106,12 +106,11 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
     public OverlayPanelViewController(
             Context context,
             @Main Resources resources,
-            int stubId,
             OverlayViewGlobalStateController overlayViewGlobalStateController,
             FlingAnimationUtils.Builder flingAnimationUtilsBuilder,
             CarDeviceProvisionedController carDeviceProvisionedController
     ) {
-        super(stubId, overlayViewGlobalStateController);
+        super(overlayViewGlobalStateController);
 
         mContext = context;
         mScreenHeightPx = Resources.getSystem().getDisplayMetrics().heightPixels;
@@ -149,7 +148,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
                 return true;
             }
             if (!isInflated()) {
-                getOverlayViewGlobalStateController().inflateView(this);
+                getOverlayViewGlobalStateController().ensureInflated(this);
             }
 
             boolean consumed = openGestureDetector.onTouchEvent(event);
@@ -180,11 +179,6 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
         };
     }
 
-    @Override
-    protected void onFinishInflate() {
-        setUpHandleBar();
-    }
-
     /** Sets the overlay panel animation direction along the x or y axis. */
     public void setOverlayDirection(@OverlayDirection int direction) {
         if (direction == OVERLAY_FROM_TOP_BAR) {
@@ -199,7 +193,7 @@ public abstract class OverlayPanelViewController extends OverlayViewController {
     /** Toggles the visibility of the panel. */
     public void toggle() {
         if (!isInflated()) {
-            getOverlayViewGlobalStateController().inflateView(this);
+            getOverlayViewGlobalStateController().ensureInflated(this);
         }
         if (isPanelExpanded()) {
             animateCollapsePanel();

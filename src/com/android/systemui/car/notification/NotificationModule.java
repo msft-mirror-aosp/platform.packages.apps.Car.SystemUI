@@ -18,13 +18,18 @@ package com.android.systemui.car.notification;
 
 import static com.android.systemui.car.notification.NotificationConstants.DRAG_OPEN_NOTIFICATION_BAR_NAMES;
 import static com.android.systemui.car.notification.NotificationConstants.DRAG_CLOSE_NOTIFICATION_BAR_NAMES;
+import static com.android.systemui.car.notification.NotificationConstants.OVERLAY_TYPE_NOTIFICATION_PANEL;
 
 import android.content.Context;
 
 import com.android.systemui.R;
+import com.android.systemui.car.window.OverlayViewController;
 
+import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntoMap;
+import dagger.multibindings.StringKey;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,12 +38,12 @@ import javax.inject.Named;
 
 /** Dagger module for Notifications. */
 @Module
-public class NotificationModule {
+public abstract class NotificationModule {
 
     /** Provides the list of system bar names that the notification panel should register with. */
     @Provides
     @Named(DRAG_OPEN_NOTIFICATION_BAR_NAMES)
-    public List<String> provideDragOpenNotificationBarNames(Context context) {
+    static List<String> provideDragOpenNotificationBarNames(Context context) {
         return Arrays.asList(
                 context.getResources().getStringArray(R.array.config_notificationDragOpenListener));
     }
@@ -46,8 +51,14 @@ public class NotificationModule {
     /** Provides the list of system bar names that the notification panel should register with. */
     @Provides
     @Named(DRAG_CLOSE_NOTIFICATION_BAR_NAMES)
-    public List<String> provideDragCloseNotificationBarNames(Context context) {
+    static List<String> provideDragCloseNotificationBarNames(Context context) {
         return Arrays.asList(context.getResources().getStringArray(
                 R.array.config_notificationDragCloseListener));
     }
+
+    @Binds
+    @IntoMap
+    @StringKey(OVERLAY_TYPE_NOTIFICATION_PANEL)
+    abstract OverlayViewController bindNotificationPanelViewController(
+            NotificationPanelViewController controller);
 }

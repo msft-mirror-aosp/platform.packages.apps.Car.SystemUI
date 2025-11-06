@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import android.car.settings.CarSettings;
 import android.os.Handler;
+import android.os.UserManager;
 import android.provider.Settings;
 import android.testing.TestableLooper;
 import android.view.IWindowManager;
@@ -31,6 +32,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
@@ -56,6 +58,10 @@ public class DisplaySystemBarsControllerTest extends CarSysuiTestCase {
 
     private static final int DISPLAY_ID = 1;
 
+    @Mock
+    private UserManager mUserManager;
+    @Mock
+    private CarServiceProvider mCarServiceProvider;
     @Mock
     private IWindowManager mIWindowManager;
     @Mock
@@ -83,6 +89,8 @@ public class DisplaySystemBarsControllerTest extends CarSysuiTestCase {
 
         mController = new DisplaySystemBarsController(
                 mContext,
+                mUserManager,
+                mCarServiceProvider,
                 mIWindowManager,
                 mDisplayController,
                 mDisplayInsetsController,

@@ -17,6 +17,8 @@
 package com.android.systemui.wm;
 
 import static android.car.CarOccupantZoneManager.INVALID_USER_ID;
+import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKED;
+import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKING;
 import static android.content.Intent.ACTION_OVERLAY_CHANGED;
 import static android.view.WindowInsets.Type.navigationBars;
 import static android.view.WindowInsets.Type.statusBars;
@@ -41,7 +43,9 @@ import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventCon
 
 import android.annotation.NonNull;
 import android.annotation.Nullable;
+import android.annotation.SuppressLint;
 import android.car.settings.CarSettings;
+import android.car.user.CarUserManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -51,9 +55,11 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.os.HandlerExecutor;
 import android.os.PatternMatcher;
 import android.os.RemoteException;
 import android.os.UserHandle;
+import android.os.UserManager;
 import android.provider.Settings;
 import android.util.Slog;
 import android.util.SparseArray;
@@ -71,6 +77,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.car.scalableui.model.Event;
 import com.android.systemui.R;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;
@@ -104,6 +111,8 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
 
     protected final Context mContext;
+    protected final UserManager mUserManager;
+    protected final CarServiceProvider mCarServiceProvider;
     protected final IWindowManager mWmService;
     protected final DisplayInsetsController mDisplayInsetsController;
     protected final Handler mHandler;
@@ -143,6 +152,8 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
 
     public DisplaySystemBarsController(
             Context context,
+            UserManager userManager,
+            CarServiceProvider carServiceProvider,
             IWindowManager wmService,
             DisplayController displayController,
             DisplayInsetsController displayInsetsController,
@@ -152,6 +163,8 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             SystemUiWindowProvider windowProvider,
             EventDispatcher eventDispatcher) {
         mContext = context;
+        mUserManager = userManager;
+        mCarServiceProvider = carServiceProvider;
         mWmService = wmService;
         mDisplayInsetsController = displayInsetsController;
         mHandler = mainHandler;
@@ -189,6 +202,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
                     /* notifyForDescendants= */ true, mSuwSettingsObserver, UserHandle.USER_ALL);
             registerOverlayChangeBroadcastReceiver();
             registerOccupantZoneChangeListener();
+            registerUserLifecycleListener();
         }
     }
 
@@ -281,6 +295,25 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         mUserHelper.addOccupantZoneChangeListener(mOccupantChangeListener);
     }
 
+    @SuppressLint("MissingPermission")
+    private void registerUserLifecycleListener() {
+        CarUserManager.UserLifecycleListener userLifecycleListener = event -> {
+            if (event.getEventType() == USER_LIFECYCLE_EVENT_TYPE_UNLOCKING
+                    || event.getEventType() == USER_LIFECYCLE_EVENT_TYPE_UNLOCKED) {
+                onUserSetupInProgressChangedPerDisplay();
+            }
+        };
+
+        mCarServiceProvider.addListener(car -> {
+            CarUserManager carUserManager = car.getCarManager(CarUserManager.class);
+            if (carUserManager != null) {
+                carUserManager.addListener(new HandlerExecutor(mHandler), userLifecycleListener);
+                // Trigger just in case unlock happened prior to the CarService being available
+                onUserSetupInProgressChangedPerDisplay();
+            }
+        });
+    }
+
     @VisibleForTesting
     protected String getBarPolicyString() {
         return mBarControlPolicy.getSettingValue();
@@ -290,7 +323,8 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         if (userId == INVALID_USER_ID) {
             return false;
         }
-        return Settings.Secure.getIntForUser(mContext.getContentResolver(),
+        return mUserManager.isUserUnlockingOrUnlocked(userId)
+                && Settings.Secure.getIntForUser(mContext.getContentResolver(),
                 CarSettings.Secure.KEY_SETUP_WIZARD_IN_PROGRESS, 0,
                 userId) != 0;
     }

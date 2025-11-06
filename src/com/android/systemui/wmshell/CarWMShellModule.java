@@ -21,6 +21,7 @@ import static com.android.car.scalableui.loader.xml.HunTagXmlParserKt.HUN_PANEL_
 import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.os.Handler;
+import android.os.UserManager;
 import android.util.Log;
 import android.view.IWindowManager;
 
@@ -100,14 +101,15 @@ public abstract class CarWMShellModule {
     @WMSingleton
     @Provides
     static DisplaySystemBarsController provideDisplaySystemBarsController(Context context,
+            UserManager userManager, CarServiceProvider carServiceProvider,
             IWindowManager wmService, DisplayController displayController,
             DisplayInsetsController displayInsetsController,
             @Main Handler mainHandler, CarWMUserHelper userHelper,
             ShellController shellController, SystemUiWindowProvider windowProvider,
             EventDispatcher dispatcher) {
-        return new DisplaySystemBarsController(context, wmService, displayController,
-                displayInsetsController, mainHandler, userHelper, shellController, windowProvider,
-                dispatcher);
+        return new DisplaySystemBarsController(context, userManager, carServiceProvider, wmService,
+                displayController, displayInsetsController, mainHandler, userHelper,
+                shellController, windowProvider, dispatcher);
     }
 
     @WMSingleton

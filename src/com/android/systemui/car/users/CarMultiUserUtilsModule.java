@@ -87,19 +87,18 @@ public abstract class CarMultiUserUtilsModule {
             CarMUPANDUserTrackerImpl mupandTracker = new CarMUPANDUserTrackerImpl(context,
                     featureFlagsProvider, userManager, iActivityManager, dumpManager, appScope,
                     backgroundDispatcher, handler, carServiceProvider, initController);
-            mupandTracker.initialize(ActivityManager.getCurrentUser());
+            mupandTracker.initialize(ActivityManager::getCurrentUser);
             return mupandTracker;
         }
         UserHandle processUser = Process.myUserHandle();
         boolean isSecondaryUserSystemUI =
                 CarSystemUIUserUtil.isSecondaryMUMDSystemUI();
-        int startingUser = isSecondaryUserSystemUI
-                ? processUser.getIdentifier()
-                : ActivityManager.getCurrentUser();
         CarUserTrackerImpl tracker = new CarUserTrackerImpl(context, featureFlagsProvider,
                 userManager, iActivityManager, dumpManager, appScope, backgroundDispatcher,
                 handler, isSecondaryUserSystemUI);
-        tracker.initialize(startingUser);
+        tracker.initialize(isSecondaryUserSystemUI
+                ? processUser::getIdentifier
+                : ActivityManager::getCurrentUser);
         return tracker;
     }
 

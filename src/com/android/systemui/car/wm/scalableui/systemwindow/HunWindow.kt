@@ -28,7 +28,7 @@ import kotlin.math.min
 /**
  * An implementation of [SystemUiWindow] for Heads-Up Notifications (Huns).
  */
-class HunWindow constructor(
+class HunWindow(
     context: Context,
     displayManager: DisplayManager,
     consumer: PanelUpdateConsumer,

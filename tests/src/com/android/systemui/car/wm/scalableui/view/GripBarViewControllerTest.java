@@ -70,7 +70,7 @@ public class GripBarViewControllerTest extends CarSysuiTestCase {
     private static final String BREAKPOINT_2_EVENT_ID = "breakpoint_2_event";
 
     private GripBarViewController mGripBarViewController;
-    private GripBar mGripBar;
+    private GripBarBase mGripBar;
 
     @Mock
     private com.android.car.scalableui.model.PanelControllerMetadata mMetadata;
@@ -87,7 +87,7 @@ public class GripBarViewControllerTest extends CarSysuiTestCase {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mGripBar = new GripBar(mContext, null);
+        mGripBar = new HorizontalGripBar(mContext, null);
         mGripBar.setId(GRIP_BAR_ID);
 
         BreakPoint breakPoint1 = new BreakPoint.Builder(0, BREAKPOINT_1_EVENT_ID).build();
@@ -100,7 +100,7 @@ public class GripBarViewControllerTest extends CarSysuiTestCase {
         when(mMetadata.getStringConfiguration(SNAPTHREADHOLD_TAG)).thenReturn("5");
 
         when(mMetadata.getStringConfiguration(VIEW_TAG))
-                .thenReturn("com.android.systemui.car.wm.scalableui.view.GripBar");
+                .thenReturn("com.android.systemui.car.wm.scalableui.view.HorizontalGripBar");
         when(mDecorPanelViewMap.get(any())).thenReturn(mViewProvider);
         when(mViewProvider.get()).thenReturn(mGripBar);
     }

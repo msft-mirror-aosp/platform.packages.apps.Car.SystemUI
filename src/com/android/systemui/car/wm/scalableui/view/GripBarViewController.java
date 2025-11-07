@@ -15,8 +15,6 @@
  */
 package com.android.systemui.car.wm.scalableui.view;
 
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.DRAG_DEC_EVENT_ID_TAG;
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.DRAG_INC_EVENT_ID_TAG;
 import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.EVENT_ID_TAG;
 import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.ORIENTATION_TAG;
 import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.SNAPTHREADHOLD_TAG;
@@ -79,8 +77,6 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     private GripBar mGripBar;
     private boolean mIsHorizontal;
     private String mDragEventId;
-    private String mDragDecreaseEventId;
-    private String mDragIncreaseEventId;
     private float mSnapThreshold;
     private float mDragStart;
     private int mState = 0;
@@ -131,8 +127,6 @@ public class GripBarViewController extends DecorPanelControllerBase implements
 
     private void init(PanelControllerMetadata metadata) {
         mDragEventId = metadata.getStringConfiguration(EVENT_ID_TAG);
-        mDragDecreaseEventId = metadata.getStringConfiguration(DRAG_DEC_EVENT_ID_TAG);
-        mDragIncreaseEventId = metadata.getStringConfiguration(DRAG_INC_EVENT_ID_TAG);
         mIsHorizontal = Integer.parseInt(
                 metadata.getStringConfiguration(ORIENTATION_TAG)) == 1;
         mSnapThreshold = Integer.parseInt(
@@ -192,7 +186,7 @@ public class GripBarViewController extends DecorPanelControllerBase implements
                 mDragStart = mIsHorizontal ? event.getRawX() : event.getRawY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                dispatchEvent(progress, value, event);
+                dispatchDragEvent(progress, value);
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
@@ -204,43 +198,52 @@ public class GripBarViewController extends DecorPanelControllerBase implements
         Trace.endSection();
     }
 
-    private void dispatchEvent(float progress, float value, MotionEvent event) {
-        if (progress == mLastDispatchedProgress && event.getAction() != MotionEvent.ACTION_UP) {
+    /**
+     * Dispatches an event indicating an ongoing drag.
+     * @param progress The progress of drag between 0 and 1. This value indicates the progress of
+     *                 drag between two adjacent breakpionts.*
+     * @param value The drag value in pixels
+     */
+    private void dispatchDragEvent(float progress, float value) {
+        if (progress == mLastDispatchedProgress) {
             // don't dispatch multiple events from same progress
             return;
         }
-        if (mDragDecreaseEventId != null && value < mDragStart) {
-            Event keyFrameEvent = new KeyFrameEvent.Builder(mDragDecreaseEventId, progress)
-                    .setPanelId(mPanelId)
-                    .build();
-            dispatchEvent(keyFrameEvent);
-        } else if (mDragIncreaseEventId != null && value > mDragStart) {
-            Event keyFrameEvent = new KeyFrameEvent.Builder(mDragIncreaseEventId, progress)
-                    .setPanelId(mPanelId)
-                    .build();
-            dispatchEvent(keyFrameEvent);
-        } else {
-            Event keyFrameEvent = new KeyFrameEvent.Builder(mDragEventId, progress)
-                    .setPanelId(mPanelId)
-                    .build();
-            dispatchEvent(keyFrameEvent);
-        }
+
+        Event keyFrameEvent = new KeyFrameEvent.Builder(mDragEventId, progress)
+                .setPanelId(mPanelId)
+                .addToken(PANEL_DRAG_DIRECTION_ID, getDragDirection(value))
+                .build();
+        dispatchEvent(keyFrameEvent);
+
         mLastDispatchedProgress = progress;
     }
 
+    /**
+     * Dispatches an event indicating the end of drag.
+     * @param value The drag value in pixels
+     * @param breakPoint The breakpoint the drag should end on.
+     */
     private void dispatchDragEndEvent(float value, BreakPoint breakPoint) {
-        String direction;
-        if (mStartBreakPoint.getEventId().equals(breakPoint.getEventId())) {
-            direction = DRAG_NO_CHANGE;
-        } else if (value < mDragStart) {
-            direction = DRAG_DECREASE;
-        } else {
-            direction = DRAG_INCREASE;
-        }
         dispatchEvent(new Event.Builder(breakPoint.getEventId())
-                .addToken(PANEL_DRAG_DIRECTION_ID, direction)
+                .addToken(PANEL_DRAG_DIRECTION_ID, getDragDirection(value))
                 .setPanelId(mPanelId)
                 .build());
+    }
+
+    /**
+     * Specifies the direction of the drag.
+     * @param value The drag value
+     * @return The token value to be used for the <code>direction</code> key.
+     */
+    private String getDragDirection(float value) {
+        if (value < mDragStart) {
+            return DRAG_DECREASE;
+        } else if (value > mDragStart) {
+            return DRAG_INCREASE;
+        } else {
+            return DRAG_NO_CHANGE;
+        }
     }
 
     @Override

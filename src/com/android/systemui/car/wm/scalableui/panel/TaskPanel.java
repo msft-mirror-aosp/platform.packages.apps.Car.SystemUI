@@ -717,10 +717,14 @@ public final class TaskPanel extends SysUIPanel {
             Log.e(TAG, "leash is " + getLeash() + ", tx is " + tx);
         }
 
-        Rect[] panelInsets = getInsetRects(variant);
-        IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
-            mAutoLayoutManager.addOrUpdateInsets(getRootStack(), sideIndex,
-                    systemOverlays(), panelInsets[sideIndex]);
+        // Execute AutoLayoutManager transactions on WmShell-MainThread, we may not block the
+        // SysUI-MainThread as it's not part of the same surface transaction.
+        mMainExecutor.execute(() -> {
+            Rect[] panelInsets = getInsetRects(variant);
+            IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
+                mAutoLayoutManager.addOrUpdateInsets(getRootStack(), sideIndex,
+                        systemOverlays(), panelInsets[sideIndex]);
+            });
         });
         if (updateChildren) {
             // autoSurfaceTransaction being null should not be possible if the caller is properly

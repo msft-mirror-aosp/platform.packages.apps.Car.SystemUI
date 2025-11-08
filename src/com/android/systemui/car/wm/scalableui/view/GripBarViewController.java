@@ -24,10 +24,10 @@ import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventCon
 
 import android.annotation.SuppressLint;
 import android.os.Trace;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.car.scalableui.model.BreakPoint;
@@ -68,10 +68,11 @@ import javax.inject.Provider;
  */
 public class GripBarViewController extends DecorPanelControllerBase implements
         GripBar.GripBarEventHandler {
+    static final String DRAG_NO_CHANGE = "noChange";
+    static final String DRAG_INCREASE = "increase";
+    static final String DRAG_DECREASE = "decrease";
+
     private static final String TAG = GripBarViewController.class.getSimpleName();
-    private static final String DRAG_NO_CHANGE = "noChange";
-    private static final String DRAG_INCREASE = "increase";
-    private static final String DRAG_DECREASE = "decrease";
     private final String mPanelId;
     private final EventDispatcher mEventDispatcher;
     private final List<BreakPoint> mBreakPoints;
@@ -84,11 +85,13 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     private float mDragStart;
     private int mState = 0;
     private BreakPoint mStartBreakPoint;
-    private float mLastDispatchedProgress;
+    private float mLastDispatchedProgress = -1;
 
     @Override
     public void onClick() {
-        Event event = new Event.Builder((mBreakPoints.get(mState).getEventId())).build();
+        Event event = new Event.Builder((mBreakPoints.get(mState).getEventId()))
+                .setPanelId(mPanelId)
+                .build();
         dispatchEvent(event);
         mState = (mState + 1) % mBreakPoints.size();
         logIfDebuggable("onclick " + event);
@@ -98,7 +101,7 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     public GripBarViewController(@Assisted String panelId,
             @Assisted PanelControllerMetadata metadata,
             @DecorPanelViewMap Map<Class<?>, Provider<View>> decorPanelViewMap,
-            EventDispatcher eventDispatcher) {
+            @NonNull EventDispatcher eventDispatcher) {
         super(metadata, decorPanelViewMap);
         mPanelId = panelId;
         mEventDispatcher = eventDispatcher;
@@ -136,14 +139,13 @@ public class GripBarViewController extends DecorPanelControllerBase implements
                 metadata.getStringConfiguration(SNAPTHREADHOLD_TAG));
         mBreakPoints.clear();
         mBreakPoints.addAll(metadata.getBreakPoints());
+        if (mBreakPoints.size() < 2) {
+            throw new RuntimeException("Invalid breakpoints: " + mBreakPoints.size());
+        }
         logIfDebuggable("Parse array: " + this);
     }
 
     private void dispatchEvent(Event event) {
-        if (mEventDispatcher == null) {
-            Log.e(TAG, "EventDispatcher is null");
-            return;
-        }
         mEventDispatcher.executeEvent(event);
     }
 
@@ -166,11 +168,6 @@ public class GripBarViewController extends DecorPanelControllerBase implements
 
     @Override
     public void onTouch(MotionEvent event) {
-        if (mBreakPoints.size() < 2) {
-            Log.w(TAG, "break point not valid " + mBreakPoints.size());
-            return;
-        }
-
         float value = mIsHorizontal ? event.getRawX() : event.getRawY();
         float min = mBreakPoints.getFirst().getPoint();
         float max = mBreakPoints.getLast().getPoint();
@@ -199,7 +196,7 @@ public class GripBarViewController extends DecorPanelControllerBase implements
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                dispatchDirectionEvent(value, closest);
+                dispatchDragEndEvent(value, closest);
                 mStartBreakPoint = null;
                 break;
             default:
@@ -217,7 +214,7 @@ public class GripBarViewController extends DecorPanelControllerBase implements
                     .setPanelId(mPanelId)
                     .build();
             dispatchEvent(keyFrameEvent);
-        } else if (mDragIncreaseEventId != null) {
+        } else if (mDragIncreaseEventId != null && value > mDragStart) {
             Event keyFrameEvent = new KeyFrameEvent.Builder(mDragIncreaseEventId, progress)
                     .setPanelId(mPanelId)
                     .build();
@@ -231,7 +228,7 @@ public class GripBarViewController extends DecorPanelControllerBase implements
         mLastDispatchedProgress = progress;
     }
 
-    private void dispatchDirectionEvent(float value, BreakPoint breakPoint) {
+    private void dispatchDragEndEvent(float value, BreakPoint breakPoint) {
         String direction;
         if (mStartBreakPoint.getEventId().equals(breakPoint.getEventId())) {
             direction = DRAG_NO_CHANGE;
@@ -248,10 +245,9 @@ public class GripBarViewController extends DecorPanelControllerBase implements
 
     @Override
     public String toString() {
-        String breakpointsString = (mBreakPoints == null) ? "null" :
-                mBreakPoints.stream()
-                        .map(Object::toString)
-                        .collect(Collectors.joining(", ", "[", "]"));
+        String breakpointsString = mBreakPoints.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", ", "[", "]"));
 
         return "GripBarViewProvider {"
                 + "mPanelId=" + mPanelId

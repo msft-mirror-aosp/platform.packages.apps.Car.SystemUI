@@ -363,8 +363,7 @@ public class PanelTransitionCoordinator {
             }
             boolean isChildTaskVisible = conflictingPanelStates.get(panelId);
             if (isChildTaskVisible && TransitionUtil.isOpeningMode(change.getMode())) {
-                orderedOpenConflictPanelIds.remove(panelId);
-                orderedOpenConflictPanelIds.add(panelId);
+                orderedOpenConflictPanelIds.addLast(panelId);
             } else if (!isChildTaskVisible && TransitionUtil.isClosingMode(change.getMode())) {
                 Transition closeTransition = mPanelUtils.peekPanelTransitionForEvent(
                         new Event.Builder(SYSTEM_TASK_CLOSE_EVENT_ID).setPanelId(panelId).build(),
@@ -374,19 +373,69 @@ public class PanelTransitionCoordinator {
                     // The panel is either empty, becoming empty, or the close event will trigger
                     // the panel to become invisible. Therefore the resolution here is to trigger
                     // a close transition event to update the panel state.
-                    orderedCloseConflictPanelIds.remove(panelId);
-                    orderedCloseConflictPanelIds.add(panelId);
+                    orderedCloseConflictPanelIds.addLast(panelId);
                 } else {
                     // The panel is visible but the child task is not visible because of a close
                     // transition. However, because a close event will not update the state of this
-                    // panel (and there is still some task attached to this panel, it is assumed
+                    // panel (and there is still some task attached to this panel), it is assumed
                     // that the intent is for the panel and task to still be visible.
-                    orderedOpenConflictPanelIds.remove(panelId);
-                    orderedOpenConflictPanelIds.add(panelId);
+                    orderedOpenConflictPanelIds.addLast(panelId);
                 }
             }
         }
+        // If a previous transition was merged into this one, some of the changes may not be
+        // included in this transition. Triggers these first with our best-guess of a proper
+        // resolution.
+        Map<String, Boolean> unhandledConflictingPanelStates =
+                conflictingPanelStates.entrySet().stream()
+                        .filter(entry -> !orderedOpenConflictPanelIds.contains(entry.getKey()))
+                        .filter(entry -> !orderedCloseConflictPanelIds.contains(entry.getKey()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        LinkedHashSet<String> unhandledCloseConflictPanelIds = new LinkedHashSet<>();
+        LinkedHashSet<String> unhandledOpenConflictPanelIds = new LinkedHashSet<>();
+        for (String unhandledConflictPanel : unhandledConflictingPanelStates.keySet()) {
+            if (unhandledConflictingPanelStates.get(unhandledConflictPanel)) {
+                unhandledOpenConflictPanelIds.addLast(unhandledConflictPanel);
+                continue;
+            }
+            TaskPanel taskPanel = mPanelUtils.getTaskPanel(
+                    tp -> tp.getPanelId().equals(unhandledConflictPanel));
+            if (taskPanel == null) {
+                continue;
+            }
+            Transition closeTransition = mPanelUtils.peekPanelTransitionForEvent(
+                    new Event.Builder(SYSTEM_TASK_CLOSE_EVENT_ID).setPanelId(
+                            unhandledConflictPanel).build(), unhandledConflictPanel);
+            if (taskPanel.isRootTaskEmpty() || (closeTransition != null
+                    && !closeTransition.getToVariant().isVisible())) {
+                // The panel is either empty or the close event will trigger the panel to
+                // become invisible. Therefore the resolution here is to trigger a close
+                // transition event to update the panel state.
+                unhandledCloseConflictPanelIds.addLast(unhandledConflictPanel);
+            } else {
+                // The panel is visible but the child task is not visible because of a close
+                // transition. However, because a close event will not update the state of this
+                // panel (and there is still some task attached to this panel), it is assumed
+                // that the intent is for the panel and task to still be visible.
+                unhandledOpenConflictPanelIds.addLast(unhandledConflictPanel);
+            }
+        }
         List<Event> conflictEvents = new ArrayList<>();
+        // Order by:
+        // - Unhandled close events
+        // - Unhandled open events
+        // - Ordered close events
+        // - Ordered open events
+        unhandledCloseConflictPanelIds.forEach(panelId -> {
+            conflictEvents.add(new Event.Builder(SYSTEM_TASK_CLOSE_EVENT_ID)
+                    .setPanelId(panelId)
+                    .build());
+        });
+        unhandledOpenConflictPanelIds.forEach(panelId -> {
+            conflictEvents.add(new Event.Builder(SYSTEM_TASK_OPEN_EVENT_ID)
+                    .setPanelId(panelId)
+                    .build());
+        });
         orderedCloseConflictPanelIds.forEach(panelId -> {
             conflictEvents.add(new Event.Builder(SYSTEM_TASK_CLOSE_EVENT_ID)
                     .setPanelId(panelId)
@@ -742,8 +791,8 @@ public class PanelTransitionCoordinator {
 
     private void calculateTransaction(SurfaceControl.Transaction transaction,
             @NonNull TransitionInfo info, Predicate<String> useCurrentState) {
-        Variant variant = null;
         for (TransitionInfo.Change change : info.getChanges()) {
+            Variant variant = null;
             if (change.getTaskInfo() == null) {
                 continue;
             }

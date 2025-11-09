@@ -40,14 +40,16 @@ import com.android.systemui.dump.DumpManager;
 import com.android.systemui.flags.FeatureFlagsClassic;
 import com.android.systemui.settings.UserTrackerImpl;
 
+import kotlin.jvm.functions.Function0;
+
+import kotlinx.coroutines.CoroutineDispatcher;
+import kotlinx.coroutines.CoroutineScope;
+
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import javax.inject.Provider;
-
-import kotlinx.coroutines.CoroutineDispatcher;
-import kotlinx.coroutines.CoroutineScope;
 
 /**
  * Custom user tracking class extended from {@link UserTrackerImpl} specifically for
@@ -115,11 +117,11 @@ public class CarMUPANDUserTrackerImpl extends UserTrackerImpl {
     }
 
     @Override
-    public void initialize(int startingUser) {
+    public void initialize(Function0<Integer> getStartingUser) {
         if (getInitialized()) {
             return;
         }
-        super.initialize(startingUser);
+        super.initialize(getStartingUser);
         mCarServiceProvider.addListener(mCarServiceOnConnectedListener);
     }
 

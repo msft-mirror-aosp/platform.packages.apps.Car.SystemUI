@@ -89,7 +89,8 @@ import javax.inject.Inject;
 public class PanelTransitionCoordinator {
     private static final String TAG = PanelTransitionCoordinator.class.getSimpleName();
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
-    private static final String DECOR_TRANSACTION = "DECOR_TRANSACTION";
+    @VisibleForTesting
+    protected static final String DECOR_TRANSACTION = "DECOR_TRANSACTION";
     private static final String PANEL_TRANSACTION = "PANEL_TRANSACTION";
 
     private final AutoTaskStackController mAutoTaskStackController;

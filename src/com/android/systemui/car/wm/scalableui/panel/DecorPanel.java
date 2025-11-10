@@ -17,6 +17,7 @@ package com.android.systemui.car.wm.scalableui.panel;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Trace;
 import android.util.Log;
 import android.view.SurfaceControl;
 import android.view.View;
@@ -183,6 +184,7 @@ public final class DecorPanel extends SysUIPanel {
             Log.e(TAG, "AutoSurfaceTransaction cannot be null for DecorPanel updates");
             return;
         }
+        Trace.beginSection(TAG + "#updateInternal");
         super.updateInternal(autoSurfaceTransaction, tx, variant, updateChildren);
         logIfDebuggable("updateDecorPanelSurface:" + this);
         Rect bounds = variant == null ? getBounds() : variant.getBounds();
@@ -199,6 +201,7 @@ public final class DecorPanel extends SysUIPanel {
                 variant == null ? getAlpha() : variant.getAlpha());
         autoSurfaceTransaction.setVisibility(getAutoDecor(),
                 variant == null ? isVisible() : variant.isVisible());
+        Trace.endSection();
     }
 
     @AssistedFactory

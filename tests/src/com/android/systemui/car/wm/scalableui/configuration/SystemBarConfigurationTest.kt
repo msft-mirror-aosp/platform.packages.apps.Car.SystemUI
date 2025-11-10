@@ -125,7 +125,7 @@ class SystemBarConfigurationTest : CarSysuiTestCase() {
     fun isAboveHun_isTrue() {
         testBundle.putInt(
             SystemBarTagXmlParser.BAR_Z_ORDER_ATTRIBUTE,
-            HUN_Z_ORDER
+            HUN_Z_ORDER + 1
         )
         val systemBarConfiguration = SystemBarConfiguration(
             Optional.of(mockPanelUpdateConsumer),
@@ -140,7 +140,7 @@ class SystemBarConfigurationTest : CarSysuiTestCase() {
     fun isAboveHun_isFalse() {
         testBundle.putInt(
             SystemBarTagXmlParser.BAR_Z_ORDER_ATTRIBUTE,
-            HUN_Z_ORDER + 1
+            HUN_Z_ORDER
         )
         val systemBarConfiguration = SystemBarConfiguration(
             Optional.of(mockPanelUpdateConsumer),

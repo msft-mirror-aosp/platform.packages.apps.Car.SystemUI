@@ -23,10 +23,11 @@ import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.SNAPTHREAD
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_DRAG_DIRECTION_ID;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
+import android.os.Trace;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.car.scalableui.model.BreakPoint;
@@ -67,29 +68,30 @@ import javax.inject.Provider;
  */
 public class GripBarViewController extends DecorPanelControllerBase implements
         GripBar.GripBarEventHandler {
+    static final String DRAG_NO_CHANGE = "noChange";
+    static final String DRAG_INCREASE = "increase";
+    static final String DRAG_DECREASE = "decrease";
+
     private static final String TAG = GripBarViewController.class.getSimpleName();
-    private static final String DRAG_NO_CHANGE = "noChange";
-    private static final String DRAG_INCREASE = "increase";
-    private static final String DRAG_DECREASE = "decrease";
+    private final String mPanelId;
+    private final EventDispatcher mEventDispatcher;
+    private final List<BreakPoint> mBreakPoints;
     private GripBar mGripBar;
     private boolean mIsHorizontal;
-
     private String mDragEventId;
     private String mDragDecreaseEventId;
     private String mDragIncreaseEventId;
     private float mSnapThreshold;
     private float mDragStart;
-
     private int mState = 0;
-
-    private final List<BreakPoint> mBreakPoints;
     private BreakPoint mStartBreakPoint;
-    private EventDispatcher mEventDispatcher;
-    private float mLastDispatchedProgress;
+    private float mLastDispatchedProgress = -1;
 
     @Override
     public void onClick() {
-        Event event = new Event.Builder((mBreakPoints.get(mState).getEventId())).build();
+        Event event = new Event.Builder((mBreakPoints.get(mState).getEventId()))
+                .setPanelId(mPanelId)
+                .build();
         dispatchEvent(event);
         mState = (mState + 1) % mBreakPoints.size();
         logIfDebuggable("onclick " + event);
@@ -99,8 +101,9 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     public GripBarViewController(@Assisted String panelId,
             @Assisted PanelControllerMetadata metadata,
             @DecorPanelViewMap Map<Class<?>, Provider<View>> decorPanelViewMap,
-            EventDispatcher eventDispatcher) {
+            @NonNull EventDispatcher eventDispatcher) {
         super(metadata, decorPanelViewMap);
+        mPanelId = panelId;
         mEventDispatcher = eventDispatcher;
         mBreakPoints = new ArrayList<>();
         init(metadata);
@@ -136,14 +139,13 @@ public class GripBarViewController extends DecorPanelControllerBase implements
                 metadata.getStringConfiguration(SNAPTHREADHOLD_TAG));
         mBreakPoints.clear();
         mBreakPoints.addAll(metadata.getBreakPoints());
+        if (mBreakPoints.size() < 2) {
+            throw new RuntimeException("Invalid breakpoints: " + mBreakPoints.size());
+        }
         logIfDebuggable("Parse array: " + this);
     }
 
     private void dispatchEvent(Event event) {
-        if (mEventDispatcher == null) {
-            Log.e(TAG, "EventDispatcher is null");
-            return;
-        }
         mEventDispatcher.executeEvent(event);
     }
 
@@ -166,11 +168,6 @@ public class GripBarViewController extends DecorPanelControllerBase implements
 
     @Override
     public void onTouch(MotionEvent event) {
-        if (mBreakPoints.size() < 2) {
-            logIfDebuggable("break point not valid " + mBreakPoints.size());
-            return;
-        }
-
         float value = mIsHorizontal ? event.getRawX() : event.getRawY();
         float min = mBreakPoints.getFirst().getPoint();
         float max = mBreakPoints.getLast().getPoint();
@@ -185,25 +182,26 @@ public class GripBarViewController extends DecorPanelControllerBase implements
         }
 
         float progress = (value - min) / (max - min);
-        logIfDebuggable("progress " + progress);
         if (progress < 0 || progress > 1) {
             progress = progress < 0 ? 0 : 1;
         }
 
+        Trace.beginSection("GripBar#onTouch " + MotionEvent.actionToString(event.getAction()));
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mDragStart = mIsHorizontal ? event.getRawX() : event.getRawY();
-                return;
+                break;
             case MotionEvent.ACTION_MOVE:
                 dispatchEvent(progress, value, event);
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                dispatchDirectionEvent(value, closest);
+                dispatchDragEndEvent(value, closest);
                 mStartBreakPoint = null;
                 break;
             default:
         }
+        Trace.endSection();
     }
 
     private void dispatchEvent(float progress, float value, MotionEvent event) {
@@ -212,43 +210,51 @@ public class GripBarViewController extends DecorPanelControllerBase implements
             return;
         }
         if (mDragDecreaseEventId != null && value < mDragStart) {
-            KeyFrameEvent keyFrameEvent = new KeyFrameEvent.Builder(mDragDecreaseEventId,
-                    progress).build();
+            Event keyFrameEvent = new KeyFrameEvent.Builder(mDragDecreaseEventId, progress)
+                    .setPanelId(mPanelId)
+                    .build();
             dispatchEvent(keyFrameEvent);
-        } else if (mDragIncreaseEventId != null) {
-            KeyFrameEvent keyFrameEvent = new KeyFrameEvent.Builder(mDragIncreaseEventId,
-                    progress).build();
+        } else if (mDragIncreaseEventId != null && value > mDragStart) {
+            Event keyFrameEvent = new KeyFrameEvent.Builder(mDragIncreaseEventId, progress)
+                    .setPanelId(mPanelId)
+                    .build();
             dispatchEvent(keyFrameEvent);
         } else {
-            dispatchEvent(new KeyFrameEvent.Builder(mDragEventId,
-                    progress).build());
+            Event keyFrameEvent = new KeyFrameEvent.Builder(mDragEventId, progress)
+                    .setPanelId(mPanelId)
+                    .build();
+            dispatchEvent(keyFrameEvent);
         }
         mLastDispatchedProgress = progress;
     }
 
-    private void dispatchDirectionEvent(float value, BreakPoint breakPoin) {
+    private void dispatchDragEndEvent(float value, BreakPoint breakPoint) {
         String direction;
-        if (mStartBreakPoint.getEventId().equals(breakPoin.getEventId())) {
+        if (mStartBreakPoint.getEventId().equals(breakPoint.getEventId())) {
             direction = DRAG_NO_CHANGE;
         } else if (value < mDragStart) {
             direction = DRAG_DECREASE;
         } else {
             direction = DRAG_INCREASE;
         }
-        dispatchEvent(new Event.Builder(breakPoin.getEventId())
+        dispatchEvent(new Event.Builder(breakPoint.getEventId())
                 .addToken(PANEL_DRAG_DIRECTION_ID, direction)
+                .setPanelId(mPanelId)
                 .build());
     }
 
     @Override
     public String toString() {
-        String breakpointsString = (mBreakPoints == null) ? "null" :
-                mBreakPoints.stream()
-                        .map(Object::toString)
-                        .collect(Collectors.joining(", ", "[", "]"));
+        String breakpointsString = mBreakPoints.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(", ", "[", "]"));
 
-        return "GripBarViewProvider{" + "mGripBar=" + mGripBar + ", mIsHorizontal=" + mIsHorizontal
-                + ", mDragEventId='" + mDragEventId + '\'' + ", mSnapThreshold=" + mSnapThreshold
+        return "GripBarViewProvider {"
+                + "mPanelId=" + mPanelId
+                + ", mGripBar=" + mGripBar
+                + ", mIsHorizontal=" + mIsHorizontal
+                + ", mDragEventId='" + mDragEventId + '\''
+                + ", mSnapThreshold=" + mSnapThreshold
                 + ", mBreakPoints=" + breakpointsString + '}';
     }
 }

@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.hvac;
 
+import static com.android.systemui.car.hvac.HvacConstants.HVAC_SYSTEM_BAR_NAMES;
+
 import android.content.Context;
 
 import com.android.systemui.R;
@@ -31,8 +33,6 @@ import javax.inject.Named;
 /** Dagger module for HVAC. */
 @Module
 public class HvacModule {
-    /** Dagger {@link Named} for a list of strings that listen to HVAC drag closed listener. */
-    public static final String HVAC_SYSTEM_BAR_NAMES = "HvacSystemBarNames";
 
     /** Provides the list of system bar names that the HVAC panel should register with. */
     @Provides

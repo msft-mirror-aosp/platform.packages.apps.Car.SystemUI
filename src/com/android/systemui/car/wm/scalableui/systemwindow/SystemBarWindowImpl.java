@@ -28,6 +28,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.os.Binder;
+import android.view.Gravity;
 import android.view.InsetsFrameProvider;
 import android.view.WindowManager;
 
@@ -45,6 +46,7 @@ import dagger.assisted.AssistedInject;
 public class SystemBarWindowImpl extends SystemUiWindowBase implements SystemBarWindow {
     private static final Binder INSETS_OWNER = new Binder();
     private final SystemBarConfiguration mConfiguration;
+    private final PanelUpdateConsumer mPanelUpdateConsumer;
 
     @AssistedInject
     public SystemBarWindowImpl(Context context, DisplayManager displayManager,
@@ -53,6 +55,7 @@ public class SystemBarWindowImpl extends SystemUiWindowBase implements SystemBar
             @Assisted int displayId) {
         super(context, displayManager, consumer, dispatcher, config.getName(), displayId);
         mConfiguration = config;
+        mPanelUpdateConsumer = consumer;
     }
 
     private static int mapZOrderToBarType(int zOrder) {
@@ -84,6 +87,10 @@ public class SystemBarWindowImpl extends SystemUiWindowBase implements SystemBar
                 new InsetsFrameProvider(INSETS_OWNER, getMandatorySystemGesturesIndex(),
                         mandatorySystemGestures())};
         lp.setFitInsetsTypes(0);
+        int panelGravity = mPanelUpdateConsumer.getGravity(getId());
+        if (panelGravity != Gravity.NO_GRAVITY) {
+            lp.gravity = panelGravity;
+        }
         lp.windowAnimations = 0;
         lp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
         lp.privateFlags = lp.privateFlags

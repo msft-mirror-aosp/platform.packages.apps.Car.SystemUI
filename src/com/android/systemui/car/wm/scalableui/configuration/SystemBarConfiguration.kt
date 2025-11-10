@@ -73,7 +73,7 @@ data class SystemBarConfiguration(
         /**
          * @return `true` if SystemBar should be displayed above HUN
          */
-        get() = HUN_Z_ORDER >= zOrder
+        get() = HUN_Z_ORDER < zOrder
 
     val isHiddenForKeyboard: Boolean
         /**

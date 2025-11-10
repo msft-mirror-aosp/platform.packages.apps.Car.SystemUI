@@ -845,7 +845,8 @@ public class PanelTransitionCoordinator {
      * 3. If the current focused panel is becoming invisible, focus the highest z-layer panel
      * permitted that is still visible.
      */
-    private void calculateFocusedTaskStack(PanelTransaction panelTransaction,
+    @VisibleForTesting
+    void calculateFocusedTaskStack(PanelTransaction panelTransaction,
             AutoTaskStackTransaction autoTaskStackTransaction,
             @Nullable Event event) {
         // 1. If the trigger is a task being opened on a visible panel, focus that panel
@@ -853,7 +854,7 @@ public class PanelTransitionCoordinator {
             String panelId = event.getPanelId();
             if (panelId != null) {
                 TaskPanel taskPanel = mPanelUtils.getTaskPanel(
-                        p -> p.getPanelId().equals(panelId));
+                        p -> p.getPanelId().equals(panelId) && p.getRootStack() != null);
                 if (taskPanel != null) {
                     // ensure the panel is or will become visible
                     Transition toState = panelTransaction.getPanelTransactionState(

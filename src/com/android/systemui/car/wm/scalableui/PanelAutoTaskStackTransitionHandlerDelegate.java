@@ -231,7 +231,9 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
 
         String componentString = component != null ? component.flattenToString() : null;
         TaskPanel panel = mPanelUtils.getTaskPanel(
-                tp -> tp.getRootTaskId() == request.getTriggerTask().parentTaskId);
+                tp -> request.getTriggerTask().parentTaskId != -1
+                        && tp.getRootTaskId() == request.getTriggerTask().parentTaskId
+                        && tp.getDisplayId() == request.getTriggerTask().displayId);
         if (panel == null) {
             // There is no panel ready to handle this event
             // TODO(b/392694590): determine if/how this case should be handled

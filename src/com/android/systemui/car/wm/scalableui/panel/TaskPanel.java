@@ -204,7 +204,8 @@ public final class TaskPanel extends SysUIPanel {
     }
 
     /**
-     * Initializes the panel with the RootTask. This must be called after the state has been set.
+     * Initializes the panel with the RootTask. This must be called after the state has been
+     * set.
      */
     @Override
     public void init() {
@@ -255,10 +256,8 @@ public final class TaskPanel extends SysUIPanel {
                                     mTaskPanelInfoRepository.getLastTopTaskOnPanel(getPanelId());
                             if (lastTask != null) {
                                 mWasRootTaskPreviouslyNonEmpty = false;
-                                logIfDebuggable(
-                                        "onRootTaskStackInfoChanged: Root task is empty, "
-                                                + "scheduling restart.");
-                                scheduleRestartAttempt(lastTask);
+                                logIfDebuggable("onRootTaskStackInfoChanged - " + getPanelId());
+                                handlePanelEmpty(lastTask);
                             }
                         } else {
                             mWasRootTaskPreviouslyNonEmpty = !isRootTaskEmpty();
@@ -307,42 +306,57 @@ public final class TaskPanel extends SysUIPanel {
     }
 
     @VisibleForTesting
-    void scheduleRestartAttempt(ActivityManager.RunningTaskInfo taskInfo) {
+    void handlePanelEmpty(ActivityManager.RunningTaskInfo taskInfo) {
         if (hasRestart()) {
-            PanelState panelState = getPanelState();
-            Restart restart = panelState.getRestart();
-            if (mCurrentRetryCount < restart.getMaxRetry()) {
-                long delay = (long) (INITIAL_RETRY_DELAY_MS * Math.pow(2, mCurrentRetryCount));
-                logIfDebuggable("scheduleRestartAttempt: Attempt " + (mCurrentRetryCount + 1)
-                        + " of " + restart.getMaxRetry() + " with delay " + delay + "ms.");
+            scheduleRestartAttempt(taskInfo);
+        } else if (!isVisible()) {
+            // If panel is visible, the panel empty event will be sent by PanelTransitionCoordinator
+            reportTaskPanelEmpty(taskInfo);
+        }
+    }
+
+    private void reportTaskPanelEmpty(ActivityManager.RunningTaskInfo taskInfo) {
+        logIfDebuggable(
+                "reportTaskPanelEmpty for TaskPanel" + getPanelId() + ",  forTask " + taskInfo);
+        mEventDispatcher.executeEvent(new Event.Builder(
+                SYSTEM_TASK_PANEL_EMPTY_EVENT_ID)
+                .setPanelId(getPanelId())
+                .build());
+    }
+
+    @VisibleForTesting
+    void scheduleRestartAttempt(ActivityManager.RunningTaskInfo taskInfo) {
+        PanelState panelState = getPanelState();
+        Restart restart = panelState.getRestart();
+        if (mCurrentRetryCount < restart.getMaxRetry()) {
+            long delay = (long) (INITIAL_RETRY_DELAY_MS * Math.pow(2, mCurrentRetryCount));
+            logIfDebuggable("scheduleRestartAttempt: Attempt " + (mCurrentRetryCount + 1)
+                    + " of " + restart.getMaxRetry() + " with delay " + delay + "ms.");
+            mMainExecutor.executeDelayed(() -> {
+                if (restart.getPolicy().equals(RESTART_POLICY_DEFAULT)) {
+                    logIfDebuggable("scheduleRestartAttempt: Restarting with DEFAULT policy.");
+                    mContext.startActivityAsUser(getDefaultIntent(), UserHandle.CURRENT);
+                } else if (restart.getPolicy().equals(RESTART_POLICY_LAST)) {
+                    logIfDebuggable("scheduleRestartAttempt: Restarting with LAST policy.");
+                    mContext.startActivityAsUser(taskInfo.baseIntent, UserHandle.CURRENT);
+                }
                 mMainExecutor.executeDelayed(() -> {
-                    if (restart.getPolicy().equals(RESTART_POLICY_DEFAULT)) {
-                        logIfDebuggable("scheduleRestartAttempt: Restarting with DEFAULT policy.");
-                        mContext.startActivityAsUser(getDefaultIntent(), UserHandle.CURRENT);
-                    } else if (restart.getPolicy().equals(RESTART_POLICY_LAST)) {
-                        logIfDebuggable("scheduleRestartAttempt: Restarting with LAST policy.");
-                        mContext.startActivityAsUser(taskInfo.baseIntent, UserHandle.CURRENT);
+                    if (isRootTaskEmpty()) {
+                        logIfDebuggable(
+                                "scheduleRestartAttempt: Restart failed, trying again.");
+                        mCurrentRetryCount++;
+                        scheduleRestartAttempt(taskInfo);
+                    } else {
+                        logIfDebuggable("scheduleRestartAttempt: Restart successful.");
                     }
-                    mMainExecutor.executeDelayed(() -> {
-                        if (isRootTaskEmpty()) {
-                            logIfDebuggable(
-                                    "scheduleRestartAttempt: Restart failed, trying again.");
-                            mCurrentRetryCount++;
-                            scheduleRestartAttempt(taskInfo);
-                        } else {
-                            logIfDebuggable("scheduleRestartAttempt: Restart successful.");
-                        }
-                    }, CHECK_RESTART_SUCCESS_DELAY_MS);
-                }, delay);
-            } else {
-                logIfDebuggable(
-                        "scheduleRestartAttempt: Max retries reached, sending empty event.");
-                mEventDispatcher.executeEvent(new Event.Builder(
-                        SYSTEM_TASK_PANEL_EMPTY_EVENT_ID)
-                        .setPanelId(getPanelId()).build());
-            }
+                }, CHECK_RESTART_SUCCESS_DELAY_MS);
+            }, delay);
         } else {
-            logIfDebuggable("scheduleRestartAttempt: No restart policy found.");
+            logIfDebuggable(
+                    "scheduleRestartAttempt: Max retries reached, sending empty event.");
+            mEventDispatcher.executeEvent(new Event.Builder(
+                    SYSTEM_TASK_PANEL_EMPTY_EVENT_ID)
+                    .setPanelId(getPanelId()).build());
         }
     }
 

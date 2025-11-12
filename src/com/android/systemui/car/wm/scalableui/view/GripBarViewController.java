@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 import javax.inject.Provider;
 
 /**
- * A Controller for the {@link GripBar}
+ * A Controller for the {@link GripBarBase}
  * <p>
  * Configuration for the GripBar is read from a themed attribute, which is
  * expected to be an array resource. The array should contain values defining
@@ -65,7 +65,7 @@ import javax.inject.Provider;
  * </ul>
  */
 public class GripBarViewController extends DecorPanelControllerBase implements
-        GripBar.GripBarEventHandler {
+        GripBarBase.GripBarEventHandler {
     static final String DRAG_NO_CHANGE = "noChange";
     static final String DRAG_INCREASE = "increase";
     static final String DRAG_DECREASE = "decrease";
@@ -74,7 +74,7 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     private final String mPanelId;
     private final EventDispatcher mEventDispatcher;
     private final List<BreakPoint> mBreakPoints;
-    private GripBar mGripBar;
+    private GripBarBase mGripBar;
     private boolean mIsHorizontal;
     private String mDragEventId;
     private float mSnapThreshold;
@@ -116,7 +116,7 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     @Nullable
     public View getView() {
         View view = super.getView();
-        if (view instanceof GripBar gripBar) {
+        if (view instanceof GripBarBase gripBar) {
             mGripBar = gripBar;
         } else {
             throw new RuntimeException("GripBarViewController mush have a gripBar view");

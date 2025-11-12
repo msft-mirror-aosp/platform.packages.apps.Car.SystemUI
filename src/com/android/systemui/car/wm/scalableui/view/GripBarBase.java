@@ -26,17 +26,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.android.systemui.R;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A custom view representing a "grip" or handle, often used for interacting with
- * draggable or resizable UI elements.
+ * A base class for custom views representing a "grip" or handle.
+ * <p>
+ * This view is often used for interacting with draggable or resizable UI elements.
+ * Concrete classes should apply any styling required to the view.
+ *
+ * @see HorizontalGripBar
+ * @see VerticalGripBar
  */
-public class GripBar extends ConstraintLayout {
-    private static final String TAG = GripBar.class.getSimpleName();
+public abstract class GripBarBase extends ConstraintLayout {
+    private static final String TAG = GripBarBase.class.getSimpleName();
     private final GestureDetector mGestureDetector;
     private final List<GripBarEventHandler> mGripBarEventHandlers;
 
@@ -50,24 +53,23 @@ public class GripBar extends ConstraintLayout {
     /**
      * Constructor for GripBar.
      */
-    public GripBar(@NonNull Context context) {
+    protected GripBarBase(@NonNull Context context) {
         this(context, null);
     }
 
-    public GripBar(@NonNull Context context, @Nullable AttributeSet attrs) {
+    protected GripBarBase(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public GripBar(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    protected GripBarBase(@NonNull Context context, @Nullable AttributeSet attrs,
+            int defStyleAttr) {
         this(context, attrs, defStyleAttr, 0);
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    public GripBar(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
+    protected GripBarBase(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        //TODO(b/422235782): Supports refresh with Token
-        setBackgroundResource(R.drawable.grip_bar_background);
         setOnTouchListener(this::onTouchEvent);
         setOnClickListener(v -> onClickEvent());
         mGestureDetector = new GestureDetector(context, new SingleTapListener());

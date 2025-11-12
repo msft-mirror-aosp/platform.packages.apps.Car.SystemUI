@@ -266,6 +266,8 @@ public final class TaskPanel extends SysUIPanel {
 
                     @Override
                     public void onRootTaskStackDestroyed(@NonNull RootTaskStack rootTaskStack) {
+                        logIfDebuggable(getPanelId() + ", onRootTaskStackDestroyed "
+                                + rootTaskStack);
                         mAutoCaptionController.removeCaptionRegion(rootTaskStack);
                         mRootTaskStack = null;
                         mRootTaskId = -1;

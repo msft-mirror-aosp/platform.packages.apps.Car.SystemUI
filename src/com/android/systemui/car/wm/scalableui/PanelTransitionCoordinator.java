@@ -43,7 +43,6 @@ import androidx.annotation.VisibleForTesting;
 import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.Event;
-import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.PanelTransaction;
 import com.android.car.scalableui.model.Transition;
 import com.android.car.scalableui.model.Variant;
@@ -809,14 +808,8 @@ public class PanelTransitionCoordinator {
             }
             taskPanel.setLeash(leash);
             if (!useCurrentState.test(taskPanel.getPanelId())) {
-                // Use the PanelState is up to date even before animation, but not Panel.
-                PanelState ps = StateManager.getPanelState(
-                        taskPanel.getPanelId());
-                if (ps == null) {
-                    Log.e(TAG, "PanelState is null " + taskPanel.getPanelId());
-                    continue;
-                }
-                variant = ps.getCurrentVariant();
+                // Use the PanelState variant - it is up to date even before animation
+                variant = mPanelUtils.getCurrentVariant(taskPanel.getPanelId());
                 if (variant == null) {
                     Log.e(TAG, "Current Variant for panelState is null " + taskPanel.getPanelId());
                     continue;
@@ -967,11 +960,13 @@ public class PanelTransitionCoordinator {
         // look at all unchanged panels to see if one of those should take focus.
         if (isCurrentFocusedPanelBecomingInvisible && !isFocusingForPanelOpen) {
             for (String unchangedPanelId : panelTransaction.getLockededPanelIdSet()) {
+                Variant currentVariant = mPanelUtils.getCurrentVariant(unchangedPanelId);
                 TaskPanel taskPanel = mPanelUtils.getTaskPanel(
                         p -> p.getPanelId().equals(unchangedPanelId));
-                if (taskPanel != null && taskPanel.isVisible() && taskPanel.canFocusOnTransition()
-                        && taskPanel.getLayer() > rootTaskToFocusLayer) {
-                    rootTaskToFocusLayer = taskPanel.getLayer();
+                if (taskPanel != null && currentVariant != null && currentVariant.isVisible()
+                        && currentVariant.canFocusOnTransition()
+                        && currentVariant.getLayer() > rootTaskToFocusLayer) {
+                    rootTaskToFocusLayer = currentVariant.getLayer();
                     rootTaskToFocus = taskPanel;
                 }
             }

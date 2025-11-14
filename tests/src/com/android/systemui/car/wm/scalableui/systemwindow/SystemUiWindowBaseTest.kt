@@ -17,6 +17,7 @@ package com.android.systemui.car.wm.scalableui.systemwindow
 
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Insets
 import android.hardware.display.DisplayManager
 import android.testing.TestableContext
 import android.testing.TestableLooper.RunWithLooper
@@ -38,11 +39,14 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
+import org.mockito.Mockito.verify
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 
 @CarSystemUiTest
 @RunWith(AndroidJUnit4::class)
@@ -64,6 +68,7 @@ class SystemUiWindowBaseTest : CarSysuiTestCase() {
 
     private lateinit var systemUiWindowBase: SystemUiWindowBase
     private lateinit var testableContext: TestableContext
+    private lateinit var panelUpdateCallback: PanelUpdateConsumer.PanelUpdateCallback
 
     private val layoutParams = WindowManager.LayoutParams()
 
@@ -97,12 +102,15 @@ class SystemUiWindowBaseTest : CarSysuiTestCase() {
                 return this@SystemUiWindowBaseTest.layoutParams
             }
         }
+        val captor = argumentCaptor<PanelUpdateConsumer.PanelUpdateCallback>()
+        systemUiWindowBase.setRootView(view, layoutParams)
+        verify(panelUpdateConsumer).registerCallback(eq(TEST_ID), captor.capture())
+        panelUpdateCallback = captor.firstValue
     }
 
     @Test
     fun setRootView_addsViewToWindowManager() {
-        systemUiWindowBase.setRootView(view, layoutParams)
-
+        // The view is added in setUp - verify it was added once.
         verify(windowManager).addView(view, layoutParams)
         verify(panelUpdateConsumer).registerCallback(
             eq(TEST_ID),
@@ -111,8 +119,16 @@ class SystemUiWindowBaseTest : CarSysuiTestCase() {
     }
 
     @Test
+    fun setRootView_whenAlreadyExists_removesOldView() {
+        val newView = mock<View>()
+        systemUiWindowBase.setRootView(newView, layoutParams)
+
+        verify(windowManager).removeView(view)
+        verify(windowManager).addView(newView, layoutParams)
+    }
+
+    @Test
     fun removeRootView_removesViewFromWindowManager() {
-        systemUiWindowBase.setRootView(view, layoutParams) // Ensure callback is registered first
         systemUiWindowBase.removeRootView()
 
         verify(windowManager).removeView(view)
@@ -123,8 +139,15 @@ class SystemUiWindowBaseTest : CarSysuiTestCase() {
     }
 
     @Test
+    fun removeRootView_whenNoRootView_doesNothing() {
+        systemUiWindowBase.removeRootView()
+        systemUiWindowBase.removeRootView()
+
+        verify(windowManager, times(1)).removeView(view)
+    }
+
+    @Test
     fun removeRootViewImmediate_removesViewImmediateFromWindowManager() {
-        systemUiWindowBase.setRootView(view, layoutParams) // Ensure callback is registered first
         systemUiWindowBase.removeRootViewImmediate()
 
         verify(windowManager).removeViewImmediate(view)
@@ -152,6 +175,75 @@ class SystemUiWindowBaseTest : CarSysuiTestCase() {
         verify(eventDispatcher).executeEvent(captor.capture())
         assertThat(captor.value.id).isEqualTo(SYSTEM_HIDE_PANEL_EVENT_ID)
         assertThat(captor.value.panelId).isEqualTo(TEST_ID)
+    }
+
+    @Test
+    fun onBoundsChange_updatesViewLayout() {
+        panelUpdateCallback.onBoundsChange(TEST_ID, mock())
+
+        verify(windowManager).updateViewLayout(view, layoutParams)
+    }
+
+    @Test
+    fun onInsetsChange_updatesViewPadding() {
+        val insets = Insets.of(1, 2, 3, 4)
+        panelUpdateCallback.onInsetsChange(TEST_ID, insets)
+
+        verify(view).setPadding(1, 2, 3, 4)
+    }
+
+    @Test
+    fun onAlphaChange_updatesViewAlpha() {
+        panelUpdateCallback.onAlphaChange(TEST_ID, 0.5f)
+
+        verify(view).setAlpha(0.5f)
+    }
+
+    @Test
+    fun onVisibilityChange_toVisible_updatesViewVisibility() {
+        panelUpdateCallback.onVisibilityChange(TEST_ID, true)
+
+        verify(view).setVisibility(View.VISIBLE)
+    }
+
+    @Test
+    fun onVisibilityChange_toGone_updatesViewVisibility() {
+        panelUpdateCallback.onVisibilityChange(TEST_ID, false)
+
+        verify(view).setVisibility(View.GONE)
+    }
+
+    @Test
+    fun onGravityChange_updatesViewLayout() {
+        panelUpdateCallback.onGravityChange(TEST_ID, 0)
+
+        verify(windowManager).updateViewLayout(view, layoutParams)
+    }
+
+    @Test
+    fun onBoundsChange_noRootView_doesNothing() {
+        systemUiWindowBase.removeRootView()
+        panelUpdateCallback.onBoundsChange(TEST_ID, mock())
+
+        verify(windowManager, never()).updateViewLayout(any(), any())
+    }
+
+    @Test
+    fun onGravityChange_noRootView_doesNothing() {
+        systemUiWindowBase.removeRootView()
+        panelUpdateCallback.onGravityChange(TEST_ID, 0)
+
+        verify(windowManager, never()).updateViewLayout(any(), any())
+    }
+
+    @Test
+    fun addAndRemoveCallback_registersAndUnregistersCallback() {
+        val callback = mock<SystemUiWindow.WindowUpdateCallback>()
+        systemUiWindowBase.addCallback(callback)
+        verify(panelUpdateConsumer).registerCallback(TEST_ID, callback)
+
+        systemUiWindowBase.removeCallback(callback)
+        verify(panelUpdateConsumer).unregisterCallback(TEST_ID, callback)
     }
 
     companion object {

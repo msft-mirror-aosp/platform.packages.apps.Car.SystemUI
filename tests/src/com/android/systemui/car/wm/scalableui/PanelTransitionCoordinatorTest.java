@@ -15,6 +15,7 @@
  */
 package com.android.systemui.car.wm.scalableui;
 
+import static com.android.systemui.car.wm.scalableui.PanelTransitionCoordinator.DECOR_TRANSACTION;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_OPEN_EVENT_ID;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -130,6 +131,24 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
                 mPanelTransitionCoordinator.getPendingPanelTransaction(binder);
         assertThat(pendingTransaction).isNotNull();
         assertThat(pendingTransaction.getAnimators().size()).isEqualTo(1);
+    }
+
+    @Test
+    public void testStartTransition_noWindowChanges_updatesPanelSurface() {
+        // This test covers the scenario where a transaction does not involve window changes.
+        // In this case, the panel surfaces should be updated directly without going through
+        // the shell transition machinery. This path is wrapped by the Trace calls that were
+        // added.
+        PanelTransaction panelTransaction = new PanelTransaction.Builder()
+                .setHasWindowChanges(false)
+                .build();
+
+        mPanelTransitionCoordinator.startTransition(panelTransaction);
+
+        // Verify that a surface transaction is created and applied, which is the expected
+        // behavior for a transaction with no window changes.
+        verify(mAutoSurfaceTransactionFactory).createTransaction(DECOR_TRANSACTION);
+        verify(mAutoSurfaceTransaction).apply();
     }
 
     @Test

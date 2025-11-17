@@ -30,6 +30,7 @@ import android.animation.ValueAnimator;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -74,6 +75,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentNavigableMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -92,10 +95,17 @@ public class PanelTransitionCoordinator {
     @VisibleForTesting
     protected static final String DECOR_TRANSACTION = "DECOR_TRANSACTION";
     private static final String PANEL_TRANSACTION = "PANEL_TRANSACTION";
+    // Amount of time (in ms) that historically applied events should be stored for before
+    // potentially clearing
+    private static final long HISTORICAL_EVENTS_RETENTION_THRESHOLD = 5000;
 
     private final AutoTaskStackController mAutoTaskStackController;
     @GuardedBy("mPendingPanelTransactions")
     private final HashMap<IBinder, PanelTransaction> mPendingPanelTransactions = new HashMap<>();
+    // Map of timestamp (elapsedRealtime) to list of events that occurred at that time.
+    @GuardedBy("mHistoricallyAppliedEvents")
+    private final ConcurrentSkipListMap<Long, List<Event>> mHistoricallyAppliedEvents =
+            new ConcurrentSkipListMap<>();
     @NonNull
     private final FlagManager mFlagManager;
     private AnimatorSet mRunningAnimatorSet = null;
@@ -274,6 +284,7 @@ public class PanelTransitionCoordinator {
     void reconcileAutoTaskStackState(@NonNull IBinder transition,
             @NonNull Map<Integer, AutoTaskStackState> changedTaskStacks,
             @NonNull TransitionInfo info) {
+        boolean shouldForceEvents = false;
         Map<String, Boolean> conflictingPanelStates = getConflictingPanelStates(changedTaskStacks,
                 transition);
         List<Event> reconciliationEvents = new ArrayList<>(
@@ -284,11 +295,24 @@ public class PanelTransitionCoordinator {
         // empty panel.
         List<String> panelsBecomingEmpty = getPanelsBecomingEmptyIds(info.getChanges());
         reconciliationEvents.addAll(getTriggerTaskPanelEmptyEvents(panelsBecomingEmpty));
+        List<Event> postAppliedEvents = getPostAppliedEvents(transition);
+        if (!postAppliedEvents.isEmpty()) {
+            PanelTransaction transaction = getPendingPanelTransaction(transition);
+            if (transaction != null) {
+                // Add our current transaction events to the start of the reconciliationEvents such
+                // that the from variants of the transitions are corrected to what the state
+                // actually is after this transition.
+                reconciliationEvents.addAll(0, transaction.getTransactionEvents());
+            }
+            reconciliationEvents.addAll(postAppliedEvents);
+            shouldForceEvents = true;
+        }
 
         if (!conflictingPanelStates.isEmpty() || !reconciliationEvents.isEmpty()) {
             logIfDebuggable("Reconciling: conflictingPanelStates=" + conflictingPanelStates
                     + ", reconciliationEvents=" + reconciliationEvents);
-            PanelTransaction transaction = StateManager.handleEvents(reconciliationEvents);
+            PanelTransaction transaction = StateManager.handleEvents(reconciliationEvents,
+                    shouldForceEvents);
             startTransition(transaction, conflictingPanelStates.keySet());
         }
     }
@@ -523,6 +547,39 @@ public class PanelTransitionCoordinator {
             }
         }
         return isEqual;
+    }
+
+    /**
+     * Get a list of events that were supposed to be applied after this transition but due to
+     * differing transition priority were actually applied first. These events can be re-applied
+     * after this transition to correct the final state.
+     */
+    private List<Event> getPostAppliedEvents(IBinder transition) {
+        List<Event> postAppliedEvents = new ArrayList<>();
+        PanelTransaction transaction = getPendingPanelTransaction(transition);
+        if (transaction == null) {
+            return postAppliedEvents;
+        }
+        long currTimestamp = transaction.getBuildTime();
+
+        synchronized (mHistoricallyAppliedEvents) {
+            ConcurrentNavigableMap<Long, List<Event>> rangeView =
+                    mHistoricallyAppliedEvents.subMap(currTimestamp, false,
+                            SystemClock.elapsedRealtime(), true);
+
+            for (List<Event> events : rangeView.values()) {
+                postAppliedEvents.addAll(events);
+            }
+
+            // clean up old entries
+            long clearanceThreshold = currTimestamp - HISTORICAL_EVENTS_RETENTION_THRESHOLD;
+            mHistoricallyAppliedEvents.headMap(clearanceThreshold).clear();
+
+            // add current events
+            mHistoricallyAppliedEvents.put(currTimestamp, transaction.getTransactionEvents());
+        }
+        logIfDebuggable("Post applied events " + postAppliedEvents);
+        return postAppliedEvents;
     }
 
     /**
@@ -861,9 +918,25 @@ public class PanelTransitionCoordinator {
         if (taskPanel == null) {
             return;
         }
-        Rect bounds = toVariant != null ? toVariant.getBounds() : taskPanel.getBounds();
-        boolean isVisible = toVariant != null ? toVariant.isVisible() : taskPanel.isVisible();
-        int layer = toVariant != null ? toVariant.getLayer() : taskPanel.getLayer();
+
+        Rect bounds;
+        boolean isVisible;
+        int layer;
+        if (toVariant != null) {
+            bounds = toVariant.getBounds();
+            isVisible = toVariant.isVisible();
+            layer = toVariant.getLayer();
+        } else {
+            PanelState panelState = StateManager.getPanelState(panelId);
+            Variant currentVariant = panelState == null ? null : panelState.getCurrentVariant();
+            if (currentVariant == null) {
+                return;
+            }
+            bounds = currentVariant.getBounds();
+            isVisible = currentVariant.isVisible();
+            layer = currentVariant.getLayer();
+        }
+
         AutoTaskStackState autoTaskStackState = new AutoTaskStackState(bounds, isVisible, layer);
         autoTaskStackTransaction.setTaskStackState(taskPanel.getRootStack().getId(),
                 autoTaskStackState);

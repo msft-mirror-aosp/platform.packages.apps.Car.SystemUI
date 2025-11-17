@@ -23,10 +23,11 @@ import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.car.scalableui.panel.TaskPanelController;
 import com.android.systemui.car.wm.scalableui.view.AppStyledViewController;
 import com.android.systemui.car.wm.scalableui.view.AppStyledViewScrim;
-import com.android.systemui.car.wm.scalableui.view.GripBar;
 import com.android.systemui.car.wm.scalableui.view.GripBarViewController;
+import com.android.systemui.car.wm.scalableui.view.HorizontalGripBar;
 import com.android.systemui.car.wm.scalableui.view.PanelOverlay;
 import com.android.systemui.car.wm.scalableui.view.PanelOverlayController;
+import com.android.systemui.car.wm.scalableui.view.VerticalGripBar;
 
 import dagger.Binds;
 import dagger.Module;
@@ -89,13 +90,22 @@ public abstract class PanelControllerModule {
             CompatibilityToolbarController.Factory factory
     );
 
-    /** Binds {@link GripBar} as a decor panel view. */
+    /** Binds {@link HorizontalGripBar} as a decor panel view. */
     @Provides
     @IntoMap
-    @ClassKey(GripBar.class)
+    @ClassKey(HorizontalGripBar.class)
     @DecorPanelViewMap
-    static View bindGripBarView(Context context) {
-        return new GripBar(context);
+    static View bindHorizontalGripBarView(Context context) {
+        return new HorizontalGripBar(context);
+    }
+
+    /** Binds {@link VerticalGripBar} as a decor panel view. */
+    @Provides
+    @IntoMap
+    @ClassKey(VerticalGripBar.class)
+    @DecorPanelViewMap
+    static View bindVerticalGripBarView(Context context) {
+        return new VerticalGripBar(context);
     }
 
     /** Binds {@link AppStyledViewScrim} as a decor panel view. */

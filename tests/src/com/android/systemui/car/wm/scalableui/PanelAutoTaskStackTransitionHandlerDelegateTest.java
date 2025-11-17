@@ -37,6 +37,7 @@ import android.app.role.RoleManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.IBinder;
+import android.view.Display;
 import android.view.SurfaceControl;
 import android.view.WindowManager;
 import android.window.TransitionInfo;
@@ -68,6 +69,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 @CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
@@ -77,6 +79,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
     private static final String TEST_PANEL_ID = "test_panel";
     private static final String TEST_COMPONENT_NAME = "com.test/com.test.TestActivity";
     private static final int TEST_ROOT_TASK_ID = 100;
+    private static final int TEST_DISPLAY_ID = Display.DEFAULT_DISPLAY;
+    private static final int UNMAPPED_DISPLAY_ID = 2;
 
     private PanelAutoTaskStackTransitionHandlerDelegate mDelegate;
 
@@ -329,6 +333,73 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
         ComponentName componentName = ComponentName.unflattenFromString(TEST_COMPONENT_NAME);
         when(mPanelUtils.getTaskComponentName(taskInfo)).thenReturn(componentName);
         when(mPanelUtils.getTaskPanel(any())).thenReturn(null);
+
+        Event event = mDelegate.calculateEvent(request);
+
+        assertThat(event.getId()).isEqualTo(EMPTY_EVENT_ID);
+        assertThat(event.getTokens()).isEmpty();
+    }
+
+    @Test
+    public void calculateEvent_nullComponentName_returnsEmptyEvent() {
+        TransitionRequestInfo request = mock(TransitionRequestInfo.class);
+        ActivityManager.RunningTaskInfo taskInfo = new ActivityManager.RunningTaskInfo();
+        taskInfo.baseIntent = new Intent();
+        taskInfo.parentTaskId = TEST_ROOT_TASK_ID;
+        when(request.getType()).thenReturn(TRANSIT_CLOSE);
+        when(request.getTriggerTask()).thenReturn(taskInfo);
+        when(mPanelUtils.getTaskComponentName(taskInfo)).thenReturn(null);
+
+        Event event = mDelegate.calculateEvent(request);
+
+        assertThat(event.getId()).isEqualTo(EMPTY_EVENT_ID);
+        assertThat(event.getTokens()).isEmpty();
+    }
+
+    @Test
+    public void calculateEvent_invalidParentTaskId_returnsEmptyEvent() {
+        TaskPanel panel = mock(TaskPanel.class);
+        when(panel.getRootTaskId()).thenReturn(TEST_ROOT_TASK_ID);
+        when(panel.getDisplayId()).thenReturn(TEST_DISPLAY_ID);
+        when(mPanelUtils.getTaskPanel(any())).then(invocation -> {
+            Predicate<TaskPanel> predicate = invocation.getArgument(0);
+            return predicate.test(panel) ? panel : null;
+        });
+
+        TransitionRequestInfo request = mock(TransitionRequestInfo.class);
+        ActivityManager.RunningTaskInfo taskInfo = new ActivityManager.RunningTaskInfo();
+        taskInfo.baseIntent = new Intent();
+        taskInfo.parentTaskId = -1;
+        taskInfo.displayId = TEST_DISPLAY_ID;
+        when(request.getType()).thenReturn(TRANSIT_OPEN);
+        when(request.getTriggerTask()).thenReturn(taskInfo);
+        ComponentName componentName = ComponentName.unflattenFromString(TEST_COMPONENT_NAME);
+        when(mPanelUtils.getTaskComponentName(taskInfo)).thenReturn(componentName);
+
+        Event event = mDelegate.calculateEvent(request);
+
+        assertThat(event.getId()).isEqualTo(EMPTY_EVENT_ID);
+        assertThat(event.getTokens()).isEmpty();
+    }
+
+    @Test
+    public void calculateEvent_displayIdMismatch_returnsEmptyEvent() {
+        TaskPanel panel = mock(TaskPanel.class);
+        when(panel.getRootTaskId()).thenReturn(TEST_ROOT_TASK_ID);
+        when(panel.getDisplayId()).thenReturn(UNMAPPED_DISPLAY_ID);
+        when(mPanelUtils.getTaskPanel(any())).then(invocation -> {
+            Predicate<TaskPanel> predicate = invocation.getArgument(0);
+            return predicate.test(panel) ? panel : null;
+        });
+        TransitionRequestInfo request = mock(TransitionRequestInfo.class);
+        ActivityManager.RunningTaskInfo taskInfo = new ActivityManager.RunningTaskInfo();
+        taskInfo.baseIntent = new Intent();
+        taskInfo.parentTaskId = TEST_ROOT_TASK_ID;
+        taskInfo.displayId = TEST_DISPLAY_ID;
+        when(request.getType()).thenReturn(TRANSIT_OPEN);
+        when(request.getTriggerTask()).thenReturn(taskInfo);
+        ComponentName componentName = ComponentName.unflattenFromString(TEST_COMPONENT_NAME);
+        when(mPanelUtils.getTaskComponentName(taskInfo)).thenReturn(componentName);
 
         Event event = mDelegate.calculateEvent(request);
 

@@ -16,8 +16,6 @@
 
 package com.android.systemui.car.wm.scalableui.view;
 
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.DRAG_DEC_EVENT_ID_TAG;
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.DRAG_INC_EVENT_ID_TAG;
 import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.EVENT_ID_TAG;
 import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.ORIENTATION_TAG;
 import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.SNAPTHREADHOLD_TAG;
@@ -66,15 +64,13 @@ public class GripBarViewControllerTest extends CarSysuiTestCase {
 
     private static final String TEST_PANEL_ID = "test_panel_id";
     private static final String DRAG_EVENT_ID = "drag_event";
-    private static final String DRAG_INCREASE_EVENT_ID = "drag_increase";
-    private static final String DRAG_DECREASE_EVENT_ID = "drag_decrease";
     private static final int GRIP_BAR_ID = 12345;
 
     private static final String BREAKPOINT_1_EVENT_ID = "breakpoint_1_event";
     private static final String BREAKPOINT_2_EVENT_ID = "breakpoint_2_event";
 
     private GripBarViewController mGripBarViewController;
-    private GripBar mGripBar;
+    private GripBarBase mGripBar;
 
     @Mock
     private com.android.car.scalableui.model.PanelControllerMetadata mMetadata;
@@ -91,7 +87,7 @@ public class GripBarViewControllerTest extends CarSysuiTestCase {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mGripBar = new GripBar(mContext, null);
+        mGripBar = new HorizontalGripBar(mContext, null);
         mGripBar.setId(GRIP_BAR_ID);
 
         BreakPoint breakPoint1 = new BreakPoint.Builder(0, BREAKPOINT_1_EVENT_ID).build();
@@ -100,15 +96,11 @@ public class GripBarViewControllerTest extends CarSysuiTestCase {
 
         when(mMetadata.getBreakPoints()).thenReturn(breakPoints);
         when(mMetadata.getStringConfiguration(EVENT_ID_TAG)).thenReturn(DRAG_EVENT_ID);
-        when(mMetadata.getStringConfiguration(DRAG_DEC_EVENT_ID_TAG))
-                .thenReturn(DRAG_DECREASE_EVENT_ID);
-        when(mMetadata.getStringConfiguration(DRAG_INC_EVENT_ID_TAG))
-                .thenReturn(DRAG_INCREASE_EVENT_ID);
         when(mMetadata.getStringConfiguration(ORIENTATION_TAG)).thenReturn("0");
         when(mMetadata.getStringConfiguration(SNAPTHREADHOLD_TAG)).thenReturn("5");
 
         when(mMetadata.getStringConfiguration(VIEW_TAG))
-                .thenReturn("com.android.systemui.car.wm.scalableui.view.GripBar");
+                .thenReturn("com.android.systemui.car.wm.scalableui.view.HorizontalGripBar");
         when(mDecorPanelViewMap.get(any())).thenReturn(mViewProvider);
         when(mViewProvider.get()).thenReturn(mGripBar);
     }
@@ -144,9 +136,11 @@ public class GripBarViewControllerTest extends CarSysuiTestCase {
         List<Event> dispatchedEvents = mEventArgumentCaptor.getAllValues();
 
         KeyFrameEvent keyFrameEvent = (KeyFrameEvent) dispatchedEvents.getFirst();
-        assertThat(keyFrameEvent.getId()).isEqualTo(DRAG_INCREASE_EVENT_ID);
+        assertThat(keyFrameEvent.getId()).isEqualTo(DRAG_EVENT_ID);
         assertThat(keyFrameEvent.getPanelId()).isEqualTo(TEST_PANEL_ID);
         assertThat(keyFrameEvent.getFraction()).isEqualTo(0.6f);
+        assertThat(keyFrameEvent.getTokens().get(PANEL_DRAG_DIRECTION_ID))
+                .isEqualTo(DRAG_INCREASE);
 
         Event directionEvent = dispatchedEvents.get(1);
         assertThat(directionEvent.getId()).isEqualTo(BREAKPOINT_2_EVENT_ID);
@@ -172,9 +166,11 @@ public class GripBarViewControllerTest extends CarSysuiTestCase {
         List<Event> dispatchedEvents = mEventArgumentCaptor.getAllValues();
 
         KeyFrameEvent keyFrameEvent = (KeyFrameEvent) dispatchedEvents.getFirst();
-        assertThat(keyFrameEvent.getId()).isEqualTo(DRAG_DECREASE_EVENT_ID);
+        assertThat(keyFrameEvent.getId()).isEqualTo(DRAG_EVENT_ID);
         assertThat(keyFrameEvent.getPanelId()).isEqualTo(TEST_PANEL_ID);
         assertThat(keyFrameEvent.getFraction()).isEqualTo(0.2f);
+        assertThat(keyFrameEvent.getTokens().get(PANEL_DRAG_DIRECTION_ID))
+                .isEqualTo(DRAG_DECREASE);
 
         Event directionEvent = dispatchedEvents.get(1);
         assertThat(directionEvent.getId()).isEqualTo(BREAKPOINT_1_EVENT_ID);
@@ -200,9 +196,11 @@ public class GripBarViewControllerTest extends CarSysuiTestCase {
         List<Event> dispatchedEvents = mEventArgumentCaptor.getAllValues();
 
         KeyFrameEvent keyFrameEvent = (KeyFrameEvent) dispatchedEvents.getFirst();
-        assertThat(keyFrameEvent.getId()).isEqualTo(DRAG_INCREASE_EVENT_ID);
+        assertThat(keyFrameEvent.getId()).isEqualTo(DRAG_EVENT_ID);
         assertThat(keyFrameEvent.getPanelId()).isEqualTo(TEST_PANEL_ID);
         assertThat(keyFrameEvent.getFraction()).isEqualTo(0.2f);
+        assertThat(keyFrameEvent.getTokens().get(PANEL_DRAG_DIRECTION_ID))
+                .isEqualTo(DRAG_INCREASE);
 
         Event directionEvent = dispatchedEvents.get(1);
         assertThat(directionEvent.getId()).isEqualTo(BREAKPOINT_1_EVENT_ID);

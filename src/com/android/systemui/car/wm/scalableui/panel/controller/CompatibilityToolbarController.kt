@@ -20,6 +20,7 @@ import android.app.ActivityManager.RunningTaskInfo
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.hardware.input.InputManager
 import android.os.Build
@@ -33,9 +34,9 @@ import android.view.KeyCharacterMap
 import android.view.KeyEvent
 import android.view.View
 import android.window.WindowContainerTransaction
-import androidx.core.net.toUri
 import com.android.car.scalableui.model.Event
 import com.android.car.scalableui.panel.PanelPool
+import com.android.systemui.R
 import com.android.systemui.car.wm.scalableui.EventDispatcher
 import com.android.systemui.car.wm.scalableui.getDisplayBounds
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
@@ -138,9 +139,11 @@ constructor(
 
     private fun sendAspectRatioIntent(topActivity: ComponentName, userId: Int) {
         val intent =
-            Intent(Settings.ACTION_MANAGE_USER_ASPECT_RATIO_SETTINGS).apply {
+            Intent(ASPECT_RATIO_SHOW_DIALOG_ACTION).apply {
+                `package` = getSettingsPackageName(userId)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                data = "package:${topActivity.packageName}".toUri()
+                putExtra(ASPECT_RATIO_SHOW_DIALOG_EXTRA_KEY_CMP_NAME, topActivity)
+                putExtra(ASPECT_RATIO_SHOW_DIALOG_EXTRA_KEY_UID, userId)
             }
         context.startActivityAsUser(intent, UserHandle.of(userId))
         logIfDebuggable("sendAspectRatioIntent: $intent")
@@ -175,6 +178,19 @@ constructor(
             ?.injectInputEvent(keyEvent, InputManager.INJECT_INPUT_EVENT_MODE_ASYNC)
     }
 
+    private fun getSettingsPackageName(userId: Int): String {
+        val settingsIntent = Intent(Settings.ACTION_SETTINGS)
+        val flags = PackageManager.MATCH_DIRECT_BOOT_AWARE or
+                PackageManager.MATCH_DIRECT_BOOT_UNAWARE or
+                PackageManager.MATCH_DEFAULT_ONLY
+
+        val resolveInfo = context.packageManager
+            .resolveActivityAsUser(settingsIntent, flags, userId)
+
+        return resolveInfo?.activityInfo?.packageName
+            ?: context.resources.getString(R.string.config_defaultSettingsPackage)
+    }
+
     @AssistedFactory
     interface Factory : TaskToolbarController.Factory<CompatibilityToolbarController> {
         override fun create(panelId: String): CompatibilityToolbarController
@@ -183,6 +199,12 @@ constructor(
     companion object {
         private val DEBUG = Build.isDebuggable()
         const val TAG: String = "CompatibilityToolbarCtr"
+        const val ASPECT_RATIO_SHOW_DIALOG_ACTION =
+            "com.android.car.settings.aspectRatio.action.SHOW_DIALOG"
+        const val ASPECT_RATIO_SHOW_DIALOG_EXTRA_KEY_CMP_NAME =
+            "com.android.car.settings.aspectRatio.extra.COMPONENT_NAME"
+        const val ASPECT_RATIO_SHOW_DIALOG_EXTRA_KEY_UID =
+            "com.android.car.settings.aspectRatio.extra.USER_ID"
 
         fun logIfDebuggable(msg: String) {
             if (DEBUG) {

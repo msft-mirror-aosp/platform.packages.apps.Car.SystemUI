@@ -52,7 +52,7 @@
             systemui:icon="@drawable/car_ic_home"
             systemui:intent="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;launchFlags=0x14000000;end"
             systemui:systemBarDisableFlags="home"
-            systemui:controller="com.android.systemui.car.systembar.PassengerHomeButtonController"/>
+            systemui:controller="com.android.systemui.car.systembar.passengerhome.PassengerHomeButtonController"/>
 
         <Space
             android:layout_width="0dp"

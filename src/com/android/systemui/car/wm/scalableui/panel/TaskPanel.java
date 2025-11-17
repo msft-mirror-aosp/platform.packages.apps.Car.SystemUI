@@ -410,8 +410,7 @@ public final class TaskPanel extends SysUIPanel {
                 .createTransaction(RESET_TRANSACTION + getPanelId());
         SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
 
-        PanelState panelState = StateManager.getPanelState(getPanelId());
-        Variant currentVariant = panelState == null ? null : panelState.getCurrentVariant();
+        Variant currentVariant = mPanelUtils.getCurrentVariant(getPanelId());
 
         update(autoSurfaceTransaction, tx, currentVariant, /* updateChildren= */ true);
 
@@ -467,8 +466,7 @@ public final class TaskPanel extends SysUIPanel {
 
     @NonNull
     private Map<String, Decor> getCurrentDecors() {
-        PanelState panelState = StateManager.getPanelState(getPanelId());
-        Variant currentVariant = panelState == null ? null : panelState.getCurrentVariant();
+        Variant currentVariant = mPanelUtils.getCurrentVariant(getPanelId());
         return currentVariant == null ? new HashMap<>() : currentVariant.getDecors();
     }
 

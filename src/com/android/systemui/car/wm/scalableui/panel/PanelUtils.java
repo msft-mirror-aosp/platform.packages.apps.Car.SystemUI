@@ -33,6 +33,7 @@ import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.Transition;
+import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.PanelPool;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.wm.shell.dagger.WMSingleton;
@@ -103,6 +104,18 @@ public class PanelUtils {
     public SysUIPanel getSysUiPanel(Predicate<SysUIPanel> predicate) {
         return (SysUIPanel) PanelPool.getInstance().getPanel(
                 p -> (p instanceof SysUIPanel sysUiPanel) && predicate.test(sysUiPanel));
+    }
+
+    /**
+     * Retrieve the current variant set on the PanelState for a particular panel id.
+     */
+    @Nullable
+    public Variant getCurrentVariant(String panelId) {
+        PanelState panelState = StateManager.getPanelState(panelId);
+        if (panelState == null) {
+            return null;
+        }
+        return panelState.getCurrentVariant();
     }
 
     /**

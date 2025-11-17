@@ -27,4 +27,7 @@ public class NotificationConstants {
      * Dagger {@link Named} for a list of strings that listen to notification drag close listener.
      */
     public static final String DRAG_CLOSE_NOTIFICATION_BAR_NAMES = "DragCloseNotificationBarNames";
+
+    /** Overlay type key for the Notification panel. */
+    public static final String OVERLAY_TYPE_NOTIFICATION_PANEL = "notification_panel";
 }

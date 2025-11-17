@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.keyguard;
 
+import static com.android.systemui.car.keyguard.KeyguardConstants.OVERLAY_TYPE_KEYGUARD;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -25,6 +27,7 @@ import android.os.Bundle;
 import android.os.UserHandle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewRootImpl;
@@ -192,7 +195,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
             StatusBarKeyguardViewManagerInteractor statusBarKeyguardViewManagerInteractor,
             @Main CoroutineDispatcher mainDispatcher,
             JavaAdapter javaAdapter) {
-        super(R.id.keyguard_stub, overlayViewGlobalStateController);
+        super(overlayViewGlobalStateController);
 
         mContext = context;
         mMainExecutor = mainExecutor;
@@ -242,18 +245,19 @@ public class CarKeyguardViewController extends OverlayViewController implements
     }
 
     @Override
-    protected int getFocusAreaViewId() {
-        return R.id.keyguard_container;
+    public String getOverlayType() {
+        return OVERLAY_TYPE_KEYGUARD;
     }
 
     @Override
-    protected boolean shouldShowNavigationBarInsets() {
-        return true;
-    }
+    public View inflate() {
+        if (isInflated()) return mLayout;
 
-    @Override
-    public void onFinishInflate() {
-        mKeyguardContainer = getLayout().findViewById(R.id.keyguard_container);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        mLayout = inflater.inflate(R.layout.keyguard_container, /* root= */ null,
+                /* attachToRoot= */ false);
+
+        mKeyguardContainer = mLayout.findViewById(R.id.keyguard_container);
         KeyguardBouncerViewBinder.bind(mMainDispatcher, mKeyguardContainer,
                 mKeyguardBouncerViewModel, mPrimaryBouncerToDreamingTransitionViewModel,
                 mPrimaryBouncerToGoneTransitionViewModel,
@@ -266,10 +270,21 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mBiometricUnlockControllerLazy.get().setKeyguardViewController(this);
 
         KeyguardSecurityContainer securityContainer =
-                getLayout().findViewById(R.id.keyguard_security_container);
+                mLayout.findViewById(R.id.keyguard_security_container);
         if (securityContainer != null) {
             securityContainer.enableTransparentMode();
         }
+        return mLayout;
+    }
+
+    @Override
+    protected int getFocusAreaViewId() {
+        return R.id.keyguard_container;
+    }
+
+    @Override
+    protected boolean shouldShowNavigationBarInsets() {
+        return true;
     }
 
     @Override

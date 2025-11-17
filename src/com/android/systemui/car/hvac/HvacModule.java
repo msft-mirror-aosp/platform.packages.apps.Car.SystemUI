@@ -17,13 +17,18 @@
 package com.android.systemui.car.hvac;
 
 import static com.android.systemui.car.hvac.HvacConstants.HVAC_SYSTEM_BAR_NAMES;
+import static com.android.systemui.car.hvac.HvacConstants.OVERLAY_TYPE_HVAC_PANEL;
 
 import android.content.Context;
 
 import com.android.systemui.R;
+import com.android.systemui.car.window.OverlayViewController;
 
+import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntoMap;
+import dagger.multibindings.StringKey;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,13 +37,19 @@ import javax.inject.Named;
 
 /** Dagger module for HVAC. */
 @Module
-public class HvacModule {
+public abstract class HvacModule {
 
     /** Provides the list of system bar names that the HVAC panel should register with. */
     @Provides
     @Named(HVAC_SYSTEM_BAR_NAMES)
-    public List<String> provideHvacSystemBarNames(Context context) {
+    static List<String> provideHvacSystemBarNames(Context context) {
         return Arrays.asList(context.getResources().getStringArray(
                 R.array.config_registerHvacDragCloseListener));
     }
+
+    @Binds
+    @IntoMap
+    @StringKey(OVERLAY_TYPE_HVAC_PANEL)
+    abstract OverlayViewController bindHvacPanelOverlayViewController(
+            HvacPanelOverlayViewController controller);
 }

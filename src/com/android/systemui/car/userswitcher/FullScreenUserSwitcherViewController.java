@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.userswitcher;
 
+import static com.android.systemui.car.userswitcher.UserSwitcherConstants.OVERLAY_TYPE_FULLSCREEN_USER_SWITCHER;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.car.Car;
@@ -71,7 +73,7 @@ public class FullScreenUserSwitcherViewController extends OverlayViewController
             ConfigurationController configurationController,
             CarServiceProvider carServiceProvider,
             OverlayViewGlobalStateController overlayViewGlobalStateController) {
-        super(R.id.fullscreen_user_switcher_stub, overlayViewGlobalStateController);
+        super(overlayViewGlobalStateController);
         mContext = context;
         mUserTracker = userTracker;
         mUserIconProvider = userIconProvider;
@@ -87,8 +89,19 @@ public class FullScreenUserSwitcherViewController extends OverlayViewController
     }
 
     @Override
-    protected void onFinishInflate() {
+    public String getOverlayType() {
+        return OVERLAY_TYPE_FULLSCREEN_USER_SWITCHER;
+    }
+
+    @Override
+    public View inflate() {
+        if (isInflated()) return mLayout;
+
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        mLayout = inflater.inflate(R.layout.car_fullscreen_user_switcher, /* root= */ null,
+                /* attachToRoot= */ false);
         initializeViews();
+        return mLayout;
     }
 
     @Override

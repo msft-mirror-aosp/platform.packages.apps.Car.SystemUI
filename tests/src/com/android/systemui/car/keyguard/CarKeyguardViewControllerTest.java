@@ -28,7 +28,6 @@ import static org.mockito.Mockito.when;
 
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -42,7 +41,6 @@ import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.ViewMediatorCallback;
 import com.android.keyguard.dagger.KeyguardBouncerComponent;
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.bouncer.domain.interactor.BouncerMessageInteractor;
 import com.android.systemui.bouncer.domain.interactor.PrimaryBouncerCallbackInteractor;
 import com.android.systemui.bouncer.domain.interactor.PrimaryBouncerInteractor;
@@ -166,8 +164,7 @@ public class CarKeyguardViewControllerTest extends CarSysuiTestCase {
                 mock(CoroutineDispatcher.class),
                 mock(JavaAdapter.class)
         );
-        mCarKeyguardViewController.inflate((ViewGroup) LayoutInflater.from(mContext).inflate(
-                R.layout.sysui_overlay_window, /* root= */ null));
+        mCarKeyguardViewController.inflate();
     }
 
     @Test

@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.notification;
 
+import static com.android.systemui.car.notification.NotificationConstants.OVERLAY_TYPE_NOTIFICATION_PANEL;
+
 import android.app.ActivityManager;
 import android.car.Car;
 import android.car.drivingstate.CarUxRestrictionsManager;
@@ -160,7 +162,7 @@ public class NotificationPanelViewController extends OverlayPanelViewController
             /* Things that need to be replaced */
             StatusBarStateController statusBarStateController
     ) {
-        super(context, resources, R.id.notification_panel_stub, overlayViewGlobalStateController,
+        super(context, resources, overlayViewGlobalStateController,
                 flingAnimationUtilsBuilder, carDeviceProvisionedController);
         mContext = context;
         mResources = resources;
@@ -208,10 +210,6 @@ public class NotificationPanelViewController extends OverlayPanelViewController
                 R.bool.config_notif_panel_inset_by_left_systembar);
         mFitRightSystemBarInset = mResources.getBoolean(
                 R.bool.config_notif_panel_inset_by_right_systembar);
-
-        // Inflate view on instantiation to properly initialize listeners even if panel has
-        // not been opened.
-        getOverlayViewGlobalStateController().inflateView(this);
     }
 
     // CommandQueue.Callbacks
@@ -242,13 +240,24 @@ public class NotificationPanelViewController extends OverlayPanelViewController
     // OverlayViewController
 
     @Override
-    public boolean shouldPanelConsumeSystemBarTouch() {
-        return true;
+    public String getOverlayType() {
+        return OVERLAY_TYPE_NOTIFICATION_PANEL;
     }
 
     @Override
-    protected void onFinishInflate() {
+    public View inflate() {
+        if (isInflated()) return mLayout;
+
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        mLayout = inflater.inflate(R.layout.notification_panel_container, /* root= */ null,
+                /* attachToRoot= */ false);
         reinflate();
+        return mLayout;
+    }
+
+    @Override
+    public boolean shouldPanelConsumeSystemBarTouch() {
+        return true;
     }
 
     @Override
@@ -306,6 +315,20 @@ public class NotificationPanelViewController extends OverlayPanelViewController
         return !mImeVisible;
     }
 
+    @Override
+    public void adjustForDisplayCutout(Rect safeInsets) {
+        if (!isInflated()) return;
+
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) mLayout.getLayoutParams();
+        if (params != null) {
+            params.leftMargin = safeInsets.left;
+            params.rightMargin = safeInsets.right;
+            // Top and bottom insets are handled by padding in the notification_panel_container.xml
+            mLayout.setLayoutParams(params);
+        }
+    }
+
     /** Reinflates the view. */
     public void reinflate() {
         // Do not reinflate the view if it has not been inflated at all.
@@ -338,6 +361,7 @@ public class NotificationPanelViewController extends OverlayPanelViewController
 
         container.addView(mNotificationView);
         onNotificationViewInflated();
+        setUpHandleBar();
     }
 
     private void onNotificationViewInflated() {

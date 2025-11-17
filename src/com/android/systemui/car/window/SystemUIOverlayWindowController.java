@@ -38,7 +38,6 @@ import androidx.annotation.Nullable;
 
 import com.android.systemui.R;
 import com.android.systemui.dagger.SysUISingleton;
-import com.android.systemui.statusbar.policy.ConfigurationController;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -78,13 +77,11 @@ public class SystemUIOverlayWindowController {
     private boolean mFocusable = false;
     private boolean mUsingStableInsets = false;
 
-    private boolean mInternalIsAttached = false;
     private boolean mIsAttaching = false;
 
     @Inject
     public SystemUIOverlayWindowController(
             Context context,
-            ConfigurationController configurationController,
             Map<String, Provider<OverlayViewController>> overlayControllerProviders) {
         mContext = context.createWindowContext(WindowManager.LayoutParams.TYPE_NOTIFICATION_SHADE,
                 /* options= */ null);
@@ -103,13 +100,11 @@ public class SystemUIOverlayWindowController {
             @Override
             public void onViewAttachedToWindow(View v) {
                 mIsAttaching = false;
-                mInternalIsAttached = true;
             }
 
             @Override
             public void onViewDetachedFromWindow(View v) {
                 mIsAttaching = false;
-                mInternalIsAttached = false;
             }
         });
         // Pre-populate the cache
@@ -141,7 +136,12 @@ public class SystemUIOverlayWindowController {
         return mBaseLayout;
     }
 
-    /** Returns {@code true} if the window is being attached. */
+    /**
+     * This state is needed because isAttached will still return false, until
+     * onViewAttachedToWindow is called.
+     *
+     * Returns {@code true} if the window is being attached.
+     */
     private boolean isAttaching() {
         return mIsAttaching;
     }
@@ -150,20 +150,7 @@ public class SystemUIOverlayWindowController {
     private boolean isAttached() {
         // For some reason the mBaseLayout is dettached but we never receive a call to
         // onViewDetachedFromWindow. But mBaseLayout.isAttachedToWindow() has the correct value.
-        boolean isReallyAttached = (mBaseLayout != null && mBaseLayout.isAttachedToWindow());
-
-        if (mInternalIsAttached && !isReallyAttached) {
-            mInternalIsAttached = false;
-            mIsAttaching = false;
-            return false;
-        }
-
-        if (mIsAttaching) {
-            // If we are in the process of attaching, return the actual state.
-            return false;
-        }
-
-        return mInternalIsAttached;
+        return (mBaseLayout != null && mBaseLayout.isAttachedToWindow());
     }
 
     /** Attaches the window to the window manager. */

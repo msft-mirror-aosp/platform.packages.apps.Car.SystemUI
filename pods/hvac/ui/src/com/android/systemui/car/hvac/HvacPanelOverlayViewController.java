@@ -37,8 +37,8 @@ import android.view.WindowInsets;
 
 import androidx.annotation.Nullable;
 
-import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
+import com.android.systemui.car.hvac.ui.R;
 import com.android.systemui.car.window.OverlayPanelViewController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.dagger.SysUISingleton;

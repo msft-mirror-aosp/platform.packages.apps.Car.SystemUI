@@ -36,7 +36,8 @@ import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
 import com.android.systemui.car.displayconfig.ExternalDisplayController;
 import com.android.systemui.car.flags.FlagManager;
-import com.android.systemui.car.hvac.HvacModule;
+import com.android.systemui.car.hvac.HvacControllerModule;
+import com.android.systemui.car.hvac.HvacUiModule;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationModule;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
@@ -108,7 +109,8 @@ import javax.inject.Provider;
                 ExternalDisplayController.StartableModule.class,
                 GestureModule.class,
                 HeadsUpEmptyImplModule.class,
-                HvacModule.class,
+                HvacControllerModule.class,
+                HvacUiModule.class,
                 KeyguardDisplayModule.class,
                 MediaMuteAwaitConnectionCli.StartableModule.class,
                 NearbyMediaDevicesManager.StartableModule.class,

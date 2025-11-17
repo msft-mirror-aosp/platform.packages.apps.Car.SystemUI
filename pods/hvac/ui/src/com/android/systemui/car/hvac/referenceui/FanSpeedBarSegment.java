@@ -86,6 +86,9 @@ public class FanSpeedBarSegment extends ImageView {
         });
     }
 
+    /**
+     * Sets the on/off state of the segment, updating the visual appearance immediately.
+     */
     public void setTurnedOn(boolean isOn) {
         mTurnedOn = isOn;
         GradientDrawable drawable = (GradientDrawable) getDrawable();

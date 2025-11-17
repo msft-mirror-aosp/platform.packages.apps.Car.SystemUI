@@ -14,7 +14,11 @@
 // limitations under the License.
 //
 
-subdirs = ["pods"]
+subdirs = [
+    "pods",
+    "pods/hvac/controller",
+    "pods/hvac/ui",
+]
 
 package {
     default_applicable_licenses: ["Android-Apache-2.0"],
@@ -63,6 +67,8 @@ carsystemui_srcs = [
 
 carsysui_pods = [
     // pods go here
+    "CarSystemUI-Hvac-Controller",
+    "CarSystemUI-Hvac-UI",
 ]
 
 java_defaults {

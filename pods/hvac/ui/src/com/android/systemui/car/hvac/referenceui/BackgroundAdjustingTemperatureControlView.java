@@ -37,7 +37,7 @@ import com.android.systemui.car.hvac.TemperatureControlView;
  */
 public class BackgroundAdjustingTemperatureControlView extends TemperatureControlView {
 
-    private final static String TAG = "BgAdjTemperatureCtlView";
+    private static final String TAG = "BgAdjTemperatureCtlView";
 
     private View mTemperatureBarView;
     private int[] mUpperLimits;

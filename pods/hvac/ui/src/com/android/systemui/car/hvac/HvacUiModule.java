@@ -35,9 +35,9 @@ import java.util.List;
 
 import javax.inject.Named;
 
-/** Dagger module for HVAC. */
+/** Dagger module for HVAC UI. */
 @Module
-public abstract class HvacModule {
+public abstract class HvacUiModule {
 
     /** Provides the list of system bar names that the HVAC panel should register with. */
     @Provides

@@ -391,8 +391,7 @@ public final class TaskPanel extends BasePanel {
                 .createTransaction(RESET_TRANSACTION + getPanelId());
         SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
 
-        PanelState panelState = StateManager.getPanelState(getPanelId());
-        Variant currentVariant = panelState == null ? null : panelState.getCurrentVariant();
+        Variant currentVariant = mPanelUtils.getCurrentVariant(getPanelId());
 
         update(autoSurfaceTransaction, tx, currentVariant, /* updateChildren= */ true);
         tx.apply();
@@ -447,8 +446,7 @@ public final class TaskPanel extends BasePanel {
 
     @NonNull
     private Map<String, Decor> getCurrentDecors() {
-        PanelState panelState = StateManager.getPanelState(getPanelId());
-        Variant currentVariant = panelState == null ? null : panelState.getCurrentVariant();
+        Variant currentVariant = mPanelUtils.getCurrentVariant(getPanelId());
         return currentVariant == null ? new HashMap<>() : currentVariant.getDecors();
     }
 

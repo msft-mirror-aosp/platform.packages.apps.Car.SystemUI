@@ -25,8 +25,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.android.car.scalableui.manager.StateManager;
-import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.car.scalableui.panel.Panel;
@@ -129,8 +127,7 @@ public final class DecorPanel extends BasePanel {
             AutoSurfaceTransaction autoSurfaceTransaction = mAutoSurfaceTransactionFactory
                     .createTransaction(RESET_TRANSACTION + getPanelId());
 
-            PanelState panelState = StateManager.getPanelState(getPanelId());
-            Variant currentVariant = panelState == null ? null : panelState.getCurrentVariant();
+            Variant currentVariant = mPanelUtils.getCurrentVariant(getPanelId());
 
             update(autoSurfaceTransaction, currentVariant, /* updateChildren= */ true);
             autoSurfaceTransaction.apply();

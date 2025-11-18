@@ -17,10 +17,21 @@
 package com.android.systemui.car.userswitcher;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import android.app.KeyguardManager;
+import android.car.user.CarUserManager;
+import android.os.RemoteException;
+import android.os.UserHandle;
+import android.os.UserManager;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
+import android.view.IWindowManager;
 
 import androidx.test.filters.SmallTest;
 
@@ -28,12 +39,18 @@ import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.policy.KeyguardStateController;
+import com.android.systemui.util.concurrency.FakeExecutor;
+import com.android.systemui.util.time.FakeSystemClock;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @CarSystemUiTest
 @RunWith(AndroidTestingRunner.class)
@@ -43,19 +60,39 @@ public class UserSwitchTransitionViewMediatorTest extends CarSysuiTestCase {
     private static final int TEST_USER = 100;
 
     private UserSwitchTransitionViewMediator mUserSwitchTransitionViewMediator;
+    private FakeExecutor mFakeExecutor;
+
     @Mock
     private CarServiceProvider mCarServiceProvider;
     @Mock
     private UserTracker mUserTracker;
     @Mock
+    private UserManager mUserManager;
+    @Mock
+    private IWindowManager mWindowManagerService;
+    @Mock
+    private KeyguardManager mKeyguardManager;
+    @Mock
+    private KeyguardStateController mKeyguardStateController;
+    @Mock
     private UserSwitchTransitionViewController mUserSwitchTransitionViewController;
+
+    private final List<KeyguardStateController.Callback> mKeyguardCallbacks = new ArrayList<>();
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mFakeExecutor = new FakeExecutor(new FakeSystemClock());
+
+        mContext.addMockSystemService(KeyguardManager.class, mKeyguardManager);
+        doAnswer(invocation -> {
+            mKeyguardCallbacks.add(invocation.getArgument(0));
+            return null;
+        }).when(mKeyguardStateController).addCallback(any());
 
         mUserSwitchTransitionViewMediator = new UserSwitchTransitionViewMediator(mContext,
-                mCarServiceProvider, mUserTracker,
+                mFakeExecutor, mCarServiceProvider, mUserTracker, mUserManager,
+                mWindowManagerService, mKeyguardStateController,
                 mUserSwitchTransitionViewController);
     }
 
@@ -63,34 +100,75 @@ public class UserSwitchTransitionViewMediatorTest extends CarSysuiTestCase {
     public void registerListeners_addsUserTrackerCallback() {
         mUserSwitchTransitionViewMediator.registerListeners();
 
-        verify(mUserTracker).addCallback(any(), any());
+        verify(mUserTracker).addCallback(any(), eq(mFakeExecutor));
     }
 
     @Test
-    public void onUserLifecycleEvent_beforeUserSwitching_callsHandleShow() {
+    public void onBeforeUserSwitching_showsSwitchingUI() throws RemoteException {
         mUserSwitchTransitionViewMediator.mUserChangedCallback.onBeforeUserSwitching(TEST_USER);
 
-        verify(mUserSwitchTransitionViewController).handleShow(TEST_USER);
+        verify(mUserSwitchTransitionViewController).showSwitchingUI(TEST_USER);
+        verify(mWindowManagerService).setSwitchingUser(true);
     }
 
     @Test
-    public void onUserLifecycleEvent_onUserChanging_callsHandleSwitching() {
+    public void onUserChanging_deviceIsSecure_locksDevice() throws RemoteException {
+        when(mKeyguardManager.isDeviceSecure(TEST_USER)).thenReturn(true);
+
         mUserSwitchTransitionViewMediator.mUserChangedCallback.onUserChanging(TEST_USER, mContext);
 
-        verify(mUserSwitchTransitionViewController).handleSwitching(TEST_USER);
+        verify(mWindowManagerService).lockNow(null);
     }
 
     @Test
-    public void onUserLifecycleEvent_onUserChanged_callsHandleHide() {
+    public void onUserChanging_deviceIsNotSecure_doesNotLockDevice() throws RemoteException {
+        when(mKeyguardManager.isDeviceSecure(TEST_USER)).thenReturn(false);
+
+        mUserSwitchTransitionViewMediator.mUserChangedCallback.onUserChanging(TEST_USER, mContext);
+
+        verify(mWindowManagerService, never()).lockNow(null);
+    }
+
+    @Test
+    public void onUserChanged_hidesSwitchingUI() {
+        when(mUserManager.isUserUnlocked(anyInt())).thenReturn(true);
+
         mUserSwitchTransitionViewMediator.mUserChangedCallback.onUserChanged(TEST_USER, mContext);
 
-        verify(mUserSwitchTransitionViewController).handleHide();
+        verify(mUserSwitchTransitionViewController).hideSwitchingUI();
     }
 
     @Test
-    public void onShowUserSwitchDialog_callsHandleShow() {
-        mUserSwitchTransitionViewMediator.showUserSwitchDialog(TEST_USER);
+    public void onUserSwitchStart_showsSwitchingUI() {
+        mUserSwitchTransitionViewMediator.onUserSwitchStart(UserHandle.of(TEST_USER));
+        mFakeExecutor.runAllReady();
 
-        verify(mUserSwitchTransitionViewController).handleShow(TEST_USER);
+        verify(mUserSwitchTransitionViewController).showSwitchingUI(TEST_USER);
+    }
+
+    @Test
+    public void onUserUnlockedEvent_hidesSwitchingUI() {
+        when(mUserTracker.getUserId()).thenReturn(TEST_USER);
+        when(mUserManager.isUserUnlocked(TEST_USER)).thenReturn(true);
+        CarUserManager.UserLifecycleEvent event = new CarUserManager.UserLifecycleEvent(
+                CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKED, TEST_USER);
+
+        mUserSwitchTransitionViewMediator.handleUserLifecycleEvent(event);
+
+        verify(mUserSwitchTransitionViewController).hideSwitchingUI();
+    }
+
+    @Test
+    public void onKeyguardShowing_hidesSwitchingUI() {
+        when(mKeyguardManager.isDeviceSecure(anyInt())).thenReturn(true);
+        when(mKeyguardStateController.isShowing()).thenReturn(false);
+        mUserSwitchTransitionViewMediator.registerListeners();
+        when(mKeyguardStateController.isShowing()).thenReturn(true);
+
+        for (KeyguardStateController.Callback callback : mKeyguardCallbacks) {
+            callback.onKeyguardShowingChanged();
+        }
+
+        verify(mUserSwitchTransitionViewController).hideSwitchingUI();
     }
 }

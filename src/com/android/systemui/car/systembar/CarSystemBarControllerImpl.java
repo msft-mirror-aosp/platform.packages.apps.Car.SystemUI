@@ -672,11 +672,9 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                mSystemBarAttachedMap.values().forEach(enabled -> {
-                    if (enabled) {
-                        restartSystemBars();
-                    }
-                });
+                if (mSystemBarAttachedMap.containsValue(true)) {
+                    restartSystemBars();
+                }
             }
         };
         mContext.registerReceiver(receiver, overlayFilter, /* broadcastPermission= */

@@ -2,13 +2,6 @@ package: "com.android.systemui.car"
 container: "system_ext"
 
 flag {
-    name: "config_aware_systemui"
-    namespace: "car_sys_exp"
-    description: "Flag to make car system ui react to runtime resource overlay change at the runtime."
-    bug: "304293383"
-}
-
-flag {
     name: "config_app_blocking_activities"
     namespace: "car_sys_exp"
     description: "Flag controlling the launch of app specific driving optimized blocking activities"

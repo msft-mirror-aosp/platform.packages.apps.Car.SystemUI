@@ -18,6 +18,7 @@ subdirs = [
     "pods",
     "pods/hvac/controller",
     "pods/hvac/ui",
+    "pods/systembar/home",
 ]
 
 package {
@@ -69,6 +70,7 @@ carsysui_pods = [
     // pods go here
     "CarSystemUI-Hvac-Controller",
     "CarSystemUI-Hvac-UI",
+    "CarSystemUI-SystemBar-HomeButton",
 ]
 
 java_defaults {

@@ -42,7 +42,7 @@
             systemui:selectedIcon="@drawable/car_ic_overview_selected"
             systemui:highlightWhenSelected="true"
             systemui:systemBarDisableFlags="home"
-            systemui:controller="com.android.systemui.car.systembar.HomeButtonController"/>
+            systemui:controller="com.android.systemui.car.systembar.home.HomeButtonController"/>
     </LinearLayout>
 </com.android.systemui.car.systembar.CarSystemBarView>
 

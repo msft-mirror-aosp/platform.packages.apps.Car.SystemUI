@@ -67,6 +67,7 @@ import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
+import com.android.systemui.car.systembar.home.HomeButtonController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.window.OverlayVisibilityMediator;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;

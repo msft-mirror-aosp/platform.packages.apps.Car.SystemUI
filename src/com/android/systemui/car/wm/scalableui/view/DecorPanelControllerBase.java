@@ -65,11 +65,12 @@ public abstract class DecorPanelControllerBase implements DecorPanelController {
 
     @Nullable
     private View initView() {
+        View view = null;
         if (mViewProvider != null) {
-            return mViewProvider.get();
+            view = mViewProvider.get();
         }
-
-        return null;
+        logIfDebuggable("Get View " + view + ", with panel provider " + mViewProvider);
+        return view;
     }
 
     @Override
@@ -81,6 +82,7 @@ public abstract class DecorPanelControllerBase implements DecorPanelController {
     @Nullable
     public View getView() {
         mView = mView == null ? initView() : mView;
+        logIfDebuggable("getView =" + mView);
         return mView;
     }
 

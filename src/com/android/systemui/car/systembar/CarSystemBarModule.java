@@ -39,6 +39,7 @@ import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationButtonController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.home.HomeButtonModule;
+import com.android.systemui.car.systembar.passengerhome.PassengerHomeButtonModule;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
@@ -81,7 +82,8 @@ import javax.inject.Provider;
  */
 @Module(includes = {
         FlexibleUiModule.class,
-        HomeButtonModule.class})
+        HomeButtonModule.class,
+        PassengerHomeButtonModule.class})
 public abstract class CarSystemBarModule {
 
     @Provides
@@ -366,13 +368,6 @@ public abstract class CarSystemBarModule {
     public abstract CarSystemBarElementController.Factory
             bindTemperatureControlViewControllerFactory(
                     TemperatureControlViewController.Factory factory);
-
-    /** Injects PassengerHomeButtonController */
-    @Binds
-    @IntoMap
-    @ClassKey(PassengerHomeButtonController.class)
-    public abstract CarSystemBarElementController.Factory bindPassengerHomeButtonControllerFactory(
-            PassengerHomeButtonController.Factory factory);
 
     /** Injects ControlCenterButtonController */
     @Binds

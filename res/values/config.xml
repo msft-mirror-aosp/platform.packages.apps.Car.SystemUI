@@ -259,11 +259,11 @@
         Enable the clear back stack feature on the CarSystemBarButtons.  This feature should be
         disabled when scalableUi feature is enabled.
     -->
-    <bool name="config_enableClearBackStack">true</bool>
+    <bool name="config_enableClearBackStack">false</bool>
 
     <!-- Enable the ScalableUI feature - this configuration toggle is only valid if the ScalableUI
          feature flag is also enabled. -->
-    <bool name="config_enableScalableUI">false</bool>
+    <bool name="config_enableScalableUI">true</bool>
 
     <!-- The entry point for panel definition of scalableUI feature.  -->
     <array name="window_states">

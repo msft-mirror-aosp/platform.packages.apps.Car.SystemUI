@@ -304,6 +304,15 @@ public final class TaskPanel extends SysUIPanel {
                                         + isRootTaskEmpty());
                         mTaskPanelInfoRepository.onTaskVanishedOnPanel(getPanelId(), taskInfo);
                     }
+
+                    @Override
+                    public void moveRootTaskToBack(ActivityManager.RunningTaskInfo taskInfo) {
+                        // TODO(b/464035997): Remove this once we have a Sink root task in
+                        //  car-wm-shell that will be a placeholder that contains all the
+                        //  intermediate/transient app-tasks.
+                        logIfDebuggable("moveRootTaskToBack: " + taskInfo.taskId);
+                        reportTaskPanelEmpty(taskInfo);
+                    }
                 });
     }
 

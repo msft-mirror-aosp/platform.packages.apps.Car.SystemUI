@@ -14,14 +14,6 @@
 // limitations under the License.
 //
 
-subdirs = [
-    "pods",
-    "pods/hvac/controller",
-    "pods/hvac/ui",
-    "pods/systembar/home",
-    "pods/systembar/passengerhome",
-]
-
 package {
     default_applicable_licenses: ["Android-Apache-2.0"],
     default_team: "trendy_team_system_experience",

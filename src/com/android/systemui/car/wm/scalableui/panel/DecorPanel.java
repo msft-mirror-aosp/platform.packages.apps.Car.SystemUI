@@ -112,6 +112,9 @@ public final class DecorPanel extends SysUIPanel {
                 mAutoDecorManager.removeAutoDecor(mAutoDecor);
             }
         });
+        if (mDecorPanelController != null) {
+            mDecorPanelController.destroy();
+        }
         super.destroy();
     }
 

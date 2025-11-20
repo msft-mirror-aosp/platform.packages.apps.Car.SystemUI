@@ -125,6 +125,11 @@ public class BaseTaskPanelController implements TaskPanelController {
         logIfDebuggable("Panel Controller init: " + this);
     }
 
+    @Override
+    public void destroy() {
+        logIfDebuggable("Panel Controller destroyed");
+    }
+
     private Intent parseUpdateFilter(@NonNull PanelControllerMetadata metadata) {
         String intentString = metadata.getStringConfiguration(
                 UPDATABLE_INTENT_FILTER_TAG);
@@ -199,7 +204,7 @@ public class BaseTaskPanelController implements TaskPanelController {
 
     protected void logIfDebuggable(String s) {
         if (DEBUG) {
-            Log.d(TAG, s);
+            Log.d(TAG, mPanelId + ", " + s);
         }
     }
 

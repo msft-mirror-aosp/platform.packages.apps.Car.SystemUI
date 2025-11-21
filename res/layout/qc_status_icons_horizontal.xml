@@ -124,8 +124,7 @@
         android:gravity="center"
         android:layout_alignParentStart="true"
         style="@style/TopBarButton"
-        systemui:controller="com.android.systemui.car.systembar.DebugPanelButtonViewController"
-        systemui:panelLayoutRes="@layout/qc_debug_panel"
+        systemui:controller="com.android.systemui.car.systembar.debugpanel.DebugPanelViewController"
         systemui:disabledWhileUnprovisioned="true"
         systemui:systemBarDisable2Flags="quickSettings">
         <ImageView

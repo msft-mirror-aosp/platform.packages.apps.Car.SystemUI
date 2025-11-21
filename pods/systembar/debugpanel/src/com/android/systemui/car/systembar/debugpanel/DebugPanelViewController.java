@@ -14,19 +14,27 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar.debugpanel;
 
 import static android.provider.Settings.Global.DEVELOPMENT_SETTINGS_ENABLED;
 
+import android.content.Context;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 
 import com.android.settingslib.development.DevelopmentSettingsEnabler;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.car.statusicon.PanelContentProvider;
+import com.android.systemui.car.statusicon.PanelContentProviderWrapper;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
+import com.android.systemui.car.systembar.BuildInfoUtil;
+import com.android.systemui.car.systembar.CarSystemBarPanelButtonView;
+import com.android.systemui.car.systembar.CarSystemBarPanelButtonViewController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.util.settings.GlobalSettings;
 
@@ -39,13 +47,13 @@ import javax.inject.Provider;
 /**
  * A controller for the debug panel button.
  */
-public class DebugPanelButtonViewController extends CarSystemBarPanelButtonViewController {
+public class DebugPanelViewController extends CarSystemBarPanelButtonViewController {
     private final GlobalSettings mGlobalSettings;
     private final Uri mDevelopEnabled;
     private final ContentObserver mDeveloperSettingsObserver;
 
     @AssistedInject
-    protected DebugPanelButtonViewController(@Assisted CarSystemBarPanelButtonView view,
+    protected DebugPanelViewController(@Assisted CarSystemBarPanelButtonView view,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
             Provider<StatusIconPanelViewController.Factory> statusIconPanelFactoryProvider,
@@ -65,7 +73,7 @@ public class DebugPanelButtonViewController extends CarSystemBarPanelButtonViewC
     @AssistedFactory
     public interface Factory extends
             CarSystemBarElementController.Factory<CarSystemBarPanelButtonView,
-                    DebugPanelButtonViewController> {
+                    DebugPanelViewController> {
     }
 
     @Override
@@ -86,4 +94,26 @@ public class DebugPanelButtonViewController extends CarSystemBarPanelButtonViewC
         return BuildInfoUtil.isDevTesting(getContext())
                 && DevelopmentSettingsEnabler.isDevelopmentSettingsEnabled(getContext());
     }
+
+    @Override
+    protected PanelContentProvider getPanelContentProvider() {
+        return new DebugPanelContentProvider(mView);
+    }
+
+    private static final class DebugPanelContentProvider extends PanelContentProviderWrapper {
+
+        DebugPanelContentProvider(PanelContentProvider base) {
+            super(base);
+        }
+
+        @Override
+        public ViewGroup createPanelContentView(Context context) {
+            ViewGroup xmlPanelLayout = super.createPanelContentView(context);
+            if (xmlPanelLayout != null) {
+                return xmlPanelLayout;
+            }
+            return (ViewGroup) LayoutInflater.from(context).inflate(
+                    R.layout.qc_debug_panel, /* root= */ null);
+        }
+    };
 }

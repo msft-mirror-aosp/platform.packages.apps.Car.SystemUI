@@ -37,7 +37,7 @@ import com.android.systemui.car.hvac.HvacButtonController;
 import com.android.systemui.car.hvac.TemperatureControlViewController;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationButtonController;
-import com.android.systemui.car.statusicon.StatusIconPanelViewController;
+import com.android.systemui.car.systembar.debugpanel.DebugPanelModule;
 import com.android.systemui.car.systembar.home.HomeButtonModule;
 import com.android.systemui.car.systembar.passengerhome.PassengerHomeButtonModule;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
@@ -71,8 +71,6 @@ import dagger.multibindings.StringKey;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.inject.Provider;
-
 /**
  * Dagger injection module for {@link CarSystemBar}.
  *
@@ -83,7 +81,8 @@ import javax.inject.Provider;
 @Module(includes = {
         FlexibleUiModule.class,
         HomeButtonModule.class,
-        PassengerHomeButtonModule.class})
+        PassengerHomeButtonModule.class,
+        DebugPanelModule.class})
 public abstract class CarSystemBarModule {
 
     @Provides
@@ -152,7 +151,6 @@ public abstract class CarSystemBarModule {
             ButtonSelectionStateController buttonSelectionStateController,
             ButtonRoleHolderController buttonRoleHolderController,
             SystemBarConfigs systemBarConfigs,
-            Provider<StatusIconPanelViewController.Factory> panelControllerFactoryProvider,
             // TODO(b/156052638): Should not need to inject LightBarController
             LightBarController lightBarController,
             DarkIconDispatcher darkIconDispatcher,
@@ -255,13 +253,6 @@ public abstract class CarSystemBarModule {
             return Optional.empty();
         }
     }
-
-    /** Injects DebugPanelButtonViewController */
-    @Binds
-    @IntoMap
-    @ClassKey(DebugPanelButtonViewController.class)
-    public abstract CarSystemBarElementController.Factory bindDebugPanelButtonViewController(
-            DebugPanelButtonViewController.Factory factory);
 
     /** Injects CarSystemBarViewFactory */
     @SysUISingleton

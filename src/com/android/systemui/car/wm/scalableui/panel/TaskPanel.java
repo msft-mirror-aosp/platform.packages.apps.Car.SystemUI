@@ -62,7 +62,7 @@ import com.android.car.scalableui.panel.TaskPanelController;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
-import com.android.systemui.car.wm.AutoCaptionBarViewFactoryImpl;
+import com.android.systemui.car.wm.AutoCaptionBarViewControllerImpl;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.panel.controller.PanelControllerInitializer;
@@ -122,7 +122,7 @@ public final class TaskPanel extends SysUIPanel {
     @NonNull
     private final AutoCaptionController mAutoCaptionController;
     @NonNull
-    private final AutoCaptionBarViewFactoryImpl mAutoCaptionBarViewFactoryImpl;
+    private final AutoCaptionBarViewControllerImpl mAutoCaptionBarViewControllerImpl;
     @NonNull
     private final TaskPanelInfoRepository mTaskPanelInfoRepository;
     @NonNull
@@ -192,8 +192,8 @@ public final class TaskPanel extends SysUIPanel {
         mPersistedActivities = new ArraySet<>();
         mPanelUtils = panelUtils;
         mAutoCaptionController = autoCaptionController;
-        mAutoCaptionBarViewFactoryImpl =
-                new AutoCaptionBarViewFactoryImpl(context, shellTaskOrganizer);
+        mAutoCaptionBarViewControllerImpl =
+                new AutoCaptionBarViewControllerImpl(context, shellTaskOrganizer);
         mAutoDecorManager = autoDecorManager;
         mContext = context;
         mPanelControllerInitializer = panelControllerInitializer;
@@ -909,7 +909,7 @@ public final class TaskPanel extends SysUIPanel {
                 + ", panel bounds = " + getBounds());
 
         mAutoCaptionController.setCaptionRegion(mRootTaskStack,
-                toolbarBounds, mAutoCaptionBarViewFactoryImpl);
+                toolbarBounds, mAutoCaptionBarViewControllerImpl);
     }
 
     private void setupTaskToolbar(RootTaskStack rootTaskStack, Rect taskToolbarBounds) {

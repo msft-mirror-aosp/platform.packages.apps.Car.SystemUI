@@ -20,6 +20,7 @@ import android.app.ActivityManager.RunningTaskInfo
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo.RESIZE_MODE_RESIZEABLE
 import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.hardware.input.InputManager
@@ -46,7 +47,7 @@ import com.android.systemui.car.wm.scalableui.panel.ui.CompatibilityToolbarUiSta
 import com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_ENTER_IMMERSIVE_EVENT_ID
 import com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_EXIT_IMMERSIVE_EVENT_ID
 import com.android.wm.shell.ShellTaskOrganizer
-import com.android.wm.shell.automotive.AutoCaptionBarViewFactory
+import com.android.wm.shell.automotive.AutoCaptionBarViewController
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -70,7 +71,7 @@ import dagger.assisted.AssistedInject
  * @property shellTaskOrganizer The shell component for managing task windows.
  * @property eventDispatcher A dispatcher for sending system-wide events.
  * @property panelId The unique identifier of the panel this toolbar is associated with.
- * @see AutoCaptionBarViewFactory
+ * @see AutoCaptionBarViewController
  * @see CompatibilityToolbar
  * @see PanelUpdateConsumer
  */
@@ -83,39 +84,75 @@ constructor(
     private val eventDispatcher: EventDispatcher,
     private val uiState: CompatibilityToolbarUiState,
     @Assisted private val panelId: String,
-) : TaskToolbarController(), PanelUpdateConsumer.PanelUpdateCallback {
+) : TaskToolbarController, PanelUpdateConsumer.PanelUpdateCallback {
 
     val displayId: Int =
         PanelPool.getInstance().getPanel(panelId)?.displayId ?: Display.INVALID_DISPLAY
 
-    override fun createView(taskInfo: RunningTaskInfo?): View {
+    override fun createView(taskInfo: RunningTaskInfo): View {
         return CompatibilityToolbar(context).apply {
             // Configure aspect ratio button based on task info availability.
-            taskInfo?.topActivity?.let {
-                onAspectRatioButtonClick = {
-                    sendAspectRatioIntent(it, taskInfo.userId)
-                }
+            updateButtonVisibility(this, taskInfo)
+            setupButtonClickListener(this, taskInfo)
+        }
+    }
 
-                onDisplayDensityButtonClick = {
-                    sendDisplayDensityIntent(it, taskInfo.userId, taskInfo.displayId)
-                }
-            } ?: run {
-                aspectRatioButton?.visibility = View.GONE
+    override fun updateView(captionView: View, taskInfo: RunningTaskInfo) {
+        (captionView as? CompatibilityToolbar)?.let { toolbar ->
+            updateButtonVisibility(toolbar, taskInfo)
+            setupButtonClickListener(toolbar, taskInfo)
+        }.run {
+            logIfDebuggable("captionView could not be casted to CompatibilityToolbar")
+        }
+    }
+
+    private fun updateButtonVisibility(
+        compatibilityToolbar: CompatibilityToolbar,
+        taskInfo: RunningTaskInfo
+    ) {
+        val taskIsValid = taskInfo.topActivity != null
+        val isActivityResizable = taskInfo.topActivityInfo?.resizeMode == RESIZE_MODE_RESIZEABLE
+        val aspectRatioVisible = taskIsValid && !isActivityResizable
+        compatibilityToolbar.apply {
+            aspectRatioButton?.visibility = if (aspectRatioVisible) View.VISIBLE else View.GONE
+            displayDensityButton?.visibility =
+                if (taskIsValid) View.VISIBLE else View.GONE
+        }
+    }
+
+    private fun setupButtonClickListener(
+        compatibilityToolbar: CompatibilityToolbar,
+        taskInfo: RunningTaskInfo
+    ) {
+        taskInfo.topActivity?.let { topActivityComponent ->
+            compatibilityToolbar.aspectRatioButton?.setOnClickListener {
+                sendAspectRatioIntent(topActivityComponent, taskInfo.userId)
             }
 
-            // Configure other buttons using modern lambda syntax.
-            onBackButtonClick = { sendBackEvent(taskInfo?.displayId) }
-
-            onCloseButtonClick = {
-                taskInfo?.let { info ->
-                    logIfDebuggable("Close button clicked: $info")
-                    val wct = WindowContainerTransaction().apply { removeTask(info.token) }
-                    shellTaskOrganizer.applyTransaction(wct)
-                }
+            compatibilityToolbar.displayDensityButton?.setOnClickListener {
+                sendDisplayDensityIntent(
+                    topActivityComponent,
+                    taskInfo.userId,
+                    taskInfo.displayId
+                )
             }
+        }
 
-            onFullscreenButtonClick =
-                { getImmersiveEvent()?.let { eventDispatcher.executeEvent(it) } }
+        // Configure other buttons using modern lambda syntax.
+        compatibilityToolbar.backButton?.setOnClickListener { sendBackEvent(taskInfo.displayId) }
+        compatibilityToolbar.closeButton?.setOnClickListener {
+            taskInfo.let { info ->
+                logIfDebuggable("Close button clicked: $info")
+                val wct = WindowContainerTransaction().apply { removeTask(info.token) }
+                shellTaskOrganizer.applyTransaction(wct)
+            }
+        }
+        compatibilityToolbar.fullscreenButton?.setOnClickListener {
+            getImmersiveEvent()?.let {
+                eventDispatcher.executeEvent(
+                    it
+                )
+            }
         }
     }
 
@@ -166,9 +203,7 @@ constructor(
         logIfDebuggable("sendDisplayDensityIntent: $intent")
     }
 
-    private fun sendBackEvent(displayId: Int?) {
-        // Use a guard clause for cleaner null handling.
-        displayId ?: return
+    private fun sendBackEvent(displayId: Int) {
         logIfDebuggable("sendBackEvent: $displayId")
 
         val eventTime = SystemClock.uptimeMillis()

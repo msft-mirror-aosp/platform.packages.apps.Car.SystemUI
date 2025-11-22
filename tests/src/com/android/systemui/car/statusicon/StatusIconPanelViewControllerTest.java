@@ -35,6 +35,8 @@ import android.content.IntentFilter;
 import android.os.UserHandle;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.test.filters.SmallTest;
@@ -76,6 +78,8 @@ public class StatusIconPanelViewControllerTest extends CarSysuiTestCase {
     private CarDeviceProvisionedController mDeviceProvisionedController;
     @Mock
     private CarSystemBarElementInitializer mCarSystemBarElementInitializer;
+    @Mock
+    private PanelContentProvider mPanelContentProvider;
 
     @Before
     public void setUp() {
@@ -90,10 +94,17 @@ public class StatusIconPanelViewControllerTest extends CarSysuiTestCase {
                 R.drawable.ic_bluetooth_status_off, mContext.getTheme()));
         mAnchorView.setColorFilter(mContext.getResources().getColor(
                 R.color.car_status_icon_color, mContext.getTheme()));
-        mViewController = new StatusIconPanelViewController.Builder(mContext, mUserTracker,
+
+        ViewGroup qcDisplayPanel = (ViewGroup) LayoutInflater.from(getContext()).inflate(
+                R.layout.qc_display_panel, /* root= */ null);
+        when(mPanelContentProvider.createPanelContentView(any())).thenReturn(qcDisplayPanel);
+        int panelWidth = mContext.getResources().getDimensionPixelSize(
+                R.dimen.car_status_icon_panel_default_width);
+        when(mPanelContentProvider.getPanelWidthPx()).thenReturn(panelWidth);
+
+        mViewController = new StatusIconPanelViewController(mContext, mUserTracker,
                 mBroadcastDispatcher, mConfigurationController, mDeviceProvisionedController,
-                mCarSystemBarElementInitializer).build(mAnchorView,
-                R.layout.qc_display_panel, R.dimen.car_status_icon_panel_default_width);
+                mCarSystemBarElementInitializer, mAnchorView, mPanelContentProvider);
         spyOn(mViewController);
         reset(mAnchorView);
         mViewController.init();

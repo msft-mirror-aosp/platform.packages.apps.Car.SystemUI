@@ -152,7 +152,7 @@ public abstract class CarSystemBarModule {
             ButtonSelectionStateController buttonSelectionStateController,
             ButtonRoleHolderController buttonRoleHolderController,
             SystemBarConfigs systemBarConfigs,
-            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider,
+            Provider<StatusIconPanelViewController.Factory> panelControllerFactoryProvider,
             // TODO(b/156052638): Should not need to inject LightBarController
             LightBarController lightBarController,
             DarkIconDispatcher darkIconDispatcher,

@@ -22,6 +22,8 @@ import android.annotation.LayoutRes;
 import android.content.Context;
 import android.hardware.SensorPrivacyManager;
 import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -33,6 +35,7 @@ import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.privacy.PrivacyChip;
+import com.android.systemui.car.statusicon.PanelContentProvider;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.privacy.PrivacyItem;
 import com.android.systemui.privacy.PrivacyItemController;
@@ -51,7 +54,7 @@ public abstract class PrivacyChipViewController extends CarSystemBarElementContr
     private final SensorPrivacyManager mSensorPrivacyManager;
     private final UserTracker mUserTracker;
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
-    private final Provider<StatusIconPanelViewController.Builder> mPanelControllerBuilderProvider;
+    private final Provider<StatusIconPanelViewController.Factory> mPanelControllerFactoryProvider;
     private Context mContext;
 
     private final SensorPrivacyManager.OnSensorPrivacyChangedListener
@@ -125,14 +128,14 @@ public abstract class PrivacyChipViewController extends CarSystemBarElementContr
             PrivacyItemController privacyItemController,
             SensorPrivacyManager sensorPrivacyManager, UserTracker userTracker,
             CarDeviceProvisionedController carDeviceProvisionedController,
-            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider) {
+            Provider<StatusIconPanelViewController.Factory> panelControllerFactoryProvider) {
         super(view, disableController, stateController);
         mContext = context;
         mPrivacyItemController = privacyItemController;
         mSensorPrivacyManager = sensorPrivacyManager;
         mUserTracker = userTracker;
         mCarDeviceProvisionedController = carDeviceProvisionedController;
-        mPanelControllerBuilderProvider = panelControllerBuilderProvider;
+        mPanelControllerFactoryProvider = panelControllerFactoryProvider;
         mIsPrivacyChipVisible = false;
     }
 
@@ -164,12 +167,42 @@ public abstract class PrivacyChipViewController extends CarSystemBarElementContr
     protected void onInit() {
         super.onInit();
         if (isDeviceSetupForUser() && getPanelLayoutRes() != 0) {
+            PanelContentProvider panelContentProvider = new PanelContentProvider() {
+                @Override
+                public ViewGroup createPanelContentView(Context context) {
+                    return (ViewGroup) LayoutInflater.from(context).inflate(getPanelLayoutRes(),
+                            /* root= */ null);
+                }
+
+                @Override
+                public int getPanelWidthPx() {
+                    return mContext.getResources().getDimensionPixelSize(
+                            R.dimen.car_sensor_qc_panel_width);
+                }
+
+                @Override
+                public int getXOffsetPx() {
+                    return -mContext.getResources().getDimensionPixelOffset(
+                            R.dimen.privacy_chip_horizontal_padding);
+                }
+
+                @Override
+                public int getYOffsetPx() {
+                    int panelMarginTop = mContext.getResources().getDimensionPixelSize(
+                            R.dimen.car_status_icon_panel_margin_top);
+                    int topSystemBarHeight = mContext.getResources().getDimensionPixelSize(
+                            R.dimen.car_top_system_bar_height);
+                    // TODO(b/202563671): remove yOffsetPx when the PopupWindow API is updated.
+                    return panelMarginTop - topSystemBarHeight;
+                }
+
+                @Override
+                public int getPanelGravity() {
+                    return Gravity.TOP | Gravity.END;
+                }
+            };
             StatusIconPanelViewController panelViewController =
-                    mPanelControllerBuilderProvider.get()
-                    .setXOffset(-mContext.getResources()
-                            .getDimensionPixelOffset(R.dimen.privacy_chip_horizontal_padding))
-                    .setGravity(Gravity.TOP | Gravity.END)
-                    .build(mView, getPanelLayoutRes(), R.dimen.car_sensor_qc_panel_width);
+                    mPanelControllerFactoryProvider.get().create(mView, panelContentProvider);
             panelViewController.init();
         }
     }

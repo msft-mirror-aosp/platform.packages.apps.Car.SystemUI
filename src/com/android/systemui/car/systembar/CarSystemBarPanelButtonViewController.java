@@ -16,13 +16,14 @@
 
 package com.android.systemui.car.systembar;
 
-import static com.android.systemui.car.systembar.CarSystemBarPanelButtonView.INVALID_RESOURCE_ID;
-
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.car.statusicon.PanelContentProvider;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 
 import dagger.assisted.Assisted;
@@ -35,15 +36,15 @@ import javax.inject.Provider;
 public class CarSystemBarPanelButtonViewController extends
         CarSystemBarElementController<CarSystemBarPanelButtonView> {
     private static final String KEY_IS_SELECTED = "key_is_selected";
-    private final Provider<StatusIconPanelViewController.Builder> mStatusIconPanelBuilder;
+    private final Provider<StatusIconPanelViewController.Factory> mStatusIconPanelFactoryProvider;
 
     @AssistedInject
     protected CarSystemBarPanelButtonViewController(@Assisted CarSystemBarPanelButtonView view,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
-            Provider<StatusIconPanelViewController.Builder> statusIconPanelBuilder) {
+            Provider<StatusIconPanelViewController.Factory> statusIconPanelFactoryProvider) {
         super(view, disableController, stateController);
-        mStatusIconPanelBuilder = statusIconPanelBuilder;
+        mStatusIconPanelFactoryProvider = statusIconPanelFactoryProvider;
     }
 
     @AssistedFactory
@@ -54,40 +55,11 @@ public class CarSystemBarPanelButtonViewController extends
 
     @Override
     protected void onInit() {
-        StatusIconPanelViewController.Builder builder = mStatusIconPanelBuilder.get();
-        int panelLayoutRes = mView.getPanelContentLayout();
-        int panelLayoutWidthRes = mView.getPanelWidth();
-        Integer xOffset = mView.getXOffset();
-        if (xOffset != null) {
-            builder.setXOffset(xOffset);
-        }
-        Integer yOffset = mView.getYOffset();
-        if (yOffset != null) {
-            builder.setYOffset(yOffset);
-        }
-        Integer gravity = mView.getPanelGravity();
-        if (gravity != null) {
-            builder.setGravity(gravity);
-        }
-        Boolean disabledWhileDriving = mView.getDisabledWhileDriving();
-        if (disabledWhileDriving != null) {
-            builder.setDisabledWhileDriving(disabledWhileDriving);
-        }
-        Boolean disabledWhileUnprovisioned = mView.getDisabledWhileUnprovisioned();
-        if (disabledWhileUnprovisioned != null) {
-            builder.setDisabledWhileUnprovisioned(disabledWhileUnprovisioned);
-        }
-        Boolean showAsDropDown = mView.getShowAsDropDown();
-        if (showAsDropDown != null) {
-            builder.setShowAsDropDown(showAsDropDown);
-        }
-
-        if (panelLayoutRes != INVALID_RESOURCE_ID) {
-            StatusIconPanelViewController panelController = builder.build(mView,
-                    panelLayoutRes,
-                    panelLayoutWidthRes);
-            panelController.init();
-        }
+        StatusIconPanelViewController.Factory factory = mStatusIconPanelFactoryProvider.get();
+        // The View (mView) itself implements PanelContentProvider to provide its own content.
+        StatusIconPanelViewController panelController = factory.create(/* anchorView= */ mView,
+                getPanelContentProvider());
+        panelController.init();
     }
 
     @Override
@@ -109,5 +81,10 @@ public class CarSystemBarPanelButtonViewController extends
                 mView.callOnClick();
             }
         }
+    }
+
+    @NonNull
+    protected PanelContentProvider getPanelContentProvider() {
+        return (PanelContentProvider) mView;
     }
 }

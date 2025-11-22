@@ -63,10 +63,10 @@ public class UserNamePanelButtonViewController extends CarSystemBarPanelButtonVi
     protected UserNamePanelButtonViewController(@Assisted CarSystemBarPanelButtonView view,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
-            Provider<StatusIconPanelViewController.Builder> statusIconPanelBuilder,
+            Provider<StatusIconPanelViewController.Factory> statusIconPanelFactoryProvider,
             Context context, UserTracker userTracker, CarServiceProvider carServiceProvider,
             CarDeviceProvisionedController deviceProvisionedController) {
-        super(view, disableController, stateController, statusIconPanelBuilder);
+        super(view, disableController, stateController, statusIconPanelFactoryProvider);
         mContext = context;
         mUserTracker = userTracker;
         mCarServiceProvider = carServiceProvider;
@@ -140,22 +140,17 @@ public class UserNamePanelButtonViewController extends CarSystemBarPanelButtonVi
     }
 
     private View.OnClickListener getMUMDUserPickerClickListener() {
-        boolean disabledWhileDriving =
-                mView.getDisabledWhileDriving() != null ? mView.getDisabledWhileDriving()
-                        : false;
-        boolean disabledWhileUnprovisioned = mView.getDisabledWhileUnprovisioned() != null
-                ? mView.getDisabledWhileUnprovisioned() : false;
         CarUxRestrictionsUtil carUxRestrictionsUtil;
-        if (disabledWhileDriving) {
+        if (mView.isDisabledWhileDriving()) {
             carUxRestrictionsUtil = CarUxRestrictionsUtil.getInstance(mContext);
         } else {
             carUxRestrictionsUtil = null;
         }
         return v -> {
-            if (disabledWhileUnprovisioned && !isDeviceSetupForUser()) {
+            if (mView.isDisabledWhileUnprovisioned() && !isDeviceSetupForUser()) {
                 return;
             }
-            if (disabledWhileDriving && carUxRestrictionsUtil.getCurrentRestrictions()
+            if (mView.isDisabledWhileDriving() && carUxRestrictionsUtil.getCurrentRestrictions()
                     .isRequiresDistractionOptimization()) {
                 Toast.makeText(mContext, R.string.car_ui_restricted_while_driving,
                         Toast.LENGTH_LONG).show();

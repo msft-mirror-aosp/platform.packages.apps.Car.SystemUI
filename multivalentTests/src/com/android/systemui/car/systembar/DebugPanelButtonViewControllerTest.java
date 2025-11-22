@@ -56,7 +56,7 @@ public class DebugPanelButtonViewControllerTest extends CarSysuiTestCase {
     @Mock
     private CarSystemBarElementStateController mStateController;
     @Mock
-    private Provider<StatusIconPanelViewController.Builder> mStatusIconPanelBuilder;
+    private Provider<StatusIconPanelViewController.Factory> mStatusIconPanelFactoryProvider;
     @Mock
     private Handler mMainHandler;
     @Mock
@@ -70,7 +70,7 @@ public class DebugPanelButtonViewControllerTest extends CarSysuiTestCase {
 
         when(mView.getContext()).thenReturn(mContext);
         mController = new DebugPanelButtonViewController(mView, mDisableController,
-                mStateController, mStatusIconPanelBuilder, mMainHandler, mGlobalSettings);
+                mStateController, mStatusIconPanelFactoryProvider, mMainHandler, mGlobalSettings);
         mController.onViewAttached();
     }
 

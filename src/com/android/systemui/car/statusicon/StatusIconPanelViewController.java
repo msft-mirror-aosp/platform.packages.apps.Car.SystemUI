@@ -20,8 +20,6 @@ import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
 import static android.widget.PopupWindow.INPUT_METHOD_NOT_NEEDED;
 
-import android.annotation.DimenRes;
-import android.annotation.LayoutRes;
 import android.app.PendingIntent;
 import android.car.drivingstate.CarUxRestrictions;
 import android.content.BroadcastReceiver;
@@ -31,7 +29,6 @@ import android.content.IntentFilter;
 import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
@@ -57,10 +54,12 @@ import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.util.ViewController;
 
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 /**
  * A controller for a panel view associated with a status icon.
@@ -73,16 +72,9 @@ public class StatusIconPanelViewController extends ViewController<View> {
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final CarSystemBarElementInitializer mCarSystemBarElementInitializer;
     private final String mIdentifier;
-    @LayoutRes
-    private final int mPanelLayoutRes;
-    @DimenRes
-    private final int mPanelWidthRes;
-    private final int mXOffsetPixel;
-    private final int mYOffsetPixel;
-    private final int mPanelGravity;
+    private final PanelContentProvider mPanelContentProvider;
     private final boolean mIsDisabledWhileDriving;
     private final boolean mIsDisabledWhileUnprovisioned;
-    private final boolean mShowAsDropDown;
     private final ArrayList<SystemUIQCViewController> mQCViewControllers = new ArrayList<>();
 
     private PopupWindow mPanel;
@@ -172,30 +164,26 @@ public class StatusIconPanelViewController extends ViewController<View> {
         }
     };
 
-    private StatusIconPanelViewController(Context context,
+    @AssistedInject
+    public StatusIconPanelViewController(Context context,
             UserTracker userTracker,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
             CarDeviceProvisionedController deviceProvisionedController,
             CarSystemBarElementInitializer elementInitializer,
-            View anchorView, @LayoutRes int layoutRes, @DimenRes int widthRes,
-            int xOffset, int yOffset, int gravity, boolean isDisabledWhileDriving,
-            boolean isDisabledWhileUnprovisioned, boolean showAsDropDown) {
+            @Assisted View anchorView,
+            @Assisted PanelContentProvider panelContentProvider) {
         super(anchorView);
-        mContext = context;
+        mContext = context.createWindowContext(context.getDisplay(),
+                WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG, null);
         mUserTracker = userTracker;
         mBroadcastDispatcher = broadcastDispatcher;
         mConfigurationController = configurationController;
         mCarDeviceProvisionedController = deviceProvisionedController;
         mCarSystemBarElementInitializer = elementInitializer;
-        mIsDisabledWhileDriving = isDisabledWhileDriving;
-        mIsDisabledWhileUnprovisioned = isDisabledWhileUnprovisioned;
-        mPanelLayoutRes = layoutRes;
-        mPanelWidthRes = widthRes;
-        mXOffsetPixel = xOffset;
-        mYOffsetPixel = yOffset;
-        mPanelGravity = gravity;
-        mShowAsDropDown = showAsDropDown;
+        mPanelContentProvider = panelContentProvider;
+        mIsDisabledWhileDriving = mPanelContentProvider.isDisabledWhileDriving();
+        mIsDisabledWhileUnprovisioned = mPanelContentProvider.isDisabledWhileUnprovisioned();
         mIdentifier = Integer.toString(System.identityHashCode(this));
     }
 
@@ -227,16 +215,21 @@ public class StatusIconPanelViewController extends ViewController<View> {
 
             registerFocusListener(true);
 
-            if (mShowAsDropDown) {
-                // TODO(b/202563671): remove yOffsetPixel when the PopupWindow API is updated.
-                mPanel.showAsDropDown(mView, mXOffsetPixel, mYOffsetPixel, mPanelGravity);
+            int xOffsetPx = mPanelContentProvider.getXOffsetPx();
+            int yOffsetPx = mPanelContentProvider.getYOffsetPx();
+            int gravity = mPanelContentProvider.getPanelGravity();
+            boolean showAsDropDown = mPanelContentProvider.getShowAsDropDown();
+
+            if (showAsDropDown) {
+                // TODO(b/202563671): remove yOffsetPx when the PopupWindow API is updated.
+                mPanel.showAsDropDown(mView, xOffsetPx, yOffsetPx, gravity);
             } else {
-                int verticalGravity = mPanelGravity & Gravity.VERTICAL_GRAVITY_MASK;
+                int verticalGravity = gravity & Gravity.VERTICAL_GRAVITY_MASK;
                 int animationStyle = verticalGravity == Gravity.BOTTOM
                         ? com.android.internal.R.style.Animation_DropDownUp
                         : com.android.internal.R.style.Animation_DropDownDown;
                 mPanel.setAnimationStyle(animationStyle);
-                mPanel.showAtLocation(mView, mPanelGravity, mXOffsetPixel, mYOffsetPixel);
+                mPanel.showAtLocation(mView, gravity, xOffsetPx, yOffsetPx);
             }
             mView.setSelected(true);
             setAnimatedStatusIconHighlightedStatus(true);
@@ -320,15 +313,14 @@ public class StatusIconPanelViewController extends ViewController<View> {
      * @return true if the panel was created, false otherwise
      */
     private boolean createPanel() {
-        if (mPanelWidthRes == 0 || mPanelLayoutRes == 0) {
+        mPanelContent = mPanelContentProvider.createPanelContentView(mContext);
+        if (mPanelContent == null) {
             return false;
         }
 
-        int panelWidth = mContext.getResources().getDimensionPixelSize(mPanelWidthRes);
+        int panelWidth = mPanelContentProvider.getPanelWidthPx();
         Drawable panelBackgroundDrawable = mContext.getResources()
                 .getDrawable(R.drawable.status_icon_panel_bg, mContext.getTheme());
-        mPanelContent = (ViewGroup) LayoutInflater.from(mContext).inflate(mPanelLayoutRes,
-                /* root= */ null);
         // clip content to the panel background (to handle rounded corners)
         mPanelContent.setOutlineProvider(new DrawableViewOutlineProvider(panelBackgroundDrawable));
         mPanelContent.setClipToOutline(true);
@@ -464,102 +456,19 @@ public class StatusIconPanelViewController extends ViewController<View> {
         }
     }
 
-    /** Daggerized builder for StatusIconPanelViewController */
-    public static class Builder {
-        private final Context mContext;
-        private final UserTracker mUserTracker;
-        private final BroadcastDispatcher mBroadcastDispatcher;
-        private final ConfigurationController mConfigurationController;
-        private final CarDeviceProvisionedController mCarDeviceProvisionedController;
-        private final CarSystemBarElementInitializer mCarSystemBarElementInitializer;
-
-        private int mXOffset = 0;
-        private int mYOffset;
-        private int mGravity = Gravity.TOP | Gravity.START;
-        private boolean mIsDisabledWhileDriving = false;
-        private boolean mIsDisabledWhileUnprovisioned = false;
-        private boolean mShowAsDropDown = true;
-
-        @Inject
-        public Builder(
-                Context context,
-                UserTracker userTracker,
-                BroadcastDispatcher broadcastDispatcher,
-                ConfigurationController configurationController,
-                CarDeviceProvisionedController deviceProvisionedController,
-                CarSystemBarElementInitializer elementInitializer) {
-            mContext = context.createWindowContext(context.getDisplay(),
-                    WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG, null);
-            mUserTracker = userTracker;
-            mBroadcastDispatcher = broadcastDispatcher;
-            mConfigurationController = configurationController;
-            mCarDeviceProvisionedController = deviceProvisionedController;
-            mCarSystemBarElementInitializer = elementInitializer;
-
-            int panelMarginTop = mContext.getResources().getDimensionPixelSize(
-                    R.dimen.car_status_icon_panel_margin_top);
-            int topSystemBarHeight = mContext.getResources().getDimensionPixelSize(
-                    R.dimen.car_top_system_bar_height);
-            // TODO(b/202563671): remove mYOffset when the PopupWindow API is updated.
-            mYOffset = panelMarginTop - topSystemBarHeight;
-        }
-
-        /** Set the panel offset in the x direction by a specified number of pixels. */
-        public Builder setXOffset(int offset) {
-            mXOffset = offset;
-            return this;
-        }
-
-        /** Set the panel offset in the y direction by a specified number of pixels. */
-        public Builder setYOffset(int offset) {
-            mYOffset = offset;
-            return this;
-        }
-
+    /**
+     * Factory for creating {@link StatusIconPanelViewController} instances.
+     */
+    @AssistedFactory
+    public interface Factory {
         /**
-         * Set the panel's gravity - by default the gravity will be `Gravity.TOP | Gravity
-         * .START`
+         * Creates a new instance of {@link StatusIconPanelViewController}.
+         *
+         * @param anchorView The view that the panel is anchored to.
+         * @param panelContentProvider The provider for the panel's content.
+         * @return A new {@link StatusIconPanelViewController} instance.
          */
-        public Builder setGravity(int gravity) {
-            mGravity = gravity;
-            return this;
-        }
-
-        /** Set whether the panel should be shown while driving or not - defaults to false. */
-        public Builder setDisabledWhileDriving(boolean disabled) {
-            mIsDisabledWhileDriving = disabled;
-            return this;
-        }
-
-        /**
-         * Sets whether the panel should be disabled when the device is unprovisioned - defaults
-         * to false
-         */
-        public Builder setDisabledWhileUnprovisioned(boolean disabled) {
-            mIsDisabledWhileUnprovisioned = disabled;
-            return this;
-        }
-
-        /**
-         * Set whether the panel should be shown as a dropdown (vs. at a specific location)
-         * - defaults to true.
-         */
-        public Builder setShowAsDropDown(boolean dropDown) {
-            mShowAsDropDown = dropDown;
-            return this;
-        }
-
-        /**
-         * Builds the controller with the required parameters of anchor view, panel layout resource,
-         * and panel width resources.
-         */
-        public StatusIconPanelViewController build(View anchorView, @LayoutRes int layoutRes,
-                @DimenRes int widthRes) {
-            return new StatusIconPanelViewController(mContext, mUserTracker,
-                    mBroadcastDispatcher, mConfigurationController, mCarDeviceProvisionedController,
-                    mCarSystemBarElementInitializer, anchorView, layoutRes, widthRes, mXOffset,
-                    mYOffset, mGravity, mIsDisabledWhileDriving, mIsDisabledWhileUnprovisioned,
-                    mShowAsDropDown);
-        }
+        StatusIconPanelViewController create(View anchorView,
+                PanelContentProvider panelContentProvider);
     }
 }

@@ -38,7 +38,7 @@ import javax.inject.Inject
  * Its companion object also provides COMPILE-TIME constants for use in annotations.
  */
 
-class FlagManager @Inject constructor (
+class FlagManager @Inject constructor(
     private val context: Context,
 ) {
     /**
@@ -91,5 +91,18 @@ class FlagManager @Inject constructor (
 
     private fun logFlagCheck(message: String) {
         Log.d(tag, message)
+    }
+
+    override fun toString(): String {
+        val formatted = Flag.entries.joinToString(
+            separator = " , ",
+            prefix = "[ ",
+            postfix = " ]"
+        ) { "${it.flagMethodName} = ${isEnabled(it)}" }
+        return formatted
+    }
+
+    fun findFlag(flagName: String): Flag? {
+        return Flag.entries.find { it.flagMethodName.endsWith(flagName, ignoreCase = true) }
     }
 }

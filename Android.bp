@@ -211,6 +211,7 @@ android_app {
         proguard_flags_files: [
             "proguard.flags",
         ],
+        included_proguard_flags_files: [":sysui_proguard_common_and_kotlin"],
     },
     // TODO(b/301283770): Compiling CarSystemUI should not require -J-Xmx8192M
     javacflags: [
@@ -400,6 +401,7 @@ android_app {
         shrink_resources: false,
         optimized_shrink_resources: false,
         proguard_flags_files: ["proguard.flags"],
+        included_proguard_flags_files: [":sysui_proguard_common_and_kotlin"],
     },
 
     plugins: ["dagger2-compiler"],
@@ -475,5 +477,13 @@ filegroup {
         "multivalentTests/src/**/*.kt",
         "multivalentTests/src/**/*.java",
         "tests/utils/src/com/android/systemui/*.java",
+    ],
+}
+
+filegroup {
+    name: "CarSystemUI-proguard-deps",
+    srcs: [
+        "proguard.flags",
+        ":sysui_proguard_common_and_kotlin",
     ],
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar.privacy.mic;
 
 import static android.hardware.SensorPrivacyManager.Sensors.MICROPHONE;
 
@@ -22,14 +22,15 @@ import android.content.Context;
 import android.hardware.SensorPrivacyManager;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.VisibleForTesting;
 
-import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.privacy.PrivacyChip;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
+import com.android.systemui.car.systembar.PrivacyChipViewController;
 import com.android.systemui.privacy.PrivacyItemController;
 import com.android.systemui.privacy.PrivacyType;
 import com.android.systemui.settings.UserTracker;
@@ -82,5 +83,23 @@ public class MicPrivacyChipViewController extends PrivacyChipViewController {
     @Override
     protected int getPanelLayoutRes() {
         return R.layout.qc_mic_panel;
+    }
+
+    @VisibleForTesting
+    @Override
+    protected void onViewDetached() {
+        super.onViewDetached();
+    }
+
+    @VisibleForTesting
+    @Override
+    protected void onViewAttached() {
+        super.onViewAttached();
+    }
+
+    @VisibleForTesting
+    @Override
+    protected boolean isSensorEnabled() {
+        return super.isSensorEnabled();
     }
 }

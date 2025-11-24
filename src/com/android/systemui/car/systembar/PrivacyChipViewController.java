@@ -140,7 +140,7 @@ public abstract class PrivacyChipViewController extends CarSystemBarElementContr
     }
 
     @VisibleForTesting
-    boolean isSensorEnabled() {
+    protected boolean isSensorEnabled() {
         // We need to negate return of isSensorPrivacyEnabled since when it is {@code true} it
         // means the sensor (microphone/camera) has been toggled off
         return !mSensorPrivacyManager.isSensorPrivacyEnabled(/* toggleType= */ TOGGLE_TYPE_SOFTWARE,

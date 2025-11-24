@@ -52,10 +52,10 @@ public class CameraPrivacyChipViewController extends PrivacyChipViewController {
             SensorPrivacyManager sensorPrivacyManager,
             UserTracker userTracker,
             CarDeviceProvisionedController carDeviceProvisionedController,
-            Provider<StatusIconPanelViewController.Builder> panelControllerBuilderProvider) {
+            Provider<StatusIconPanelViewController.Factory> panelControllerFactoryProvider) {
         super(view, disableController, stateController, context, privacyItemController,
                 sensorPrivacyManager, userTracker, carDeviceProvisionedController,
-                panelControllerBuilderProvider);
+                panelControllerFactoryProvider);
     }
 
     @AssistedFactory

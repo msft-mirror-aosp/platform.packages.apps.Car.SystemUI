@@ -19,6 +19,9 @@ package com.android.systemui.car.systembar;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.annotation.DimenRes;
@@ -29,9 +32,11 @@ import com.android.systemui.R;
 import com.android.systemui.car.flexibleui.CarSystemBarElement;
 import com.android.systemui.car.flexibleui.CarSystemBarElementFlags;
 import com.android.systemui.car.flexibleui.CarSystemBarElementResolver;
+import com.android.systemui.car.statusicon.PanelContentProvider;
 
 /** Custom view that provides the layout and attributes for creating system bar panels. */
-public class CarSystemBarPanelButtonView extends LinearLayout implements CarSystemBarElement {
+public class CarSystemBarPanelButtonView extends LinearLayout implements CarSystemBarElement,
+        PanelContentProvider {
     static final int INVALID_RESOURCE_ID = -1;
 
     private Class<?> mElementControllerClassAttr;
@@ -43,18 +48,12 @@ public class CarSystemBarPanelButtonView extends LinearLayout implements CarSyst
     private int mPanelLayoutRes;
     @DimenRes
     private int mPanelWidthRes;
-    @Nullable
-    private Integer mXOffset;
-    @Nullable
-    private Integer mYOffset;
-    @Nullable
-    private Integer mGravity;
-    @Nullable
-    private Boolean mDisabledWhileDriving;
-    @Nullable
-    private Boolean mDisabledWhileUnprovisioned;
-    @Nullable
-    private Boolean mShowAsDropDown;
+    private int mXOffset;
+    private int mYOffset;
+    private int mGravity;
+    private boolean mDisabledWhileDriving;
+    private boolean mDisabledWhileUnprovisioned;
+    private boolean mShowAsDropDown;
 
     public CarSystemBarPanelButtonView(Context context) {
         super(context);
@@ -99,65 +98,68 @@ public class CarSystemBarPanelButtonView extends LinearLayout implements CarSyst
         mPanelWidthRes = typedArray.getResourceId(
                 R.styleable.CarSystemBarPanelButtonView_panelWidthRes,
                 R.dimen.car_status_icon_panel_default_width);
-        mXOffset = typedArray.hasValue(R.styleable.CarSystemBarPanelButtonView_xOffset)
-                ? typedArray.getInteger(R.styleable.CarSystemBarPanelButtonView_xOffset, 0) : null;
-        mYOffset = typedArray.hasValue(R.styleable.CarSystemBarPanelButtonView_yOffset)
-                ? typedArray.getInteger(R.styleable.CarSystemBarPanelButtonView_yOffset, 0) : null;
-        mGravity = typedArray.hasValue(R.styleable.CarSystemBarPanelButtonView_gravity)
-                ? typedArray.getInteger(R.styleable.CarSystemBarPanelButtonView_gravity, 0) : null;
-        mDisabledWhileDriving =
-                typedArray.hasValue(R.styleable.CarSystemBarPanelButtonView_disabledWhileDriving)
-                        ? typedArray.getBoolean(
-                        R.styleable.CarSystemBarPanelButtonView_disabledWhileDriving, false) : null;
-        mDisabledWhileUnprovisioned = typedArray.hasValue(
-                R.styleable.CarSystemBarPanelButtonView_disabledWhileUnprovisioned)
-                ? typedArray.getBoolean(
-                R.styleable.CarSystemBarPanelButtonView_disabledWhileUnprovisioned, false) : null;
-        mShowAsDropDown =
-                typedArray.hasValue(R.styleable.CarSystemBarPanelButtonView_showAsDropDown)
-                        ? typedArray.getBoolean(
-                        R.styleable.CarSystemBarPanelButtonView_showAsDropDown, true) : null;
+        mXOffset = typedArray.getInteger(R.styleable.CarSystemBarPanelButtonView_xOffset, 0);
+        int panelMarginTop = context.getResources().getDimensionPixelSize(
+                R.dimen.car_status_icon_panel_margin_top);
+        int topSystemBarHeight = context.getResources().getDimensionPixelSize(
+                R.dimen.car_top_system_bar_height);
+        // TODO(b/202563671): remove yOffsetPx when the PopupWindow API is updated.
+        int defaultYOffset = panelMarginTop - topSystemBarHeight;
+        mYOffset = typedArray.getInteger(R.styleable.CarSystemBarPanelButtonView_yOffset,
+                defaultYOffset);
+        mGravity = typedArray.getInteger(R.styleable.CarSystemBarPanelButtonView_gravity,
+                Gravity.TOP | Gravity.START);
+        mDisabledWhileDriving = typedArray.getBoolean(
+                R.styleable.CarSystemBarPanelButtonView_disabledWhileDriving, false);
+        mDisabledWhileUnprovisioned = typedArray.getBoolean(
+                R.styleable.CarSystemBarPanelButtonView_disabledWhileUnprovisioned, false);
+        mShowAsDropDown = typedArray.getBoolean(
+                R.styleable.CarSystemBarPanelButtonView_showAsDropDown, true);
         typedArray.recycle();
     }
 
-
-    @LayoutRes
-    public int getPanelContentLayout() {
-        return mPanelLayoutRes;
-    }
-
-    @DimenRes
-    public int getPanelWidth() {
-        return mPanelWidthRes;
-    }
-
     @Nullable
-    public Integer getXOffset() {
+    @Override
+    public ViewGroup createPanelContentView(Context context) {
+        if (mPanelLayoutRes == INVALID_RESOURCE_ID) {
+            return null;
+        }
+        return (ViewGroup) LayoutInflater.from(context)
+                .inflate(mPanelLayoutRes, /* root= */ null);
+    }
+
+    @Override
+    public int getPanelWidthPx() {
+        return getContext().getResources().getDimensionPixelSize(mPanelWidthRes);
+    }
+
+    @Override
+    public int getXOffsetPx() {
         return mXOffset;
     }
 
-    @Nullable
-    public Integer getYOffset() {
+    @Override
+    public int getYOffsetPx() {
         return mYOffset;
     }
 
-    @Nullable
-    public Integer getPanelGravity() {
+    @Override
+    public int getPanelGravity() {
         return mGravity;
     }
 
-    @Nullable
-    public Boolean getDisabledWhileDriving() {
+    @Override
+    public boolean isDisabledWhileDriving() {
         return mDisabledWhileDriving;
     }
 
-    @Nullable
-    public Boolean getDisabledWhileUnprovisioned() {
+    @Override
+    public boolean isDisabledWhileUnprovisioned() {
         return mDisabledWhileUnprovisioned;
     }
 
-    @Nullable
-    public Boolean getShowAsDropDown() {
+    @Override
+    public boolean getShowAsDropDown() {
         return mShowAsDropDown;
     }
 

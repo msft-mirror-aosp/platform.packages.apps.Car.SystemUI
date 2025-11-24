@@ -48,9 +48,9 @@ public class DebugPanelButtonViewController extends CarSystemBarPanelButtonViewC
     protected DebugPanelButtonViewController(@Assisted CarSystemBarPanelButtonView view,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
-            Provider<StatusIconPanelViewController.Builder> statusIconPanelBuilder,
+            Provider<StatusIconPanelViewController.Factory> statusIconPanelFactoryProvider,
             @Main Handler mainHandler, GlobalSettings globalSettings) {
-        super(view, disableController, stateController, statusIconPanelBuilder);
+        super(view, disableController, stateController, statusIconPanelFactoryProvider);
         mGlobalSettings = globalSettings;
         mDevelopEnabled = globalSettings.getUriFor(DEVELOPMENT_SETTINGS_ENABLED);
         mDeveloperSettingsObserver = new ContentObserver(mainHandler) {

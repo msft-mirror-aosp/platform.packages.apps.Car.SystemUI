@@ -39,8 +39,6 @@ import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.testing.TestableResources;
 import android.view.IWindowManager;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
@@ -75,7 +73,6 @@ public class UserSwitchTransitionViewControllerTest extends CarSysuiTestCase {
     private TestableResources mTestableResources;
     private FakeExecutor mExecutor;
     private FakeSystemClock mClock;
-    private ViewGroup mViewGroup;
     @Mock
     private ActivityManager mMockActivityManager;
     @Mock
@@ -111,9 +108,7 @@ public class UserSwitchTransitionViewControllerTest extends CarSysuiTestCase {
         mockGetUserInfo(TEST_USER_1);
         mockGetUserInfo(TEST_USER_2);
         mockGlobalShowView();
-        mViewGroup = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                R.layout.sysui_overlay_window, /* root= */ null);
-        mCarUserSwitchingDialogController.inflate(mViewGroup);
+        mCarUserSwitchingDialogController.inflate();
     }
 
     @Test
@@ -132,7 +127,8 @@ public class UserSwitchTransitionViewControllerTest extends CarSysuiTestCase {
         mExecutor.advanceClockToLast();
         mExecutor.runAllReady();
 
-        TextView textView = mViewGroup.findViewById(R.id.user_loading);
+        TextView textView = mCarUserSwitchingDialogController.getLayout()
+                .findViewById(R.id.user_loading);
         assertThat(textView.getText().toString()).isEqualTo(
                 mTestableResources.getResources().getString(R.string.car_loading_profile));
     }
@@ -146,7 +142,8 @@ public class UserSwitchTransitionViewControllerTest extends CarSysuiTestCase {
         mExecutor.advanceClockToLast();
         mExecutor.runAllReady();
 
-        TextView textView = mViewGroup.findViewById(R.id.user_loading);
+        TextView textView = mCarUserSwitchingDialogController.getLayout()
+                .findViewById(R.id.user_loading);
         assertThat(textView.getText().toString()).isEqualTo(message);
     }
 

@@ -20,4 +20,7 @@ package com.android.systemui.car.hvac;
 public class HvacConstants {
     /** Qualifier name for the list of system bar names that host HVAC components. */
     public static final String HVAC_SYSTEM_BAR_NAMES = "HvacSystemBarNames";
+
+    /** Overlay type key for the HVAC panel. */
+    public static final String OVERLAY_TYPE_HVAC_PANEL = "hvac_panel";
 }

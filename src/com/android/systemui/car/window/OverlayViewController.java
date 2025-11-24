@@ -19,10 +19,10 @@ package com.android.systemui.car.window;
 import static android.view.WindowInsets.Type.statusBars;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_FOCUS;
 
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.view.WindowInsets;
 
 import androidx.annotation.IdRes;
@@ -36,24 +36,29 @@ import java.util.ArrayList;
 /**
  * Owns a {@link View} that is present in SystemUIOverlayWindow.
  */
-public class OverlayViewController {
+public abstract class OverlayViewController {
     protected static final int INVALID_INSET_SIDE = -1;
     protected static final int NO_INSET_SIDE = 0;
 
-    private final int mStubId;
     private final OverlayViewGlobalStateController mOverlayViewGlobalStateController;
 
-    private View mLayout;
+    protected View mLayout;
 
     protected final ArrayList<OverlayViewStateListener> mViewStateListeners =
             new ArrayList<>();
 
-    public OverlayViewController(int stubId,
+    public OverlayViewController(
             OverlayViewGlobalStateController overlayViewGlobalStateController) {
         mLayout = null;
-        mStubId = stubId;
         mOverlayViewGlobalStateController = overlayViewGlobalStateController;
     }
+
+    /**
+     * Returns the unique String key for this overlay type.
+     * This key MUST match the android:tag of the container
+     * in sysui_overlay_window.xml.
+     */
+    public abstract String getOverlayType();
 
     /**
      * Shows content of {@link OverlayViewController}.
@@ -76,22 +81,14 @@ public class OverlayViewController {
     }
 
     /**
-     * Inflate layout owned by controller.
+     * Called by OverlayViewGlobalStateController. Subclasses MUST override this to inflate
+     * and return their content View. The returned View will be added to the container by the
+     * OverlayViewGlobalStateController.
+     *
+     * @return The inflated View.
      */
     @MainThread
-    public final void inflate(ViewGroup baseLayout) {
-        ViewStub viewStub = baseLayout.findViewById(mStubId);
-        mLayout = viewStub.inflate();
-        onFinishInflate();
-    }
-
-    /**
-     * Called once inflate finishes.
-     */
-    @MainThread
-    protected void onFinishInflate() {
-        // no-op
-    }
+    public abstract View inflate();
 
     /**
      * Touches will be passed to ONLY the top most OverlayViewController which have the highest
@@ -153,13 +150,6 @@ public class OverlayViewController {
         }
     }
 
-    /**
-     * Provides access to layout owned by controller.
-     */
-    protected final View getLayout() {
-        return mLayout;
-    }
-
     /** Returns the {@link OverlayViewGlobalStateController}. */
     protected final OverlayViewGlobalStateController getOverlayViewGlobalStateController() {
         return mOverlayViewGlobalStateController;
@@ -167,7 +157,18 @@ public class OverlayViewController {
 
     /** Returns whether the view controlled by this controller is visible. */
     public final boolean isVisible() {
-        return mLayout.getVisibility() == View.VISIBLE;
+        return mLayout != null && mLayout.getVisibility() == View.VISIBLE;
+    }
+
+    /**
+     * Called when the window layout is updated to account for display cutouts.
+     * Subclasses should override this method if their layout needs to be adjusted
+     * to avoid display obstructions.
+     * @param safeInsets The insets from the edges of the screen that are safe from obstructions.
+     */
+    @MainThread
+    public void adjustForDisplayCutout(Rect safeInsets) {
+        // no-op
     }
 
     /**
@@ -350,6 +351,17 @@ public class OverlayViewController {
         mViewStateListeners.remove(listener);
     }
 
+    /**
+     * Provides access to layout owned by controller.
+     */
+    @VisibleForTesting
+    public final View getLayout() {
+        return mLayout;
+    }
+
+    /**
+     * Set the controller's layout
+     */
     @VisibleForTesting
     public void setLayout(View layout) {
         mLayout = layout;

@@ -14,8 +14,6 @@
 // limitations under the License.
 //
 
-subdirs = ["pods"]
-
 package {
     default_applicable_licenses: ["Android-Apache-2.0"],
     default_team: "trendy_team_system_experience",
@@ -59,6 +57,14 @@ carsystemui_srcs = [
     "src/**/*.kt",
     "src/**/I*.aidl",
     ":statslog-carsystemui-java-gen",
+]
+
+carsysui_pods = [
+    // pods go here
+    "CarSystemUI-Hvac-Controller",
+    "CarSystemUI-Hvac-UI",
+    "CarSystemUI-SystemBar-HomeButton",
+    "CarSystemUI-SystemBar-PassengerHomeButton",
 ]
 
 java_defaults {
@@ -140,8 +146,7 @@ android_library {
 
     static_libs: [
         "CarSystemUI-Shared",
-        // pods go here
-    ],
+    ] + carsysui_pods,
 
     libs: [
         "android.car",
@@ -206,6 +211,7 @@ android_app {
         proguard_flags_files: [
             "proguard.flags",
         ],
+        included_proguard_flags_files: [":sysui_proguard_common_and_kotlin"],
     },
     // TODO(b/301283770): Compiling CarSystemUI should not require -J-Xmx8192M
     javacflags: [
@@ -295,7 +301,7 @@ android_library {
         "//external/kotlinc:kotlin-annotations",
         "Car-WindowManager-Shell",
         "oem-token-lib",
-    ],
+    ] + carsysui_pods,
 
     libs: [
         "token-shared-lib-prebuilt",
@@ -395,6 +401,7 @@ android_app {
         shrink_resources: false,
         optimized_shrink_resources: false,
         proguard_flags_files: ["proguard.flags"],
+        included_proguard_flags_files: [":sysui_proguard_common_and_kotlin"],
     },
 
     plugins: ["dagger2-compiler"],
@@ -470,5 +477,13 @@ filegroup {
         "multivalentTests/src/**/*.kt",
         "multivalentTests/src/**/*.java",
         "tests/utils/src/com/android/systemui/*.java",
+    ],
+}
+
+filegroup {
+    name: "CarSystemUI-proguard-deps",
+    srcs: [
+        "proguard.flags",
+        ":sysui_proguard_common_and_kotlin",
     ],
 }

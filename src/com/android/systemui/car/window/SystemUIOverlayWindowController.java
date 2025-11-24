@@ -21,7 +21,9 @@ import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_M
 
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.os.Binder;
+import android.util.Log;
 import android.view.DisplayCutout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -29,14 +31,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
+
+import androidx.annotation.Nullable;
 
 import com.android.systemui.R;
 import com.android.systemui.dagger.SysUISingleton;
-import com.android.systemui.statusbar.policy.ConfigurationController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 /**
  * Controls the expansion state of the primary window which will contain all of the fullscreen sysui
@@ -44,8 +51,8 @@ import javax.inject.Inject;
  * this window for the notification panel.
  */
 @SysUISingleton
-public class SystemUIOverlayWindowController implements
-        ConfigurationController.ConfigurationListener {
+public class SystemUIOverlayWindowController {
+    private static final String TAG = "SystemUIOverlayWindowController";
 
     /**
      * Touch listener to get touches on the view.
@@ -60,27 +67,55 @@ public class SystemUIOverlayWindowController implements
 
     private final Context mContext;
     private final WindowManager mWindowManager;
+    private final Map<String, Provider<OverlayViewController>> mOverlayControllerProviders;
+    private final Map<String, ViewGroup> mContainerCache = new HashMap<>();
 
     private ViewGroup mBaseLayout;
     private WindowManager.LayoutParams mLp;
     private WindowManager.LayoutParams mLpChanged;
-    private boolean mIsAttached = false;
     private boolean mVisible = false;
     private boolean mFocusable = false;
     private boolean mUsingStableInsets = false;
 
+    private boolean mIsAttaching = false;
+
     @Inject
     public SystemUIOverlayWindowController(
             Context context,
-            ConfigurationController configurationController) {
+            Map<String, Provider<OverlayViewController>> overlayControllerProviders) {
         mContext = context.createWindowContext(WindowManager.LayoutParams.TYPE_NOTIFICATION_SHADE,
                 /* options= */ null);
         mWindowManager = mContext.getSystemService(WindowManager.class);
+        mOverlayControllerProviders = overlayControllerProviders;
 
         mLpChanged = new WindowManager.LayoutParams();
+
+        inflateBaseLayout();
+    }
+
+    private void inflateBaseLayout() {
         mBaseLayout = (ViewGroup) LayoutInflater.from(mContext)
                 .inflate(R.layout.sysui_overlay_window, /* root= */ null, false);
-        configurationController.addCallback(this);
+        mBaseLayout.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View v) {
+                mIsAttaching = false;
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View v) {
+                mIsAttaching = false;
+            }
+        });
+        // Pre-populate the cache
+        for (int i = 0; i < mBaseLayout.getChildCount(); i++) {
+            View child = mBaseLayout.getChildAt(i);
+            if (child instanceof ViewGroup && child.getTag() != null) {
+                mContainerCache.put((String) child.getTag(), (ViewGroup) child);
+            }
+        }
+        attach();
+        setWindowVisible(false);
     }
 
     /**
@@ -101,17 +136,28 @@ public class SystemUIOverlayWindowController implements
         return mBaseLayout;
     }
 
+    /**
+     * This state is needed because isAttached will still return false, until
+     * onViewAttachedToWindow is called.
+     *
+     * Returns {@code true} if the window is being attached.
+     */
+    private boolean isAttaching() {
+        return mIsAttaching;
+    }
+
     /** Returns {@code true} if the window is already attached. */
-    public boolean isAttached() {
-        return mIsAttached;
+    private boolean isAttached() {
+        // For some reason the mBaseLayout is dettached but we never receive a call to
+        // onViewDetachedFromWindow. But mBaseLayout.isAttachedToWindow() has the correct value.
+        return (mBaseLayout != null && mBaseLayout.isAttachedToWindow());
     }
 
     /** Attaches the window to the window manager. */
-    public void attach() {
-        if (mIsAttached) {
+    private void attach() {
+        if (isAttached() || isAttaching()) {
             return;
         }
-        mIsAttached = true;
         // Now that the status bar window encompasses the sliding panel and its
         // translucent backdrop, the entire thing is made TRANSLUCENT and is
         // hardware-accelerated.
@@ -137,7 +183,7 @@ public class SystemUIOverlayWindowController implements
 
         mWindowManager.addView(mBaseLayout, mLp);
         mLpChanged.copyFrom(mLp);
-        setWindowVisible(false);
+        mIsAttaching = true;
     }
 
     /** Sets the types of insets to fit. Note: This should be rarely used. */
@@ -205,7 +251,24 @@ public class SystemUIOverlayWindowController implements
         mUsingStableInsets = useStableInsets;
     }
 
+    /**
+     * Returns the placeholder ViewGroup for the given overlay type String.
+     */
+    @Nullable
+    public ViewGroup getContainerForType(String type) {
+        ViewGroup container = mContainerCache.get(type);
+        if (container == null) {
+            Log.e(TAG, "Could not find container ViewGroup with tag: " + type);
+        }
+        return container;
+    }
+
     private void updateWindow() {
+        if (!isAttached() && !isAttaching()) {
+            Log.d(TAG, "Window not attached, attaching in updateWindow");
+            attach();
+        }
+
         if (mLp != null && mLp.copyFrom(mLpChanged) != 0) {
             if (isAttached()) {
                 handleDisplayCutout();
@@ -227,30 +290,39 @@ public class SystemUIOverlayWindowController implements
     private void handleDisplayCutout() {
         DisplayCutout cutout =
                 mWindowManager.getCurrentWindowMetrics().getWindowInsets().getDisplayCutout();
-        if (cutout != null) {
-            int leftMargin = cutout.getBoundingRectLeft().width();
-            int rightMargin = cutout.getBoundingRectRight().width();
-            int appWindowWidth = mBaseLayout.getWidth() - (leftMargin + rightMargin);
+        if (cutout == null) return;
 
-            View notificationsPanelView = mBaseLayout.findViewById(R.id.notifications);
-            if (notificationsPanelView != null) {
-                ViewGroup.MarginLayoutParams newLayoutParams =
-                        new ViewGroup.MarginLayoutParams(notificationsPanelView.getLayoutParams());
-                newLayoutParams.width = appWindowWidth;
-                newLayoutParams.leftMargin = leftMargin;
-                newLayoutParams.rightMargin = rightMargin;
-                notificationsPanelView.setLayoutParams(newLayoutParams);
-            }
+        Rect safeInsets = new Rect(
+                cutout.getSafeInsetLeft(),
+                cutout.getSafeInsetTop(),
+                cutout.getSafeInsetRight(),
+                cutout.getSafeInsetBottom()
+        );
 
-            View hvacPanelView = mBaseLayout.findViewById(R.id.hvac_panel);
-            if (hvacPanelView != null) {
-                LinearLayout.LayoutParams newLayoutParams =
-                        (LinearLayout.LayoutParams) hvacPanelView.getLayoutParams();
-                newLayoutParams.width = appWindowWidth;
-                newLayoutParams.leftMargin = leftMargin;
-                newLayoutParams.rightMargin = rightMargin;
-                hvacPanelView.setLayoutParams(newLayoutParams);
+        for (Provider<OverlayViewController> controllerProvider :
+                mOverlayControllerProviders.values()) {
+            OverlayViewController controller = controllerProvider.get();
+            if (controller.isInflated()) {
+                controller.adjustForDisplayCutout(safeInsets);
             }
+        }
+    }
+
+    void showInsets(int types) {
+        WindowInsetsController wic = getBaseLayout().getWindowInsetsController();
+        if (wic != null) {
+            wic.show(types);
+        } else {
+            Log.e(TAG, "Cannot showInsets, WindowInsetsController is null");
+        }
+    }
+
+    void hideInsets(int types) {
+        WindowInsetsController wic = getBaseLayout().getWindowInsetsController();
+        if (wic != null) {
+            wic.hide(types);
+        } else {
+            Log.e(TAG, "Cannot hideInsets, WindowInsetsController is null");
         }
     }
 }

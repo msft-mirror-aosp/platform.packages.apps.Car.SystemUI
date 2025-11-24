@@ -21,9 +21,11 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.test.filters.SmallTest;
@@ -60,7 +62,7 @@ public class OverlayViewControllerTest extends CarSysuiTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(/* testClass= */ this);
 
-        mOverlayViewController = new TestOverlayViewController(R.id.overlay_view_controller_stub,
+        mOverlayViewController = new TestOverlayViewController(mContext,
                 mOverlayViewGlobalStateController);
 
         mBaseLayout = (ViewGroup) LayoutInflater.from(mContext).inflate(
@@ -69,7 +71,7 @@ public class OverlayViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void inflate_layoutInitialized() {
-        mOverlayViewController.inflate(mBaseLayout);
+        mOverlayViewController.inflate();
 
         assertThat(mOverlayViewController.getLayout().getId()).isEqualTo(
                 R.id.overlay_view_controller_test);
@@ -77,14 +79,14 @@ public class OverlayViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void inflate_onFinishInflateCalled() {
-        mOverlayViewController.inflate(mBaseLayout);
+        mOverlayViewController.inflate();
 
         assertThat(mOverlayViewController.mOnFinishInflateCalled).isTrue();
     }
 
     @Test
     public void start_viewInflated_viewShown() {
-        mOverlayViewController.inflate(mBaseLayout);
+        mOverlayViewController.inflate();
 
         mOverlayViewController.start();
 
@@ -98,7 +100,7 @@ public class OverlayViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void stop_viewInflated_viewHidden() {
-        mOverlayViewController.inflate(mBaseLayout);
+        mOverlayViewController.inflate();
 
         mOverlayViewController.stop();
 
@@ -136,7 +138,7 @@ public class OverlayViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void showInternal_callsListenerOnVisibilityChangedTrue() {
-        mOverlayViewController.inflate(mBaseLayout);
+        mOverlayViewController.inflate();
         mOverlayViewController.registerViewStateListener(mOverlayViewStateListener);
 
         mOverlayViewController.showInternal();
@@ -146,7 +148,7 @@ public class OverlayViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void hideInternal_callsListenerOnVisibilityChangedFalse() {
-        mOverlayViewController.inflate(mBaseLayout);
+        mOverlayViewController.inflate();
         mOverlayViewController.registerViewStateListener(mOverlayViewStateListener);
 
         mOverlayViewController.hideInternal();
@@ -155,18 +157,29 @@ public class OverlayViewControllerTest extends CarSysuiTestCase {
     }
 
     private static class TestOverlayViewController extends OverlayViewController {
+        private final Context mContext;
         boolean mOnFinishInflateCalled = false;
         boolean mShowInternalCalled = false;
         boolean mHideInternalCalled = false;
 
-        TestOverlayViewController(int stubId,
+        TestOverlayViewController(Context context,
                 OverlayViewGlobalStateController overlayViewGlobalStateController) {
-            super(stubId, overlayViewGlobalStateController);
+            super(overlayViewGlobalStateController);
+            mContext = context;
+        }
+
+        public String getOverlayType() {
+            return "test_overlay";
         }
 
         @Override
-        protected void onFinishInflate() {
+        public View inflate() {
+            if (isInflated()) return mLayout;
+            mLayout = LayoutInflater.from(mContext).inflate(
+                    R.layout.overlay_view_controller_stub, /* root= */ null,
+                    /* attachToRoot= */ false);
             mOnFinishInflateCalled = true;
+            return mLayout;
         }
 
         @Override

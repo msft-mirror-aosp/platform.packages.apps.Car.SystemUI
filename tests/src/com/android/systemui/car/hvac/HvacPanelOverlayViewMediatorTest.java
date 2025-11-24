@@ -16,13 +16,18 @@
 
 package com.android.systemui.car.hvac;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.UserHandle;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.View;
@@ -38,6 +43,8 @@ import com.android.systemui.settings.UserTracker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -64,6 +71,8 @@ public class HvacPanelOverlayViewMediatorTest extends CarSysuiTestCase {
     @Mock
     private UserTracker mUserTracker;
     @Mock
+    private UserHandle mUserHandle;
+    @Mock
     private View.OnTouchListener mOnTouchListener;
 
     @Before
@@ -72,6 +81,7 @@ public class HvacPanelOverlayViewMediatorTest extends CarSysuiTestCase {
 
         when(mHvacPanelOverlayViewController.getDragCloseTouchListener())
                 .thenReturn(mOnTouchListener);
+        when(mUserTracker.getUserHandle()).thenReturn(mUserHandle);
 
         mHvacPanelOverlayViewMediator = new HvacPanelOverlayViewMediator(
                 mContext,
@@ -120,5 +130,26 @@ public class HvacPanelOverlayViewMediatorTest extends CarSysuiTestCase {
         mHvacPanelOverlayViewMediator.mBroadcastReceiver.onReceive(getContext(), intent);
 
         verify(mHvacPanelOverlayViewController, never()).toggle();
+    }
+
+    @Test
+    public void onUserChanged_unregistersAndRegistersBroadcastReceiver() {
+        // Capture the callback added to UserTracker during listener registration.
+        ArgumentCaptor<UserTracker.Callback> callbackCaptor =
+                ArgumentCaptor.forClass(UserTracker.Callback.class);
+        mHvacPanelOverlayViewMediator.registerListeners();
+        verify(mUserTracker).addCallback(callbackCaptor.capture(), any());
+
+        callbackCaptor.getValue().onUserChanged(/* newUser= */ 1, mContext);
+
+        // Verify that the broadcast receiver is unregistered and then re-registered in order.
+        InOrder inOrder = inOrder(mBroadcastDispatcher);
+        inOrder.verify(mBroadcastDispatcher).unregisterReceiver(
+                mHvacPanelOverlayViewMediator.mBroadcastReceiver);
+        inOrder.verify(mBroadcastDispatcher).registerReceiver(
+                eq(mHvacPanelOverlayViewMediator.mBroadcastReceiver),
+                any(IntentFilter.class),
+                isNull(),
+                eq(mUserHandle));
     }
 }

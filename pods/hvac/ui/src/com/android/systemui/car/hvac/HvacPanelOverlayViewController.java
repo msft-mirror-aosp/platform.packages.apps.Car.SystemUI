@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.hvac;
 
+import static com.android.systemui.car.hvac.HvacConstants.OVERLAY_TYPE_HVAC_PANEL;
+
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.ValueAnimator;
@@ -35,8 +37,8 @@ import android.view.WindowInsets;
 
 import androidx.annotation.Nullable;
 
-import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
+import com.android.systemui.car.hvac.ui.R;
 import com.android.systemui.car.window.OverlayPanelViewController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.dagger.SysUISingleton;
@@ -81,7 +83,7 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
             FlingAnimationUtils.Builder flingAnimationUtilsBuilder,
             CarDeviceProvisionedController carDeviceProvisionedController,
             ConfigurationController configurationController) {
-        super(context, resources, R.id.hvac_panel_stub, overlayViewGlobalStateController,
+        super(context, resources, overlayViewGlobalStateController,
                 flingAnimationUtilsBuilder, carDeviceProvisionedController);
         mContext = context;
         mResources = resources;
@@ -93,15 +95,24 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
     }
 
     @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
+    public String getOverlayType() {
+        return OVERLAY_TYPE_HVAC_PANEL;
+    }
 
-        View closeButton = getLayout().findViewById(R.id.hvac_panel_close_button);
+    @Override
+    public View inflate() {
+        if (isInflated()) return mLayout;
+
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        mLayout = inflater.inflate(R.layout.hvac_panel_container, /* root= */ null,
+                /* attachToRoot= */ false);
+
+        View closeButton = mLayout.findViewById(R.id.hvac_panel_close_button);
         if (closeButton != null) {
             closeButton.setOnClickListener(v -> dismissHvacPanel());
         }
 
-        mHvacPanelView = getLayout().findViewById(R.id.hvac_panel);
+        mHvacPanelView = mLayout.findViewById(R.id.hvac_panel);
         mHvacController.registerHvacViews(mHvacPanelView);
 
         mHvacPanelView.setKeyEventHandler((event) -> {
@@ -120,6 +131,22 @@ public class HvacPanelOverlayViewController extends OverlayPanelViewController i
         }));
 
         loadCustomAnimators();
+        setUpHandleBar();
+        return mLayout;
+    }
+
+    @Override
+    public void adjustForDisplayCutout(Rect safeInsets) {
+        if (!isInflated()) return;
+
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) mLayout.getLayoutParams();
+        if (params != null) {
+            params.leftMargin = safeInsets.left;
+            params.rightMargin = safeInsets.right;
+            // Top and bottom insets are handled by padding in the hvac_panel_container.xml
+            mLayout.setLayoutParams(params);
+        }
     }
 
     @Override

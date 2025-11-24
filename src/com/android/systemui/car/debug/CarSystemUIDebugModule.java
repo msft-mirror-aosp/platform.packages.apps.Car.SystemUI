@@ -61,4 +61,10 @@ public abstract class CarSystemUIDebugModule {
     @IntoSet
     public abstract CarSystemUIShellCommand bindScalableUIPanelDumpCommand(
             ScalableUIPanelDumpCommand command);
+
+    /** Inject ScalableUIPanelDumpCommand as a CarSystemUIShellCommand */
+    @Binds
+    @IntoSet
+    public abstract CarSystemUIShellCommand bindFlagDumpCommand(
+            FlagDumpCommand command);
 }

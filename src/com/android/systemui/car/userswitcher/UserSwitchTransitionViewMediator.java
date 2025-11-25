@@ -188,11 +188,7 @@ public class UserSwitchTransitionViewMediator implements OverlayViewMediator,
 
     @Override
     public void onUserSwitchStart(@NonNull UserHandle userHandle) {
-        // TODO(b/461573313): remove executor, as this callback should respect provided
-        // executor from registration.
-        mMainExecutor.execute(
-                () -> mUserSwitchTransitionViewController.showSwitchingUI(
-                        userHandle.getIdentifier()));
+        mUserSwitchTransitionViewController.showSwitchingUI(userHandle.getIdentifier());
     }
 
     void handleUserLifecycleEvent(CarUserManager.UserLifecycleEvent event) {

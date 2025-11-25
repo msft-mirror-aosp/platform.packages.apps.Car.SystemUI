@@ -9,7 +9,6 @@
 
 -keep class com.android.systemui.statusbar.policy.DateView { *; }
 
--keep class com.android.systemui.car.privacy.CameraQcPanel { *; }
 -keep class com.android.systemui.car.privacy.SensorQcPanel { *; }
 -keep class com.android.systemui.car.qc.ProfileSwitcher { *; }
 -keep class com.android.systemui.car.qc.QCFooterView { *; }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.privacy;
+package com.android.systemui.car.systembar.privacy.camera;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -23,8 +23,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.systemui.R;
-import com.android.systemui.car.systembar.CameraPrivacyChipViewController;
+import com.android.systemui.car.privacy.PrivacyChip;
 
 /** Car optimized Camera Privacy Chip View that is shown when camera is being used. */
 public class CameraPrivacyChip extends PrivacyChip {

@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<com.android.systemui.car.privacy.CastToOtherDevicePrivacyChip
+<com.android.systemui.car.systembar.privacy.cast.CastToOtherDevicePrivacyChip
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cast_to_other_device_privacy_chip"
@@ -28,4 +28,4 @@
 
     <include layout="@layout/privacy_chip_content"/>
 
-</com.android.systemui.car.privacy.CastToOtherDevicePrivacyChip>
+</com.android.systemui.car.systembar.privacy.cast.CastToOtherDevicePrivacyChip>

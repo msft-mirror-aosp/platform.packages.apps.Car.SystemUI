@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar
+package com.android.systemui.car.systembar.privacy.cast
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.android.systemui.car.flexibleui.CarSystemBarElementController
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController
 import com.android.systemui.car.privacy.PrivacyChip
+import com.android.systemui.car.systembar.OngoingActivityPrivacyChipViewController
 import com.android.systemui.dagger.qualifiers.Application
 import com.android.systemui.statusbar.chips.casttootherdevice.ui.viewmodel.CastToOtherDeviceChipViewModel
 import dagger.assisted.Assisted
@@ -48,10 +50,18 @@ constructor(
         castToOtherDeviceChipViewModel,
     ) {
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public override fun onViewAttached() {
+        super.onViewAttached()
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public override fun onViewDetached() {
+        super.onViewDetached()
+    }
+
     @AssistedFactory
     interface Factory :
-        CarSystemBarElementController.Factory<
-            PrivacyChip,
-            CastToOtherDevicePrivacyChipViewController,
-        >
+        CarSystemBarElementController.Factory<PrivacyChip,
+                CastToOtherDevicePrivacyChipViewController>
 }

@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<com.android.systemui.car.privacy.ShareToAppPrivacyChip
+<com.android.systemui.car.systembar.privacy.share.ShareToAppPrivacyChip
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/share_to_app_privacy_chip"
@@ -28,4 +28,4 @@
 
     <include layout="@layout/privacy_chip_content"/>
 
-</com.android.systemui.car.privacy.ShareToAppPrivacyChip>
+</com.android.systemui.car.systembar.privacy.share.ShareToAppPrivacyChip>

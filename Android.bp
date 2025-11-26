@@ -69,6 +69,7 @@ carsysui_pods = [
     "CarSystemUI-SystemBar-PrivacyChip-Camera",
     "CarSystemUI-SystemBar-PrivacyChip-Cast",
     "CarSystemUI-SystemBar-PrivacyChip-Mic",
+    "CarSystemUI-SystemBar-PrivacyChip-Share",
 ]
 
 java_defaults {

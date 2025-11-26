@@ -482,6 +482,7 @@ public final class TaskPanel extends SysUIPanel {
 
     @Override
     public void refreshTheme() {
+        super.refreshTheme();
         mMainExecutor.execute(() -> {
             mExistingAutoDecors.forEach((id, autoDecor) -> {
                 mAutoDecorManager.removeAutoDecor(autoDecor);

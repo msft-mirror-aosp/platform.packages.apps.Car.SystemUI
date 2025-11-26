@@ -17,6 +17,7 @@ package com.android.systemui.car.wm.scalableui.systemevents;
 
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKED;
+import static android.content.pm.ActivityInfo.CONFIG_UI_MODE;
 
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_BEFORE_USER_SWITCH_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_ENTER_SUW_EVENT_ID;
@@ -33,7 +34,6 @@ import android.app.KeyguardManager;
 import android.car.user.CarUserManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -246,7 +246,8 @@ public class SystemEventHandler implements CoreStartable,
         mCarDeviceProvisionedController = carDeviceProvisionedController;
         mEventDispatcher = dispatcher;
         mFlagManager = flagManager;
-        mConfiguration = mContext.getResources().getConfiguration();
+        // Make a copy of current Configuration
+        mConfiguration = new Configuration(mContext.getResources().getConfiguration());
     }
 
     /**
@@ -282,7 +283,7 @@ public class SystemEventHandler implements CoreStartable,
     @Override
     public void onConfigChanged(Configuration newConfig) {
         int diff = mConfiguration.updateFrom(newConfig);
-        if ((diff & ActivityInfo.CONFIG_UI_MODE) != 0) {
+        if ((diff & CONFIG_UI_MODE) != 0) {
             PanelPool.getInstance().forEach(Panel::refreshTheme);
         }
     }

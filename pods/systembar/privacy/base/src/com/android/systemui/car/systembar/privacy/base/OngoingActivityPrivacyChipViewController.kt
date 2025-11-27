@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar
+package com.android.systemui.car.systembar.privacy.base
 
 import android.content.Context
 import android.os.Build
@@ -23,7 +23,6 @@ import com.android.systemui.car.Flags.showMediaProjectionIndicator
 import com.android.systemui.car.flexibleui.CarSystemBarElementController
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController
-import com.android.systemui.car.privacy.PrivacyChip
 import com.android.systemui.statusbar.chips.ui.model.OngoingActivityChipModel
 import com.android.systemui.statusbar.chips.ui.viewmodel.OngoingActivityChipViewModel
 import kotlinx.coroutines.CoroutineScope

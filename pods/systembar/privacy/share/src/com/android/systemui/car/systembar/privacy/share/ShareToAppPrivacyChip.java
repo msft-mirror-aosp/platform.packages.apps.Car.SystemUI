@@ -23,7 +23,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.systemui.car.privacy.OngoingActivityPrivacyChip;
+import com.android.systemui.car.systembar.privacy.base.OngoingActivityPrivacyChip;
 
 /** Car optimized ShareToApp Privacy Chip View that is shown when app sharing is being used. */
 public class ShareToAppPrivacyChip extends OngoingActivityPrivacyChip {

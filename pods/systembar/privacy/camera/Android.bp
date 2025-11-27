@@ -23,8 +23,9 @@ android_library {
     srcs: ["src/**/*.java"],
     resource_dirs: ["res"],
     static_libs: [
-        "CarSystemUI-Shared",
         "CarSystemUI-FlexibleUI",
+        "CarSystemUI-Shared",
+        "CarSystemUI-SystemBar-PrivacyChip-Base",
     ],
     plugins: [
         "dagger2-compiler",

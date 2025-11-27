@@ -23,7 +23,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.systemui.car.privacy.PrivacyChip;
+import com.android.systemui.car.systembar.privacy.base.PrivacyChip;
 
 /** Car optimized Mic Privacy Chip View that is shown when microphone is being used. */
 public class MicPrivacyChip extends PrivacyChip {

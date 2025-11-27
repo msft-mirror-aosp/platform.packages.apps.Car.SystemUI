@@ -28,8 +28,9 @@ android_library {
         "res",
     ],
     static_libs: [
-        "CarSystemUI-Shared",
         "CarSystemUI-FlexibleUI",
+        "CarSystemUI-Shared",
+        "CarSystemUI-SystemBar-PrivacyChip-Base",
     ],
     plugins: ["dagger2-compiler"],
     manifest: "AndroidManifest.xml",

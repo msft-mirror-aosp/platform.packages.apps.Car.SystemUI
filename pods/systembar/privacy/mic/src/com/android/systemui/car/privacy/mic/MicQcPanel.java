@@ -20,7 +20,7 @@ import android.content.Context;
 import androidx.annotation.DrawableRes;
 
 import com.android.car.qc.provider.BaseLocalQCProvider;
-import com.android.systemui.car.privacy.SensorQcPanel;
+import com.android.systemui.car.systembar.privacy.base.SensorQcPanel;
 
 import javax.inject.Inject;
 

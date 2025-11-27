@@ -22,7 +22,7 @@ import android.content.pm.PackageManager;
 import android.hardware.SensorPrivacyManager;
 import android.permission.PermissionManager;
 
-import com.android.systemui.car.privacy.SensorPrivacyInfoProvider;
+import com.android.systemui.car.systembar.privacy.base.SensorPrivacyInfoProvider;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.privacy.PrivacyItemController;
 import com.android.systemui.privacy.PrivacyType;
@@ -33,7 +33,7 @@ import javax.inject.Inject;
 
 /**
  * Implementation of {@link
- * com.android.systemui.car.privacy.SensorPrivacyInfoProvider} for camera.
+ * com.android.systemui.car.systembar.privacy.base.SensorPrivacyInfoProvider} for camera.
  */
 @SysUISingleton
 public class CameraSensorPrivacyInfoProvider extends SensorPrivacyInfoProvider {

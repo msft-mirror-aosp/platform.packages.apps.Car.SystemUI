@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.privacy;
+package com.android.systemui.car.systembar.privacy.base;
 
 import android.content.Context;
 import android.util.AttributeSet;

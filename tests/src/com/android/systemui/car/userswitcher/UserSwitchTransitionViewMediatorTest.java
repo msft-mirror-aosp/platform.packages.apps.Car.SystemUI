@@ -140,9 +140,10 @@ public class UserSwitchTransitionViewMediatorTest extends CarSysuiTestCase {
 
     @Test
     public void onUserSwitchStart_showsSwitchingUI() {
+        // Call onUserSwitchStart, which should directly call to show the switching UI.
         mUserSwitchTransitionViewMediator.onUserSwitchStart(UserHandle.of(TEST_USER));
-        mFakeExecutor.runAllReady();
 
+        // Verify that the switching UI is shown without needing to execute any pending runnables.
         verify(mUserSwitchTransitionViewController).showSwitchingUI(TEST_USER);
     }
 

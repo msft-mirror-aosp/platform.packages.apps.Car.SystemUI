@@ -63,9 +63,10 @@ carsysui_pods = [
     // pods go here
     "CarSystemUI-Hvac-Controller",
     "CarSystemUI-Hvac-UI",
+    "CarSystemUI-SystemBar-DebugPanel",
     "CarSystemUI-SystemBar-HomeButton",
     "CarSystemUI-SystemBar-PassengerHomeButton",
-    "CarSystemUI-SystemBar-DebugPanel",
+    "CarSystemUI-SystemBar-PrivacyChip-Camera",
     "CarSystemUI-SystemBar-PrivacyChip-Mic",
 ]
 

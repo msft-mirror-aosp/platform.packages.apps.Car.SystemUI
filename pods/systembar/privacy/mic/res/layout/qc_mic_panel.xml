@@ -45,7 +45,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    app:localQCProvider="com.android.systemui.car.privacy.MicQcPanel"/>
+                    app:localQCProvider="com.android.systemui.car.systembar.privacy.mic.MicQcPanel"/>
             </ScrollView>
             <com.android.systemui.car.qc.QCFooterButton
                 android:id="@+id/qc_mic_footer_button"

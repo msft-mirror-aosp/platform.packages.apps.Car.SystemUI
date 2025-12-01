@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.systemui.car.privacy;
+package com.android.systemui.car.systembar.privacy.mic;
 
 import static android.hardware.SensorPrivacyManager.Sensors.MICROPHONE;
 
@@ -22,6 +22,7 @@ import android.content.pm.PackageManager;
 import android.hardware.SensorPrivacyManager;
 import android.permission.PermissionManager;
 
+import com.android.systemui.car.privacy.SensorPrivacyInfoProvider;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.privacy.PrivacyItemController;
 import com.android.systemui.privacy.PrivacyType;

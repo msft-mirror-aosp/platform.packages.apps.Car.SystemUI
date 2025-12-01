@@ -291,7 +291,7 @@ open class SysUIPanel @AssistedInject constructor(
     }
 
     override fun refreshTheme() {
-        // no-op
+        logIfDebuggable("$panelId refreshTheme")
     }
 
     override fun destroy() {

@@ -146,6 +146,7 @@ public final class DecorPanel extends SysUIPanel {
 
     @Override
     public void refreshTheme() {
+        super.refreshTheme();
         if (mDecorPanelController != null) {
             mDecorPanelController.refreshTheme();
         }

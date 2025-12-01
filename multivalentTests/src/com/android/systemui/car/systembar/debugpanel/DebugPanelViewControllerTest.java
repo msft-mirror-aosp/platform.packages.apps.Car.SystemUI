@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar.debugpanel;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -32,6 +32,7 @@ import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
+import com.android.systemui.car.systembar.CarSystemBarPanelButtonView;
 import com.android.systemui.util.settings.GlobalSettings;
 
 import org.junit.Before;
@@ -48,7 +49,7 @@ import javax.inject.Provider;
 @RunWith(AndroidJUnit4.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class DebugPanelButtonViewControllerTest extends CarSysuiTestCase {
+public class DebugPanelViewControllerTest extends CarSysuiTestCase {
     @Mock
     private CarSystemBarPanelButtonView mView;
     @Mock
@@ -56,21 +57,21 @@ public class DebugPanelButtonViewControllerTest extends CarSysuiTestCase {
     @Mock
     private CarSystemBarElementStateController mStateController;
     @Mock
-    private Provider<StatusIconPanelViewController.Builder> mStatusIconPanelBuilder;
+    private Provider<StatusIconPanelViewController.Factory> mStatusIconPanelFactoryProvider;
     @Mock
     private Handler mMainHandler;
     @Mock
     private GlobalSettings mGlobalSettings;
 
-    private DebugPanelButtonViewController mController;
+    private DebugPanelViewController mController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         when(mView.getContext()).thenReturn(mContext);
-        mController = new DebugPanelButtonViewController(mView, mDisableController,
-                mStateController, mStatusIconPanelBuilder, mMainHandler, mGlobalSettings);
+        mController = new DebugPanelViewController(mView, mDisableController,
+                mStateController, mStatusIconPanelFactoryProvider, mMainHandler, mGlobalSettings);
         mController.onViewAttached();
     }
 

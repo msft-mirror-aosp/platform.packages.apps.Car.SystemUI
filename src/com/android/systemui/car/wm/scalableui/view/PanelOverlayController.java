@@ -31,12 +31,14 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 
+import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.PanelControllerMetadata;
+import com.android.car.scalableui.model.PanelState;
+import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.DecorPanelController;
-import com.android.car.scalableui.panel.Panel;
-import com.android.car.scalableui.panel.PanelPool;
 import com.android.internal.graphics.drawable.BackgroundBlurDrawable;
 import com.android.systemui.R;
+import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.controller.DecorPanelViewMap;
 
@@ -45,30 +47,42 @@ import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Provider;
 
 /**
- * A Controller for the {@link GripBar}
- * <p>
- * Configuration for the GripBar is read from a themed attribute, which is
- * expected to be an array resource. The array should contain values defining
- * the behavior of the GripBar. The following indices in the configuration
- * array are used:
- * </p>
+ * A controller for a {@link PanelOverlay} view.
+ *
+ * <p>This controller manages an overlay that provides a visual effect, typically a blurred
+ * background and a centered icon (a "vail"), over another panel.
+ *
+ * <p>The controller's behavior is configured through {@link PanelControllerMetadata} using
+ * the following tags:
  * <ul>
- * <li>Index 0: View provider name (String)</li>
- * <li>Index 1: View class name (String)</li>
- * <li>Index 2: Drag event ID (String)</li>
- * <li>Index 3: Orientation (0 for vertical, 1 for horizontal) (Integer)</li>
- * <li>Index 4: Snap threshold (Dimension)</li>
- * <li>Index 5: Resource ID of the breakpoint definition array (Integer)</li>
+ *     <li>{@code overlay_panel_id}: The ID of the {@link TaskPanel} this overlay is
+ *     associated with. The controller will display the icon of the top application from this
+ *     TaskPanel.</li>
+ *     <li>{@code background_color}: A hex string defining the background color of the
+ *     overlay, which is applied on top of the blur effect.</li>
  * </ul>
+ *
+ * <p>When the panel becomes visible, the controller performs two main actions:
+ * <ol>
+ *     <li><b>Blur Effect</b>: It applies a {@link BackgroundBlurDrawable} to its view,
+ *     creating a blur of the content underneath.</li>
+ *     <li><b>Vail Icon</b>: It identifies the top application in the associated
+ *     {@link TaskPanel} and displays its application icon centered within the overlay.</li>
+ * </ol>
  */
-public class PanelOverlayController extends DecorPanelControllerBase {
+public class PanelOverlayController extends DecorPanelControllerBase implements
+        StateManager.PanelStateObserver {
     private static final String TAG = PanelOverlayController.class.getSimpleName();
     private final Context mContext;
-    private PanelOverlay mPanelOverlay;
+    private final String mPanelId;
+    private final PanelUtils mPanelUtils;
+    private boolean mIsVisible;
+    private ConstraintLayout mPanelOverlay;
     private String mOverlayPanelId;
     private String mBackgroundColorHex;
     private BackgroundBlurDrawable mBackgroundBlurDrawable;
@@ -78,10 +92,43 @@ public class PanelOverlayController extends DecorPanelControllerBase {
     public PanelOverlayController(@Assisted String panelId,
             @Assisted PanelControllerMetadata metadata,
             @DecorPanelViewMap Map<Class<?>, Provider<View>> decorPanelViewMap,
-            Context context) {
+            Context context,
+            PanelUtils panelUtils) {
         super(metadata, decorPanelViewMap);
         mContext = context;
         init(metadata);
+        mPanelId = panelId;
+        mPanelUtils = panelUtils;
+        mIsVisible = isPanelVisible();
+        // TODO(b/462485520): add removePanelStateObserver when controller get destroyed due to
+        //  config change.
+        StateManager.getInstance().addPanelStateObserver(this, panelId);
+    }
+
+    private boolean isPanelVisible() {
+        Variant currentVariant = mPanelUtils.getCurrentVariant(mPanelId);
+        return currentVariant != null && currentVariant.isVisible();
+    }
+
+    @Override
+    public void onBeforePanelStateChanged(@NonNull Set<String> changedPanelIds,
+            @NonNull Map<String, PanelState> toPanelStates) {
+        // Update the blur and vail before the state change is applied.
+        if (changedPanelIds.contains(mPanelId)) {
+            boolean currentVis = isPanelVisible();
+            if (currentVis != mIsVisible && currentVis) {
+                mPanelOverlay.post(() -> {
+                    updatePanelOverlay();
+                });
+            }
+            mIsVisible = currentVis;
+        }
+    }
+
+    @Override
+    public void onPanelStateChanged(@NonNull Set<String> changedPanelIds,
+            @NonNull Map<String, PanelState> toPanelStates) {
+        // no-op
     }
 
     @AssistedFactory
@@ -97,47 +144,38 @@ public class PanelOverlayController extends DecorPanelControllerBase {
     @Override
     @NonNull
     public View getView() {
-        Log.e(TAG, "getView... ");
         View view = super.getView();
         if (view instanceof PanelOverlay panelOverlay) {
             mPanelOverlay = panelOverlay;
         } else {
             throw new RuntimeException("PanelOverlayController mush have a PanelOverlay view");
         }
-        mPanelOverlay.setOnChangeListener(new PanelOverlay.OnChangeListener() {
-            @Override
-            public void onVisibilityChange(int visibility) {
-                Log.e(TAG, "visibility changed... " + visibility
-                        + " mOverlayPanelId: " + mOverlayPanelId);
-                if (visibility == View.GONE) {
-                    return;
-                }
-                setBlur();
-                PanelPool pool = PanelPool.getInstance();
-                Panel panel = pool.getPanel(mOverlayPanelId);
-                if (panel instanceof TaskPanel) {
-                    String packageName = ((TaskPanel) panel).getTopTaskPackageName();
-                    setVail(packageName);
-                }
-            }
 
-            @Override
-            public void onAlphaChanged(float alpha) {
-                mBackgroundBlurDrawable.setBlurRadius((int) (mBlurRadius * alpha));
-                mPanelOverlay.setBackground(mBackgroundBlurDrawable);
-            }
-        });
         return mPanelOverlay;
     }
 
-    private void init(PanelControllerMetadata metadata) {
+    private void updatePanelOverlay() {
+        setBlur();
+        updateVail();
+    }
+
+    private void init(@NonNull PanelControllerMetadata metadata) {
         mOverlayPanelId = metadata.getStringConfiguration(OVERLAY_PANEL_ID_TAG);
         mBackgroundColorHex = metadata.getStringConfiguration(BACKGROUND_COLOR_TAG);
     }
 
-    private void setVail(String packageName) {
+    private void updateVail() {
+        String packageName = null;
+        TaskPanel taskPanel = mPanelUtils.getTaskPanel(tp -> tp.getPanelId().equals(
+                mOverlayPanelId));
+        logIfDebuggable(mPanelId + ", handleStateChange" + mOverlayPanelId);
+        if (taskPanel != null) {
+            packageName = taskPanel.getTopTaskPackageName();
+            logIfDebuggable(mPanelId + ", setVail for" + packageName + ", on TaskPanel"
+                    + taskPanel.getPanelId());
+        }
         if (packageName == null) {
-            Log.i(TAG, "can't set vail as package name is null.");
+            logIfDebuggable(mPanelId + ", can't set vail as package name is null.");
             return;
         }
         Drawable icon;
@@ -157,8 +195,11 @@ public class PanelOverlayController extends DecorPanelControllerBase {
         addCenteredIconWithConstraintSet(iconImageView, width, height);
     }
 
+    // Blur need to be set after view being attached to call createBackgroundBlurDrawable, no
+    // need to be update once created.
     private void setBlur() {
         if (mPanelOverlay.getBackground() != null) {
+            logIfDebuggable(mPanelId + ", Background already set " + mPanelOverlay.getBackground());
             return;
         }
         mBackgroundBlurDrawable =
@@ -176,6 +217,7 @@ public class PanelOverlayController extends DecorPanelControllerBase {
         mBlurRadius = mContext.getResources().getInteger(R.integer.overlay_panel_blur_radius);
         mBackgroundBlurDrawable.setBlurRadius(mBlurRadius);
         mPanelOverlay.setBackground(mBackgroundBlurDrawable);
+        logIfDebuggable(mPanelId + ", Background set to " + mPanelOverlay.getBackground());
     }
 
     private void addCenteredIconWithConstraintSet(ImageView iconImageView, int width, int height) {

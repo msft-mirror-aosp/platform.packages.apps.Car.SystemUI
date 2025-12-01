@@ -65,6 +65,7 @@ carsysui_pods = [
     "CarSystemUI-Hvac-UI",
     "CarSystemUI-SystemBar-HomeButton",
     "CarSystemUI-SystemBar-PassengerHomeButton",
+    "CarSystemUI-SystemBar-DebugPanel",
 ]
 
 java_defaults {

@@ -98,7 +98,7 @@ public class CameraPrivacyChipViewControllerTest extends CarSysuiTestCase {
     @Mock
     private CarDeviceProvisionedController mCarDeviceProvisionedController;
     @Mock
-    private Provider<StatusIconPanelViewController.Builder> mPanelControllerBuilderProvider;
+    private Provider<StatusIconPanelViewController.Factory> mPanelControllerFactoryProvider;
     @Mock
     private Car mCar;
 
@@ -117,7 +117,7 @@ public class CameraPrivacyChipViewControllerTest extends CarSysuiTestCase {
         mCameraPrivacyChipViewController = new CameraPrivacyChipViewController(mCameraPrivacyChip,
                 mBarElementDisableController, mBarElementStateController, mContext,
                 mPrivacyItemController, mSensorPrivacyManager, mUserTracker,
-                mCarDeviceProvisionedController, mPanelControllerBuilderProvider);
+                mCarDeviceProvisionedController, mPanelControllerFactoryProvider);
     }
 
     @Test

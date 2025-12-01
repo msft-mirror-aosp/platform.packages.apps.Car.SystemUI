@@ -399,8 +399,11 @@ public final class TaskPanel extends SysUIPanel {
             return;
         }
         AutoTaskStackTransaction autoTaskStackTransaction = new AutoTaskStackTransaction();
-        AutoTaskStackState autoTaskStackState = new AutoTaskStackState(getBounds(), isVisible(),
-                getLayer());
+        Variant currentVariant = mPanelUtils.getCurrentVariant(getPanelId());
+        AutoTaskStackState autoTaskStackState = new AutoTaskStackState(
+                currentVariant != null ? currentVariant.getBounds() : getBounds(),
+                currentVariant != null ? currentVariant.isVisible() : isVisible(),
+                currentVariant != null ? currentVariant.getLayer() : getLayer());
         autoTaskStackTransaction.setTaskStackState(getRootStack().getId(), autoTaskStackState);
         if (mFlagManager.isEnabled(Flag.DisplayCompatibilityAutoDecorSafeRegion)) {
             autoTaskStackTransaction.setSafeRegionBounds(getRootStack().getId(), getSafeBounds());
@@ -418,8 +421,6 @@ public final class TaskPanel extends SysUIPanel {
         AutoSurfaceTransaction autoSurfaceTransaction = mAutoSurfaceTransactionFactory
                 .createTransaction(RESET_TRANSACTION + getPanelId());
         SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
-
-        Variant currentVariant = mPanelUtils.getCurrentVariant(getPanelId());
 
         update(autoSurfaceTransaction, tx, currentVariant, /* updateChildren= */ true);
 

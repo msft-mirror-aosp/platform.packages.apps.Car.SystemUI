@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar
+package com.android.systemui.car.systembar.privacy.share
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
@@ -22,6 +22,7 @@ import com.android.systemui.car.flexibleui.CarSystemBarElementController
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController
 import com.android.systemui.car.privacy.PrivacyChip
+import com.android.systemui.car.systembar.OngoingActivityPrivacyChipViewController
 import com.android.systemui.dagger.qualifiers.Application
 import com.android.systemui.statusbar.chips.sharetoapp.ui.viewmodel.ShareToAppChipViewModel
 import dagger.assisted.Assisted

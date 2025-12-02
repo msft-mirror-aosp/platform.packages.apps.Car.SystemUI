@@ -43,6 +43,7 @@ import com.android.systemui.car.systembar.passengerhome.PassengerHomeButtonModul
 import com.android.systemui.car.systembar.privacy.camera.PrivacyChipCameraModule;
 import com.android.systemui.car.systembar.privacy.cast.PrivacyChipCastModule;
 import com.android.systemui.car.systembar.privacy.mic.PrivacyChipMicModule;
+import com.android.systemui.car.systembar.privacy.share.PrivacyChipShareModule;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
@@ -86,9 +87,10 @@ import java.util.Optional;
         FlexibleUiModule.class,
         HomeButtonModule.class,
         PassengerHomeButtonModule.class,
-        PrivacyChipCastModule.class,
         PrivacyChipMicModule.class,
-        PrivacyChipCameraModule.class})
+        PrivacyChipCameraModule.class,
+        PrivacyChipCastModule.class,
+        PrivacyChipShareModule.class})
 public abstract class CarSystemBarModule {
 
     @Provides
@@ -314,13 +316,6 @@ public abstract class CarSystemBarModule {
     @ClassKey(CarSystemBarButtonController.class)
     public abstract CarSystemBarElementController.Factory bindCarSystemBarButtonControllerFactory(
             CarSystemBarButtonController.Factory factory);
-
-    /** Injects ShareToAppPrivacyChipViewController */
-    @Binds
-    @IntoMap
-    @ClassKey(ShareToAppPrivacyChipViewController.class)
-    public abstract CarSystemBarElementController.Factory bindShareToAppChipViewControllerFactory(
-            ShareToAppPrivacyChipViewController.Factory factory);
 
     /** Injects NotificationButtonController */
     @Binds

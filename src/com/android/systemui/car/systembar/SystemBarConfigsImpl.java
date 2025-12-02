@@ -417,11 +417,6 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
         mLeftNavBarEnabled = mResources.getBoolean(R.bool.config_enableLeftSystemBar);
         mRightNavBarEnabled = mResources.getBoolean(R.bool.config_enableRightSystemBar);
 
-        if (mLeftNavBarEnabled || mRightNavBarEnabled) {
-            throw new IllegalStateException(
-                    "Navigation Bar and Display Compat toolbar can't be " + "on the same side");
-        }
-
         if (mTopNavBarEnabled) {
             int type = mResources.getInteger(R.integer.config_topSystemBarType);
             SystemBarConfiguration topBarConfig = new SystemBarConfigBuilder()

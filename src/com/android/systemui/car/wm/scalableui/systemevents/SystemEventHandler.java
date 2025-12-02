@@ -30,7 +30,6 @@ import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventCon
 
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
-import android.app.KeyguardManager;
 import android.car.user.CarUserManager;
 import android.content.Context;
 import android.content.Intent;
@@ -58,7 +57,6 @@ import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIUtils;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Background;
-import com.android.systemui.deviceentry.domain.interactor.DeviceEntryInteractor;
 import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
@@ -96,7 +94,6 @@ public class SystemEventHandler implements CoreStartable,
     private final DisplayTracker mDisplayTracker;
     private final Lazy<DisplayStateHelper> mDisplayStateHelper;
     private final KeyguardStateController mKeyguardStateController;
-    private final Lazy<DeviceEntryInteractor> mDeviceEntryInteractor;
     private final Executor mBackgroundExecutor;
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final EventDispatcher mEventDispatcher;
@@ -114,9 +111,7 @@ public class SystemEventHandler implements CoreStartable,
             new CarUserManager.UserLifecycleListener() {
                 @Override
                 public void onEvent(@NonNull CarUserManager.UserLifecycleEvent event) {
-                    if (DEBUG) {
-                        Log.d(TAG, "on User event = " + event);
-                    }
+                    logIfDebuggable("on User event = " + event);
                     if (event.getUserHandle().isSystem()) {
                         Log.i(TAG, "Ignore system event");
                         return;
@@ -132,9 +127,8 @@ public class SystemEventHandler implements CoreStartable,
                         mResetCalledForUser = false;
                         mIsUserSwitching = true;
                     } else if (event.getEventType() == USER_LIFECYCLE_EVENT_TYPE_UNLOCKED) {
-                        handleSuwLaunchIfNecessary(event.getUserId());
                         if (shouldResetPanels()) {
-                            Log.d(TAG, "Resetting panels during user unlock");
+                            logIfDebuggable("Resetting panels during user unlock");
                             if (!Flags.homeActivityAlwaysPresent()) {
                                 Intent homeIntent = new Intent(Intent.ACTION_MAIN);
                                 homeIntent.addCategory(Intent.CATEGORY_HOME);
@@ -147,8 +141,10 @@ public class SystemEventHandler implements CoreStartable,
                             StateManager.handlePanelReset();
                             mResetCalledForUser = true;
                         } else {
-                            Log.d(TAG, "Received user unlock while user is not setup");
+                            logIfDebuggable("Received user unlock while user is not setup");
                         }
+
+                        handleSuwLaunchIfNecessary(event.getUserId());
 
                         if (!mIsKeyguardShowing) {
                             mEventDispatcher.executeEvent(getUserAuthEvent());
@@ -164,16 +160,7 @@ public class SystemEventHandler implements CoreStartable,
             new CarDeviceProvisionedListener() {
                 @Override
                 public void onUserSetupChanged() {
-                    if (mUserTracker.getUserHandle().isSystem()) {
-                        // don't handle headless system user
-                        return;
-                    }
-                    if (mUserManager.isUserUnlocked(mUserTracker.getUserId())
-                            && shouldResetPanels()) {
-                        Log.d(TAG, "Resetting panels during user setup state change");
-                        StateManager.handlePanelReset();
-                        mResetCalledForUser = true;
-                    }
+                    updateUserSetupState(/* force= */ false);
                 }
 
                 @Override
@@ -228,8 +215,6 @@ public class SystemEventHandler implements CoreStartable,
             DisplayTracker displayTracker,
             Lazy<DisplayStateHelper> displayStateHelper,
             KeyguardStateController keyguardStateController,
-            Lazy<DeviceEntryInteractor> deviceEntryInteractor,
-            KeyguardManager keyguardManager,
             CarDeviceProvisionedController carDeviceProvisionedController,
             EventDispatcher dispatcher,
             FlagManager flagManager
@@ -242,7 +227,6 @@ public class SystemEventHandler implements CoreStartable,
         mDisplayTracker = displayTracker;
         mDisplayStateHelper = displayStateHelper;
         mKeyguardStateController = keyguardStateController;
-        mDeviceEntryInteractor = deviceEntryInteractor;
         mCarDeviceProvisionedController = carDeviceProvisionedController;
         mEventDispatcher = dispatcher;
         mFlagManager = flagManager;
@@ -255,10 +239,21 @@ public class SystemEventHandler implements CoreStartable,
      * @param force always send event regardless of if anything has changed
      */
     private void updateUserSetupState(boolean force) {
+        if (mUserTracker.getUserHandle().isSystem()) {
+            // don't handle headless system user
+            return;
+        }
         boolean isUserSetupInProgress = !mCarDeviceProvisionedController.isCurrentUserFullySetup();
         if (isUserSetupInProgress != mIsUserSetupInProgress || force) {
+            logIfDebuggable("User setup state changed setupInProgress=" + isUserSetupInProgress);
             mIsUserSetupInProgress = isUserSetupInProgress;
             notifySuwStateEvent();
+            if (mUserManager.isUserUnlocked(mUserTracker.getUserId())
+                    && shouldResetPanels()) {
+                logIfDebuggable("Resetting panels during user setup state change");
+                StateManager.handlePanelReset();
+                mResetCalledForUser = true;
+            }
         }
     }
 
@@ -301,7 +296,7 @@ public class SystemEventHandler implements CoreStartable,
             return;
         }
         if (!mCarDeviceProvisionedController.isUserSetup(userId)) {
-            Log.d(TAG, "Launch SUW intent for non-setup user");
+            logIfDebuggable("Launch SUW intent for non-setup user");
             Intent suwIntent = new Intent(Intent.ACTION_MAIN);
             suwIntent.addCategory(Intent.CATEGORY_SETUP_WIZARD);
             suwIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -387,5 +382,11 @@ public class SystemEventHandler implements CoreStartable,
                 SYSTEM_USER_AUTHENTICATED_EVENT_ID)
                 .addToken(SYSTEM_USER_SWITCH_ON_AUTHENTICATED_TOKEN_ID,
                         Boolean.toString(mIsUserSwitching)));
+    }
+
+    private static void logIfDebuggable(String msg) {
+        if (DEBUG) {
+            Log.d(TAG, msg);
+        }
     }
 }

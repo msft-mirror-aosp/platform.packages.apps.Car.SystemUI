@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar.panel;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -28,11 +28,9 @@ import androidx.annotation.DimenRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 
-import com.android.systemui.R;
 import com.android.systemui.car.flexibleui.CarSystemBarElement;
 import com.android.systemui.car.flexibleui.CarSystemBarElementFlags;
 import com.android.systemui.car.flexibleui.CarSystemBarElementResolver;
-import com.android.systemui.car.statusicon.PanelContentProvider;
 
 /** Custom view that provides the layout and attributes for creating system bar panels. */
 public class CarSystemBarPanelButtonView extends LinearLayout implements CarSystemBarElement,
@@ -102,7 +100,7 @@ public class CarSystemBarPanelButtonView extends LinearLayout implements CarSyst
         int panelMarginTop = context.getResources().getDimensionPixelSize(
                 R.dimen.car_status_icon_panel_margin_top);
         int topSystemBarHeight = context.getResources().getDimensionPixelSize(
-                R.dimen.car_top_system_bar_height);
+                com.android.systemui.R.dimen.car_top_system_bar_height);
         // TODO(b/202563671): remove yOffsetPx when the PopupWindow API is updated.
         int defaultYOffset = panelMarginTop - topSystemBarHeight;
         mYOffset = typedArray.getInteger(R.styleable.CarSystemBarPanelButtonView_yOffset,

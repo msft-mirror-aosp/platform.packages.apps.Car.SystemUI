@@ -29,12 +29,12 @@ import com.android.settingslib.development.DevelopmentSettingsEnabler;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.statusicon.PanelContentProvider;
-import com.android.systemui.car.statusicon.PanelContentProviderWrapper;
-import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.car.systembar.BuildInfoUtil;
-import com.android.systemui.car.systembar.CarSystemBarPanelButtonView;
-import com.android.systemui.car.systembar.CarSystemBarPanelButtonViewController;
+import com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView;
+import com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonViewController;
+import com.android.systemui.car.systembar.panel.PanelContentProvider;
+import com.android.systemui.car.systembar.panel.PanelContentProviderWrapper;
+import com.android.systemui.car.systembar.panel.PanelViewController;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.util.settings.GlobalSettings;
 
@@ -56,7 +56,7 @@ public class DebugPanelViewController extends CarSystemBarPanelButtonViewControl
     protected DebugPanelViewController(@Assisted CarSystemBarPanelButtonView view,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
-            Provider<StatusIconPanelViewController.Factory> statusIconPanelFactoryProvider,
+            Provider<PanelViewController.Factory> statusIconPanelFactoryProvider,
             @Main Handler mainHandler, GlobalSettings globalSettings) {
         super(view, disableController, stateController, statusIconPanelFactoryProvider);
         mGlobalSettings = globalSettings;

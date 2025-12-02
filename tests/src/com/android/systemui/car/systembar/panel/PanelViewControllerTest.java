@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.statusicon;
+package com.android.systemui.car.systembar.panel;
 
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.spyOn;
 
@@ -63,8 +63,8 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class StatusIconPanelViewControllerTest extends CarSysuiTestCase {
-    private StatusIconPanelViewController mViewController;
+public class PanelViewControllerTest extends CarSysuiTestCase {
+    private PanelViewController mViewController;
     private ImageView mAnchorView;
     private UserHandle mUserHandle;
 
@@ -102,7 +102,7 @@ public class StatusIconPanelViewControllerTest extends CarSysuiTestCase {
                 R.dimen.car_status_icon_panel_default_width);
         when(mPanelContentProvider.getPanelWidthPx()).thenReturn(panelWidth);
 
-        mViewController = new StatusIconPanelViewController(mContext, mUserTracker,
+        mViewController = new PanelViewController(mContext, mUserTracker,
                 mBroadcastDispatcher, mConfigurationController, mDeviceProvisionedController,
                 mCarSystemBarElementInitializer, mAnchorView, mPanelContentProvider);
         spyOn(mViewController);

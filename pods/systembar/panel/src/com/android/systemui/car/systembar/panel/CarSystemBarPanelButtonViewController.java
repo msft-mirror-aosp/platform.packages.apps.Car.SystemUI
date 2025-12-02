@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar.panel;
 
 import android.os.Bundle;
 
@@ -23,8 +23,7 @@ import androidx.annotation.NonNull;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.statusicon.PanelContentProvider;
-import com.android.systemui.car.statusicon.StatusIconPanelViewController;
+
 
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
@@ -36,13 +35,13 @@ import javax.inject.Provider;
 public class CarSystemBarPanelButtonViewController extends
         CarSystemBarElementController<CarSystemBarPanelButtonView> {
     private static final String KEY_IS_SELECTED = "key_is_selected";
-    private final Provider<StatusIconPanelViewController.Factory> mStatusIconPanelFactoryProvider;
+    private final Provider<PanelViewController.Factory> mStatusIconPanelFactoryProvider;
 
     @AssistedInject
     protected CarSystemBarPanelButtonViewController(@Assisted CarSystemBarPanelButtonView view,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
-            Provider<StatusIconPanelViewController.Factory> statusIconPanelFactoryProvider) {
+            Provider<PanelViewController.Factory> statusIconPanelFactoryProvider) {
         super(view, disableController, stateController);
         mStatusIconPanelFactoryProvider = statusIconPanelFactoryProvider;
     }
@@ -55,9 +54,9 @@ public class CarSystemBarPanelButtonViewController extends
 
     @Override
     protected void onInit() {
-        StatusIconPanelViewController.Factory factory = mStatusIconPanelFactoryProvider.get();
+        PanelViewController.Factory factory = mStatusIconPanelFactoryProvider.get();
         // The View (mView) itself implements PanelContentProvider to provide its own content.
-        StatusIconPanelViewController panelController = factory.create(/* anchorView= */ mView,
+        PanelViewController panelController = factory.create(/* anchorView= */ mView,
                 getPanelContentProvider());
         panelController.init();
     }

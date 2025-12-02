@@ -27,6 +27,7 @@ android_library {
     static_libs: [
         "CarSystemUI-FlexibleUI",
         "CarSystemUI-Shared",
+        "CarSystemUI-SystemBar-Panel",
     ],
     plugins: ["dagger2-compiler"],
     optimize: {

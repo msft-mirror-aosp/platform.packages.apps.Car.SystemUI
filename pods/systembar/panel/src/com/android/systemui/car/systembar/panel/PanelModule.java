@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package {
-    default_applicable_licenses: ["Android-Apache-2.0"],
-}
+package com.android.systemui.car.systembar.panel;
 
-android_library {
-    name: "CarSystemUI-SystemBar-DebugPanel",
-    srcs: ["src/**/*.java"],
-    resource_dirs: ["res"],
-    static_libs: [
-        "CarSystemUI-FlexibleUI",
-        "CarSystemUI-Shared",
-        "CarSystemUI-SystemBar-Panel",
-    ],
-    plugins: [
-        "dagger2-compiler",
-    ],
+import com.android.systemui.car.flexibleui.CarSystemBarElementController;
+
+import dagger.Binds;
+import dagger.Module;
+import dagger.multibindings.ClassKey;
+import dagger.multibindings.IntoMap;
+
+@Module
+public abstract class PanelModule {
+    /** Injects CarSystemBarPanelButtonViewController */
+    @Binds
+    @IntoMap
+    @ClassKey(CarSystemBarPanelButtonViewController.class)
+    public abstract CarSystemBarElementController.Factory bindSystemBarPanelButtonController(
+            CarSystemBarPanelButtonViewController.Factory factory);
 }

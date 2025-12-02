@@ -20,7 +20,7 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:orientation="horizontal">
-    <com.android.systemui.car.systembar.CarSystemBarPanelButtonView
+    <com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView
         android:id="@+id/bluetooth_panel_button"
         android:layout_width="@dimen/car_quick_controls_entry_points_button_width"
         android:layout_height="match_parent"
@@ -39,8 +39,8 @@
             android:tint="@color/car_status_icon_color"
             android:duplicateParentState="true"
             systemui:controller="com.android.systemui.car.statusicon.ui.BluetoothStatusIconController"/>
-    </com.android.systemui.car.systembar.CarSystemBarPanelButtonView>
-    <com.android.systemui.car.systembar.CarSystemBarPanelButtonView
+    </com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView>
+    <com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView
         android:id="@+id/connectivity_panel_button"
         android:layout_width="@dimen/car_quick_controls_entry_points_button_width"
         android:layout_height="match_parent"
@@ -73,8 +73,8 @@
                 android:visibility="gone"
                 systemui:controller="com.android.systemui.car.systembar.DataSubscriptionUnseenIconController"/>
         </FrameLayout>
-    </com.android.systemui.car.systembar.CarSystemBarPanelButtonView>
-    <com.android.systemui.car.systembar.CarSystemBarPanelButtonView
+    </com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView>
+    <com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView
         android:id="@+id/display_panel_button"
         android:layout_width="@dimen/car_quick_controls_entry_points_button_width"
         android:layout_height="match_parent"
@@ -95,8 +95,8 @@
             android:duplicateParentState="true"
             android:src="@drawable/car_ic_brightness"
             android:contentDescription="@string/status_icon_display_status"/>
-    </com.android.systemui.car.systembar.CarSystemBarPanelButtonView>
-    <com.android.systemui.car.systembar.CarSystemBarPanelButtonView
+    </com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView>
+    <com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView
         android:id="@+id/volume_panel"
         android:layout_width="@dimen/car_quick_controls_entry_points_button_width"
         android:layout_height="match_parent"
@@ -115,8 +115,8 @@
             android:tint="@color/car_status_icon_color"
             android:duplicateParentState="true"
             systemui:controller="com.android.systemui.car.statusicon.ui.MediaVolumeStatusIconController"/>
-    </com.android.systemui.car.systembar.CarSystemBarPanelButtonView>
-    <com.android.systemui.car.systembar.CarSystemBarPanelButtonView
+    </com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView>
+    <com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView
         android:id="@+id/debug_panel"
         android:layout_width="@dimen/car_quick_controls_entry_points_button_width"
         android:layout_height="match_parent"
@@ -136,7 +136,7 @@
             android:duplicateParentState="true"
             android:src="@drawable/car_ic_debug"
             android:contentDescription="@string/status_icon_debug_status"/>
-    </com.android.systemui.car.systembar.CarSystemBarPanelButtonView>
+    </com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView>
     <com.android.systemui.car.systembar.CarSystemBarButton
         android:id="@+id/aaos_studio"
         android:layout_width="@dimen/car_quick_controls_entry_points_button_width"

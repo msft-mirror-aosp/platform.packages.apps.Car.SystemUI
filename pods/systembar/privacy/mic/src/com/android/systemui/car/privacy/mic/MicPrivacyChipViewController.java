@@ -28,7 +28,7 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.statusicon.StatusIconPanelViewController;
+import com.android.systemui.car.systembar.panel.PanelViewController;
 import com.android.systemui.car.systembar.privacy.base.PrivacyChip;
 import com.android.systemui.car.systembar.privacy.base.PrivacyChipViewController;
 import com.android.systemui.privacy.PrivacyItemController;
@@ -53,7 +53,7 @@ public class MicPrivacyChipViewController extends PrivacyChipViewController {
             SensorPrivacyManager sensorPrivacyManager,
             UserTracker userTracker,
             CarDeviceProvisionedController carDeviceProvisionedController,
-            Provider<StatusIconPanelViewController.Factory> panelControllerFactoryProvider) {
+            Provider<PanelViewController.Factory> panelControllerFactoryProvider) {
         super(view, disableController, stateController, context, privacyItemController,
                 sensorPrivacyManager, userTracker, carDeviceProvisionedController,
                 panelControllerFactoryProvider);

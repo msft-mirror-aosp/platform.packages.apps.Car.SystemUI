@@ -325,8 +325,6 @@ android_library {
         ":CarSystemUI-application-srcs",
     ],
 
-    kotlin_lang_version: "1.9",
-
     static_libs: [
         "SystemUI-tests",
         "CarSystemUI-tests-base",

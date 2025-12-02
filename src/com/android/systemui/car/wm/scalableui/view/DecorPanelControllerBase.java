@@ -35,12 +35,14 @@ public abstract class DecorPanelControllerBase implements DecorPanelController {
     private static final boolean DEBUG = true;
     @Nullable
     private final Provider<View> mViewProvider;
+    protected final String mPanelId;
     @Nullable
     private View mView;
     protected final PanelControllerMetadata mMetadata;
 
-    protected DecorPanelControllerBase(PanelControllerMetadata metadata,
+    protected DecorPanelControllerBase(@NonNull String panelId, PanelControllerMetadata metadata,
             Map<Class<?>, Provider<View>> decorPanelViewMap) {
+        mPanelId = panelId;
         mMetadata = metadata;
         String viewName = metadata.getStringConfiguration(VIEW_TAG);
         if (viewName == null) {
@@ -87,13 +89,19 @@ public abstract class DecorPanelControllerBase implements DecorPanelController {
     }
 
     @Override
+    public void destroy() {
+        mView = null;
+        logIfDebuggable(mPanelId + ", getView =" + mView);
+    }
+
+    @Override
     public void refreshTheme() {
         mView = initView();
     }
 
-    protected static void logIfDebuggable(String msg) {
+    protected void logIfDebuggable(String msg) {
         if (DEBUG) {
-            Log.d(TAG, msg);
+            Log.d(TAG, mPanelId + ", " + msg);
         }
     }
 }

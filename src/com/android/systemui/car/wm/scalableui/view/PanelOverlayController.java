@@ -79,7 +79,6 @@ public class PanelOverlayController extends DecorPanelControllerBase implements
         StateManager.PanelStateObserver {
     private static final String TAG = PanelOverlayController.class.getSimpleName();
     private final Context mContext;
-    private final String mPanelId;
     private final PanelUtils mPanelUtils;
     private boolean mIsVisible;
     private ConstraintLayout mPanelOverlay;
@@ -94,10 +93,9 @@ public class PanelOverlayController extends DecorPanelControllerBase implements
             @DecorPanelViewMap Map<Class<?>, Provider<View>> decorPanelViewMap,
             Context context,
             PanelUtils panelUtils) {
-        super(metadata, decorPanelViewMap);
+        super(panelId, metadata, decorPanelViewMap);
         mContext = context;
         init(metadata);
-        mPanelId = panelId;
         mPanelUtils = panelUtils;
         mIsVisible = isPanelVisible();
         // TODO(b/462485520): add removePanelStateObserver when controller get destroyed due to
@@ -162,6 +160,12 @@ public class PanelOverlayController extends DecorPanelControllerBase implements
     private void init(@NonNull PanelControllerMetadata metadata) {
         mOverlayPanelId = metadata.getStringConfiguration(OVERLAY_PANEL_ID_TAG);
         mBackgroundColorHex = metadata.getStringConfiguration(BACKGROUND_COLOR_TAG);
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        StateManager.getInstance().removePanelStateObserver(this);
     }
 
     private void updateVail() {

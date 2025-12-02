@@ -159,7 +159,7 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             animationStarted.set(mPanelTransitionCoordinator.playPendingAnimations(binder,
-                    mFinishCallback, mFinishTransaction, mInfo));
+                    mFinishCallback, mFinishTransaction, Collections.emptyList()));
         });
 
         assertThat(animationStarted.get()).isFalse();
@@ -185,7 +185,7 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
         AtomicBoolean animationStarted = new AtomicBoolean(false);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             animationStarted.set(mPanelTransitionCoordinator.playPendingAnimations(binder,
-                    mFinishCallback, mFinishTransaction, mInfo));
+                    mFinishCallback, mFinishTransaction, Collections.emptyList()));
         });
 
         assertThat(animationStarted.get()).isTrue();
@@ -219,7 +219,7 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
         // Run the animation on the main looper
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
             mPanelTransitionCoordinator.playPendingAnimations(binder, mFinishCallback,
-                    mFinishTransaction, mInfo);
+                    mFinishTransaction, Collections.emptyList());
         });
 
         mPanelTransitionCoordinator.stopRunningAnimations(binder2);

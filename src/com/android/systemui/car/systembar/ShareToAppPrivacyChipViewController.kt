@@ -17,6 +17,7 @@
 package com.android.systemui.car.systembar
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.android.systemui.car.flexibleui.CarSystemBarElementController
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController
@@ -47,6 +48,16 @@ constructor(
         scope,
         shareToAppChipViewModel,
     ) {
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public override fun onViewAttached() {
+        super.onViewAttached()
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public override fun onViewDetached() {
+        super.onViewDetached()
+    }
 
     @AssistedFactory
     interface Factory :

@@ -46,10 +46,6 @@ public abstract class OngoingActivityPrivacyChipViewController(
     override fun onViewAttached() {
         super.onViewAttached()
 
-        onViewAttachedInternal()
-    }
-
-    internal fun onViewAttachedInternal() {
         job?.cancel()
         job =
             scope.launch {
@@ -62,10 +58,6 @@ public abstract class OngoingActivityPrivacyChipViewController(
     override fun onViewDetached() {
         super.onViewDetached()
 
-        onViewDetachedInternal()
-    }
-
-    internal fun onViewDetachedInternal() {
         job?.cancel()
         job = null
     }

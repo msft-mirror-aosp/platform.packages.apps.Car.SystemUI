@@ -98,7 +98,7 @@ class ShareToAppPrivacyChipViewControllerTest : CarSysuiTestCase() {
     @Test
     fun onViewAttached_callsAnimateIn_whenStateIsActive() =
         testScope.runTest {
-            shareToAppPrivacyChipViewController.onViewAttachedInternal()
+            shareToAppPrivacyChipViewController.onViewAttached()
 
             chipModelFlow.value = createActiveChipModel()
             runCurrent()
@@ -111,7 +111,7 @@ class ShareToAppPrivacyChipViewControllerTest : CarSysuiTestCase() {
     @Test
     fun onViewAttached_callsAnimateOut_whenStateIsInactive() =
         testScope.runTest {
-            shareToAppPrivacyChipViewController.onViewAttachedInternal()
+            shareToAppPrivacyChipViewController.onViewAttached()
 
             chipModelFlow.value = OngoingActivityChipModel.Inactive()
             runCurrent()
@@ -124,7 +124,7 @@ class ShareToAppPrivacyChipViewControllerTest : CarSysuiTestCase() {
     @Test
     fun onViewDetached_stopsCollectingStatus() =
         testScope.runTest {
-            shareToAppPrivacyChipViewController.onViewDetachedInternal()
+            shareToAppPrivacyChipViewController.onViewDetached()
 
             chipModelFlow.value = createActiveChipModel()
             runCurrent()

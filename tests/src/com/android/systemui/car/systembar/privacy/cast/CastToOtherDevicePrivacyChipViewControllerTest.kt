@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar
+package com.android.systemui.car.systembar.privacy.cast
 
 import android.platform.test.annotations.EnableFlags
 import android.platform.test.flag.junit.SetFlagsRule
@@ -29,7 +29,6 @@ import com.android.systemui.car.CarSystemUiTest
 import com.android.systemui.car.Flags.FLAG_SHOW_MEDIA_PROJECTION_INDICATOR
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController
-import com.android.systemui.car.privacy.CastToOtherDevicePrivacyChip
 import com.android.systemui.statusbar.chips.casttootherdevice.ui.viewmodel.CastToOtherDeviceChipViewModel
 import com.android.systemui.statusbar.chips.ui.model.ColorsModel
 import com.android.systemui.statusbar.chips.ui.model.OngoingActivityChipModel
@@ -100,7 +99,7 @@ class CastToOtherDevicePrivacyChipViewControllerTest : CarSysuiTestCase() {
     @Test
     fun onViewAttached_callsAnimateIn_whenStateIsActive() =
         testScope.runTest {
-            castToOtherDevicePrivacyChipViewController.onViewAttachedInternal()
+            castToOtherDevicePrivacyChipViewController.onViewAttached()
 
             chipModelFlow.value = createActiveChipModel()
             runCurrent()
@@ -113,7 +112,7 @@ class CastToOtherDevicePrivacyChipViewControllerTest : CarSysuiTestCase() {
     @Test
     fun onViewAttached_callsAnimateOut_whenStateIsInactive() =
         testScope.runTest {
-            castToOtherDevicePrivacyChipViewController.onViewAttachedInternal()
+            castToOtherDevicePrivacyChipViewController.onViewAttached()
 
             chipModelFlow.value = OngoingActivityChipModel.Inactive()
             runCurrent()
@@ -126,7 +125,7 @@ class CastToOtherDevicePrivacyChipViewControllerTest : CarSysuiTestCase() {
     @Test
     fun onViewDetached_stopsCollectingState() =
         testScope.runTest {
-            castToOtherDevicePrivacyChipViewController.onViewDetachedInternal()
+            castToOtherDevicePrivacyChipViewController.onViewDetached()
 
             chipModelFlow.value = createActiveChipModel()
             runCurrent()

@@ -44,6 +44,7 @@ import com.android.systemui.car.systembar.privacy.camera.PrivacyChipCameraModule
 import com.android.systemui.car.systembar.privacy.cast.PrivacyChipCastModule;
 import com.android.systemui.car.systembar.privacy.mic.PrivacyChipMicModule;
 import com.android.systemui.car.systembar.privacy.share.PrivacyChipShareModule;
+import com.android.systemui.car.systembar.usernamepanel.UserNamePanelModule;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
@@ -90,7 +91,8 @@ import java.util.Optional;
         PrivacyChipMicModule.class,
         PrivacyChipCameraModule.class,
         PrivacyChipCastModule.class,
-        PrivacyChipShareModule.class})
+        PrivacyChipShareModule.class,
+        UserNamePanelModule.class})
 public abstract class CarSystemBarModule {
 
     @Provides
@@ -228,27 +230,6 @@ public abstract class CarSystemBarModule {
     @ClassKey(DataSubscriptionUnseenIconController.class)
     public abstract CarSystemBarElementController.Factory bindDataSubscriptionUnseenIconController(
             DataSubscriptionUnseenIconController.Factory factory);
-
-    /** Injects UserNamePanelButtonViewController */
-    @Binds
-    @IntoMap
-    @ClassKey(UserNamePanelButtonViewController.class)
-    public abstract CarSystemBarElementController.Factory bindUserNamePanelButtonViewController(
-            UserNamePanelButtonViewController.Factory factory);
-
-    /** Injects UserNameTextViewController */
-    @Binds
-    @IntoMap
-    @ClassKey(UserNameTextViewController.class)
-    public abstract CarSystemBarElementController.Factory bindUserNameTextViewController(
-            UserNameTextViewController.Factory factory);
-
-    /** Injects UserNameImageViewController */
-    @Binds
-    @IntoMap
-    @ClassKey(UserNameImageViewController.class)
-    public abstract CarSystemBarElementController.Factory bindUserNameImageViewController(
-            UserNameImageViewController.Factory factory);
 
     /** Injects KeyguardSystemBarPresenter */
     @SysUISingleton

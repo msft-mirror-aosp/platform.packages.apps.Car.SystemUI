@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar.usernamepanel;
 
 import android.app.ActivityOptions;
 import android.car.app.CarActivityManager;
@@ -27,13 +27,14 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
-import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
+import com.android.systemui.car.systembar.CarSystemBarPanelButtonView;
+import com.android.systemui.car.systembar.CarSystemBarPanelButtonViewController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.settings.UserTracker;
 
@@ -45,8 +46,8 @@ import java.net.URISyntaxException;
 
 import javax.inject.Provider;
 
-public class UserNamePanelButtonViewController extends CarSystemBarPanelButtonViewController {
-    private static final String TAG = UserNamePanelButtonViewController.class.getName();
+public class UserNamePanelViewController extends CarSystemBarPanelButtonViewController {
+    private static final String TAG = UserNamePanelViewController.class.getName();
     private final Context mContext;
     private final UserTracker mUserTracker;
     private final CarServiceProvider mCarServiceProvider;
@@ -60,7 +61,7 @@ public class UserNamePanelButtonViewController extends CarSystemBarPanelButtonVi
             };
 
     @AssistedInject
-    protected UserNamePanelButtonViewController(@Assisted CarSystemBarPanelButtonView view,
+    protected UserNamePanelViewController(@Assisted CarSystemBarPanelButtonView view,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
             Provider<StatusIconPanelViewController.Factory> statusIconPanelFactoryProvider,
@@ -77,7 +78,7 @@ public class UserNamePanelButtonViewController extends CarSystemBarPanelButtonVi
     @AssistedFactory
     public interface Factory extends
             CarSystemBarElementController.Factory<CarSystemBarPanelButtonView,
-                    UserNamePanelButtonViewController> {
+                    UserNamePanelViewController> {
     }
 
     @Override
@@ -152,7 +153,8 @@ public class UserNamePanelButtonViewController extends CarSystemBarPanelButtonVi
             }
             if (mView.isDisabledWhileDriving() && carUxRestrictionsUtil.getCurrentRestrictions()
                     .isRequiresDistractionOptimization()) {
-                Toast.makeText(mContext, R.string.car_ui_restricted_while_driving,
+                Toast.makeText(mContext,
+                        com.android.systemui.R.string.car_ui_restricted_while_driving,
                         Toast.LENGTH_LONG).show();
                 return;
             }

@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar.usernamepanel;
 
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.BroadcastReceiver;
+import android.content.Intent;
 import android.content.pm.UserInfo;
-import android.graphics.drawable.Drawable;
+import android.os.UserManager;
 import android.testing.TestableLooper;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
+import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.flexibleui.layout.CarSystemBarImageView;
-import com.android.systemui.car.users.CarProfileIconUpdater;
-import com.android.systemui.car.userswitcher.UserIconProvider;
+import com.android.systemui.car.flexibleui.layout.CarSystemBarTextView;
 import com.android.systemui.settings.UserTracker;
 
 import org.junit.Before;
@@ -52,11 +52,13 @@ import java.util.concurrent.Executor;
 @RunWith(AndroidJUnit4.class)
 @TestableLooper.RunWithLooper
 @SmallTest
-public class UserNameImageViewControllerTest extends CarSysuiTestCase {
+public class UserNameTextViewControllerTest extends CarSysuiTestCase {
+    private static final String USER_1_NAME = "User 1";
+    private static final String USER_2_NAME = "User 2";
     private final UserInfo mUserInfo1 =
-            new UserInfo(/* id= */ 0, /* name= */ "User 1", /* flags= */ 0);
+            new UserInfo(/* id= */ 0, USER_1_NAME, /* flags= */ 0);
     private final UserInfo mUserInfo2 =
-            new UserInfo(/* id= */ 1, /* name= */ "User 2", /* flags= */ 0);
+            new UserInfo(/* id= */ 1, USER_2_NAME, /* flags= */ 0);
 
     @Mock
     CarSystemBarElementStatusBarDisableController mDisableController;
@@ -67,28 +69,24 @@ public class UserNameImageViewControllerTest extends CarSysuiTestCase {
     @Mock
     private UserTracker mUserTracker;
     @Mock
-    private CarProfileIconUpdater mIconUpdater;
+    private UserManager mUserManager;
     @Mock
-    private UserIconProvider mUserIconProvider;
-    @Mock
-    private Drawable mTestDrawable1;
-    @Mock
-    private Drawable mTestDrawable2;
+    private BroadcastDispatcher mBroadcastDispatcher;
 
-    private CarSystemBarImageView mView;
-    private UserNameImageViewController mController;
+    private CarSystemBarTextView mView;
+    private UserNameTextViewController mController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        when(mUserManager.getUserInfo(mUserInfo1.id)).thenReturn(mUserInfo1);
+        when(mUserManager.getUserInfo(mUserInfo2.id)).thenReturn(mUserInfo2);
         when(mUserTracker.getUserId()).thenReturn(mUserInfo1.id);
-        when(mUserIconProvider.getRoundedUserIcon(anyInt())).thenReturn(mTestDrawable1);
 
-        mView = new CarSystemBarImageView(mContext);
-        mController = new UserNameImageViewController(mView, mDisableController,
-                mStateController, mContext, mExecutor, mUserTracker, mIconUpdater,
-                mUserIconProvider);
+        mView = new CarSystemBarTextView(mContext);
+        mController = new UserNameTextViewController(mView, mDisableController,
+                mStateController, mExecutor, mUserTracker, mUserManager, mBroadcastDispatcher);
     }
 
     @Test
@@ -96,14 +94,14 @@ public class UserNameImageViewControllerTest extends CarSysuiTestCase {
         mController.onViewAttached();
 
         verify(mUserTracker).addCallback(any(), any());
-        verify(mIconUpdater).addCallback(any());
+        verify(mBroadcastDispatcher).registerReceiver(any(), any(), any(), any());
     }
 
     @Test
     public void onViewAttached_updatesUser() {
         mController.onViewAttached();
 
-        assertThat(mView.getDrawable()).isEqualTo(mTestDrawable1);
+        assertThat(mView.getText().toString()).isEqualTo(USER_1_NAME);
     }
 
     @Test
@@ -112,7 +110,7 @@ public class UserNameImageViewControllerTest extends CarSysuiTestCase {
         mController.onViewDetached();
 
         verify(mUserTracker).removeCallback(any());
-        verify(mIconUpdater).removeCallback(any());
+        verify(mBroadcastDispatcher).unregisterReceiver(any());
     }
 
     @Test
@@ -123,25 +121,22 @@ public class UserNameImageViewControllerTest extends CarSysuiTestCase {
         verify(mUserTracker).addCallback(captor.capture(), any());
         assertThat(captor.getValue()).isNotNull();
 
-        when(mUserTracker.getUserId()).thenReturn(mUserInfo2.id);
-        when(mUserIconProvider.getRoundedUserIcon(anyInt())).thenReturn(mTestDrawable2);
         captor.getValue().onUserChanged(mUserInfo2.id, mContext);
 
-        assertThat(mView.getDrawable()).isEqualTo(mTestDrawable2);
+        assertThat(mView.getText().toString()).isEqualTo(USER_2_NAME);
     }
 
     @Test
-    public void onUserIconChanged_updatesUser() {
-        ArgumentCaptor<CarProfileIconUpdater.Callback> captor = ArgumentCaptor.forClass(
-                CarProfileIconUpdater.Callback.class);
+    public void onUserNameChanged_updatesUser() {
+        ArgumentCaptor<BroadcastReceiver> captor = ArgumentCaptor.forClass(BroadcastReceiver.class);
         mController.onViewAttached();
-        verify(mIconUpdater).addCallback(captor.capture());
+        verify(mBroadcastDispatcher).registerReceiver(captor.capture(), any(), any(), any());
         assertThat(captor.getValue()).isNotNull();
 
         when(mUserTracker.getUserId()).thenReturn(mUserInfo2.id);
-        when(mUserIconProvider.getRoundedUserIcon(anyInt())).thenReturn(mTestDrawable2);
-        captor.getValue().onUserIconUpdated(mUserInfo2.id);
+        captor.getValue().onReceive(getContext(),
+                new Intent(Intent.ACTION_USER_INFO_CHANGED));
 
-        assertThat(mView.getDrawable()).isEqualTo(mTestDrawable2);
+        assertThat(mView.getText().toString()).isEqualTo(USER_2_NAME);
     }
 }

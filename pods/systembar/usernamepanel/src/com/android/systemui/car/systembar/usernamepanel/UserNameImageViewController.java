@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar.usernamepanel;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.UserInfo;
-import android.os.UserHandle;
-import android.os.UserManager;
+import android.graphics.drawable.Drawable;
 
-import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.flexibleui.layout.CarSystemBarTextView;
+import com.android.systemui.car.flexibleui.layout.CarSystemBarImageView;
+import com.android.systemui.car.users.CarProfileIconUpdater;
+import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
 
@@ -39,14 +35,15 @@ import dagger.assisted.AssistedInject;
 import java.util.concurrent.Executor;
 
 /**
- * Controls user name TextView for the current logged in user.
+ * Controls user name ImageView for the current logged in user.
  */
-public final class UserNameTextViewController extends
-        CarSystemBarElementController<CarSystemBarTextView> {
+public final class UserNameImageViewController extends
+        CarSystemBarElementController<CarSystemBarImageView> {
+    private final Context mContext;
     private final Executor mMainExecutor;
     private final UserTracker mUserTracker;
-    private final UserManager mUserManager;
-    private final BroadcastDispatcher mBroadcastDispatcher;
+    private final CarProfileIconUpdater mCarProfileIconUpdater;
+    private final UserIconProvider mUserIconProvider;
     private boolean mUserLifecycleListenerRegistered;
 
     private final UserTracker.Callback mUserChangedCallback =
@@ -57,30 +54,26 @@ public final class UserNameTextViewController extends
                 }
             };
 
-    private final BroadcastReceiver mUserUpdateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            updateUser(mUserTracker.getUserId());
-        }
-    };
+    private final CarProfileIconUpdater.Callback mUserIconUpdateCallback = this::updateUser;
 
     @AssistedInject
-    protected UserNameTextViewController(@Assisted CarSystemBarTextView view,
+    protected UserNameImageViewController(@Assisted CarSystemBarImageView view,
             CarSystemBarElementStatusBarDisableController disableController,
-            CarSystemBarElementStateController stateController,
-            @Main Executor mainExecutor, UserTracker userTracker, UserManager userManager,
-            BroadcastDispatcher broadcastDispatcher) {
+            CarSystemBarElementStateController stateController, Context context,
+            @Main Executor mainExecutor, UserTracker userTracker,
+            CarProfileIconUpdater carProfileIconUpdater, UserIconProvider userIconProvider) {
         super(view, disableController, stateController);
+        mContext = context;
         mMainExecutor = mainExecutor;
         mUserTracker = userTracker;
-        mUserManager = userManager;
-        mBroadcastDispatcher = broadcastDispatcher;
+        mCarProfileIconUpdater = carProfileIconUpdater;
+        mUserIconProvider = userIconProvider;
     }
 
     @AssistedFactory
     public interface Factory extends
-            CarSystemBarElementController.Factory<CarSystemBarTextView,
-                    UserNameTextViewController> {
+            CarSystemBarElementController.Factory<CarSystemBarImageView,
+                    UserNameImageViewController> {
     }
 
     @Override
@@ -94,7 +87,7 @@ public final class UserNameTextViewController extends
     protected void onViewDetached() {
         super.onViewDetached();
         if (mUserLifecycleListenerRegistered) {
-            mBroadcastDispatcher.unregisterReceiver(mUserUpdateReceiver);
+            mCarProfileIconUpdater.removeCallback(mUserIconUpdateCallback);
             mUserTracker.removeCallback(mUserChangedCallback);
             mUserLifecycleListenerRegistered = false;
         }
@@ -107,15 +100,12 @@ public final class UserNameTextViewController extends
         mUserLifecycleListenerRegistered = true;
         // Register for user switching
         mUserTracker.addCallback(mUserChangedCallback, mMainExecutor);
-        // Also register for user info changing
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_USER_INFO_CHANGED);
-        mBroadcastDispatcher.registerReceiver(mUserUpdateReceiver, filter, /* executor= */ null,
-                UserHandle.ALL);
+        // Also register for user icon changing
+        mCarProfileIconUpdater.addCallback(mUserIconUpdateCallback);
     }
 
     private void updateUser(int userId) {
-        UserInfo currentUserInfo = mUserManager.getUserInfo(userId);
-        mView.setText(currentUserInfo.name);
+        Drawable roundedUserIcon = mUserIconProvider.getRoundedUserIcon(userId);
+        mView.setImageDrawable(roundedUserIcon);
     }
 }

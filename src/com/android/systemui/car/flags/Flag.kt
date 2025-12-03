@@ -180,6 +180,14 @@ enum class Flag(
     ScalableUiNoSuwHome(
         "com.android.systemui.car.Flags.scalableUiNoSuwHome",
         R.bool.scalable_ui_no_suw_home
+    ),
+
+    /**
+     * Checks if Minimized Controls is enabled.
+     */
+    ScalableUiMinimizedControls(
+        "com.android.systemui.car.Flags.scalableUiMinimizedControls",
+        R.bool.scalable_ui_minimized_controls
     );
 
     // These properties are now calculated from the fullFlagIdentifier.

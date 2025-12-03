@@ -52,6 +52,7 @@ class DecorPanelUnitTest : CarSysuiTestCase() {
 
     private lateinit var decorPanel: DecorPanel
     private lateinit var mainExecutor: ShellExecutor
+    private lateinit var shellMainExecutor: ShellExecutor
 
     @Mock
     private lateinit var context: Context
@@ -82,6 +83,7 @@ class DecorPanelUnitTest : CarSysuiTestCase() {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         mainExecutor = ShellSyncExecutor()
+        shellMainExecutor = ShellSyncExecutor()
 
         decorPanel = spy(
             DecorPanel(
@@ -90,6 +92,7 @@ class DecorPanelUnitTest : CarSysuiTestCase() {
                 panelUtils,
                 panelControllerInitializer,
                 mainExecutor,
+                shellMainExecutor,
                 autoSurfaceTransactionFactory,
                 Optional.of(panelUpdatePublisher),
                 DECOR_PANEL_ID

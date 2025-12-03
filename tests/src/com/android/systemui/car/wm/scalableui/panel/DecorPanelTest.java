@@ -78,7 +78,9 @@ public class DecorPanelTest extends CarSysuiTestCase {
     @Mock
     private PanelControllerInitializer mPanelControllerInitializer;
     @Mock
-    private ShellExecutor mShellExecutor;
+    private ShellExecutor mShellMainExecutor;
+    @Mock
+    private ShellExecutor mMainExecutor;
     @Mock
     private AutoDecor mMockExistingAutoDecor;
     @Mock
@@ -114,7 +116,8 @@ public class DecorPanelTest extends CarSysuiTestCase {
                 mAutoDecorManager,
                 mPanelUtils,
                 mPanelControllerInitializer,
-                mShellExecutor,
+                mMainExecutor,
+                mShellMainExecutor,
                 mAutoSurfaceTransactionFactory,
                 Optional.of(mPanelUpdatePublisher),
                 TEST_PANEL_ID
@@ -131,7 +134,14 @@ public class DecorPanelTest extends CarSysuiTestCase {
                 runnable.run();
             }
             return null;
-        }).when(mShellExecutor).execute(any(Runnable.class));
+        }).when(mShellMainExecutor).execute(any(Runnable.class));
+        doAnswer(invocation -> {
+            Runnable runnable = invocation.getArgument(0);
+            if (runnable != null) {
+                runnable.run();
+            }
+            return null;
+        }).when(mMainExecutor).execute(any(Runnable.class));
 
         // --- Stub SysUIPanel methods (called via spy) ---
         doReturn(TEST_LAYER).when(mDecorPanel).getLayer();
@@ -155,7 +165,7 @@ public class DecorPanelTest extends CarSysuiTestCase {
         mDecorPanel.init();
 
         verify(mDecorPanel).reset();
-        verify(mShellExecutor).execute(any(Runnable.class));
+        verify(mShellMainExecutor).execute(any(Runnable.class));
     }
 
     @Test
@@ -165,7 +175,7 @@ public class DecorPanelTest extends CarSysuiTestCase {
         mDecorPanel.init();
 
         verify(mDecorPanel, never()).reset();
-        verify(mShellExecutor, never()).execute(any(Runnable.class));
+        verify(mShellMainExecutor, never()).execute(any(Runnable.class));
     }
 
     // --- Tests for reset() ---
@@ -178,7 +188,7 @@ public class DecorPanelTest extends CarSysuiTestCase {
 
         mDecorPanel.reset();
 
-        verify(mShellExecutor).execute(mRunnableArgumentCaptor.capture());
+        verify(mShellMainExecutor).execute(mRunnableArgumentCaptor.capture());
         verify(mAutoDecorManager, never()).removeAutoDecor(any());
         verify(mDecorPanel).inflateDecorView();
         verify(mAutoDecorManager).createAutoDecor(
@@ -200,7 +210,7 @@ public class DecorPanelTest extends CarSysuiTestCase {
 
         mDecorPanel.reset();
 
-        verify(mShellExecutor).execute(mRunnableArgumentCaptor.capture());
+        verify(mShellMainExecutor).execute(mRunnableArgumentCaptor.capture());
         verify(mAutoDecorManager).removeAutoDecor(mMockExistingAutoDecor);
         verify(mDecorPanel).inflateDecorView();
         verify(mAutoDecorManager).createAutoDecor(eq(mMockDecorView), eq(TEST_LAYER),

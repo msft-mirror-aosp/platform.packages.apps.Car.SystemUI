@@ -60,6 +60,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
 
@@ -70,6 +71,7 @@ class TaskPanelUnitTest : CarSysuiTestCase() {
 
     private lateinit var taskPanel: TaskPanel
     private lateinit var mainExecutor: ShellExecutor
+    private lateinit var shellMainExecutor: ShellExecutor
 
     @Mock
     private lateinit var autoTaskStackController: AutoTaskStackController
@@ -116,7 +118,7 @@ class TaskPanelUnitTest : CarSysuiTestCase() {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         mainExecutor = ShellSyncExecutor()
-
+        shellMainExecutor = ShellSyncExecutor()
         taskPanel = spy(
             TaskPanel(
                 autoTaskStackController,
@@ -132,6 +134,7 @@ class TaskPanelUnitTest : CarSysuiTestCase() {
                 panelControllerInitializer,
                 autoLayoutManager,
                 mainExecutor,
+                shellMainExecutor,
                 autoSurfaceTransactionFactory,
                 Optional.of(panelUpdatePublisher),
                 flagManager,
@@ -172,11 +175,23 @@ class TaskPanelUnitTest : CarSysuiTestCase() {
         taskPanel.mExistingAutoDecors["decor1"] = decor
         `when`(flagManager.isEnabled(Flag.EnableDecor)).thenReturn(true)
 
+        // Create a real map for the decor views, as getDecorViewMap will be called.
+        val decorViewMap = hashMapOf<String, View>()
+        // Spy on the panel to mock the getDecorViewMap call.
+        doReturn(decorViewMap).`when`(taskPanel).getDecorViewMap(any())
+
+        // WHEN
         taskPanel.refreshTheme()
 
+        // THEN
+        // Verify old decors are removed
         verify(autoDecorManager).removeAutoDecor(decor)
         assertThat(taskPanel.mExistingAutoDecors).isEmpty()
-        verify(taskPanel).updateDecors(autoSurfaceTransaction, null)
+
+        // Verify updateDecors is called with the correct arguments
+        verify(taskPanel).updateDecors(eq(autoSurfaceTransaction), eq(null), eq(decorViewMap))
+
+        // Verify the transaction is applied
         verify(autoSurfaceTransaction).apply()
     }
 
@@ -186,7 +201,8 @@ class TaskPanelUnitTest : CarSysuiTestCase() {
         val decorModel = mock(Decor::class.java)
         val decorView = mock(View::class.java)
         val newAutoDecor = mock(AutoDecor::class.java)
-        `when`(decorModel.getView(userContext)).thenReturn(decorView)
+        val decorViewMap = hashMapOf("decor1" to decorView)
+
         `when`(decorModel.layer).thenReturn(1)
         `when`(decorModel.id).thenReturn("decor1")
         val decors = mapOf("decor1" to decorModel)
@@ -195,7 +211,7 @@ class TaskPanelUnitTest : CarSysuiTestCase() {
         `when`(autoDecorManager.createAutoDecor(any(), any(), any(), any()))
             .thenReturn(newAutoDecor)
 
-        taskPanel.updateDecors(autoSurfaceTransaction, variant)
+        taskPanel.updateDecors(autoSurfaceTransaction, variant, decorViewMap)
 
         verify(autoDecorManager).createAutoDecor(decorView, 1, taskPanel.safeBounds, "decor1")
         verify(autoDecorManager).attachAutoDecorToTask(newAutoDecor, ROOT_TASK_ID)
@@ -207,11 +223,12 @@ class TaskPanelUnitTest : CarSysuiTestCase() {
     fun updateDecors_removesObsoleteDecor() {
         `when`(flagManager.isEnabled(Flag.EnableDecor)).thenReturn(true)
         val existingDecor = mock(AutoDecor::class.java)
+        val decorViewMap = hashMapOf<String, View>()
         taskPanel.mExistingAutoDecors["obsolete_decor"] = existingDecor
         val variant = mock(Variant::class.java)
         `when`(variant.decors).thenReturn(emptyMap()) // New variant has no decors
 
-        taskPanel.updateDecors(autoSurfaceTransaction, variant)
+        taskPanel.updateDecors(autoSurfaceTransaction, variant, decorViewMap)
 
         verify(autoDecorManager).removeAutoDecor(existingDecor)
         assertThat(taskPanel.mExistingAutoDecors).isEmpty()

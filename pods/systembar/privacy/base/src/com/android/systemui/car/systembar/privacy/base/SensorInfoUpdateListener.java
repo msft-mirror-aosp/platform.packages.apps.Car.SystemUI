@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 The Android Open Source Project
+ * Copyright (C) 2023 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-package {
-    default_applicable_licenses: ["Android-Apache-2.0"],
-}
+package com.android.systemui.car.systembar.privacy.base;
 
-android_library {
-    name: "CarSystemUI-SystemBar-PrivacyChip-Share",
-    srcs: [
-        "src/**/*.java",
-        "src/**/*.kt",
-    ],
-    resource_dirs: [
-        "res",
-    ],
-    static_libs: [
-        "CarSystemUI-FlexibleUI",
-        "CarSystemUI-Shared",
-        "CarSystemUI-SystemBar-PrivacyChip-Base",
-    ],
-    plugins: ["dagger2-compiler"],
-    manifest: "AndroidManifest.xml",
+/**
+ * A listener to notify when the sensor gets updated.
+ */
+public interface SensorInfoUpdateListener {
+
+    /**
+     * Notify of sensor privacy state change
+     */
+    void onSensorPrivacyChanged();
+
+    /**
+     * Notify that the privacy items have changed
+     */
+    void onPrivacyItemsChanged();
 }

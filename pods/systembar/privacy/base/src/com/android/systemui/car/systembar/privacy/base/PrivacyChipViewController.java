@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar.privacy.base;
 
 import static android.hardware.SensorPrivacyManager.TOGGLE_TYPE_SOFTWARE;
 
@@ -34,7 +34,6 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.privacy.PrivacyChip;
 import com.android.systemui.car.statusicon.PanelContentProvider;
 import com.android.systemui.car.statusicon.StatusIconPanelViewController;
 import com.android.systemui.privacy.PrivacyItem;
@@ -59,17 +58,17 @@ public abstract class PrivacyChipViewController extends CarSystemBarElementContr
 
     private final SensorPrivacyManager.OnSensorPrivacyChangedListener
             mOnSensorPrivacyChangedListener = (sensor, sensorPrivacyEnabled) -> {
-        if (mContext == null) {
-            return;
-        }
-        // Since this is launched using a callback thread, its UI based elements need
-        // to execute on main executor.
-        mContext.getMainExecutor().execute(() -> {
-            // We need to negate enabled since when it is {@code true} it means
-            // the sensor (such as microphone or camera) has been toggled off.
-            mView.setSensorEnabled(/* enabled= */ !sensorPrivacyEnabled);
-        });
-    };
+                if (mContext == null) {
+                    return;
+                }
+                // Since this is launched using a callback thread, its UI based elements need
+                // to execute on main executor.
+                mContext.getMainExecutor().execute(() -> {
+                    // We need to negate enabled since when it is {@code true} it means
+                    // the sensor (such as microphone or camera) has been toggled off.
+                    mView.setSensorEnabled(/* enabled= */ !sensorPrivacyEnabled);
+                });
+            };
 
     private final UserTracker.Callback mUserSwitchCallback = new UserTracker.Callback() {
         @Override

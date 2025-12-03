@@ -66,6 +66,7 @@ carsysui_pods = [
     "CarSystemUI-SystemBar-DebugPanel",
     "CarSystemUI-SystemBar-HomeButton",
     "CarSystemUI-SystemBar-PassengerHomeButton",
+    "CarSystemUI-SystemBar-PrivacyChip-Base",
     "CarSystemUI-SystemBar-PrivacyChip-Camera",
     "CarSystemUI-SystemBar-PrivacyChip-Cast",
     "CarSystemUI-SystemBar-PrivacyChip-Mic",

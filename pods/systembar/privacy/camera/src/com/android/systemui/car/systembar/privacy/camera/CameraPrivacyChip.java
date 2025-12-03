@@ -23,7 +23,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.systemui.car.privacy.PrivacyChip;
+import com.android.systemui.car.systembar.privacy.base.PrivacyChip;
 
 /** Car optimized Camera Privacy Chip View that is shown when camera is being used. */
 public class CameraPrivacyChip extends PrivacyChip {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.systemui.car.privacy;
+package com.android.systemui.car.systembar.privacy.base;
 
 import static android.hardware.SensorPrivacyManager.Sources.QS_TILE;
 import static android.hardware.SensorPrivacyManager.TOGGLE_TYPE_SOFTWARE;

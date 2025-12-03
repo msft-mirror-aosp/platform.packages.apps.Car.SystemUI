@@ -280,7 +280,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
      */
     @Override
     public void setImeWindowStatus(int displayId, int visibility, int backDisposition,
-            boolean showImeSwitcher) {
+            boolean showImeSwitcherButton) {
         if (mContext.getDisplayId() != displayId) {
             return;
         }
@@ -597,7 +597,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
                     result.mPackageName, result.mLetterboxDetails);
 
             setImeWindowStatus(mDisplayId, result.mImeWindowVis, result.mImeBackDisposition,
-                    result.mShowImeSwitcher);
+                    result.mShowImeSwitcherButton);
 
             // Set up the initial icon state
             int numIcons = result.mIcons.size();
@@ -611,7 +611,7 @@ public class CarSystemBarControllerImpl implements CarSystemBarController,
         // Try setting up the initial state of the nav bar if applicable.
         if (result != null) {
             setImeWindowStatus(mDisplayTracker.getDefaultDisplayId(), result.mImeWindowVis,
-                    result.mImeBackDisposition, result.mShowImeSwitcher);
+                    result.mImeBackDisposition, result.mShowImeSwitcherButton);
         }
 
         createNavBar();

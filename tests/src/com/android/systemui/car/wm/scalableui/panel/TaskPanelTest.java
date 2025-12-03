@@ -93,6 +93,7 @@ public class TaskPanelTest extends SysuiTestCase {
 
     private TaskPanel mTaskPanel;
     private ShellExecutor mMainExecutor;
+    private ShellExecutor mShellMainThread;
     private RootTaskStackListener mRootTaskStackListener;
 
     @Mock
@@ -144,12 +145,13 @@ public class TaskPanelTest extends SysuiTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mMainExecutor = new ShellSyncExecutor();
+        mShellMainThread = new ShellSyncExecutor();
         mTaskPanel = spy(
                 new TaskPanel(mAutoTaskStackController, mUserContext, mCarServiceProvider,
                         mAutoTaskStackHelper, mShellTaskOrganizer, mAutoCaptionController,
                         mPanelUtils, mTaskPanelInfoRepository, mAutoDecorManager, mEventDispatcher,
                         mPanelControllerInitializer, mAutoLayoutManager, mMainExecutor,
-                        mAutoSurfaceTransactionFactory, mFlagManager,
+                        mShellMainThread, mAutoSurfaceTransactionFactory, mFlagManager,
                         Optional.of(mPanelUpdatePublisher), TASK_PANEL_ID));
         when(mFactory.create(any())).thenReturn(mTaskPanel);
 

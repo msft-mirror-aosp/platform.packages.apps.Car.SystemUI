@@ -136,10 +136,6 @@
     <!-- Adjust temperature view raise temperature label-->
     <string name="hvac_increase_button_label">Raise temperature</string>
 
-    <!-- Status icon for bluetooth settings in status bar-->
-    <string name="status_icon_bluetooth_disconnected">Bluetooth Setting: Disconnected</string>
-    <string name="status_icon_bluetooth_connected">Bluetooth Setting: Connected</string>
-    <string name="status_icon_bluetooth_off">Bluetooth Setting: Bluetooth off</string>
     <!-- Status icon for signal settings in status bar-->
     <string name="status_icon_signal_mobile">Signal Settings: Using Mobile Data</string>
     <string name="status_icon_signal_wifi">Signal Settings: Wifi On</string>

@@ -43,4 +43,6 @@
     <bool name="show_media_projection_indicator">true</bool>
     <!-- Controls removing SUW as the home activity and launching through alternative means. -->
     <bool name="scalable_ui_no_suw_home">false</bool>
+    <!-- Controls enabling Minimized Controls. -->
+    <bool name="scalable_ui_minimized_controls">true</bool>
 </resources>

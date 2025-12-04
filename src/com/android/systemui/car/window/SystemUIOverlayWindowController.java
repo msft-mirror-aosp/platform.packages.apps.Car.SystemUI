@@ -77,7 +77,9 @@ public class SystemUIOverlayWindowController {
     private boolean mFocusable = false;
     private boolean mUsingStableInsets = false;
 
+    private boolean mIsInitialized = false;
     private boolean mIsAttaching = false;
+    private boolean mIsUpdatePendingAttach = false;
 
     @Inject
     public SystemUIOverlayWindowController(
@@ -91,6 +93,20 @@ public class SystemUIOverlayWindowController {
         mLpChanged = new WindowManager.LayoutParams();
 
         inflateBaseLayout();
+        setWindowVisible(false);
+    }
+
+    /**
+     * Initialize and attach the Overlay window. This should only be called for SysUI instances that
+     * utilize the relevant CoreStartable for this to exist, not just when the object itself exists.
+     */
+    void init() {
+        if (mIsInitialized) {
+            return;
+        }
+        mIsInitialized = true;
+        attach();
+        updateWindow();
     }
 
     private void inflateBaseLayout() {
@@ -100,6 +116,10 @@ public class SystemUIOverlayWindowController {
             @Override
             public void onViewAttachedToWindow(View v) {
                 mIsAttaching = false;
+                if (mIsUpdatePendingAttach) {
+                    updateWindow();
+                    mIsUpdatePendingAttach = false;
+                }
             }
 
             @Override
@@ -114,8 +134,32 @@ public class SystemUIOverlayWindowController {
                 mContainerCache.put((String) child.getTag(), (ViewGroup) child);
             }
         }
-        attach();
-        setWindowVisible(false);
+
+        // Create initial LPs to be applied once this window is initialized
+        // Now that the status bar window encompasses the sliding panel and its
+        // translucent backdrop, the entire thing is made TRANSLUCENT and is
+        // hardware-accelerated.
+        mLp = new WindowManager.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_NOTIFICATION_SHADE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_TOUCHABLE_WHEN_WAKING
+                        | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
+                        | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                        | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+                        | WindowManager.LayoutParams.FLAG_DIM_BEHIND,
+                PixelFormat.TRANSLUCENT);
+        mLp.token = new Binder();
+        mLp.gravity = Gravity.TOP;
+        mLp.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
+        mLp.dimAmount = 0f;
+        mLp.setTitle("SystemUIOverlayWindow");
+        mLp.packageName = mContext.getPackageName();
+        mLp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
+        mLp.insetsFlags.behavior = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
+
+        mLpChanged.copyFrom(mLp);
     }
 
     /**
@@ -158,31 +202,8 @@ public class SystemUIOverlayWindowController {
         if (isAttached() || isAttaching()) {
             return;
         }
-        // Now that the status bar window encompasses the sliding panel and its
-        // translucent backdrop, the entire thing is made TRANSLUCENT and is
-        // hardware-accelerated.
-        mLp = new WindowManager.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_NOTIFICATION_SHADE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                        | WindowManager.LayoutParams.FLAG_TOUCHABLE_WHEN_WAKING
-                        | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
-                        | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
-                        | WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
-                        | WindowManager.LayoutParams.FLAG_DIM_BEHIND,
-                PixelFormat.TRANSLUCENT);
-        mLp.token = new Binder();
-        mLp.gravity = Gravity.TOP;
-        mLp.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
-        mLp.dimAmount = 0f;
-        mLp.setTitle("SystemUIOverlayWindow");
-        mLp.packageName = mContext.getPackageName();
-        mLp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
-        mLp.insetsFlags.behavior = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
 
         mWindowManager.addView(mBaseLayout, mLp);
-        mLpChanged.copyFrom(mLp);
         mIsAttaching = true;
     }
 
@@ -264,12 +285,24 @@ public class SystemUIOverlayWindowController {
     }
 
     private void updateWindow() {
+        if (!mIsInitialized) {
+            // Not initialized - update layout params for when added later
+            mLp.copyFrom(mLpChanged);
+            return;
+        }
+
         if (!isAttached() && !isAttaching()) {
             Log.d(TAG, "Window not attached, attaching in updateWindow");
             attach();
         }
 
-        if (mLp != null && mLp.copyFrom(mLpChanged) != 0) {
+        if (!isAttached()) {
+            // Leave mLpChanged unchanged to allow it to apply later once the attach is finished
+            mIsUpdatePendingAttach = true;
+            return;
+        }
+
+        if (mLp.copyFrom(mLpChanged) != 0) {
             if (isAttached()) {
                 handleDisplayCutout();
                 mLp.insetsFlags.behavior = BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;

@@ -72,6 +72,7 @@ public class SystemUIOverlayWindowManager implements CoreStartable,
     }
 
     private void startInternal() {
+        mOverlayViewGlobalStateController.init();
         String[] names = mContext.getResources().getStringArray(
                 R.array.config_carSystemUIOverlayViewsMediators);
         startServices(names);

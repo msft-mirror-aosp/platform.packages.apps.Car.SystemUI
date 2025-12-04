@@ -27,7 +27,7 @@
         android:layout_marginHorizontal="@dimen/car_padding_1"
         android:layout_gravity="center"
         android:tint="@color/system_bar_icon_color"
-        systemui:controller="com.android.systemui.car.statusicon.ui.LocationStatusIconController"
+        systemui:controller="com.android.systemui.car.statusicon.location.LocationStatusIconController"
         systemui:systemBarDisable2Flags="systemIcons"
         systemui:disableForLockTaskModeLocked="true"/>
     <com.android.systemui.car.statusicon.StatusIconView

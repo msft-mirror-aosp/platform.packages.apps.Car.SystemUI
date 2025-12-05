@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.statusicon.ui;
+package com.android.systemui.car.statusicon.phonecall;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -26,7 +26,6 @@ import android.telephony.TelephonyManager;
 
 import androidx.annotation.NonNull;
 
-import com.android.systemui.R;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.statusicon.StatusIconView;

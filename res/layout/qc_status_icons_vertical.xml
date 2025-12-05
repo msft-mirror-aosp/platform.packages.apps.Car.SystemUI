@@ -113,7 +113,7 @@
             android:layout_gravity="center"
             android:tint="@color/car_status_icon_color"
             android:duplicateParentState="true"
-            systemui:controller="com.android.systemui.car.statusicon.ui.MediaVolumeStatusIconController"/>
+            systemui:controller="com.android.systemui.car.statusicon.mediavolume.MediaVolumeStatusIconController"/>
     </com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView>
     <com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView
         android:id="@+id/debug_panel"

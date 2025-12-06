@@ -155,7 +155,7 @@ public class PanelTransitionCoordinator {
             mMainExecutor.execute(() -> {
                 synchronized (mPendingPanelTransactions) {
                     IBinder transition = mAutoTaskStackController.startTransition(
-                            createAutoTaskStackTransaction(transaction, /* event= */ null,
+                            createAutoTaskStackTransaction(transaction,
                                     panelIdsToForceCurrentState));
                     if (transition != null) {
                         mPendingPanelTransactions.put(transition, transaction);
@@ -591,9 +591,9 @@ public class PanelTransitionCoordinator {
      * pending animators.
      */
     AutoTaskStackTransaction createAutoTaskStackTransaction(IBinder transition,
-            PanelTransaction panelTransaction, Event event) {
+            PanelTransaction panelTransaction) {
         AutoTaskStackTransaction autoTaskStackTransaction = createAutoTaskStackTransaction(
-                panelTransaction, event);
+                panelTransaction);
 
         synchronized (mPendingPanelTransactions) {
             mPendingPanelTransactions.put(transition, panelTransaction);
@@ -855,13 +855,12 @@ public class PanelTransitionCoordinator {
     }
 
     private AutoTaskStackTransaction createAutoTaskStackTransaction(
-            PanelTransaction panelTransaction, @Nullable Event event) {
-        return createAutoTaskStackTransaction(panelTransaction, event, Collections.emptySet());
+            PanelTransaction panelTransaction) {
+        return createAutoTaskStackTransaction(panelTransaction, Collections.emptySet());
     }
 
     private AutoTaskStackTransaction createAutoTaskStackTransaction(
-            PanelTransaction panelTransaction, @Nullable Event event,
-            @NonNull Set<String> panelIdsToForceCurrentState) {
+            PanelTransaction panelTransaction, @NonNull Set<String> panelIdsToForceCurrentState) {
         AutoTaskStackTransaction autoTaskStackTransaction = new AutoTaskStackTransaction();
         for (Map.Entry<String, Transition> entry :
                 panelTransaction.getPanelTransactionStates()) {
@@ -880,7 +879,7 @@ public class PanelTransitionCoordinator {
         }
 
         if (mFlagManager.isEnabled(Flag.ScalableUiTaskFocus)) {
-            calculateFocusedTaskStack(panelTransaction, autoTaskStackTransaction, event);
+            calculateFocusedTaskStack(panelTransaction, autoTaskStackTransaction);
         }
 
         return autoTaskStackTransaction;
@@ -937,10 +936,12 @@ public class PanelTransitionCoordinator {
      * permitted that is still visible.
      */
     private void calculateFocusedTaskStack(PanelTransaction panelTransaction,
-            AutoTaskStackTransaction autoTaskStackTransaction,
-            @Nullable Event event) {
+            AutoTaskStackTransaction autoTaskStackTransaction) {
         // 1. If the trigger is a task being opened on a visible panel, focus that panel
-        if (event != null && TextUtils.equals(event.getId(), SYSTEM_TASK_OPEN_EVENT_ID)) {
+        for (Event event : panelTransaction.getTransactionEvents().reversed()) {
+            if (!TextUtils.equals(event.getId(), SYSTEM_TASK_OPEN_EVENT_ID)) {
+                continue;
+            }
             String panelId = event.getPanelId();
             if (panelId != null) {
                 TaskPanel taskPanel = mPanelUtils.getTaskPanel(
@@ -966,6 +967,12 @@ public class PanelTransitionCoordinator {
             }
         }
 
+        // If there are no panel changes, don't choose a focus and let the system handle it. If a
+        // focus is manually set for this case, it may override an explicit user focus touch.
+        if (panelTransaction.getPanelTransactionStates().isEmpty()) {
+            logIfDebuggable("No panel transactions - don't override focus");
+            return;
+        }
         TaskPanel rootTaskToFocus = null;
         int rootTaskToFocusLayer = Integer.MIN_VALUE;
         // Set to true if the focus is for the purpose of a panel opening. This takes priority over
@@ -975,6 +982,7 @@ public class PanelTransitionCoordinator {
         // Set to true if the currently focused panel is going from visible to invisible such that
         // a new focus must be found.
         boolean isCurrentFocusedPanelBecomingInvisible = false;
+
         for (Map.Entry<String, Transition> entry :
                 panelTransaction.getPanelTransactionStates()) {
             Transition transition = entry.getValue();
@@ -1029,6 +1037,15 @@ public class PanelTransitionCoordinator {
             logIfDebuggable(
                     "Focusing TaskPanel=" + rootTaskToFocus.getPanelId() + reason);
             autoTaskStackTransaction.setFocusedTaskStack(rootTaskToFocus.getRootStack().getId());
+        } else {
+            TaskPanel currentFocusedTaskPanel = mPanelUtils.getTaskPanel(
+                    p -> p.getRootStack() != null && p.getRootStack().getRootTaskInfo().isFocused);
+            if (currentFocusedTaskPanel != null && currentFocusedTaskPanel.isVisible()) {
+                logIfDebuggable(
+                        "Maintaining focus on TaskPanel=" + currentFocusedTaskPanel.getPanelId());
+                autoTaskStackTransaction.setFocusedTaskStack(
+                        currentFocusedTaskPanel.getRootStack().getId());
+            }
         }
     }
 

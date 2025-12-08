@@ -93,3 +93,11 @@ flag {
     description: "This flag controls removing SUW as the home activity and launching through alternative means."
     bug: "435347522"
 }
+
+
+flag {
+    name: "scalable_ui_minimized_controls"
+    namespace: "car_sys_exp"
+    description: "This flag controls enabling minimized controls"
+    bug: "465164732"
+}

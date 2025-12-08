@@ -71,7 +71,6 @@ public class GripBarViewController extends DecorPanelControllerBase implements
     static final String DRAG_DECREASE = "decrease";
 
     private static final String TAG = GripBarViewController.class.getSimpleName();
-    private final String mPanelId;
     private final EventDispatcher mEventDispatcher;
     private final List<BreakPoint> mBreakPoints;
     private GripBarBase mGripBar;
@@ -98,8 +97,7 @@ public class GripBarViewController extends DecorPanelControllerBase implements
             @Assisted PanelControllerMetadata metadata,
             @DecorPanelViewMap Map<Class<?>, Provider<View>> decorPanelViewMap,
             @NonNull EventDispatcher eventDispatcher) {
-        super(metadata, decorPanelViewMap);
-        mPanelId = panelId;
+        super(panelId, metadata, decorPanelViewMap);
         mEventDispatcher = eventDispatcher;
         mBreakPoints = new ArrayList<>();
         init(metadata);

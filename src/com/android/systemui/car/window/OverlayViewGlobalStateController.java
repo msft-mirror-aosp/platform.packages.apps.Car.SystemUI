@@ -75,6 +75,10 @@ public class OverlayViewGlobalStateController {
         mViewsHiddenForOcclusion = new HashSet<>();
     }
 
+    void init() {
+        mSystemUIOverlayWindowController.init();
+    }
+
     /**
      * Register {@link OverlayViewMediator} to use in SystemUIOverlayWindow.
      */

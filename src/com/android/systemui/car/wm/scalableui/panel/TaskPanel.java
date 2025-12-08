@@ -137,7 +137,6 @@ public final class TaskPanel extends SysUIPanel {
     private final Context mContext;
     @Nullable
     private CarActivityManager mCarActivityManager;
-    private int mRootTaskId = -1;
     @Nullable
     private SurfaceControl mLeash;
     private boolean mIsLaunchRoot;
@@ -148,7 +147,8 @@ public final class TaskPanel extends SysUIPanel {
     @Nullable
     private RootTaskStack mRootTaskStack;
     @NonNull
-    private final Map<String, AutoDecor> mExistingAutoDecors;
+    @VisibleForTesting
+    final Map<String, AutoDecor> mExistingAutoDecors;
     @Nullable
     private String mTopTaskPackageName;
     @Nullable
@@ -224,13 +224,12 @@ public final class TaskPanel extends SysUIPanel {
                     public void onRootTaskStackCreated(@NonNull RootTaskStack rootTaskStack) {
                         logIfDebuggable(getPanelId() + ", onRootTaskStackCreated " + rootTaskStack);
                         mRootTaskStack = rootTaskStack;
-                        mRootTaskId = mRootTaskStack.getRootTaskInfo().taskId;
                         trySetPersistentActivity();
                         trySetRootTaskLaunchBehavior();
                         if (mIsLaunchRoot) {
                             mAutoTaskStackController.setDefaultRootTaskStackOnDisplay(
                                     getDisplayId(),
-                                    mRootTaskId);
+                                    getRootTaskId());
                         }
 
                         if (mFlagManager.isEnabled(Flag.DisplayCompatibilityV2)) {
@@ -249,7 +248,6 @@ public final class TaskPanel extends SysUIPanel {
                     @Override
                     public void onRootTaskStackInfoChanged(@NonNull RootTaskStack rootTaskStack) {
                         mRootTaskStack = rootTaskStack;
-                        mRootTaskId = mRootTaskStack.getRootTaskInfo().taskId;
                         // TODO(b/440364117): move to onTaskVanished once ordering is consistent
                         if (isRootTaskEmpty() && mWasRootTaskPreviouslyNonEmpty) {
                             ActivityManager.RunningTaskInfo lastTask =
@@ -270,7 +268,6 @@ public final class TaskPanel extends SysUIPanel {
                                 + rootTaskStack);
                         mAutoCaptionController.removeCaptionRegion(rootTaskStack);
                         mRootTaskStack = null;
-                        mRootTaskId = -1;
                     }
 
                     @Override
@@ -388,6 +385,9 @@ public final class TaskPanel extends SysUIPanel {
         if (mRootTaskStack != null) {
             mAutoTaskStackController.destroyTaskStack(mRootTaskStack.getId());
         }
+        if (mTaskPanelController != null) {
+            mTaskPanelController.destroy();
+        }
         super.destroy();
     }
 
@@ -399,8 +399,11 @@ public final class TaskPanel extends SysUIPanel {
             return;
         }
         AutoTaskStackTransaction autoTaskStackTransaction = new AutoTaskStackTransaction();
-        AutoTaskStackState autoTaskStackState = new AutoTaskStackState(getBounds(), isVisible(),
-                getLayer());
+        Variant currentVariant = mPanelUtils.getCurrentVariant(getPanelId());
+        AutoTaskStackState autoTaskStackState = new AutoTaskStackState(
+                currentVariant != null ? currentVariant.getBounds() : getBounds(),
+                currentVariant != null ? currentVariant.isVisible() : isVisible(),
+                currentVariant != null ? currentVariant.getLayer() : getLayer());
         autoTaskStackTransaction.setTaskStackState(getRootStack().getId(), autoTaskStackState);
         if (mFlagManager.isEnabled(Flag.DisplayCompatibilityAutoDecorSafeRegion)) {
             autoTaskStackTransaction.setSafeRegionBounds(getRootStack().getId(), getSafeBounds());
@@ -419,8 +422,6 @@ public final class TaskPanel extends SysUIPanel {
                 .createTransaction(RESET_TRANSACTION + getPanelId());
         SurfaceControl.Transaction tx = new SurfaceControl.Transaction();
 
-        Variant currentVariant = mPanelUtils.getCurrentVariant(getPanelId());
-
         update(autoSurfaceTransaction, tx, currentVariant, /* updateChildren= */ true);
 
         tx.apply();
@@ -428,7 +429,8 @@ public final class TaskPanel extends SysUIPanel {
     }
 
     @ShellMainThread
-    private void updateDecors(@NonNull AutoSurfaceTransaction autoSurfaceTransaction,
+    @VisibleForTesting
+    void updateDecors(@NonNull AutoSurfaceTransaction autoSurfaceTransaction,
             @Nullable Variant variant) {
         logIfDebuggable("Update " + getPanelId() + " decors, with variant" + variant);
         if (!mFlagManager.isEnabled(Flag.EnableDecor)) {
@@ -479,7 +481,8 @@ public final class TaskPanel extends SysUIPanel {
         return currentVariant == null ? new HashMap<>() : currentVariant.getDecors();
     }
 
-    private void updateAutoDecor(AutoDecor autoDecor, Decor decor,
+    @VisibleForTesting
+    void updateAutoDecor(AutoDecor autoDecor, Decor decor,
             AutoSurfaceTransaction autoSurfaceTransaction) {
         Rect bounds = new Rect(0, 0, getBounds().width(), getBounds().height());
         autoSurfaceTransaction.setBounds(autoDecor, bounds);
@@ -543,7 +546,7 @@ public final class TaskPanel extends SysUIPanel {
      * Returns the task ID of the root task associated with this panel.
      */
     public int getRootTaskId() {
-        return mRootTaskId;
+        return mRootTaskStack == null ? -1 : mRootTaskStack.getRootTaskInfo().taskId;
     }
 
     /**
@@ -983,7 +986,7 @@ public final class TaskPanel extends SysUIPanel {
                 + "\n, mBounds=" + getBounds()
                 + "\n, mAlpha=" + getAlpha()
                 + "\n, mIsVisible=" + isVisible()
-                + "\n, mRootTaskId=" + mRootTaskId
+                + "\n, rootTaskId=" + getRootTaskId()
                 + "\n, mRole=" + getRole()
                 + "\n, mLayer=" + getLayer()
                 + "\n, mLeash=" + mLeash

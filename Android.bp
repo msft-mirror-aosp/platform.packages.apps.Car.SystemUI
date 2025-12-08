@@ -63,9 +63,15 @@ carsysui_pods = [
     // pods go here
     "CarSystemUI-Hvac-Controller",
     "CarSystemUI-Hvac-UI",
+    "CarSystemUI-SystemBar-DebugPanel",
     "CarSystemUI-SystemBar-HomeButton",
     "CarSystemUI-SystemBar-PassengerHomeButton",
-    "CarSystemUI-SystemBar-DebugPanel",
+    "CarSystemUI-SystemBar-PrivacyChip-Base",
+    "CarSystemUI-SystemBar-PrivacyChip-Camera",
+    "CarSystemUI-SystemBar-PrivacyChip-Cast",
+    "CarSystemUI-SystemBar-PrivacyChip-Mic",
+    "CarSystemUI-SystemBar-PrivacyChip-Share",
+    "CarSystemUI-SystemBar-UserNamePanel",
 ]
 
 java_defaults {
@@ -154,6 +160,10 @@ android_library {
     ],
     enforce_uses_libs: false,
 
+    kotlincflags: [
+        "-J-Xmx12288M",
+    ],
+
     javacflags: ["-Adagger.fastInit=enabled"],
     plugins: ["dagger2-compiler"],
 }
@@ -214,10 +224,6 @@ android_app {
         ],
         included_proguard_flags_files: [":sysui_proguard_common_and_kotlin"],
     },
-    // TODO(b/301283770): Compiling CarSystemUI should not require -J-Xmx8192M
-    javacflags: [
-        "-J-Xmx8192M",
-    ],
     dxflags: ["--multi-dex"],
 
     aaptflags: [
@@ -282,7 +288,6 @@ android_library {
     ],
     static_libs: [
         "CarSystemUI-Shared",
-        "CarSystemUI-FlexibleUI",
         "SystemUI-tests-base",
         "CarNotificationLib",
         "android.car.test.utils",
@@ -319,13 +324,8 @@ android_library {
         "tests/src/**/*.java",
         "tests/src/**/*.kt",
         ":CarSystemUI-tests-multivalent",
-        "src/**/*.java",
-        "src/**/*.kt",
-        "src/**/I*.aidl",
-        ":statslog-carsystemui-java-gen",
+        ":CarSystemUI-application-srcs",
     ],
-
-    kotlin_lang_version: "1.9",
 
     static_libs: [
         "SystemUI-tests",
@@ -369,11 +369,6 @@ android_app {
     ],
     manifest: "tests/AndroidManifest-base.xml",
 
-    srcs: [
-        "src/**/*.java",
-        "src/**/*.kt",
-        "src/**/I*.aidl",
-    ],
     static_libs: [
         "//frameworks/libs/systemui:compilelib",
         "CarSystemUI-tests-base",

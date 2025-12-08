@@ -44,7 +44,7 @@ public class AppStyledViewController extends DecorPanelControllerBase {
             @Assisted PanelControllerMetadata metadata,
             @DecorPanelViewMap Map<Class<?>, Provider<View>> decorPanelViewMap,
             EventDispatcher eventDispatcher) {
-        super(metadata, decorPanelViewMap);
+        super(panelId, metadata, decorPanelViewMap);
         mEventDispatcher = eventDispatcher;
         getView().requireViewById(
                 R.id.car_ui_app_styled_view_nav_icon_container).setOnClickListener(v -> {

@@ -112,6 +112,9 @@ public final class DecorPanel extends SysUIPanel {
                 mAutoDecorManager.removeAutoDecor(mAutoDecor);
             }
         });
+        if (mDecorPanelController != null) {
+            mDecorPanelController.destroy();
+        }
         super.destroy();
     }
 
@@ -130,14 +133,16 @@ public final class DecorPanel extends SysUIPanel {
                 Log.e(TAG, "DecorView is null, fail to create AutoDecor, " + getPanelId());
                 return;
             }
-            mAutoDecor = mAutoDecorManager.createAutoDecor(mDecorView, getLayer(), getBounds(),
+            Variant currentVariant = mPanelUtils.getCurrentVariant(getPanelId());
+            mAutoDecor = mAutoDecorManager.createAutoDecor(mDecorView,
+                    currentVariant != null ? currentVariant.getLayer() : getLayer(),
+                    currentVariant != null ? currentVariant.getBounds() : getBounds(),
                     getPanelId());
+
             mAutoDecorManager.attachAutoDecorToDisplay(mAutoDecor, getDisplayId());
 
             AutoSurfaceTransaction autoSurfaceTransaction = mAutoSurfaceTransactionFactory
                     .createTransaction(RESET_TRANSACTION + getPanelId());
-
-            Variant currentVariant = mPanelUtils.getCurrentVariant(getPanelId());
 
             update(autoSurfaceTransaction, currentVariant, /* updateChildren= */ true);
             autoSurfaceTransaction.apply();

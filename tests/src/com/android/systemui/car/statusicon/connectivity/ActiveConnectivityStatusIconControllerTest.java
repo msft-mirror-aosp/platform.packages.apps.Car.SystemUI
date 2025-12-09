@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.statusicon.ui;
+package com.android.systemui.car.statusicon.connectivity;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -28,7 +28,6 @@ import android.testing.TestableLooper;
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
@@ -49,7 +48,7 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidTestingRunner.class)
 @TestableLooper.RunWithLooper(setAsMainLooper = true)
 @SmallTest
-public class SignalStatusIconControllerTest extends CarSysuiTestCase {
+public class ActiveConnectivityStatusIconControllerTest extends CarSysuiTestCase {
 
     @Mock
     Resources mResources;
@@ -65,112 +64,112 @@ public class SignalStatusIconControllerTest extends CarSysuiTestCase {
     CarSystemBarElementStateController mStateController;
 
     private StatusIconView mView;
-    private SignalStatusIconController mSignalStatusIconController;
+    private ActiveConnectivityStatusIconController mActiveConnectivityStatusIconController;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         mView = new StatusIconView(mContext);
-        mSignalStatusIconController = new SignalStatusIconController(mView, mDisableController,
-                mStateController, mContext, mResources, mNetworkController, mHotspotController,
-                mDataSubscriptionToolkitView);
+        mActiveConnectivityStatusIconController = new ActiveConnectivityStatusIconController(mView,
+                mDisableController, mStateController, mContext, mResources, mNetworkController,
+                mHotspotController, mDataSubscriptionToolkitView);
     }
 
     @Test
     public void onViewAttached_registersNetworkCallbacks() {
-        mSignalStatusIconController.onViewAttached();
+        mActiveConnectivityStatusIconController.onViewAttached();
         verify(mNetworkController).addCallback(any());
         verify(mHotspotController).addCallback(any());
     }
 
     @Test
     public void onViewDetached_unregistersNetworkCallbacks() {
-        mSignalStatusIconController.onViewAttached();
-        mSignalStatusIconController.onViewDetached();
+        mActiveConnectivityStatusIconController.onViewAttached();
+        mActiveConnectivityStatusIconController.onViewDetached();
         verify(mNetworkController).removeCallback(any());
         verify(mHotspotController).removeCallback(any());
     }
 
     @Test
     public void onUpdateStatus_wifiDisabled_hotspotDisabled_showsMobileDataIcon() {
-        mSignalStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ false));
-        mSignalStatusIconController.setEthernetIndicators(
+        mActiveConnectivityStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ false));
+        mActiveConnectivityStatusIconController.setEthernetIndicators(
                 getEthernetIndicator(/* enabled= */  false));
-        mSignalStatusIconController.onHotspotChanged(/* enabled= */ false, /* numDevices= */  0);
+        mActiveConnectivityStatusIconController.onHotspotChanged(/* enabled= */ false, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
 
-        assertThat(mSignalStatusIconController.getIconDrawableToDisplay()).isEqualTo(
-                mSignalStatusIconController.getMobileSignalIconDrawable());
+        assertThat(mActiveConnectivityStatusIconController.getIconDrawableToDisplay()).isEqualTo(
+                mActiveConnectivityStatusIconController.getMobileSignalIconDrawable());
     }
 
     @Test
     public void onUpdateStatus_wifiEnabled_hotspotDisabled_showsWifiIcon() {
-        mSignalStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ true));
-        mSignalStatusIconController.setEthernetIndicators(
+        mActiveConnectivityStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ true));
+        mActiveConnectivityStatusIconController.setEthernetIndicators(
                 getEthernetIndicator(/* enabled= */  false));
-        mSignalStatusIconController.onHotspotChanged(/* enabled= */ false, /* numDevices= */  0);
+        mActiveConnectivityStatusIconController.onHotspotChanged(/* enabled= */ false, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
 
-        assertThat(mSignalStatusIconController.getIconDrawableToDisplay()).isEqualTo(
-                mSignalStatusIconController.getWifiSignalIconDrawable());
+        assertThat(mActiveConnectivityStatusIconController.getIconDrawableToDisplay()).isEqualTo(
+                mActiveConnectivityStatusIconController.getWifiSignalIconDrawable());
     }
 
     @Test
     public void onUpdateStatus_wifiDisabled_hotspotEnabled_showsHotspotIcon() {
-        mSignalStatusIconController.setWifiIndicators(
+        mActiveConnectivityStatusIconController.setWifiIndicators(
                 getWifiIndicator(/* enabled= */ false));
-        mSignalStatusIconController.setEthernetIndicators(
+        mActiveConnectivityStatusIconController.setEthernetIndicators(
                 getEthernetIndicator(/* enabled= */  false));
-        mSignalStatusIconController.onHotspotChanged(/* enabled= */ true, /* numDevices= */  0);
+        mActiveConnectivityStatusIconController.onHotspotChanged(/* enabled= */ true, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
 
-        assertThat(mSignalStatusIconController.getIconDrawableToDisplay()).isEqualTo(
-                mSignalStatusIconController.getHotSpotIconDrawable());
+        assertThat(mActiveConnectivityStatusIconController.getIconDrawableToDisplay()).isEqualTo(
+                mActiveConnectivityStatusIconController.getHotSpotIconDrawable());
     }
 
     @Test
     public void onUpdateStatus_wifiEnabled_hotspotEnabled_showsHotspotIcon() {
-        mSignalStatusIconController.setWifiIndicators(
+        mActiveConnectivityStatusIconController.setWifiIndicators(
                 getWifiIndicator(/* enabled= */ true));
-        mSignalStatusIconController.setEthernetIndicators(
+        mActiveConnectivityStatusIconController.setEthernetIndicators(
                 getEthernetIndicator(/* enabled= */  false));
-        mSignalStatusIconController.onHotspotChanged(/* enabled= */ true, /* numDevices= */  0);
+        mActiveConnectivityStatusIconController.onHotspotChanged(/* enabled= */ true, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
 
-        assertThat(mSignalStatusIconController.getIconDrawableToDisplay()).isEqualTo(
-                mSignalStatusIconController.getHotSpotIconDrawable());
+        assertThat(mActiveConnectivityStatusIconController.getIconDrawableToDisplay()).isEqualTo(
+                mActiveConnectivityStatusIconController.getHotSpotIconDrawable());
     }
 
     @Test
     public void onUpdateStatus_wifiEnabled_hotspotEnabled_ethernetEnabled_showsHotspotIcon() {
-        mSignalStatusIconController.setWifiIndicators(
+        mActiveConnectivityStatusIconController.setWifiIndicators(
                 getWifiIndicator(/* enabled= */ true));
-        mSignalStatusIconController.setEthernetIndicators(
+        mActiveConnectivityStatusIconController.setEthernetIndicators(
                 getEthernetIndicator(/* enabled= */ true));
-        mSignalStatusIconController.onHotspotChanged(/* enabled= */ true, /* numDevices= */  0);
+        mActiveConnectivityStatusIconController.onHotspotChanged(/* enabled= */ true, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
 
-        assertThat(mSignalStatusIconController.getIconDrawableToDisplay()).isEqualTo(
-                mSignalStatusIconController.getHotSpotIconDrawable());
+        assertThat(mActiveConnectivityStatusIconController.getIconDrawableToDisplay()).isEqualTo(
+                mActiveConnectivityStatusIconController.getHotSpotIconDrawable());
     }
 
     @Test
     public void onUpdateStatus_wifiEnabled_hotspotDisabled_ethernetEnabled_showsEthernetIcon() {
-        mSignalStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ true));
-        mSignalStatusIconController.setEthernetIndicators(
+        mActiveConnectivityStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ true));
+        mActiveConnectivityStatusIconController.setEthernetIndicators(
                 getEthernetIndicator(/* enabled= */ true));
-        mSignalStatusIconController.onHotspotChanged(/* enabled= */ false, /* numDevices= */  0);
+        mActiveConnectivityStatusIconController.onHotspotChanged(/* enabled= */ false, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
 
-        assertThat(mSignalStatusIconController.getIconDrawableToDisplay()).isEqualTo(
-                mSignalStatusIconController.getEthernetIconDrawable());
+        assertThat(mActiveConnectivityStatusIconController.getIconDrawableToDisplay()).isEqualTo(
+                mActiveConnectivityStatusIconController.getEthernetIconDrawable());
     }
 
     private WifiIndicators getWifiIndicator(boolean enabled) {

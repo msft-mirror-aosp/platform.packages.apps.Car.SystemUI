@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.android.car.scalableui.model.Corner;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.car.scalableui.panel.Panel;
@@ -196,8 +197,16 @@ public final class DecorPanel extends SysUIPanel {
                 variant == null ? isVisible() : variant.isVisible());
         autoSurfaceTransaction.setZOrder(getAutoDecor(),
                 variant == null ? getLayer() : variant.getLayer());
-        autoSurfaceTransaction.setCornerRadius(getAutoDecor(),
-                variant == null ? getCornerRadius() : variant.getCornerRadius());
+        Corner radius = variant == null ? getCornerRadius() : variant.getCornerRadius();
+        if (com.android.graphics.surfaceflinger.flags.Flags.setClientDrawnCornerRadii()) {
+            autoSurfaceTransaction.setCornerRadius(getAutoDecor(),
+                    radius.getTopLeftRadius(), radius.getTopRightRadius(),
+                    radius.getBottomLeftRadius(), radius.getBottomRightRadius());
+        } else {
+            // Per-corner radius is not supported, applying a uniform radius to all corners.
+            // Note: we could use any Corner#getRadius*(), as they will be the same.
+            autoSurfaceTransaction.setCornerRadius(getAutoDecor(), radius.getTopLeftRadius());
+        }
         autoSurfaceTransaction.setCrop(getAutoDecor(),
                 new Rect(0, 0, bounds.width(), bounds.height()));
         autoSurfaceTransaction.setAlpha(getAutoDecor(),

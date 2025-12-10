@@ -24,6 +24,7 @@ import android.util.Log
 import android.view.Display
 import android.view.View
 import android.view.WindowManager
+import com.android.car.scalableui.model.Corner
 import com.android.car.scalableui.model.Event
 import com.android.systemui.car.wm.scalableui.EventDispatcher
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
@@ -162,8 +163,8 @@ abstract class SystemUiWindowBase(
         return panelUpdateConsumer.getInsets(id)
     }
 
-    override fun getCornerRadius(): Int {
-        return panelUpdateConsumer.getCornerRadius(id) ?: 0
+    override fun getCornerRadius(): Corner {
+        return panelUpdateConsumer.getCornerRadius(id)
     }
 
     override fun getDisplayId() = displayId

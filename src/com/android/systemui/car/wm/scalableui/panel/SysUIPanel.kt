@@ -23,6 +23,7 @@ import android.util.Log
 import android.view.Gravity
 import android.view.SurfaceControl
 import androidx.annotation.CallSuper
+import com.android.car.scalableui.model.Corner
 import com.android.car.scalableui.model.Focus
 import com.android.car.scalableui.model.GravityVariant
 import com.android.car.scalableui.model.PanelControllerMetadata
@@ -54,7 +55,7 @@ open class SysUIPanel @AssistedInject constructor(
     private var isVisible: Boolean? = null
     private var alpha = 0f
     private var displayId = 0
-    private var cornerRadius = 0
+    private var cornerRadius = Corner.DEFAULT_CORNER
     private var insets = Insets.NONE
     private var panelControllerMetadata: PanelControllerMetadata? = null
     private var gravity: Int = Gravity.NO_GRAVITY
@@ -130,7 +131,7 @@ open class SysUIPanel @AssistedInject constructor(
         panelUpdateObserver?.postAlpha(panelId, alpha)
     }
 
-    override fun setCornerRadius(radius: Int) {
+    override fun setCornerRadius(radius: Corner) {
         this.cornerRadius = radius
         panelUpdateObserver?.postCornerRadius(panelId, radius)
     }

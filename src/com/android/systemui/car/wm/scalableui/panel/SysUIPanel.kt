@@ -31,6 +31,9 @@ import com.android.car.scalableui.model.Variant
 import com.android.car.scalableui.panel.Panel
 import com.android.car.scalableui.panel.PanelUpdatePublisher
 import com.android.wm.shell.automotive.AutoSurfaceTransaction
+import com.android.wm.shell.common.ShellExecutor
+import com.android.wm.shell.shared.annotations.ExternalMainThread
+import com.android.wm.shell.shared.annotations.ShellMainThread
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -45,7 +48,9 @@ import java.util.Optional
 open class SysUIPanel @AssistedInject constructor(
     private val context: Context,
     @Assisted private val panelId: String,
-    private val panelUpdatePublisherOptional: Optional<PanelUpdatePublisher>
+    private val panelUpdatePublisherOptional: Optional<PanelUpdatePublisher>,
+    @ExternalMainThread val mainExecutor: ShellExecutor,
+    @ShellMainThread val shellMainExecutor: ShellExecutor
 ) : Panel {
     private var layer = -1
     private var canFocusOnTransition = Focus.Companion.DEFAULT_FOCUS_ON_TRANSITION
@@ -290,6 +295,7 @@ open class SysUIPanel @AssistedInject constructor(
         return panelUpdatePublisherOptional.orElse(null)
     }
 
+    @ExternalMainThread
     override fun refreshTheme() {
         logIfDebuggable("$panelId refreshTheme")
     }
@@ -324,11 +330,18 @@ open class SysUIPanel @AssistedInject constructor(
         protected const val RESET_TRANSACTION = "Reset : "
         protected const val REFRESH_TRANSACTION = "Refresh : "
         private val TAG = SysUIPanel::class.simpleName.orEmpty()
+        private val TAG_THREAD = "${SysUIPanel::class.simpleName.orEmpty()}.Thread"
 
         @JvmStatic
         protected fun logIfDebuggable(msg: String) {
             if (DEBUG) {
                 Log.d(TAG, msg)
+            }
+        }
+        @JvmStatic
+        protected fun logThreadIfDebuggable(msg: String, thread: Thread) {
+            if (DEBUG) {
+                Log.d(TAG_THREAD, "$msg on thread ${thread.name}")
             }
         }
     }

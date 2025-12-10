@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.keyguard.passenger;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -86,7 +87,7 @@ public class PassengerKeyguardLockoutHelperTest extends CarSysuiTestCase {
     }
 
     @Test
-    public void onCheckCompletedWithTimeout_setsTimeout() {
+    public void onCheckCompletedWithTimeout_checksTimeout() {
         Duration lockoutEndTime = Duration.ofMillis(SystemClock.elapsedRealtime())
                 .plus(TEST_TIMEOUT_LENGTH);
         when(mLockPatternUtils.getLockoutEndTime(TEST_USER_ID))
@@ -94,7 +95,7 @@ public class PassengerKeyguardLockoutHelperTest extends CarSysuiTestCase {
 
         mLockoutHelper.onCheckCompletedWithTimeout(TEST_TIMEOUT_LENGTH);
 
-        verify(mLockPatternUtils).setLockoutAttemptDeadline(TEST_USER_ID, TEST_TIMEOUT_LENGTH);
+        verify(mLockPatternUtils, times(2)).getLockoutEndTime(TEST_USER_ID);
         verify(mCallback).refreshUI(true);
     }
 

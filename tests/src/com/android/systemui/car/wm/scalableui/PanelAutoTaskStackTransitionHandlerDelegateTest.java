@@ -107,7 +107,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mPanelTransitionCoordinator.createAutoTaskStackTransaction(any(),
-                any(), any())).thenReturn(new AutoTaskStackTransaction());
+                any())).thenReturn(new AutoTaskStackTransaction());
         when(mPanelUtils.handles(TEST_ROOT_TASK_ID)).thenReturn(true);
         when(mRoleManager.getRoleHoldersAsUser(any(), any())).thenReturn(Collections.emptyList());
         mDelegate = new PanelAutoTaskStackTransitionHandlerDelegate(mContext, mRoleManager,

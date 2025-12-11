@@ -39,6 +39,7 @@ import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationButtonController;
 import com.android.systemui.car.systembar.debugpanel.DebugPanelModule;
 import com.android.systemui.car.systembar.home.HomeButtonModule;
+import com.android.systemui.car.systembar.panel.PanelModule;
 import com.android.systemui.car.systembar.passengerhome.PassengerHomeButtonModule;
 import com.android.systemui.car.systembar.privacy.camera.PrivacyChipCameraModule;
 import com.android.systemui.car.systembar.privacy.cast.PrivacyChipCastModule;
@@ -87,6 +88,7 @@ import java.util.Optional;
         DebugPanelModule.class,
         FlexibleUiModule.class,
         HomeButtonModule.class,
+        PanelModule.class,
         PassengerHomeButtonModule.class,
         PrivacyChipMicModule.class,
         PrivacyChipCameraModule.class,
@@ -209,13 +211,6 @@ public abstract class CarSystemBarModule {
     /** Empty set for CarSystemBarElements. */
     @Multibinds
     abstract Map<Class<?>, CarSystemBarElementController.Factory> bindEmptyElementFactoryMap();
-
-    /** Injects CarSystemBarPanelButtonViewController */
-    @Binds
-    @IntoMap
-    @ClassKey(CarSystemBarPanelButtonViewController.class)
-    public abstract CarSystemBarElementController.Factory bindSystemBarPanelButtonController(
-            CarSystemBarPanelButtonViewController.Factory factory);
 
     /** Injects DockViewControllerWrapper */
     @Binds

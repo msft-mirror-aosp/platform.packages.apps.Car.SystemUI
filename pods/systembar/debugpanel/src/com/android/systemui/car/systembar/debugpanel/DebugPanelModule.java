@@ -17,7 +17,7 @@
 package com.android.systemui.car.systembar.debugpanel;
 
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
-import com.android.systemui.car.systembar.CarSystemBarPanelButtonView;
+import com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView;
 
 import dagger.Binds;
 import dagger.Module;

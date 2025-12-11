@@ -32,9 +32,9 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.statusicon.StatusIconPanelViewController;
-import com.android.systemui.car.systembar.CarSystemBarPanelButtonView;
-import com.android.systemui.car.systembar.CarSystemBarPanelButtonViewController;
+import com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView;
+import com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonViewController;
+import com.android.systemui.car.systembar.panel.PanelViewController;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.settings.UserTracker;
 
@@ -64,7 +64,7 @@ public class UserNamePanelViewController extends CarSystemBarPanelButtonViewCont
     protected UserNamePanelViewController(@Assisted CarSystemBarPanelButtonView view,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
-            Provider<StatusIconPanelViewController.Factory> statusIconPanelFactoryProvider,
+            Provider<PanelViewController.Factory> statusIconPanelFactoryProvider,
             Context context, UserTracker userTracker, CarServiceProvider carServiceProvider,
             CarDeviceProvisionedController deviceProvisionedController) {
         super(view, disableController, stateController, statusIconPanelFactoryProvider);

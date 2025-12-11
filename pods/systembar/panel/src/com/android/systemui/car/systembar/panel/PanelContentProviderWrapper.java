@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.statusicon;
+package com.android.systemui.car.systembar.panel;
 
 import android.content.Context;
 import android.view.ViewGroup;

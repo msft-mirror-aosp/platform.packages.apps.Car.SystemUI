@@ -65,6 +65,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -179,8 +180,7 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
         });
         PanelTransaction panelTransaction = new PanelTransaction.Builder()
                 .addAnimator("testPanel", animator).build();
-        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction,
-                /* event= */ null);
+        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction);
 
         AtomicBoolean animationStarted = new AtomicBoolean(false);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
@@ -214,8 +214,7 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
         });
         PanelTransaction panelTransaction = new PanelTransaction.Builder()
                 .addAnimator("testPanel", animator).build();
-        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction,
-                /* event= */ null);
+        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, panelTransaction);
 
         // Run the animation on the main looper
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
@@ -276,10 +275,11 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
         setupTaskPanel(TEST_PANEL_1, TEST_TASK_ID_1, /* isVisible= */ true);
         when(mPanelUtils.getTaskPanel(any())).thenReturn(mTaskPanel);
         PanelTransaction panelTransaction = new PanelTransaction.Builder()
+                .setTransactionEvents(Collections.singletonList(event))
                 .build();
 
         mPanelTransitionCoordinator.calculateFocusedTaskStack(panelTransaction,
-                mAutoTaskStackTransaction, event);
+                mAutoTaskStackTransaction);
 
         verify(mAutoTaskStackTransaction).setFocusedTaskStack(TEST_TASK_ID_1);
     }
@@ -296,10 +296,11 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
         when(variant.isVisible()).thenReturn(true);
         PanelTransaction panelTransaction = new PanelTransaction.Builder()
                 .addPanelTransaction(TEST_PANEL_1, transition)
+                .setTransactionEvents(Collections.singletonList(event))
                 .build();
 
         mPanelTransitionCoordinator.calculateFocusedTaskStack(panelTransaction,
-                mAutoTaskStackTransaction, event);
+                mAutoTaskStackTransaction);
 
         verify(mAutoTaskStackTransaction).setFocusedTaskStack(TEST_TASK_ID_1);
     }

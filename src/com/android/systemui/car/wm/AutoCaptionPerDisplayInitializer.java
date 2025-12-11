@@ -39,7 +39,7 @@ import com.android.wm.shell.common.DisplayController;
 public class AutoCaptionPerDisplayInitializer implements
         DisplayController.OnDisplaysChangedListener {
     private final AutoCaptionController mAutoCaptionController;
-    private final AutoCaptionBarViewFactoryImpl mAutoCaptionBarViewFactoryImpl;
+    private final AutoCaptionBarViewControllerImpl mAutoCaptionBarViewControllerImpl;
     private final boolean mEnableSafeAreaAndToolbarPerDisplay;
     private final Rect mSafeRegion;
     private final Rect mCaptionRegion;
@@ -56,8 +56,8 @@ public class AutoCaptionPerDisplayInitializer implements
             RootTaskDisplayAreaOrganizer rootTaskDisplayAreaOrganizer,
             AutoLayoutManager autoLayoutManager) {
         mAutoCaptionController = autoCaptionController;
-        mAutoCaptionBarViewFactoryImpl =
-                new AutoCaptionBarViewFactoryImpl(context, shellTaskOrganizer);
+        mAutoCaptionBarViewControllerImpl =
+                new AutoCaptionBarViewControllerImpl(context, shellTaskOrganizer);
         // TODO(b/443340830): enable safe region for mumd
         mEnableSafeAreaAndToolbarPerDisplay = context.getResources().getBoolean(
                 R.bool.config_enableSafeAreaAndToolbarPerDisplay)
@@ -122,7 +122,7 @@ public class AutoCaptionPerDisplayInitializer implements
             mAutoLayoutManager.setOrUpdateSafeRegion(displayAreaInfo.displayId, mSafeRegion);
             mAutoCaptionController.setCaptionRegion(displayAreaInfo.displayId,
                     mCaptionRegion,
-                    mAutoCaptionBarViewFactoryImpl
+                    mAutoCaptionBarViewControllerImpl
             );
         }
     }

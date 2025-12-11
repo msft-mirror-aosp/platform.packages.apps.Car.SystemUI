@@ -24,7 +24,7 @@ import androidx.annotation.Nullable;
 import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.car.scalableui.panel.TaskPanelController;
-import com.android.wm.shell.automotive.AutoCaptionBarViewFactory;
+import com.android.wm.shell.automotive.AutoCaptionBarViewController;
 import com.android.wm.shell.dagger.WMSingleton;
 
 import java.util.Map;
@@ -157,7 +157,7 @@ public class PanelControllerInitializer {
     }
 
     /**
-     * Creates an {@link AutoCaptionBarViewFactory} instance for a task toolbar.
+     * Creates an {@link AutoCaptionBarViewController} instance for a task toolbar.
      *
      * <p>This method uses the controller class name specified in the provided
      * {@link PanelControllerMetadata}. If the metadata is {@code null} or does not specify a
@@ -167,8 +167,8 @@ public class PanelControllerInitializer {
      * @param metadata The metadata containing configuration for the toolbar controller. Can be
      *                 {@code null}, in which case a default controller is created.
      * @param panelId  The unique identifier for the panel that will host the toolbar.
-     * @return A new instance of {@link AutoCaptionBarViewFactory} if successful, or {@code null} if
-     * the specified controller class cannot be found or instantiated.
+     * @return A new instance of {@link AutoCaptionBarViewController} if successful, or {@code null}
+     * if the specified controller class cannot be found or instantiated.
      */
     public TaskToolbarController createTaskToolBarController(
             @Nullable PanelControllerMetadata metadata, @NonNull String panelId) {

@@ -20,8 +20,8 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
-import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacPropertySetter;
+import com.android.systemui.car.hvac.ui.R;
 
 /**
  * An implementation of the {@link HvacToggleButton} which toggles between two {@code int} values.

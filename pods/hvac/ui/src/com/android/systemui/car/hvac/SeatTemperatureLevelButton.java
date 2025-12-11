@@ -33,7 +33,7 @@ import android.widget.ImageButton;
 
 import androidx.annotation.ArrayRes;
 
-import com.android.systemui.R;
+import com.android.systemui.car.hvac.ui.R;
 
 /**
  * An image button that allows for multiple seat heating/cooling states based on

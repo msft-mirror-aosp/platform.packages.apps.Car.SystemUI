@@ -41,25 +41,8 @@
     <integer name="privacy_chip_pill_to_circle_delay">2000</integer>
     <!-- Privacy chip no sensor usage animation delay -->
     <integer name="privacy_chip_no_sensor_usage_delay">15000</integer>
-    <!-- HVAC area ID that represents the associated property affecting the entire vehicle
-      (e.g. HVAC Power On/Off affects the entire vehicle.) -->
-    <integer name="hvac_global_area_id">117</integer>
-    <!-- The total number of seat heat levels supported by VHAL. -->
-    <integer name="hvac_seat_heat_level_count">4</integer>
     <!-- Immersive privacy indicator animation duration. -->
     <integer name="privacy_indicator_animation_duration">500</integer>
-    <!-- The minimum fan speed value.-->
-    <integer name="hvac_min_fan_speed">1</integer>
-    <!-- The maximum fan speed value. -->
-    <integer name="hvac_max_fan_speed">6</integer>
-
-    <!-- The upper bounds for background colors used in Adjustable Background Temperature Control
-    View. Note that these integers should be in Celsius and will be divided by 10 so that the first
-    decimal can be expressed. The corresponding background color for each level is defined in
-    arrays.xml (see hvac_temperature_level_backgrounds). -->
-    <integer-array name="hvac_temperature_control_levels">
-        <item>9999</item>
-    </integer-array>
 
     <!-- Timeout value for data subscription pop up in ms -->
     <integer name="data_subscription_pop_up_timeout">30000</integer>

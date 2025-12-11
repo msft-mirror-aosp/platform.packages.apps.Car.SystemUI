@@ -23,7 +23,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import com.android.systemui.R;
+import com.android.systemui.car.hvac.ui.R;
 
 /**
  * Represents a single bar in the fan speed bar.

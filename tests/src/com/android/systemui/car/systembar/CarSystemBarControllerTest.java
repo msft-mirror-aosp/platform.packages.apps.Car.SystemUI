@@ -34,6 +34,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertNotNull;
 
 import android.app.ActivityManager;
 import android.graphics.Rect;
@@ -246,7 +247,7 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
                                 name, view));
                     }
                 };
-        Map<String, CarSystemBarViewControllerFactory> factoriesMap =
+        Map<String, CarSystemBarViewControllerFactory<?>> factoriesMap =
                 new HashMap<>();
         factoriesMap.put(LEFT_BAR_NAME, carSystemBarViewControllerFactory);
         factoriesMap.put(TOP_BAR_NAME, carSystemBarViewControllerFactory);
@@ -761,6 +762,53 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
         assertThat(mCarSystemBarController.getBarWindow(BOTTOM_BAR_NAME)).isNotNull();
         assertThat(mCarSystemBarController.getBarWindow(LEFT_BAR_NAME)).isNotNull();
         assertThat(mCarSystemBarController.getBarWindow(RIGHT_BAR_NAME)).isNotNull();
+    }
+
+    @Test
+    public void testTopLeftPanel_inflatesSuccessfully_andHasRequiredElements() {
+        LayoutInflater inflater = LayoutInflater.from(mSpiedContext);
+        View topLeftPanel = inflater.inflate(R.layout.car_top_left_system_bar, null);
+
+        View bluetoothPanelButton = topLeftPanel.findViewById(R.id.bluetooth_panel_button);
+        assertNotNull(bluetoothPanelButton);
+    }
+
+    @Test
+    public void testTopRightPanel_inflatesSuccessfully_andHasRequiredElements() {
+        LayoutInflater inflater = LayoutInflater.from(mSpiedContext);
+        View topRightPanel = inflater.inflate(R.layout.car_top_right_system_bar, null);
+
+        assertNotNull(topRightPanel.findViewById(R.id.clock));
+        assertNotNull(topRightPanel.findViewById(R.id.notifications));
+        assertNotNull(topRightPanel.findViewById(R.id.mic_privacy_chip));
+        assertNotNull(topRightPanel.findViewById(R.id.camera_privacy_chip));
+    }
+
+    @Test
+    public void testBottomLeftPanel_inflatesSuccessfully_andHasRequiredElements() {
+        LayoutInflater inflater = LayoutInflater.from(mSpiedContext);
+        View bottomLeftPanel = inflater.inflate(R.layout.car_bottom_left_system_bar, null);
+
+        assertNotNull(bottomLeftPanel.findViewById(R.id.passenger_home));
+        assertNotNull(bottomLeftPanel.findViewById(R.id.driver_hvac));
+    }
+
+    @Test
+    public void testBottomCenterPanel_inflatesSuccessfully_andHasRequiredElements() {
+        LayoutInflater inflater = LayoutInflater.from(mSpiedContext);
+        View bottomCenterPanel = inflater.inflate(R.layout.car_bottom_center_system_bar, null);
+
+        assertNotNull(bottomCenterPanel.findViewById(R.id.grid_nav));
+        assertNotNull(bottomCenterPanel.findViewById(R.id.dock));
+        assertNotNull(bottomCenterPanel.findViewById(R.id.assistant));
+    }
+
+    @Test
+    public void testBottomRightPanel_inflatesSuccessfully_andHasRequiredElements() {
+        LayoutInflater inflater = LayoutInflater.from(mSpiedContext);
+        View bottomRightPanel = inflater.inflate(R.layout.car_bottom_right_system_bar, null);
+
+        assertNotNull(bottomRightPanel.findViewById(R.id.passenger_hvac));
     }
 
     private void clearSystemBarStates() {

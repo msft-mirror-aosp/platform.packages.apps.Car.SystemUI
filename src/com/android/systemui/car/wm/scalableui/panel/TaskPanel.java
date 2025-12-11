@@ -703,9 +703,14 @@ public final class TaskPanel extends BasePanel {
         // Execute AutoLayoutManager transactions on WmShell-MainThread, we may not block the
         // SysUI-MainThread as it's not part of the same surface transaction.
         getShellMainExecutor().execute(() -> {
+            RootTaskStack rootTaskStack = getRootStack();
+            if (rootTaskStack == null) {
+                Log.w(TAG, "Skip updating insets, RootTaskStack is null for " + getPanelId());
+                return;
+            }
             Rect[] panelInsets = getInsetRects(variant);
             IntStream.range(0, panelInsets.length).forEach(sideIndex -> {
-                mAutoLayoutManager.addOrUpdateInsets(getRootStack(), sideIndex,
+                mAutoLayoutManager.addOrUpdateInsets(rootTaskStack, sideIndex,
                         systemOverlays(), panelInsets[sideIndex]);
             });
         });

@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.wm.taskview;
 
-import static android.car.feature.Flags.taskViewTaskReordering;
 import static android.view.WindowManager.TRANSIT_TO_FRONT;
 
 import android.app.ActivityManager;
@@ -185,12 +184,6 @@ public final class RemoteCarTaskViewTransitions implements Transitions.Transitio
             @NonNull SurfaceControl.Transaction startTransaction,
             @NonNull SurfaceControl.Transaction finishTransaction,
             @NonNull Transitions.TransitionFinishCallback finishCallback) {
-        if (!taskViewTaskReordering()) {
-            if (DBG) {
-                Slog.d(TAG, "Not implementing task view task reordering, as flag is disabled");
-            }
-            return false;
-        }
         if (mLastReorderedTransitionInHandleRequest != transition) {
             // This is to handle the case where when some activity on top of home goes away by
             // pressing back, a handleRequest is not sent for the home due to which the home

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.statusicon;
+package com.android.systemui.car.systembar.panel;
 
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
 import static android.widget.ListPopupWindow.WRAP_CONTENT;
@@ -44,7 +44,6 @@ import com.android.car.qc.QCItem;
 import com.android.car.qc.view.QCView;
 import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
-import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
@@ -64,7 +63,7 @@ import java.util.List;
 /**
  * A controller for a panel view associated with a status icon.
  */
-public class StatusIconPanelViewController extends ViewController<View> {
+public class PanelViewController extends ViewController<View> {
     private final Context mContext;
     private final UserTracker mUserTracker;
     private final BroadcastDispatcher mBroadcastDispatcher;
@@ -165,7 +164,7 @@ public class StatusIconPanelViewController extends ViewController<View> {
     };
 
     @AssistedInject
-    public StatusIconPanelViewController(Context context,
+    public PanelViewController(Context context,
             UserTracker userTracker,
             BroadcastDispatcher broadcastDispatcher,
             ConfigurationController configurationController,
@@ -196,7 +195,8 @@ public class StatusIconPanelViewController extends ViewController<View> {
             if (mIsDisabledWhileDriving && mCarUxRestrictionsUtil.getCurrentRestrictions()
                     .isRequiresDistractionOptimization()) {
                 dismissAllSystemDialogs();
-                Toast.makeText(mContext, R.string.car_ui_restricted_while_driving,
+                Toast.makeText(mContext,
+                        com.android.systemui.R.string.car_ui_restricted_while_driving,
                         Toast.LENGTH_LONG).show();
                 return;
             }
@@ -457,18 +457,18 @@ public class StatusIconPanelViewController extends ViewController<View> {
     }
 
     /**
-     * Factory for creating {@link StatusIconPanelViewController} instances.
+     * Factory for creating {@link PanelViewController} instances.
      */
     @AssistedFactory
     public interface Factory {
         /**
-         * Creates a new instance of {@link StatusIconPanelViewController}.
+         * Creates a new instance of {@link PanelViewController}.
          *
          * @param anchorView The view that the panel is anchored to.
          * @param panelContentProvider The provider for the panel's content.
-         * @return A new {@link StatusIconPanelViewController} instance.
+         * @return A new {@link PanelViewController} instance.
          */
-        StatusIconPanelViewController create(View anchorView,
+        PanelViewController create(View anchorView,
                 PanelContentProvider panelContentProvider);
     }
 }

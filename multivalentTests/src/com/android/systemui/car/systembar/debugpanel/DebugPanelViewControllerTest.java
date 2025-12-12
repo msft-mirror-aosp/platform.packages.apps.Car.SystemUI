@@ -31,8 +31,8 @@ import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.statusicon.StatusIconPanelViewController;
-import com.android.systemui.car.systembar.CarSystemBarPanelButtonView;
+import com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView;
+import com.android.systemui.car.systembar.panel.PanelViewController;
 import com.android.systemui.util.settings.GlobalSettings;
 
 import org.junit.Before;
@@ -57,7 +57,7 @@ public class DebugPanelViewControllerTest extends CarSysuiTestCase {
     @Mock
     private CarSystemBarElementStateController mStateController;
     @Mock
-    private Provider<StatusIconPanelViewController.Factory> mStatusIconPanelFactoryProvider;
+    private Provider<PanelViewController.Factory> mStatusIconPanelFactoryProvider;
     @Mock
     private Handler mMainHandler;
     @Mock

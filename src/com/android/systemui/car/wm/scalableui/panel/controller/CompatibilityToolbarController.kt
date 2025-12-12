@@ -95,6 +95,10 @@ constructor(
                 onAspectRatioButtonClick = {
                     sendAspectRatioIntent(it, taskInfo.userId)
                 }
+
+                onDisplayDensityButtonClick = {
+                    sendDisplayDensityIntent(it, taskInfo.userId, taskInfo.displayId)
+                }
             } ?: run {
                 aspectRatioButton?.visibility = View.GONE
             }
@@ -147,6 +151,19 @@ constructor(
             }
         context.startActivityAsUser(intent, UserHandle.of(userId))
         logIfDebuggable("sendAspectRatioIntent: $intent")
+    }
+
+    private fun sendDisplayDensityIntent(topActivity: ComponentName, userId: Int, displayId: Int) {
+        val intent =
+            Intent(DISPLAY_DENSITY_SHOW_DIALOG_ACTION).apply {
+                `package` = getSettingsPackageName(userId)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                putExtra(DISPLAY_DENSITY_SHOW_DIALOG_EXTRA_KEY_CMP_NAME, topActivity)
+                putExtra(DISPLAY_DENSITY_SHOW_DIALOG_EXTRA_KEY_UID, userId)
+                putExtra(DISPLAY_DENSITY_SHOW_DIALOG_EXTRA_KEY_DISPLAY_ID, displayId)
+            }
+        context.startActivityAsUser(intent, UserHandle.of(userId))
+        logIfDebuggable("sendDisplayDensityIntent: $intent")
     }
 
     private fun sendBackEvent(displayId: Int?) {
@@ -205,6 +222,14 @@ constructor(
             "com.android.car.settings.aspectRatio.extra.COMPONENT_NAME"
         const val ASPECT_RATIO_SHOW_DIALOG_EXTRA_KEY_UID =
             "com.android.car.settings.aspectRatio.extra.USER_ID"
+        const val DISPLAY_DENSITY_SHOW_DIALOG_ACTION =
+            "com.android.car.settings.displayDensity.action.SHOW_DIALOG"
+        const val DISPLAY_DENSITY_SHOW_DIALOG_EXTRA_KEY_CMP_NAME =
+            "com.android.car.settings.displayDensity.extra.COMPONENT_NAME"
+        const val DISPLAY_DENSITY_SHOW_DIALOG_EXTRA_KEY_UID =
+            "com.android.car.settings.displayDensity.extra.USER_ID"
+        const val DISPLAY_DENSITY_SHOW_DIALOG_EXTRA_KEY_DISPLAY_ID =
+            "com.android.car.settings.displayDensity.extra.DISPLAY_ID"
 
         fun logIfDebuggable(msg: String) {
             if (DEBUG) {

@@ -39,6 +39,7 @@ constructor(
     val fullscreenButton: Button?
     val aspectRatioButton: Button?
     val closeButton: Button?
+    val displayDensityButton: Button?
 
     /** A listener to be invoked when the back button is clicked. */
     var onBackButtonClick: (() -> Unit)? = null
@@ -51,6 +52,9 @@ constructor(
 
     /** A listener to be invoked when the close button is clicked. */
     var onCloseButtonClick: (() -> Unit)? = null
+
+    /** A listener to be invoked when the close button is clicked. */
+    var onDisplayDensityButtonClick: (() -> Unit)? = null
 
     init {
         inflate(context, R.layout.tasktoolbar, this)
@@ -67,6 +71,9 @@ constructor(
         }
         aspectRatioButton = findViewById<Button>(R.id.aspect_ratio)?.apply {
             setOnClickListener { onAspectRatioButtonClick?.invoke() }
+        }
+        displayDensityButton = findViewById<Button>(R.id.display_density)?.apply {
+            setOnClickListener { onDisplayDensityButtonClick?.invoke() }
         }
         closeButton = findViewById<Button>(R.id.close_window)?.apply {
             setOnClickListener { onCloseButtonClick?.invoke() }

@@ -29,7 +29,18 @@
     <Space
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="0.94"
+        android:layout_weight="0.3"
+        android:elevation="2dp" />
+    <Button
+        android:id="@+id/display_density"
+        style="@style/CaptionButtonStyle"
+        android:background="@drawable/car_ic_display_settings"
+        android:contentDescription="@string/display_density_button_description"
+        android:duplicateParentState="true" />
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="0.91"
         android:elevation="2dp" />
     <Button
         android:id="@+id/aspect_ratio"

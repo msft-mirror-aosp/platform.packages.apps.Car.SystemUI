@@ -43,7 +43,7 @@ import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.statusicon.StatusIconPanelViewController;
+import com.android.systemui.car.systembar.panel.PanelViewController;
 import com.android.systemui.privacy.PrivacyItem;
 import com.android.systemui.privacy.PrivacyItemController;
 import com.android.systemui.privacy.PrivacyType;
@@ -97,7 +97,7 @@ public class CameraPrivacyChipViewControllerTest extends CarSysuiTestCase {
     @Mock
     private CarDeviceProvisionedController mCarDeviceProvisionedController;
     @Mock
-    private Provider<StatusIconPanelViewController.Factory> mPanelControllerFactoryProvider;
+    private Provider<PanelViewController.Factory> mPanelControllerFactoryProvider;
     @Mock
     private Car mCar;
 

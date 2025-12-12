@@ -34,7 +34,7 @@ import com.android.systemui.R;
 import com.android.systemui.car.flexibleui.CarSystemBarElement;
 import com.android.systemui.car.flexibleui.CarSystemBarElementFlags;
 import com.android.systemui.car.flexibleui.CarSystemBarElementResolver;
-import com.android.systemui.car.statusicon.AnimatedStatusIcon;
+import com.android.systemui.car.systembar.panel.AnimatedStatusIcon;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

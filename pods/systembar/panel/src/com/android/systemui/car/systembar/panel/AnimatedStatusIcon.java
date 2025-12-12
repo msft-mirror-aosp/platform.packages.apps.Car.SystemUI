@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.statusicon;
+package com.android.systemui.car.systembar.panel;
 
 /**
  * A Status Icon that does not use {@link StatusIconController} and requires a different way to know

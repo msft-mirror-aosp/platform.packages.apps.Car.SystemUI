@@ -27,6 +27,7 @@ android_library {
     manifest: "AndroidManifest.xml",
     static_libs: [
         "CarSystemUI-FlexibleUI",
+        "CarSystemUI-QC-DataSubscription",
         "CarSystemUI-Shared",
         "CarSystemUI-StatusIcon-Base",
     ],

@@ -265,7 +265,4 @@
     <string name="fullscreen">Full Screen</string>
     <string name="display_density_button_description">Display size</string>
 
-    <!-- Data subscription button text [CHAR LIMIT=30]-->
-    <string name="data_subscription_button_text">See plans</string>
-
 </resources>

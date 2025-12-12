@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.statusicon.ui;
+package com.android.systemui.car.statusicon.bluetooth;
 
 import static com.google.common.truth.Truth.assertThat;
 

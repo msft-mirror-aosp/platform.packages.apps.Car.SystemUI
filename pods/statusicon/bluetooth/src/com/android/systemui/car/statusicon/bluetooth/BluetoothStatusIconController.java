@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.statusicon.ui;
+package com.android.systemui.car.statusicon.bluetooth;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.android.systemui.R;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.statusicon.StatusIconView;

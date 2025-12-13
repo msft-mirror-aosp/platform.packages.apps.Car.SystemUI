@@ -15,21 +15,21 @@
  */
 package com.android.systemui.car.wm.scalableui.panel.controller
 
-import com.android.wm.shell.automotive.AutoCaptionBarViewFactory
+import com.android.wm.shell.automotive.AutoCaptionBarViewController
 
 /**
  * An abstract base class for controllers that create and manage a task toolbar view.
  *
- * This class extends [AutoCaptionBarViewFactory] and defines a common factory pattern
+ * This class extends [AutoCaptionBarViewController] and defines a common factory pattern
  * for its subclasses, enabling them to be created with a specific `panelId`.
  *
  * @see CompatibilityToolBarController
- * @see AutoCaptionBarViewFactory
+ * @see com.android.wm.shell.automotive.AutoCaptionBarViewController
  */
-abstract class TaskToolbarController : AutoCaptionBarViewFactory() {
+interface TaskToolbarController : AutoCaptionBarViewController {
     interface Factory<T : TaskToolbarController> {
         /**
-         * Create an instance of the [TaskToolbarController] implementation using the provided  
+         * Create an instance of the [TaskToolbarController] implementation using the provided
          * panelId.
          */
         fun create(panelId: String): T

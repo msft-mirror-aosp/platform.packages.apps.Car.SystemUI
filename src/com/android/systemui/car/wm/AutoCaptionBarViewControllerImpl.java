@@ -36,31 +36,35 @@ import android.view.View;
 import android.widget.Button;
 import android.window.WindowContainerTransaction;
 
+import androidx.annotation.NonNull;
+
 import com.android.systemui.R;
 import com.android.wm.shell.ShellTaskOrganizer;
-import com.android.wm.shell.automotive.AutoCaptionBarViewFactory;
+import com.android.wm.shell.automotive.AutoCaptionBarViewController;
 import com.android.wm.shell.automotive.RootTaskStack;
 
 /**
  * Factory to provide views for caption bar. See
  * {@link com.android.wm.shell.automotive.AutoCaptionController#setCaptionRegion(RootTaskStack,
- * Rect, AutoCaptionBarViewFactory)}
+ * Rect, AutoCaptionBarViewController)}
  * for more details.
  */
 @SuppressLint("MissingPermission")
-public class AutoCaptionBarViewFactoryImpl extends AutoCaptionBarViewFactory {
-    private static final String TAG = AutoCaptionBarViewFactoryImpl.class.getSimpleName();
+public class AutoCaptionBarViewControllerImpl implements AutoCaptionBarViewController {
+    private static final String TAG = AutoCaptionBarViewControllerImpl.class.getSimpleName();
 
     private final Context mContext;
     private final ShellTaskOrganizer mShellTaskOrganizer;
 
-    public AutoCaptionBarViewFactoryImpl(Context context, ShellTaskOrganizer shellTaskOrganizer) {
+    public AutoCaptionBarViewControllerImpl(Context context,
+            ShellTaskOrganizer shellTaskOrganizer) {
         mContext = context;
         mShellTaskOrganizer = shellTaskOrganizer;
     }
 
+    @NonNull
     @Override
-    public View createView(ActivityManager.RunningTaskInfo taskInfo) {
+    public View createView(@NonNull ActivityManager.RunningTaskInfo taskInfo) {
         View displayCompatToolbar = LayoutInflater.from(mContext).inflate(
                 R.layout.display_compat_toolbar, null);
 
@@ -89,9 +93,6 @@ public class AutoCaptionBarViewFactoryImpl extends AutoCaptionBarViewFactory {
         Button closeButton = displayCompatToolbar.findViewById(R.id.close_window);
         if (closeButton != null) {
             closeButton.setOnClickListener(view -> {
-                if (taskInfo == null) {
-                    return;
-                }
                 WindowContainerTransaction wct = new WindowContainerTransaction();
                 wct.removeTask(taskInfo.token);
                 mShellTaskOrganizer.applyTransaction(wct);
@@ -99,6 +100,12 @@ public class AutoCaptionBarViewFactoryImpl extends AutoCaptionBarViewFactory {
         }
 
         return displayCompatToolbar;
+    }
+
+    @Override
+    public void updateView(@NonNull View captionView,
+            @NonNull ActivityManager.RunningTaskInfo taskInfo) {
+        // no-op
     }
 
     private void sendBackEvent(int displayId) {

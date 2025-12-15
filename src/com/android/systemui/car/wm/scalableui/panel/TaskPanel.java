@@ -221,8 +221,9 @@ public final class TaskPanel extends SysUIPanel {
         mAutoTaskStackController.createRootTaskStack(getDisplayId(), getPanelId(),
                 new RootTaskStackListener() {
                     @Override
-                    public void onRootTaskStackCreated(@NonNull RootTaskStack rootTaskStack) {
-                        logIfDebuggable(getPanelId() + ", onRootTaskStackCreated " + rootTaskStack);
+                    public void onRootTaskStackAppeared(@NonNull RootTaskStack rootTaskStack) {
+                        logIfDebuggable(getPanelId() + ", onRootTaskStackAppeared "
+                                + rootTaskStack);
                         mRootTaskStack = rootTaskStack;
                         trySetPersistentActivity();
                         trySetRootTaskLaunchBehavior();

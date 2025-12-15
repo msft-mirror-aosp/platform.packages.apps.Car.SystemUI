@@ -35,12 +35,15 @@ public class CarSystemBarViewFactoryImpl implements CarSystemBarViewFactory {
     private final Map<Pair<String, Boolean>, CarSystemBarViewController>
             mCachedViewControllerMap = new ArrayMap<>();
     private final Map<String, ViewGroup> mCachedWindowMap = new HashMap<>();
-    private final Map<String, CarSystemBarViewControllerFactory> mFactoriesMap;
+    // Dagger's multibinding mechanism requires this wildcard generic type to properly
+    // interoperate with Kotlin modules that provide CarSystemBarViewControllerFactory<*>.
+    // This ensures compatibility while maintaining type safety.
+    private final Map<String, CarSystemBarViewControllerFactory<?>> mFactoriesMap;
     private final SystemBarConfigs mSystemBarConfigs;
 
     @Inject
     public CarSystemBarViewFactoryImpl(
-            Map<String, CarSystemBarViewControllerFactory> factoriesMap,
+            Map<String, CarSystemBarViewControllerFactory<?>> factoriesMap,
             SystemBarConfigs systemBarConfigs) {
         mFactoriesMap = factoriesMap;
         mSystemBarConfigs = systemBarConfigs;

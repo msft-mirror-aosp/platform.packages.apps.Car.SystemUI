@@ -109,4 +109,69 @@ public class SystemBarWindowImplTest extends CarSysuiTestCase {
 
         assertThat(params.type).isEqualTo(WindowManager.LayoutParams.TYPE_STATUS_BAR_ADDITIONAL);
     }
+
+    @Test
+    public void getLayoutParams_topBarLeftPanel_setsCorrectTitle() {
+        String panelName = "top_bar_left_panel";
+        when(mSystemBarConfiguration.getName()).thenReturn(panelName);
+        when(mPanelUpdateConsumer.getBounds(panelName)).thenReturn(new Rect(0, 0, 100, 100));
+        SystemBarWindowImpl window = new SystemBarWindowImpl(mContext, mDisplayManager,
+                mEventDispatcher, mPanelUpdateConsumer, mSystemBarConfiguration, TEST_DISPLAY_ID);
+
+        WindowManager.LayoutParams params = window.getLayoutParams();
+
+        assertThat(params.getTitle()).isEqualTo(panelName);
+    }
+
+    @Test
+    public void getLayoutParams_topBarRightPanel_setsCorrectTitle() {
+        String panelName = "top_bar_right_panel";
+        when(mSystemBarConfiguration.getName()).thenReturn(panelName);
+        when(mPanelUpdateConsumer.getBounds(panelName)).thenReturn(new Rect(0, 0, 100, 100));
+        SystemBarWindowImpl window = new SystemBarWindowImpl(mContext, mDisplayManager,
+                mEventDispatcher, mPanelUpdateConsumer, mSystemBarConfiguration, TEST_DISPLAY_ID);
+
+        WindowManager.LayoutParams params = window.getLayoutParams();
+
+        assertThat(params.getTitle()).isEqualTo(panelName);
+    }
+
+    @Test
+    public void getLayoutParams_bottomBarLeftPanel_setsCorrectTitle() {
+        String panelName = "bottom_bar_left_panel";
+        when(mSystemBarConfiguration.getName()).thenReturn(panelName);
+        when(mPanelUpdateConsumer.getBounds(panelName)).thenReturn(new Rect(0, 0, 100, 100));
+        SystemBarWindowImpl window = new SystemBarWindowImpl(mContext, mDisplayManager,
+                mEventDispatcher, mPanelUpdateConsumer, mSystemBarConfiguration, TEST_DISPLAY_ID);
+
+        WindowManager.LayoutParams params = window.getLayoutParams();
+
+        assertThat(params.getTitle()).isEqualTo(panelName);
+    }
+
+    @Test
+    public void getLayoutParams_bottomBarCenterPanel_setsCorrectTitle() {
+        String panelName = "bottom_bar_center_panel";
+        when(mSystemBarConfiguration.getName()).thenReturn(panelName);
+        when(mPanelUpdateConsumer.getBounds(panelName)).thenReturn(new Rect(0, 0, 100, 100));
+        SystemBarWindowImpl window = new SystemBarWindowImpl(mContext, mDisplayManager,
+                mEventDispatcher, mPanelUpdateConsumer, mSystemBarConfiguration, TEST_DISPLAY_ID);
+
+        WindowManager.LayoutParams params = window.getLayoutParams();
+
+        assertThat(params.getTitle()).isEqualTo(panelName);
+    }
+
+    @Test
+    public void getLayoutParams_bottomBarRightPanel_setsCorrectTitle() {
+        String panelName = "bottom_bar_right_panel";
+        when(mSystemBarConfiguration.getName()).thenReturn(panelName);
+        when(mPanelUpdateConsumer.getBounds(panelName)).thenReturn(new Rect(0, 0, 100, 100));
+        SystemBarWindowImpl window = new SystemBarWindowImpl(mContext, mDisplayManager,
+                mEventDispatcher, mPanelUpdateConsumer, mSystemBarConfiguration, TEST_DISPLAY_ID);
+
+        WindowManager.LayoutParams params = window.getLayoutParams();
+
+        assertThat(params.getTitle()).isEqualTo(panelName);
+    }
 }

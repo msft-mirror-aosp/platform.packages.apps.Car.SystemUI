@@ -57,8 +57,30 @@ class SystemUiWindowProviderTest : CarSysuiTestCase() {
     private val navBarConfiguration = mock<SystemBarConfiguration> {
         on { name } doReturn "TestNavBar"
     }
+    private val topBarLeftConfiguration = mock<SystemBarConfiguration> {
+        on { name } doReturn "TestTopBarLeft"
+    }
+    private val topBarRightConfiguration = mock<SystemBarConfiguration> {
+        on { name } doReturn "TestTopBarRight"
+    }
+    private val bottomBarLeftConfiguration = mock<SystemBarConfiguration> {
+        on { name } doReturn "TestBottomBarLeft"
+    }
+    private val bottomBarCenterConfiguration = mock<SystemBarConfiguration> {
+        on { name } doReturn "TestBottomBarCenter"
+    }
+    private val bottomBarRightConfiguration = mock<SystemBarConfiguration> {
+        on { name } doReturn "TestBottomBarRight"
+    }
+
     private val statusBarWindow = mock<SystemBarWindowImpl>()
     private val navBarWindow = mock<SystemBarWindowImpl>()
+    private val topBarLeftWindow = mock<SystemBarWindowImpl>()
+    private val topBarRightWindow = mock<SystemBarWindowImpl>()
+    private val bottomBarLeftWindow = mock<SystemBarWindowImpl>()
+    private val bottomBarCenterWindow = mock<SystemBarWindowImpl>()
+    private val bottomBarRightWindow = mock<SystemBarWindowImpl>()
+
     private val windowFactory = mock<SystemBarWindowImpl.Factory> {
         on {
             create(
@@ -70,6 +92,21 @@ class SystemUiWindowProviderTest : CarSysuiTestCase() {
         on {
             create(panelUpdateConsumer, navBarConfiguration, TEST_DISPLAY_ID)
         } doReturn navBarWindow
+        on {
+            create(panelUpdateConsumer, topBarLeftConfiguration, TEST_DISPLAY_ID)
+        } doReturn topBarLeftWindow
+        on {
+            create(panelUpdateConsumer, topBarRightConfiguration, TEST_DISPLAY_ID)
+        } doReturn topBarRightWindow
+        on {
+            create(panelUpdateConsumer, bottomBarLeftConfiguration, TEST_DISPLAY_ID)
+        } doReturn bottomBarLeftWindow
+        on {
+            create(panelUpdateConsumer, bottomBarCenterConfiguration, TEST_DISPLAY_ID)
+        } doReturn bottomBarCenterWindow
+        on {
+            create(panelUpdateConsumer, bottomBarRightConfiguration, TEST_DISPLAY_ID)
+        } doReturn bottomBarRightWindow
     }
     private val configurationProvider = mock<SystemUiConfigurationProvider> {
         on { getStatusBarConfigs() } doReturn listOf(statusBarConfiguration)
@@ -100,6 +137,31 @@ class SystemUiWindowProviderTest : CarSysuiTestCase() {
             on { getDisplayId() } doReturn TEST_DISPLAY_ID
             on { getCurrentVariant() } doReturn variant
         }
+        val topBarLeftPanelState = mock<PanelState> {
+            on { getId() } doReturn "TestTopBarLeft"
+            on { getDisplayId() } doReturn TEST_DISPLAY_ID
+            on { getCurrentVariant() } doReturn variant
+        }
+        val topBarRightPanelState = mock<PanelState> {
+            on { getId() } doReturn "TestTopBarRight"
+            on { getDisplayId() } doReturn TEST_DISPLAY_ID
+            on { getCurrentVariant() } doReturn variant
+        }
+        val bottomBarLeftPanelState = mock<PanelState> {
+            on { getId() } doReturn "TestBottomBarLeft"
+            on { getDisplayId() } doReturn TEST_DISPLAY_ID
+            on { getCurrentVariant() } doReturn variant
+        }
+        val bottomBarCenterPanelState = mock<PanelState> {
+            on { getId() } doReturn "TestBottomBarCenter"
+            on { getDisplayId() } doReturn TEST_DISPLAY_ID
+            on { getCurrentVariant() } doReturn variant
+        }
+        val bottomBarRightPanelState = mock<PanelState> {
+            on { getId() } doReturn "TestBottomBarRight"
+            on { getDisplayId() } doReturn TEST_DISPLAY_ID
+            on { getCurrentVariant() } doReturn variant
+        }
     }
 
     @Before
@@ -107,6 +169,11 @@ class SystemUiWindowProviderTest : CarSysuiTestCase() {
         PanelPool.getInstance().setDelegate(delegate)
         StateManager.addState(statusBarPanelState)
         StateManager.addState(navBarPanelState)
+        StateManager.addState(topBarLeftPanelState)
+        StateManager.addState(topBarRightPanelState)
+        StateManager.addState(bottomBarLeftPanelState)
+        StateManager.addState(bottomBarCenterPanelState)
+        StateManager.addState(bottomBarRightPanelState)
 
         provider = SystemUiWindowProvider(
             consumer,
@@ -127,6 +194,50 @@ class SystemUiWindowProviderTest : CarSysuiTestCase() {
     fun systemBarWindows_returnsAllSystemBarWindows() {
         val windows = provider.getSystemBarWindows()
         assertThat(windows).containsExactly(statusBarWindow, navBarWindow)
+    }
+
+    @Test
+    fun statusBarWindows_returnsMultiPanelTopBarWindows() {
+        whenever(configurationProvider.getStatusBarConfigs()) doReturn
+            listOf(topBarLeftConfiguration, topBarRightConfiguration)
+
+        val windows = provider.getStatusBarWindows()
+
+        assertThat(windows).containsExactly(topBarLeftWindow, topBarRightWindow)
+    }
+
+    @Test
+    fun navigationBarWindows_returnsMultiPanelBottomBarWindows() {
+        whenever(configurationProvider.getNavigationBarConfigs()) doReturn
+            listOf(bottomBarLeftConfiguration, bottomBarCenterConfiguration,
+                bottomBarRightConfiguration)
+
+        val windows = provider.getNavigationBarWindows()
+
+        assertThat(windows).containsExactly(
+            bottomBarLeftWindow,
+            bottomBarCenterWindow,
+            bottomBarRightWindow
+        )
+    }
+
+    @Test
+    fun systemBarWindows_returnsAllMultiPanelSystemBarWindows() {
+        whenever(configurationProvider.getStatusBarConfigs()) doReturn
+            listOf(topBarLeftConfiguration, topBarRightConfiguration)
+        whenever(configurationProvider.getNavigationBarConfigs()) doReturn
+            listOf(bottomBarLeftConfiguration, bottomBarCenterConfiguration,
+                bottomBarRightConfiguration)
+
+        val windows = provider.getSystemBarWindows()
+
+        assertThat(windows).containsExactly(
+            topBarLeftWindow,
+            topBarRightWindow,
+            bottomBarLeftWindow,
+            bottomBarCenterWindow,
+            bottomBarRightWindow
+        )
     }
 
     @Test

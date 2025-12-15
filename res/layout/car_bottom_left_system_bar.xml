@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2025 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<com.android.systemui.car.systembar.CarSystemBarView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:systemui="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="ltr"
+    android:gravity="center">
+
+    <com.android.systemui.car.systembar.CarSystemBarButton
+        android:id="@+id/passenger_home"
+        android:contentDescription="@string/system_bar_home_label"
+        android:visibility="gone"
+        style="@style/SystemBarButton"
+        systemui:highlightWhenSelected="true"
+        systemui:icon="@drawable/car_ic_home"
+        systemui:intent="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;launchFlags=0x14000000;end"
+        systemui:systemBarDisableFlags="home"
+        systemui:controller="com.android.systemui.car.systembar.passengerhome.PassengerHomeButtonController"/>
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+    <com.android.systemui.car.hvac.TemperatureControlView
+        android:id="@+id/driver_hvac"
+        style="@style/TemperatureControlView"
+        systemui:hvacAreaId="49"
+        systemui:controller="com.android.systemui.car.hvac.TemperatureControlViewController">
+        <include layout="@layout/adjustable_temperature_view"/>
+    </com.android.systemui.car.hvac.TemperatureControlView>
+
+</com.android.systemui.car.systembar.CarSystemBarView>
+

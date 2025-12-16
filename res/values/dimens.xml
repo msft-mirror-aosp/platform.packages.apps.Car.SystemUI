@@ -487,5 +487,9 @@
     <dimen name="panel_grip_bar_decor_width">100dp</dimen>
     <dimen name="panel_grip_bar_decor_height">4dp</dimen>
 
+    <dimen name="car_system_bar_clock_elevation">5dp</dimen>
+    <dimen name="car_bottom_center_system_bar_horizontal_padding">64dp</dimen>
+    <dimen name="car_top_right_system_bar_horizontal_padding">16dp</dimen>
+
 
 </resources>

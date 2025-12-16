@@ -86,6 +86,7 @@ import java.util.Optional;
  */
 @Module(includes = {
         DebugPanelModule.class,
+        ExtensionPanelUpdatesCarSystemBarModule.class,
         FlexibleUiModule.class,
         HomeButtonModule.class,
         PanelModule.class,
@@ -94,6 +95,7 @@ import java.util.Optional;
         PrivacyChipCameraModule.class,
         PrivacyChipCastModule.class,
         PrivacyChipShareModule.class,
+        SplitCarSystemBarModule.class,
         UserNamePanelModule.class})
 public abstract class CarSystemBarModule {
 
@@ -248,42 +250,28 @@ public abstract class CarSystemBarModule {
     @Binds
     @IntoMap
     @StringKey(LEFT_BAR_NAME)
-    public abstract CarSystemBarViewControllerFactory bindLeftCarSystemBarViewFactory(
+    public abstract CarSystemBarViewControllerFactory<?> bindLeftCarSystemBarViewFactory(
             CarSystemBarViewControllerImpl.Factory factory);
 
     /** Injects CarSystemBarViewController for TOP_BAR_NAME */
     @Binds
     @IntoMap
     @StringKey(TOP_BAR_NAME)
-    public abstract CarSystemBarViewControllerFactory bindTopCarSystemBarViewFactory(
+    public abstract CarSystemBarViewControllerFactory<?> bindTopCarSystemBarViewFactory(
             CarSystemBarViewControllerImpl.Factory factory);
 
     /** Injects CarSystemBarViewController for RIGHT_BAR_NAME */
     @Binds
     @IntoMap
     @StringKey(RIGHT_BAR_NAME)
-    public abstract CarSystemBarViewControllerFactory bindRightCarSystemBarViewFactory(
+    public abstract CarSystemBarViewControllerFactory<?> bindRightCarSystemBarViewFactory(
             CarSystemBarViewControllerImpl.Factory factory);
 
     /** Injects CarSystemBarViewController for BOTTOM_BAR_NAME */
     @Binds
     @IntoMap
     @StringKey(BOTTOM_BAR_NAME)
-    public abstract CarSystemBarViewControllerFactory bindBottomCarSystemBarViewFactory(
-            CarSystemBarViewControllerImpl.Factory factory);
-
-    /** Injects CarSystemBarViewController for nav */
-    @Binds
-    @IntoMap
-    @StringKey("nav")
-    public abstract CarSystemBarViewControllerFactory bindNavCarSystemBarViewFactory(
-            CarSystemBarViewControllerImpl.Factory factory);
-
-    /** Injects CarSystemBarViewController for status */
-    @Binds
-    @IntoMap
-    @StringKey("status")
-    public abstract CarSystemBarViewControllerFactory bindStatusCarSystemBarViewFactory(
+    public abstract CarSystemBarViewControllerFactory<?> bindBottomCarSystemBarViewFactory(
             CarSystemBarViewControllerImpl.Factory factory);
 
     /** Injects CarSystemBarButtonController */
@@ -391,38 +379,6 @@ public abstract class CarSystemBarModule {
     static CarSystemBarWindowSupplier bindBottomCarSystemBarWindowSupplier() {
         return new CarSystemBarWindowSupplierUsingLayout(R.layout.navigation_bar_window,
                 R.id.car_bottom_bar_window);
-    }
-
-    @Provides
-    @IntoMap
-    @StringKey("nav")
-    static CarSystemBarViewSupplier bindNavCarSystemBarViewSupplier() {
-        return new CarSystemBarViewSupplierUsingLayout(R.layout.car_bottom_system_bar,
-                R.layout.car_bottom_system_bar_unprovisioned);
-    }
-
-    @Provides
-    @IntoMap
-    @StringKey("nav")
-    static CarSystemBarWindowSupplier bindNavCarSystemBarWindowSupplier() {
-        return new CarSystemBarWindowSupplierUsingLayout(R.layout.navigation_bar_window,
-                R.id.car_bottom_bar_window);
-    }
-
-    @Provides
-    @IntoMap
-    @StringKey("status")
-    static CarSystemBarViewSupplier bindStatusCarSystemBarViewSupplier() {
-        return new CarSystemBarViewSupplierUsingLayout(R.layout.car_top_system_bar,
-                R.layout.car_top_system_bar_unprovisioned);
-    }
-
-    @Provides
-    @IntoMap
-    @StringKey("status")
-    static CarSystemBarWindowSupplier bindStatusCarSystemBarWindowSupplier() {
-        return new CarSystemBarWindowSupplierUsingLayout(R.layout.navigation_bar_window,
-                R.id.car_top_bar_window);
     }
 
     /** Injects SystemBarConfigs */

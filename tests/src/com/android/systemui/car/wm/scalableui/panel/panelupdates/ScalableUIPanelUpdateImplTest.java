@@ -31,6 +31,7 @@ import android.view.Gravity;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
+import com.android.car.scalableui.model.Corner;
 import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
@@ -72,7 +73,7 @@ public class ScalableUIPanelUpdateImplTest extends CarSysuiTestCase {
         // Arrange: Post all types of state updates for a panel.
         Rect testBounds = new Rect(0, 0, 100, 100);
         float testAlpha = 0.5f;
-        int testRadius = 10;
+        Corner testRadius = new Corner.Builder().setRadius(10).build();
         boolean testVisibility = true;
         Insets testInsets = Insets.of(1, 2, 3, 4);
         int testGravity = Gravity.CENTER;
@@ -124,7 +125,7 @@ public class ScalableUIPanelUpdateImplTest extends CarSysuiTestCase {
     @Test
     public void postCornerRadius_notifiesRegisteredCallbacks() {
         mPanelUpdateManager.registerCallback(TEST_PANEL_ID_1, mMockCallback1);
-        int testRadius = 25;
+        Corner testRadius = new Corner.Builder().setRadius(25).build();
 
         mPanelUpdateManager.postCornerRadius(TEST_PANEL_ID_1, testRadius);
         mMainHandler.runWithScissors(() -> {}, 0);
@@ -226,7 +227,7 @@ public class ScalableUIPanelUpdateImplTest extends CarSysuiTestCase {
     public void getters_returnCorrectValues() {
         Rect testBounds = new Rect(0, 0, 100, 100);
         float testAlpha = 0.5f;
-        int testRadius = 10;
+        Corner testRadius = new Corner.Builder().setRadius(10).build();
         boolean testVisibility = true;
         Insets testInsets = Insets.of(1, 2, 3, 4);
         int testGravity = Gravity.CENTER;

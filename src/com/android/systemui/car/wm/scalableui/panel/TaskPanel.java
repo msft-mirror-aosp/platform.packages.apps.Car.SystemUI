@@ -50,6 +50,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.car.internal.dep.Trace;
 import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.Corner;
 import com.android.car.scalableui.model.Decor;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelControllerMetadata;
@@ -490,7 +491,16 @@ public final class TaskPanel extends SysUIPanel {
         autoSurfaceTransaction.setBounds(autoDecor, bounds);
         autoSurfaceTransaction.setVisibility(autoDecor, true);
         autoSurfaceTransaction.setZOrder(autoDecor, decor.getLayer());
-        autoSurfaceTransaction.setCornerRadius(autoDecor, getCornerRadius());
+        if (com.android.graphics.surfaceflinger.flags.Flags.setClientDrawnCornerRadii()) {
+            autoSurfaceTransaction.setCornerRadius(autoDecor,
+                    getCornerRadius().getTopLeftRadius(), getCornerRadius().getTopRightRadius(),
+                    getCornerRadius().getBottomLeftRadius(),
+                    getCornerRadius().getBottomRightRadius());
+        } else {
+            // Per-corner radius is not supported, applying a uniform radius to all corners.
+            // Note: we could use any Corner#getRadius*(), as they will be the same.
+            autoSurfaceTransaction.setCornerRadius(autoDecor, getCornerRadius().getTopLeftRadius());
+        }
         autoSurfaceTransaction.setCrop(autoDecor, bounds);
     }
 
@@ -745,8 +755,18 @@ public final class TaskPanel extends SysUIPanel {
                     new Rect(0, 0, bounds.width(), bounds.height()));
             autoSurfaceTransaction.setTaskSurfacePosition(taskId, bounds.left,
                     bounds.top);
-            autoSurfaceTransaction.setTaskSurfaceCornerRadius(taskId,
-                    variant == null ? getCornerRadius() : variant.getCornerRadius());
+            Corner radius = variant == null ? getCornerRadius() : variant.getCornerRadius();
+            if (com.android.graphics.surfaceflinger.flags.Flags.setClientDrawnCornerRadii()) {
+                autoSurfaceTransaction.setTaskSurfaceCornerRadius(taskId,
+                        radius.getTopLeftRadius(), radius.getTopRightRadius(),
+                        radius.getBottomLeftRadius(),
+                        radius.getBottomRightRadius());
+            } else {
+                // Per-corner radius is not supported, applying a uniform radius to all corners.
+                // Note: we could use any Corner#getRadius*(), as they will be the same.
+                autoSurfaceTransaction.setTaskSurfaceCornerRadius(taskId,
+                        radius.getTopLeftRadius());
+            }
         }
 
         if (tx != null && getLeash() != null) {
@@ -757,8 +777,17 @@ public final class TaskPanel extends SysUIPanel {
             if (autoSurfaceTransaction == null) {
                 tx.setCrop(getLeash(), new Rect(0, 0, bounds.width(), bounds.height()));
                 tx.setPosition(getLeash(), bounds.left, bounds.top);
-                tx.setCornerRadius(getLeash(),
-                        variant == null ? getCornerRadius() : variant.getCornerRadius());
+                Corner radius = variant == null ? getCornerRadius() : variant.getCornerRadius();
+                if (com.android.graphics.surfaceflinger.flags.Flags.setClientDrawnCornerRadii()) {
+                    tx.setCornerRadius(getLeash(),
+                            radius.getTopLeftRadius(), radius.getTopRightRadius(),
+                            radius.getBottomLeftRadius(),
+                            radius.getBottomRightRadius());
+                } else {
+                    // Per-corner radius is not supported, applying a uniform radius to all corners.
+                    // Note: we could use any Corner#getRadius*(), as they will be the same.
+                    tx.setCornerRadius(getLeash(), radius.getTopLeftRadius());
+                }
             }
         } else {
             Log.e(TAG, "leash is " + getLeash() + ", tx is " + tx);

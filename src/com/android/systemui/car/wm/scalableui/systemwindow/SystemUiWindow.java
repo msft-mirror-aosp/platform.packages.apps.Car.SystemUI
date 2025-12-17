@@ -25,6 +25,7 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.car.scalableui.model.Corner;
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer;
 
 /**
@@ -128,7 +129,7 @@ public interface SystemUiWindow {
     /**
      * @return corner radius of the window
      */
-    int getCornerRadius();
+    Corner getCornerRadius();
 
     /**
      * @return display ID of the window

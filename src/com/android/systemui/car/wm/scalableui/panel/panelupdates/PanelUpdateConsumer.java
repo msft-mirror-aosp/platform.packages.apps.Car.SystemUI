@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.car.scalableui.Flags;
+import com.android.car.scalableui.model.Corner;
 import com.android.car.scalableui.model.PanelControllerMetadata;
 
 /**
@@ -86,7 +87,7 @@ public interface PanelUpdateConsumer {
      * been recorded yet or the panel ID is unknown.
      */
     @FlaggedApi(Flags.FLAG_ENABLE_EXT_PANEL_UPDATES)
-    Integer getCornerRadius(String panelId);
+    Corner getCornerRadius(String panelId);
 
     /**
      * Returns the last known visibility for a given panel ID.
@@ -176,7 +177,7 @@ public interface PanelUpdateConsumer {
          * @param radius  The new (or last known replayed) corner radius of the panel.
          */
         @FlaggedApi(Flags.FLAG_ENABLE_EXT_PANEL_UPDATES)
-        default void onCornerRadiusChange(@NonNull String panelId, int radius) {
+        default void onCornerRadiusChange(@NonNull String panelId, Corner radius) {
             // Default implementation does nothing, allowing selective overriding.
         }
 

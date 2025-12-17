@@ -50,6 +50,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser;
+import com.android.car.scalableui.model.Corner;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.R;
 import com.android.systemui.car.wm.scalableui.configuration.SystemBarConfiguration;
@@ -837,8 +838,8 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
         }
 
         @Override
-        public int getCornerRadius() {
-            return 0;
+        public Corner getCornerRadius() {
+            return Corner.DEFAULT_CORNER;
         }
 
         @Override

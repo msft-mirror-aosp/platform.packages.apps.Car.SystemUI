@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.systembar;
 
+import android.car.feature.Flags;
 import android.content.Context;
 import android.content.om.OverlayManager;
 import android.content.res.Configuration;
@@ -107,6 +108,11 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
 
     @Override
     public void init() {
+        if (Flags.rrosPerOccupantZone()) {
+            super.init();
+            return;
+        }
+
         mInitialized = false;
 
         String rroPackageName = mContext.getString(
@@ -137,6 +143,10 @@ public class MDSystemBarsControllerImpl extends CarSystemBarControllerImpl {
 
     @Override
     public void onConfigChanged(Configuration newConfig) {
+        if (Flags.rrosPerOccupantZone()) {
+            super.onConfigChanged(newConfig);
+            return;
+        }
         if (!mInitialized) {
             mInitialized = true;
             super.init();

@@ -48,6 +48,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -491,8 +492,17 @@ public class ActivityBlockingActivity extends FragmentActivity {
         }
     }
 
-    private void startBlockingActivity(String blockingActivity) {
+    private void startBlockingActivity(@Nullable String blockingActivity) {
         if (isFinishing()) {
+            return;
+        }
+
+        if (blockingActivity == null) {
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Slog.d(TAG, String.format("Attempting to show null blocking activity, default to "
+                        + "standard ui instead"));
+            }
+            displayBlockingContent();
             return;
         }
 

@@ -25,6 +25,7 @@ import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.car.scalableui.model.Corner;
 import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.panel.PanelUpdatePublisher;
 
@@ -86,7 +87,7 @@ public class ScalableUIPanelUpdateImpl implements PanelUpdatePublisher, PanelUpd
                 callback.onAlphaChange(panelId, alpha);
             }
 
-            Integer radius = getCornerRadius(panelId);
+            Corner radius = getCornerRadius(panelId);
             if (radius != null) {
                 callback.onCornerRadiusChange(panelId, radius);
             }
@@ -172,7 +173,7 @@ public class ScalableUIPanelUpdateImpl implements PanelUpdatePublisher, PanelUpd
 
     @Override
     @GuardedBy("mPanelUpdateListenersPerPanelMap")
-    public void postCornerRadius(String panelId, int radius) {
+    public void postCornerRadius(String panelId, Corner radius) {
         PanelState panelState =
                 mLastKnownPanelState.computeIfAbsent(panelId, k -> new PanelState());
         panelState.setRadius(radius);
@@ -269,7 +270,7 @@ public class ScalableUIPanelUpdateImpl implements PanelUpdatePublisher, PanelUpd
     }
 
     @Override
-    public Integer getCornerRadius(String panelId) {
+    public Corner getCornerRadius(String panelId) {
         if (mLastKnownPanelState.get(panelId) != null) {
             return mLastKnownPanelState.get(panelId).getRadius();
         }
@@ -318,8 +319,7 @@ public class ScalableUIPanelUpdateImpl implements PanelUpdatePublisher, PanelUpd
         private Rect mBounds;
         @Nullable
         private Float mAlpha;
-        @Nullable
-        private Integer mRadius;
+        private Corner mRadius = Corner.DEFAULT_CORNER;
         @Nullable
         private Boolean mIsVisible;
         @Nullable
@@ -337,12 +337,11 @@ public class ScalableUIPanelUpdateImpl implements PanelUpdatePublisher, PanelUpd
             mAlpha = alpha;
         }
 
-        @Nullable
-        Integer getRadius() {
+        Corner getRadius() {
             return mRadius;
         }
 
-        void setRadius(@Nullable Integer radius) {
+        void setRadius(Corner radius) {
             mRadius = radius;
         }
 

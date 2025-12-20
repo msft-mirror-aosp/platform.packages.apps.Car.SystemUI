@@ -55,6 +55,7 @@ import com.android.systemui.dock.DockManager;
 import com.android.systemui.dock.DockManagerImpl;
 import com.android.systemui.doze.DozeHost;
 import com.android.systemui.dreams.suppression.dagger.NoOpActivityRecognitionModule;
+import com.android.systemui.inputmethod.DefaultImeSwitcherMenuModule;
 import com.android.systemui.lowlight.dagger.NoopAmbientLightModeMonitorModule;
 import com.android.systemui.media.muteawait.MediaMuteAwaitConnectionCli;
 import com.android.systemui.media.nearby.NearbyMediaDevicesManager;
@@ -106,6 +107,7 @@ import javax.inject.Provider;
                 CarMultiUserUtilsModule.class,
                 CarPolicyModule.class,
                 CarVolumeModule.class,
+                DefaultImeSwitcherMenuModule.class,
                 ExternalDisplayController.StartableModule.class,
                 GestureModule.class,
                 HeadsUpEmptyImplModule.class,

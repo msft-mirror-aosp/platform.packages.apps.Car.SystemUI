@@ -70,9 +70,6 @@
     <string name="system_bar_user_name_text" msgid="5859605302481171746">"युजरनेम टेक्स्ट"</string>
     <string name="hvac_decrease_button_label" msgid="5628481079099995286">"तापक्रम घटाउनुहोस्"</string>
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"तापक्रम बढाउनुहोस्"</string>
-    <string name="status_icon_bluetooth_disconnected" msgid="6773447522499007010">"ब्लुटुथसम्बन्धी सेटिङ: डिस्कनेक्ट गरिएको"</string>
-    <string name="status_icon_bluetooth_connected" msgid="4548446117525711779">"ब्लुटुथसम्बन्धी सेटिङ: कनेक्ट गरिएको"</string>
-    <string name="status_icon_bluetooth_off" msgid="5435041393564635821">"ब्लुटुथसम्बन्धी सेटिङ: ब्लुटुथ अफ छ"</string>
     <string name="status_icon_signal_mobile" msgid="7264721079060179783">"सिग्नलसम्बन्धी सेटिङ: मोबाइल डेटा प्रयोग गरिँदै छ"</string>
     <string name="status_icon_signal_wifi" msgid="1257569337648058522">"सिग्नलसम्बन्धी सेटिङ: Wifi अन छ"</string>
     <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"सिग्नलसम्बन्धी सेटिङ: हटस्पट अन छ"</string>
@@ -133,7 +130,6 @@
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
     <string name="back_btn" msgid="7774349944465667391">"पछाडि"</string>
     <string name="fullscreen" msgid="7648956467442135844">"फुल स्क्रिन"</string>
-    <!-- no translation found for display_density_button_description (5355175016830062352) -->
-    <skip />
+    <string name="display_density_button_description" msgid="5355175016830062352">"डिस्प्ले साइज"</string>
     <string name="data_subscription_button_text" msgid="6595983827855035949">"योजनाहरू हेर्नुहोस्"</string>
 </resources>

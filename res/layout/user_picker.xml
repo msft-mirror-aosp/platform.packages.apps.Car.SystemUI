@@ -102,7 +102,14 @@
             app:layout_constraintTop_toBottomOf="@+id/header_barrier"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/user_picker_bottom_bar"/>
+            app:layout_constraintBottom_toTopOf="@+id/footer_barrier"/>
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/footer_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="top"
+            app:constraint_referenced_ids="user_picker_bottom_bar" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/user_picker_bottom_bar"
@@ -110,6 +117,7 @@
             android:layout_height="@dimen/car_bottom_system_bar_height"
             android:orientation="horizontal"
             android:background="@color/user_picker_bottom_bar_color"
+            android:visibility="gone"
             app:layout_constraintVertical_bias="1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

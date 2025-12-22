@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.userpicker;
 
+import static android.view.WindowInsets.Type.systemBars;
 import static android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
 import static android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT;
 
@@ -97,6 +98,8 @@ public class UserPickerActivity extends Activity implements Dumpable {
     View mLogoutButton;
     @VisibleForTesting
     View mBackButton;
+    @VisibleForTesting
+    View mBottomBar;
 
     private final OnBackInvokedCallback mIgnoreBackCallback = () -> {
         // Ignore back press.
@@ -176,6 +179,7 @@ public class UserPickerActivity extends Activity implements Dumpable {
         mIsDriver = getIsDriver();
         LayoutInflater inflater = LayoutInflater.from(this);
         mRootView = inflater.inflate(R.layout.user_picker, null);
+        mBottomBar = mRootView.findViewById(R.id.user_picker_bottom_bar);
         if (getWindow() != null) {
             setContentView(mRootView);
             initWindow();
@@ -210,9 +214,8 @@ public class UserPickerActivity extends Activity implements Dumpable {
         initRecyclerView();
 
         // Initialize bar element within the user picker's bottom bar
-        View bottomBar = mRootView.findViewById(R.id.user_picker_bottom_bar);
-        if (bottomBar instanceof ViewGroup) {
-            mCarSystemBarElementInitializer.initializeCarSystemBarElements((ViewGroup) bottomBar);
+        if (mBottomBar instanceof ViewGroup) {
+            mCarSystemBarElementInitializer.initializeCarSystemBarElements((ViewGroup) mBottomBar);
         }
     }
 
@@ -242,20 +245,20 @@ public class UserPickerActivity extends Activity implements Dumpable {
 
     // Avoid activity resizing due to dismissible system bars.
     private final View.OnApplyWindowInsetsListener mOnApplyWindowInsetsListener = (v, insets) -> {
-        if (!insets.isVisible(WindowInsets.Type.statusBars())) {
-            Insets statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars());
-            insets.inset(statusBarInsets);
-        }
-        if (!insets.isVisible(WindowInsets.Type.navigationBars())) {
-            Insets navBarInsets = insets.getInsets(WindowInsets.Type.navigationBars());
-            insets.inset(navBarInsets);
-        }
-        return insets;
+        Insets systemBarInsets = insets.getInsets(systemBars());
+        mRootView.setPadding(systemBarInsets.left, systemBarInsets.top,
+                systemBarInsets.right, systemBarInsets.bottom);
+
+        boolean statusBarVisible = insets.isVisible(WindowInsets.Type.statusBars());
+        boolean navBarVisible = insets.isVisible(WindowInsets.Type.navigationBars());
+        mBottomBar.setVisibility(!statusBarVisible && !navBarVisible ? View.VISIBLE : View.GONE);
+
+        return WindowInsets.CONSUMED;
     };
 
     private void initManagers(View rootView) {
         mDialogManager.initContextFromView(rootView);
-        mSnackbarManager.setRootView(rootView, R.id.user_picker_bottom_bar);
+        mSnackbarManager.setRootView(rootView, R.id.footer_barrier);
     }
 
     private void initController() {

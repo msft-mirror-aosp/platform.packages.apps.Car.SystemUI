@@ -20,6 +20,7 @@ import static android.car.app.CarActivityManager.LAUNCH_BEHAVIOR_REMAIN_IN_SOURC
 import static com.android.car.scalableui.model.Restart.RESTART_POLICY_DEFAULT;
 import static com.android.car.scalableui.model.Restart.RESTART_POLICY_LAST;
 import static com.android.car.scalableui.model.TaskBehavior.NEW_TASK_LAUNCH_POLICY_REMAIN_IN_SOURCE;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_PANEL_EMPTY_EVENT_ID;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -347,5 +348,21 @@ public class TaskPanelTest extends CarSysuiTestCase {
         WindowContainerToken actualToken = mTaskPanel.getRootTaskToken();
 
         assertThat(actualToken).isEqualTo(expectedToken);
+    }
+
+    @Test
+    public void moveRootTaskToBack_reportsPanelEmpty() {
+        // GIVEN a mock task info
+        ActivityManager.RunningTaskInfo taskInfo = mock(ActivityManager.RunningTaskInfo.class);
+
+        // WHEN the moveRootTaskToBack callback is invoked
+        mRootTaskStackListener.moveRootTaskToBack(taskInfo);
+
+        // THEN an event is dispatched to report the panel is empty
+        ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mEventDispatcher).executeEvent(eventCaptor.capture());
+        Event capturedEvent = eventCaptor.getValue();
+        assertThat(capturedEvent.getId()).isEqualTo(SYSTEM_TASK_PANEL_EMPTY_EVENT_ID);
+        assertThat(capturedEvent.getPanelId()).isEqualTo(TASK_PANEL_ID);
     }
 }

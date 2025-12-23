@@ -15,18 +15,17 @@
   ~ limitations under the License.
   -->
   <resources>
-    <!-- Used by systemUI reguardless of scalableUi -->
+    <!-- Used by systemUI regardless of scalableUi -->
     <string name="config_appGridComponentName" translatable="false">com.android.car.carlauncher/com.android.car.carlauncher.GASAppGridActivity</string>
     <string name="config_calmModeComponentName" translatable="false">com.android.car.carlauncher/com.android.car.carlauncher.calmmode.CalmModeActivity</string>
 
-    <!-- For resrouce parsing -->
+    <!-- For resource parsing -->
     <string name="widget_component" translatable="false">com.android.car.carlauncher/.WidgetHostActivity</string>
 
     <!-- AOSP packages -->
     <string name="camera_package"></string>
-    <string name="default_map_componentName"></string>
+    <string name="default_map_intent"></string>
     <string name="projected_package"></string>
     <string name="suw_package"></string>
-    <string name="additional_suw_componentName"></string>
     <!-- AOSP packages END -->
 </resources>

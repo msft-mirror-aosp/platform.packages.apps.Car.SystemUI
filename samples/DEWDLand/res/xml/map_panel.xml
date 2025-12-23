@@ -14,6 +14,8 @@
   ~ limitations under the License.
   -->
 <TaskPanel id="map_panel" defaultVariant="@id/opened" displayId="0" controller="@xml/map_panel_controller">
+    <Restart policy="LAST" maxRetry="3"/>
+    <TaskBehavior taskProperties="UNTRIMMABLE"/>
     <Variant id="@+id/base">
         <Layer layer="2"/>
         <Bounds

@@ -13,7 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-  <TaskPanel id="panel_app_grid" defaultVariant="@id/closed" role="@string/config_appGridComponentName" displayId="0">
+  <TaskPanel id="panel_app_grid" defaultVariant="@id/closed" controller="@xml/app_grid_panel_controller" displayId="0">
     <Variant id="@+id/base">
         <Layer layer="@integer/app_grid_panel_layer"/>
     </Variant>

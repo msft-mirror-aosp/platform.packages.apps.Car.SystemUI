@@ -105,8 +105,7 @@ public class BaseTaskPanelControllerTest extends CarSysuiTestCase {
                 DEFAULT_COMPONENT_TAG)).thenReturn(null);
         BaseTaskPanelController controller = createBaseTaskPanelController();
         Intent defaultIntent = controller.getDefaultComponent();
-        assertNotNull(defaultIntent);
-        assertNull(defaultIntent.getComponent());
+        assertNull(defaultIntent);
     }
 
     @Test

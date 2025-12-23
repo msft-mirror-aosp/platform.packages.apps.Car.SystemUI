@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.wm.scalableui;
 
+import static com.android.car.scalableui.model.TaskBehavior.TASK_PROPERTY_UNTRIMMABLE;
+
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -25,6 +27,8 @@ import android.window.WindowContainerTransaction;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.PanelState;
 import com.android.systemui.R;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.dagger.WMSingleton;
@@ -138,8 +142,18 @@ public final class AutoTaskStackHelper {
      * is considered according to config_untrimmable_activities. If the task is *not*
      * trimmable, it explicitly sets the task's trimmable state to `false`.
      */
-    public void setTaskUntrimmableIfNeeded(@NonNull ActivityManager.RunningTaskInfo taskInfo) {
+    public void setTaskUntrimmableIfNeeded(@NonNull String panelId,
+            @NonNull ActivityManager.RunningTaskInfo taskInfo) {
         if (!isTrimmable(taskInfo)) {
+            setTaskTrimmable(taskInfo, /* trimmable= */ false);
+            return;
+        }
+        PanelState panelState = StateManager.getPanelState(panelId);
+        if (panelState == null || panelState.getTaskBehavior() == null) {
+            return;
+        }
+        String untrimmablePolicy = panelState.getTaskBehavior().getTaskProperties();
+        if (TASK_PROPERTY_UNTRIMMABLE.equals(untrimmablePolicy)) {
             setTaskTrimmable(taskInfo, /* trimmable= */ false);
         }
     }

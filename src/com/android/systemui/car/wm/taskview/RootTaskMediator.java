@@ -99,7 +99,6 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
         TaskCreationParams params = new TaskCreationParams.Builder()
                 .setDisplayId(displayId)
                 .setWindowingMode(WINDOWING_MODE_MULTI_WINDOW)
-                .setRemoveWithTaskOrganizer(true)
                 .build();
         mShellTaskOrganizer.createTask(params, this);
     }

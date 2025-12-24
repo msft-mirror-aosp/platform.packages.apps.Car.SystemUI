@@ -56,6 +56,7 @@ import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
 import com.android.wm.shell.automotive.AutoTaskStackTransitionHandlerDelegate;
+import com.android.wm.shell.automotive.TaskStackStateChange;
 import com.android.wm.shell.shared.TransitionUtil;
 import com.android.wm.shell.transition.Transitions;
 
@@ -163,31 +164,30 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
 
     @Override
     public boolean startAnimation(@NonNull IBinder transition,
-            @NonNull Map<Integer, AutoTaskStackState> changedTaskStacks,
-            @NonNull TransitionInfo info,
+            @NonNull List<TaskStackStateChange> changedTaskStacks,
+            @NonNull TransitionInfo preferNotToUse,
             @NonNull SurfaceControl.Transaction startTransaction,
             @NonNull SurfaceControl.Transaction finishTransaction,
             @NonNull Transitions.TransitionFinishCallback finishCallback) {
         if (DEBUG) {
-            Log.d(TAG, "startAnimation INFO = " + info
+            Log.d(TAG, "startAnimation INFO = " + preferNotToUse
                     + ", changedTaskStacks=" + changedTaskStacks
                     + ", start transaction=" + startTransaction.getId()
                     + ", finishTransaction=" + finishTransaction.getId());
         }
 
-        mPanelTransitionCoordinator.reconcileAutoTaskStackState(transition, changedTaskStacks,
-                info);
+        mPanelTransitionCoordinator.reconcileAutoTaskStackState(transition, changedTaskStacks);
         mPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
 
         Trace.beginSection(TAG + "#startAnimation");
 
-        mPanelTransitionCoordinator.calculateStartTransaction(startTransaction, info);
+        mPanelTransitionCoordinator.calculateStartTransaction(startTransaction, changedTaskStacks);
         // Its expected for the auto transition handler delegate to apply startTransaction for now.
         // TODO(b/421966313) Think about applying this in car-wm-shell instead.
         startTransaction.apply();
 
         boolean animationStarted = mPanelTransitionCoordinator.playPendingAnimations(transition,
-                finishCallback, finishTransaction, info);
+                finishCallback, finishTransaction, changedTaskStacks);
         Trace.endSection();
         return animationStarted;
     }
@@ -290,8 +290,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
 
     @Override
     public void mergeAnimation(@NonNull IBinder transition,
-            @NonNull Map<Integer, AutoTaskStackState> changedTaskStacks,
-            @NonNull TransitionInfo info, @NonNull SurfaceControl.Transaction t,
+            @NonNull List<TaskStackStateChange> changedTaskStacks,
+            @NonNull TransitionInfo preferNotToUse, @NonNull SurfaceControl.Transaction t,
             @NonNull IBinder mergeTarget,
             @NonNull Transitions.TransitionFinishCallback finishCallback) {
         if (DEBUG) {

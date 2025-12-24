@@ -56,8 +56,8 @@ import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoTaskStackController;
-import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
+import com.android.wm.shell.automotive.TaskStackStateChange;
 import com.android.wm.shell.transition.Transitions;
 
 import org.junit.Before;
@@ -67,8 +67,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.function.Predicate;
 
 @CarSystemUiTest
@@ -143,7 +142,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
 
     @Test
     public void testStartAnimation_withPendingAnimators() {
-        Map<Integer, AutoTaskStackState> changedTaskStacks = new HashMap<>();
+        List<TaskStackStateChange> changedTaskStacks = Collections.emptyList();
         TransitionInfo info = mock(TransitionInfo.class);
         SurfaceControl.Transaction startTransaction = mock(SurfaceControl.Transaction.class);
         SurfaceControl.Transaction finishTransaction = mock(SurfaceControl.Transaction.class);
@@ -163,7 +162,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
 
     @Test
     public void testStartAnimation_withoutPendingAnimators() {
-        Map<Integer, AutoTaskStackState> changedTaskStacks = new HashMap<>();
+        List<TaskStackStateChange> changedTaskStacks = Collections.emptyList();
         TransitionInfo info = mock(TransitionInfo.class);
         SurfaceControl.Transaction startTransaction = mock(SurfaceControl.Transaction.class);
         SurfaceControl.Transaction finishTransaction = mock(SurfaceControl.Transaction.class);
@@ -185,7 +184,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
     public void testOnTransitionConsumed() {
         mDelegate.onTransitionConsumed(
                 mock(IBinder.class),
-                mock(Map.class),
+                Collections.emptyMap(),
                 false,
                 mock(SurfaceControl.Transaction.class));
 
@@ -196,7 +195,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
     public void testMergeAnimation() {
         mDelegate.mergeAnimation(
                 mock(IBinder.class),
-                mock(Map.class),
+                Collections.emptyList(),
                 mock(TransitionInfo.class),
                 mock(SurfaceControl.Transaction.class),
                 mock(IBinder.class),

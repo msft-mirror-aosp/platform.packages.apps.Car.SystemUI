@@ -84,8 +84,7 @@ public class PassengerKeyguardLockoutHelper {
             return;
         }
 
-        long deadline = mLockPatternUtils.setLockoutAttemptDeadline(
-                mUserId, timeout).toMillis();
+        long deadline = mLockPatternUtils.getLockoutEndTime(mUserId).toMillis();
         handleAttemptLockout(deadline);
     }
 

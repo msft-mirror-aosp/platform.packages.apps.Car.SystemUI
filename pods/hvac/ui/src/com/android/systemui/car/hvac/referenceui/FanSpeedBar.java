@@ -244,8 +244,10 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
     }
 
     private void setOffAndMaxButtonsActiveState(int fanSpeed) {
-        setOffButtonActive(fanSpeed == mMinFanSpeedSupportedByUi);
-        setMaxButtonActive(fanSpeed == mMaxFanSpeedSupportedByUi);
+        mContext.getMainExecutor().execute(() -> {
+            setOffButtonActive(fanSpeed == mMinFanSpeedSupportedByUi);
+            setMaxButtonActive(fanSpeed == mMaxFanSpeedSupportedByUi);
+        });
     }
 
     private void setMaxButtonActive(boolean active) {
@@ -279,7 +281,9 @@ public class FanSpeedBar extends RelativeLayout implements HvacView {
     }
 
     private void updateViewPerAvailability() {
-        setAlpha(shouldAllowControl() ? mOnAlpha : mOffAlpha);
+        mContext.getMainExecutor().execute(() -> {
+            setAlpha(shouldAllowControl() ? mOnAlpha : mOffAlpha);
+        });
     }
 
     private boolean shouldAllowControl() {

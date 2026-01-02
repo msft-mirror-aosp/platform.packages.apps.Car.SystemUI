@@ -200,7 +200,9 @@ public class FanDirectionButtons extends LinearLayout implements HvacView {
     }
 
     private void updateViewPerAvailability() {
-        setAlpha(shouldAllowControl() ? mOnAlpha : mOffAlpha);
+        mContext.getMainExecutor().execute(() -> {
+            setAlpha(shouldAllowControl() ? mOnAlpha : mOffAlpha);
+        });
     }
 
     private boolean shouldAllowControl() {

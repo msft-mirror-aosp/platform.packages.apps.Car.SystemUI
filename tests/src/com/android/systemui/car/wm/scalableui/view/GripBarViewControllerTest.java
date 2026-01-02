@@ -187,7 +187,7 @@ public class GripBarViewControllerTest extends CarSysuiTestCase {
 
         // Act
         mGripBar.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 10, 0));
-        mGripBar.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 0, 20, 0));
+        mGripBar.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE, 0, 60, 0));
         mGripBar.dispatchTouchEvent(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 10, 0));
 
         // Assert
@@ -198,7 +198,7 @@ public class GripBarViewControllerTest extends CarSysuiTestCase {
         KeyFrameEvent keyFrameEvent = (KeyFrameEvent) dispatchedEvents.getFirst();
         assertThat(keyFrameEvent.getId()).isEqualTo(DRAG_EVENT_ID);
         assertThat(keyFrameEvent.getPanelId()).isEqualTo(TEST_PANEL_ID);
-        assertThat(keyFrameEvent.getFraction()).isEqualTo(0.2f);
+        assertThat(keyFrameEvent.getFraction()).isEqualTo(0.6f);
         assertThat(keyFrameEvent.getTokens().get(PANEL_DRAG_DIRECTION_ID))
                 .isEqualTo(DRAG_INCREASE);
 

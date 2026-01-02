@@ -17,10 +17,12 @@ package com.android.systemui.car.wm.scalableui;
 
 import static com.android.systemui.car.wm.scalableui.PanelTransitionCoordinator.DECOR_TRANSACTION;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_OPEN_EVENT_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_TASK_PANEL_EMPTY_EVENT_ID;
 
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
@@ -30,6 +32,7 @@ import static org.mockito.Mockito.when;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.graphics.Rect;
 import android.os.Binder;
 import android.os.IBinder;
 import android.testing.TestableLooper;
@@ -40,32 +43,41 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelTransaction;
 import com.android.car.scalableui.model.Transition;
 import com.android.car.scalableui.model.Variant;
+import com.android.dx.mockito.inline.extended.ExtendedMockito;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.ShellSyncExecutor;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.flags.FlagManager;
+import com.android.systemui.car.wm.scalableui.panel.DecorPanel;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoSurfaceTransaction;
 import com.android.wm.shell.automotive.AutoSurfaceTransactionFactory;
 import com.android.wm.shell.automotive.AutoTaskStackController;
+import com.android.wm.shell.automotive.AutoTaskStackState;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
 import com.android.wm.shell.automotive.RootTaskStack;
+import com.android.wm.shell.automotive.TaskStackStateChange;
 import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.transition.Transitions;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.MockitoSession;
+import org.mockito.quality.Strictness;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -107,15 +119,28 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
     @Mock
     private TaskPanel mTaskPanel;
 
+    private MockitoSession mSession;
+
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        mSession = ExtendedMockito.mockitoSession()
+                .initMocks(this)
+                .mockStatic(StateManager.class)
+                .strictness(Strictness.LENIENT)
+                .startMocking();
         mMainExecutor = new ShellSyncExecutor();
         mPanelTransitionCoordinator = new PanelTransitionCoordinator(
                 mAutoTaskStackController, mAutoSurfaceTransactionFactory, mPanelUtils,
                 mAutoLayoutManager, mMainExecutor, mFlagManager);
         when(mAutoSurfaceTransactionFactory.createTransaction(anyString())).thenReturn(
                 mAutoSurfaceTransaction);
+    }
+
+    @After
+    public void tearDown() {
+        if (mSession != null) {
+            mSession.finishMocking();
+        }
     }
 
     @Test
@@ -320,5 +345,121 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
 
         when(mTaskPanel.isVisible()).thenReturn(isVisible);
         when(mTaskPanel.canFocusOnTransition()).thenReturn(true);
+    }
+
+    @Test
+    public void testResetUnpreparedDecorPanel_resetsWhenDecorIsNullAndToVariantIsVisible() {
+        DecorPanel decorPanel = mock(DecorPanel.class);
+        when(decorPanel.getPanelId()).thenReturn(TEST_PANEL_1);
+        when(decorPanel.getAutoDecor()).thenReturn(null);
+        when(mPanelUtils.getDecorPanel(any())).thenReturn(decorPanel);
+
+        Transition transition = mock(Transition.class);
+        Variant toVariant = mock(Variant.class);
+        when(toVariant.isVisible()).thenReturn(true);
+        when(transition.getToVariant()).thenReturn(toVariant);
+
+        PanelTransaction transaction = new PanelTransaction.Builder()
+                .addPanelTransaction(TEST_PANEL_1, transition)
+                .build();
+
+        mPanelTransitionCoordinator.resetUnpreparedDecorPanel(transaction);
+
+        verify(decorPanel).reset();
+    }
+
+    @Test
+    public void testMergeAnimation_mergesAnimationCorrectly() {
+        IBinder binder = new Binder();
+        IBinder mergeBinder = new Binder();
+        // Setup a running animation
+        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
+        animator.setDuration(1000L);
+        Transition mockTransition = mock(Transition.class);
+        Variant mockVariant = mock(Variant.class);
+        when(mockTransition.getToVariant()).thenReturn(mockVariant);
+        when(mockVariant.getIdName()).thenReturn("test_variant");
+        PanelTransaction runningTransaction = new PanelTransaction.Builder()
+                .addAnimator(TEST_PANEL_1, animator)
+                .addPanelTransaction(TEST_PANEL_1, mockTransition)
+                .build();
+        mPanelTransitionCoordinator.createAutoTaskStackTransaction(binder, runningTransaction);
+
+        // Start the animation
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            mPanelTransitionCoordinator.playPendingAnimations(binder,
+                    mFinishCallback, mFinishTransaction, Collections.emptyList());
+        });
+
+        // Setup merge transaction
+        PanelTransaction mergeTransaction = new PanelTransaction.Builder()
+                .addPanelTransaction(TEST_PANEL_1, mock(Transition.class))
+                .build();
+        mPanelTransitionCoordinator.createAutoTaskStackTransaction(mergeBinder, mergeTransaction);
+
+        // Perform merge
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            mPanelTransitionCoordinator.mergeAnimation(mergeBinder, binder);
+        });
+
+        assertThat(runningTransaction.shouldMergePanelAnimation(TEST_PANEL_1)).isTrue();
+        assertThat(mPanelTransitionCoordinator.isAnimationRunning()).isFalse();
+    }
+
+    @Test
+    public void testReconcileAutoTaskStackState_detectsConflicts_startsTransition() {
+        // Setup conflict: TaskPanel visible, but AutoTaskStackState says invisible
+        setupTaskPanel(TEST_PANEL_1, TEST_TASK_ID_1, /* isVisible= */ true);
+        when(mTaskPanel.getLayer()).thenReturn(1);
+        when(mTaskPanel.getBounds()).thenReturn(new Rect(0, 0, 100, 100));
+        when(mPanelUtils.getTaskPanel(any())).thenReturn(mTaskPanel);
+
+        AutoTaskStackState changedState = mock(AutoTaskStackState.class);
+        when(changedState.getChildrenTasksVisible()).thenReturn(false);
+        when(changedState.getLayer()).thenReturn(1);
+        when(changedState.getBounds()).thenReturn(new Rect(0, 0, 100, 100));
+        List<TaskStackStateChange> changedTaskStacks = Collections.singletonList(
+                new TaskStackStateChange(TEST_TASK_ID_1, changedState));
+
+        // Mock StateManager to capture events and return a transaction
+        PanelTransaction resultingTransaction = new PanelTransaction.Builder().build();
+        ExtendedMockito.doReturn(resultingTransaction).when(
+                () -> StateManager.handleEvents(any(), anyBoolean()));
+
+        mPanelTransitionCoordinator.reconcileAutoTaskStackState(new Binder(), changedTaskStacks);
+
+        // Verify StateManager was called with events
+        ExtendedMockito.verify(() -> StateManager.handleEvents(any(), anyBoolean()));
+    }
+
+    @Test
+    public void testReconcileAutoTaskStackState_detectsPanelsBecomingEmpty_startsTransition() {
+        setupTaskPanel(TEST_PANEL_1, TEST_TASK_ID_1, /* isVisible= */ true);
+        when(mTaskPanel.getLayer()).thenReturn(1);
+        when(mTaskPanel.getBounds()).thenReturn(new Rect(0, 0, 100, 100));
+        when(mTaskPanel.hasRestart()).thenReturn(false);
+        when(mTaskPanel.isRootTaskEmpty()).thenReturn(true);
+        when(mPanelUtils.getTaskPanel(any())).thenReturn(mTaskPanel);
+
+        AutoTaskStackState changedState = mock(AutoTaskStackState.class);
+        when(changedState.getChildrenTasksVisible()).thenReturn(false);
+        when(changedState.getLayer()).thenReturn(1);
+        when(changedState.getBounds()).thenReturn(new Rect(0, 0, 100, 100));
+        List<TaskStackStateChange> changedTaskStacks = Collections.singletonList(
+                new TaskStackStateChange(TEST_TASK_ID_1, changedState));
+
+        PanelTransaction resultingTransaction = new PanelTransaction.Builder().build();
+        ExtendedMockito.doReturn(resultingTransaction).when(
+                () -> StateManager.handleEvents(any(), anyBoolean()));
+
+        mPanelTransitionCoordinator.reconcileAutoTaskStackState(new Binder(), changedTaskStacks);
+
+        ArgumentCaptor<List<Event>> eventsCaptor = ArgumentCaptor.forClass(List.class);
+        ExtendedMockito.verify(
+                () -> StateManager.handleEvents(eventsCaptor.capture(), anyBoolean()));
+        List<Event> events = eventsCaptor.getValue();
+        assertThat(events).isNotEmpty();
+        assertThat(events.stream().anyMatch(
+                event -> event.getId().equals(SYSTEM_TASK_PANEL_EMPTY_EVENT_ID))).isTrue();
     }
 }

@@ -234,11 +234,11 @@ public final class RootTaskMediator implements ShellTaskOrganizer.TaskListener {
     }
 
     @Override
-    public void onBackPressedOnTaskRoot(ActivityManager.RunningTaskInfo taskInfo,
-            boolean isFromMoveActivityTaskToBack, boolean isOptInOnBackInvoked,
+    public void onBackOnTaskRoot(ActivityManager.RunningTaskInfo taskInfo,
+            boolean isFromBackPress, boolean isOptInOnBackInvoked,
             boolean hasOpaqueSibling) {
-        ShellTaskOrganizer.TaskListener.super.onBackPressedOnTaskRoot(taskInfo,
-                isFromMoveActivityTaskToBack, isOptInOnBackInvoked, hasOpaqueSibling);
+        ShellTaskOrganizer.TaskListener.super.onBackOnTaskRoot(taskInfo,
+                isFromBackPress, isOptInOnBackInvoked, hasOpaqueSibling);
         if (mTaskStack.size() == 1) {
             Log.i(TAG, "Cannot remove last task from root task, display=" + mDisplayId);
             return;

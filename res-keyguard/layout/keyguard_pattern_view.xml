@@ -40,18 +40,18 @@
         android:orientation="vertical"
         android:layout_gravity="center">
 
-        <TextView
-            android:id="@+id/pattern_prompt"
-            android:layout_width="wrap_content"
+        <com.android.systemui.bouncer.ui.BouncerMessageView
+            android:id="@+id/bouncer_message_view"
+            android:screenReaderFocusable="true"
+            android:accessibilityLiveRegion="polite"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@*android:dimen/car_padding_2"
-            android:gravity="center"
-            android:textAppearance="?oemTextAppearanceTitleLarge"
-            android:text="@string/car_keyguard_enter_your_pattern"
+            android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/bouncer_message_area"/>
+            app:layout_constraintBottom_toTopOf="@id/bouncer_message_area"
+            />
 
         <include
             android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
             layout="@layout/keyguard_message_area"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/pattern_prompt"
+            app:layout_constraintTop_toBottomOf="@id/bouncer_message_view"
             app:layout_constraintBottom_toTopOf="@id/lockPatternView"/>
 
         <com.android.internal.widget.LockPatternView

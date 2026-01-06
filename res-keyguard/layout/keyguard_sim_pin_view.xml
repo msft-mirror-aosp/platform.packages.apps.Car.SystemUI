@@ -85,13 +85,14 @@
             android:layout_height="@dimen/divider_height"
             android:background="?oemColorOnSurface" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <com.android.systemui.bouncer.ui.BouncerMessageView
+            android:id="@+id/bouncer_message_view"
+            android:screenReaderFocusable="true"
+            android:accessibilityLiveRegion="polite"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@*android:dimen/car_padding_2"
-            android:gravity="center"
-            android:textAppearance="?oemTextAppearanceTitleLarge"
-            android:text="@string/car_keyguard_enter_your_pin" />
+            android:orientation="vertical"
+            />
 
         <include layout="@layout/keyguard_message_area" />
 

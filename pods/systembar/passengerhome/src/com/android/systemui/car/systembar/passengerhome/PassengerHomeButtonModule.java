@@ -31,6 +31,6 @@ public interface PassengerHomeButtonModule {
     @Binds
     @IntoMap
     @ClassKey(PassengerHomeButtonController.class)
-    CarSystemBarElementController.Factory<?, ?> bindFactory(
+    CarSystemBarElementController.Factory bindFactory(
             PassengerHomeButtonController.Factory factory);
 }

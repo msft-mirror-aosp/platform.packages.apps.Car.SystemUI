@@ -47,6 +47,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @CarSystemUiTest
@@ -61,6 +62,7 @@ public class ButtonSelectionStateControllerTest extends CarSysuiTestCase {
     private static final String TEST_CATEGORY_CLASS = ".APP_MAPS";
     private static final String TEST_PACKAGE = "com.android.car.dialer";
     private static final String TEST_PACKAGE_CLASS = ".Dialer";
+    private static final String TEST_PANEL_ID = "test_panel";
 
     // LinearLayout with CarSystemBarButtons with different configurations.
     private LinearLayout mTestView;
@@ -147,7 +149,8 @@ public class ButtonSelectionStateControllerTest extends CarSysuiTestCase {
         when(mTaskPanelInfoRepository.isPackageVisibleOnDisplay(eq(mComponentName.getPackageName()),
                 anyInt())).thenReturn(true);
         testButton.setSelected(false);
-        mButtonSelectionStateController.panelTaskChanged();
+        mButtonSelectionStateController.panelTaskChanged(Collections.singletonList(TEST_PANEL_ID),
+                Collections.singletonList(mComponentName));
 
         assertbuttonSelected(testButton);
     }
@@ -161,7 +164,8 @@ public class ButtonSelectionStateControllerTest extends CarSysuiTestCase {
         when(mTaskPanelInfoRepository.isPackageVisibleOnDisplay(eq(mComponentName.getPackageName()),
                 anyInt())).thenReturn(true);
         testButton.setSelected(false);
-        mButtonSelectionStateController.panelTaskChanged();
+        mButtonSelectionStateController.panelTaskChanged(Collections.singletonList(TEST_PANEL_ID),
+                Collections.singletonList(mComponentName));
 
         assertbuttonSelected(testButton);
     }
@@ -175,14 +179,16 @@ public class ButtonSelectionStateControllerTest extends CarSysuiTestCase {
         when(mTaskPanelInfoRepository.isComponentVisibleOnDisplay(eq(mComponentName), anyInt()))
                 .thenReturn(true);
         oldButton.setSelected(false);
-        mButtonSelectionStateController.panelTaskChanged();
+        mButtonSelectionStateController.panelTaskChanged(Collections.singletonList(TEST_PANEL_ID),
+                Collections.singletonList(mComponentName));
 
         when(mTaskPanelInfoRepository.isComponentVisibleOnDisplay(eq(mComponentName), anyInt()))
                 .thenReturn(false);
         mComponentName = new ComponentName(TEST_PACKAGE, TEST_PACKAGE_CLASS);
         when(mTaskPanelInfoRepository.isComponentVisibleOnDisplay(eq(mComponentName), anyInt()))
                 .thenReturn(true);
-        mButtonSelectionStateController.panelTaskChanged();
+        mButtonSelectionStateController.panelTaskChanged(Collections.singletonList(TEST_PANEL_ID),
+                Collections.singletonList(mComponentName));
 
         assertButtonUnselected(oldButton);
     }

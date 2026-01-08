@@ -44,12 +44,16 @@ import com.android.systemui.car.wm.scalableui.ScalableUIUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.dagger.SysUISingleton;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * CarSystemBarButtons can optionally have selection state that toggles certain visual indications
@@ -69,15 +73,16 @@ public class ButtonSelectionStateController {
     protected final Context mContext;
     protected final TaskPanelInfoRepository mTaskPanelInfoRepository;
     private final FlagManager mFlagManager;
-    protected ButtonMap mButtonsByCategory = new ButtonMap();
-    protected ButtonMap mButtonsByPackage = new ButtonMap();
-    protected ButtonMap mButtonsByComponentName = new ButtonMap();
+    protected ButtonMap<String> mButtonsByCategory = new ButtonMap<>();
+    protected ButtonMap<String> mButtonsByPackage = new ButtonMap<>();
+    protected ButtonMap<ComponentName> mButtonsByComponentName = new ButtonMap<>();
     protected HashSet<CarSystemBarButton> mSelectedButtons;
     protected HashSet<CarSystemBarButton> mSelectedButtonsForPanelApp;
     protected HashSet<CarSystemBarButton> mSelectedButtonsForPanelVisibility;
 
     private final TaskPanelInfoRepository.TaskPanelChangeListener mTaskPanelListener =
-            this::panelTaskChanged;
+            (panelId, changedComponentNames) -> panelTaskChanged(Collections.singletonList(panelId),
+                    changedComponentNames);
 
     private final StateManager.PanelStateObserver mPanelStateObserver =
             new StateManager.PanelStateObserver() {
@@ -94,7 +99,7 @@ public class ButtonSelectionStateController {
                     }
                     panelVisibilityChanged(panelStates);
                     // also trigger task change since it depends on panel visibility
-                    panelTaskChanged();
+                    panelTaskChanged(changedPanelIds, /* changedComponentNames= */ null);
                 }
 
                 @Override
@@ -103,10 +108,6 @@ public class ButtonSelectionStateController {
                     // handled opportunistically in before method
                 }
             };
-
-    public ButtonSelectionStateController(Context context, FlagManager flagManager) {
-        this(context, null, flagManager);
-    }
 
     public ButtonSelectionStateController(Context context,
             TaskPanelInfoRepository taskPanelInfoRepository,
@@ -135,8 +136,7 @@ public class ButtonSelectionStateController {
             if (((CarSystemBarButton) v).hasSelectionState()) {
                 addButtonWithSelectionState((CarSystemBarButton) v);
             }
-        } else if (v instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) v;
+        } else if (v instanceof ViewGroup viewGroup) {
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 addAllButtonsWithSelectionState(viewGroup.getChildAt(i));
             }
@@ -208,19 +208,35 @@ public class ButtonSelectionStateController {
      * be selected next. It does this by reading the properties on the CarSystemBarButton and
      * seeing if they are a match based on panel visibility and task visibility on panels.
      */
-    protected void panelTaskChanged() {
-        mSelectedButtonsForPanelApp.clear();
-        mButtonsByComponentName.keySet().forEach(componentName -> {
-            mButtonsByComponentName.get(componentName).forEach(button -> {
-                if (mTaskPanelInfoRepository.isComponentVisibleOnDisplay(
-                        ComponentName.unflattenFromString(componentName), button.getDisplayId())) {
+    protected void panelTaskChanged(@NonNull Collection<String> changedPanelIds,
+            @Nullable List<ComponentName> changedComponentNames) {
+        List<ComponentName> changedComponentNamesFinal;
+        Set<String> changedPackageNames;
+        if (changedComponentNames == null || changedComponentNames.isEmpty()) {
+            mSelectedButtonsForPanelApp.clear();
+            changedComponentNamesFinal = mButtonsByComponentName.keySet().stream().toList();
+            changedPackageNames = mButtonsByPackage.keySet();
+        } else {
+            changedComponentNamesFinal = changedComponentNames;
+            changedPackageNames = changedComponentNamesFinal.stream().map(
+                    ComponentName::getPackageName).collect(Collectors.toSet());
+            mSelectedButtonsForPanelApp.removeIf(button ->
+                    !Collections.disjoint(button.getComponentNames(), changedComponentNamesFinal)
+                            || !Collections.disjoint(Arrays.asList(button.getPackages()),
+                            changedPackageNames));
+        }
+
+        changedComponentNamesFinal.forEach(componentName -> {
+            mButtonsByComponentName.getOrDefault(componentName, new HashSet<>()).forEach(button -> {
+                if (mTaskPanelInfoRepository.isComponentVisibleOnDisplay(componentName,
+                        button.getDisplayId())) {
                     mSelectedButtonsForPanelApp.add(button);
                 }
             });
         });
 
-        mButtonsByPackage.keySet().forEach(packageName -> {
-            mButtonsByPackage.get(packageName).forEach(button -> {
+        changedPackageNames.forEach(packageName -> {
+            mButtonsByPackage.getOrDefault(packageName, new HashSet<>()).forEach(button -> {
                 if (mTaskPanelInfoRepository.isPackageVisibleOnDisplay(packageName,
                         button.getDisplayId())) {
                     mSelectedButtonsForPanelApp.add(button);
@@ -263,17 +279,17 @@ public class ButtonSelectionStateController {
 
         boolean shouldSelectForApp = false;
         String[] packages = button.getPackages();
-        for (int i = 0; i < packages.length; i++) {
+        for (String aPackage : packages) {
             if (mTaskPanelInfoRepository.isPackageVisibleOnDisplay(
-                    packages[i], button.getDisplayId())) {
+                    aPackage, button.getDisplayId())) {
                 shouldSelectForApp = true;
                 break;
             }
         }
-        String[] componentNames = button.getComponentName();
-        for (int i = 0; i < componentNames.length; i++) {
+        List<ComponentName> componentNames = button.getComponentNames();
+        for (ComponentName componentName : componentNames) {
             if (mTaskPanelInfoRepository.isComponentVisibleOnDisplay(
-                    ComponentName.unflattenFromString(componentNames[i]),
+                    componentName,
                     button.getDisplayId())) {
                 shouldSelectForApp = true;
                 break;
@@ -369,17 +385,17 @@ public class ButtonSelectionStateController {
                 return;
             }
             String[] categories = carSystemBarButton.getCategories();
-            for (int i = 0; i < categories.length; i++) {
-                mButtonsByCategory.add(categories[i], carSystemBarButton);
+            for (String category : categories) {
+                mButtonsByCategory.add(category, carSystemBarButton);
             }
 
             String[] packages = carSystemBarButton.getPackages();
-            for (int i = 0; i < packages.length; i++) {
-                mButtonsByPackage.add(packages[i], carSystemBarButton);
+            for (String aPackage : packages) {
+                mButtonsByPackage.add(aPackage, carSystemBarButton);
             }
-            String[] componentNames = carSystemBarButton.getComponentName();
-            for (int i = 0; i < componentNames.length; i++) {
-                mButtonsByComponentName.add(componentNames[i], carSystemBarButton);
+            List<ComponentName> componentNames = carSystemBarButton.getComponentNames();
+            for (ComponentName componentName : componentNames) {
+                mButtonsByComponentName.add(componentName, carSystemBarButton);
             }
 
             mRegisteredViews.add(carSystemBarButton);
@@ -397,8 +413,7 @@ public class ButtonSelectionStateController {
 
         String packageName = topActivity.getPackageName();
 
-        HashSet<CarSystemBarButton> selectedButtons =
-                findButtonsByComponentName(topActivity);
+        HashSet<CarSystemBarButton> selectedButtons = mButtonsByComponentName.get(topActivity);
         if (selectedButtons == null) {
             selectedButtons = mButtonsByPackage.get(packageName);
         }
@@ -435,14 +450,6 @@ public class ButtonSelectionStateController {
         return null;
     }
 
-    private HashSet<CarSystemBarButton> findButtonsByComponentName(
-            ComponentName componentName) {
-        HashSet<CarSystemBarButton> buttons =
-                mButtonsByComponentName.get(componentName.flattenToShortString());
-        return (buttons != null) ? buttons :
-                mButtonsByComponentName.get(componentName.flattenToString());
-    }
-
     private String getPackageCategory(String packageName) {
         PackageManager pm = mContext.getPackageManager();
         Set<String> supportedCategories = mButtonsByCategory.keySet();
@@ -463,9 +470,9 @@ public class ButtonSelectionStateController {
     }
 
     // simple multi-map
-    private static class ButtonMap extends HashMap<String, HashSet<CarSystemBarButton>> {
+    private static class ButtonMap<K> extends HashMap<K, HashSet<CarSystemBarButton>> {
 
-        public boolean add(String key, CarSystemBarButton value) {
+        public boolean add(K key, CarSystemBarButton value) {
             if (containsKey(key)) {
                 return get(key).add(value);
             }

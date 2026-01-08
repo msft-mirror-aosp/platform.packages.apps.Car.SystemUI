@@ -151,6 +151,9 @@
     <!-- Specifies the component name of the home activity -->
     <string name="config_homeComponentName" translatable="false">com.android.car.carlauncher/.CarLauncher</string>
 
+    <!-- Specifies the panel visibilities that comprise the home scene -->
+    <string name="config_homePanelVisibilities" translatable="false"></string>
+
     <!-- Specifies the component name of the app grid activity -->
     <string name="config_appGridComponentName" translatable="false">com.android.car.carlauncher/.AppGridActivity</string>
 

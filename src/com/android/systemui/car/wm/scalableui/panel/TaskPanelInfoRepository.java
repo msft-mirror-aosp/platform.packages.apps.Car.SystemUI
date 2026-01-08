@@ -22,15 +22,15 @@ import android.util.ArraySet;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
-import com.android.car.scalableui.panel.Panel;
-import com.android.car.scalableui.panel.PanelPool;
+import com.android.car.scalableui.model.Variant;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 import com.android.wm.shell.dagger.WMSingleton;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -56,21 +56,13 @@ public class TaskPanelInfoRepository {
     @GuardedBy("mLock")
     private final Set<TaskPanelChangeListener> mListeners = new ArraySet<>();
     private final Executor mUiBackgroundExecutor;
-    private final PanelPool mPanelPool;
+    private final PanelUtils mPanelUtils;
 
-    @GuardedBy("mLock")
-    private boolean mHasPendingTaskChanges = false;
 
     @Inject
-    public TaskPanelInfoRepository(@UiBackground Executor executor) {
+    public TaskPanelInfoRepository(@UiBackground Executor executor, PanelUtils panelUtils) {
         mUiBackgroundExecutor = executor;
-        mPanelPool = PanelPool.getInstance();
-    }
-
-    @VisibleForTesting
-    TaskPanelInfoRepository(Executor executor, PanelPool panelPool) {
-        mUiBackgroundExecutor = executor;
-        mPanelPool = panelPool;
+        mPanelUtils = panelUtils;
     }
 
     /**
@@ -97,10 +89,12 @@ public class TaskPanelInfoRepository {
     public boolean isPackageVisible(String packageName) {
         synchronized (mLock) {
             for (String panelId : mPanelTaskMap.keySet()) {
-                if (mPanelTaskMap.get(panelId).lastEntry() != null
-                        && mPanelTaskMap.get(panelId).lastEntry().getValue().topActivity != null
-                        && Objects.equals(mPanelTaskMap.get(panelId).lastEntry().getValue()
-                        .topActivity.getPackageName(), packageName)) {
+                ActivityManager.RunningTaskInfo taskInfo = getTopVisibleTaskOnPanel(panelId);
+                if (taskInfo == null) {
+                    continue;
+                }
+                if (taskInfo.topActivity != null
+                        && Objects.equals(taskInfo.topActivity.getPackageName(), packageName)) {
                     return isPanelVisible(panelId);
                 }
             }
@@ -114,14 +108,14 @@ public class TaskPanelInfoRepository {
     public boolean isPackageVisibleOnDisplay(String packageName, int displayId) {
         synchronized (mLock) {
             for (String panelId : mPanelTaskMap.keySet()) {
-                if (mPanelTaskMap.get(panelId).lastEntry() != null) {
-                    ActivityManager.RunningTaskInfo taskInfo = mPanelTaskMap.get(
-                            panelId).lastEntry().getValue();
-                    if (taskInfo.topActivity != null && Objects.equals(
-                            taskInfo.topActivity.getPackageName(), packageName)
-                            && taskInfo.displayId == displayId) {
-                        return isPanelVisible(panelId);
-                    }
+                ActivityManager.RunningTaskInfo taskInfo = getTopVisibleTaskOnPanel(panelId);
+                if (taskInfo == null) {
+                    continue;
+                }
+                if (taskInfo.topActivity != null
+                        && Objects.equals(taskInfo.topActivity.getPackageName(), packageName)
+                        && taskInfo.displayId == displayId) {
+                    return isPanelVisible(panelId);
                 }
             }
         }
@@ -134,9 +128,11 @@ public class TaskPanelInfoRepository {
     public boolean isComponentVisible(ComponentName componentName) {
         synchronized (mLock) {
             for (String panelId : mPanelTaskMap.keySet()) {
-                if (mPanelTaskMap.get(panelId).lastEntry() != null && Objects.equals(
-                        mPanelTaskMap.get(
-                                panelId).lastEntry().getValue().topActivity, componentName)) {
+                ActivityManager.RunningTaskInfo taskInfo = getTopVisibleTaskOnPanel(panelId);
+                if (taskInfo == null) {
+                    continue;
+                }
+                if (Objects.equals(taskInfo.topActivity, componentName)) {
                     return isPanelVisible(panelId);
                 }
             }
@@ -150,11 +146,12 @@ public class TaskPanelInfoRepository {
     public boolean isComponentVisibleOnDisplay(ComponentName componentName, int displayId) {
         synchronized (mLock) {
             for (String panelId : mPanelTaskMap.keySet()) {
-                if (mPanelTaskMap.get(panelId).lastEntry() != null && Objects.equals(
-                        mPanelTaskMap.get(
-                                panelId).lastEntry().getValue().topActivity, componentName)
-                        && mPanelTaskMap.get(panelId).lastEntry().getValue().displayId
-                        == displayId) {
+                ActivityManager.RunningTaskInfo taskInfo = getTopVisibleTaskOnPanel(panelId);
+                if (taskInfo == null) {
+                    continue;
+                }
+                if (Objects.equals(taskInfo.topActivity, componentName)
+                        && taskInfo.displayId == displayId) {
                     return isPanelVisible(panelId);
                 }
             }
@@ -166,11 +163,11 @@ public class TaskPanelInfoRepository {
      * Query if a specific panel is currently visible.
      */
     private boolean isPanelVisible(String panelId) {
-        Panel panel = mPanelPool.getPanel(panelId);
-        if (panel == null) {
+        Variant currentVariant = mPanelUtils.getCurrentVariant(panelId);
+        if (currentVariant == null) {
             return false;
         }
-        return panel.isVisible();
+        return currentVariant.isVisible();
     }
 
     void onTaskAppearedOnPanel(String panelId, ActivityManager.RunningTaskInfo taskInfo) {
@@ -179,7 +176,8 @@ public class TaskPanelInfoRepository {
                 mPanelTaskMap.put(panelId, new LinkedHashMap<>());
             }
             mPanelTaskMap.get(panelId).put(taskInfo.taskId, taskInfo);
-            mHasPendingTaskChanges = true;
+            List<ComponentName> changedComponents = getChangedComponents(panelId);
+            notifyTaskPanelChangeListeners(panelId, changedComponents);
 
             if (!mPanelTaskMap.get(panelId).isEmpty()) {
                 mLastVanishedTaskInfo.remove(panelId);
@@ -192,13 +190,15 @@ public class TaskPanelInfoRepository {
             if (!mPanelTaskMap.containsKey(panelId)) {
                 return;
             }
-            ActivityManager.RunningTaskInfo oldTask = mPanelTaskMap.get(panelId).get(
+            ActivityManager.RunningTaskInfo oldTask = mPanelTaskMap.get(panelId).remove(
                     taskInfo.taskId);
             mPanelTaskMap.get(panelId).put(taskInfo.taskId, taskInfo);
-            if ((oldTask == null || !isTaskVisible(oldTask)
-                    || !Objects.equals(oldTask.topActivity, taskInfo.topActivity))
-                    && isTaskVisible(taskInfo)) {
-                mHasPendingTaskChanges = true;
+            if (oldTask == null
+                    || !Objects.equals(oldTask.topActivity, taskInfo.topActivity)
+                    || isTaskVisible(oldTask) != isTaskVisible(taskInfo)) {
+                List<ComponentName> changedComponents = getChangedComponents(panelId);
+
+                notifyTaskPanelChangeListeners(panelId, changedComponents);
             }
 
             if (!mPanelTaskMap.get(panelId).isEmpty()) {
@@ -217,7 +217,9 @@ public class TaskPanelInfoRepository {
             if (removed == null) {
                 return;
             }
-            mHasPendingTaskChanges = true;
+
+            List<ComponentName> changedComponents = getChangedComponents(panelId);
+            notifyTaskPanelChangeListeners(panelId, changedComponents);
 
             if (mPanelTaskMap.get(panelId).isEmpty()) {
                 mLastVanishedTaskInfo.put(panelId, removed);
@@ -226,23 +228,48 @@ public class TaskPanelInfoRepository {
     }
 
     /**
-     * Notify if the top task on any panel has changed. This should be called from startAnimation
-     * only since that is when the task stack is finalized and settled (to reduce
-     * over-notification).
+     * Notify if the top task on any panel has changed.
      */
-    public void maybeNotifyTopTaskOnPanelChanged() {
+    private void notifyTaskPanelChangeListeners(String panelId,
+            List<ComponentName> changedComponentName) {
         synchronized (mLock) {
-            if (!mHasPendingTaskChanges) {
-                return;
-            }
-            mHasPendingTaskChanges = false;
             mListeners.forEach(listener -> mUiBackgroundExecutor.execute(
-                    listener::onTopTaskOnPanelChanged));
+                    () -> listener.onTopTaskOnPanelChanged(panelId, changedComponentName)));
+        }
+    }
+
+    @Nullable
+    private ActivityManager.RunningTaskInfo getTopVisibleTaskOnPanel(String panelId) {
+        synchronized (mLock) {
+            LinkedHashMap<Integer, ActivityManager.RunningTaskInfo> map = mPanelTaskMap.get(
+                    panelId);
+            if (map == null || map.isEmpty()) {
+                return null;
+            }
+            for (Map.Entry<Integer, ActivityManager.RunningTaskInfo> entry :
+                    map.reversed().entrySet()) {
+                if (entry.getValue() != null && isTaskVisible(entry.getValue())) {
+                    return entry.getValue();
+                }
+            }
+            return null;
         }
     }
 
     private boolean isTaskVisible(ActivityManager.RunningTaskInfo task) {
         return task.isVisible && task.isRunning && !task.isSleeping;
+    }
+
+    private List<ComponentName> getChangedComponents(String panelId) {
+        synchronized (mLock) {
+            List<ComponentName> changedComponents = new ArrayList<>();
+            for (ActivityManager.RunningTaskInfo info : mPanelTaskMap.get(panelId).values()) {
+                if (info.topActivity != null) {
+                    changedComponents.add(info.topActivity);
+                }
+            }
+            return changedComponents;
+        }
     }
 
     // TODO(b/440364117): remove once task ordering is consistent
@@ -259,7 +286,9 @@ public class TaskPanelInfoRepository {
     public interface TaskPanelChangeListener {
         /**
          * Notify the top task on a panel has changed.
+         * @param panelId the id of the panel that has a new top task
+         * @param changedComponentNames a list of components who's visibility may have changed
          */
-        void onTopTaskOnPanelChanged();
+        void onTopTaskOnPanelChanged(String panelId, List<ComponentName> changedComponentNames);
     }
 }

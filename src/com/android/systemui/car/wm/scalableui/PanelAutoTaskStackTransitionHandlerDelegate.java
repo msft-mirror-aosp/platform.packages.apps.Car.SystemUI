@@ -50,7 +50,6 @@ import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
-import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackState;
@@ -83,7 +82,6 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
     private final RoleManager mRoleManager;
     private final PanelUtils mPanelUtils;
     private final CarWMUserHelper mUserHelper;
-    private final TaskPanelInfoRepository mPanelInfoRepository;
     private final AutoLayoutManager mAutoLayoutManager;
     private final FlagManager mFlagManager;
     private final Set<ComponentName> mIgnoredActivities = new ArraySet<>();
@@ -96,7 +94,6 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
             PanelTransitionCoordinator panelTransitionCoordinator,
             PanelUtils panelUtils,
             CarWMUserHelper userHelper,
-            TaskPanelInfoRepository panelInfoRepository,
             AutoLayoutManager autoLayoutManager,
             FlagManager flagManager
     ) {
@@ -106,7 +103,6 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         mRoleManager = roleManager;
         mPanelUtils = panelUtils;
         mUserHelper = userHelper;
-        mPanelInfoRepository = panelInfoRepository;
         mAutoLayoutManager = autoLayoutManager;
         mFlagManager = flagManager;
 
@@ -177,8 +173,6 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         }
 
         mPanelTransitionCoordinator.reconcileAutoTaskStackState(transition, changedTaskStacks);
-        mPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
-
         Trace.beginSection(TAG + "#startAnimation");
 
         mPanelTransitionCoordinator.calculateStartTransaction(startTransaction, changedTaskStacks);

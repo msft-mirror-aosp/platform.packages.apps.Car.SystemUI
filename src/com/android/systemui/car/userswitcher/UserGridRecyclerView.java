@@ -365,26 +365,6 @@ public class UserGridRecyclerView extends RecyclerView {
          * @return Maximum number of real users that can be created.
          */
         private int getMaxSupportedRealUsers() {
-            if (!android.multiuser.Flags.consistentMaxUsers()
-                    || !android.multiuser.Flags.maxUsersInCarIsForSecondary()) {
-                int maxSupportedUsers = UserManager.getMaxSupportedUsers();
-                if (UserManager.isHeadlessSystemUserMode()) {
-                    maxSupportedUsers -= 1;
-                }
-
-                List<UserInfo> users = mUserManager.getAliveUsers();
-
-                // Count all users that are managed profiles of another user.
-                int managedProfilesCount = 0;
-                for (UserInfo user : users) {
-                    if (user.isManagedProfile()) {
-                        managedProfilesCount++;
-                    }
-                }
-
-                return maxSupportedUsers - managedProfilesCount;
-            }
-
             // "Real" users means secondary users and - for non-HSUM devices - the full system user.
             return mUserManager.getCurrentAllowedNumberOfUsers(UserManager.USER_TYPE_FULL_SECONDARY)
                     + (UserManager.isHeadlessSystemUserMode() ? 0 : 1);

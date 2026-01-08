@@ -216,24 +216,6 @@ public final class UserEventManager {
         }
     }
 
-    private static boolean areMaxUsersMethodFlagsEnabled() {
-        return android.multiuser.Flags.consistentMaxUsers()
-                && android.multiuser.Flags.maxUsersInCarIsForSecondary();
-    }
-
-    static int getMaxSupportedUsers() {
-        if (areMaxUsersMethodFlagsEnabled()) {
-            // TODO(b/394178333): When the flags are permanent, delete this method entirely.
-            throw new UnsupportedOperationException("This method is no longer supported");
-        }
-
-        int maxSupportedUsers = UserManager.getMaxSupportedUsers();
-        if (isHeadlessSystemUserMode()) {
-            maxSupportedUsers -= 1;
-        }
-        return maxSupportedUsers;
-    }
-
     UserInfo getUserInfo(@UserIdInt int userId) {
         return mUserManager.getUserInfo(userId);
     }
@@ -262,16 +244,6 @@ public final class UserEventManager {
     }
 
     boolean isUserLimitReached() {
-        if (!areMaxUsersMethodFlagsEnabled()) {
-            int countNonGuestUsers = getAliveUsers().size();
-            int maxSupportedUsers = getMaxSupportedUsers();
-
-            if (countNonGuestUsers > maxSupportedUsers) {
-                Slog.e(TAG, "There are more users on the device than allowed.");
-                return true;
-            }
-            return countNonGuestUsers == maxSupportedUsers;
-        }
         return !mUserManager.canAddMoreUsers(UserManager.USER_TYPE_FULL_SECONDARY);
     }
 

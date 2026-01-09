@@ -14,6 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+<!-- TODO(b/474385728): replace colors with tokens -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -25,6 +26,6 @@
         android:layout_height="50dp"
         style="?android:attr/progressBarStyleHorizontal"
         android:indeterminate="true"
-        android:indeterminateTint="?oemColorOnSurface"
+        android:indeterminateTint="@color/car_on_surface"
         android:layout_gravity="center"/>
 </FrameLayout>

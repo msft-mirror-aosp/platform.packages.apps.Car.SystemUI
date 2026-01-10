@@ -51,6 +51,7 @@ import dagger.assisted.AssistedInject;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -273,8 +274,10 @@ public class BaseTaskPanelController implements TaskPanelController {
 
     @Override
     public String toString() {
-        String persistentActivities = mPersistentActivities.stream().map(
-                ComponentName::toString).collect(Collectors.joining("\n,"));
+        String persistentActivities = mPersistentActivities.stream()
+                .filter(Objects::nonNull)
+                .map(ComponentName::toString)
+                .collect(Collectors.joining("\n,"));
         return "PanelController{"
                 + "mPanelControllerMetadata=" + mPanelControllerMetadata
                 + "\n, mPersistentActivities=" + persistentActivities

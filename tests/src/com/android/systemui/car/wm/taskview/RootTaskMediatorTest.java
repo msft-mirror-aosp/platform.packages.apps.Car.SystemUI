@@ -22,9 +22,12 @@ import static android.app.WindowConfiguration.WINDOWING_MODE_MULTI_WINDOW;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.ActivityManager;
@@ -33,6 +36,7 @@ import android.car.app.CarActivityManager;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.window.WindowContainerToken;
+import android.window.WindowContainerTransaction;
 
 import androidx.test.filters.SmallTest;
 
@@ -45,6 +49,7 @@ import com.android.wm.shell.taskview.TaskViewTransitions;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Optional;
 
@@ -281,5 +286,74 @@ public final class RootTaskMediatorTest extends CarSysuiTestCase {
 
         assertThat(mMediator.getRootTask()).isNull();
         assertThat(mMediator.getTaskStack()).isEmpty();
+    }
+
+    @Test
+    public void onBackOnTaskRoot_withMultipleTasks_removesTopTask() {
+        // Arrange: Create a mediator with a root task and two child tasks.
+        mMediator = new RootTaskMediator(1, /* isLaunchRoot= */ true, /* embedHomeTask= */ false,
+                /* embedRecentsTask= */ false, /* embedAssistantTask= */true, mShellTaskOrganizer,
+                mTaskViewTaskController, mTaskViewClientPart, mCarActivityManager,
+                mTaskViewTransitions,
+                /* windowDecorViewModelOptional= */Optional.empty());
+        ActivityManager.RunningTaskInfo rootTask = createTask(/* taskId= */ 99);
+        mMediator.onTaskAppeared(rootTask, null);
+        ActivityManager.RunningTaskInfo task1 = createTask(/* taskId= */ 1);
+        mMediator.onTaskAppeared(task1, null);
+        ActivityManager.RunningTaskInfo task2 = createTask(/* taskId= */ 2);
+        mMediator.onTaskAppeared(task2, null);
+
+        // Act: Trigger the back press callback.
+        mMediator.onBackOnTaskRoot(rootTask, /* isFromBackPress= */ true,
+                /* isOptInOnBackInvoked= */ false, /* hasOpaqueSibling= */ false);
+
+        // Assert: Verify that a transition is started to remove the top task.
+        ArgumentCaptor<WindowContainerTransaction> wctCaptor =
+                ArgumentCaptor.forClass(WindowContainerTransaction.class);
+        verify(mTaskViewTransitions).startInstantTransition(anyInt(), wctCaptor.capture());
+        // The test can't inspect the content of WindowContainerTransaction,
+        // but this verifies that a transaction is started to handle the back press.
+    }
+
+    @Test
+    public void onBackOnTaskRoot_withOneTask_doesNothing() {
+        // Arrange: Create a mediator with a root task and one child task.
+        mMediator = new RootTaskMediator(1, /* isLaunchRoot= */ true, /* embedHomeTask= */ false,
+                /* embedRecentsTask= */ false, /* embedAssistantTask= */true, mShellTaskOrganizer,
+                mTaskViewTaskController, mTaskViewClientPart, mCarActivityManager,
+                mTaskViewTransitions,
+                /* windowDecorViewModelOptional= */Optional.empty());
+        ActivityManager.RunningTaskInfo rootTask = createTask(/* taskId= */ 99);
+        mMediator.onTaskAppeared(rootTask, null);
+        ActivityManager.RunningTaskInfo task1 = createTask(/* taskId= */ 1);
+        mMediator.onTaskAppeared(task1, null);
+
+        // Act: Trigger the back press callback.
+        mMediator.onBackOnTaskRoot(rootTask, /* isFromBackPress= */ true,
+                /* isOptInOnBackInvoked= */ false, /* hasOpaqueSibling= */ false);
+
+        // Assert: Verify that no transition is started as there is only one task in the stack.
+        verify(mTaskViewTransitions, never()).startInstantTransition(anyInt(),
+                any(WindowContainerTransaction.class));
+    }
+
+    @Test
+    public void onBackOnTaskRoot_withEmptyStack_doesNothing() {
+        // Arrange: Create a mediator with only a root task.
+        mMediator = new RootTaskMediator(1, /* isLaunchRoot= */ true, /* embedHomeTask= */ false,
+                /* embedRecentsTask= */ false, /* embedAssistantTask= */true, mShellTaskOrganizer,
+                mTaskViewTaskController, mTaskViewClientPart, mCarActivityManager,
+                mTaskViewTransitions,
+                /* windowDecorViewModelOptional= */Optional.empty());
+        ActivityManager.RunningTaskInfo rootTask = createTask(/* taskId= */ 99);
+        mMediator.onTaskAppeared(rootTask, null);
+
+        // Act: Trigger the back press callback.
+        mMediator.onBackOnTaskRoot(rootTask, /* isFromBackPress= */ true,
+                /* isOptInOnBackInvoked= */ false, /* hasOpaqueSibling= */ false);
+
+        // Assert: Verify that no transition is started as the task stack is empty.
+        verify(mTaskViewTransitions, never()).startInstantTransition(anyInt(),
+                any(WindowContainerTransaction.class));
     }
 }

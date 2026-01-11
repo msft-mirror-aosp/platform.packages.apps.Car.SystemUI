@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.window;
 
+import android.car.feature.Flags;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -133,7 +134,8 @@ public class SystemUIOverlayWindowManager implements CoreStartable,
     }
 
     private boolean hasPendingConfigChangeForSecondaryUser() {
-        return mContext.getResources().getBoolean(R.bool.config_enableSecondaryUserRRO) && (
+        return !Flags.rrosPerOccupantZone()
+                && mContext.getResources().getBoolean(R.bool.config_enableSecondaryUserRRO) && (
                 CarSystemUIUserUtil.isSecondaryMUMDSystemUI()
                         || CarSystemUIUserUtil.isMUPANDSystemUI());
     }

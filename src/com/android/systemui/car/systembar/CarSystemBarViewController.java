@@ -16,6 +16,8 @@
 package com.android.systemui.car.systembar;
 
 import android.annotation.IntDef;
+import android.annotation.NonNull;
+import android.annotation.Nullable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,12 +46,12 @@ public interface CarSystemBarViewController {
     /**
      * Call to save the internal state.
      */
-    void onSaveInstanceState(Bundle outState);
+    void onSaveInstanceState(@NonNull Bundle outState);
 
     /**
      * Call to restore the internal state.
      */
-    void onRestoreInstanceState(Bundle savedInstanceState);
+    void onRestoreInstanceState(@Nullable Bundle savedInstanceState);
 
     /**
      * Only visible so that this view can be attached to the window.

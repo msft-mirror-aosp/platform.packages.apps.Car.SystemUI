@@ -15,9 +15,11 @@
  */
 package com.android.systemui.car.systembar;
 
+import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +52,7 @@ public class CarSystemBarViewControllerImpl
         extends ViewController<CarSystemBarViewControllerImpl.TouchInterceptingFrameLayout>
         implements CarSystemBarViewController, Gefingerpoken {
 
+    private static final String TAG = CarSystemBarViewControllerImpl.class.getSimpleName();
     private static final String LAST_FOCUSED_VIEW_ID = "last_focused_view_id";
 
     protected final Context mContext;
@@ -113,7 +116,7 @@ public class CarSystemBarViewControllerImpl
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         // The focused view will be destroyed during re-layout, causing the framework to adjust
         // the focus unexpectedly. To avoid that, move focus to a view that won't be
         // destroyed during re-layout and has no focus highlight (the FocusParkingView), then
@@ -122,7 +125,11 @@ public class CarSystemBarViewControllerImpl
     }
 
     @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
+    public void onRestoreInstanceState(@Nullable Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            Log.w(TAG, "savedInstanceState is null for " + mName);
+            return;
+        }
         restoreFocus(mView, savedInstanceState.getInt(LAST_FOCUSED_VIEW_ID, View.NO_ID));
     }
 

@@ -26,12 +26,3 @@ PRODUCT_PACKAGES += \
     CarSystemUIRightRRO \
     CarSystemUIStatusBarTranslucent \
     CarSystemUINavBarTranslucent
-
-# DEWD samples
-PRODUCT_PACKAGES += \
-    DewdLandAospRRO \
-    DewdPortAospRRO \
-    DewdDynamicAospRRO \
-
-PRODUCT_PRODUCT_PROPERTIES += \
-    car.dewd.config=dynamic

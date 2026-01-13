@@ -19,6 +19,7 @@ package com.android.systemui.car.statusicon.ui;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.statusicon.StatusIconViewController;
 import com.android.systemui.car.statusicon.bluetooth.BluetoothStatusIconModule;
+import com.android.systemui.car.statusicon.location.LocationStatusIconModule;
 
 import dagger.Binds;
 import dagger.Module;
@@ -29,7 +30,8 @@ import dagger.multibindings.IntoMap;
  * Dagger injection module for {@link StatusIconViewController}
  */
 @Module(includes = {
-        BluetoothStatusIconModule.class})
+        BluetoothStatusIconModule.class,
+        LocationStatusIconModule.class})
 public abstract class QuickControlsEntryPointsModule {
 
     /** Injects SignalStatusIconController. */
@@ -38,13 +40,6 @@ public abstract class QuickControlsEntryPointsModule {
     @ClassKey(SignalStatusIconController.class)
     public abstract CarSystemBarElementController.Factory bindSignalStatusIconController(
             SignalStatusIconController.Factory signalStatusIconController);
-
-    /** Injects LocationStatusIconController. */
-    @Binds
-    @IntoMap
-    @ClassKey(LocationStatusIconController.class)
-    public abstract CarSystemBarElementController.Factory bindLocationStatusIconController(
-            LocationStatusIconController.Factory locationStatusIconController);
 
     /** Injects PhoneCallStatusIconController. */
     @Binds

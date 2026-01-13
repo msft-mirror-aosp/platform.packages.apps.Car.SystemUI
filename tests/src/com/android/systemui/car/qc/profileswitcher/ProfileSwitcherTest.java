@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.qc;
+package com.android.systemui.car.qc.profileswitcher;
 
 import static android.car.test.mocks.AndroidMockitoHelper.mockUmGetVisibleUsers;
 import static android.car.user.UserSwitchResult.STATUS_SUCCESSFUL;
@@ -168,7 +168,8 @@ public class ProfileSwitcherTest extends CarSysuiTestCase {
                 mContext.getString(com.android.internal.R.string.guest_name));
         assertThat(rows.get(4).getTitle()).isEqualTo(
                 mContext.getString(R.string.car_add_user));
-        assertThat(rows.get(5).getTitle()).isEqualTo(mContext.getString(R.string.end_session));
+        assertThat(rows.get(5).getTitle()).isEqualTo(mContext.getString(
+                com.android.systemui.car.qc.profileswitcher.R.string.end_session));
     }
 
     @Test
@@ -184,7 +185,8 @@ public class ProfileSwitcherTest extends CarSysuiTestCase {
         assertThat(rows.get(0).getSubtitle()).isEqualTo(
                 mContext.getString(com.android.systemui.res.R.string.do_disclosure_generic));
         assertThat(rows.get(1).getTitle()).isEqualTo(mAliveUsers.get(0).name);
-        assertThat(rows.get(2).getTitle()).isEqualTo(mContext.getString(R.string.end_session));
+        assertThat(rows.get(2).getTitle()).isEqualTo(mContext.getString(
+                com.android.systemui.car.qc.profileswitcher.R.string.end_session));
     }
 
     @Test
@@ -327,8 +329,7 @@ public class ProfileSwitcherTest extends CarSysuiTestCase {
         mAliveUsers.add(currentUser);
         when(mUserManager.getUserInfo(mUserTracker.getUserId())).thenReturn(currentUser);
         List<QCRow> rows = getProfileRows();
-        assertThat(rows.get(0).getSubtitle()).isEqualTo(
-                mContext.getString(R.string.current_profile_subtitle));
+        assertThat(rows.get(0).getSubtitle()).isEqualTo("Current profile");
     }
 
     @Test

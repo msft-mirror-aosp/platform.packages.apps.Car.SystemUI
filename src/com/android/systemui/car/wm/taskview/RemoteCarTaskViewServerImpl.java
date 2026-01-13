@@ -37,6 +37,7 @@ import android.os.Bundle;
 import android.os.DeadSystemRuntimeException;
 import android.util.Slog;
 import android.util.SparseArray;
+import android.view.InsetsBoundingRect;
 import android.view.InsetsSource;
 import android.view.SurfaceControl;
 import android.window.WindowContainerTransaction;
@@ -252,8 +253,15 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
                 return;
             }
             WindowContainerTransaction wct = new WindowContainerTransaction();
-            wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
-                    mInsetsOwner, index, type, frame, /* boundingRects = */ null, /* flags = */ 0);
+            if (com.android.window.flags.Flags.improveFluidResizingPerformance()) {
+                wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
+                        mInsetsOwner, index, type, frame,
+                        /* boundingRects = */ (InsetsBoundingRect[]) null, /* flags = */ 0);
+            } else {
+                wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
+                        mInsetsOwner, index, type, frame,
+                        /* boundingRects = */ (Rect[]) null, /* flags = */ 0);
+            }
             mShellTaskOrganizer.applyTransaction(wct);
         }
 
@@ -395,9 +403,15 @@ public class RemoteCarTaskViewServerImpl implements TaskViewBase {
         for (int i = 0; i < mInsets.size(); i++) {
             final int id = mInsets.keyAt(i);
             final Rect frame = mInsets.valueAt(i);
-            wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
-                    mInsetsOwner, InsetsSource.getIndex(id), InsetsSource.getType(id), frame,
-                    null /* boundingRects */, 0 /* flags */);
+            if (com.android.window.flags.Flags.improveFluidResizingPerformance()) {
+                wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
+                        mInsetsOwner, InsetsSource.getIndex(id), InsetsSource.getType(id), frame,
+                        (InsetsBoundingRect[]) null /* boundingRects */, 0 /* flags */);
+            } else {
+                wct.addInsetsSource(mTaskViewTaskController.getTaskInfo().token,
+                        mInsetsOwner, InsetsSource.getIndex(id), InsetsSource.getType(id), frame,
+                        (Rect []) null /* boundingRects */, 0 /* flags */);
+            }
         }
         mShellTaskOrganizer.applyTransaction(wct);
     }

@@ -91,6 +91,7 @@ java_defaults {
 
     static_libs: [
         "CarSystemUI-FlexibleUI",
+        "dewd-res-core",
         "SystemUI-application",
         "SystemUI-core",
         "CarNotificationLib",

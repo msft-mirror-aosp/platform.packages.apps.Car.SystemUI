@@ -66,6 +66,7 @@ carsysui_pods = [
     "CarSystemUI-Minimized-Controls",
     "CarSystemUI-QC-DataSubscription",
     "CarSystemUI-QC-Footer-Base",
+    "CarSystemUI-QC-Base",
     "CarSystemUI-QC-Footer-Logout",
     "CarSystemUI-QC-Footer-ScreenOff",
     "CarSystemUI-QC-Footer-UserPicker",

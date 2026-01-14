@@ -44,12 +44,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-                    <com.android.systemui.car.qc.SystemUIQCView
+                    <com.android.systemui.car.qc.base.SystemUIQCView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         app:remoteQCProvider="content://com.android.car.settings.qc/bluetooth_switch"/>
-                    <com.android.systemui.car.qc.SystemUIQCView
+                    <com.android.systemui.car.qc.base.SystemUIQCView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"

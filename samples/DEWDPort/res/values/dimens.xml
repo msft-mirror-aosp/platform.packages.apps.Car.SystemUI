@@ -19,34 +19,30 @@
     <dimen name="status_bar_height">80px</dimen>
     <dimen name="navigation_bar_height">140px</dimen>
     <dimen name="panel_rounded_corner">42px</dimen>
+    <dimen name="contextual_bar_gap">20px</dimen>
     <dimen name="contextual_bar_height">360px</dimen>
+    <dimen name="contextual_bar_height_plus_gaps">400px</dimen>
+    <dimen name="navigation_bar_height_plus_contextual_bar_gap">160px</dimen>
 
-    <dimen name="nav_plus_contextual_height">500px</dimen>
-    <dimen name="nav_plus_contextual_height_neg">-500px</dimen>
-    <dimen name="nav_plus_contextual_height_minus_corner_radius">458px</dimen>
-    <dimen name="grip_plus_app_plus_corner_radius_height">818px</dimen>
+    <dimen name="app_plus_grip_height">891px</dimen>
 
     <!-- TODO(418260617) remove. Currently needed because of grip bar controller -->
-    <dimen name="app_top">671px</dimen>
-    <dimen name="app_height">749px</dimen>
-    <dimen name="app_bottom_offset">@dimen/nav_plus_contextual_height</dimen>
+    <dimen name="app_top">931px</dimen>
+    <dimen name="app_height">849px</dimen>
+    <dimen name="app_bottom_offset">@dimen/navigation_bar_height</dimen>
 
-    <dimen name="app_height_safe">673px</dimen>
+    <dimen name="app_height_safe">773px</dimen>
     <dimen name="app_safe_top_offset">76px</dimen>
     <dimen name="app_toolbar_height">76px</dimen>
-    <dimen name="app_safe_bottom_offset">1173px</dimen>
+    <dimen name="app_safe_bottom_offset">923px</dimen>
     <dimen name="app_safe_fullscreen_top_offset">156px</dimen>
 
     <dimen name="map_top_inset">@dimen/status_bar_height</dimen>
-    <dimen name="map_bottom_inset">@dimen/panel_rounded_corner</dimen>
-    <dimen name="map_bottom_inset_large">@dimen/grip_plus_app_plus_corner_radius_height</dimen>
-    <dimen name="map_bottom_offset">@dimen/nav_plus_contextual_height_minus_corner_radius</dimen>
+    <dimen name="map_bottom_inset">@dimen/contextual_bar_height_plus_gaps</dimen>
+    <dimen name="map_bottom_inset_large">@dimen/app_plus_grip_height</dimen>
+    <dimen name="map_bottom_offset">@dimen/navigation_bar_height</dimen>
 
     <!-- Extending grip bar to go all the way behind the app panel to cover the missing corners at the bottom -->
-    <dimen name="grip_bar_height">@dimen/grip_plus_app_plus_corner_radius_height</dimen>
+    <dimen name="grip_bar_height">@dimen/app_plus_grip_height</dimen>
     <dimen name="grip_bar_top_offset">-35px</dimen>
-
-    <dimen name="map_corner_radius">48dp</dimen>
-    <dimen name="widget_panel_width">416dp</dimen>
-    <dimen name="toolbar_height">69dp</dimen>
 </resources>

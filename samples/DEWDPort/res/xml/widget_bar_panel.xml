@@ -21,11 +21,20 @@
         <Focus onTransition="false" />
     </Variant>
     <Variant id="@+id/opened" parent="@id/base">
-        <Bounds left="0" bottom="100%" width="100%" height="@dimen/contextual_bar_height" bottomOffset="@dimen/navigation_bar_height"/>
+        <Bounds left="@dimen/contextual_bar_gap"
+            bottom="100%"
+            right="100%"
+            height="@dimen/contextual_bar_height"
+            bottomOffset="@dimen/navigation_bar_height_plus_contextual_bar_gap"
+            rightOffset="@dimen/contextual_bar_gap"/>
     </Variant>
     <Variant id="@+id/closed" parent="@id/base">
         <Visibility isVisible="false"/>
-        <Bounds left="0" top="100%" width="100%" height="@dimen/contextual_bar_height" />
+        <Bounds left="@dimen/contextual_bar_gap"
+            top="100%"
+            right="100%"
+            height="@dimen/contextual_bar_height"
+            rightOffset="@dimen/contextual_bar_gap" />
     </Variant>
     <Variant id="@+id/userswitch" parent="@id/closed" />
     <Variant id="@+id/suw" parent="@id/closed" />

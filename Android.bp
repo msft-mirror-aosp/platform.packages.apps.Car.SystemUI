@@ -65,6 +65,7 @@ carsysui_pods = [
     "CarSystemUI-Hvac-UI",
     "CarSystemUI-StatusIcon-Bluetooth",
     "CarSystemUI-StatusIcon-Location",
+    "CarSystemUI-StatusIcon-PhoneCall",
     "CarSystemUI-SystemBar-DebugPanel",
     "CarSystemUI-SystemBar-HomeButton",
     "CarSystemUI-SystemBar-Panel",
@@ -165,10 +166,14 @@ android_library {
     enforce_uses_libs: false,
 
     kotlincflags: [
-        "-J-Xmx12288M",
+        "-J-Xmx16000M",
     ],
 
-    javacflags: ["-Adagger.fastInit=enabled"],
+    javacflags: [
+        "-J-Xmx16000M",
+        "-Adagger.fastInit=enabled",
+    ],
+
     plugins: ["dagger2-compiler"],
 }
 
@@ -184,7 +189,15 @@ android_library {
 
     manifest: "AndroidManifest-shared.xml",
 
-    javacflags: ["-Adagger.fastInit=enabled"],
+    kotlincflags: [
+        "-J-Xmx16000M",
+    ],
+
+    javacflags: [
+        "-J-Xmx16000M",
+        "-Adagger.fastInit=enabled",
+    ],
+
     plugins: ["dagger2-compiler"],
 
     // TODO(b/319708040): re-enable use_resource_processor

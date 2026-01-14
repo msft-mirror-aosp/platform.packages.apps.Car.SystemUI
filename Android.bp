@@ -63,6 +63,7 @@ carsysui_pods = [
     // pods go here
     "CarSystemUI-Hvac-Controller",
     "CarSystemUI-Hvac-UI",
+    "CarSystemUI-Minimized-Controls",
     "CarSystemUI-StatusIcon-Bluetooth",
     "CarSystemUI-StatusIcon-Location",
     "CarSystemUI-StatusIcon-MediaVolume",
@@ -168,11 +169,11 @@ android_library {
     enforce_uses_libs: false,
 
     kotlincflags: [
-        "-J-Xmx16000M",
+        "-J-Xmx24576M",
     ],
 
     javacflags: [
-        "-J-Xmx16000M",
+        "-J-Xmx24576M",
         "-Adagger.fastInit=enabled",
     ],
 
@@ -192,11 +193,11 @@ android_library {
     manifest: "AndroidManifest-shared.xml",
 
     kotlincflags: [
-        "-J-Xmx16000M",
+        "-J-Xmx24576M",
     ],
 
     javacflags: [
-        "-J-Xmx16000M",
+        "-J-Xmx24576M",
         "-Adagger.fastInit=enabled",
     ],
 

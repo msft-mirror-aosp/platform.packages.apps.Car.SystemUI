@@ -22,6 +22,7 @@ android_library {
     manifest: "AndroidManifest.xml",
     static_libs: [
         "CarSystemUI-Shared",
+        "CarSystemUI-QC-Footer-Base",
         "car-qc-lib",
     ],
     libs: [

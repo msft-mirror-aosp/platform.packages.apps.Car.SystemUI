@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.qc;
+package com.android.systemui.car.qc.footer.base;
 
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;

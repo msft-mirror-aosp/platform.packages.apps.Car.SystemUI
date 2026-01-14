@@ -66,7 +66,7 @@
                         app:remoteQCProvider="content://com.android.car.carlauncher.calmmode/calm_mode"/>
                 </LinearLayout>
             </ScrollView>
-            <com.android.systemui.car.qc.QCFooterButton
+            <com.android.systemui.car.qc.footer.base.QCFooterButton
                 android:id="@+id/qc_display_footer_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

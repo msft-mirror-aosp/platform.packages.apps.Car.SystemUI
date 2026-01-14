@@ -61,7 +61,7 @@
                         app:remoteQCProvider="content://com.android.car.settings.qc/wifi_row"/>
                 </LinearLayout>
             </ScrollView>
-            <com.android.systemui.car.qc.QCFooterButton
+            <com.android.systemui.car.qc.footer.base.QCFooterButton
                 android:id="@+id/qc_connectivity_footer_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

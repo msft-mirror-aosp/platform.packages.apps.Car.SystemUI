@@ -26,6 +26,7 @@ android_library {
         "CarSystemUI-FlexibleUI",
         "CarSystemUI-Shared",
         "CarSystemUI-SystemBar-Panel",
+        "CarSystemUI-QC-Footer-Base",
     ],
     plugins: [
         "dagger2-compiler",

@@ -67,7 +67,7 @@
                         app:remoteQCProvider="content://com.android.car.settings.qc/navigation_volume_slider"/>
                 </LinearLayout>
             </ScrollView>
-            <com.android.systemui.car.qc.QCFooterButton
+            <com.android.systemui.car.qc.footer.base.QCFooterButton
                 android:id="@+id/qc_sound_footer_button"
                 app:layout_constraintTop_toBottomOf="@id/sound_panel_scroll_view"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -17,16 +17,19 @@ package {
 }
 
 android_library {
-    name: "CarSystemUI-QC-Footer-UserPicker",
+    name: "CarSystemUI-QC-Footer-Base",
     srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
     manifest: "AndroidManifest.xml",
     static_libs: [
         "CarSystemUI-Shared",
-        "CarSystemUI-QC-Footer-Base",
         "car-qc-lib",
     ],
     libs: [
         "android.car",
     ],
     plugins: ["dagger2-compiler"],
+    optimize: {
+        proguard_flags_files: ["proguard.flags"],
+    },
 }

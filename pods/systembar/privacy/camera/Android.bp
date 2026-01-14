@@ -27,6 +27,7 @@ android_library {
         "CarSystemUI-Shared",
         "CarSystemUI-SystemBar-PrivacyChip-Base",
         "CarSystemUI-SystemBar-Panel",
+        "CarSystemUI-QC-Footer-Base",
     ],
     plugins: [
         "dagger2-compiler",

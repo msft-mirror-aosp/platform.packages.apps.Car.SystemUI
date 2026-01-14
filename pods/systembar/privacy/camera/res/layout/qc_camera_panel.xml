@@ -46,7 +46,7 @@
                     android:gravity="center"
                     app:localQCProvider="com.android.systemui.car.systembar.privacy.camera.CameraQcPanel"/>
             </ScrollView>
-            <com.android.systemui.car.qc.QCFooterButton
+            <com.android.systemui.car.qc.footer.base.QCFooterButton
                 android:id="@+id/qc_camera_footer_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

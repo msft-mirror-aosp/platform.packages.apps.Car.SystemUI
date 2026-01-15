@@ -38,6 +38,7 @@ import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationButtonController;
 import com.android.systemui.car.qc.datasubscription.DataSubscriptionModule;
 import com.android.systemui.car.shared.R;
+import com.android.systemui.car.systembar.aaosstudio.AaosStudioButtonModule;
 import com.android.systemui.car.systembar.appgrid.AppGridButtonModule;
 import com.android.systemui.car.systembar.assistant.AssistantButtonModule;
 import com.android.systemui.car.systembar.debugpanel.DebugPanelModule;
@@ -90,6 +91,7 @@ import java.util.Optional;
  * default system bar class.
  */
 @Module(includes = {
+        AaosStudioButtonModule.class,
         AppGridButtonModule.class,
         AssistantButtonModule.class,
         DebugPanelModule.class,
@@ -313,12 +315,7 @@ public abstract class CarSystemBarModule {
     public abstract CarSystemBarElementController.Factory bindControlCenterButtonControllerFactory(
             ControlCenterButtonController.Factory factory);
 
-    /** Injects AaosStudioButtonController */
-    @Binds
-    @IntoMap
-    @ClassKey(AaosStudioButtonController.class)
-    public abstract CarSystemBarElementController.Factory bindAaosStudioButtonControllerFactory(
-            AaosStudioButtonController.Factory factory);
+
 
     @Provides
     @IntoMap

@@ -39,6 +39,7 @@ import com.android.systemui.car.notification.NotificationButtonController;
 import com.android.systemui.car.qc.datasubscription.DataSubscriptionModule;
 import com.android.systemui.car.shared.R;
 import com.android.systemui.car.systembar.appgrid.AppGridButtonModule;
+import com.android.systemui.car.systembar.assistant.AssistantButtonModule;
 import com.android.systemui.car.systembar.debugpanel.DebugPanelModule;
 import com.android.systemui.car.systembar.home.HomeButtonModule;
 import com.android.systemui.car.systembar.panel.PanelModule;
@@ -88,6 +89,7 @@ import java.util.Optional;
  */
 @Module(includes = {
         AppGridButtonModule.class,
+        AssistantButtonModule.class,
         DebugPanelModule.class,
         DataSubscriptionModule.class,
         ExtensionPanelUpdatesCarSystemBarModule.class,

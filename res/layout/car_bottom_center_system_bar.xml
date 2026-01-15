@@ -63,7 +63,7 @@
             systemui:componentNames="com.android.car.multidisplay.controlcenter/.ControlCenterActivity"
             systemui:controller="com.android.systemui.car.systembar.ControlCenterButtonController"/>
 
-        <com.android.systemui.car.systembar.AssistantButton
+        <com.android.systemui.car.systembar.assistant.AssistantButton
             android:id="@+id/assistant"
             android:contentDescription="@string/system_bar_assistant_label"
             style="@style/SystemBarButton"

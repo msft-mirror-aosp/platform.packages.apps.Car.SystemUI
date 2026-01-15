@@ -80,6 +80,7 @@ carsysui_pods = [
     "CarSystemUI-StatusIcon-Connectivity",
     "CarSystemUI-StatusIcon-Wifi",
     "CarSystemUI-SystemBar-AppGridButton",
+    "CarSystemUI-SystemBar-AssistantButton",
     "CarSystemUI-SystemBar-DebugPanel",
     "CarSystemUI-SystemBar-HomeButton",
     "CarSystemUI-SystemBar-Panel",

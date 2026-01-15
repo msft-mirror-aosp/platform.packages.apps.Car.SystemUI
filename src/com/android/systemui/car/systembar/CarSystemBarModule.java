@@ -43,6 +43,7 @@ import com.android.systemui.car.systembar.appgrid.AppGridButtonModule;
 import com.android.systemui.car.systembar.assistant.AssistantButtonModule;
 import com.android.systemui.car.systembar.controlcenter.ControlCenterButtonModule;
 import com.android.systemui.car.systembar.debugpanel.DebugPanelModule;
+import com.android.systemui.car.systembar.dock.DockViewModule;
 import com.android.systemui.car.systembar.home.HomeButtonModule;
 import com.android.systemui.car.systembar.notificationchip.PromotedNotificationChipModule;
 import com.android.systemui.car.systembar.panel.PanelModule;
@@ -98,6 +99,7 @@ import java.util.Optional;
         ControlCenterButtonModule.class,
         DebugPanelModule.class,
         DataSubscriptionModule.class,
+        DockViewModule.class,
         ExtensionPanelUpdatesCarSystemBarModule.class,
         FlexibleUiModule.class,
         HomeButtonModule.class,
@@ -227,13 +229,6 @@ public abstract class CarSystemBarModule {
     /** Empty set for CarSystemBarElements. */
     @Multibinds
     abstract Map<Class<?>, CarSystemBarElementController.Factory> bindEmptyElementFactoryMap();
-
-    /** Injects DockViewControllerWrapper */
-    @Binds
-    @IntoMap
-    @ClassKey(DockViewControllerWrapper.class)
-    public abstract CarSystemBarElementController.Factory bindDockViewControllerWrapper(
-            DockViewControllerWrapper.Factory factory);
 
     /** Injects KeyguardSystemBarPresenter */
     @SysUISingleton

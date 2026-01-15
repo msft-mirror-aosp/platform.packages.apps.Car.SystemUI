@@ -13,7 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-  <TaskPanel id="assistant_panel" defaultVariant="@id/closed"  controller="@xml/assistant_panel_controller" displayId="0">
+  <TaskPanel id="assistant_panel" defaultVariant="@id/closed" controller="@xml/assistant_panel_controller" displayId="0">
     <Variant id="@+id/base">
         <Layer layer="@integer/assistant_panel_layer"/>
         <Bounds left="0" top="0" right="100%" height="100%" />

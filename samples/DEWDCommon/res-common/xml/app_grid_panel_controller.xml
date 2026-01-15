@@ -13,8 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<Controller id="map_panel_controller">
-    <ControllerName>com.android.systemui.car.wm.scalableui.panel.controller.MapsPanelController</ControllerName>
-    <UpdateIntentFilter>intent:geo:0.0,0.0#Intent;action=androidx.car.app.action.NAVIGATE;end</UpdateIntentFilter>
-    <DefaultIntent>@string/default_map_intent</DefaultIntent>
+<Controller id="app_grid_panel_controller">
+    <ControllerName>com.android.systemui.car.wm.scalableui.panel.controller.BaseTaskPanelController</ControllerName>
+    <UpdateIntentFilter>intent:#Intent;action=com.android.car.carlauncher.ACTION_APP_GRID;end</UpdateIntentFilter>
 </Controller>

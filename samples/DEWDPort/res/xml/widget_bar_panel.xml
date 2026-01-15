@@ -15,6 +15,7 @@
   -->
 <TaskPanel id="widget_panel" defaultVariant="@id/opened" controller="@xml/widget_panel_controller" displayId="0">
     <Restart policy="DEFAULT" maxRetry="3"/>
+    <TaskBehavior taskProperties="UNTRIMMABLE"/>
     <Variant id="@+id/base">
         <Layer layer="@integer/widget_panel_layer"/>
         <Focus onTransition="false" />

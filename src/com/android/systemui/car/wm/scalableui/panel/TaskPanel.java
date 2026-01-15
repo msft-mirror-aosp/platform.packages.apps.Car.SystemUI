@@ -287,7 +287,7 @@ public final class TaskPanel extends SysUIPanel {
                             logIfDebuggable("onTaskAppeared: Resetting retry count.");
                             mCurrentRetryCount = 0;
                         }
-                        mAutoTaskStackHelper.setTaskUntrimmableIfNeeded(taskInfo);
+                        mAutoTaskStackHelper.setTaskUntrimmableIfNeeded(getPanelId(), taskInfo);
                         mTaskPanelInfoRepository.onTaskAppearedOnPanel(getPanelId(), taskInfo);
                     }
 

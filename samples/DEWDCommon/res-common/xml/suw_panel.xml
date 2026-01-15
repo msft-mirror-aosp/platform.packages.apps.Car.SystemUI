@@ -14,6 +14,7 @@
   ~ limitations under the License.
   -->
   <TaskPanel id="suw_panel" defaultVariant="@id/closed" displayId="0" controller="@xml/suw_panel_controller">
+    <TaskBehavior newTaskLaunchPolicy="REPARENT_TO_SOURCE"/>
     <Variant id="@+id/base">
         <Layer layer="@integer/suw_panel_layer"/>
         <Bounds left="0" top="0" width="100%" height="100%" />

@@ -429,11 +429,11 @@ android_robolectric_test {
     name: "CarSystemUIRoboTests",
     srcs: [
         ":SystemUI-robotest-utils",
-        ":SystemUI-tests-utils",
         ":CarSystemUI-tests-multivalent",
     ],
     static_libs: [
         "RoboTestLibraries",
+        "SystemUI_test_fixtures",
     ],
     libs: [
         "android.car",
@@ -457,7 +457,6 @@ android_robolectric_test {
 android_ravenwood_test {
     name: "CarSystemUIRavenTests",
     srcs: [
-        ":SystemUI-tests-utils",
         ":CarSystemUI-tests-multivalent",
         ":CarSystemUIRobo-stub{.aapt.srcjar}",
     ],
@@ -470,6 +469,7 @@ android_ravenwood_test {
         "androidx.test.ext.junit",
         "kosmos",
         "mockito-kotlin-nodeps",
+        "SystemUI_test_fixtures",
     ],
     libs: [
         "android.car",

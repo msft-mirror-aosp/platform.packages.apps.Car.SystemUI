@@ -41,6 +41,7 @@ import com.android.systemui.car.shared.R;
 import com.android.systemui.car.systembar.aaosstudio.AaosStudioButtonModule;
 import com.android.systemui.car.systembar.appgrid.AppGridButtonModule;
 import com.android.systemui.car.systembar.assistant.AssistantButtonModule;
+import com.android.systemui.car.systembar.controlcenter.ControlCenterButtonModule;
 import com.android.systemui.car.systembar.debugpanel.DebugPanelModule;
 import com.android.systemui.car.systembar.home.HomeButtonModule;
 import com.android.systemui.car.systembar.notificationchip.PromotedNotificationChipModule;
@@ -94,6 +95,7 @@ import java.util.Optional;
         AaosStudioButtonModule.class,
         AppGridButtonModule.class,
         AssistantButtonModule.class,
+        ControlCenterButtonModule.class,
         DebugPanelModule.class,
         DataSubscriptionModule.class,
         ExtensionPanelUpdatesCarSystemBarModule.class,
@@ -307,15 +309,6 @@ public abstract class CarSystemBarModule {
     public abstract CarSystemBarElementController.Factory
             bindTemperatureControlViewControllerFactory(
                     TemperatureControlViewController.Factory factory);
-
-    /** Injects ControlCenterButtonController */
-    @Binds
-    @IntoMap
-    @ClassKey(ControlCenterButtonController.class)
-    public abstract CarSystemBarElementController.Factory bindControlCenterButtonControllerFactory(
-            ControlCenterButtonController.Factory factory);
-
-
 
     @Provides
     @IntoMap

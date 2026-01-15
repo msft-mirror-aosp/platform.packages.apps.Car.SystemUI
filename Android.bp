@@ -91,6 +91,7 @@ carsysui_pods = [
     "CarSystemUI-SystemBar-PrivacyChip-Mic",
     "CarSystemUI-SystemBar-PrivacyChip-Share",
     "CarSystemUI-SystemBar-UserNamePanel",
+    "CarSystemUI-SystemBar-Volume",
 ]
 
 java_defaults {

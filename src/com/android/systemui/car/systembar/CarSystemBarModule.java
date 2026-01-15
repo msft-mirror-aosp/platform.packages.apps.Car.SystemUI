@@ -49,6 +49,7 @@ import com.android.systemui.car.systembar.privacy.cast.PrivacyChipCastModule;
 import com.android.systemui.car.systembar.privacy.mic.PrivacyChipMicModule;
 import com.android.systemui.car.systembar.privacy.share.PrivacyChipShareModule;
 import com.android.systemui.car.systembar.usernamepanel.UserNamePanelModule;
+import com.android.systemui.car.systembar.volume.VolumeButtonModule;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
@@ -102,7 +103,8 @@ import java.util.Optional;
         PrivacyChipCastModule.class,
         PrivacyChipShareModule.class,
         SplitCarSystemBarModule.class,
-        UserNamePanelModule.class})
+        UserNamePanelModule.class,
+        VolumeButtonModule.class})
 public abstract class CarSystemBarModule {
 
     @Provides

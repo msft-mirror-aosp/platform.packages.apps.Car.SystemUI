@@ -59,8 +59,6 @@
         <Transition toVariant="@id/opened">
             <Event id="_Drag_PanelOpenEvent" panelId="decor_grip_app" />
         </Transition>
-<!--        <Transition onEvent="_User_DragEvent_Appgrid"  toVariant="@id/drag"/>-->
-<!--        <Transition onEvent="_Drag_TaskCloseEvent_Appgrid" toVariant="@id/closed"/>-->
-<!--        <Transition onEvent="_Drag_TaskOpenEvent_Appgrid"  toVariant="@id/opened"/>-->
+
     </Transitions>
 </TaskPanel>

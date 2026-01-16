@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.statusicon.ui;
+package com.android.systemui.car.statusicon.wifi;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -29,7 +29,6 @@ import android.testing.TestableLooper;
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;

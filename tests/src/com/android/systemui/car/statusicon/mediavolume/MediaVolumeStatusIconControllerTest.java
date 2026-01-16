@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.statusicon.ui;
+package com.android.systemui.car.statusicon.mediavolume;
 
 import static android.media.AudioAttributes.USAGE_MEDIA;
 

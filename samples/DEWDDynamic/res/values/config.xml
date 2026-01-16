@@ -36,4 +36,6 @@
         <item>@xml/suw_panel</item>
         <item>@xml/unreactive_panel</item>
     </array>
+
+    <string name="config_homePanelVisibilities" translatable="false">-app_panel;map_panel;widget_panel;-suw_panel;-assistant_panel</string>
 </resources>

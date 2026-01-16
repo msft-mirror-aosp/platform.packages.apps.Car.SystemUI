@@ -17,6 +17,9 @@ package com.android.systemui.car.wm.scalableui.panel;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,8 +31,7 @@ import android.view.Display;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
-import com.android.car.scalableui.panel.Panel;
-import com.android.car.scalableui.panel.PanelPool;
+import com.android.car.scalableui.model.Variant;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.util.concurrency.FakeExecutor;
@@ -59,18 +61,22 @@ public class TaskPanelInfoRepositoryTest extends CarSysuiTestCase {
     @Mock
     private TaskPanelInfoRepository.TaskPanelChangeListener mTaskPanelChangeListener;
     @Mock
-    private PanelPool mPanelPool;
+    private PanelUtils mPanelUtils;
     @Mock
-    private Panel mTestPanel;
+    private TaskPanel mTestPanel;
+    @Mock
+    private Variant mTestPanelCurrentVariant;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         mFakeExecutor = new FakeExecutor(new FakeSystemClock());
-        when(mPanelPool.getPanel(TEST_PANEL_ID)).thenReturn(mTestPanel);
+        doReturn(mTestPanel).when(mPanelUtils).getTaskPanel(any());
+        when(mTestPanelCurrentVariant.isVisible()).thenReturn(true);
+        doReturn(mTestPanelCurrentVariant).when(mPanelUtils).getCurrentVariant(TEST_PANEL_ID);
         when(mTestPanel.isVisible()).thenReturn(true);
-        mTaskPanelInfoRepository = new TaskPanelInfoRepository(mFakeExecutor, mPanelPool);
+        mTaskPanelInfoRepository = new TaskPanelInfoRepository(mFakeExecutor, mPanelUtils);
         mTaskPanelInfoRepository.addChangeListener(mTaskPanelChangeListener);
     }
 
@@ -83,40 +89,36 @@ public class TaskPanelInfoRepositoryTest extends CarSysuiTestCase {
     public void onTaskAppearedOnPanel_notifyChange() {
         mTaskPanelInfoRepository.onTaskAppearedOnPanel(TEST_PANEL_ID,
                 createTaskInfo(TEST_COMPONENT_NAME_1, TEST_TASK_ID_1));
-        mTaskPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
         waitForDelayableExecutor();
 
-        verify(mTaskPanelChangeListener).onTopTaskOnPanelChanged();
+        verify(mTaskPanelChangeListener).onTopTaskOnPanelChanged(eq(TEST_PANEL_ID), any());
     }
 
     @Test
     public void onTaskChangedOnPanel_noChange_noNotifyChange() {
         mTaskPanelInfoRepository.onTaskAppearedOnPanel(TEST_PANEL_ID,
                 createTaskInfo(TEST_COMPONENT_NAME_1, TEST_TASK_ID_1));
-        mTaskPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
         waitForDelayableExecutor();
         Mockito.clearInvocations(mTaskPanelChangeListener);
 
         mTaskPanelInfoRepository.onTaskChangedOnPanel(TEST_PANEL_ID,
                 createTaskInfo(TEST_COMPONENT_NAME_1, TEST_TASK_ID_1));
 
-        verify(mTaskPanelChangeListener, never()).onTopTaskOnPanelChanged();
+        verify(mTaskPanelChangeListener, never()).onTopTaskOnPanelChanged(any(), any());
     }
 
     @Test
     public void onTaskChangedOnPanel_topActivityChange_notifyChange() {
         mTaskPanelInfoRepository.onTaskAppearedOnPanel(TEST_PANEL_ID,
                 createTaskInfo(TEST_COMPONENT_NAME_1, TEST_TASK_ID_1));
-        mTaskPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
         waitForDelayableExecutor();
         Mockito.clearInvocations(mTaskPanelChangeListener);
 
         mTaskPanelInfoRepository.onTaskChangedOnPanel(TEST_PANEL_ID,
                 createTaskInfo(TEST_COMPONENT_NAME_2, TEST_TASK_ID_1));
-        mTaskPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
         waitForDelayableExecutor();
 
-        verify(mTaskPanelChangeListener).onTopTaskOnPanelChanged();
+        verify(mTaskPanelChangeListener).onTopTaskOnPanelChanged(eq(TEST_PANEL_ID), any());
     }
 
     @Test
@@ -125,32 +127,28 @@ public class TaskPanelInfoRepositoryTest extends CarSysuiTestCase {
                 TEST_TASK_ID_1);
         taskInfo1.isVisible = false;
         mTaskPanelInfoRepository.onTaskAppearedOnPanel(TEST_PANEL_ID, taskInfo1);
-        mTaskPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
         waitForDelayableExecutor();
         Mockito.clearInvocations(mTaskPanelChangeListener);
 
         mTaskPanelInfoRepository.onTaskChangedOnPanel(TEST_PANEL_ID,
                 createTaskInfo(TEST_COMPONENT_NAME_1, TEST_TASK_ID_1));
-        mTaskPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
         waitForDelayableExecutor();
 
-        verify(mTaskPanelChangeListener).onTopTaskOnPanelChanged();
+        verify(mTaskPanelChangeListener).onTopTaskOnPanelChanged(eq(TEST_PANEL_ID), any());
     }
 
     @Test
     public void onTaskRemovedOnPanel_notifyChange() {
         mTaskPanelInfoRepository.onTaskAppearedOnPanel(TEST_PANEL_ID,
                 createTaskInfo(TEST_COMPONENT_NAME_1, TEST_TASK_ID_1));
-        mTaskPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
         waitForDelayableExecutor();
         Mockito.clearInvocations(mTaskPanelChangeListener);
 
         mTaskPanelInfoRepository.onTaskVanishedOnPanel(TEST_PANEL_ID,
                 createTaskInfo(TEST_COMPONENT_NAME_1, TEST_TASK_ID_1));
-        mTaskPanelInfoRepository.maybeNotifyTopTaskOnPanelChanged();
         waitForDelayableExecutor();
 
-        verify(mTaskPanelChangeListener).onTopTaskOnPanelChanged();
+        verify(mTaskPanelChangeListener).onTopTaskOnPanelChanged(eq(TEST_PANEL_ID), any());
     }
 
     @Test

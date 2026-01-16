@@ -33,6 +33,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -452,7 +453,7 @@ public class CarSystemBarButton extends LinearLayout implements
             intent.putExtra(EXTRA_DIALOG_CLOSE_REASON, DIALOG_CLOSE_REASON_CAR_SYSTEMBAR_BUTTON);
             mContext.sendBroadcastAsUser(intent, getCurrentUserHandle(mContext, mUserTracker));
 
-            if (getEvent() != null && mEventDispatcher != null) {
+            if (!TextUtils.isEmpty(getEvent()) && mEventDispatcher != null) {
                 mEventDispatcher.executeEvent(getEvent());
             }
 

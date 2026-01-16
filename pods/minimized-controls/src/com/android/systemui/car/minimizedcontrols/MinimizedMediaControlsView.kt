@@ -16,6 +16,21 @@
 
 package com.android.systemui.car.minimizedcontrols
 
-/** Dagger module for minimized controls. */
+import android.content.Context
+import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.widget.LinearLayout
 
-abstract class MinimizedControlsModule
+/**
+ * A custom view to display minimized media controls.
+ */
+class MinimizedMediaControlsView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : LinearLayout(context, attrs, defStyleAttr) {
+
+    init {
+        LayoutInflater.from(context).inflate(R.layout.minimized_media_controls_view, this, true)
+    }
+}

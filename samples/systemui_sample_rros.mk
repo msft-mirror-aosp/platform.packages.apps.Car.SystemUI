@@ -32,6 +32,7 @@ PRODUCT_PACKAGES += \
     DewdLandAospRRO \
     DewdPortAospRRO \
     DewdDynamicAospRRO \
+    MinimizedControlsDynamicRRO \
 
 PRODUCT_PRODUCT_PROPERTIES += \
     car.dewd.config=dynamic

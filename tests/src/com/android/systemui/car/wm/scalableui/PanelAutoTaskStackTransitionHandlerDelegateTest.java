@@ -53,7 +53,6 @@ import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
-import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.wm.shell.automotive.AutoLayoutManager;
 import com.android.wm.shell.automotive.AutoTaskStackController;
 import com.android.wm.shell.automotive.AutoTaskStackTransaction;
@@ -94,8 +93,6 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
     @Mock
     private PanelUtils mPanelUtils;
     @Mock
-    private TaskPanelInfoRepository mTaskPanelInfoRepository;
-    @Mock
     private AutoLayoutManager mAutoLayoutManager;
     @Mock
     private FlagManager mFlagManager;
@@ -111,7 +108,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
         when(mRoleManager.getRoleHoldersAsUser(any(), any())).thenReturn(Collections.emptyList());
         mDelegate = new PanelAutoTaskStackTransitionHandlerDelegate(mContext, mRoleManager,
                 mAutoTaskStackController, mPanelTransitionCoordinator, mPanelUtils,
-                mCarWMUserHelper, mTaskPanelInfoRepository, mAutoLayoutManager, mFlagManager);
+                mCarWMUserHelper, mAutoLayoutManager, mFlagManager);
     }
 
     @Test

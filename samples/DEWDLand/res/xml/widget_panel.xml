@@ -14,6 +14,8 @@
   ~ limitations under the License.
   -->
 <TaskPanel id="widget_panel" defaultVariant="@id/opened" displayId="0" controller="@xml/widget_panel_controller">
+    <Restart policy="DEFAULT" maxRetry="3"/>
+    <TaskBehavior taskProperties="UNTRIMMABLE"/>
     <Variant id="@+id/base">
         <Layer layer="2"/>
         <Bounds

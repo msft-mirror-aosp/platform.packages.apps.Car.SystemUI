@@ -21,7 +21,7 @@
     <integer name="app_panel_layer">50</integer>
     <integer name="app_grid_grip_bar_panel_layer">90</integer>
     <integer name="app_grid_panel_layer">100</integer>
-    <integer name="widget_panel_layer">101</integer>
+    <integer name="widget_panel_layer">20</integer>
     <integer name="calm_mode_panel_layer">150</integer>
     <integer name="assistant_panel_layer">200</integer>
     <integer name="projected_panel_layer">249</integer>

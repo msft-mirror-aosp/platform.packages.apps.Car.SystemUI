@@ -61,7 +61,7 @@
                 android:layout_gravity="center"
                 android:tint="@color/car_status_icon_color"
                 android:duplicateParentState="true"
-                systemui:controller="com.android.systemui.car.statusicon.ui.SignalStatusIconController"/>
+                systemui:controller="com.android.systemui.car.statusicon.connectivity.ActiveConnectivityStatusIconController"/>
             <com.android.systemui.car.flexibleui.layout.CarSystemBarImageView
                 android:id="@+id/qc_icon_button_unseen_icon"
                 android:layout_height="wrap_content"

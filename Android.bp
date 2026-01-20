@@ -69,6 +69,7 @@ carsysui_pods = [
     "CarSystemUI-StatusIcon-MediaVolume",
     "CarSystemUI-StatusIcon-Mobile",
     "CarSystemUI-StatusIcon-PhoneCall",
+    "CarSystemUI-StatusIcon-Connectivity",
     "CarSystemUI-StatusIcon-Wifi",
     "CarSystemUI-SystemBar-DebugPanel",
     "CarSystemUI-SystemBar-HomeButton",

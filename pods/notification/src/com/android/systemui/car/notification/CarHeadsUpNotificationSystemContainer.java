@@ -165,7 +165,7 @@ public class CarHeadsUpNotificationSystemContainer extends CarHeadsUpNotificatio
      * @return {@link WindowManager.LayoutParams} to be used when adding HUN Window to {@link
      * WindowManager}.
      */
-     private WindowManager.LayoutParams getWindowManagerLayoutParams() {
+    private WindowManager.LayoutParams getWindowManagerLayoutParams() {
         if (mHunWindow.isPresent()) {
             return mHunWindow.get().getLayoutParams();
         }

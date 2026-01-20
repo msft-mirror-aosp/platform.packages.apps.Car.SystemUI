@@ -312,7 +312,8 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableBottomSystemBar, true);
         // If Top Notification Panel is used but top navigation bar is not enabled, SystemUI is
         // expected to crash.
-        mTestableResources.addOverride(R.string.config_notificationPanelViewMediator,
+        mTestableResources.addOverride(
+                com.android.systemui.car.notification.R.string.config_notificationPanelViewMediator,
                 BOTTOM_NOTIFICATION_PANEL);
         mCarSystemBarController.init();
 
@@ -348,7 +349,8 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
         mTestableResources.addOverride(R.bool.config_enableTopSystemBar, true);
         // If Bottom Notification Panel is used but bottom navigation bar is not enabled,
         // SystemUI is expected to crash.
-        mTestableResources.addOverride(R.string.config_notificationPanelViewMediator,
+        mTestableResources.addOverride(
+                com.android.systemui.car.notification.R.string.config_notificationPanelViewMediator,
                 TOP_NOTIFICATION_PANEL);
         mCarSystemBarController.init();
 
@@ -785,7 +787,8 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
                 com.android.systemui.car.systembar.split.R.layout.car_top_right_system_bar, null);
 
         assertNotNull(topRightPanel.findViewById(R.id.clock));
-        assertNotNull(topRightPanel.findViewById(R.id.notifications));
+        assertNotNull(topRightPanel.findViewById(
+                com.android.systemui.car.notification.R.id.notifications));
         assertNotNull(topRightPanel.findViewById(
                 com.android.systemui.car.systembar.privacy.mic.R.id.mic_privacy_chip));
         assertNotNull(topRightPanel.findViewById(

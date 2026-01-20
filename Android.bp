@@ -64,6 +64,7 @@ carsysui_pods = [
     "CarSystemUI-Hvac-Controller",
     "CarSystemUI-Hvac-UI",
     "CarSystemUI-Minimized-Controls",
+    "CarSystemUI-Notification",
     "CarSystemUI-QC-DataSubscription",
     "CarSystemUI-QC-Footer-Base",
     "CarSystemUI-QC-Base",

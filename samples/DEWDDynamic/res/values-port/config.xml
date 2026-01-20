@@ -54,4 +54,8 @@
         <item>@xml/projected_panel</item>
         <item>@xml/camera_panel</item>
     </array>
+
+    <string name="config_homePanelVisibilities" translatable="false">-panel_app_grid;-app_panel;-assistant_panel;-panel_calm_mode;widget_panel;map_panel</string>
+    <string name="config_appGridPanelVisibilities" translatable="false">panel_app_grid</string>
+    <string name="config_appGridSelectedClickEvent" translatable="false">close_app_grid</string>
 </resources>

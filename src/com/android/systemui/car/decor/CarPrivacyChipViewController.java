@@ -18,7 +18,6 @@ package com.android.systemui.car.decor;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.InsetsFrameProvider;
 import android.view.View;
 import android.view.WindowInsets.Type.InsetsType;
 import android.view.WindowInsetsController;
@@ -28,8 +27,6 @@ import androidx.annotation.UiThread;
 import com.android.internal.statusbar.LetterboxDetails;
 import com.android.internal.view.AppearanceRegion;
 import com.android.systemui.ScreenDecorationsThread;
-import com.android.systemui.car.shared.R;
-import com.android.systemui.car.systembar.SystemBarConfigs;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Application;
 import com.android.systemui.dagger.qualifiers.Default;
@@ -76,14 +73,12 @@ public class CarPrivacyChipViewController extends PrivacyDotViewControllerImpl
             @NotNull @Default SystemStatusAnimationScheduler animationScheduler,
             @NotNull @ScreenDecorationsThread DelayableExecutor uiExecutor,
             CommandQueue commandQueue,
-            SystemBarConfigs systemBarConfigs) {
+            @CarPrivacyChipBarType int barType) {
         super(mainExecutor, scope, stateController, configurationController, contentInsetsProvider,
                 animationScheduler, null, null, uiExecutor, context.getDisplayId(), null);
         commandQueue.addCallback(this);
         mAnimationHelper = new CarPrivacyChipAnimationHelper(context);
-        InsetsFrameProvider provider = systemBarConfigs.getInsetsFrameProviderByName(
-                context.getResources().getString(R.string.config_privacyIndicatorLocation));
-        mBarType = provider != null ? provider.getType() : -1;
+        mBarType = barType;
     }
 
     @Override

@@ -21,6 +21,7 @@ import static com.android.systemui.Dependency.LEAK_REPORT_EMAIL_NAME;
 
 import android.content.Context;
 import android.hardware.SensorPrivacyManager;
+import android.view.InsetsFrameProvider;
 import android.window.DisplayAreaOrganizer;
 
 import com.android.car.datasubscription.DataSubscriptionMessageCreator;
@@ -33,6 +34,7 @@ import com.android.systemui.biometrics.dagger.BiometricsModule;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedControllerImpl;
 import com.android.systemui.car.decor.CarPolicyModule;
+import com.android.systemui.car.decor.CarPrivacyChipBarType;
 import com.android.systemui.car.decor.CarPrivacyChipDecorProviderFactory;
 import com.android.systemui.car.decor.CarPrivacyChipViewController;
 import com.android.systemui.car.displayconfig.ExternalDisplayController;
@@ -42,7 +44,9 @@ import com.android.systemui.car.hvac.HvacUiModule;
 import com.android.systemui.car.keyguard.CarKeyguardViewController;
 import com.android.systemui.car.notification.NotificationModule;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.statusbar.DozeServiceHost;
+import com.android.systemui.car.systembar.SystemBarConfigs;
 import com.android.systemui.car.users.CarMultiUserUtilsModule;
 import com.android.systemui.car.volume.CarVolumeModule;
 import com.android.systemui.car.wm.activity.window.ActivityWindowModule;
@@ -260,5 +264,13 @@ abstract class CarSystemUIModule {
     @SysUISingleton
     static CarUxRestrictionsUtil provideCarUxRestrictionsUtil(Context context) {
         return CarUxRestrictionsUtil.getInstance(context);
+    }
+
+    @Provides
+    @CarPrivacyChipBarType
+    static int provideCarPrivacyChipBarType(Context context, SystemBarConfigs systemBarConfigs) {
+        InsetsFrameProvider provider = systemBarConfigs.getInsetsFrameProviderByName(
+                context.getResources().getString(R.string.config_privacyIndicatorLocation));
+        return provider != null ? provider.getType() : -1;
     }
 }

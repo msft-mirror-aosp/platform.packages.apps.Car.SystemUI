@@ -16,6 +16,7 @@
 
 package com.android.systemui;
 
+import com.android.systemui.bundle.phone.PodModulePhone;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.ScalableUIWMInitializer;
 import com.android.systemui.car.wm.scalableui.configuration.SystemUiConfigurationProvider;
@@ -42,6 +43,7 @@ import java.util.Optional;
         CarComponentBinder.class,
         DependencyProvider.class,
         SystemUIModule.class,
+        PodModulePhone.class,
         CarSystemUICoreStartableModule.class,
         CarSystemUIModule.class,
         CarSystemUIBinder.class,

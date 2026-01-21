@@ -20,31 +20,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layoutDirection="ltr"
+    android:background="@drawable/split_system_bar_background"
     android:gravity="center">
 
-    <com.android.systemui.car.systembar.CarSystemBarButton
-        android:id="@+id/passenger_home"
-        android:contentDescription="@string/system_bar_home_label"
-        android:visibility="gone"
-        style="@style/SystemBarButton"
-        systemui:highlightWhenSelected="true"
-        systemui:icon="@drawable/car_ic_home"
-        systemui:intent="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;launchFlags=0x14000000;end"
-        systemui:systemBarDisableFlags="home"
-        systemui:controller="com.android.systemui.car.systembar.passengerhome.PassengerHomeButtonController"/>
-
-    <Space
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_centerInParent="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-    <com.android.systemui.car.hvac.TemperatureControlView
-        android:id="@+id/driver_hvac"
-        style="@style/TemperatureControlView"
-        systemui:hvacAreaId="49"
-        systemui:controller="com.android.systemui.car.hvac.TemperatureControlViewController">
-        <include layout="@layout/adjustable_temperature_view"/>
-    </com.android.systemui.car.hvac.TemperatureControlView>
+        <com.android.systemui.car.hvac.TemperatureControlView
+            android:id="@+id/driver_hvac"
+            style="@style/TemperatureControlView"
+            systemui:hvacAreaId="49"
+            systemui:controller="com.android.systemui.car.hvac.TemperatureControlViewController">
+            <include layout="@layout/adjustable_temperature_view"/>
+        </com.android.systemui.car.hvac.TemperatureControlView>
+
+    </LinearLayout>
 
 </com.android.systemui.car.systembar.CarSystemBarView>
 

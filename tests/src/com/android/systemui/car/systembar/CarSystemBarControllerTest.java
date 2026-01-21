@@ -789,7 +789,7 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
         LayoutInflater inflater = LayoutInflater.from(mSpiedContext);
         View bottomLeftPanel = inflater.inflate(R.layout.car_bottom_left_system_bar, null);
 
-        assertNotNull(bottomLeftPanel.findViewById(R.id.passenger_home));
+
         assertNotNull(bottomLeftPanel.findViewById(R.id.driver_hvac));
     }
 

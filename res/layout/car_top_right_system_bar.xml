@@ -19,74 +19,71 @@
     xmlns:systemui="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/split_system_bar_background"
     android:layoutDirection="ltr">
 
-    <FrameLayout
-        android:id="@+id/clock_container"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:paddingStart="@dimen/car_top_right_system_bar_horizontal_padding"
-        android:paddingEnd="@dimen/car_top_right_system_bar_horizontal_padding"
-        android:layout_centerInParent="true">
-        <com.android.systemui.statusbar.policy.Clock
-            android:id="@+id/clock"
+        android:layout_centerInParent="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <FrameLayout
+            android:id="@+id/clock_container"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:elevation="@dimen/car_system_bar_clock_elevation"
-            android:singleLine="true"
-            style="@style/SystemBarClockText"
-            systemui:amPmStyle="gone"
-            />
-    </FrameLayout>
+            android:layout_height="match_parent"
+            android:paddingStart="@dimen/car_top_right_system_bar_horizontal_padding"
+            android:paddingEnd="@dimen/car_top_right_system_bar_horizontal_padding">
+            <com.android.systemui.statusbar.policy.Clock
+                android:id="@+id/clock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:elevation="@dimen/car_system_bar_clock_elevation"
+                android:singleLine="true"
+                style="@style/SystemBarClockText"
+                systemui:amPmStyle="gone"
+                />
+        </FrameLayout>
 
-    <include layout="@layout/read_only_status_icons"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/clock_container"/>
+        <include layout="@layout/read_only_status_icons"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
 
-    <com.android.systemui.car.systembar.CarSystemBarButton
-        android:id="@+id/notifications"
-        android:contentDescription="@string/system_bar_notifications_label"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        style="@style/TopBarButton"
-        android:layout_toLeftOf="@id/share_to_app_privacy_chip"
-        systemui:highlightWhenSelected="true"
-        systemui:icon="@drawable/car_ic_notification_dock"
-        systemui:longIntent="intent:#Intent;action=com.android.car.bugreport.action.BUG_REPORT;end"
-        systemui:systemBarDisableFlags="notificationIcons"
-        systemui:controller="com.android.systemui.car.notification.NotificationButtonController"/>
+        <com.android.systemui.car.systembar.CarSystemBarButton
+            android:id="@+id/notifications"
+            android:contentDescription="@string/system_bar_notifications_label"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            style="@style/TopBarButton"
+            systemui:highlightWhenSelected="true"
+            systemui:icon="@drawable/car_ic_notification_dock"
+            systemui:longIntent="intent:#Intent;action=com.android.car.bugreport.action.BUG_REPORT;end"
+            systemui:systemBarDisableFlags="notificationIcons"
+            systemui:controller="com.android.systemui.car.notification.NotificationButtonController"/>
 
-    <include layout="@layout/share_to_app_privacy_chip"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/cast_to_other_device_privacy_chip" />
+        <include layout="@layout/share_to_app_privacy_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
 
-    <include layout="@layout/cast_to_other_device_privacy_chip"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/camera_privacy_chip" />
+        <include layout="@layout/cast_to_other_device_privacy_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
 
-    <include layout="@layout/camera_privacy_chip"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/mic_privacy_chip" />
+        <include layout="@layout/camera_privacy_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
 
-    <include layout="@layout/mic_privacy_chip"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@id/user_name_container"
-        android:contentDescription="@string/system_bar_mic_privacy_chip" />
+        <include layout="@layout/mic_privacy_chip"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/system_bar_mic_privacy_chip" />
 
-    <include layout="@layout/user_name_container"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentEnd="true" />
+        <include layout="@layout/user_name_container"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
 </com.android.systemui.car.systembar.CarSystemBarView>
 

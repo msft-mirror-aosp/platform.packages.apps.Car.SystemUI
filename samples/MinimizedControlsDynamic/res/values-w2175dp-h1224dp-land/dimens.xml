@@ -27,7 +27,7 @@
   <dimen name="car_bottom_left_system_bar_left">0px</dimen>
   <dimen name="car_bottom_left_system_bar_right">277px</dimen>
   <dimen name="car_top_left_system_bar_left">0px</dimen>
-  <dimen name="car_top_left_system_bar_right">312px</dimen>
+  <dimen name="car_top_left_system_bar_right">450px</dimen>
 
   <!-- Center Panel -->
   <dimen name="car_bottom_center_system_bar_left">787px</dimen>
@@ -36,8 +36,11 @@
   <!-- Right Panels -->
   <dimen name="car_bottom_right_system_bar_left">1898px</dimen>
   <dimen name="car_bottom_right_system_bar_right">2175px</dimen>
-  <dimen name="car_top_right_system_bar_left">1775px</dimen>
+  <dimen name="car_top_right_system_bar_left">1815px</dimen>
   <dimen name="car_top_right_system_bar_right">2175px</dimen>
+
+  <dimen name="status_bar_height">88px</dimen>
+  <dimen name="navigation_bar_height">136px</dimen>
 
   <!-- Minimized Controls Decor Panel (in between left and center) -->
   <dimen name="minimized_controls_left">340px</dimen>

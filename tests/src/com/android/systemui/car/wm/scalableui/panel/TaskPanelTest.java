@@ -100,6 +100,7 @@ public class TaskPanelTest extends CarSysuiTestCase {
     private TaskPanel mTaskPanel;
     private ShellExecutor mMainExecutor;
     private ShellExecutor mShellMainThread;
+    private ShellExecutor mShellBgExecutor;
     private RootTaskStackListener mRootTaskStackListener;
 
     @Mock
@@ -152,12 +153,13 @@ public class TaskPanelTest extends CarSysuiTestCase {
         MockitoAnnotations.initMocks(this);
         mMainExecutor = new ShellSyncExecutor();
         mShellMainThread = new ShellSyncExecutor();
+        mShellBgExecutor = new ShellSyncExecutor();
         mTaskPanel = spy(
                 new TaskPanel(mAutoTaskStackController, mUserContext, mCarServiceProvider,
                         mAutoTaskStackHelper, mShellTaskOrganizer, mAutoCaptionController,
                         mPanelUtils, mTaskPanelInfoRepository, mAutoDecorManager, mEventDispatcher,
                         mPanelControllerInitializer, mAutoLayoutManager,
-                        mMainExecutor, mShellMainThread,
+                        mMainExecutor, mShellMainThread, mShellBgExecutor,
                         mAutoSurfaceTransactionFactory, Optional.of(mPanelUpdatePublisher),
                         mFlagManager,
                         TASK_PANEL_ID));

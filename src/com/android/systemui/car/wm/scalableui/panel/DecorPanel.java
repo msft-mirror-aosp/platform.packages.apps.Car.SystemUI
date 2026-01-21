@@ -38,6 +38,7 @@ import com.android.wm.shell.automotive.AutoSurfaceTransaction;
 import com.android.wm.shell.automotive.AutoSurfaceTransactionFactory;
 import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.shared.annotations.ExternalMainThread;
+import com.android.wm.shell.shared.annotations.ShellBackgroundThread;
 import com.android.wm.shell.shared.annotations.ShellMainThread;
 
 import dagger.assisted.Assisted;
@@ -74,11 +75,13 @@ public final class DecorPanel extends SysUIPanel {
             PanelControllerInitializer panelControllerInitializer,
             @ExternalMainThread ShellExecutor mainExecutor,
             @ShellMainThread ShellExecutor shellMainExecutor,
+            @ShellBackgroundThread ShellExecutor shellBgExecutor,
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
             Optional<PanelUpdatePublisher> panelUpdatePublisherOptional,
             @Assisted String id
     ) {
-        super(context, id, panelUpdatePublisherOptional, mainExecutor, shellMainExecutor);
+        super(context, id, panelUpdatePublisherOptional, mainExecutor, shellMainExecutor,
+                shellBgExecutor);
         mAutoDecorManager = autoDecorManager;
         mPanelUtils = panelUtils;
         mPanelControllerInitializer = panelControllerInitializer;

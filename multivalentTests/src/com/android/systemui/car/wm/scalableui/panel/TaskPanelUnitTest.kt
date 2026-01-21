@@ -72,6 +72,7 @@ class TaskPanelUnitTest : CarSysuiTestCase() {
     private lateinit var taskPanel: TaskPanel
     private lateinit var mainExecutor: ShellExecutor
     private lateinit var shellMainExecutor: ShellExecutor
+    private lateinit var shellBgExecutor: ShellExecutor
 
     @Mock
     private lateinit var autoTaskStackController: AutoTaskStackController
@@ -119,6 +120,7 @@ class TaskPanelUnitTest : CarSysuiTestCase() {
         MockitoAnnotations.initMocks(this)
         mainExecutor = ShellSyncExecutor()
         shellMainExecutor = ShellSyncExecutor()
+        shellBgExecutor = ShellSyncExecutor()
         taskPanel = spy(
             TaskPanel(
                 autoTaskStackController,
@@ -135,6 +137,7 @@ class TaskPanelUnitTest : CarSysuiTestCase() {
                 autoLayoutManager,
                 mainExecutor,
                 shellMainExecutor,
+                shellBgExecutor,
                 autoSurfaceTransactionFactory,
                 Optional.of(panelUpdatePublisher),
                 flagManager,

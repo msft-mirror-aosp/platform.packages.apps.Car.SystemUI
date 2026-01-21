@@ -36,4 +36,7 @@
         <item>@xml/suw_panel</item>
         <item>@xml/unreactive_panel</item>
     </array>
+
+    <!-- TODO(b/463778970):Remove after portraitlauncher deprecation -->
+    <string name="widget_component" translatable="false">com.android.car.portraitlauncher/com.android.car.carlauncher.WidgetHostActivity</string>
 </resources>

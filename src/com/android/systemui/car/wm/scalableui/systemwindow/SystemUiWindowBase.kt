@@ -18,6 +18,7 @@ package com.android.systemui.car.wm.scalableui.systemwindow
 import android.content.Context
 import android.graphics.Insets
 import android.graphics.Rect
+import android.graphics.drawable.GradientDrawable
 import android.hardware.display.DisplayManager
 import android.util.DisplayMetrics
 import android.util.Log
@@ -73,6 +74,28 @@ abstract class SystemUiWindowBase(
             override fun onGravityChange(panelId: String, gravity: Int) {
                 _rootView?.let {
                     windowManager?.updateViewLayout(it, getLayoutParams())
+                }
+            }
+
+            override fun onCornerRadiusChange(panelId: String, radius: Corner?) {
+                _rootView?.let {
+                    radius?.let { cornerRadius ->
+                        it.background?.let { background ->
+                            if (background is GradientDrawable) {
+                                background.cornerRadii = floatArrayOf(
+                                    cornerRadius.topLeftRadius.toFloat(),
+                                    cornerRadius.topLeftRadius.toFloat(),
+                                    cornerRadius.topRightRadius.toFloat(),
+                                    cornerRadius.topRightRadius.toFloat(),
+                                    cornerRadius.bottomRightRadius.toFloat(),
+                                    cornerRadius.bottomRightRadius.toFloat(),
+                                    cornerRadius.bottomLeftRadius.toFloat(),
+                                    cornerRadius.bottomLeftRadius.toFloat(),
+                                )
+                                it.background = background
+                            }
+                        }
+                    }
                 }
             }
         }

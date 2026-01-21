@@ -39,4 +39,8 @@
   <dimen name="car_top_right_system_bar_left">1775px</dimen>
   <dimen name="car_top_right_system_bar_right">2175px</dimen>
 
+  <!-- Minimized Controls Decor Panel (in between left and center) -->
+  <dimen name="minimized_controls_left">340px</dimen>
+  <dimen name="minimized_controls_right">740px</dimen>
+
 </resources>

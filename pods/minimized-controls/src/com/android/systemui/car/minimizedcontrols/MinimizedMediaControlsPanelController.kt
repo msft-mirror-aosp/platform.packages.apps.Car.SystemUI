@@ -35,6 +35,16 @@ class MinimizedMediaControlsPanelController @AssistedInject constructor(
     @DecorPanelViewMap decorPanelViewMap: Map<Class<*>, @JvmSuppressWildcards Provider<View>>
 ) : DecorPanelControllerBase(panelId, metadata, decorPanelViewMap) {
 
+    private var view: MinimizedMediaControlsView? = null
+
+    override fun getView(): View? {
+        val currentView = super.getView()
+        if (currentView !== view) {
+            view = currentView as? MinimizedMediaControlsView
+        }
+        return currentView
+    }
+
     @AssistedFactory
     interface Factory : DecorPanelController.Factory<MinimizedMediaControlsPanelController> {
         override fun create(panelId: String, metadata: PanelControllerMetadata):

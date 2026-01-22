@@ -65,7 +65,6 @@ import com.android.systemui.log.BouncerLogger;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.shade.ShadeExpansionStateManager;
 import com.android.systemui.shade.domain.interactor.ShadeLockscreenInteractor;
-import com.android.systemui.statusbar.domain.interactor.OccludedState;
 import com.android.systemui.statusbar.domain.interactor.StatusBarKeyguardViewManagerInteractor;
 import com.android.systemui.statusbar.phone.BiometricUnlockController;
 import com.android.systemui.statusbar.phone.CentralSurfaces;
@@ -236,12 +235,8 @@ public class CarKeyguardViewController extends OverlayViewController implements
                     this::consumeShowStatusBarKeyguardView);
             mJavaAdapter.alwaysCollectFlow(
                     mStatusBarKeyguardViewManagerInteractor.getKeyguardViewOcclusionState(),
-                    this::consumeOcclusionState);
+                    this::setOccluded);
         }
-    }
-
-    protected void consumeOcclusionState(OccludedState occludedState) {
-        setOccluded(occludedState.getOccluded(), false);
     }
 
     @Override
@@ -381,7 +376,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
 
     @Override
     @MainThread
-    public void setOccluded(boolean occluded, boolean animate) {
+    public void setOccluded(boolean occluded) {
         mKeyguardStateController.notifyKeyguardState(
                 mKeyguardStateController.isShowing(), occluded);
         getOverlayViewGlobalStateController().setOccluded(occluded);
@@ -412,7 +407,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         // Activity) while Keyguard is occluded, unocclude Keyguard so the user can authenticate to
         // dismiss Keyguard.
         if (mKeyguardStateController.isOccluded()) {
-            setOccluded(/* occluded= */ false, /* animate= */ false);
+            setOccluded(/* occluded= */ false);
         }
         if (!isSecure()) {
             hide(/* startTime= */ 0, /* fadeoutDuration= */ 0);

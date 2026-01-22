@@ -20,7 +20,7 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:orientation="horizontal">
-    <com.android.systemui.car.statusicon.StatusIconView
+    <com.android.systemui.car.statusicon.base.StatusIconView
         android:id="@+id/read_only_location_icon"
         android:layout_width="@dimen/car_quick_controls_entry_points_icon_width"
         android:layout_height="match_parent"
@@ -30,7 +30,7 @@
         systemui:controller="com.android.systemui.car.statusicon.location.LocationStatusIconController"
         systemui:systemBarDisable2Flags="systemIcons"
         systemui:disableForLockTaskModeLocked="true"/>
-    <com.android.systemui.car.statusicon.StatusIconView
+    <com.android.systemui.car.statusicon.base.StatusIconView
         android:id="@+id/read_only_phone_icon"
         android:layout_width="@dimen/car_quick_controls_entry_points_icon_width"
         android:layout_height="match_parent"

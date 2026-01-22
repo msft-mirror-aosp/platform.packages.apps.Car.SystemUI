@@ -28,6 +28,7 @@ android_library {
     static_libs: [
         "CarSystemUI-FlexibleUI",
         "CarSystemUI-Shared",
+        "CarSystemUI-StatusIcon-Base",
     ],
     libs: [
         "android.car",

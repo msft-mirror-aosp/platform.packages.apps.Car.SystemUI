@@ -64,6 +64,7 @@ carsysui_pods = [
     "CarSystemUI-Hvac-Controller",
     "CarSystemUI-Hvac-UI",
     "CarSystemUI-Minimized-Controls",
+    "CarSystemUI-StatusIcon-Base",
     "CarSystemUI-StatusIcon-Bluetooth",
     "CarSystemUI-StatusIcon-Location",
     "CarSystemUI-StatusIcon-MediaVolume",

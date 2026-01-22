@@ -176,4 +176,17 @@ public class UserEventManagerTest extends UserPickerTestCase {
 
         assertThat(result).isEqualTo(mCreateResult);
     }
+
+    @Test
+    public void isUserLimitReached_whenCanAddMoreUsers_returnsFalse() {
+        doReturn(true).when(mMockUserManager).canAddMoreUsers(UserManager.USER_TYPE_FULL_SECONDARY);
+        assertThat(mUserEventManager.isUserLimitReached()).isFalse();
+    }
+
+    @Test
+    public void isUserLimitReached_whenCannotAddMoreUsers_returnsTrue() {
+        doReturn(false).when(mMockUserManager)
+                .canAddMoreUsers(UserManager.USER_TYPE_FULL_SECONDARY);
+        assertThat(mUserEventManager.isUserLimitReached()).isTrue();
+    }
 }

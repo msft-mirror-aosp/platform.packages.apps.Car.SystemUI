@@ -31,11 +31,11 @@ import android.widget.ImageButton;
 
 import androidx.annotation.CallSuper;
 
-import com.android.systemui.R;
 import com.android.systemui.car.hvac.HvacController;
 import com.android.systemui.car.hvac.HvacPropertySetter;
 import com.android.systemui.car.hvac.HvacUtils;
 import com.android.systemui.car.hvac.HvacView;
+import com.android.systemui.car.hvac.ui.R;
 
 /**
  * An abstract toggle button which changes its drawable based off its state.

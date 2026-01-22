@@ -32,10 +32,10 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.android.systemui.R;
 import com.android.systemui.car.flexibleui.CarSystemBarElement;
 import com.android.systemui.car.flexibleui.CarSystemBarElementFlags;
 import com.android.systemui.car.flexibleui.CarSystemBarElementResolver;
+import com.android.systemui.car.hvac.ui.R;
 
 import java.util.List;
 
@@ -92,10 +92,12 @@ public class TemperatureControlView extends LinearLayout implements HvacView, Ca
         mMinTempC = getResources().getFloat(R.dimen.hvac_min_value_celsius);
         mMinTempF = getResources().getFloat(R.dimen.hvac_min_value_fahrenheit);
         mMaxTempC = getResources().getFloat(R.dimen.hvac_max_value_celsius);
-        mAvailableTextColor = getResources().getColor(R.color.system_bar_text_color,
-                getContext().getTheme());
-        mUnavailableTextColor = getResources().getColor(R.color.system_bar_text_unavailable_color,
-                getContext().getTheme());
+        mAvailableTextColor = getResources()
+                .getColor(com.android.systemui.R.color.system_bar_text_color,
+                        getContext().getTheme());
+        mUnavailableTextColor = getResources()
+                .getColor(com.android.systemui.R.color.system_bar_text_unavailable_color,
+                        getContext().getTheme());
 
         mElementControllerClassAttr =
                 CarSystemBarElementResolver.getElementControllerClassFromAttributes(context, attrs);

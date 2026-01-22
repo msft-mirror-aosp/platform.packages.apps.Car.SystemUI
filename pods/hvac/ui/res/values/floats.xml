@@ -19,4 +19,12 @@
         Range is from 1.0 for completely opaque to 0.0 for no dim.
     -->
     <item name="hvac_overlay_window_dim_amount" format="float" type="fraction">0.72</item>
+
+    <!-- Temperature increment float for degrees celsius (in degrees celsius) -->
+    <item name="celsius_temperature_increment" format="float" type="fraction">0.5</item>
+    <!--
+        Temperature increment float for degrees fahrenheit.
+        Specified in degrees celsius - 0.5555555°C ~= 1°F
+     -->
+    <item name="fahrenheit_temperature_increment" format="float" type="fraction">0.5555555</item>
 </resources>

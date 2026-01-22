@@ -136,10 +136,6 @@
     <!-- Adjust temperature view raise temperature label-->
     <string name="hvac_increase_button_label">Raise temperature</string>
 
-    <!-- Status icon for signal settings in status bar-->
-    <string name="status_icon_signal_mobile">Signal Settings: Using Mobile Data</string>
-    <string name="status_icon_signal_wifi">Signal Settings: Wifi On</string>
-    <string name="status_icon_signal_hotspot">Signal Settings: Hotspot On</string>
     <!-- Status icon for display settings in status bar-->
     <string name="status_icon_display_status">Display Settings</string>
     <!-- Status icon for debug settings in status bar-->

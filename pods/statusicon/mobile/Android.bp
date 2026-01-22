@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 The Android Open Source Project
+ * Copyright (C) 2025 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.minimizedcontrols
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
 
-/** Dagger module for minimized controls. */
-
-abstract class MinimizedControlsModule
+android_library {
+    name: "CarSystemUI-StatusIcon-Mobile",
+    srcs: [
+        "src/**/*.java",
+    ],
+    resource_dirs: ["res"],
+    manifest: "AndroidManifest.xml",
+    static_libs: [
+        "CarSystemUI-FlexibleUI",
+        "CarSystemUI-Shared",
+    ],
+    libs: [
+        "android.car",
+    ],
+    plugins: ["dagger2-compiler"],
+}

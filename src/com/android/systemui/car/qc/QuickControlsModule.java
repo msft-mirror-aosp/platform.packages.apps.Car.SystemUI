@@ -18,7 +18,7 @@ package com.android.systemui.car.qc;
 
 import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
-import com.android.systemui.car.statusicon.ui.MobileSignalStatusIconController;
+import com.android.systemui.car.statusicon.mobile.MobileStatusIconModule;
 import com.android.systemui.car.statusicon.wifi.WifiStatusIconModule;
 import com.android.systemui.car.systembar.privacy.camera.CameraQcPanelModule;
 import com.android.systemui.car.systembar.privacy.mic.MicQcPanelModule;
@@ -31,7 +31,10 @@ import dagger.multibindings.IntoMap;
 /**
  * Dagger injection module for {@link SystemUIQCViewController}
  */
-@Module(includes = {MicQcPanelModule.class, CameraQcPanelModule.class, WifiStatusIconModule.class})
+@Module(includes = {MicQcPanelModule.class,
+        CameraQcPanelModule.class,
+        WifiStatusIconModule.class,
+        MobileStatusIconModule.class})
 public abstract class QuickControlsModule {
     /** Injects ProfileSwitcher. */
     @Binds
@@ -39,13 +42,6 @@ public abstract class QuickControlsModule {
     @ClassKey(ProfileSwitcher.class)
     public abstract BaseLocalQCProvider bindProfileSwitcher(
             ProfileSwitcher profileSwitcher);
-
-    /** Injects MobileSignalStatusIconController. */
-    @Binds
-    @IntoMap
-    @ClassKey(MobileSignalStatusIconController.class)
-    public abstract CarSystemBarElementController.Factory bindMobileSignalStatusIconController(
-            MobileSignalStatusIconController.Factory mobileSignalStatusIconController);
 
     /** Injects SystemUIQCViewController. */
     @Binds

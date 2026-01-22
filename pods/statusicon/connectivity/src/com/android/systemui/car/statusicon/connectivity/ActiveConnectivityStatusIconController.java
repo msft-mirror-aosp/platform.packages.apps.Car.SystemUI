@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.statusicon.ui;
+package com.android.systemui.car.statusicon.connectivity;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -24,7 +24,6 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.car.datasubscription.Flags;
 import com.android.settingslib.graph.SignalDrawable;
-import com.android.systemui.R;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.qc.DataSubscriptionToolkitView;
@@ -45,7 +44,7 @@ import dagger.assisted.AssistedInject;
 /**
  * A controller for status icon about mobile data, Wi-Fi, and hotspot.
  */
-public class SignalStatusIconController extends StatusIconViewController implements
+public class ActiveConnectivityStatusIconController extends StatusIconViewController implements
         SignalCallback, HotspotController.Callback {
 
     private final Context mContext;
@@ -66,7 +65,7 @@ public class SignalStatusIconController extends StatusIconViewController impleme
     private String mEthernetContentDescription;
 
     @AssistedInject
-    SignalStatusIconController(
+    ActiveConnectivityStatusIconController(
             @Assisted StatusIconView view,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController,
@@ -82,7 +81,8 @@ public class SignalStatusIconController extends StatusIconViewController impleme
         mNetworkController = networkController;
         mDataSubscriptionToolkitView = dataSubscriptionToolkitView;
         mMobileSignalIconDrawable = new SignalDrawable(mContext);
-        mHotSpotIconDrawable = mResources.getDrawable(R.drawable.ic_hotspot, mContext.getTheme());
+        mHotSpotIconDrawable = mResources.getDrawable(
+                com.android.systemui.R.drawable.ic_hotspot, mContext.getTheme());
 
         mMobileSignalContentDescription = resources.getString(R.string.status_icon_signal_mobile);
         mWifiConnectedContentDescription = resources.getString(R.string.status_icon_signal_wifi);
@@ -91,7 +91,7 @@ public class SignalStatusIconController extends StatusIconViewController impleme
 
     @AssistedFactory
     public interface Factory extends
-            StatusIconViewController.Factory<SignalStatusIconController> {
+            StatusIconViewController.Factory<ActiveConnectivityStatusIconController> {
     }
 
     @Override

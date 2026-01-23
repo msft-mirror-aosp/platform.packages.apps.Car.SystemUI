@@ -20,7 +20,7 @@
     </Variant>
 
     <Variant id="@+id/opened" parent="@id/base">
-        <Bounds left="0" top="@dimen/app_top" width="100%" height="@dimen/grip_bar_height" topOffset="@dimen/grip_bar_top_offset"/>
+        <Bounds left="0" bottom="100%" width="100%" height="@dimen/grip_bar_height" topOffset="@dimen/grip_bar_top_offset" bottomOffset="@dimen/app_bottom_offset"/>
     </Variant>
 
     <Variant id="@+id/closed" parent="@id/base">

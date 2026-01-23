@@ -34,6 +34,7 @@ import com.android.car.scalableui.panel.PanelUpdatePublisher
 import com.android.wm.shell.automotive.AutoSurfaceTransaction
 import com.android.wm.shell.common.ShellExecutor
 import com.android.wm.shell.shared.annotations.ExternalMainThread
+import com.android.wm.shell.shared.annotations.ShellBackgroundThread
 import com.android.wm.shell.shared.annotations.ShellMainThread
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -51,7 +52,8 @@ open class SysUIPanel @AssistedInject constructor(
     @Assisted private val panelId: String,
     private val panelUpdatePublisherOptional: Optional<PanelUpdatePublisher>,
     @ExternalMainThread val mainExecutor: ShellExecutor,
-    @ShellMainThread val shellMainExecutor: ShellExecutor
+    @ShellMainThread val shellMainExecutor: ShellExecutor,
+    @ShellBackgroundThread val shellBgExecutor: ShellExecutor
 ) : Panel {
     private var layer = -1
     private var canFocusOnTransition = Focus.Companion.DEFAULT_FOCUS_ON_TRANSITION

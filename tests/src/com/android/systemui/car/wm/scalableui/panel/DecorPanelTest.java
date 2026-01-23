@@ -82,6 +82,8 @@ public class DecorPanelTest extends CarSysuiTestCase {
     @Mock
     private ShellExecutor mMainExecutor;
     @Mock
+    private ShellExecutor mShellBgExecutor;
+    @Mock
     private AutoDecor mMockExistingAutoDecor;
     @Mock
     private AutoDecor mMockNewAutoDecor;
@@ -118,6 +120,7 @@ public class DecorPanelTest extends CarSysuiTestCase {
                 mPanelControllerInitializer,
                 mMainExecutor,
                 mShellMainExecutor,
+                mShellBgExecutor,
                 mAutoSurfaceTransactionFactory,
                 Optional.of(mPanelUpdatePublisher),
                 TEST_PANEL_ID
@@ -142,7 +145,13 @@ public class DecorPanelTest extends CarSysuiTestCase {
             }
             return null;
         }).when(mMainExecutor).execute(any(Runnable.class));
-
+        doAnswer(invocation -> {
+            Runnable runnable = invocation.getArgument(0);
+            if (runnable != null) {
+                runnable.run();
+            }
+            return null;
+        }).when(mShellBgExecutor).execute(any(Runnable.class));
         // --- Stub SysUIPanel methods (called via spy) ---
         doReturn(TEST_LAYER).when(mDecorPanel).getLayer();
         doReturn(mMockBounds).when(mDecorPanel).getBounds();

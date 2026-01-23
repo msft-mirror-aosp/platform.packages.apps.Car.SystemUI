@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.qc;
+package com.android.systemui.car.qc.datasubscription;
 
 import static com.android.car.datasubscription.Flags.FLAG_DATA_SUBSCRIPTION_POP_UP;
 

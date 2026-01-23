@@ -23,10 +23,10 @@ import android.util.AttributeSet;
 import androidx.annotation.Nullable;
 
 import com.android.car.qc.view.QCView;
-import com.android.systemui.R;
 import com.android.systemui.car.flexibleui.CarSystemBarElement;
 import com.android.systemui.car.flexibleui.CarSystemBarElementFlags;
 import com.android.systemui.car.flexibleui.CarSystemBarElementResolver;
+import com.android.systemui.car.shared.R;
 
 /**
  * Quick Control View Element for CarSystemUI.

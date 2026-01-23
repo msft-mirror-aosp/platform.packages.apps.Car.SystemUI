@@ -24,11 +24,11 @@ import android.view.LayoutInflater
 import androidx.test.filters.SmallTest
 import com.android.internal.logging.InstanceId
 import com.android.systemui.CarSysuiTestCase
-import com.android.systemui.R
 import com.android.systemui.car.CarSystemUiTest
 import com.android.systemui.car.Flags.FLAG_SHOW_MEDIA_PROJECTION_INDICATOR
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController
+import com.android.systemui.car.systembar.privacy.share.R as ShareR
 import com.android.systemui.statusbar.chips.sharetoapp.ui.viewmodel.ShareToAppChipViewModel
 import com.android.systemui.statusbar.chips.ui.model.ColorsModel
 import com.android.systemui.statusbar.chips.ui.model.OngoingActivityChipModel
@@ -80,7 +80,9 @@ class ShareToAppPrivacyChipViewControllerTest : CarSysuiTestCase() {
         val context = spy(mContext).stub { on { mainExecutor } doReturn executor }
         shareToAppPrivacyChip =
             spy(
-                LayoutInflater.from(mContext).inflate(R.layout.share_to_app_privacy_chip, null)
+                LayoutInflater.from(mContext).inflate(
+                        ShareR.layout.share_to_app_privacy_chip,
+                                null)
                     as ShareToAppPrivacyChip
             )
         shareToAppPrivacyChipViewController =

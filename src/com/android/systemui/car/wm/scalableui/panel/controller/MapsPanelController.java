@@ -27,7 +27,6 @@ import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.TaskPanelController;
 import com.android.car.tos.TosHelper;
-import com.android.systemui.R;
 import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 
@@ -72,7 +71,7 @@ public final class MapsPanelController extends BaseTaskPanelController {
             return mapIntent;
         }
         Intent result = TosHelper.maybeReplaceWithTosMapIntent(mContext, mapIntent,
-                R.string.config_tosMapIntent, userId);
+                com.android.car.tos.R.string.config_tosMapIntent, userId);
         logIfDebuggable(TAG + ", getDefaultComponent =  " + result);
         return result;
     }

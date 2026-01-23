@@ -31,8 +31,8 @@ import android.view.View;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.userpicker.UserPickerController.Callbacks;
 
 import org.junit.Before;

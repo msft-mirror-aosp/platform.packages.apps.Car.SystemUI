@@ -89,7 +89,8 @@ public class MobileSignalStatusIconControllerTest extends CarSysuiTestCase {
     }
 
     private MobileDataIndicators getMobileDataIndicator() {
-        IconState iconState = new IconState(/* visible= */ true, R.drawable.icon,
+        IconState iconState = new IconState(/* visible= */ true,
+                android.R.drawable.sym_def_app_icon,
                 /* contentDescription= */ "");
         return new MobileDataIndicators(iconState, /* qsIcon=" */ null, /* statusType= */ 0,
                 /* qsType= */ 0, /* activityIn= */ false, /* activityOut= */ false,

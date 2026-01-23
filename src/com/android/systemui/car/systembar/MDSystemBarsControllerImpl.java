@@ -27,8 +27,8 @@ import android.util.Log;
 import android.view.WindowManager;
 
 import com.android.internal.statusbar.IStatusBarService;
-import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.dagger.qualifiers.Main;

@@ -16,7 +16,7 @@
 
 package com.android.systemui.car.systembar
 
-import com.android.systemui.R
+import com.android.systemui.car.shared.R
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -57,7 +57,7 @@ abstract class ExtensionPanelUpdatesCarSystemBarModule {
         @StringKey("nav")
         fun provideNavCarSystemBarWindowSupplier(): CarSystemBarWindowSupplier {
             return CarSystemBarWindowSupplierUsingLayout(
-                R.layout.navigation_bar_window,
+                com.android.systemui.res.R.layout.navigation_bar_window,
                 R.id.car_bottom_bar_window
             )
         }
@@ -77,7 +77,7 @@ abstract class ExtensionPanelUpdatesCarSystemBarModule {
         @StringKey("status")
         fun provideStatusCarSystemBarWindowSupplier(): CarSystemBarWindowSupplier {
             return CarSystemBarWindowSupplierUsingLayout(
-                R.layout.navigation_bar_window,
+                com.android.systemui.res.R.layout.navigation_bar_window,
                 R.id.car_top_bar_window
             )
         }

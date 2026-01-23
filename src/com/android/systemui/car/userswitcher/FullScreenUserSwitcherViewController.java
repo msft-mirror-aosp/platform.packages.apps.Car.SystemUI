@@ -34,8 +34,8 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.android.settingslib.applications.InterestingConfigChanges;
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.window.OverlayViewController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.dagger.SysUISingleton;

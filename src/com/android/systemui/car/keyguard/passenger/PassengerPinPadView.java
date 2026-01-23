@@ -29,7 +29,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 
 import java.util.ArrayList;
 import java.util.List;

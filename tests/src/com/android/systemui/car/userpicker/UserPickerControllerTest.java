@@ -41,7 +41,6 @@ import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.userpicker.UserPickerController.Callbacks;
 import com.android.systemui.car.userswitcher.UserIconProvider;
@@ -137,8 +136,10 @@ public class UserPickerControllerTest extends UserPickerTestCase {
 
         mSnackbarManager = new SnackbarManager();
         mUserPickerSharedState = new UserPickerSharedState();
-        View rootView = mInflater.inflate(R.layout.test_empty_layout, null);
-        mSnackbarManager.setRootView(rootView, R.id.test_empty_layout_frame);
+        View rootView = mInflater.inflate(
+                com.android.systemui.car.tests.baselib.R.layout.test_empty_layout, null);
+        mSnackbarManager.setRootView(rootView,
+                com.android.systemui.car.tests.baselib.R.id.test_empty_layout_frame);
 
         mUserPickerController = new UserPickerController(mContext, mMockUserEventManager,
                 mMockCarServiceMediator, mMockDialogManager, mSnackbarManager,

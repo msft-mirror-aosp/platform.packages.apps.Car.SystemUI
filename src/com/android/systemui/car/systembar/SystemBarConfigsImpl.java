@@ -52,7 +52,7 @@ import androidx.annotation.Nullable;
 import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser;
 import com.android.car.scalableui.model.Corner;
 import com.android.internal.annotations.VisibleForTesting;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.wm.scalableui.configuration.SystemBarConfiguration;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindow;

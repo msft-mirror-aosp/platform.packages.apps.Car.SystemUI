@@ -38,8 +38,8 @@ import androidx.test.filters.SmallTest;
 import com.android.car.qc.QCItem;
 import com.android.car.qc.QCList;
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.privacy.PrivacyDialog;
 
 import org.junit.Before;
@@ -88,7 +88,8 @@ public class CameraQcPanelTest extends CarSysuiTestCase {
 
         mCameraQcPanel = new CameraQcPanel(mContext, mCameraSensorInfoProvider);
 
-        mPhoneCallTitle = mContext.getString(R.string.ongoing_privacy_dialog_phonecall);
+        mPhoneCallTitle = mContext.getString(
+                com.android.systemui.res.R.string.ongoing_privacy_dialog_phonecall);
         mCameraOnTitleText = mContext.getString(R.string.privacy_chip_use_sensor,
                 mCameraQcPanel.getSensorName());
         mCameraOffTitleText = mContext.getString(R.string.privacy_chip_off_content,

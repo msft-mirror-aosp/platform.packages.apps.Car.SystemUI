@@ -16,7 +16,7 @@
 package com.android.systemui.car.flags
 
 import android.annotation.BoolRes
-import com.android.car.scalableui.R
+import com.android.systemui.car.shared.R
 
 /**
  * An enum to represent all supported feature flags.

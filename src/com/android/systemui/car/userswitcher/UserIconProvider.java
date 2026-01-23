@@ -31,7 +31,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import com.android.car.admin.ui.UserAvatarView;
 import com.android.car.internal.user.UserHelper;
 import com.android.internal.util.UserIcons;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.dagger.SysUISingleton;
 
 import javax.inject.Inject;

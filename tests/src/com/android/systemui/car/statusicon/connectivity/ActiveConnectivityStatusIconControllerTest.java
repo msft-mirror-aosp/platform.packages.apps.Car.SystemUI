@@ -173,11 +173,11 @@ public class ActiveConnectivityStatusIconControllerTest extends CarSysuiTestCase
     }
 
     private WifiIndicators getWifiIndicator(boolean enabled) {
-        IconState iconState = new IconState(true, R.drawable.icon, "");
+        IconState iconState = new IconState(true, android.R.drawable.sym_def_app_icon, "");
         return new WifiIndicators(enabled, iconState, null, false, false, "", false, "");
     }
 
     private IconState getEthernetIndicator(boolean enabled) {
-        return new IconState(enabled, R.drawable.stat_sys_ethernet_fully, "");
+        return new IconState(enabled, android.R.drawable.stat_sys_data_bluetooth, "");
     }
 }

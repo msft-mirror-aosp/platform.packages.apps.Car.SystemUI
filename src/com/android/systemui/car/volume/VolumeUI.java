@@ -37,7 +37,6 @@ import android.os.HandlerExecutor;
 import android.util.Log;
 
 import com.android.systemui.CoreStartable;
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
@@ -149,7 +148,8 @@ public class VolumeUI implements CoreStartable, ConfigurationController.Configur
 
     @Override
     public void start() {
-        boolean enableVolumeUi = mResources.getBoolean(R.bool.enable_volume_ui);
+        boolean enableVolumeUi = mResources.getBoolean(
+                com.android.systemui.res.R.bool.enable_volume_ui);
         mEnabled = enableVolumeUi;
         if (!mEnabled) return;
 

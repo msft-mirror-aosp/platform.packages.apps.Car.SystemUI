@@ -37,7 +37,6 @@ import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.hvac.referenceui.FanSpeedBar;
 import com.android.systemui.car.hvac.referenceui.FanSpeedBarSegment;
-import com.android.systemui.tests.R;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -73,13 +72,15 @@ public class FanSpeedBarTest extends CarSysuiTestCase {
         MockitoAnnotations.initMocks(this);
 
         mFanSpeedBar = LayoutInflater.from(getContext()).inflate(
-                R.layout.fan_speed_bar_test, /* root= */ null).findViewById(R.id.fan_speed_bar);
-        mOffButton = mFanSpeedBar.findViewById(com.android.systemui.R.id.fan_off);
-        mFanSpeed1 = mFanSpeedBar.findViewById(com.android.systemui.R.id.fan_speed_1);
-        mFanSpeed2 = mFanSpeedBar.findViewById(com.android.systemui.R.id.fan_speed_2);
-        mFanSpeed3 = mFanSpeedBar.findViewById(com.android.systemui.R.id.fan_speed_3);
-        mFanSpeed4 = mFanSpeedBar.findViewById(com.android.systemui.R.id.fan_speed_4);
-        mMaxButton = mFanSpeedBar.findViewById(com.android.systemui.R.id.fan_max);
+                com.android.systemui.car.tests.baselib.R.layout.fan_speed_bar_test,
+                        /* root= */ null)
+                .findViewById(com.android.systemui.car.tests.baselib.R.id.fan_speed_bar);
+        mOffButton = mFanSpeedBar.findViewById(com.android.systemui.car.hvac.ui.R.id.fan_off);
+        mFanSpeed1 = mFanSpeedBar.findViewById(com.android.systemui.car.hvac.ui.R.id.fan_speed_1);
+        mFanSpeed2 = mFanSpeedBar.findViewById(com.android.systemui.car.hvac.ui.R.id.fan_speed_2);
+        mFanSpeed3 = mFanSpeedBar.findViewById(com.android.systemui.car.hvac.ui.R.id.fan_speed_3);
+        mFanSpeed4 = mFanSpeedBar.findViewById(com.android.systemui.car.hvac.ui.R.id.fan_speed_4);
+        mMaxButton = mFanSpeedBar.findViewById(com.android.systemui.car.hvac.ui.R.id.fan_max);
         mFanSpeedBar.setHvacPropertySetter(mHvacPropertySetter);
     }
 

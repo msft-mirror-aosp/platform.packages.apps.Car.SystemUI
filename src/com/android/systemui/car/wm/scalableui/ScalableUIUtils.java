@@ -18,9 +18,9 @@ package com.android.systemui.car.wm.scalableui;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-import com.android.systemui.R;
 import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
+import com.android.systemui.car.shared.R;
 
 public class ScalableUIUtils {
 

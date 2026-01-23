@@ -59,8 +59,8 @@ import com.android.car.qc.QCList;
 import com.android.car.qc.QCRow;
 import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.settingslib.utils.StringUtil;
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.dagger.qualifiers.Background;
@@ -193,7 +193,8 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
                 drawableToBitmap(mContext.getDrawable(R.drawable.car_ic_managed_device)));
         QCRow row = new QCRow.Builder()
                 .setIcon(icon)
-                .setSubtitle(mContext.getString(R.string.do_disclosure_generic))
+                .setSubtitle(mContext.getString(
+                        com.android.systemui.res.R.string.do_disclosure_generic))
                 .build();
         row.setActionHandler(new QCItem.ActionHandler() {
             @Override

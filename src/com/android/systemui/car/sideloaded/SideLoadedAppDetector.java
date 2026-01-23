@@ -27,8 +27,8 @@ import android.content.res.Resources;
 import android.os.UserHandle;
 import android.util.Log;
 
-import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 

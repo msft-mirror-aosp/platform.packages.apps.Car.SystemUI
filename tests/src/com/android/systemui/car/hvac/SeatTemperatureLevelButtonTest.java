@@ -33,7 +33,6 @@ import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.tests.R;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -65,8 +64,10 @@ public class SeatTemperatureLevelButtonTest extends CarSysuiTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         View testView = LayoutInflater.from(getContext()).inflate(
-                R.layout.seat_heat_level_button_test, /* root= */ null);
-        mSeatTemperatureLevelButton = testView.findViewById(R.id.seat_heat_button);
+                com.android.systemui.car.tests.baselib.R.layout.seat_heat_level_button_test,
+                        /* root= */ null);
+        mSeatTemperatureLevelButton = testView.findViewById(
+                com.android.systemui.car.tests.baselib.R.id.seat_heat_button);
         mSeatTemperatureLevelButton.setHvacPropertySetter(mHvacPropertySetter);
         when(mCarPropertyConfig.getAreaIdConfig(AREA_ID)).thenReturn(mAreaIdConfig);
         when(mAreaIdConfig.getMaxValue()).thenReturn(3);

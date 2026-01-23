@@ -44,7 +44,7 @@ import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.tests.R;
+import com.android.systemui.car.tests.baselib.R;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -119,7 +119,8 @@ public class TemperatureControlViewTest extends CarSysuiTestCase {
     public void onHoldIncreaseButtonDown_inCelsius_increasesThreeDegreesCelsius() {
         setPowerPropertyValue(true);
         mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
-        View increaseButton = mTemperatureControlView.findViewById(R.id.hvac_increase_button);
+        View increaseButton = mTemperatureControlView.findViewById(
+                com.android.systemui.car.hvac.ui.R.id.hvac_increase_button);
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ false);
@@ -140,7 +141,8 @@ public class TemperatureControlViewTest extends CarSysuiTestCase {
     public void onHoldDecreaseButtonDown_inCelsius_decreasesThreeDegreesCelsius() {
         setPowerPropertyValue(true);
         mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
-        View decreaseButton = mTemperatureControlView.findViewById(R.id.hvac_decrease_button);
+        View decreaseButton = mTemperatureControlView.findViewById(
+                com.android.systemui.car.hvac.ui.R.id.hvac_decrease_button);
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ false);
@@ -161,7 +163,8 @@ public class TemperatureControlViewTest extends CarSysuiTestCase {
     public void onHoldIncreaseButtonDown_inFahrenheit_increasesThreeDegreesFahrenheit() {
         setPowerPropertyValue(true);
         mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
-        View increaseButton = mTemperatureControlView.findViewById(R.id.hvac_increase_button);
+        View increaseButton = mTemperatureControlView.findViewById(
+                com.android.systemui.car.hvac.ui.R.id.hvac_increase_button);
         int intervalTimes = 3;
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
@@ -182,7 +185,8 @@ public class TemperatureControlViewTest extends CarSysuiTestCase {
     public void onHoldDecreaseButtonDown_inFahrenheit_decreasesThreeDegreesFahrenheit() {
         setPowerPropertyValue(true);
         mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
-        View decreaseButton = mTemperatureControlView.findViewById(R.id.hvac_decrease_button);
+        View decreaseButton = mTemperatureControlView.findViewById(
+                com.android.systemui.car.hvac.ui.R.id.hvac_decrease_button);
         mTemperatureControlView.onPropertyChanged(mCarPropertyValue);
         mTemperatureControlView.onHvacTemperatureUnitChanged(/* usesFahrenheit= */ true);
         int intervalTimes = 3;
@@ -203,7 +207,8 @@ public class TemperatureControlViewTest extends CarSysuiTestCase {
     public void onHoldIncreaseButtonDown_powerOff_doesNotSetNewValues() {
         setPowerPropertyValue(false);
         mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
-        View increaseButton = mTemperatureControlView.findViewById(R.id.hvac_increase_button);
+        View increaseButton = mTemperatureControlView.findViewById(
+                com.android.systemui.car.hvac.ui.R.id.hvac_increase_button);
         int intervalTimes = 3;
 
         // Hold the button down for more than BUTTON_REPEAT_INTERVAL_MS * 2 but less than
@@ -219,7 +224,8 @@ public class TemperatureControlViewTest extends CarSysuiTestCase {
     public void onHoldDecreaseButtonDown_powerOff_doesNotSetNewValues() {
         setPowerPropertyValue(false);
         mTemperatureControlView.onPropertyChanged(mHvacPowerProperty);
-        View decreaseButton = mTemperatureControlView.findViewById(R.id.hvac_decrease_button);
+        View decreaseButton = mTemperatureControlView.findViewById(
+                com.android.systemui.car.hvac.ui.R.id.hvac_decrease_button);
         int intervalTimes = 3;
 
         // Hold the button down for more than BUTTON_REPEAT_INTERVAL_MS * 2 but less than

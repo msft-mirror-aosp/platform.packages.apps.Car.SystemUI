@@ -31,7 +31,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.SecurityController;
@@ -67,8 +67,9 @@ public class SystemDialogsViewController {
         AlertDialog dialog = new AlertDialog.Builder(mContext,
                 com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
                 .setView(createDialogView())
-                .setPositiveButton(R.string.ok, mOnDeviceMonitoringDialogClickListener)
-                .setNeutralButton(R.string.monitoring_button_view_policies,
+                .setPositiveButton(com.android.systemui.res.R.string.ok,
+                        mOnDeviceMonitoringDialogClickListener)
+                .setNeutralButton(com.android.systemui.res.R.string.monitoring_button_view_policies,
                         mOnDeviceMonitoringDialogClickListener)
                 .create();
 
@@ -136,24 +137,30 @@ public class SystemDialogsViewController {
 
     private CharSequence getDeviceMonitoringTitle(CharSequence deviceOwnerOrganization) {
         if (deviceOwnerOrganization != null && mSecurityController.isFinancedDevice()) {
-            return mContext.getString(R.string.monitoring_title_financed_device,
+            return mContext.getString(
+                    com.android.systemui.res.R.string.monitoring_title_financed_device,
                     deviceOwnerOrganization);
         } else {
-            return mContext.getString(R.string.monitoring_title_device_owned);
+            return mContext.getString(
+                    com.android.systemui.res.R.string.monitoring_title_device_owned);
         }
     }
 
     private CharSequence getDeviceMonitoringMessage(CharSequence deviceOwnerOrganization) {
         if (deviceOwnerOrganization != null) {
             if (mSecurityController.isFinancedDevice()) {
-                return mContext.getString(R.string.monitoring_financed_description_named_management,
+                return mContext.getString(
+                        com.android.systemui.res.R.string
+                                .monitoring_financed_description_named_management,
                         deviceOwnerOrganization, deviceOwnerOrganization);
             } else {
                 return mContext.getString(
-                        R.string.monitoring_description_named_management, deviceOwnerOrganization);
+                        com.android.systemui.res.R.string.monitoring_description_named_management,
+                        deviceOwnerOrganization);
             }
         }
-        return mContext.getString(R.string.monitoring_description_management);
+        return mContext.getString(
+                com.android.systemui.res.R.string.monitoring_description_management);
     }
 
     @Nullable
@@ -162,13 +169,17 @@ public class SystemDialogsViewController {
         boolean hasCACertsInWorkProfile = mSecurityController.hasCACertInWorkProfile();
         if (!(hasCACerts || hasCACertsInWorkProfile)) return null;
         if (isDeviceManaged) {
-            return mContext.getString(R.string.monitoring_description_management_ca_certificate);
+            return mContext.getString(
+                    com.android.systemui.res.R.string
+                            .monitoring_description_management_ca_certificate);
         }
         if (hasCACertsInWorkProfile) {
             return mContext.getString(
-                    R.string.monitoring_description_managed_profile_ca_certificate);
+                    com.android.systemui.res.R.string
+                            .monitoring_description_managed_profile_ca_certificate);
         }
-        return mContext.getString(R.string.monitoring_description_ca_certificate);
+        return mContext.getString(
+                com.android.systemui.res.R.string.monitoring_description_ca_certificate);
     }
 
     @Nullable
@@ -176,10 +187,13 @@ public class SystemDialogsViewController {
         boolean isNetworkLoggingEnabled = mSecurityController.isNetworkLoggingEnabled();
         if (!isNetworkLoggingEnabled) return null;
         if (isDeviceManaged) {
-            return mContext.getString(R.string.monitoring_description_management_network_logging);
+            return mContext.getString(
+                    com.android.systemui.res.R.string
+                            .monitoring_description_management_network_logging);
         } else {
             return mContext.getString(
-                    R.string.monitoring_description_managed_profile_network_logging);
+                    com.android.systemui.res.R.string
+                            .monitoring_description_managed_profile_network_logging);
         }
     }
 
@@ -191,24 +205,34 @@ public class SystemDialogsViewController {
         if (vpnName == null && vpnNameWorkProfile == null) return null;
         if (isDeviceManaged) {
             if (vpnName != null && vpnNameWorkProfile != null) {
-                return mContext.getString(R.string.monitoring_description_two_named_vpns,
+                return mContext.getString(
+                        com.android.systemui.res.R.string.monitoring_description_two_named_vpns,
                         vpnName, vpnNameWorkProfile);
             } else {
-                return mContext.getString(R.string.monitoring_description_managed_device_named_vpn,
+                return mContext.getString(
+                        com.android.systemui.res.R.string
+                                .monitoring_description_managed_device_named_vpn,
                         vpnName != null ? vpnName : vpnNameWorkProfile);
             }
         } else {
             if (vpnName != null && vpnNameWorkProfile != null) {
-                return mContext.getString(R.string.monitoring_description_two_named_vpns,
+                return mContext.getString(
+                        com.android.systemui.res.R.string.monitoring_description_two_named_vpns,
                         vpnName, vpnNameWorkProfile);
             } else if (vpnNameWorkProfile != null) {
-                return mContext.getString(R.string.monitoring_description_managed_profile_named_vpn,
+                return mContext.getString(
+                        com.android.systemui.res.R.string
+                                .monitoring_description_managed_profile_named_vpn,
                         vpnNameWorkProfile);
             } else if (hasWorkProfile) {
                 return mContext.getString(
-                        R.string.monitoring_description_personal_profile_named_vpn, vpnName);
+                        com.android.systemui.res.R.string
+                                .monitoring_description_personal_profile_named_vpn,
+                        vpnName);
             } else {
-                return mContext.getString(R.string.monitoring_description_named_vpn, vpnName);
+                return mContext.getString(
+                        com.android.systemui.res.R.string.monitoring_description_named_vpn,
+                        vpnName);
             }
         }
     }

@@ -27,9 +27,9 @@ import androidx.annotation.NonNull;
 import com.android.car.scalableui.loader.xml.XmlModelLoader;
 import com.android.car.scalableui.manager.ActionManager;
 import com.android.car.scalableui.model.Action;
-import com.android.systemui.R;
 import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
+import com.android.systemui.car.shared.R;
 import com.android.wm.shell.dagger.WMSingleton;
 
 import java.util.List;

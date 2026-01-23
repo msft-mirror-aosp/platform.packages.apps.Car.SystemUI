@@ -74,8 +74,8 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.plugins.VolumeDialog;
 import com.android.systemui.plugins.VolumeDialogController;
 import com.android.systemui.settings.UserTracker;
@@ -702,7 +702,7 @@ public class CarVolumeDialogImpl
     private final class CustomDialog extends Dialog implements DialogInterface {
 
         private CustomDialog(Context context) {
-            super(context, com.android.systemui.R.style.Theme_SystemUI);
+            super(context, com.android.systemui.res.R.style.Theme_SystemUI);
         }
 
         @Override

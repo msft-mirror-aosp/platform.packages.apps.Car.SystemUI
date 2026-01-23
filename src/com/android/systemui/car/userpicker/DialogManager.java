@@ -35,7 +35,7 @@ import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -28,7 +28,7 @@ import android.text.TextUtils
 import android.util.ArraySet
 import android.util.Log
 import androidx.annotation.Nullable
-import com.android.systemui.R
+import com.android.systemui.car.shared.R
 import com.android.systemui.settings.UserTracker
 import java.net.URISyntaxException
 

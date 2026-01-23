@@ -46,8 +46,8 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.systemui.CoreStartable;
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 

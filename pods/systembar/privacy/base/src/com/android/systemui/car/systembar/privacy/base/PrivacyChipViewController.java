@@ -176,13 +176,14 @@ public abstract class PrivacyChipViewController extends CarSystemBarElementContr
                 @Override
                 public int getPanelWidthPx() {
                     return mContext.getResources().getDimensionPixelSize(
-                            com.android.systemui.R.dimen.car_sensor_qc_panel_width);
+                            com.android.systemui.car.shared.R.dimen.car_sensor_qc_panel_width);
                 }
 
                 @Override
                 public int getXOffsetPx() {
                     return -mContext.getResources().getDimensionPixelOffset(
-                            com.android.systemui.R.dimen.privacy_chip_horizontal_padding);
+                            com.android.systemui.car.shared.R.dimen
+                                    .privacy_chip_horizontal_padding);
                 }
 
                 @Override
@@ -190,7 +191,7 @@ public abstract class PrivacyChipViewController extends CarSystemBarElementContr
                     int panelMarginTop = mContext.getResources().getDimensionPixelSize(
                             R.dimen.car_status_icon_panel_margin_top);
                     int topSystemBarHeight = mContext.getResources().getDimensionPixelSize(
-                            com.android.systemui.R.dimen.car_top_system_bar_height);
+                            com.android.systemui.car.shared.R.dimen.car_top_system_bar_height);
                     // TODO(b/202563671): remove yOffsetPx when the PopupWindow API is updated.
                     return panelMarginTop - topSystemBarHeight;
                 }

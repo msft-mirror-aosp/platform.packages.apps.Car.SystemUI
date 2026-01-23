@@ -39,7 +39,7 @@ import com.android.car.qc.QCItem;
 import com.android.car.qc.QCList;
 import com.android.car.qc.QCRow;
 import com.android.car.qc.provider.BaseLocalQCProvider;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.privacy.PrivacyDialog;
 
 import java.util.List;
@@ -66,7 +66,8 @@ public abstract class SensorQcPanel extends BaseLocalQCProvider
     public SensorQcPanel(Context context, SensorPrivacyInfoProvider infoProvider) {
         super(context);
         mSensorInfoProvider = infoProvider;
-        mPhoneCallTitle = context.getString(R.string.ongoing_privacy_dialog_phonecall);
+        mPhoneCallTitle = context.getString(
+                com.android.systemui.res.R.string.ongoing_privacy_dialog_phonecall);
         mSensorOnTitleText = context.getString(R.string.privacy_chip_use_sensor, getSensorName());
         mSensorOffTitleText = context.getString(R.string.privacy_chip_off_content,
                 getSensorNameWithFirstLetterCapitalized());

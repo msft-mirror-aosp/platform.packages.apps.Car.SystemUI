@@ -37,7 +37,7 @@ import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.internal.graphics.drawable.BackgroundBlurDrawable;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.wm.scalableui.panel.PanelUtils;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanel;
 import com.android.systemui.car.wm.scalableui.panel.controller.DecorPanelViewMap;

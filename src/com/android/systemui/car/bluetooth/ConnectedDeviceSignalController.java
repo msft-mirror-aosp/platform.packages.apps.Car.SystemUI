@@ -36,7 +36,7 @@ import android.widget.ImageView;
 
 import com.android.settingslib.graph.SignalDrawable;
 import com.android.systemui.Dependency;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.statusbar.ScalingDrawableWrapper;
 import com.android.systemui.statusbar.policy.BluetoothController;
 
@@ -105,8 +105,8 @@ public class ConnectedDeviceSignalController extends BroadcastReceiver implement
         mController = Dependency.get(BluetoothController.class);
 
         mSignalsView = signalsView;
-        mNetworkSignalView = (ImageView)
-                mSignalsView.findViewById(R.id.connected_device_network_signal);
+        mNetworkSignalView = (ImageView) mSignalsView.findViewById(
+                com.android.systemui.res.R.id.connected_device_network_signal);
 
         TypedValue typedValue = new TypedValue();
         context.getResources().getValue(R.dimen.status_bar_icon_scale_factor, typedValue, true);

@@ -24,7 +24,7 @@ import android.util.Log;
 import android.util.Slog;
 
 import com.android.internal.annotations.VisibleForTesting;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 
 /**
  * Router activity used to launch the intended activity on the desired private display.

@@ -61,7 +61,7 @@ import android.util.SparseArray;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;

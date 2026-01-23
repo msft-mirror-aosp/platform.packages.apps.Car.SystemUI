@@ -21,7 +21,7 @@ import static com.android.systemui.car.hvac.HvacConstants.OVERLAY_TYPE_HVAC_PANE
 
 import android.content.Context;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.window.OverlayViewController;
 
 import dagger.Binds;

@@ -23,7 +23,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.android.systemui.CoreStartable;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;

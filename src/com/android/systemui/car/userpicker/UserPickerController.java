@@ -47,7 +47,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.internal.widget.LockPatternUtils;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.userpicker.UserEventManager.OnUpdateUsersListener;
 import com.android.systemui.car.userpicker.UserRecord.OnClickListenerCreatorBase;
 import com.android.systemui.car.userswitcher.UserIconProvider;

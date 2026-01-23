@@ -37,7 +37,7 @@ import android.widget.TextView;
 import androidx.annotation.MainThread;
 
 import com.android.internal.annotations.VisibleForTesting;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.window.OverlayViewController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.dagger.SysUISingleton;

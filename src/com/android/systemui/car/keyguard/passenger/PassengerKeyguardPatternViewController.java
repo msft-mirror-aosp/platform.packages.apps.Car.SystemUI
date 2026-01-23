@@ -23,8 +23,8 @@ import android.view.View;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.LockPatternView;
 import com.android.internal.widget.LockscreenCredential;
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.settings.UserTracker;
 
 import java.util.List;

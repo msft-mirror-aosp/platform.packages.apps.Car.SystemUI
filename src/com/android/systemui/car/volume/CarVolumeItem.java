@@ -25,7 +25,7 @@ import android.widget.SeekBar;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 
 /** Holds all related data to represent a volume group. */
 public class CarVolumeItem {

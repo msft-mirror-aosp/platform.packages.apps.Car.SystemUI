@@ -22,7 +22,7 @@ import android.widget.ImageView;
 
 import androidx.constraintlayout.motion.widget.MotionLayout;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.util.concurrency.DelayableExecutor;
 
 /**

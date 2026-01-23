@@ -31,7 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 
 import java.io.PrintWriter;
 import java.util.List;

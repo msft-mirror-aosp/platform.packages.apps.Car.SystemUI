@@ -37,8 +37,8 @@ import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
+import com.android.systemui.car.tests.baselib.R;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
-import com.android.systemui.tests.R;
 
 import org.junit.Before;
 import org.junit.Test;

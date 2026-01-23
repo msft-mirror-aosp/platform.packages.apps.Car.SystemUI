@@ -34,8 +34,8 @@ import androidx.annotation.CallSuper;
 import com.android.internal.widget.LockPatternChecker;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.LockscreenCredential;
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.util.ViewController;
 

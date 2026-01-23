@@ -27,7 +27,6 @@ android_test {
 
     dxflags: [
         "--multi-dex",
-        "-JXmx8192M", // TODO(b/301283770): Compiling CarSystemUI should not require -J-Xmx8192M
     ],
     platform_apis: true,
     test_suites: [
@@ -55,9 +54,5 @@ android_test {
 
     certificate: "platform",
 
-    // TODO(b/319708040): re-enable use_resource_processor
-    use_resource_processor: false,
-
-    additional_manifests: ["AndroidManifest.xml"],
-    manifest: "AndroidManifest-base.xml",
+    manifest: "AndroidManifest.xml",
 }

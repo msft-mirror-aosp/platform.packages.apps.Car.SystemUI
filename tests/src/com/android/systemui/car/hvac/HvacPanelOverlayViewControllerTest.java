@@ -40,7 +40,6 @@ import android.widget.TextView;
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
@@ -110,7 +109,8 @@ public class HvacPanelOverlayViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void onAnimateExpandPanel_noTimeout_timeoutNotSet() {
-        mTestableResources.addOverride(R.integer.config_hvacAutoDismissDurationMs, 0);
+        mTestableResources.addOverride(
+                com.android.systemui.car.hvac.ui.R.integer.config_hvacAutoDismissDurationMs, 0);
         createHvacPanelOverlayViewController();
         View mockLayout = mock(View.class);
         mHvacPanelOverlayViewController.setLayout(mockLayout);
@@ -122,7 +122,8 @@ public class HvacPanelOverlayViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void onAnimateExpandPanel_timeoutSet() {
-        mTestableResources.addOverride(R.integer.config_hvacAutoDismissDurationMs, 1000);
+        mTestableResources.addOverride(
+                com.android.systemui.car.hvac.ui.R.integer.config_hvacAutoDismissDurationMs, 1000);
         createHvacPanelOverlayViewController();
         View mockLayout = mock(View.class);
         mHvacPanelOverlayViewController.setLayout(mockLayout);
@@ -134,7 +135,8 @@ public class HvacPanelOverlayViewControllerTest extends CarSysuiTestCase {
 
     @Test
     public void onAnimateCollapsePanel_timeoutCancelled() {
-        mTestableResources.addOverride(R.integer.config_hvacAutoDismissDurationMs, 1000);
+        mTestableResources.addOverride(
+                com.android.systemui.car.hvac.ui.R.integer.config_hvacAutoDismissDurationMs, 1000);
         createHvacPanelOverlayViewController();
         View mockLayout = mock(View.class);
         mHvacPanelOverlayViewController.setLayout(mockLayout);
@@ -160,9 +162,11 @@ public class HvacPanelOverlayViewControllerTest extends CarSysuiTestCase {
                 mock(ViewGroup.LayoutParams.class));
         when(mockHvacPanelView.getParent()).thenReturn(mockHvacPanelParentView);
         when(mockHvacPanelView.getLayoutParams()).thenReturn(mock(ViewGroup.LayoutParams.class));
-        when(mockHvacPanelView.findViewById(R.id.hvac_temperature_text)).thenReturn(
+        when(mockHvacPanelView.findViewById(
+                com.android.systemui.car.hvac.ui.R.id.hvac_temperature_text)).thenReturn(
                 mock(TextView.class));
-        when(mockLayout.findViewById(R.id.hvac_panel)).thenReturn(mockHvacPanelView);
+        when(mockLayout.findViewById(com.android.systemui.car.hvac.ui.R.id.hvac_panel)).thenReturn(
+                mockHvacPanelView);
         mHvacPanelOverlayViewController.setLayout(mockLayout);
 
         mHvacPanelOverlayViewController.onConfigChanged(config);

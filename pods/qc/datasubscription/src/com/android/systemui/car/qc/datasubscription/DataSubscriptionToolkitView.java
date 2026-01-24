@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.qc;
+package com.android.systemui.car.qc.datasubscription;
 
 import static android.widget.PopupWindow.INPUT_METHOD_NOT_NEEDED;
 
@@ -37,7 +37,6 @@ import com.android.car.datasubscription.DataSubscriptionController;
 import com.android.car.datasubscription.DataSubscriptionMessageCreator;
 import com.android.car.datasubscription.DataSubscriptionMessageEventListener;
 import com.android.car.datasubscription.DataSubscriptionViewActionListener;
-import com.android.systemui.R;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
 
@@ -88,7 +87,7 @@ public class DataSubscriptionToolkitView implements DataSubscriptionMessageEvent
         mMainExecutor = mainExecutor;
         mIntent = new Intent(DATA_SUBSCRIPTION_ACTION);
         mIntent.setPackage(mContext.getString(
-                R.string.connectivity_flow_app));
+                com.android.car.datasubscription.R.string.connectivity_flow_app));
         mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         LayoutInflater inflater = LayoutInflater.from(mContext);
         mPopupView = inflater.inflate(R.layout.data_subscription_popup_window, null);

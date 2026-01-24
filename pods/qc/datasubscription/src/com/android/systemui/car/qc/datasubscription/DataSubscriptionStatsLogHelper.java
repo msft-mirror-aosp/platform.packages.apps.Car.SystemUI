@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.qc;
+package com.android.systemui.car.qc.datasubscription;
+
+import static com.android.systemui.CarSystemUIStatsLog.CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__EVENT_TYPE__UNSPECIFIED_EVENT_TYPE;
+import static com.android.systemui.CarSystemUIStatsLog.CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__EVENT_TYPE__SESSION_STARTED;
+import static com.android.systemui.CarSystemUIStatsLog.CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__EVENT_TYPE__SESSION_FINISHED;
+import static com.android.systemui.CarSystemUIStatsLog.CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__EVENT_TYPE__BUTTON_CLICKED;
+import static com.android.systemui.CarSystemUIStatsLog.CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__MESSAGE_TYPE__UNSPECIFIED_MESSAGE_TYPE;
+import static com.android.systemui.CarSystemUIStatsLog.CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__MESSAGE_TYPE__PROACTIVE;
+import static com.android.systemui.CarSystemUIStatsLog.CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__MESSAGE_TYPE__REACTIVE;
 
 import android.annotation.IntDef;
 import android.os.Build;
@@ -50,17 +58,13 @@ public class DataSubscriptionStatsLogHelper {
 
     public @interface DataSubscriptionEventType {
         int UNSPECIFIED_EVENT_TYPE =
-                CarSystemUIStatsLog
-                        .CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__EVENT_TYPE__UNSPECIFIED_EVENT_TYPE;
+                CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__EVENT_TYPE__UNSPECIFIED_EVENT_TYPE;
         int SESSION_STARTED =
-                CarSystemUIStatsLog
-                        .CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__EVENT_TYPE__SESSION_STARTED;
+                CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__EVENT_TYPE__SESSION_STARTED;
         int SESSION_FINISHED =
-                CarSystemUIStatsLog
-                        .CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__EVENT_TYPE__SESSION_FINISHED;
+                CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__EVENT_TYPE__SESSION_FINISHED;
         int BUTTON_CLICKED =
-                CarSystemUIStatsLog
-                        .CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__EVENT_TYPE__BUTTON_CLICKED;
+                CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__EVENT_TYPE__BUTTON_CLICKED;
     }
 
     /**
@@ -73,16 +77,12 @@ public class DataSubscriptionStatsLogHelper {
     })
 
     public @interface DataSubscriptionMessageType {
-
         int UNSPECIFIED_MESSAGE_TYPE =
-                CarSystemUIStatsLog
-                        .CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__MESSAGE_TYPE__UNSPECIFIED_MESSAGE_TYPE;
+                CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__MESSAGE_TYPE__UNSPECIFIED_MESSAGE_TYPE;
         int PROACTIVE =
-                CarSystemUIStatsLog
-                        .CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__MESSAGE_TYPE__PROACTIVE;
+                CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__MESSAGE_TYPE__PROACTIVE;
         int REACTIVE =
-                CarSystemUIStatsLog
-                        .CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__MESSAGE_TYPE__REACTIVE;
+                CAR_SYSTEM_UI_DATA_SUBSCRIPTION_EVENT_REPORTED__MESSAGE_TYPE__REACTIVE;
     }
 
     /**

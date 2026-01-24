@@ -37,6 +37,7 @@ import com.android.systemui.car.hvac.HvacButtonController;
 import com.android.systemui.car.hvac.TemperatureControlViewController;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationButtonController;
+import com.android.systemui.car.qc.datasubscription.DataSubscriptionModule;
 import com.android.systemui.car.systembar.debugpanel.DebugPanelModule;
 import com.android.systemui.car.systembar.home.HomeButtonModule;
 import com.android.systemui.car.systembar.panel.PanelModule;
@@ -86,6 +87,7 @@ import java.util.Optional;
  */
 @Module(includes = {
         DebugPanelModule.class,
+        DataSubscriptionModule.class,
         ExtensionPanelUpdatesCarSystemBarModule.class,
         FlexibleUiModule.class,
         HomeButtonModule.class,
@@ -220,13 +222,6 @@ public abstract class CarSystemBarModule {
     @ClassKey(DockViewControllerWrapper.class)
     public abstract CarSystemBarElementController.Factory bindDockViewControllerWrapper(
             DockViewControllerWrapper.Factory factory);
-
-    /** Injects DataSubscriptionUnseenIconController */
-    @Binds
-    @IntoMap
-    @ClassKey(DataSubscriptionUnseenIconController.class)
-    public abstract CarSystemBarElementController.Factory bindDataSubscriptionUnseenIconController(
-            DataSubscriptionUnseenIconController.Factory factory);
 
     /** Injects KeyguardSystemBarPresenter */
     @SysUISingleton

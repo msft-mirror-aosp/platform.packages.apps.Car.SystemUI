@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.qc.datasubscription;
 
 import static com.android.car.datasubscription.Flags.FLAG_DATA_SUBSCRIPTION_POP_UP;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;

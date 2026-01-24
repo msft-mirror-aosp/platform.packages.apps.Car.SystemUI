@@ -1011,7 +1011,12 @@ public class PanelTransitionCoordinator {
         } else {
             TaskPanel currentFocusedTaskPanel = mPanelUtils.getTaskPanel(
                     p -> p.getRootStack() != null && p.getRootStack().getRootTaskInfo().isFocused);
-            if (currentFocusedTaskPanel != null && currentFocusedTaskPanel.isVisible()) {
+            if (currentFocusedTaskPanel == null) {
+                return;
+            }
+            Variant currentVariant = mPanelUtils.getCurrentVariant(
+                    currentFocusedTaskPanel.getPanelId());
+            if (currentVariant != null && currentVariant.isVisible()) {
                 logIfDebuggable(
                         "Maintaining focus on TaskPanel=" + currentFocusedTaskPanel.getPanelId());
                 autoTaskStackTransaction.setFocusedTaskStack(

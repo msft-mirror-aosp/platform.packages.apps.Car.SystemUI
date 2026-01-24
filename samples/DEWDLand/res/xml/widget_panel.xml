@@ -32,9 +32,8 @@
     <Variant id="@+id/closed" parent="@id/base">
         <Visibility isVisible="false"/>
     </Variant>
-    <Variant id="@+id/suw" parent="@id/base">
-        <Visibility isVisible="false"/>
-    </Variant>
+    <Variant id="@+id/suw" parent="@id/closed" />
+    <Variant id="@+id/userswitch" parent="@id/closed" />
 
     <Transitions>
         <Transition onEvent="_System_EnterSuwEvent" toVariant="@id/suw"/>
@@ -43,5 +42,9 @@
         <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=app_panel" fromVariant="@id/opened" toVariant="@id/closed"/>
         <Transition onEvent="_System_TaskPanelEmptyEvent" onEventTokens="panelId=app_panel" fromVariant="@id/closed" toVariant="@id/opened"/>
         <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=map_panel" fromVariant="@id/closed" toVariant="@id/opened"/>
+
+        <!-- User Switch -->
+        <Transition onEvent="_System_BeforeUserSwitch" toVariant="@id/userswitch"/>
+        <Transition onEvent="_System_UserSwitchComplete" fromVariant="@id/userswitch" toVariant="@id/opened"/>
     </Transitions>
 </TaskPanel>

@@ -83,6 +83,7 @@ import com.android.wm.shell.automotive.RootTaskStack;
 import com.android.wm.shell.automotive.RootTaskStackListener;
 import com.android.wm.shell.common.ShellExecutor;
 import com.android.wm.shell.shared.annotations.ExternalMainThread;
+import com.android.wm.shell.shared.annotations.ShellBackgroundThread;
 import com.android.wm.shell.shared.annotations.ShellMainThread;
 
 import dagger.assisted.Assisted;
@@ -180,11 +181,13 @@ public final class TaskPanel extends SysUIPanel {
             AutoLayoutManager autoLayoutManager,
             @ExternalMainThread ShellExecutor mainExecutor,
             @ShellMainThread ShellExecutor shellMainExecutor,
+            @ShellBackgroundThread ShellExecutor shellBgExecutor,
             AutoSurfaceTransactionFactory autoSurfaceTransactionFactory,
             Optional<PanelUpdatePublisher> panelUpdatePublisherOptional,
             FlagManager flagManager,
             @Assisted String id) {
-        super(context, id, panelUpdatePublisherOptional, mainExecutor, shellMainExecutor);
+        super(context, id, panelUpdatePublisherOptional, mainExecutor, shellMainExecutor,
+                shellBgExecutor);
         mAutoTaskStackController = autoTaskStackController;
         mCarServiceProvider = carServiceProvider;
         mAutoTaskStackHelper = autoTaskStackHelper;
@@ -793,10 +796,10 @@ public final class TaskPanel extends SysUIPanel {
         } else {
             Log.e(TAG, "leash is " + getLeash() + ", tx is " + tx);
         }
-
-        // Execute AutoLayoutManager transactions on WmShell-MainThread, we may not block the
-        // SysUI-MainThread as it's not part of the same surface transaction.
-        getShellMainExecutor().execute(() -> {
+        // TODO b/466431797: Revisit the threading mode for car-wm-shell + ScalableUI
+        // Execute AutoLayoutManager transactions on ShellBgThread, we may not block the
+        // SysUI/WM MainThread as it's not part of the same surface transaction.
+        getShellBgExecutor().execute(() -> {
             RootTaskStack rootTaskStack = getRootStack();
             if (rootTaskStack == null) {
                 Log.w(TAG, "Skip updating insets, RootTaskStack is null for " + getPanelId());

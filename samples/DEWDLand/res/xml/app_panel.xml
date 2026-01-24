@@ -54,5 +54,7 @@
 
         <Transition onEvent="_System_OnHomeEvent" fromVariant="@id/opened" toVariant="@id/closed"/>
         <Transition onEvent="_System_TaskPanelEmptyEvent" onEventTokens="panelId=app_panel" fromVariant="@id/opened" toVariant="@id/closed"/>
+
+        <Transition onEvent="_System_BeforeUserSwitch" toVariant="@id/closed"/>
     </Transitions>
 </TaskPanel>

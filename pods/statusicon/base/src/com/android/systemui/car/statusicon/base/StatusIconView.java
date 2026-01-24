@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.statusicon;
-
+package com.android.systemui.car.statusicon.base;
 
 import android.content.Context;
 import android.util.AttributeSet;

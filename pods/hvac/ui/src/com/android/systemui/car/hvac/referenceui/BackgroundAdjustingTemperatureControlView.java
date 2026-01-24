@@ -28,8 +28,8 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.android.systemui.R;
 import com.android.systemui.car.hvac.TemperatureControlView;
+import com.android.systemui.car.hvac.ui.R;
 
 /**
  * {@link TemperatureControlView} with an added feature of the temperature control bar background

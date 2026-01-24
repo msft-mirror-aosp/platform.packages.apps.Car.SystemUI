@@ -31,7 +31,7 @@
         systemui:panelLayoutRes="@layout/qc_bluetooth_panel"
         systemui:disabledWhileUnprovisioned="true"
         systemui:systemBarDisable2Flags="quickSettings">
-        <com.android.systemui.car.statusicon.StatusIconView
+        <com.android.systemui.car.statusicon.base.StatusIconView
             android:id="@+id/bluetooth_status_icon"
             android:layout_width="@dimen/car_quick_controls_icon_drawable_width"
             android:layout_height="@dimen/car_quick_controls_icon_drawable_height"
@@ -54,7 +54,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <com.android.systemui.car.statusicon.StatusIconView
+            <com.android.systemui.car.statusicon.base.StatusIconView
                 android:id="@+id/connectivity_status_icon"
                 android:layout_width="@dimen/car_quick_controls_icon_drawable_width"
                 android:layout_height="@dimen/car_quick_controls_icon_drawable_height"
@@ -107,7 +107,7 @@
         systemui:panelLayoutRes="@layout/qc_volume_panel"
         systemui:disabledWhileUnprovisioned="true"
         systemui:systemBarDisable2Flags="quickSettings">
-        <com.android.systemui.car.statusicon.StatusIconView
+        <com.android.systemui.car.statusicon.base.StatusIconView
             android:id="@+id/volume_status_icon"
             android:layout_width="@dimen/car_quick_controls_icon_drawable_width"
             android:layout_height="@dimen/car_quick_controls_icon_drawable_height"

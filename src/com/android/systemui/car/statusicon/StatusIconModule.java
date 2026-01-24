@@ -16,11 +16,12 @@
 
 package com.android.systemui.car.statusicon.ui;
 
-import com.android.systemui.car.statusicon.StatusIconViewController;
+import com.android.systemui.car.statusicon.base.StatusIconViewController;
 import com.android.systemui.car.statusicon.bluetooth.BluetoothStatusIconModule;
 import com.android.systemui.car.statusicon.connectivity.ConnectivityStatusIconModule;
 import com.android.systemui.car.statusicon.location.LocationStatusIconModule;
 import com.android.systemui.car.statusicon.mediavolume.MediaVolumeStatusIconModule;
+import com.android.systemui.car.statusicon.mobile.MobileStatusIconModule;
 import com.android.systemui.car.statusicon.phonecall.PhoneCallStatusIconModule;
 import com.android.systemui.car.statusicon.wifi.WifiStatusIconModule;
 
@@ -34,6 +35,7 @@ import dagger.Module;
         ConnectivityStatusIconModule.class,
         LocationStatusIconModule.class,
         MediaVolumeStatusIconModule.class,
+        MobileStatusIconModule.class,
         PhoneCallStatusIconModule.class,
         WifiStatusIconModule.class})
-public abstract class QuickControlsEntryPointsModule {}
+public abstract class StatusIconModule {}

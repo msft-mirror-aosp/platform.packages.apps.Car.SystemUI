@@ -47,8 +47,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.android.car.ui.recyclerview.CarUiRecyclerView;
 import com.android.systemui.Dumpable;
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.userpicker.UserPickerController.Callbacks;
 import com.android.systemui.car.userswitcher.UserIconProvider;

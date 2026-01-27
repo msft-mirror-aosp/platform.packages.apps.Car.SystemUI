@@ -31,7 +31,7 @@ import android.window.ScreenCaptureInternal.CaptureArgs;
 import android.window.ScreenCaptureInternal.ScreenshotHardwareBuffer;
 import android.window.ScreenCaptureInternal.SynchronousScreenCaptureListener;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.wm.activity.ActivityBlockingActivity;
 
 import java.nio.IntBuffer;

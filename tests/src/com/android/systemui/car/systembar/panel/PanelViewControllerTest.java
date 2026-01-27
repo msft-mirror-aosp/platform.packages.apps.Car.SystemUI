@@ -44,10 +44,10 @@ import androidx.test.filters.SmallTest;
 import com.android.car.qc.QCItem;
 import com.android.car.ui.FocusParkingView;
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
@@ -91,7 +91,8 @@ public class PanelViewControllerTest extends CarSysuiTestCase {
 
         mAnchorView = spy(new ImageView(mContext));
         mAnchorView.setImageDrawable(mContext.getResources().getDrawable(
-                R.drawable.ic_bluetooth_status_off, mContext.getTheme()));
+                com.android.systemui.car.statusicon.bluetooth.R.drawable.ic_bluetooth_status_off,
+                mContext.getTheme()));
         mAnchorView.setColorFilter(mContext.getResources().getColor(
                 R.color.car_status_icon_color, mContext.getTheme()));
 
@@ -99,7 +100,8 @@ public class PanelViewControllerTest extends CarSysuiTestCase {
                 R.layout.qc_display_panel, /* root= */ null);
         when(mPanelContentProvider.createPanelContentView(any())).thenReturn(qcDisplayPanel);
         int panelWidth = mContext.getResources().getDimensionPixelSize(
-                R.dimen.car_status_icon_panel_default_width);
+                com.android.systemui.car.systembar.panel.R.dimen
+                        .car_status_icon_panel_default_width);
         when(mPanelContentProvider.getPanelWidthPx()).thenReturn(panelWidth);
 
         mViewController = new PanelViewController(mContext, mUserTracker,

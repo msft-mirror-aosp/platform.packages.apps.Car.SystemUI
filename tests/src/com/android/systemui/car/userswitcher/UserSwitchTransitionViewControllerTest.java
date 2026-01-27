@@ -38,8 +38,8 @@ import android.widget.TextView;
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.util.concurrency.FakeExecutor;
 import com.android.systemui.util.time.FakeSystemClock;

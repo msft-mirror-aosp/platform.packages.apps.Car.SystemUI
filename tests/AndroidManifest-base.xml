@@ -18,4 +18,4 @@
     xmlns:androidprv="http://schemas.android.com/apk/prv/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:sharedUserId="android.uid.system"
-    package="com.android.systemui.tests" />
+    package="com.android.systemui.car.tests.baselib" />

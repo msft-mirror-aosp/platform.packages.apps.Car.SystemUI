@@ -44,7 +44,6 @@ import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardViewController;
 import com.android.keyguard.ViewMediatorCallback;
 import com.android.keyguard.dagger.KeyguardBouncerComponent;
-import com.android.systemui.R;
 import com.android.systemui.bouncer.domain.interactor.BouncerMessageInteractor;
 import com.android.systemui.bouncer.domain.interactor.PrimaryBouncerCallbackInteractor;
 import com.android.systemui.bouncer.domain.interactor.PrimaryBouncerCallbackInteractor.PrimaryBouncerExpansionCallback;
@@ -52,6 +51,7 @@ import com.android.systemui.bouncer.domain.interactor.PrimaryBouncerInteractor;
 import com.android.systemui.bouncer.ui.BouncerView;
 import com.android.systemui.bouncer.ui.binder.KeyguardBouncerViewBinder;
 import com.android.systemui.bouncer.ui.viewmodel.KeyguardBouncerViewModel;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.window.OverlayViewController;
 import com.android.systemui.car.window.OverlayViewGlobalStateController;
 import com.android.systemui.car.window.SystemUIOverlayWindowController;
@@ -270,7 +270,7 @@ public class CarKeyguardViewController extends OverlayViewController implements
         mBiometricUnlockControllerLazy.get().setKeyguardViewController(this);
 
         KeyguardSecurityContainer securityContainer =
-                mLayout.findViewById(R.id.keyguard_security_container);
+                mLayout.findViewById(com.android.systemui.res.R.id.keyguard_security_container);
         if (securityContainer != null) {
             securityContainer.enableTransparentMode();
         }

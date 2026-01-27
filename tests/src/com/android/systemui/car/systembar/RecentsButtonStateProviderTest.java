@@ -43,8 +43,8 @@ import android.view.View;
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.shared.system.TaskStackChangeListener;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
 
@@ -325,7 +325,7 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
                 mAlphaOptimizedImageViewConsumer);
 
         verify(mAlphaOptimizedImageView, never())
-                .setImageResource(eq(com.android.systemui.R.drawable.car_ic_recents));
+                .setImageResource(eq(com.android.systemui.car.shared.R.drawable.car_ic_recents));
     }
 
     @Test
@@ -336,7 +336,7 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
                 mAlphaOptimizedImageViewConsumer);
 
         verify(mAlphaOptimizedImageView, times(1))
-                .setImageResource(eq(com.android.systemui.R.drawable.car_ic_recents));
+                .setImageResource(eq(com.android.systemui.car.shared.R.drawable.car_ic_recents));
     }
 
     @Test

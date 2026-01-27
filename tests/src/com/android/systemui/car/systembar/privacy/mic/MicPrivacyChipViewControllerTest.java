@@ -38,7 +38,6 @@ import android.view.LayoutInflater;
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
@@ -106,7 +105,8 @@ public class MicPrivacyChipViewControllerTest extends CarSysuiTestCase {
         MockitoAnnotations.initMocks(/* testClass= */ this);
 
         mMicPrivacyChip = spy((MicPrivacyChip) LayoutInflater.from(mContext)
-                .inflate(R.layout.mic_privacy_chip, /* root= */ null));
+                .inflate(com.android.systemui.car.systembar.privacy.mic.R.layout.mic_privacy_chip,
+                        /* root= */ null));
         mContext = spy(mContext);
 
         when(mContext.getMainExecutor()).thenReturn(mExecutor);

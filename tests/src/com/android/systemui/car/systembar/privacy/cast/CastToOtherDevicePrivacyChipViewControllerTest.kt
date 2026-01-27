@@ -24,11 +24,11 @@ import android.view.LayoutInflater
 import androidx.test.filters.SmallTest
 import com.android.internal.logging.InstanceId
 import com.android.systemui.CarSysuiTestCase
-import com.android.systemui.R
 import com.android.systemui.car.CarSystemUiTest
 import com.android.systemui.car.Flags.FLAG_SHOW_MEDIA_PROJECTION_INDICATOR
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController
+import com.android.systemui.car.systembar.privacy.cast.R as CastR
 import com.android.systemui.statusbar.chips.casttootherdevice.ui.viewmodel.CastToOtherDeviceChipViewModel
 import com.android.systemui.statusbar.chips.ui.model.ColorsModel
 import com.android.systemui.statusbar.chips.ui.model.OngoingActivityChipModel
@@ -82,7 +82,7 @@ class CastToOtherDevicePrivacyChipViewControllerTest : CarSysuiTestCase() {
         castToOtherDevicePrivacyChip =
             spy(
                 LayoutInflater.from(mContext)
-                    .inflate(R.layout.cast_to_other_device_privacy_chip, null)
+                    .inflate(CastR.layout.cast_to_other_device_privacy_chip, null)
                     as CastToOtherDevicePrivacyChip
             )
         castToOtherDevicePrivacyChipViewController =

@@ -100,7 +100,7 @@ public class CarSystemBarPanelButtonView extends LinearLayout implements CarSyst
         int panelMarginTop = context.getResources().getDimensionPixelSize(
                 R.dimen.car_status_icon_panel_margin_top);
         int topSystemBarHeight = context.getResources().getDimensionPixelSize(
-                com.android.systemui.R.dimen.car_top_system_bar_height);
+                com.android.systemui.car.shared.R.dimen.car_top_system_bar_height);
         // TODO(b/202563671): remove yOffsetPx when the PopupWindow API is updated.
         int defaultYOffset = panelMarginTop - topSystemBarHeight;
         mYOffset = typedArray.getInteger(R.styleable.CarSystemBarPanelButtonView_yOffset,

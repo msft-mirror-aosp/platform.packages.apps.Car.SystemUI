@@ -196,7 +196,7 @@ public class PanelViewController extends ViewController<View> {
                     .isRequiresDistractionOptimization()) {
                 dismissAllSystemDialogs();
                 Toast.makeText(mContext,
-                        com.android.systemui.R.string.car_ui_restricted_while_driving,
+                        com.android.car.ui.R.string.car_ui_restricted_while_driving,
                         Toast.LENGTH_LONG).show();
                 return;
             }

@@ -16,7 +16,7 @@
 
 package com.android.systemui.car.systembar
 
-import com.android.systemui.R
+import com.android.systemui.car.shared.R
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -78,7 +78,7 @@ abstract class SplitCarSystemBarModule {
         @StringKey("top_bar_left_panel")
         fun provideTopBarLeftWindowSupplier(): CarSystemBarWindowSupplier {
             return CarSystemBarWindowSupplierUsingLayout(
-                R.layout.navigation_bar_window,
+                com.android.systemui.res.R.layout.navigation_bar_window,
                 R.id.car_top_bar_left_window
             )
         }
@@ -98,7 +98,7 @@ abstract class SplitCarSystemBarModule {
         @StringKey("top_bar_right_panel")
         fun provideTopBarRightWindowSupplier(): CarSystemBarWindowSupplier {
             return CarSystemBarWindowSupplierUsingLayout(
-                R.layout.navigation_bar_window,
+                com.android.systemui.res.R.layout.navigation_bar_window,
                 R.id.car_top_bar_right_window
             )
         }
@@ -118,7 +118,7 @@ abstract class SplitCarSystemBarModule {
         @StringKey("bottom_bar_left_panel")
         fun provideBottomBarLeftWindowSupplier(): CarSystemBarWindowSupplier {
             return CarSystemBarWindowSupplierUsingLayout(
-                R.layout.navigation_bar_window,
+                com.android.systemui.res.R.layout.navigation_bar_window,
                 R.id.car_bottom_bar_left_window
             )
         }
@@ -138,7 +138,7 @@ abstract class SplitCarSystemBarModule {
         @StringKey("bottom_bar_center_panel")
         fun provideBottomBarCenterWindowSupplier(): CarSystemBarWindowSupplier {
             return CarSystemBarWindowSupplierUsingLayout(
-                R.layout.navigation_bar_window,
+                com.android.systemui.res.R.layout.navigation_bar_window,
                 R.id.car_bottom_bar_center_window
             )
         }
@@ -158,7 +158,7 @@ abstract class SplitCarSystemBarModule {
         @StringKey("bottom_bar_right_panel")
         fun provideBottomBarRightWindowSupplier(): CarSystemBarWindowSupplier {
             return CarSystemBarWindowSupplierUsingLayout(
-                R.layout.navigation_bar_window,
+                com.android.systemui.res.R.layout.navigation_bar_window,
                 R.id.car_bottom_bar_right_window
             )
         }

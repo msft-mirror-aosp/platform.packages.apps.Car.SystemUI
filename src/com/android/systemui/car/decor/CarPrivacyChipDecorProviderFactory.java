@@ -19,7 +19,7 @@ package com.android.systemui.car.decor;
 import android.content.Context;
 import android.view.DisplayCutout;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.decor.DecorProvider;
 import com.android.systemui.decor.PrivacyDotCornerDecorProviderImpl;

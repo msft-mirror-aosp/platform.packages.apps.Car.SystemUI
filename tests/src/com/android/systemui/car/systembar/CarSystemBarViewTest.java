@@ -29,9 +29,9 @@ import android.view.View;
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.notification.NotificationPanelViewController;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.window.OverlayVisibilityMediator;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
@@ -103,7 +103,8 @@ public class CarSystemBarViewTest extends CarSysuiTestCase {
         when(mNotificationPanelViewController.shouldPanelConsumeSystemBarTouch())
                 .thenReturn(true);
         mNavBarView = (CarSystemBarView) LayoutInflater.from(getContext()).inflate(
-                R.layout.car_system_bar_view_test, /* root= */ null);
+                com.android.systemui.car.tests.baselib.R.layout.car_system_bar_view_test,
+                        /* root= */ null);
         CarSystemBarViewControllerImpl controller = getSystemBarViewController(mNavBarView);
         controller.setSystemBarTouchListeners(
                 Collections.singleton(mNavBarTouchListener));
@@ -128,7 +129,8 @@ public class CarSystemBarViewTest extends CarSysuiTestCase {
         when(mNotificationPanelViewController.shouldPanelConsumeSystemBarTouch())
                 .thenReturn(true);
         mNavBarView = (CarSystemBarView) LayoutInflater.from(getContext()).inflate(
-                R.layout.car_system_bar_view_test, /* root= */ null);
+                com.android.systemui.car.tests.baselib.R.layout.car_system_bar_view_test,
+                        /* root= */ null);
         CarSystemBarViewControllerImpl controller = getSystemBarViewController(mNavBarView);
         controller.setSystemBarTouchListeners(
                 Collections.singleton(mNavBarTouchListener));

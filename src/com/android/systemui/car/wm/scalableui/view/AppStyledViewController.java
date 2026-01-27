@@ -21,7 +21,7 @@ import android.view.View;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelControllerMetadata;
 import com.android.car.scalableui.panel.DecorPanelController;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.panel.controller.DecorPanelViewMap;
 

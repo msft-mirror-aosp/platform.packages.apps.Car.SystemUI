@@ -25,7 +25,7 @@ import android.view.View;
 
 import androidx.annotation.IdRes;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 
 import com.google.android.material.snackbar.Snackbar;
 

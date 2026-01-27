@@ -27,7 +27,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.ArrayRes;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 
 import java.util.Set;
 

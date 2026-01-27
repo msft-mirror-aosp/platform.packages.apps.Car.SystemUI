@@ -36,11 +36,11 @@ import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.settings.UserTracker;
 
 import dagger.assisted.Assisted;

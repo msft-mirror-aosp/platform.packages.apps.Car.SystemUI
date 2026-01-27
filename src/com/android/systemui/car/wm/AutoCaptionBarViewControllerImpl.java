@@ -38,7 +38,7 @@ import android.window.WindowContainerTransaction;
 
 import androidx.annotation.NonNull;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionBarViewController;
 import com.android.wm.shell.automotive.RootTaskStack;

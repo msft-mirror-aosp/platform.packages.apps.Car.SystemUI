@@ -37,8 +37,8 @@ import android.view.WindowManager;
 
 import androidx.annotation.MainThread;
 
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.dagger.qualifiers.UiBackground;
 
 import javax.inject.Inject;

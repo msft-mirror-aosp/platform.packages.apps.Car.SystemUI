@@ -19,7 +19,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.Button
 import android.widget.LinearLayout
-import com.android.systemui.R
+import com.android.systemui.car.shared.R
 
 /**
  * A view that displays a toolbar with controls for a TaskPanel.

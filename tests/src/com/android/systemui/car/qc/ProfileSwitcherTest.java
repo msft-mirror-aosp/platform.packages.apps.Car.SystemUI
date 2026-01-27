@@ -61,8 +61,8 @@ import com.android.car.qc.QCList;
 import com.android.car.qc.QCRow;
 import com.android.dx.mockito.inline.extended.ExtendedMockito;
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.settings.UserTracker;
@@ -121,7 +121,7 @@ public class ProfileSwitcherTest extends CarSysuiTestCase {
         when(mDevicePolicyManager.isDeviceManaged()).thenReturn(false);
         when(mDevicePolicyManager.isOrganizationOwnedDeviceWithManagedProfile()).thenReturn(false);
         doReturn(false).when(() -> CarSystemUIUserUtil.isSecondaryMUMDSystemUI());
-        Drawable testDrawable = mContext.getDrawable(R.drawable.ic_android);
+        Drawable testDrawable = mContext.getDrawable(android.R.drawable.sym_def_app_icon);
         when(mUserIconProvider.getDrawableWithBadge(anyInt())).thenReturn(testDrawable);
         when(mUserIconProvider.getDrawableWithBadge(any(Drawable.class))).thenReturn(testDrawable);
         when(mUserIconProvider.getRoundedGuestDefaultIcon()).thenReturn(testDrawable);
@@ -161,7 +161,7 @@ public class ProfileSwitcherTest extends CarSysuiTestCase {
         List<QCRow> rows = getProfileRows();
         assertThat(rows).hasSize(6);
         assertThat(rows.get(0).getSubtitle()).isEqualTo(
-                mContext.getString(R.string.do_disclosure_generic));
+                mContext.getString(com.android.systemui.res.R.string.do_disclosure_generic));
         assertThat(rows.get(1).getTitle()).isEqualTo("User1");
         assertThat(rows.get(2).getTitle()).isEqualTo("User2");
         assertThat(rows.get(3).getTitle()).isEqualTo(
@@ -182,7 +182,7 @@ public class ProfileSwitcherTest extends CarSysuiTestCase {
         List<QCRow> rows = getProfileRows();
         assertThat(rows).hasSize(3);
         assertThat(rows.get(0).getSubtitle()).isEqualTo(
-                mContext.getString(R.string.do_disclosure_generic));
+                mContext.getString(com.android.systemui.res.R.string.do_disclosure_generic));
         assertThat(rows.get(1).getTitle()).isEqualTo(mAliveUsers.get(0).name);
         assertThat(rows.get(2).getTitle()).isEqualTo(mContext.getString(R.string.end_session));
     }
@@ -313,7 +313,7 @@ public class ProfileSwitcherTest extends CarSysuiTestCase {
         // one for the guest user, and one for add user
         assertThat(rows).hasSize(4);
         assertThat(rows.get(0).getSubtitle()).isEqualTo(
-                mContext.getString(R.string.do_disclosure_generic));
+                mContext.getString(com.android.systemui.res.R.string.do_disclosure_generic));
         assertThat(rows.get(1).getTitle()).isEqualTo("User1");
         assertThat(rows.get(2).getTitle()).isEqualTo(
                 mContext.getString(com.android.internal.R.string.guest_name));

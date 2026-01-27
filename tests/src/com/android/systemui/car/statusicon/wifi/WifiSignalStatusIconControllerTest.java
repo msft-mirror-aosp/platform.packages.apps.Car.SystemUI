@@ -96,7 +96,8 @@ public class WifiSignalStatusIconControllerTest extends CarSysuiTestCase {
     public void onUpdateStatus_wifiEnabled_showsWifiIndicatorIcon() {
         mWifiSignalStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ true));
 
-        verify(mResources).getDrawable(eq(R.drawable.icon), any());
+        verify(mResources).getDrawable(
+                eq(com.android.systemui.res.R.drawable.icon), any());
     }
 
     @Test
@@ -107,7 +108,8 @@ public class WifiSignalStatusIconControllerTest extends CarSysuiTestCase {
     }
 
     private WifiIndicators getWifiIndicator(boolean enabled) {
-        IconState iconState = new IconState(/* visible= */ true, R.drawable.icon,
+        IconState iconState = new IconState(/* visible= */ true,
+                com.android.systemui.res.R.drawable.icon,
                 /* contentDescription= */ "");
         return new WifiIndicators(enabled, iconState, /* qsIcon= */ null, /* activityIn= */ false,
                 /* activityOut= */ false, /* qsDescription=" */ "", /* isTransient= */ false,

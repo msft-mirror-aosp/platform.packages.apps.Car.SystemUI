@@ -40,13 +40,13 @@ import android.view.WindowManager;
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.notification.NotificationPanelViewController;
 import com.android.systemui.car.notification.NotificationPanelViewMediator;
 import com.android.systemui.car.notification.PowerManagerHelper;
 import com.android.systemui.car.notification.TopNotificationPanelViewMediator;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
 import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.UserTracker;

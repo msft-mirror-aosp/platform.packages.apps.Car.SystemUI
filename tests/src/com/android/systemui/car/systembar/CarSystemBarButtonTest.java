@@ -49,9 +49,9 @@ import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.tests.baselib.R;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
-import com.android.systemui.tests.R;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -97,7 +97,7 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
     @Test
     public void onCreate_iconIsVisible() {
         AlphaOptimizedImageView icon = mDefaultButton.findViewById(
-                R.id.car_nav_button_icon_image);
+                com.android.systemui.car.shared.R.id.car_nav_button_icon_image);
 
         assertThat(icon.getDrawable()).isNotNull();
     }
@@ -107,12 +107,12 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
         mDefaultButton.setSelected(true);
         waitForIdleSync();
         Drawable selectedIconDrawable = ((AlphaOptimizedImageView) mDefaultButton.findViewById(
-                R.id.car_nav_button_icon_image)).getDrawable();
+                com.android.systemui.car.shared.R.id.car_nav_button_icon_image)).getDrawable();
 
         mDefaultButton.setSelected(false);
         waitForIdleSync();
         Drawable unselectedIconDrawable = ((AlphaOptimizedImageView) mDefaultButton.findViewById(
-                R.id.car_nav_button_icon_image)).getDrawable();
+                com.android.systemui.car.shared.R.id.car_nav_button_icon_image)).getDrawable();
 
         assertThat(selectedIconDrawable).isNotEqualTo(unselectedIconDrawable);
     }
@@ -125,13 +125,13 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
         selectedIconUndefinedButton.setSelected(true);
         waitForIdleSync();
         Drawable selectedIconDrawable = ((AlphaOptimizedImageView) mDefaultButton.findViewById(
-                R.id.car_nav_button_icon_image)).getDrawable();
+                com.android.systemui.car.shared.R.id.car_nav_button_icon_image)).getDrawable();
 
 
         selectedIconUndefinedButton.setSelected(false);
         waitForIdleSync();
         Drawable unselectedIconDrawable = ((AlphaOptimizedImageView) mDefaultButton.findViewById(
-                R.id.car_nav_button_icon_image)).getDrawable();
+                com.android.systemui.car.shared.R.id.car_nav_button_icon_image)).getDrawable();
 
         assertThat(selectedIconDrawable).isEqualTo(unselectedIconDrawable);
     }
@@ -178,7 +178,7 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
     public void onSelected_doesNotShowMoreWhenSelected_doesNotShowMoreIcon() {
         mDefaultButton.setSelected(true);
         AlphaOptimizedImageView moreIcon = mDefaultButton.findViewById(
-                R.id.car_nav_button_more_icon);
+                com.android.systemui.car.shared.R.id.car_nav_button_more_icon);
         waitForIdleSync();
 
         assertThat(moreIcon.getVisibility()).isEqualTo(View.GONE);
@@ -190,7 +190,7 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
                 R.id.not_highlightable_more_button);
         showMoreWhenSelected.setSelected(true);
         AlphaOptimizedImageView moreIcon = showMoreWhenSelected.findViewById(
-                R.id.car_nav_button_more_icon);
+                com.android.systemui.car.shared.R.id.car_nav_button_more_icon);
         waitForIdleSync();
 
         assertThat(moreIcon.getVisibility()).isEqualTo(View.VISIBLE);
@@ -203,7 +203,7 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
         showMoreWhenSelected.setSelected(true);
         showMoreWhenSelected.setSelected(false);
         AlphaOptimizedImageView moreIcon = showMoreWhenSelected.findViewById(
-                R.id.car_nav_button_more_icon);
+                com.android.systemui.car.shared.R.id.car_nav_button_more_icon);
         waitForIdleSync();
 
         assertThat(moreIcon.getVisibility()).isEqualTo(View.GONE);
@@ -212,14 +212,14 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
     @Test
     public void onUnselected_withAppIcon_showsAppIcon() {
         CarSystemBarButton roleBasedButton = mTestView.findViewById(R.id.role_based_button);
-        Drawable appIcon = getContext().getDrawable(R.drawable.ic_android);
+        Drawable appIcon = getContext().getDrawable(com.android.systemui.res.R.drawable.ic_android);
 
         roleBasedButton.setAppIcon(appIcon);
         roleBasedButton.setSelected(false);
         waitForIdleSync();
 
         Drawable currentDrawable = ((AlphaOptimizedImageView) roleBasedButton.findViewById(
-                R.id.car_nav_button_icon_image)).getDrawable();
+                com.android.systemui.car.shared.R.id.car_nav_button_icon_image)).getDrawable();
 
         assertThat(currentDrawable).isEqualTo(appIcon);
     }
@@ -228,7 +228,8 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
     public void onUnselected_withAppIcon_applyUnselectedAlpha() {
         CarSystemBarButton roleBasedButton = mTestView.findViewById(R.id.role_based_button);
 
-        roleBasedButton.setAppIcon(getContext().getDrawable(R.drawable.ic_android));
+        roleBasedButton.setAppIcon(
+                getContext().getDrawable(com.android.systemui.res.R.drawable.ic_android));
         roleBasedButton.setSelected(false);
         waitForIdleSync();
 
@@ -238,14 +239,14 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
     @Test
     public void onSelected_withAppIcon_showsAppIcon() {
         CarSystemBarButton roleBasedButton = mTestView.findViewById(R.id.role_based_button);
-        Drawable appIcon = getContext().getDrawable(R.drawable.ic_android);
+        Drawable appIcon = getContext().getDrawable(com.android.systemui.res.R.drawable.ic_android);
 
         roleBasedButton.setSelected(true);
         roleBasedButton.setAppIcon(appIcon);
         waitForIdleSync();
 
         Drawable currentDrawable = ((AlphaOptimizedImageView) roleBasedButton.findViewById(
-                R.id.car_nav_button_icon_image)).getDrawable();
+                com.android.systemui.car.shared.R.id.car_nav_button_icon_image)).getDrawable();
 
         assertThat(currentDrawable).isEqualTo(appIcon);
     }
@@ -255,7 +256,8 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
         CarSystemBarButton roleBasedButton = mTestView.findViewById(R.id.role_based_button);
 
         roleBasedButton.setSelected(true);
-        roleBasedButton.setAppIcon(getContext().getDrawable(R.drawable.ic_android));
+        roleBasedButton.setAppIcon(
+                getContext().getDrawable(com.android.systemui.res.R.drawable.ic_android));
         waitForIdleSync();
 
         assertThat(roleBasedButton.getIconAlpha()).isEqualTo(roleBasedButton.getSelectedAlpha());
@@ -443,7 +445,8 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
     @Test
     public void onSetUnseen_hasUnseen_showsUnseenIndicator() {
         mDefaultButton.setUnseen(true);
-        ImageView hasUnseenIndicator = mDefaultButton.findViewById(R.id.car_nav_button_unseen_icon);
+        ImageView hasUnseenIndicator = mDefaultButton.findViewById(
+                com.android.systemui.car.shared.R.id.car_nav_button_unseen_icon);
         waitForIdleSync();
 
         assertThat(hasUnseenIndicator.getVisibility()).isEqualTo(View.VISIBLE);
@@ -452,7 +455,8 @@ public class CarSystemBarButtonTest extends CarSysuiTestCase {
     @Test
     public void onSetUnseen_doesNotHaveUnseen_hidesUnseenIndicator() {
         mDefaultButton.setUnseen(false);
-        ImageView hasUnseenIndicator = mDefaultButton.findViewById(R.id.car_nav_button_unseen_icon);
+        ImageView hasUnseenIndicator = mDefaultButton.findViewById(
+                com.android.systemui.car.shared.R.id.car_nav_button_unseen_icon);
         waitForIdleSync();
 
         assertThat(hasUnseenIndicator.getVisibility()).isEqualTo(View.GONE);

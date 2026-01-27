@@ -32,7 +32,6 @@ import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.tests.R;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +65,8 @@ public class OverlayViewControllerTest extends CarSysuiTestCase {
                 mOverlayViewGlobalStateController);
 
         mBaseLayout = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                R.layout.overlay_view_controller_test, /* root= */ null);
+                com.android.systemui.car.tests.baselib.R.layout.overlay_view_controller_test,
+                /* root= */ null);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class OverlayViewControllerTest extends CarSysuiTestCase {
         mOverlayViewController.inflate();
 
         assertThat(mOverlayViewController.getLayout().getId()).isEqualTo(
-                R.id.overlay_view_controller_test);
+                com.android.systemui.car.tests.baselib.R.id.overlay_view_controller_test);
     }
 
     @Test
@@ -176,7 +176,8 @@ public class OverlayViewControllerTest extends CarSysuiTestCase {
         public View inflate() {
             if (isInflated()) return mLayout;
             mLayout = LayoutInflater.from(mContext).inflate(
-                    R.layout.overlay_view_controller_stub, /* root= */ null,
+                    com.android.systemui.car.tests.baselib.R.layout.overlay_view_controller_stub,
+                    /* root= */ null,
                     /* attachToRoot= */ false);
             mOnFinishInflateCalled = true;
             return mLayout;

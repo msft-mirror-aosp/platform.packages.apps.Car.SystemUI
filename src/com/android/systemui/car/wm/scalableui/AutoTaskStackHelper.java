@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 
 import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.PanelState;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.dagger.WMSingleton;
 

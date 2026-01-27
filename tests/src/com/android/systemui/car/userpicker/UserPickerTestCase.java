@@ -38,7 +38,7 @@ import android.view.DisplayInfo;
 import android.view.LayoutInflater;
 
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 
 import org.junit.Before;
 

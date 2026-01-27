@@ -36,7 +36,7 @@ import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.dagger.SysUISingleton;
 
 import java.util.HashMap;

@@ -37,7 +37,7 @@ import android.view.View
 import android.window.WindowContainerTransaction
 import com.android.car.scalableui.model.Event
 import com.android.car.scalableui.panel.PanelPool
-import com.android.systemui.R
+import com.android.systemui.car.shared.R
 import com.android.systemui.car.wm.scalableui.EventDispatcher
 import com.android.systemui.car.wm.scalableui.getDisplayBounds
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer

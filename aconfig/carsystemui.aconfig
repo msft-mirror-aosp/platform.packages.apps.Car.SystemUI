@@ -22,8 +22,6 @@ flag {
     bug: "341963483"
 }
 
-
-
 flag {
     name: "show_qc_sound_panel"
     namespace: "car_sys_exp"
@@ -94,10 +92,16 @@ flag {
     bug: "435347522"
 }
 
-
 flag {
     name: "scalable_ui_minimized_controls"
     namespace: "car_sys_exp"
     description: "This flag controls enabling minimized controls"
     bug: "465164732"
+}
+
+flag {
+    name: "promoted_notifications"
+    namespace: "car_sys_exp"
+    description: "This flag controls enabling special handling of promoted notifications"
+    bug: "478878478"
 }

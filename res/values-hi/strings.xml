@@ -17,11 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="hvac_min_text" msgid="866677328637088715">"कम से कम"</string>
-    <string name="hvac_max_text" msgid="7627950157128770380">"ज़्यादा से ज़्यादा"</string>
-    <string name="fan_speed_max" msgid="956683571700419211">"ज़्यादा से ज़्यादा"</string>
-    <string name="fan_speed_off" msgid="3860115181014880798">"बंद है"</string>
-    <string name="hvac_temperature_off" msgid="8370977023494579242">"बंद है"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"अब आवाज़ पहचानने का काम, कनेक्ट किए गए ब्लूटूथ डिवाइस करते हैं"</string>
     <string name="car_add_user" msgid="6182764665687382136">"कोई प्रोफ़ाइल जोड़ें"</string>
     <string name="end_session" msgid="2765206020435441421">"सेशन खत्म करें"</string>
@@ -70,9 +65,6 @@
     <string name="system_bar_user_name_text" msgid="5859605302481171746">"उपयोगकर्ता नाम का टेक्स्ट"</string>
     <string name="hvac_decrease_button_label" msgid="5628481079099995286">"तापमान कम करें"</string>
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"तापमान बढ़ाएं"</string>
-    <string name="status_icon_signal_mobile" msgid="7264721079060179783">"सिग्नल सेटिंग: मोबाइल डेटा का इस्तेमाल किया जा रहा है"</string>
-    <string name="status_icon_signal_wifi" msgid="1257569337648058522">"सिग्नल सेटिंग: वाई-फ़ाई चालू है"</string>
-    <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"सिग्नल सेटिंग: हॉटस्पॉट चालू है"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"डिसप्ले सेटिंग"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"डीबग सेटिंग"</string>
     <string name="status_icon_sound_status" msgid="4923149230650995670">"आवाज़ की सेटिंग"</string>

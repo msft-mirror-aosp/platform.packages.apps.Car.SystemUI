@@ -17,11 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="hvac_min_text" msgid="866677328637088715">"Tối thiểu"</string>
-    <string name="hvac_max_text" msgid="7627950157128770380">"Tối đa"</string>
-    <string name="fan_speed_max" msgid="956683571700419211">"TỐI ĐA"</string>
-    <string name="fan_speed_off" msgid="3860115181014880798">"ĐÃ TẮT"</string>
-    <string name="hvac_temperature_off" msgid="8370977023494579242">"ĐÃ TẮT"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Thiết bị Bluetooth được kết nối đang xử lý vấn đề nhận dạng giọng nói"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Thêm hồ sơ"</string>
     <string name="end_session" msgid="2765206020435441421">"Kết thúc phiên"</string>
@@ -70,9 +65,6 @@
     <string name="system_bar_user_name_text" msgid="5859605302481171746">"Văn bản tên người dùng"</string>
     <string name="hvac_decrease_button_label" msgid="5628481079099995286">"Giảm nhiệt độ"</string>
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"Tăng nhiệt độ"</string>
-    <string name="status_icon_signal_mobile" msgid="7264721079060179783">"Cài đặt tín hiệu: Đang dùng dữ liệu di động"</string>
-    <string name="status_icon_signal_wifi" msgid="1257569337648058522">"Cài đặt tín hiệu: Wi-Fi đang bật"</string>
-    <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"Cài đặt tín hiệu: Điểm phát sóng đang bật"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"Cài đặt màn hình"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"Cài đặt gỡ lỗi"</string>
     <string name="status_icon_sound_status" msgid="4923149230650995670">"Cài đặt âm thanh"</string>

@@ -17,11 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="hvac_min_text" msgid="866677328637088715">"সর্বনিম্ন"</string>
-    <string name="hvac_max_text" msgid="7627950157128770380">"সর্বাধিক"</string>
-    <string name="fan_speed_max" msgid="956683571700419211">"ফুল স্পিড"</string>
-    <string name="fan_speed_off" msgid="3860115181014880798">"বন্ধ আছে"</string>
-    <string name="hvac_temperature_off" msgid="8370977023494579242">"বন্ধ আছে"</string>
     <string name="voice_recognition_toast" msgid="7579725862117020349">"কানেক্ট করা ব্লুটুথ ডিভাইস এখন ভয়েস শনাক্তকরণ ম্যানেজ করছে"</string>
     <string name="car_add_user" msgid="6182764665687382136">"প্রোফাইল যোগ করুন"</string>
     <string name="end_session" msgid="2765206020435441421">"সেশন শেষ করুন"</string>
@@ -70,9 +65,6 @@
     <string name="system_bar_user_name_text" msgid="5859605302481171746">"ইউজার নেম টেক্সট"</string>
     <string name="hvac_decrease_button_label" msgid="5628481079099995286">"কম তাপমাত্রা"</string>
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"তাপমাত্রা বাড়ানো"</string>
-    <string name="status_icon_signal_mobile" msgid="7264721079060179783">"সিগন্যাল সেটিংস: মোবাইল ডেটা ব্যবহার করা হচ্ছে"</string>
-    <string name="status_icon_signal_wifi" msgid="1257569337648058522">"সিগন্যাল সেটিংস: ওয়াই-ফাই চালু আছে"</string>
-    <string name="status_icon_signal_hotspot" msgid="1023039120452006880">"সিগন্যাল সেটিংস: হটস্পট চালু আছে"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"ডিসপ্লে সেটিংস"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"ডিবাগ সেটিংস"</string>
     <string name="status_icon_sound_status" msgid="4923149230650995670">"সাউন্ড সেটিংস"</string>

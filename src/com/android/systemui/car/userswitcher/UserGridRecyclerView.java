@@ -63,7 +63,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.car.admin.ui.UserAvatarView;
 import com.android.car.internal.user.UserHelper;
 import com.android.settingslib.utils.StringUtil;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.settings.UserTracker;
 
 import java.lang.annotation.Retention;

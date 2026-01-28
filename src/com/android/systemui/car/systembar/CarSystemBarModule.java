@@ -27,7 +27,6 @@ import android.view.WindowManager;
 
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.CoreStartable;
-import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.dagger.CarSysUIDynamicOverride;
 import com.android.systemui.car.flags.FlagManager;
@@ -38,6 +37,7 @@ import com.android.systemui.car.hvac.TemperatureControlViewController;
 import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationButtonController;
 import com.android.systemui.car.qc.datasubscription.DataSubscriptionModule;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.systembar.debugpanel.DebugPanelModule;
 import com.android.systemui.car.systembar.home.HomeButtonModule;
 import com.android.systemui.car.systembar.panel.PanelModule;
@@ -324,7 +324,8 @@ public abstract class CarSystemBarModule {
     @IntoMap
     @StringKey(TOP_BAR_NAME)
     static CarSystemBarWindowSupplier bindTopCarSystemBarWindowSupplier() {
-        return new CarSystemBarWindowSupplierUsingLayout(R.layout.navigation_bar_window,
+        return new CarSystemBarWindowSupplierUsingLayout(
+                com.android.systemui.res.R.layout.navigation_bar_window,
                 R.id.car_top_bar_window);
     }
 
@@ -340,7 +341,8 @@ public abstract class CarSystemBarModule {
     @IntoMap
     @StringKey(LEFT_BAR_NAME)
     static CarSystemBarWindowSupplier bindLeftCarSystemBarWindowSupplier() {
-        return new CarSystemBarWindowSupplierUsingLayout(R.layout.navigation_bar_window,
+        return new CarSystemBarWindowSupplierUsingLayout(
+                com.android.systemui.res.R.layout.navigation_bar_window,
                 R.id.car_left_bar_window);
     }
 
@@ -356,7 +358,8 @@ public abstract class CarSystemBarModule {
     @IntoMap
     @StringKey(RIGHT_BAR_NAME)
     static CarSystemBarWindowSupplier bindRightCarSystemBarWindowSupplier() {
-        return new CarSystemBarWindowSupplierUsingLayout(R.layout.navigation_bar_window,
+        return new CarSystemBarWindowSupplierUsingLayout(
+                com.android.systemui.res.R.layout.navigation_bar_window,
                 R.id.car_right_bar_window);
     }
 
@@ -372,7 +375,8 @@ public abstract class CarSystemBarModule {
     @IntoMap
     @StringKey(BOTTOM_BAR_NAME)
     static CarSystemBarWindowSupplier bindBottomCarSystemBarWindowSupplier() {
-        return new CarSystemBarWindowSupplierUsingLayout(R.layout.navigation_bar_window,
+        return new CarSystemBarWindowSupplierUsingLayout(
+                com.android.systemui.res.R.layout.navigation_bar_window,
                 R.id.car_bottom_bar_window);
     }
 

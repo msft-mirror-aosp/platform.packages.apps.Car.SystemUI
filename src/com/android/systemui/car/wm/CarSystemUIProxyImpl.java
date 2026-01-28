@@ -37,8 +37,8 @@ import android.view.Display;
 import androidx.annotation.NonNull;
 
 import com.android.systemui.Dumpable;
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.wm.taskview.RemoteCarTaskViewServerImpl;
 import com.android.systemui.dump.DumpManager;
 import com.android.wm.shell.ShellTaskOrganizer;

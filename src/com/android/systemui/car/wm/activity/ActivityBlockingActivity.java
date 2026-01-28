@@ -52,9 +52,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.android.systemui.R;
 import com.android.systemui.car.ndo.BlockerViewModel;
 import com.android.systemui.car.ndo.NdoViewModelFactory;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.wm.activity.blurredbackground.BlurredSurfaceRenderer;
 
 import java.util.concurrent.Executor;

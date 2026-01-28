@@ -24,10 +24,10 @@ import android.widget.Button;
 
 import androidx.annotation.Nullable;
 
-import com.android.systemui.R;
 import com.android.systemui.car.flexibleui.CarSystemBarElement;
 import com.android.systemui.car.flexibleui.CarSystemBarElementFlags;
 import com.android.systemui.car.flexibleui.CarSystemBarElementResolver;
+import com.android.systemui.car.shared.R;
 
 import java.net.URISyntaxException;
 

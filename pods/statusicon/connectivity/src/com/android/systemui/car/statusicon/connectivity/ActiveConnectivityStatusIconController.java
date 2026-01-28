@@ -82,7 +82,7 @@ public class ActiveConnectivityStatusIconController extends StatusIconViewContro
         mDataSubscriptionToolkitView = dataSubscriptionToolkitView;
         mMobileSignalIconDrawable = new SignalDrawable(mContext);
         mHotSpotIconDrawable = mResources.getDrawable(
-                com.android.systemui.R.drawable.ic_hotspot, mContext.getTheme());
+                com.android.systemui.res.R.drawable.ic_hotspot, mContext.getTheme());
 
         mMobileSignalContentDescription = resources.getString(R.string.status_icon_signal_mobile);
         mWifiConnectedContentDescription = resources.getString(R.string.status_icon_signal_wifi);

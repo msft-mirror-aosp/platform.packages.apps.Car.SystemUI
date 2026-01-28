@@ -34,12 +34,12 @@ import androidx.annotation.NonNull;
 import com.android.car.docklib.DockViewController;
 import com.android.car.docklib.data.DockProtoDataController;
 import com.android.car.docklib.view.DockView;
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
 import com.android.systemui.car.flexibleui.layout.CarSystemBarFrameLayout;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.settings.UserFileManager;
 import com.android.systemui.settings.UserTracker;
 

@@ -21,6 +21,7 @@
     android:orientation="horizontal"
     android:gravity="center"
     android:weightSum="4"
+    android:background="@drawable/minimized_controls_background"
     android:paddingStart="@dimen/minimized_controls_padding_horizontal"
     android:paddingEnd="@dimen/minimized_controls_padding_horizontal">
 

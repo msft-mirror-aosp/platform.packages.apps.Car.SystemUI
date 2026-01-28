@@ -74,15 +74,14 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.plugins.VolumeDialog;
 import com.android.systemui.plugins.VolumeDialogController;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 import com.android.systemui.volume.Events;
 import com.android.systemui.volume.SystemUIInterpolators;
-import com.android.systemui.volume.VolumeDialogImpl;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -404,7 +403,7 @@ public class CarVolumeDialogImpl
         mWindow.setWindowAnimations(com.android.internal.R.style.Animation_Toast);
         final WindowManager.LayoutParams lp = mWindow.getAttributes();
         lp.format = PixelFormat.TRANSLUCENT;
-        lp.setTitle(VolumeDialogImpl.class.getSimpleName());
+        lp.setTitle(CarVolumeDialogImpl.class.getSimpleName());
         lp.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
         lp.windowAnimations = -1;
         mWindow.setAttributes(lp);
@@ -702,7 +701,7 @@ public class CarVolumeDialogImpl
     private final class CustomDialog extends Dialog implements DialogInterface {
 
         private CustomDialog(Context context) {
-            super(context, com.android.systemui.R.style.Theme_SystemUI);
+            super(context, com.android.systemui.res.R.style.Theme_SystemUI);
         }
 
         @Override

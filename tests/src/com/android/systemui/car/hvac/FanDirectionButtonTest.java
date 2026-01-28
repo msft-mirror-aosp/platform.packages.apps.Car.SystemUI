@@ -44,7 +44,7 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.hvac.referenceui.FanDirectionButtons;
-import com.android.systemui.tests.R;
+import com.android.systemui.car.tests.baselib.R;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -79,14 +79,17 @@ public class FanDirectionButtonTest extends CarSysuiTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mFanDirectionButtons = LayoutInflater.from(getContext()).inflate(
-                R.layout.fan_direction_buttons_test, /* root= */ null).findViewById(
-                R.id.fan_direction_buttons);
+                R.layout.fan_direction_buttons_test, /* root= */ null)
+                .findViewById(R.id.fan_direction_buttons);
 
-        mDirectionFaceButton = mFanDirectionButtons.findViewById(R.id.direction_face);
+        mDirectionFaceButton = mFanDirectionButtons.findViewById(
+                com.android.systemui.car.hvac.ui.R.id.direction_face);
         mDirectionFaceAndFloorButton = mFanDirectionButtons.findViewById(
-                R.id.direction_face_and_floor);
-        mDirectionFloorButton = mFanDirectionButtons.findViewById(R.id.direction_floor);
-        mDirectionDefrostButton = mFanDirectionButtons.findViewById(R.id.direction_defrost);
+                com.android.systemui.car.hvac.ui.R.id.direction_face_and_floor);
+        mDirectionFloorButton = mFanDirectionButtons.findViewById(
+                com.android.systemui.car.hvac.ui.R.id.direction_floor);
+        mDirectionDefrostButton = mFanDirectionButtons.findViewById(
+                com.android.systemui.car.hvac.ui.R.id.direction_defrost);
 
         mFanDirectionButtons.setHvacPropertySetter(mHvacPropertySetter);
         mFanDirectionButtons.setDisableViewIfPowerOff(true);

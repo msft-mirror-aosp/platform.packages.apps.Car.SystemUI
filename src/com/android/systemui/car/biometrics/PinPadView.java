@@ -33,9 +33,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.android.systemui.R;
 import com.android.systemui.biometrics.ui.IPinPad;
 import com.android.systemui.biometrics.ui.PinPadClickListener;
+import com.android.systemui.car.shared.R;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -25,7 +25,7 @@ import android.os.UserManager;
 import android.util.SparseArray;
 import android.window.DisplayAreaInfo;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.wm.shell.RootTaskDisplayAreaOrganizer;
 import com.android.wm.shell.ShellTaskOrganizer;
 import com.android.wm.shell.automotive.AutoCaptionController;

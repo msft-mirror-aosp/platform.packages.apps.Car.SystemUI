@@ -30,6 +30,7 @@ import androidx.test.InstrumentationRegistry;
 
 import com.android.car.oem.tokens.Token;
 import com.android.systemui.Flags;
+import com.android.systemui.car.shared.R;
 
 import org.junit.Rule;
 import org.mockito.Mockito;

@@ -40,7 +40,6 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.tests.R;
 import com.android.wm.shell.animation.FlingAnimationUtils;
 
 import org.junit.Before;
@@ -77,7 +76,8 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
         MockitoAnnotations.initMocks(this);
 
         mBaseLayout = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                R.layout.overlay_view_controller_test, /* root= */ null);
+                com.android.systemui.car.tests.baselib.R.layout.overlay_view_controller_test,
+                /* root= */ null);
 
         when(mFlingAnimationUtilsBuilder.setMaxLengthSeconds(anyFloat())).thenReturn(
                 mFlingAnimationUtilsBuilder);
@@ -484,7 +484,8 @@ public class OverlayPanelViewControllerTest extends CarSysuiTestCase {
         public View inflate() {
             if (isInflated()) return mLayout;
             mLayout = LayoutInflater.from(mContext).inflate(
-                    R.layout.overlay_view_controller_stub, /* root= */ null,
+                    com.android.systemui.car.tests.baselib.R.layout.overlay_view_controller_stub,
+                    /* root= */ null,
                     /* attachToRoot= */ false);
             return mLayout;
         }

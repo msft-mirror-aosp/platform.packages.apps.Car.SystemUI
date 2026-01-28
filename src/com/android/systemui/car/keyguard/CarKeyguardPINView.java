@@ -22,7 +22,7 @@ import android.util.AttributeSet;
 
 import com.android.keyguard.KeyguardPINView;
 import com.android.keyguard.NumPadButton;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 
 /**
  * Car-specific {@link KeyguardPINView} to bypass unwanted view logic.

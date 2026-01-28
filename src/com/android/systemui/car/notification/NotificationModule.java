@@ -22,7 +22,7 @@ import static com.android.systemui.car.notification.NotificationConstants.OVERLA
 
 import android.content.Context;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.window.OverlayViewController;
 
 import dagger.Binds;

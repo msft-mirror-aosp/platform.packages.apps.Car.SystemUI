@@ -73,8 +73,9 @@ public class CarSystemUIApplication extends SystemUIApplicationImpl {
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        getTheme().applyStyle(R.style.Theme_SystemUI, true);
-        getTheme().applyStyle(R.style.CarSystemUIThemeOverlay, true);
+        getTheme().applyStyle(com.android.systemui.res.R.style.Theme_SystemUI, true);
+        getTheme().applyStyle(
+                com.android.systemui.car.shared.R.style.CarSystemUIThemeOverlay, true);
         Token.applyOemTokenStyle(this);
         super.onConfigurationChanged(newConfig);
     }
@@ -103,7 +104,8 @@ public class CarSystemUIApplication extends SystemUIApplicationImpl {
     @Override
     public void attachBaseContext(Context base) {
         Token.applyOemTokenStyle(base);
-        base.getTheme().applyStyle(R.style.CarSystemUIThemeOverlay, true);
+        base.getTheme().applyStyle(
+                com.android.systemui.car.shared.R.style.CarSystemUIThemeOverlay, true);
         super.attachBaseContext(base);
     }
 

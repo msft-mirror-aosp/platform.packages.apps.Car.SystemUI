@@ -154,7 +154,7 @@ public class UserNamePanelViewController extends CarSystemBarPanelButtonViewCont
             if (mView.isDisabledWhileDriving() && carUxRestrictionsUtil.getCurrentRestrictions()
                     .isRequiresDistractionOptimization()) {
                 Toast.makeText(mContext,
-                        com.android.systemui.R.string.car_ui_restricted_while_driving,
+                        com.android.car.ui.R.string.car_ui_restricted_while_driving,
                         Toast.LENGTH_LONG).show();
                 return;
             }

@@ -36,7 +36,7 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.hvac.HvacPropertySetter;
-import com.android.systemui.tests.R;
+import com.android.systemui.car.tests.baselib.R;
 
 import org.junit.Before;
 import org.junit.Test;

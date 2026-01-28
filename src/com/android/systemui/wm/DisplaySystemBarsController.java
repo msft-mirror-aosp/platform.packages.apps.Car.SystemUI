@@ -76,8 +76,8 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.scalableui.model.Event;
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.wm.CarWMUserHelper;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindow;

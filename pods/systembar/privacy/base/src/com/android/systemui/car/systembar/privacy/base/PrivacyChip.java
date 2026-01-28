@@ -30,10 +30,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.constraintlayout.motion.widget.MotionLayout;
 
-import com.android.systemui.R;
 import com.android.systemui.car.flexibleui.CarSystemBarElement;
 import com.android.systemui.car.flexibleui.CarSystemBarElementFlags;
 import com.android.systemui.car.flexibleui.CarSystemBarElementResolver;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.systembar.panel.AnimatedStatusIcon;
 
 import java.util.concurrent.Executors;
@@ -301,7 +301,8 @@ public abstract class PrivacyChip extends MotionLayout implements AnimatedStatus
                     getSensorNameWithFirstLetterCapitalized());
         } else {
             contentDescription = getResources().getString(
-                    R.string.ongoing_privacy_chip_content_multiple_apps, getSensorName());
+                    com.android.systemui.res.R.string.ongoing_privacy_chip_content_multiple_apps,
+                    getSensorName());
         }
         setContentDescription(contentDescription);
     }

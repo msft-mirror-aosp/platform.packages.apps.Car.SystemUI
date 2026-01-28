@@ -25,7 +25,7 @@ import com.android.internal.annotations.GuardedBy;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.settingslib.utils.StringUtil;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;
 

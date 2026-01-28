@@ -29,7 +29,6 @@ import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
 
 import org.junit.After;
@@ -50,7 +49,8 @@ public class DialogManagerTest extends UserPickerTestCase {
         MockitoAnnotations.initMocks(this);
         doReturn(MAIN_DISPLAY_ID).when(mContext).getDisplayId();
         mDialogManager = new DialogManager();
-        View rootView = mInflater.inflate(R.layout.test_empty_layout, null);
+        View rootView = mInflater.inflate(
+                com.android.systemui.car.tests.baselib.R.layout.test_empty_layout, null);
         mDialogManager.initContextFromView(rootView);
         spyOn(mDialogManager);
     }

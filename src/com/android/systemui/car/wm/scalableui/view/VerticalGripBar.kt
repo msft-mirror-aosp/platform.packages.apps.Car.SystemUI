@@ -18,7 +18,7 @@ package com.android.systemui.car.wm.scalableui.view
 
 import android.content.Context
 import android.util.AttributeSet
-import com.android.systemui.R
+import com.android.systemui.car.shared.R
 
 /**
  * A vertical grip bar view.

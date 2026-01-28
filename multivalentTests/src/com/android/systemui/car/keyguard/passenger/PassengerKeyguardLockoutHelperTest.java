@@ -29,8 +29,8 @@ import androidx.test.filters.SmallTest;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.settingslib.utils.StringUtil;
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.settings.UserTracker;
 
 import org.junit.Before;

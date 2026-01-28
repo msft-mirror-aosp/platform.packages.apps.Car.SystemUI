@@ -93,10 +93,10 @@ public class TemperatureControlView extends LinearLayout implements HvacView, Ca
         mMinTempF = getResources().getFloat(R.dimen.hvac_min_value_fahrenheit);
         mMaxTempC = getResources().getFloat(R.dimen.hvac_max_value_celsius);
         mAvailableTextColor = getResources()
-                .getColor(com.android.systemui.R.color.system_bar_text_color,
+                .getColor(com.android.systemui.car.shared.R.color.system_bar_text_color,
                         getContext().getTheme());
         mUnavailableTextColor = getResources()
-                .getColor(com.android.systemui.R.color.system_bar_text_unavailable_color,
+                .getColor(com.android.systemui.car.shared.R.color.system_bar_text_unavailable_color,
                         getContext().getTheme());
 
         mElementControllerClassAttr =

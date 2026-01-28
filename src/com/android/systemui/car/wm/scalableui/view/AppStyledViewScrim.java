@@ -20,7 +20,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 
 /**
  * A view representing the OEM controlled decor surrounding an app styled view.

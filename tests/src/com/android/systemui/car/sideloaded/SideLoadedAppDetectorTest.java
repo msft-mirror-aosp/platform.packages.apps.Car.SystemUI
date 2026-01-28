@@ -35,9 +35,9 @@ import android.testing.TestableResources;
 import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
+import com.android.systemui.car.shared.R;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -27,8 +27,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.internal.widget.LockPatternUtils;
-import com.android.systemui.R;
 import com.android.systemui.car.CarServiceProvider;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;

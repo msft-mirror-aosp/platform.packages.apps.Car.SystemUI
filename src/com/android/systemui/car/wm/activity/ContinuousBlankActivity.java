@@ -20,7 +20,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Slog;
 
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 
 /**
  * Activity to block top activity after suspend to RAM in case of guest user.

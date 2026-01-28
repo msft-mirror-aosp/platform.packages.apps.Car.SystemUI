@@ -31,7 +31,7 @@ import androidx.annotation.VisibleForTesting;
 import com.android.car.ui.FocusParkingView;
 import com.android.car.ui.utils.ViewUtils;
 import com.android.systemui.Gefingerpoken;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.window.OverlayPanelViewController;
 import com.android.systemui.car.window.OverlayViewController;

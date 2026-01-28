@@ -20,7 +20,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.android.systemui.CoreStartable;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.dagger.SysUISingleton;
 
 import dagger.Lazy;

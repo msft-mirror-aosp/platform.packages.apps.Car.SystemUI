@@ -47,10 +47,10 @@ import com.android.car.notification.NotificationDataManager;
 import com.android.car.notification.NotificationViewController;
 import com.android.car.notification.PreprocessingManager;
 import com.android.internal.statusbar.IStatusBarService;
-import com.android.systemui.R;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarServiceProvider.CarServiceOnConnectedListener;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.window.OverlayPanelViewController;
 import com.android.systemui.car.window.OverlayViewController;
@@ -199,8 +199,7 @@ public class NotificationPanelViewController extends OverlayPanelViewController
         mBackgroundAlphaDiff = finalBackgroundAlpha - mInitialBackgroundAlpha;
 
         mEnableHeadsUpNotificationWhenNotificationPanelOpen = mResources.getBoolean(
-                com.android.car.notification.R.bool
-                        .config_enableHeadsUpNotificationWhenNotificationPanelOpen);
+                R.bool.config_enableHeadsUpNotificationWhenNotificationPanelOpen);
 
         mFitTopSystemBarInset = mResources.getBoolean(
                 R.bool.config_notif_panel_inset_by_top_systembar);

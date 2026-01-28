@@ -26,8 +26,8 @@ import android.util.ArraySet
 import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsets.Type.InsetsType
-import com.android.systemui.R
 import com.android.systemui.car.Flags.packageLevelSystemBarVisibility
+import com.android.systemui.car.shared.R
 import com.android.systemui.car.systembar.SystemBarUtil.SYSTEM_BAR_PERSISTENCY_CONFIG_BARPOLICY
 import java.io.PrintWriter
 import java.io.StringWriter

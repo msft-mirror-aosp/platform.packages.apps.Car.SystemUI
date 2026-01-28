@@ -40,7 +40,7 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.tests.R;
+import com.android.systemui.car.tests.baselib.R;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -85,7 +85,7 @@ public class ButtonRoleHolderControllerTest extends CarSysuiTestCase {
                 .findViewById(R.id.assistant_role_button);
         mNavButtonDefaultAppIconForRoleWithDisabled = mTestView
                 .findViewById(R.id.assistant_role_disabled_button);
-        mAppIcon = mContext.getDrawable(R.drawable.car_ic_apps);
+        mAppIcon = mContext.getDrawable(com.android.systemui.car.shared.R.drawable.car_ic_apps);
         when(mApplicationInfo.loadIcon(any())).thenReturn(mAppIcon);
         doThrow(new PackageManager.NameNotFoundException()).when(mPackageManager)
                 .getApplicationInfo(any(), anyInt());

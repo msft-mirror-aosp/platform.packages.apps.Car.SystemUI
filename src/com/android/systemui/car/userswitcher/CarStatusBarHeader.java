@@ -26,7 +26,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.IdRes;
 
 import com.android.settingslib.Utils;
-import com.android.systemui.R;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.plugins.DarkIconDispatcher;
 
 import java.util.ArrayList;

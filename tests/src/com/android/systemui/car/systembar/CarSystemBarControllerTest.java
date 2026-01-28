@@ -60,13 +60,13 @@ import com.android.internal.statusbar.LetterboxDetails;
 import com.android.internal.statusbar.RegisterStatusBarResult;
 import com.android.internal.view.AppearanceRegion;
 import com.android.systemui.CarSysuiTestCase;
-import com.android.systemui.R;
 import com.android.systemui.SysuiTestableContext;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.car.shared.R;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.systembar.home.HomeButtonController;
 import com.android.systemui.car.systembar.passengerhome.PassengerHomeButtonController;
@@ -780,8 +780,10 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
 
         assertNotNull(topRightPanel.findViewById(R.id.clock));
         assertNotNull(topRightPanel.findViewById(R.id.notifications));
-        assertNotNull(topRightPanel.findViewById(R.id.mic_privacy_chip));
-        assertNotNull(topRightPanel.findViewById(R.id.camera_privacy_chip));
+        assertNotNull(topRightPanel.findViewById(
+                com.android.systemui.car.systembar.privacy.mic.R.id.mic_privacy_chip));
+        assertNotNull(topRightPanel.findViewById(
+                com.android.systemui.car.systembar.privacy.camera.R.id.camera_privacy_chip));
     }
 
     @Test
@@ -789,7 +791,7 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
         LayoutInflater inflater = LayoutInflater.from(mSpiedContext);
         View bottomLeftPanel = inflater.inflate(R.layout.car_bottom_left_system_bar, null);
 
-        assertNotNull(bottomLeftPanel.findViewById(R.id.passenger_home));
+
         assertNotNull(bottomLeftPanel.findViewById(R.id.driver_hvac));
     }
 

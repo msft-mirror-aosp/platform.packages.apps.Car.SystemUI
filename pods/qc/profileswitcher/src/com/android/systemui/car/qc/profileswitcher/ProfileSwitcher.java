@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.systemui.car.qc;
+package com.android.systemui.car.qc.profileswitcher;
 
 import static android.os.UserManager.SWITCHABILITY_STATUS_OK;
 import static android.provider.Settings.ACTION_ENTERPRISE_PRIVACY_SETTINGS;
@@ -60,7 +60,6 @@ import com.android.car.qc.QCRow;
 import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.settingslib.utils.StringUtil;
 import com.android.systemui.car.CarServiceProvider;
-import com.android.systemui.car.shared.R;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.userswitcher.UserIconProvider;
 import com.android.systemui.dagger.qualifiers.Background;
@@ -256,7 +255,8 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
             }
         };
 
-        return createProfileRow(mContext.getString(R.string.car_add_user),
+        return createProfileRow(
+                mContext.getString(com.android.systemui.car.shared.R.string.car_add_user),
                 mUserIconProvider.getDrawableWithBadge(mUserIconProvider.getRoundedAddUserIcon()),
                 actionHandler);
     }
@@ -442,9 +442,9 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     private void showMaxUserLimitReachedDialog() {
         AlertDialog maxUsersDialog = new AlertDialog.Builder(mContext,
                 com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
-                .setTitle(R.string.profile_limit_reached_title)
+                .setTitle(com.android.systemui.car.shared.R.string.profile_limit_reached_title)
                 .setMessage(StringUtil.getIcuPluralsString(mContext, getMaxSupportedRealUsers(),
-                        R.string.profile_limit_reached_message))
+                        com.android.systemui.car.shared.R.string.profile_limit_reached_message))
                 .setPositiveButton(android.R.string.ok, null)
                 .create();
         // Sets window flags for the SysUI dialog
@@ -453,18 +453,21 @@ public class ProfileSwitcher extends BaseLocalQCProvider {
     }
 
     private void showConfirmAddUserDialog() {
-        String message = mContext.getString(R.string.user_add_user_message_setup)
+        String message = mContext.getString(
+                        com.android.systemui.car.shared.R.string.user_add_user_message_setup)
                 .concat(System.getProperty("line.separator"))
                 .concat(System.getProperty("line.separator"))
-                .concat(mContext.getString(R.string.user_add_user_message_update));
+                .concat(mContext.getString(
+                        com.android.systemui.car.shared.R.string.user_add_user_message_update));
         AlertDialog addUserDialog = new AlertDialog.Builder(mContext,
                 com.android.internal.R.style.Theme_DeviceDefault_Dialog_Alert)
-                .setTitle(R.string.user_add_profile_title)
+                .setTitle(com.android.systemui.car.shared.R.string.user_add_profile_title)
                 .setMessage(message)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(android.R.string.ok,
                         (dialog, which) -> new AddNewUserTask().execute(
-                                mContext.getString(R.string.car_new_user)))
+                                mContext.getString(
+                                        com.android.systemui.car.shared.R.string.car_new_user)))
                 .create();
         // Sets window flags for the SysUI dialog
         applyCarSysUIDialogFlags(addUserDialog);

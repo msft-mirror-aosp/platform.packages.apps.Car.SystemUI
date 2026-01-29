@@ -44,7 +44,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    app:localQCProvider="com.android.systemui.car.qc.ProfileSwitcher"/>
+                    app:localQCProvider="com.android.systemui.car.qc.profileswitcher.ProfileSwitcher"/>
             </ScrollView>
             <com.android.systemui.car.qc.QCFooterButton
                 android:id="@+id/qc_profile_footer_button"

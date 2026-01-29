@@ -33,6 +33,7 @@ import com.android.car.scalableui.panel.PanelUpdatePublisher;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
+import com.android.systemui.car.minimizedcontrols.MinimizedControlsModule;
 import com.android.systemui.car.wm.AutoCaptionPerDisplayInitializer;
 import com.android.systemui.car.wm.AutoDisplayCompatWindowDecorViewModel;
 import com.android.systemui.car.wm.CarFullscreenTaskMonitorListener;
@@ -94,7 +95,8 @@ import kotlinx.coroutines.CoroutineScope;
 import java.util.Optional;
 
 /** Provides dependencies from {@link com.android.wm.shell} for CarSystemUI. */
-@Module(includes = {WMShellBaseModule.class, AutoShellModule.class, PanelControllerModule.class})
+@Module(includes = { WMShellBaseModule.class, AutoShellModule.class, PanelControllerModule.class,
+        MinimizedControlsModule.class })
 public abstract class CarWMShellModule {
     private static final String TAG = CarWMShellModule.class.getSimpleName();
 

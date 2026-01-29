@@ -16,6 +16,54 @@
 
 package com.android.systemui.car.minimizedcontrols
 
-/** Dagger module for minimized controls. */
+import com.android.car.media.common.source.MediaModels
+import com.android.car.media.common.ui.PlaybackCardController
+import com.android.car.media.common.ui.PlaybackCardViewModel
+import com.android.wm.shell.common.ShellExecutor
+import com.android.wm.shell.shared.annotations.ShellMainThread
+import dagger.Module
+import dagger.Provides
 
-abstract class MinimizedControlsModule
+/** Dagger module for minimized controls. */
+@Module
+abstract class MinimizedControlsModule {
+    companion object {
+        @Provides
+        fun providePlaybackCardViewModelFactory():
+            MinimizedMediaControlsPanelController.PlaybackCardViewModelFactory {
+            return MinimizedMediaControlsPanelController.PlaybackCardViewModelFactory {
+                app, context, models ->
+                PlaybackCardViewModel(app).apply { init(context, models) }
+            }
+        }
+
+        @Provides
+        fun provideUserContextFactory(): UserContextUtils.UserContextFactory {
+            return UserContextUtils.UserContextFactory { context, userId ->
+                UserContextUtils.createWrappedUserContext(context, userId)
+            }
+        }
+
+        @Provides
+        fun provideMinimizedMediaControlsPlaybackCardControllerFactory(
+            @ShellMainThread shellExecutor: ShellExecutor
+        ): MinimizedMediaControlsPlaybackCardController.Factory {
+            return MinimizedMediaControlsPlaybackCardController.Factory {
+                view, pViewModel, pcViewModel, repo, context ->
+                val builder = PlaybackCardController.Builder()
+                    .setViewGroup(view)
+                    .setModels(pViewModel, pcViewModel, repo)
+                    .setContext(context)
+                MinimizedMediaControlsPlaybackCardController(builder, shellExecutor)
+            }
+        }
+
+        @Provides
+        fun provideMediaModelsFactory(): MinimizedMediaControlsPanelController.MediaModelsFactory {
+            return MinimizedMediaControlsPanelController.MediaModelsFactory {
+                context, notificationProvider, sessionProvider, ignoreBrowser ->
+                MediaModels(context, notificationProvider, sessionProvider, ignoreBrowser)
+            }
+        }
+    }
+}

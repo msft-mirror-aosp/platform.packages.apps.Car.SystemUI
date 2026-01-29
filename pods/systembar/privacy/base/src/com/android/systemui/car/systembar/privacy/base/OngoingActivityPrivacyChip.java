@@ -17,9 +17,9 @@
 package com.android.systemui.car.systembar.privacy.base;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -46,13 +46,13 @@ public abstract class OngoingActivityPrivacyChip extends PrivacyChip {
     }
 
     @Override
-    protected @DrawableRes int getLightMutedIconResourceId() {
-        return getLightIconResourceId();
+    protected Drawable getLightMutedIconDrawable() {
+        return getLightIconDrawable();
     }
 
     @Override
-    protected @DrawableRes int getDarkMutedIconResourceId() {
-        return getDarkIconResourceId();
+    protected Drawable getDarkMutedIconDrawable() {
+        return getDarkIconDrawable();
     }
 
     @Override

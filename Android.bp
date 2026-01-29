@@ -66,6 +66,7 @@ carsysui_pods = [
     "CarSystemUI-StatusIcon-Bluetooth",
     "CarSystemUI-SystemBar-DebugPanel",
     "CarSystemUI-SystemBar-HomeButton",
+    "CarSystemUI-SystemBar-NotificationChip",
     "CarSystemUI-SystemBar-Panel",
     "CarSystemUI-SystemBar-PassengerHomeButton",
     "CarSystemUI-SystemBar-PrivacyChip-Base",

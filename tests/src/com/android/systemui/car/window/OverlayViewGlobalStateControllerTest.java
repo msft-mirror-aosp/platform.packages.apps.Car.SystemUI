@@ -111,6 +111,15 @@ public class OverlayViewGlobalStateControllerTest extends CarSysuiTestCase {
     }
 
     @Test
+    public void init_callsSystemUIOverlayWindowControllerInit() {
+        // Action
+        mOverlayViewGlobalStateController.init();
+
+        // Verification
+        verify(mSystemUIOverlayWindowController).init();
+    }
+
+    @Test
     public void showView_nothingVisible_windowNotFocusable_shouldShowNavBar_navBarsVisible() {
         setupOverlayViewController1();
         when(mOverlayViewController1.shouldFocusWindow()).thenReturn(false);

@@ -45,4 +45,6 @@
     <bool name="scalable_ui_no_suw_home">false</bool>
     <!-- Controls enabling Minimized Controls. -->
     <bool name="scalable_ui_minimized_controls">true</bool>
+    <!-- Controls enabling special handling of promoted notifications. -->
+    <bool name="promoted_notifications">true</bool>
 </resources>

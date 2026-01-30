@@ -16,7 +16,7 @@
   -->
   <resources>
     <!-- Used by systemUI regardless of scalableUi -->
-    <string name="config_appGridComponentName" translatable="false">com.android.car.carlauncher/com.android.car.carlauncher.GASAppGridActivity</string>
+    <string name="config_appGridComponentName" translatable="false">com.android.car.carlauncher/com.android.car.carlauncher.AppGridActivity</string>
     <string name="config_calmModeComponentName" translatable="false">com.android.car.carlauncher/com.android.car.carlauncher.calmmode.CalmModeActivity</string>
 
     <!-- For resource parsing -->
@@ -24,7 +24,8 @@
 
     <!-- AOSP packages -->
     <string name="camera_package"></string>
-    <string name="default_map_intent"></string>
+    <string name="default_map_intent">intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;component=com.android.car.mapsplaceholder/.MapsPlaceholderActivity;end</string>
+    <string name="default_map_activity">com.android.car.mapsplaceholder/.MapsPlaceholderActivity</string>
     <string name="projected_package"></string>
     <string name="suw_package"></string>
     <!-- AOSP packages END -->

@@ -17,4 +17,5 @@
     <ControllerName>com.android.systemui.car.wm.scalableui.panel.controller.MapsPanelController</ControllerName>
     <UpdateIntentFilter>intent:geo:0.0,0.0#Intent;action=androidx.car.app.action.NAVIGATE;end</UpdateIntentFilter>
     <DefaultIntent>@string/default_map_intent</DefaultIntent>
+    <PersistentActivity>@string/default_map_activity</PersistentActivity>
 </Controller>

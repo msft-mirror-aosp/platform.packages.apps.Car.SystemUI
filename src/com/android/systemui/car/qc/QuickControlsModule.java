@@ -17,6 +17,7 @@
 package com.android.systemui.car.qc;
 
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
+import com.android.systemui.car.qc.footer.logout.QCLogoutModule;
 import com.android.systemui.car.qc.profileswitcher.QCProfileSwitcherModule;
 import com.android.systemui.car.systembar.privacy.camera.CameraQcPanelModule;
 import com.android.systemui.car.systembar.privacy.mic.MicQcPanelModule;
@@ -31,6 +32,7 @@ import dagger.multibindings.IntoMap;
  */
 @Module(includes = {CameraQcPanelModule.class,
         MicQcPanelModule.class,
+        QCLogoutModule.class,
         QCProfileSwitcherModule.class})
 public abstract class QuickControlsModule {
 
@@ -54,13 +56,6 @@ public abstract class QuickControlsModule {
     @ClassKey(QCFooterViewController.class)
     public abstract CarSystemBarElementController.Factory bindQCFooterViewControllerFactory(
             QCFooterViewController.Factory factory);
-
-    /** Injects QCLogoutButtonController. */
-    @Binds
-    @IntoMap
-    @ClassKey(QCLogoutButtonController.class)
-    public abstract CarSystemBarElementController.Factory bindQCLogoutButtonControllerFactory(
-            QCLogoutButtonController.Factory factory);
 
     /** Injects QCScreenOffButtonController. */
     @Binds

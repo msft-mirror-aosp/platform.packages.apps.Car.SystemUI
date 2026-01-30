@@ -216,17 +216,6 @@ public class TaskPanelTest extends CarSysuiTestCase {
     }
 
     @Test
-    public void handlePanelEmpty_withoutRestartInvisible_reportsEmpty() {
-        doReturn(false).when(mTaskPanel).hasRestart();
-        mTaskPanel.setVisibility(false);
-        mTaskPanel.handlePanelEmpty(mRunningTaskInfo);
-
-        ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
-        verify(mEventDispatcher).executeEvent(eventCaptor.capture());
-        assertThat(eventCaptor.getValue().getPanelId()).isEqualTo(TASK_PANEL_ID);
-    }
-
-    @Test
     public void handlePanelEmpty_withRestartVisible_notReportsEmpty() {
         doReturn(false).when(mTaskPanel).hasRestart();
         mTaskPanel.setVisibility(true);

@@ -17,8 +17,8 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <array name="window_states" android:featureFlag="com.android.car.scalableui.enable_ext_panel_updates">
-        <item>@xml/app_panel</item>
-        <item>@xml/map_panel</item>
+        <item>@xml/floating_app_panel</item>
+        <item>@xml/background_map_panel</item>
         <item>@xml/widget_panel</item>
         <item>@xml/assistant_panel</item>
         <item>@xml/suw_panel</item>

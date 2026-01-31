@@ -76,7 +76,7 @@ public class FullscreenUserSwitcherViewMediator implements OverlayViewMediator {
             // If guest user, we cannot use record.mInfo.id and should listen to the User lifecycle
             // event instead.
             if (record.mType != UserGridRecyclerView.UserRecord.START_GUEST) {
-                mUserSwitchTransitionViewController.handleShow(record.mInfo.id);
+                mUserSwitchTransitionViewController.showSwitchingUI(record.mInfo.id);
             }
         }
 

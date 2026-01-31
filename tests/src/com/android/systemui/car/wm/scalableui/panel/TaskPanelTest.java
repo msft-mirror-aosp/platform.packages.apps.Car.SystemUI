@@ -21,7 +21,8 @@ import static com.android.car.scalableui.model.Restart.RESTART_POLICY_DEFAULT;
 import static com.android.car.scalableui.model.Restart.RESTART_POLICY_LAST;
 import static com.android.car.scalableui.model.TaskBehavior.NEW_TASK_LAUNCH_POLICY_REMAIN_IN_SOURCE;
 
-import static org.junit.Assume.assumeTrue;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -29,9 +30,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.car.Car;
 import android.car.app.CarActivityManager;
@@ -55,7 +59,6 @@ import com.android.systemui.ShellSyncExecutor;
 import com.android.systemui.SysuiTestCase;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.flags.Flag;
 import com.android.systemui.car.flags.FlagManager;
 import com.android.systemui.car.wm.scalableui.AutoTaskStackHelper;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
@@ -77,7 +80,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
@@ -85,11 +87,13 @@ import java.util.Optional;
 @CarSystemUiTest
 @RunWith(AndroidJUnit4.class)
 @SmallTest
+@SuppressLint("MissingPermission")
 public class TaskPanelTest extends SysuiTestCase {
     private static final String TASK_PANEL_ID = "TASK_PANEL_ID";
 
     private TaskPanel mTaskPanel;
     private ShellExecutor mMainExecutor;
+    private ShellExecutor mShellMainThread;
     private RootTaskStackListener mRootTaskStackListener;
 
     @Mock
@@ -141,12 +145,13 @@ public class TaskPanelTest extends SysuiTestCase {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mMainExecutor = new ShellSyncExecutor();
-        mTaskPanel = Mockito.spy(
+        mShellMainThread = new ShellSyncExecutor();
+        mTaskPanel = spy(
                 new TaskPanel(mAutoTaskStackController, mUserContext, mCarServiceProvider,
                         mAutoTaskStackHelper, mShellTaskOrganizer, mAutoCaptionController,
                         mPanelUtils, mTaskPanelInfoRepository, mAutoDecorManager, mEventDispatcher,
                         mPanelControllerInitializer, mAutoLayoutManager, mMainExecutor,
-                        mAutoSurfaceTransactionFactory, mFlagManager,
+                        mShellMainThread, mAutoSurfaceTransactionFactory, mFlagManager,
                         Optional.of(mPanelUpdatePublisher), TASK_PANEL_ID));
         when(mFactory.create(any())).thenReturn(mTaskPanel);
 
@@ -191,8 +196,60 @@ public class TaskPanelTest extends SysuiTestCase {
     }
 
     @Test
+    public void handlePanelEmpty_withRestartEnabled_schedulesRestart() {
+        doReturn(true).when(mTaskPanel).hasRestart();
+        when(mPanelState.getRestart()).thenReturn(mRestart);
+        when(mRestart.getMaxRetry()).thenReturn(1);
+        when(mRestart.getPolicy()).thenReturn(RESTART_POLICY_DEFAULT);
+
+        mTaskPanel.handlePanelEmpty(mRunningTaskInfo);
+
+        // Called 2 twice due to handlePanelEmpty and delay inside scheduleRestartAttempt.
+        verify(mTaskPanel, times(2)).scheduleRestartAttempt(mRunningTaskInfo);
+    }
+
+    @Test
+    public void handlePanelEmpty_withoutRestartInvisible_reportsEmpty() {
+        doReturn(false).when(mTaskPanel).hasRestart();
+        mTaskPanel.setVisibility(false);
+        mTaskPanel.handlePanelEmpty(mRunningTaskInfo);
+
+        ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mEventDispatcher).executeEvent(eventCaptor.capture());
+        assertThat(eventCaptor.getValue().getPanelId()).isEqualTo(TASK_PANEL_ID);
+    }
+
+    @Test
+    public void handlePanelEmpty_withRestartVisible_notReportsEmpty() {
+        doReturn(false).when(mTaskPanel).hasRestart();
+        mTaskPanel.setVisibility(true);
+        mTaskPanel.handlePanelEmpty(mRunningTaskInfo);
+
+        ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mEventDispatcher, never()).executeEvent(eventCaptor.capture());
+    }
+
+    @Test
+    public void onRootTaskStackInfoChanged_whenTaskStackBecomesEmpty_handlesPanelEmpty() {
+        // GIVEN the task stack was previously not empty
+        doReturn(false).when(mTaskPanel).isRootTaskEmpty();
+        mRootTaskStackListener.onRootTaskStackInfoChanged(mRootTaskStack);
+
+        // GIVEN the task stack is now empty and a last task is available
+        doReturn(true).when(mTaskPanel).isRootTaskEmpty();
+        when(mTaskPanelInfoRepository.getLastTopTaskOnPanel(TASK_PANEL_ID)).thenReturn(
+                mRunningTaskInfo);
+
+        // WHEN onRootTaskStackInfoChanged is called again
+        mRootTaskStackListener.onRootTaskStackInfoChanged(mRootTaskStack);
+
+        // THEN handlePanelEmpty is called
+        verify(mTaskPanel).handlePanelEmpty(mRunningTaskInfo);
+    }
+
+    @Test
     public void scheduleRestartAttempt_withLastPolicy_restartsLastTask() {
-        assumeTrue(mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart));
+        mTaskPanel.setVisibility(true);
         Intent intent = new Intent("TEST_ACTION");
         mRunningTaskInfo.baseIntent = intent;
         when(mPanelState.getRestart()).thenReturn(mRestart);
@@ -206,7 +263,7 @@ public class TaskPanelTest extends SysuiTestCase {
 
     @Test
     public void scheduleRestartAttempt_withDefaultPolicy_restartsDefaultTask() {
-        assumeTrue(mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart));
+        mTaskPanel.setVisibility(true);
         Intent intent = new Intent("DEFAULT_ACTION");
         doReturn(intent).when(mTaskPanel).getDefaultIntent();
         when(mPanelState.getRestart()).thenReturn(mRestart);
@@ -220,7 +277,7 @@ public class TaskPanelTest extends SysuiTestCase {
 
     @Test
     public void scheduleRestartAttempt_maxRetriesReached_sendsEmptyEvent() {
-        assumeTrue(mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart));
+        mTaskPanel.setVisibility(true);
         when(mPanelState.getRestart()).thenReturn(mRestart);
         when(mRestart.getMaxRetry()).thenReturn(0);
 

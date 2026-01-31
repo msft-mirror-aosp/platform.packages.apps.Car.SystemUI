@@ -27,7 +27,12 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.android.car.scalableui.manager.StateManager;
+import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.model.PanelControllerMetadata;
+import com.android.car.scalableui.model.PanelState;
+import com.android.car.scalableui.model.Transition;
+import com.android.car.scalableui.model.Variant;
 import com.android.car.scalableui.panel.PanelPool;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.wm.shell.dagger.WMSingleton;
@@ -98,6 +103,18 @@ public class PanelUtils {
     public BasePanel getBasePanel(Predicate<BasePanel> predicate) {
         return (BasePanel) PanelPool.getInstance().getPanel(
                 p -> (p instanceof BasePanel basePanel) && predicate.test(basePanel));
+    }
+
+    /**
+     * Retrieve the current variant set on the PanelState for a particular panel id.
+     */
+    @Nullable
+    public Variant getCurrentVariant(String panelId) {
+        PanelState panelState = StateManager.getPanelState(panelId);
+        if (panelState == null) {
+            return null;
+        }
+        return panelState.getCurrentVariant();
     }
 
     /**
@@ -227,5 +244,19 @@ public class PanelUtils {
             Log.e(TAG, "Fail to find package Info for " + packageName + ", e=" + e);
         }
         return set;
+    }
+
+    /**
+     * Retrieves the {@link Transition} for a given {@link Event} applied to a specific panelId
+     * without triggering any changes to the state.
+     */
+    @Nullable
+    public Transition peekPanelTransitionForEvent(@NonNull Event event, @NonNull String panelId) {
+        PanelState state = StateManager.getPanelState(panelId);
+        if (state == null) {
+            Log.e(TAG, "panel state is null");
+            return null;
+        }
+        return state.getTransition(event);
     }
 }

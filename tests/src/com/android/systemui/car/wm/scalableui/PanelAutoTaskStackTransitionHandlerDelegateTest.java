@@ -98,7 +98,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends SysuiTestCa
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mPanelTransitionCoordinator.createAutoTaskStackTransaction(any(),
-                any(), any())).thenReturn(new AutoTaskStackTransaction());
+                any())).thenReturn(new AutoTaskStackTransaction());
         when(mPanelUtils.handles(TEST_ROOT_TASK_ID)).thenReturn(true);
         mDelegate = new PanelAutoTaskStackTransitionHandlerDelegate(mContext,
                 mAutoTaskStackController, mPanelTransitionCoordinator, mPanelUtils,

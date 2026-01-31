@@ -16,17 +16,31 @@
 
 package com.android.systemui.car.userswitcher;
 
+import static com.android.systemui.car.Flags.userSwitchKeyguardShownTimeout;
+
+import android.app.KeyguardManager;
 import android.car.user.CarUserManager;
 import android.content.Context;
+import android.os.Build;
+import android.os.RemoteException;
+import android.os.UserHandle;
+import android.os.UserManager;
 import android.util.Log;
+import android.view.IWindowManager;
 
+import androidx.annotation.GuardedBy;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.window.OverlayViewMediator;
+import com.android.systemui.dagger.qualifiers.Main;
 import com.android.systemui.settings.UserTracker;
+import com.android.systemui.statusbar.policy.KeyguardStateController;
+import com.android.systemui.util.concurrency.DelayableExecutor;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -35,60 +49,136 @@ import javax.inject.Inject;
  * mounted to SystemUiOverlayWindow.
  */
 public class UserSwitchTransitionViewMediator implements OverlayViewMediator,
-        CarUserManager.UserSwitchUiCallback {
-    private static final String TAG = "UserSwitchTransitionViewMediator";
+        CarUserManager.UserHandleSwitchUiCallback {
+    private static final String TAG = "UserSwitchTransitionVM";
+    private static final boolean DEBUG = Build.IS_DEBUGGABLE;
+    // Amount of time to wait for keyguard to show before restarting SysUI (in seconds)
+    private static final int KEYGUARD_SHOW_TIMEOUT = 20;
 
-    private final Context mContext;
+    private final DelayableExecutor mMainExecutor;
     private final CarServiceProvider mCarServiceProvider;
     private final UserTracker mUserTracker;
+    private final UserManager mUserManager;
+    private final IWindowManager mWindowManagerService;
+    private final KeyguardManager mKeyguardManager;
+    private final KeyguardStateController mKeyguardStateController;
     private final UserSwitchTransitionViewController mUserSwitchTransitionViewController;
+
+    // Lock for keyguard-related operations to prevent possible timing issues
+    private final Object mKeyguardLock = new Object();
+    // Represents the actual current keyguard showing state
+    @GuardedBy("mKeyguardLock")
+    private boolean mIsKeyguardShowing;
+    // Bit to represent the user switch has attempted to trigger keyguard and is waiting for it
+    // to show up.
+    @GuardedBy("mKeyguardLock")
+    private boolean mPendingKeyguardShow;
+    @GuardedBy("mKeyguardLock")
+    private Runnable mCancelKeyguardTimeout;
 
     @VisibleForTesting
     final UserTracker.Callback mUserChangedCallback = new UserTracker.Callback() {
         @Override
         public void onBeforeUserSwitching(int newUser) {
-            mUserSwitchTransitionViewController.handleShow(newUser);
+            mUserSwitchTransitionViewController.showSwitchingUI(newUser);
+            try {
+                mWindowManagerService.setSwitchingUser(true);
+            } catch (RemoteException e) {
+                Log.e(TAG, "unable to notify window manager service regarding user switch");
+            }
+
+            if (mKeyguardManager.isDeviceSecure(newUser)) {
+                // Setup keyguard timeout but don't lock the device just yet.
+                // The device cannot be locked until we receive a user switching event - otherwise
+                // the KeyguardViewMediator will not have the new userId.
+                setupKeyguardShownTimeout();
+            }
         }
 
         @Override
         public void onUserChanging(int newUser, @NonNull Context userContext) {
-            mUserSwitchTransitionViewController.handleSwitching(newUser);
+            if (!mKeyguardManager.isDeviceSecure(newUser)) {
+                return;
+            }
+            try {
+                if (DEBUG) {
+                    Log.d(TAG, "Notifying WM to lock device");
+                }
+                mWindowManagerService.lockNow(null);
+            } catch (RemoteException e) {
+                throw new RuntimeException("Error notifying WM of lock state", e);
+            }
         }
 
         @Override
         public void onUserChanged(int newUser, @NonNull Context userContext) {
-            mUserSwitchTransitionViewController.handleHide();
+            hideSwitchingUI();
         }
     };
 
     @Inject
     public UserSwitchTransitionViewMediator(
             Context context,
+            @Main DelayableExecutor delayableExecutor,
             CarServiceProvider carServiceProvider,
             UserTracker userTracker,
+            UserManager userManager,
+            IWindowManager windowManagerService,
+            KeyguardStateController keyguardStateController,
             UserSwitchTransitionViewController userSwitchTransitionViewController) {
-        mContext = context;
+        mMainExecutor = delayableExecutor;
         mCarServiceProvider = carServiceProvider;
         mUserTracker = userTracker;
+        mUserManager = userManager;
+        mWindowManagerService = windowManagerService;
+        mKeyguardManager = context.getSystemService(KeyguardManager.class);
+        mKeyguardStateController = keyguardStateController;
         mUserSwitchTransitionViewController = userSwitchTransitionViewController;
     }
 
     @Override
     public void registerListeners() {
-        if (!CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
-            // TODO(b/335664913): allow for callback from non-system user (and per user).
-            mCarServiceProvider.addListener(car -> {
-                CarUserManager carUserManager = car.getCarManager(CarUserManager.class);
+        mCarServiceProvider.addListener(car -> {
+            CarUserManager carUserManager = car.getCarManager(CarUserManager.class);
 
-                if (carUserManager != null) {
-                    carUserManager.setUserSwitchUiCallback(this);
-                } else {
-                    Log.e(TAG, "registerListeners: CarUserManager could not be obtained.");
+            if (carUserManager != null) {
+                if (!CarSystemUIUserUtil.isSecondaryMUMDSystemUI()) {
+                    // TODO(b/335664913): allow for callback from non-system user (and per user).
+                    carUserManager.setUserSwitchUiCallback(mMainExecutor, this);
                 }
-            });
+
+                carUserManager.addListener(mMainExecutor,
+                        this::handleUserLifecycleEvent);
+                if (mUserManager.isUserUnlocked(mUserTracker.getUserId())) {
+                    hideSwitchingUI();
+                }
+
+            } else {
+                Log.e(TAG, "registerListeners: CarUserManager could not be obtained.");
+            }
+        });
+
+        mUserTracker.addCallback(mUserChangedCallback, mMainExecutor);
+        if (mUserTracker.isUserSwitching()
+                || !mUserManager.isUserUnlocked(mUserTracker.getUserId())
+                && !mKeyguardManager.isDeviceSecure(mUserTracker.getUserId())) {
+            mUserSwitchTransitionViewController.showSwitchingUI(mUserTracker.getUserId());
         }
 
-        mUserTracker.addCallback(mUserChangedCallback, mContext.getMainExecutor());
+        synchronized (mKeyguardLock) {
+            mKeyguardStateController.addCallback(new KeyguardStateController.Callback() {
+                @Override
+                public void onKeyguardShowingChanged() {
+                    keyguardShowingChanged(mKeyguardStateController.isShowing());
+                }
+            });
+            mIsKeyguardShowing = mKeyguardStateController.isShowing();
+            if (mIsKeyguardShowing) {
+                hideSwitchingUI();
+            } else if (mKeyguardManager.isDeviceLocked(mUserTracker.getUserId())) {
+                mUserSwitchTransitionViewController.showSwitchingUI(mUserTracker.getUserId());
+            }
+        }
     }
 
     @Override
@@ -97,7 +187,108 @@ public class UserSwitchTransitionViewMediator implements OverlayViewMediator,
     }
 
     @Override
-    public void showUserSwitchDialog(int userId) {
-        mUserSwitchTransitionViewController.handleShow(userId);
+    public void onUserSwitchStart(@NonNull UserHandle userHandle) {
+        // TODO(b/461573313): remove executor, as this callback should respect provided
+        // executor from registration.
+        mMainExecutor.execute(
+                () -> mUserSwitchTransitionViewController.showSwitchingUI(
+                        userHandle.getIdentifier()));
+    }
+
+    void handleUserLifecycleEvent(CarUserManager.UserLifecycleEvent event) {
+        if (event.getUserId() != mUserTracker.getUserId()) {
+            return;
+        }
+
+        if (event.getEventType() == CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKED) {
+            hideSwitchingUI();
+        }
+    }
+
+    private boolean shouldHideSwitchingUI() {
+        synchronized (mKeyguardLock) {
+            if (mIsKeyguardShowing) {
+                return true;
+            }
+            if (mPendingKeyguardShow) {
+                return false;
+            }
+        }
+
+        if (mKeyguardManager.isDeviceLocked(mUserTracker.getUserId())) {
+            // keyguard is not showing but device is locked - should not hide UI
+            return false;
+        }
+        return mUserManager.isUserUnlocked(mUserTracker.getUserId());
+    }
+
+    private void hideSwitchingUI() {
+        if (!shouldHideSwitchingUI()) {
+            return;
+        }
+        mUserSwitchTransitionViewController.hideSwitchingUI();
+    }
+
+    private void keyguardShowingChanged(boolean showing) {
+        synchronized (mKeyguardLock) {
+            if (mIsKeyguardShowing == showing) {
+                return;
+            }
+            mIsKeyguardShowing = showing;
+            if (DEBUG) {
+                Log.d(TAG, "Keyguard state change keyguardShowing=" + mIsKeyguardShowing);
+            }
+
+            if (mPendingKeyguardShow && mIsKeyguardShowing) {
+                mPendingKeyguardShow = false;
+                mUserSwitchTransitionViewController.setShouldSkipTimeout(false);
+                if (mCancelKeyguardTimeout != null) {
+                    mCancelKeyguardTimeout.run();
+                    mCancelKeyguardTimeout = null;
+                }
+                hideSwitchingUI();
+            } else if (mIsKeyguardShowing
+                    && mKeyguardManager.isDeviceSecure(mUserTracker.getUserId())) {
+                hideSwitchingUI();
+            }
+        }
+    }
+
+    /**
+     * Wait for keyguard to be shown before hiding this blocking view.
+     * This method does the following (in-order):
+     * - Checks if the keyguard is already locked (and if so, do nothing else).
+     * - Register a KeyguardLockedStateListener to be notified when the keyguard is locked.
+     * - Start a 20 second timeout for keyguard to be shown. If it is not shown within this
+     *   timeframe, SysUI/WM is in a bad state - crash SysUI and allow it to recover on restart.
+     */
+    @VisibleForTesting
+    void setupKeyguardShownTimeout() {
+        if (!userSwitchKeyguardShownTimeout()) {
+            return;
+        }
+        synchronized (mKeyguardLock) {
+            if (mPendingKeyguardShow) {
+                Log.w(TAG, "Attempted to setup timeout while pending keyguard show");
+                return;
+            }
+            if (mIsKeyguardShowing) {
+                return;
+            }
+
+            if (DEBUG) {
+                Log.d(TAG, "Setting up keyguard show timeout");
+            }
+            mPendingKeyguardShow = true;
+            mUserSwitchTransitionViewController.setShouldSkipTimeout(true);
+            Runnable keyguardTimeoutRunnable = () -> {
+                // Keyguard did not show up in the expected timeframe - this indicates something is
+                // very wrong. Crash SystemUI and allow it to recover on re-initialization.
+                throw new RuntimeException(String.format("Keyguard was not shown in %d seconds",
+                        KEYGUARD_SHOW_TIMEOUT));
+            };
+            mCancelKeyguardTimeout = mMainExecutor.executeDelayed(keyguardTimeoutRunnable,
+                    KEYGUARD_SHOW_TIMEOUT, TimeUnit.SECONDS);
+        }
     }
 }

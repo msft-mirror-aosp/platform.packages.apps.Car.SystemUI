@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.qc;
+package com.android.systemui.car.qc.footer.userpicker;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -36,6 +36,7 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
+import com.android.systemui.car.qc.QCFooterView;
 import com.android.systemui.settings.UserTracker;
 
 import org.junit.Before;

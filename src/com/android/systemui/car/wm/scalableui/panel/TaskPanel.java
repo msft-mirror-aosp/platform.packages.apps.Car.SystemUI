@@ -322,10 +322,10 @@ public final class TaskPanel extends SysUIPanel {
     void handlePanelEmpty(ActivityManager.RunningTaskInfo taskInfo) {
         if (hasRestart()) {
             scheduleRestartAttempt(taskInfo);
-        } else if (!isVisible()) {
-            // If panel is visible, the panel empty event will be sent by PanelTransitionCoordinator
-            reportTaskPanelEmpty(taskInfo);
         }
+        // Don't report a task panel empty event yet as there could be a trampoline launch in
+        // progress which would end up in a race with a transition resulting from task panel empty
+        // The task panel empty event will be calculated during startAnimation
     }
 
     private void reportTaskPanelEmpty(ActivityManager.RunningTaskInfo taskInfo) {

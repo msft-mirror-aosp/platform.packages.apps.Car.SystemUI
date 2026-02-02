@@ -467,7 +467,7 @@ public class PanelTransitionCoordinator {
             if (taskPanel == null) {
                 continue;
             }
-            if (!change.getState().getChildrenTasksVisible() && taskPanel.isRootTaskEmpty()) {
+            if (taskPanel.isRootTaskEmpty()) {
                 taskPanelIds.add(taskPanel.getPanelId());
             }
         }

@@ -19,7 +19,6 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Spracherkennung jetzt über das verbundene Bluetooth-Gerät"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Profil hinzufügen"</string>
-    <string name="end_session" msgid="2765206020435441421">"Sitzung beenden"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Neues Profil"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Neues Profil hinzufügen?"</string>
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"Wenn du ein neues Profil hinzugefügt hast, kann es der Kontoinhaber personalisieren."</string>
@@ -28,7 +27,6 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Du kannst maximal ein Profil erstellen.}other{Du kannst maximal # Profile hinzufügen.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Wird geladen"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Nutzer wird geladen (von <xliff:g id="FROM_USER">%1$d</xliff:g> bis <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
-    <string name="current_profile_subtitle" msgid="7149515449757434139">"Aktuelles Profil"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> ist deaktiviert."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g> verwenden"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Für Apps mit Berechtigung"</string>
@@ -123,5 +121,4 @@
     <string name="back_btn" msgid="7774349944465667391">"Zurück"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Vollbild"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"Anzeigegröße"</string>
-    <string name="data_subscription_button_text" msgid="6595983827855035949">"Tarife ansehen"</string>
 </resources>

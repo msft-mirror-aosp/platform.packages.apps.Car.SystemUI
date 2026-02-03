@@ -19,7 +19,6 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="voice_recognition_toast" msgid="7579725862117020349">"이제 연결된 블루투스 기기에서 음성 인식이 처리됩니다."</string>
     <string name="car_add_user" msgid="6182764665687382136">"프로필 추가"</string>
-    <string name="end_session" msgid="2765206020435441421">"세션 종료"</string>
     <string name="car_new_user" msgid="6766334721724989964">"새 프로필"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"새 프로필을 추가하시겠습니까?"</string>
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"새 프로필을 추가한 후 계정 소유자가 맞춤설정할 수 있습니다."</string>
@@ -28,7 +27,6 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{프로필은 1개만 만들 수 있습니다.}other{프로필은 #개까지 만들 수 있습니다.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"로드 중"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"사용자 로드 중(<xliff:g id="FROM_USER">%1$d</xliff:g>님에서 <xliff:g id="TO_USER">%2$d</xliff:g>님으로)"</string>
-    <string name="current_profile_subtitle" msgid="7149515449757434139">"현재 프로필"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g>이(가) 꺼져 있습니다."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g> 사용"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"권한 있는 앱용"</string>
@@ -123,5 +121,4 @@
     <string name="back_btn" msgid="7774349944465667391">"뒤로"</string>
     <string name="fullscreen" msgid="7648956467442135844">"전체 화면"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"디스플레이 크기"</string>
-    <string name="data_subscription_button_text" msgid="6595983827855035949">"요금제 보기"</string>
 </resources>

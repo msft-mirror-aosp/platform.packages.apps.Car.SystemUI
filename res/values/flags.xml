@@ -39,6 +39,8 @@
     <bool name="scalable_ui_handle_configuration_change">true</bool>
     <!-- Controls enabling display compatibility V2. -->
     <bool name="display_compatibility_v2">true</bool>
+    <!-- Controls enabling display compatibility V2. -->
+    <bool name="display_compat_v2">true</bool>
     <!-- Controls enabling Media Projection indicator. -->
     <bool name="show_media_projection_indicator">true</bool>
     <!-- Controls removing SUW as the home activity and launching through alternative means. -->

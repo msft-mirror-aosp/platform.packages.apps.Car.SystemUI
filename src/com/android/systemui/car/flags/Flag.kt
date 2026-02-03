@@ -157,6 +157,14 @@ enum class Flag(
     ),
 
     /**
+     * Checks if the DisplayCompatibilityV2 is enabled.
+     */
+    DisplayCompatV2(
+        "com.android.systemui.car.Flags.displayCompatV2",
+        R.bool.display_compat_v2
+    ),
+
+    /**
      * Checks if the Media Projection indicator feature is enabled.
      */
     ShowMediaProjectionIndicator(

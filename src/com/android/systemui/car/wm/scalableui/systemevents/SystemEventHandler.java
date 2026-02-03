@@ -27,9 +27,12 @@ import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventCon
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_USER_AUTHENTICATED_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_USER_SWITCH_COMPLETE_EVENT_ID;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_USER_SWITCH_ON_AUTHENTICATED_TOKEN_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_UXR_RESTRICTED_TOKEN_ID;
+import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_UXR_STATE_CHANGED_EVENT_ID;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
+import android.car.drivingstate.CarUxRestrictions;
 import android.car.user.CarUserManager;
 import android.content.Context;
 import android.content.Intent;
@@ -42,10 +45,12 @@ import android.view.Display;
 
 import androidx.annotation.NonNull;
 
+
 import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.panel.Panel;
 import com.android.car.scalableui.panel.PanelPool;
+import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.CoreStartable;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
@@ -98,6 +103,7 @@ public class SystemEventHandler implements CoreStartable,
     private final CarDeviceProvisionedController mCarDeviceProvisionedController;
     private final EventDispatcher mEventDispatcher;
     private final FlagManager mFlagManager;
+    private final CarUxRestrictionsUtil mCarUxRestrictionsUtil;
 
     private CarUserManager mCarUserManager;
     private boolean mIsUserSetupInProgress;
@@ -105,6 +111,7 @@ public class SystemEventHandler implements CoreStartable,
     private boolean mResetCalledForUser = false;
     private boolean mIsUserSwitching = true;
     private boolean mIsKeyguardShowing;
+    private boolean mIsUxrRestricted;
     private Configuration mConfiguration;
 
     private final CarUserManager.UserLifecycleListener mUserLifecycleListener =
@@ -205,6 +212,22 @@ public class SystemEventHandler implements CoreStartable,
                 }
             };
 
+    private final CarUxRestrictionsUtil.OnUxRestrictionsChangedListener mUxrListener =
+            new CarUxRestrictionsUtil.OnUxRestrictionsChangedListener() {
+                @Override
+                public void onRestrictionsChanged(@NonNull CarUxRestrictions carUxRestrictions) {
+                    boolean restricted = carUxRestrictions.isRequiresDistractionOptimization();
+                    if (mIsUxrRestricted == restricted) {
+                        return;
+                    }
+                    mIsUxrRestricted = restricted;
+                    mEventDispatcher.executeEvent(getEventWithDisplays(
+                            new Event.Builder(SYSTEM_UXR_STATE_CHANGED_EVENT_ID).addToken(
+                                    SYSTEM_UXR_RESTRICTED_TOKEN_ID,
+                                    Boolean.toString(mIsUxrRestricted))));
+                }
+            };
+
     @Inject
     public SystemEventHandler(
             Context context,
@@ -217,7 +240,8 @@ public class SystemEventHandler implements CoreStartable,
             KeyguardStateController keyguardStateController,
             CarDeviceProvisionedController carDeviceProvisionedController,
             EventDispatcher dispatcher,
-            FlagManager flagManager
+            FlagManager flagManager,
+            CarUxRestrictionsUtil carUxRestrictionsUtil
     ) {
         mContext = context;
         mUserManager = userManager;
@@ -230,6 +254,7 @@ public class SystemEventHandler implements CoreStartable,
         mCarDeviceProvisionedController = carDeviceProvisionedController;
         mEventDispatcher = dispatcher;
         mFlagManager = flagManager;
+        mCarUxRestrictionsUtil = carUxRestrictionsUtil;
         // Make a copy of current Configuration
         mConfiguration = new Configuration(mContext.getResources().getConfiguration());
     }
@@ -272,6 +297,7 @@ public class SystemEventHandler implements CoreStartable,
             mUserTracker.addCallback(mUserTrackerCallback, mBackgroundExecutor);
             mDisplayStateHelper.get().addListener(mDisplayStateListener);
             registerKeyguardStateListener();
+            registerUxrListener();
         }
     }
 
@@ -363,6 +389,18 @@ public class SystemEventHandler implements CoreStartable,
 
     private boolean isKeyguardShowing() {
         return mKeyguardStateController.isShowing();
+    }
+
+    private void registerUxrListener() {
+        mCarUxRestrictionsUtil.register(mUxrListener);
+        if (mCarUxRestrictionsUtil.getCurrentRestrictions().isRequiresDistractionOptimization()) {
+            // Send event for initial state
+            mIsUxrRestricted = true;
+            mEventDispatcher.executeEvent(getEventWithDisplays(
+                    new Event.Builder(SYSTEM_UXR_STATE_CHANGED_EVENT_ID).addToken(
+                            SYSTEM_UXR_RESTRICTED_TOKEN_ID,
+                            Boolean.toString(mIsUxrRestricted))));
+        }
     }
 
     private boolean shouldResetPanels() {

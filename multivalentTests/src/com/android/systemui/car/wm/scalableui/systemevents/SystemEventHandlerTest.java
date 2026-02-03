@@ -20,10 +20,12 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.car.Car;
+import android.car.drivingstate.CarUxRestrictions;
 import android.car.user.CarUserManager;
 import android.content.pm.PackageManager;
 import android.os.UserHandle;
@@ -35,6 +37,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import com.android.car.scalableui.model.Event;
+import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarDeviceProvisionedListener;
@@ -100,6 +103,10 @@ public class SystemEventHandlerTest extends CarSysuiTestCase {
     private CarUserManager mCarUserManager;
     @Mock
     private Display mDisplay;
+    @Mock
+    private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
+    @Mock
+    private CarUxRestrictions mCarUxRestrictions;
 
     @Captor
     private ArgumentCaptor<CarUserManager.UserLifecycleListener> mUserLifecycleListenerCaptor;
@@ -109,6 +116,9 @@ public class SystemEventHandlerTest extends CarSysuiTestCase {
     private ArgumentCaptor<Event> mEventCaptor;
     @Captor
     private ArgumentCaptor<List<Event>> mEventsCaptor;
+    @Captor
+    private ArgumentCaptor<CarUxRestrictionsUtil.OnUxRestrictionsChangedListener>
+            mUxrListenerCaptor;
 
     private SystemEventHandler mSystemEventHandler;
     private Executor mExecutor = Runnable::run;
@@ -129,6 +139,7 @@ public class SystemEventHandlerTest extends CarSysuiTestCase {
         when(mDisplayTracker.getAllDisplays()).thenReturn(new Display[]{mDisplay});
         when(mDisplay.getDisplayId()).thenReturn(TEST_DISPLAY_ID);
         when(mCar.getCarManager(CarUserManager.class)).thenReturn(mCarUserManager);
+        when(mCarUxRestrictionsUtil.getCurrentRestrictions()).thenReturn(mCarUxRestrictions);
 
         mSystemEventHandler = new SystemEventHandler(
                 mContext,
@@ -141,7 +152,8 @@ public class SystemEventHandlerTest extends CarSysuiTestCase {
                 mKeyguardStateController,
                 mCarDeviceProvisionedController,
                 mEventDispatcher,
-                mFlagManager
+                mFlagManager,
+                mCarUxRestrictionsUtil
         );
     }
 
@@ -244,6 +256,89 @@ public class SystemEventHandlerTest extends CarSysuiTestCase {
         verify(mEventDispatcher).executeEvent(mEventCaptor.capture());
         Event event = mEventCaptor.getValue();
         assertThat(event.getId()).isEqualTo(SystemEventConstants.SYSTEM_EXIT_SUW_EVENT_ID);
+    }
+
+    @Test
+    public void start_uxrRestricted_sendsUxrStateChangedEvent() {
+        // Arrange
+        when(mCarUxRestrictions.isRequiresDistractionOptimization()).thenReturn(true);
+
+        // Act
+        mSystemEventHandler.start();
+
+        // Assert
+        verify(mEventDispatcher, atLeastOnce()).executeEvent(mEventCaptor.capture());
+        List<Event> events = mEventCaptor.getAllValues().stream().filter(
+                event -> event.getId().equals(
+                        SystemEventConstants.SYSTEM_UXR_STATE_CHANGED_EVENT_ID)).toList();
+        assertThat(events.size()).isEqualTo(1);
+        assertThat(events.getFirst().getTokens().get(
+                SystemEventConstants.SYSTEM_UXR_RESTRICTED_TOKEN_ID)).isEqualTo("true");
+    }
+
+    @Test
+    public void onUxRestrictionsChanged_restricted_sendsUxrStateChangedEvent() {
+        // Arrange
+        when(mCarUxRestrictions.isRequiresDistractionOptimization()).thenReturn(false);
+        mSystemEventHandler.start();
+        verify(mCarUxRestrictionsUtil).register(mUxrListenerCaptor.capture());
+        CarUxRestrictionsUtil.OnUxRestrictionsChangedListener listener =
+                mUxrListenerCaptor.getValue();
+        Mockito.clearInvocations(mEventDispatcher);
+
+        // Act
+        CarUxRestrictions newRestrictions = Mockito.mock(CarUxRestrictions.class);
+        when(newRestrictions.isRequiresDistractionOptimization()).thenReturn(true);
+        listener.onRestrictionsChanged(newRestrictions);
+
+        // Assert
+        verify(mEventDispatcher).executeEvent(mEventCaptor.capture());
+        Event event = mEventCaptor.getValue();
+        assertThat(event.getId()).isEqualTo(SystemEventConstants.SYSTEM_UXR_STATE_CHANGED_EVENT_ID);
+        assertThat(event.getTokens().get(SystemEventConstants.SYSTEM_UXR_RESTRICTED_TOKEN_ID))
+                .isEqualTo("true");
+    }
+
+    @Test
+    public void onUxRestrictionsChanged_notRestricted_sendsUxrStateChangedEvent() {
+        // Arrange
+        when(mCarUxRestrictions.isRequiresDistractionOptimization()).thenReturn(true);
+        mSystemEventHandler.start();
+        verify(mCarUxRestrictionsUtil).register(mUxrListenerCaptor.capture());
+        CarUxRestrictionsUtil.OnUxRestrictionsChangedListener listener =
+                mUxrListenerCaptor.getValue();
+        Mockito.clearInvocations(mEventDispatcher);
+
+        // Act
+        CarUxRestrictions newRestrictions = Mockito.mock(CarUxRestrictions.class);
+        when(newRestrictions.isRequiresDistractionOptimization()).thenReturn(false);
+        listener.onRestrictionsChanged(newRestrictions);
+
+        // Assert
+        verify(mEventDispatcher).executeEvent(mEventCaptor.capture());
+        Event event = mEventCaptor.getValue();
+        assertThat(event.getId()).isEqualTo(SystemEventConstants.SYSTEM_UXR_STATE_CHANGED_EVENT_ID);
+        assertThat(event.getTokens().get(SystemEventConstants.SYSTEM_UXR_RESTRICTED_TOKEN_ID))
+                .isEqualTo("false");
+    }
+
+    @Test
+    public void onUxRestrictionsChanged_sameState_doesNotSendEvent() {
+        // Arrange
+        when(mCarUxRestrictions.isRequiresDistractionOptimization()).thenReturn(true);
+        mSystemEventHandler.start();
+        verify(mCarUxRestrictionsUtil).register(mUxrListenerCaptor.capture());
+        CarUxRestrictionsUtil.OnUxRestrictionsChangedListener listener =
+                mUxrListenerCaptor.getValue();
+        Mockito.clearInvocations(mEventDispatcher);
+
+        // Act
+        CarUxRestrictions newRestrictions = Mockito.mock(CarUxRestrictions.class);
+        when(newRestrictions.isRequiresDistractionOptimization()).thenReturn(true);
+        listener.onRestrictionsChanged(newRestrictions);
+
+        // Assert
+        verify(mEventDispatcher, Mockito.never()).executeEvent(any(Event.class));
     }
 
     private void simulateCarServiceConnection() {

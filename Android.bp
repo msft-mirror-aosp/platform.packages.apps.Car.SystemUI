@@ -377,7 +377,7 @@ android_app {
         "SystemUI_optimized_defaults",
         "wmshell_defaults",
     ],
-    manifest: "tests/AndroidManifest-tests.xml",
+    manifest: "tests/AndroidManifest-base.xml",
 
     static_libs: [
         "//frameworks/libs/systemui:compilelib",

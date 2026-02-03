@@ -101,7 +101,8 @@ import javax.annotation.concurrent.GuardedBy;
  * {@link R.bool#config_remoteInsetsControllerControlsSystemBars} determines whether this controller
  * takes control or not.
  */
-public class DisplaySystemBarsController implements DisplayController.OnDisplaysChangedListener {
+public class DisplaySystemBarsController implements DisplayController.OnDisplaysChangedListener,
+        SystemUiWindowProvider.WindowReadyListener {
 
     private static final String TAG = DisplaySystemBarsController.class.getSimpleName();
     private static final int STATE_NON_IMMERSIVE = systemBars();
@@ -203,6 +204,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             registerOverlayChangeBroadcastReceiver();
             registerOccupantZoneChangeListener();
             registerUserLifecycleListener();
+            mWindowProvider.addReadinessListener(this);
         }
     }
 
@@ -236,8 +238,9 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
                             synchronized (mPerDisplaySparseArrayLock) {
                                 int size = mPerDisplaySparseArray.size();
                                 for (int i = 0; i < size; i++) {
-                                    mPerDisplaySparseArray.valueAt(
-                                            i).updateDisplayWindowRequestedVisibleTypes();
+                                    mPerDisplaySparseArray.valueAt(i)
+                                            .updateDisplayWindowRequestedVisibleTypes(
+                                                    /* force= */ false);
                                 }
                             }
                             // Add a return statement to satisfy the compiler's inferred return
@@ -314,6 +317,24 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         });
     }
 
+    @Override
+    public void onReady() {
+        synchronized (mPerDisplaySparseArrayLock) {
+            if (mPerDisplaySparseArray == null) {
+                return;
+            }
+            for (int i = 0; i < mPerDisplaySparseArray.size(); i++) {
+                int displayId = mPerDisplaySparseArray.keyAt(i);
+                List<SystemBarWindow> displaySystemBars = mWindowProvider.getSystemBarWindows()
+                        .stream()
+                        .filter(window -> window.getDisplayId() == displayId)
+                        .map(window -> (SystemBarWindow) window)
+                        .collect(Collectors.toList());
+                mPerDisplaySparseArray.valueAt(i).updateSystemBarWindows(displaySystemBars);
+            }
+        }
+    }
+
     @VisibleForTesting
     protected String getBarPolicyString() {
         return mBarControlPolicy.getSettingValue();
@@ -355,7 +376,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             mInsetsController = new InsetsController(
                     new DisplaySystemBarsInsetsControllerHost(mHandler, requestedVisibleTypes -> {
                         mRequestedVisibleTypes = requestedVisibleTypes;
-                        updateDisplayWindowRequestedVisibleTypes();
+                        updateDisplayWindowRequestedVisibleTypes(/* force= */ false);
                     }, inputMethodManager)
             );
             mIsSuwInProgress = isSuwInProgress(mUserHelper.getUserIdForDisplay(mDisplayId));
@@ -372,7 +393,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         @Override
         public void insetsChanged(InsetsState insetsState) {
             mInsetsController.onStateChanged(insetsState);
-            updateDisplayWindowRequestedVisibleTypes();
+            updateDisplayWindowRequestedVisibleTypes(/* force= */ false);
         }
 
         @Override
@@ -453,7 +474,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             updateImmersiveState(requestedVisibleTypes);
             mWindowRequestedVisibleTypes = requestedVisibleTypes;
             mPackageName = packageName;
-            updateDisplayWindowRequestedVisibleTypes();
+            updateDisplayWindowRequestedVisibleTypes(/* force= */ false);
         }
 
         private void updateImmersiveState(@InsetsType int requestedVisibleTypes) {
@@ -487,7 +508,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             // no-op - IME visibility is handled by the DisplayImeController
         }
 
-        protected void updateDisplayWindowRequestedVisibleTypes() {
+        protected void updateDisplayWindowRequestedVisibleTypes(boolean force) {
             if (mPackageName == null) {
                 return;
             }
@@ -501,7 +522,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
                     barVisibilities[INVISIBLE_BAR_VISIBILITIES_TYPES_INDEX],
                     /* visible= */ false);
 
-            if (mAppRequestedVisibleTypes == mRequestedVisibleTypes) {
+            if (!force && mAppRequestedVisibleTypes == mRequestedVisibleTypes) {
                 return;
             }
             mAppRequestedVisibleTypes = mRequestedVisibleTypes;
@@ -574,7 +595,12 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
                 return;
             }
             mIsSuwInProgress = inProgress;
-            updateDisplayWindowRequestedVisibleTypes();
+            updateDisplayWindowRequestedVisibleTypes(/* force= */ false);
+        }
+
+        void updateSystemBarWindows(List<SystemBarWindow> systemBars) {
+            mSystemBars = systemBars;
+            updateDisplayWindowRequestedVisibleTypes(/* force= */ true);
         }
 
         protected void updateRequestedVisibleTypes(@InsetsType int types, boolean visible) {

@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.qc;
+package com.android.systemui.car.qc.footer.base;
 
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-
-import androidx.annotation.CallSuper;
 
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
@@ -33,7 +31,8 @@ import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
 
-public class QCFooterViewController extends CarSystemBarElementController<QCFooterView> {
+/** Default controller for QCFooterButton views */
+public class QCFooterButtonController extends CarSystemBarElementController<QCFooterButton> {
     private static final String TAG = QCFooterButtonController.class.getSimpleName();
 
     private final Context mContext;
@@ -43,7 +42,7 @@ public class QCFooterViewController extends CarSystemBarElementController<QCFoot
                     !carUxRestrictions.isRequiresDistractionOptimization());
 
     @AssistedInject
-    protected QCFooterViewController(@Assisted QCFooterView view,
+    protected QCFooterButtonController(@Assisted QCFooterButton view,
             CarSystemBarElementStatusBarDisableController disableController,
             CarSystemBarElementStateController stateController, Context context,
             UserTracker userTracker) {
@@ -54,7 +53,7 @@ public class QCFooterViewController extends CarSystemBarElementController<QCFoot
 
     @AssistedFactory
     public interface Factory extends
-            CarSystemBarElementController.Factory<QCFooterView, QCFooterViewController> {}
+            CarSystemBarElementController.Factory<QCFooterButton, QCFooterButtonController> {}
 
     @Override
     protected void onInit() {
@@ -75,7 +74,6 @@ public class QCFooterViewController extends CarSystemBarElementController<QCFoot
     }
 
     @Override
-    @CallSuper
     protected void onViewAttached() {
         super.onViewAttached();
         if (mView.isDisableWhileDriving()) {
@@ -84,7 +82,6 @@ public class QCFooterViewController extends CarSystemBarElementController<QCFoot
     }
 
     @Override
-    @CallSuper
     protected void onViewDetached() {
         super.onViewDetached();
         if (mView.isDisableWhileDriving()) {

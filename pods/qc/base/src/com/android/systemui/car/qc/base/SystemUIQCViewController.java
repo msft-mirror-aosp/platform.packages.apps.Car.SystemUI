@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.qc;
+package com.android.systemui.car.qc.base;
 
 import android.content.Context;
 import android.net.Uri;

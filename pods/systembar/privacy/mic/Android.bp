@@ -24,6 +24,8 @@ android_library {
     resource_dirs: ["res"],
     static_libs: [
         "CarSystemUI-FlexibleUI",
+        "CarSystemUI-QC-Base",
+        "CarSystemUI-QC-Footer-Base",
         "CarSystemUI-Shared",
         "CarSystemUI-SystemBar-PrivacyChip-Base",
         "CarSystemUI-SystemBar-Panel",

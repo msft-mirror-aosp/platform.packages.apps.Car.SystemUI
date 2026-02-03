@@ -16,7 +16,9 @@
 
 package com.android.systemui.car.qc;
 
-import com.android.systemui.car.flexibleui.CarSystemBarElementController;
+import com.android.systemui.car.qc.base.QCBaseModule;
+import com.android.systemui.car.qc.base.SystemUIQCViewController;
+import com.android.systemui.car.qc.footer.base.QCFooterBaseModule;
 import com.android.systemui.car.qc.footer.logout.QCLogoutModule;
 import com.android.systemui.car.qc.footer.screenoff.QCScreenOffModule;
 import com.android.systemui.car.qc.footer.userpicker.QCUserPickerModule;
@@ -24,40 +26,17 @@ import com.android.systemui.car.qc.profileswitcher.QCProfileSwitcherModule;
 import com.android.systemui.car.systembar.privacy.camera.CameraQcPanelModule;
 import com.android.systemui.car.systembar.privacy.mic.MicQcPanelModule;
 
-import dagger.Binds;
 import dagger.Module;
-import dagger.multibindings.ClassKey;
-import dagger.multibindings.IntoMap;
 
 /**
  * Dagger injection module for {@link SystemUIQCViewController}
  */
 @Module(includes = {CameraQcPanelModule.class,
         MicQcPanelModule.class,
+        QCBaseModule.class,
+        QCFooterBaseModule.class,
         QCLogoutModule.class,
         QCProfileSwitcherModule.class,
         QCScreenOffModule.class,
         QCUserPickerModule.class})
-public abstract class QuickControlsModule {
-
-    /** Injects SystemUIQCViewController. */
-    @Binds
-    @IntoMap
-    @ClassKey(SystemUIQCViewController.class)
-    public abstract CarSystemBarElementController.Factory bindQCViewControllerFactory(
-            SystemUIQCViewController.Factory factory);
-
-    /** Injects QCFooterButtonController. */
-    @Binds
-    @IntoMap
-    @ClassKey(QCFooterButtonController.class)
-    public abstract CarSystemBarElementController.Factory bindQCFooterButtonControllerFactory(
-            QCFooterButtonController.Factory factory);
-
-    /** Injects QCFooterViewController. */
-    @Binds
-    @IntoMap
-    @ClassKey(QCFooterViewController.class)
-    public abstract CarSystemBarElementController.Factory bindQCFooterViewControllerFactory(
-            QCFooterViewController.Factory factory);
-}
+public abstract class QuickControlsModule {}

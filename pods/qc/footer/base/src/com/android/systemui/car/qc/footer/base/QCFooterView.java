@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.qc;
+package com.android.systemui.car.qc.footer.base;
 
 import android.content.Context;
 import android.content.Intent;
@@ -27,7 +27,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.android.systemui.car.flexibleui.CarSystemBarElement;
 import com.android.systemui.car.flexibleui.CarSystemBarElementFlags;
 import com.android.systemui.car.flexibleui.CarSystemBarElementResolver;
-import com.android.systemui.car.shared.R;
 
 import java.net.URISyntaxException;
 

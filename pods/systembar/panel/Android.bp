@@ -21,6 +21,7 @@ android_library {
     static_libs: [
         "CarSystemUI-Shared",
         "CarSystemUI-FlexibleUI",
+        "CarSystemUI-QC-Base",
     ],
     libs: [
         "android.car",

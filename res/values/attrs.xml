@@ -150,21 +150,6 @@
         <attr name="mute_icon" />
     </declare-styleable>
 
-    <declare-styleable name="SystemUIQCView">
-        <attr name="remoteQCProvider" format="string"/>
-        <attr name="localQCProvider" format="string"/>
-    </declare-styleable>
-
-    <declare-styleable name="QCFooterButton">
-        <attr name="intent" format="string"/>
-        <attr name="disableWhileDriving" format="boolean"/>
-    </declare-styleable>
-
-    <declare-styleable name="QCFooterView">
-        <attr name="intent" format="string"/>
-        <attr name="disableWhileDriving" format="boolean"/>
-    </declare-styleable>
-
     <declare-styleable name="PinPadView">
         <attr name="layout" format="reference"/>
     </declare-styleable>

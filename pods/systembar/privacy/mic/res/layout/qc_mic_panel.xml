@@ -41,13 +41,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toTopOf="@+id/qc_mic_footer_button">
-                <com.android.systemui.car.qc.SystemUIQCView
+                <com.android.systemui.car.qc.base.SystemUIQCView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     app:localQCProvider="com.android.systemui.car.systembar.privacy.mic.MicQcPanel"/>
             </ScrollView>
-            <com.android.systemui.car.qc.QCFooterButton
+            <com.android.systemui.car.qc.footer.base.QCFooterButton
                 android:id="@+id/qc_mic_footer_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

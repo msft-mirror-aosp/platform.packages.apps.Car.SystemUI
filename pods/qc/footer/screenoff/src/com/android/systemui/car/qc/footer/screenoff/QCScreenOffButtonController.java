@@ -24,8 +24,8 @@ import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.qc.QCFooterView;
-import com.android.systemui.car.qc.QCFooterViewController;
+import com.android.systemui.car.qc.footer.base.QCFooterView;
+import com.android.systemui.car.qc.footer.base.QCFooterViewController;
 import com.android.systemui.settings.UserTracker;
 
 import dagger.assisted.Assisted;

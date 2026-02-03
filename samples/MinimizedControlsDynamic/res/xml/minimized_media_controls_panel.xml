@@ -15,7 +15,7 @@
     limitations under the License.
 -->
 
-<DecorPanel id="minimized_media_controls_panel"  defaultVariant="@id/open" displayId="0" controller="@xml/minimized_media_controls_controller">
+<DecorPanel id="minimized_media_controls_panel"  defaultVariant="@id/closed" displayId="0" controller="@xml/minimized_media_controls_controller">
     <Variant id="@id/base">
         <Bounds
             left="@dimen/minimized_controls_left"
@@ -34,7 +34,15 @@
     </Variant>
 
     <Transitions>
-        <Transition onEvent="_System_Show_Panel" onEventTokens="panelId=minimized_media_controls_panel" toVariant="@id/open"/>
-        <Transition onEvent="_System_Hide_Panel" onEventTokens="panelId=minimized_media_controls_panel" toVariant="@id/closed"/>
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=widget_panel" toVariant="@id/closed"/>
+        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=widget_panel" toVariant="@id/open"/>
+
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=app_panel" toVariant="@id/open"/>
+        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=app_panel" toVariant="@id/closed"/>
+
+        <Transition onEvent="_System_OnHomeEvent" fromVariant="@id/open" toVariant="@id/closed"/>
+
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=map_panel" fromVariant="@id/open" toVariant="@id/closed"/>
+
     </Transitions>
 </DecorPanel>

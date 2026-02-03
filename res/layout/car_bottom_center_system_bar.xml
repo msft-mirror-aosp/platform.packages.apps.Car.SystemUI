@@ -70,6 +70,19 @@
             systemui:highlightWhenSelected="true"
             systemui:icon="@drawable/ic_mic_light"/>
 
+        <com.android.systemui.car.systembar.CarSystemBarButton
+            android:id="@+id/home"
+            android:contentDescription="@string/system_bar_home_label"
+            style="@style/SystemBarButton"
+            systemui:componentNames="@string/config_homeComponentName"
+            systemui:panelNames="@string/config_homePanelVisibilities"
+            systemui:highlightWhenSelected="true"
+            systemui:icon="@drawable/car_ic_home"
+            systemui:intent="intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.HOME;launchFlags=0x14000000;end"
+            systemui:systemBarDisableFlags="home"
+            systemui:controller="com.android.systemui.car.systembar.home.HomeButtonController"/>
+
+
     </LinearLayout>
 
 </com.android.systemui.car.systembar.CarSystemBarView>

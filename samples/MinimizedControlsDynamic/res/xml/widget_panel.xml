@@ -39,9 +39,11 @@
         <Transition onEvent="_System_EnterSuwEvent" toVariant="@id/suw"/>
         <Transition onEvent="_System_ExitSuwEvent" fromVariant="@id/suw" toVariant="@id/opened"/>
         <Transition onEvent="_System_OnHomeEvent" fromVariant="@id/closed" toVariant="@id/opened"/>
-        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=floating_app_panel" fromVariant="@id/opened" toVariant="@id/closed"/>
-        <Transition onEvent="_System_TaskPanelEmptyEvent" onEventTokens="panelId=floating_app_panel" fromVariant="@id/closed" toVariant="@id/opened"/>
-        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=background_map_panel" fromVariant="@id/closed" toVariant="@id/opened"/>
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=app_panel" fromVariant="@id/opened" toVariant="@id/closed"/>
+        <Transition onEvent="_System_TaskPanelEmptyEvent" onEventTokens="panelId=app_panel" fromVariant="@id/closed" toVariant="@id/opened"/>
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=map_panel" fromVariant="@id/closed" toVariant="@id/opened"/>
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=minimized_media_controls_panel" toVariant="@id/closed"/>
+        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=minimized_media_controls_panel" toVariant="@id/open"/>
 
         <!-- User Switch -->
         <Transition onEvent="_System_BeforeUserSwitch" toVariant="@id/userswitch"/>

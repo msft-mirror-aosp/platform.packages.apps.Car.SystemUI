@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar.appgrid;
 
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -26,7 +26,7 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.android.systemui.car.shared.R;
+import com.android.systemui.car.systembar.CarSystemBarButton;
 import com.android.systemui.shared.system.TaskStackChangeListener;
 import com.android.systemui.shared.system.TaskStackChangeListeners;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
@@ -144,9 +144,10 @@ public class RecentsButtonStateProvider {
      * @see CarSystemBarButton#refreshIconAlpha(AlphaOptimizedImageView)
      */
     public void refreshIconAlpha(AlphaOptimizedImageView icon,
-            Consumer<AlphaOptimizedImageView> defaultRefreshIconAlpha) {
+            Consumer<AlphaOptimizedImageView> defaultRefreshIconAlpha,
+            float selectedAlpha) {
         if (mIsRecentsActive) {
-            icon.setAlpha(mCarSystemBarButton.getSelectedAlpha());
+            icon.setAlpha(selectedAlpha);
             return;
         }
         if (defaultRefreshIconAlpha == null) {

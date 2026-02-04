@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar.appgrid;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
+import com.android.systemui.car.systembar.CarSystemBarButton;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
 
 /**
@@ -54,6 +55,7 @@ public class AppGridButton extends CarSystemBarButton {
 
     @Override
     protected void refreshIconAlpha(AlphaOptimizedImageView icon) {
-        mRecentsButtonStateProvider.refreshIconAlpha(icon, super::refreshIconAlpha);
+        mRecentsButtonStateProvider.refreshIconAlpha(icon, super::refreshIconAlpha,
+                getSelectedAlpha());
     }
 }

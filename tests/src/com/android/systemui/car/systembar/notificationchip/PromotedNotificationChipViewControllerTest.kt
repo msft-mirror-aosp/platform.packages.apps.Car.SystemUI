@@ -20,7 +20,9 @@ import android.graphics.drawable.Icon
 import android.platform.test.annotations.EnableFlags
 import android.testing.AndroidTestingRunner
 import android.testing.TestableLooper
+import android.view.View
 import androidx.test.filters.SmallTest
+import com.android.car.notification.CarNotificationListener
 import com.android.car.notification.PromotedNotificationModel
 import com.android.car.notification.PromotedNotificationsRepository
 import com.android.systemui.CarSysuiTestCase
@@ -30,7 +32,6 @@ import com.android.systemui.car.flags.Flag
 import com.android.systemui.car.flags.FlagManager
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController
-import com.android.systemui.car.notification.NotificationPanelViewController
 import com.android.systemui.graphics.ImageLoaderImpl
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -38,6 +39,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentCaptor
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.Mockito.verify
@@ -58,9 +60,9 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
     @Mock
     private lateinit var stateController: CarSystemBarElementStateController
     @Mock
-    private lateinit var notificationPanelViewController: NotificationPanelViewController
-    @Mock
     private lateinit var flagManager: FlagManager
+    @Mock
+    private lateinit var carNotificationListener: CarNotificationListener
     @Mock
     private lateinit var icon: Icon
 
@@ -84,7 +86,7 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             mContext,
             testScope,
             imageLoader,
-            notificationPanelViewController,
+            carNotificationListener,
             flagManager
         )
     }
@@ -135,5 +137,26 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
         testScope.testScheduler.advanceUntilIdle()
 
         verify(view).animateOut()
+    }
+
+    @Test
+    fun onChipClicked_showsHun() {
+        `when`(flagManager.isEnabled(Flag.PromotedNotifications)).thenReturn(true)
+        controller.onViewAttached()
+        val model = PromotedNotificationModel(
+            key = "key",
+            isHeadsUp = false,
+            postTime = 1000L,
+            shortCriticalText = "Text",
+            smallIcon = icon
+        )
+        repository.addPromotedNotification(model)
+        testScope.testScheduler.advanceUntilIdle()
+
+        val captor = ArgumentCaptor.forClass(View.OnClickListener::class.java)
+        verify(view).setOnClickListener(captor.capture())
+        captor.value.onClick(view)
+
+        verify(carNotificationListener).showHun("key")
     }
 }

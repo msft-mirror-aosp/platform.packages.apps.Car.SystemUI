@@ -17,9 +17,9 @@
 package com.android.systemui.car.systembar.privacy.camera;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -30,6 +30,11 @@ public class CameraPrivacyChip extends PrivacyChip {
 
     private static final String SENSOR_NAME = "camera";
     private static final String SENSOR_NAME_WITH_FIRST_LETTER_CAPITALIZED = "Camera";
+
+    private final Drawable mCameraOffLightIcon;
+    private final Drawable mCameraOffDarkIcon;
+    private final Drawable mCameraLightIcon;
+    private final Drawable mCameraDarkIcon;
 
     public CameraPrivacyChip(@NonNull Context context) {
         this(context, /* attrs= */ null);
@@ -42,26 +47,30 @@ public class CameraPrivacyChip extends PrivacyChip {
     public CameraPrivacyChip(@NonNull Context context,
             @Nullable AttributeSet attrs, int defStyleAttrs) {
         super(context, attrs, defStyleAttrs);
+        mCameraOffLightIcon = getContext().getDrawable(R.drawable.ic_camera_off_light);
+        mCameraOffDarkIcon = getContext().getDrawable(R.drawable.ic_camera_off_dark);
+        mCameraLightIcon = getContext().getDrawable(R.drawable.ic_camera_light);
+        mCameraDarkIcon = getContext().getDrawable(R.drawable.ic_camera_dark);
     }
 
     @Override
-    protected @DrawableRes int getLightMutedIconResourceId() {
-        return R.drawable.ic_camera_off_light;
+    protected Drawable getLightMutedIconDrawable() {
+        return mCameraOffLightIcon;
     }
 
     @Override
-    protected @DrawableRes int getDarkMutedIconResourceId() {
-        return R.drawable.ic_camera_off_dark;
+    protected Drawable getDarkMutedIconDrawable() {
+        return mCameraOffDarkIcon;
     }
 
     @Override
-    protected @DrawableRes int getLightIconResourceId() {
-        return R.drawable.ic_camera_light;
+    protected Drawable getLightIconDrawable() {
+        return mCameraLightIcon;
     }
 
     @Override
-    protected @DrawableRes int getDarkIconResourceId() {
-        return R.drawable.ic_camera_dark;
+    protected Drawable getDarkIconDrawable() {
+        return mCameraDarkIcon;
     }
 
     @Override

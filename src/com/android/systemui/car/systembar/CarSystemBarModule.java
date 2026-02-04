@@ -42,6 +42,7 @@ import com.android.systemui.car.systembar.appgrid.AppGridButtonModule;
 import com.android.systemui.car.systembar.assistant.AssistantButtonModule;
 import com.android.systemui.car.systembar.debugpanel.DebugPanelModule;
 import com.android.systemui.car.systembar.home.HomeButtonModule;
+import com.android.systemui.car.systembar.notificationchip.PromotedNotificationChipModule;
 import com.android.systemui.car.systembar.panel.PanelModule;
 import com.android.systemui.car.systembar.passengerhome.PassengerHomeButtonModule;
 import com.android.systemui.car.systembar.privacy.camera.PrivacyChipCameraModule;
@@ -102,6 +103,7 @@ import java.util.Optional;
         PrivacyChipCameraModule.class,
         PrivacyChipCastModule.class,
         PrivacyChipShareModule.class,
+        PromotedNotificationChipModule.class,
         SplitCarSystemBarModule.class,
         UserNamePanelModule.class,
         VolumeButtonModule.class})

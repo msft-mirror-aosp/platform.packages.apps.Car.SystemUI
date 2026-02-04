@@ -17,9 +17,9 @@
 package com.android.systemui.car.systembar.privacy.mic;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -30,6 +30,11 @@ public class MicPrivacyChip extends PrivacyChip {
 
     private static final String SENSOR_NAME = "microphone";
     private static final String SENSOR_NAME_WITH_FIRST_LETTER_CAPITALIZED = "Microphone";
+
+    private final Drawable mMicOffLightIcon;
+    private final Drawable mMicOffDarkIcon;
+    private final Drawable mMicLightIcon;
+    private final Drawable mMicDarkIcon;
 
     public MicPrivacyChip(@NonNull Context context) {
         this(context, /* attrs= */ null);
@@ -42,26 +47,30 @@ public class MicPrivacyChip extends PrivacyChip {
     public MicPrivacyChip(@NonNull Context context,
             @Nullable AttributeSet attrs, int defStyleAttrs) {
         super(context, attrs, defStyleAttrs);
+        mMicOffLightIcon = getContext().getDrawable(R.drawable.ic_mic_off_light);
+        mMicOffDarkIcon = getContext().getDrawable(R.drawable.ic_mic_off_dark);
+        mMicLightIcon = getContext().getDrawable(R.drawable.ic_mic_light);
+        mMicDarkIcon = getContext().getDrawable(R.drawable.ic_mic_dark);
     }
 
     @Override
-    protected @DrawableRes int getLightMutedIconResourceId() {
-        return R.drawable.ic_mic_off_light;
+    protected Drawable getLightMutedIconDrawable() {
+        return mMicOffLightIcon;
     }
 
     @Override
-    protected @DrawableRes int getDarkMutedIconResourceId() {
-        return R.drawable.ic_mic_off_dark;
+    protected Drawable getDarkMutedIconDrawable() {
+        return mMicOffDarkIcon;
     }
 
     @Override
-    protected @DrawableRes int getLightIconResourceId() {
-        return R.drawable.ic_mic_light;
+    protected Drawable getLightIconDrawable() {
+        return mMicLightIcon;
     }
 
     @Override
-    protected @DrawableRes int getDarkIconResourceId() {
-        return R.drawable.ic_mic_dark;
+    protected Drawable getDarkIconDrawable() {
+        return mMicDarkIcon;
     }
 
     @Override

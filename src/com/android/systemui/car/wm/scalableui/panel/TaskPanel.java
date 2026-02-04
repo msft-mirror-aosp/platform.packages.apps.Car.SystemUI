@@ -237,7 +237,7 @@ public final class TaskPanel extends SysUIPanel {
                                     getRootTaskId());
                         }
 
-                        if (mFlagManager.isEnabled(Flag.DisplayCompatibilityV2)) {
+                        if (mFlagManager.isEnabled(Flag.DisplayCompatV2)) {
                             setupTaskToolbar(mRootTaskStack,
                                     getRelativeBounds(getTaskToolbarBounds(), getBounds()));
                         } else {
@@ -322,10 +322,10 @@ public final class TaskPanel extends SysUIPanel {
     void handlePanelEmpty(ActivityManager.RunningTaskInfo taskInfo) {
         if (hasRestart()) {
             scheduleRestartAttempt(taskInfo);
-        } else if (!isVisible()) {
-            // If panel is visible, the panel empty event will be sent by PanelTransitionCoordinator
-            reportTaskPanelEmpty(taskInfo);
         }
+        // Don't report a task panel empty event yet as there could be a trampoline launch in
+        // progress which would end up in a race with a transition resulting from task panel empty
+        // The task panel empty event will be calculated during startAnimation
     }
 
     private void reportTaskPanelEmpty(ActivityManager.RunningTaskInfo taskInfo) {
@@ -413,7 +413,7 @@ public final class TaskPanel extends SysUIPanel {
         if (mFlagManager.isEnabled(Flag.DisplayCompatibilityAutoDecorSafeRegion)) {
             autoTaskStackTransaction.setSafeRegionBounds(getRootStack().getId(), getSafeBounds());
         }
-        if (mFlagManager.isEnabled(Flag.DisplayCompatibilityV2)) {
+        if (mFlagManager.isEnabled(Flag.DisplayCompatV2)) {
             setupTaskToolbar(mRootTaskStack,
                     getRelativeBounds(getTaskToolbarBounds(), getBounds()));
         }
@@ -660,7 +660,7 @@ public final class TaskPanel extends SysUIPanel {
 
     @Override
     public void setTaskToolbarBounds(@NonNull Rect bounds) {
-        if (!mFlagManager.isEnabled(Flag.DisplayCompatibilityV2)) {
+        if (!mFlagManager.isEnabled(Flag.DisplayCompatV2)) {
             logIfDebuggable("Task toolbar is disabled, not setting bounds");
             return;
         }
@@ -933,7 +933,7 @@ public final class TaskPanel extends SysUIPanel {
             return;
         }
         logIfDebuggable("setupToolbarRegion: " + getPanelId());
-        if (mFlagManager.isEnabled(Flag.DisplayCompatibilityV2)) {
+        if (mFlagManager.isEnabled(Flag.DisplayCompatV2)) {
             logVerbose("Skip setting up the toolbar");
             return;
         }

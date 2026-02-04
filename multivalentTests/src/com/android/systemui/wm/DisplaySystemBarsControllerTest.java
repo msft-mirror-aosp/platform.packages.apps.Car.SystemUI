@@ -18,10 +18,14 @@ package com.android.systemui.wm;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.car.settings.CarSettings;
+import android.content.ComponentName;
 import android.os.Handler;
 import android.os.UserManager;
 import android.provider.Settings;
@@ -45,6 +49,7 @@ import com.android.wm.shell.sysui.ShellController;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -54,9 +59,9 @@ import org.mockito.MockitoAnnotations;
 @SmallTest
 public class DisplaySystemBarsControllerTest extends CarSysuiTestCase {
 
-    private DisplaySystemBarsController mController;
-
     private static final int DISPLAY_ID = 1;
+
+    private DisplaySystemBarsController mController;
 
     @Mock
     private UserManager mUserManager;
@@ -100,6 +105,8 @@ public class DisplaySystemBarsControllerTest extends CarSysuiTestCase {
                 mWindowProvider,
                 mEventDispatcher
         );
+
+        verify(mWindowProvider).addReadinessListener(mController);
     }
 
     @Test
@@ -114,5 +121,35 @@ public class DisplaySystemBarsControllerTest extends CarSysuiTestCase {
         mController.onDisplayAdded(DISPLAY_ID);
 
         assertThat(mController.getBarPolicyString()).isEqualTo(text);
+    }
+
+    @Test
+    public void onReady_callsGetSystemBarWindows() {
+        mController.onDisplayAdded(DISPLAY_ID);
+        mController.onReady();
+
+        verify(mWindowProvider, times(2)).getSystemBarWindows();
+    }
+
+    @Test
+    public void onReady_updatesDisplayWindowRequestedVisibleTypes() throws Exception {
+        mController.onDisplayAdded(DISPLAY_ID);
+
+        // Capture the listener to simulate interaction
+        ArgumentCaptor<DisplayInsetsController.OnInsetsChangedListener> listenerCaptor =
+                ArgumentCaptor.forClass(DisplayInsetsController.OnInsetsChangedListener.class);
+        verify(mDisplayInsetsController)
+                .addInsetsChangedListener(anyInt(), listenerCaptor.capture());
+        DisplayInsetsController.OnInsetsChangedListener listener = listenerCaptor.getValue();
+
+        // Set package name to ensure update happens
+        ComponentName component = new ComponentName("com.example", "MainActivity");
+        listener.topFocusedWindowChanged(component, 0);
+
+        mController.onReady();
+
+        // Verify that the WM service is called to update visibility
+        verify(mIWindowManager, times(2)).updateDisplayWindowRequestedVisibleTypes(
+                anyInt(), anyInt(), anyInt(), any());
     }
 }

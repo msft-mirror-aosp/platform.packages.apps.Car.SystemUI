@@ -23,8 +23,4 @@
     <Variant id="@+id/closed" parent="@id/base">
         <Visibility isVisible="false"/>
     </Variant>
-    <Transitions>
-        <Transition onEvent="_System_Show_Panel" onEventTokens="panelId=nav" toVariant="@id/open"/>
-        <Transition onEvent="_System_Hide_Panel" onEventTokens="panelId=nav" toVariant="@id/closed"/>
-    </Transitions>
 </SystemBar>

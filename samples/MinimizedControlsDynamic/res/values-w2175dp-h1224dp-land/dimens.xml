@@ -27,16 +27,16 @@
   <dimen name="car_bottom_left_system_bar_left">0px</dimen>
   <dimen name="car_bottom_left_system_bar_right">277px</dimen>
   <dimen name="car_top_left_system_bar_left">0px</dimen>
-  <dimen name="car_top_left_system_bar_right">450px</dimen>
+  <dimen name="car_top_left_system_bar_right">500px</dimen>
 
   <!-- Center Panel -->
   <dimen name="car_bottom_center_system_bar_left">787px</dimen>
-  <dimen name="car_bottom_center_system_bar_right">1387px</dimen>
+  <dimen name="car_bottom_center_system_bar_right">1450px</dimen>
 
   <!-- Right Panels -->
   <dimen name="car_bottom_right_system_bar_left">1898px</dimen>
   <dimen name="car_bottom_right_system_bar_right">2175px</dimen>
-  <dimen name="car_top_right_system_bar_left">1815px</dimen>
+  <dimen name="car_top_right_system_bar_left">1790px</dimen>
   <dimen name="car_top_right_system_bar_right">2175px</dimen>
 
   <dimen name="status_bar_height">88px</dimen>

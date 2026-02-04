@@ -19,7 +19,7 @@
             left="@dimen/car_bottom_right_system_bar_left"
             top="@dimen/car_bottom_system_bar_top"
             right="@dimen/car_bottom_right_system_bar_right"
-            bottom="@dimen/car_bottom_system_bar_bottom"/>
+            bottom="100%"/>
     </Variant>
     <Variant id="@+id/open" parent="@id/base">
         <Visibility isVisible="true"/>

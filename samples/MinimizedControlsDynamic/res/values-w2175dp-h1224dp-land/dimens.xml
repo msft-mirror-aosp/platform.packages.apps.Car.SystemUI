@@ -19,8 +19,6 @@
 
   <!-- Dimensions for the split bottom navigation bar panels (2175x1224) -->
   <dimen name="car_bottom_system_bar_top">1088px</dimen>
-  <dimen name="car_bottom_system_bar_bottom">1224px</dimen>
-  <dimen name="car_top_system_bar_top">0px</dimen>
   <dimen name="car_top_system_bar_bottom">88px</dimen>
 
   <!-- Left Panels -->

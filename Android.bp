@@ -178,6 +178,8 @@ android_library {
         "-Adagger.fastInit=enabled",
     ],
 
+    kotlincflags: ["-J-Xmx16384M"],
+
     plugins: ["dagger2-compiler"],
 }
 

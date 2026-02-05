@@ -36,6 +36,7 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.UserHandle;
 import android.os.UserManager;
 import android.util.Log;
 import android.view.Display;
@@ -127,29 +128,7 @@ public class SystemEventHandler implements CoreStartable,
                         mResetCalledForUser = false;
                         mIsUserSwitching = true;
                     } else if (event.getEventType() == USER_LIFECYCLE_EVENT_TYPE_UNLOCKED) {
-                        if (shouldResetPanels()) {
-                            logIfDebuggable("Resetting panels during user unlock");
-                            if (!Flags.homeActivityAlwaysPresent()) {
-                                Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-                                homeIntent.addCategory(Intent.CATEGORY_HOME);
-                                homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                ActivityOptions options = ActivityOptions.makeBasic();
-                                options.setAvoidMoveToFront();
-                                mContext.startActivityAsUser(homeIntent, options.toBundle(),
-                                        mUserTracker.getUserHandle());
-                            }
-                            StateManager.handlePanelReset();
-                            mResetCalledForUser = true;
-                        } else {
-                            logIfDebuggable("Received user unlock while user is not setup");
-                        }
-
-                        handleSuwLaunchIfNecessary(event.getUserId());
-
-                        if (!mIsKeyguardShowing) {
-                            mEventDispatcher.executeEvent(getUserAuthEvent());
-                            mIsUserSwitching = false;
-                        }
+                        handleUserUnlocked(event.getUserHandle());
                     } else {
                         Log.i(TAG, "Ignore system event" + event.getEventType());
                     }
@@ -291,6 +270,38 @@ public class SystemEventHandler implements CoreStartable,
         mCarDeviceProvisionedController.addCallback(mCarDeviceProvisionedListener);
     }
 
+    private void handleUserUnlocked(UserHandle userHandle) {
+        if (userHandle.isSystem()) {
+            return;
+        }
+        int userId = userHandle.getIdentifier();
+
+        if (shouldResetPanels()) {
+            logIfDebuggable("Resetting panels during user unlock");
+            if (!Flags.homeActivityAlwaysPresent()) {
+                Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+                homeIntent.addCategory(Intent.CATEGORY_HOME);
+                homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                ActivityOptions options = ActivityOptions.makeBasic();
+                options.setAvoidMoveToFront();
+                mContext.startActivityAsUser(homeIntent, options.toBundle(),
+                        mUserTracker.getUserHandle());
+            }
+            StateManager.handlePanelReset();
+            mResetCalledForUser = true;
+        } else {
+            logIfDebuggable("Received user unlock while user is not setup");
+        }
+
+        handleSuwLaunchIfNecessary(userId);
+
+        if (mIsKeyguardShowing) {
+            return;
+        }
+        mEventDispatcher.executeEvent(getUserAuthEvent());
+        mIsUserSwitching = false;
+    }
+
     private void handleSuwLaunchIfNecessary(int userId) {
         if (!mFlagManager.isEnabled(Flag.ScalableUiNoSuwHome)) {
             return;
@@ -325,13 +336,19 @@ public class SystemEventHandler implements CoreStartable,
         mCarServiceProvider.addListener(car -> {
             mCarUserManager = car.getCarManager(CarUserManager.class);
             if (mCarUserManager != null) {
+                UserHandle userHandle = mUserTracker.getUserHandle();
+                if (mUserManager.isUserUnlocked(userHandle)) {
+                    handleUserUnlocked(userHandle);
+                }
                 mCarUserManager.addListener(mBackgroundExecutor, mUserLifecycleListener);
             }
         });
     }
 
     private void registerKeyguardStateListener() {
-        mIsKeyguardShowing = isKeyguardShowing();
+        if (isKeyguardShowing()) {
+            keyguardShowingChanged(true);
+        }
         mKeyguardStateController.addCallback(new KeyguardStateController.Callback() {
             @Override
             public void onKeyguardShowingChanged() {

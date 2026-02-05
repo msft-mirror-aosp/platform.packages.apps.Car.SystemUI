@@ -73,7 +73,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"/>
 
-        <com.android.systemui.car.systembar.AppGridButton
+        <com.android.systemui.car.systembar.appgrid.AppGridButton
             android:id="@+id/grid_nav"
             android:contentDescription="@string/system_bar_applications_label"
             style="@style/SystemBarButton"

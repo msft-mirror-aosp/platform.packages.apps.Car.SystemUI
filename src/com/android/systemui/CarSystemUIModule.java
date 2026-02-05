@@ -24,6 +24,7 @@ import android.hardware.SensorPrivacyManager;
 import android.window.DisplayAreaOrganizer;
 
 import com.android.car.datasubscription.DataSubscriptionMessageCreator;
+import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.keyguard.KeyguardViewController;
 import com.android.keyguard.dagger.KeyguardDisplayModule;
 import com.android.systemui.accessibility.AccessibilityModule;
@@ -253,5 +254,11 @@ abstract class CarSystemUIModule {
     @SysUISingleton
     static FlagManager provideFlagManager(Context context) {
         return new FlagManager(context);
+    }
+
+    @Provides
+    @SysUISingleton
+    static CarUxRestrictionsUtil provideCarUxRestrictionsUtil(Context context) {
+        return CarUxRestrictionsUtil.getInstance(context);
     }
 }

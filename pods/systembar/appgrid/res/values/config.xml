@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright (C) 2026 The Android Open Source Project
   ~
@@ -13,14 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<SystemBar id="nav" defaultVariant="@id/open" barZOrder="10" type="navigation" hideForKeyboard="true">
-    <Variant id="@+id/base">
-        <Bounds width="100%" height="@*android:dimen/navigation_bar_height" bottom="100%" left="0"/>
-    </Variant>
-    <Variant id="@+id/open" parent="@id/base">
-        <Visibility isVisible="true"/>
-    </Variant>
-    <Variant id="@+id/closed" parent="@id/base">
-        <Visibility isVisible="false"/>
-    </Variant>
-</SystemBar>
+<resources>
+    <!-- Whether to enable the Recents entry point. -->
+    <bool name="config_enableRecentsEntryPoint">true</bool>
+</resources>

@@ -43,6 +43,8 @@ public class SystemEventConstants {
     public static final String SYSTEM_ON_ANIMATION_END_EVENT_ID = "_System_OnAnimationEndEvent";
     public static final String SYSTEM_ENTER_IMMERSIVE_EVENT_ID = "_System_EnterImmersiveMode";
     public static final String SYSTEM_EXIT_IMMERSIVE_EVENT_ID = "_System_ExitImmersiveMode";
+    public static final String SYSTEM_UXR_STATE_CHANGED_EVENT_ID = "_System_UxrStateChanged";
+    public static final String SYSTEM_UXR_RESTRICTED_TOKEN_ID = "restricted";
     public static final String SYSTEM_SHOW_PANEL_EVENT_ID = "_System_Show_Panel";
     public static final String SYSTEM_HIDE_PANEL_EVENT_ID = "_System_Hide_Panel";
 

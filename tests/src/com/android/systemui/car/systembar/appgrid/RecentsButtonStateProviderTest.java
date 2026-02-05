@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar.appgrid;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -31,11 +31,13 @@ import static org.mockito.Mockito.when;
 
 import android.app.ActivityManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.hardware.input.InputManager;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableResources;
+import android.util.AttributeSet;
 import android.view.InputEvent;
 import android.view.KeyEvent;
 import android.view.View;
@@ -44,7 +46,7 @@ import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.shared.R;
+import com.android.systemui.car.systembar.CarSystemBarButton;
 import com.android.systemui.shared.system.TaskStackChangeListener;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
 
@@ -72,7 +74,23 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
     private TestableResources mTestableResources;
 
     @Mock
-    private CarSystemBarButton mCarSystemBarButton;
+    private SimpleCarSystemBarButton mCarSystemBarButton;
+    public static class SimpleCarSystemBarButton extends CarSystemBarButton {
+        public SimpleCarSystemBarButton(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        @Override
+        public float getSelectedAlpha() {
+            return super.getSelectedAlpha();
+        }
+
+        @Override
+        public Intent getIntent() {
+            return super.getIntent();
+        }
+    }
+
     @Mock
     private InputManager mInputManager;
     @Mock
@@ -325,7 +343,8 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
                 mAlphaOptimizedImageViewConsumer);
 
         verify(mAlphaOptimizedImageView, never())
-                .setImageResource(eq(com.android.systemui.car.shared.R.drawable.car_ic_recents));
+                .setImageResource(
+                        eq(com.android.systemui.car.systembar.appgrid.R.drawable.car_ic_recents));
     }
 
     @Test
@@ -336,7 +355,8 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
                 mAlphaOptimizedImageViewConsumer);
 
         verify(mAlphaOptimizedImageView, times(1))
-                .setImageResource(eq(com.android.systemui.car.shared.R.drawable.car_ic_recents));
+                .setImageResource(
+                        eq(com.android.systemui.car.systembar.appgrid.R.drawable.car_ic_recents));
     }
 
     @Test
@@ -344,7 +364,7 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
         mRecentsButtonStateProvider.setIsRecentsActive(false);
 
         mRecentsButtonStateProvider.refreshIconAlpha(mAlphaOptimizedImageView,
-                mAlphaOptimizedImageViewConsumer);
+                mAlphaOptimizedImageViewConsumer, SELECTED_ALPHA);
 
         verify(mAlphaOptimizedImageViewConsumer, times(1))
                 .accept(mAlphaOptimizedImageView);
@@ -355,7 +375,7 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
         mRecentsButtonStateProvider.setIsRecentsActive(true);
 
         mRecentsButtonStateProvider.refreshIconAlpha(mAlphaOptimizedImageView,
-                mAlphaOptimizedImageViewConsumer);
+                mAlphaOptimizedImageViewConsumer, SELECTED_ALPHA);
 
         verify(mAlphaOptimizedImageViewConsumer, never()).accept(any());
     }
@@ -365,7 +385,7 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
         mRecentsButtonStateProvider.setIsRecentsActive(false);
 
         mRecentsButtonStateProvider.refreshIconAlpha(mAlphaOptimizedImageView,
-                mAlphaOptimizedImageViewConsumer);
+                mAlphaOptimizedImageViewConsumer, SELECTED_ALPHA);
 
         verify(mAlphaOptimizedImageView, never()).setAlpha(SELECTED_ALPHA);
     }
@@ -375,7 +395,7 @@ public class RecentsButtonStateProviderTest extends CarSysuiTestCase {
         mRecentsButtonStateProvider.setIsRecentsActive(true);
 
         mRecentsButtonStateProvider.refreshIconAlpha(mAlphaOptimizedImageView,
-                mAlphaOptimizedImageViewConsumer);
+                mAlphaOptimizedImageViewConsumer, SELECTED_ALPHA);
 
         verify(mAlphaOptimizedImageView, times(1)).setAlpha(SELECTED_ALPHA);
     }

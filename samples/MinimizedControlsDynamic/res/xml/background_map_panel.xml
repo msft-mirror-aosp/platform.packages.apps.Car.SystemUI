@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright (C) 2026 The Android Open Source Project
   ~
@@ -13,7 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<TaskPanel id="background_map_panel" defaultVariant="@id/opened" displayId="0" controller="@xml/map_panel_controller">
+<TaskPanel id="map_panel" defaultVariant="@id/opened" displayId="0" controller="@xml/map_panel_controller">
     <Restart policy="LAST" maxRetry="3"/>
     <TaskBehavior taskProperties="UNTRIMMABLE"/>
     <Variant id="@+id/base">
@@ -25,6 +26,7 @@
             bottom="100%"
             bottomOffset="@dimen/background_map_panel_bottom_offset"
             right="100%" />
+        <Insets left="@dimen/widget_panel_width" top="0" right="0" bottom="0" />
         <Corner radius="@dimen/map_corner_radius" />
     </Variant>
     <Variant id="@+id/opened" parent="@id/base">
@@ -40,8 +42,8 @@
         <Transition onEvent="_System_EnterSuwEvent" toVariant="@id/suw"/>
         <Transition onEvent="_System_ExitSuwEvent" fromVariant="@id/suw" toVariant="@id/opened"/>
         <Transition onEvent="_System_OnHomeEvent" fromVariant="@id/closed" toVariant="@id/opened"/>
-        <Transition onEvent="_System_TaskPanelEmptyEvent" onEventTokens="panelId=floating_app_panel" fromVariant="@id/closed" toVariant="@id/opened"/>
-        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=background_map_panel" fromVariant="@id/closed" toVariant="@id/opened"/>
+        <Transition onEvent="_System_TaskPanelEmptyEvent" onEventTokens="panelId=app_panel" fromVariant="@id/closed" toVariant="@id/opened"/>
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=map_panel" fromVariant="@id/closed" toVariant="@id/opened"/>
 
         <!-- User Switch -->
         <Transition onEvent="_System_BeforeUserSwitch" toVariant="@id/userswitch"/>

@@ -13,7 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<TaskPanel id="floating_app_panel" defaultVariant="@id/closed" role="@string/default_config" displayId="0">
+<TaskPanel id="app_panel" defaultVariant="@id/closed" role="@string/default_config" displayId="0">
     <Variant id="@+id/base">
         <Layer layer="100"/>
     </Variant>
@@ -46,13 +46,14 @@
         <Transition onEvent="_System_ExitSuwEvent" fromVariant="@id/suw_open" toVariant="@id/closed"/>
         <Transition onEvent="_System_ExitSuwEvent" fromVariant="@id/suw_close" toVariant="@id/closed"/>
 
-        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=floating_app_panel" fromVariant="@id/suw_close" toVariant="@id/suw_open"/>
-        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=floating_app_panel" fromVariant="@id/closed" toVariant="@id/opened"/>
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=app_panel" fromVariant="@id/suw_close" toVariant="@id/suw_open"/>
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=app_panel" fromVariant="@id/closed" toVariant="@id/opened"/>
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=map_panel" toVariant="@id/closed"/>
 
-        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=floating_app_panel" fromVariant="@id/suw_open" toVariant="@id/suw_close"/>
+        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=app_panel" fromVariant="@id/suw_open" toVariant="@id/suw_close"/>
 
         <Transition onEvent="_System_OnHomeEvent" fromVariant="@id/opened" toVariant="@id/closed"/>
-        <Transition onEvent="_System_TaskPanelEmptyEvent" onEventTokens="panelId=floating_app_panel" fromVariant="@id/opened" toVariant="@id/closed"/>
+        <Transition onEvent="_System_TaskPanelEmptyEvent" onEventTokens="panelId=app_panel" fromVariant="@id/opened" toVariant="@id/closed"/>
 
         <Transition onEvent="_System_BeforeUserSwitch" toVariant="@id/closed"/>
     </Transitions>

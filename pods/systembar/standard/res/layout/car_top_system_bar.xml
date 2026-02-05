@@ -66,7 +66,7 @@
             android:contentDescription="@string/system_bar_notifications_label"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            style="@style/TopBarButton"
+            style="@style/HorizontalBarButton"
             android:layout_toLeftOf="@id/promoted_notification_chip"
             systemui:highlightWhenSelected="true"
             systemui:icon="@drawable/car_ic_notification_dock"

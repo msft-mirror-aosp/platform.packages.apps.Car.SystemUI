@@ -16,7 +16,7 @@
 -->
 <SystemBar id="top_bar_left_panel"
     type="status"
-    barZOrder="10"
+    barZOrder="5"
     defaultVariant="@id/open">
     <Variant id="@+id/base">
         <Bounds

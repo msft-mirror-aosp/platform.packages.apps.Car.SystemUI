@@ -43,7 +43,5 @@
   <dimen name="floating_app_panel_bottom_offset">@dimen/navigation_bar_height</dimen>
 
   <dimen name="background_map_panel_left_bound">0dp</dimen>
-  <dimen name="background_map_panel_top_offset">0dp</dimen>
-  <dimen name="background_map_panel_bottom_offset">0dp</dimen>
 
 </resources>

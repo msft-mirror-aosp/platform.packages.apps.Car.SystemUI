@@ -87,9 +87,9 @@
         <!--  Width of the panel. If not specified, will use default width value -->
         <attr name="panelWidthRes" format="reference"/>
         <!-- X Offset value for the panel location relative to the anchor view -->
-        <attr name="xOffset" format="integer"/>
+        <attr name="xOffset" format="dimension"/>
         <!-- Y Offset value for the panel location relative to the anchor view -->
-        <attr name="yOffset" format="integer"/>
+        <attr name="yOffset" format="dimension"/>
         <!-- Gravity of the panel relative to the anchor view - uses same flag format as android:gravity -->
         <attr name="gravity" format="integer">
             <flag name="top" value="0x30" />

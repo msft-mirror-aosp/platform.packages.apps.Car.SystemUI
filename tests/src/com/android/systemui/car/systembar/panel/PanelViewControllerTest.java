@@ -36,7 +36,9 @@ import android.os.UserHandle;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import androidx.test.filters.SmallTest;
@@ -103,6 +105,7 @@ public class PanelViewControllerTest extends CarSysuiTestCase {
                 com.android.systemui.car.systembar.panel.R.dimen
                         .car_status_icon_panel_default_width);
         when(mPanelContentProvider.getPanelWidthPx()).thenReturn(panelWidth);
+        when(mPanelContentProvider.getShowAsDropDown()).thenReturn(true);
 
         mViewController = new PanelViewController(mContext, mUserTracker,
                 mBroadcastDispatcher, mConfigurationController, mDeviceProvisionedController,
@@ -240,6 +243,17 @@ public class PanelViewControllerTest extends CarSysuiTestCase {
         mViewController.getQCActionListener().onQCAction(qcItem, action);
 
         assertThat(mViewController.getPanel().isShowing()).isFalse();
+    }
+
+    @Test
+    public void onPanelAnchorViewClicked_setsFitInsetsTypesToZero() {
+        clickAnchorView();
+        waitForIdleSync();
+
+        View container = mViewController.getPanel().getContentView().getRootView();
+        WindowManager.LayoutParams lp = (WindowManager.LayoutParams) container.getLayoutParams();
+
+        assertThat(lp.getFitInsetsTypes()).isEqualTo(0);
     }
 
     private void clickAnchorView() {

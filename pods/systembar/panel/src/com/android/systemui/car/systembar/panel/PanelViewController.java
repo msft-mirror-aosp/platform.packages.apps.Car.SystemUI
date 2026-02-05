@@ -357,6 +357,10 @@ public class PanelViewController extends ViewController<View> {
 
         WindowManager.LayoutParams lp = (WindowManager.LayoutParams) container.getLayoutParams();
         lp.flags |= WindowManager.LayoutParams.FLAG_DIM_BEHIND;
+        if (mPanelContentProvider.getShowAsDropDown()) {
+            // We don't need to account for insets in showAsDropDown since we use offsets
+            lp.setFitInsetsTypes(0);
+        }
         lp.dimAmount = mDimValue;
         wm.updateViewLayout(container, lp);
     }

@@ -27,7 +27,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:layout_alignParentStart="true"
-        style="@style/TopBarButton"
+        style="@style/VerticalBarButton"
         systemui:panelLayoutRes="@layout/qc_bluetooth_panel"
         systemui:disabledWhileUnprovisioned="true"
         systemui:systemBarDisable2Flags="quickSettings">
@@ -47,7 +47,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:layout_alignParentStart="true"
-        style="@style/TopBarButton"
+        style="@style/VerticalBarButton"
         systemui:panelLayoutRes="@layout/qc_connectivity_panel"
         systemui:disabledWhileUnprovisioned="true"
         systemui:systemBarDisable2Flags="quickSettings">
@@ -81,7 +81,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:layout_alignParentStart="true"
-        style="@style/TopBarButton"
+        style="@style/VerticalBarButton"
         systemui:panelLayoutRes="@layout/qc_display_panel"
         systemui:disabledWhileUnprovisioned="true"
         systemui:systemBarDisable2Flags="quickSettings">
@@ -102,7 +102,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:layout_alignParentStart="true"
-        style="@style/TopBarButton"
+        style="@style/VerticalBarButton"
         systemui:panelLayoutRes="@layout/qc_volume_panel"
         systemui:disabledWhileUnprovisioned="true"
         systemui:systemBarDisable2Flags="quickSettings">
@@ -122,7 +122,7 @@
         android:orientation="vertical"
         android:gravity="center"
         android:layout_alignParentStart="true"
-        style="@style/TopBarButton"
+        style="@style/VerticalBarButton"
         systemui:controller="com.android.systemui.car.systembar.debugpanel.DebugPanelViewController"
         systemui:disabledWhileUnprovisioned="true"
         systemui:systemBarDisable2Flags="quickSettings">

@@ -19,7 +19,6 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="voice_recognition_toast" msgid="7579725862117020349">"Balso atpažinimą dabar tvarko susietas „Bluetooth“ įrenginys"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Pridėti profilį"</string>
-    <string name="end_session" msgid="2765206020435441421">"Baigti seansą"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Naujas profilis"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Pridėti naują profilį?"</string>
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"Kai pridėsite naują profilį, paskyros savininkas galės jį tinkinti."</string>
@@ -28,7 +27,6 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{Galima sukurti tik vieną profilį.}one{Galite pridėti iki # profilio.}few{Galite pridėti iki # profilių.}many{Galite pridėti iki # profilio.}other{Galite pridėti iki # profilių.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"Įkeliama"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"Įkeliamas naudotojo profilis (<xliff:g id="FROM_USER">%1$d</xliff:g> – <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
-    <string name="current_profile_subtitle" msgid="7149515449757434139">"Dabartinis profilis"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> – išjungta."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"Naudoti: <xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Programoms, turinčioms leidimą"</string>
@@ -123,5 +121,4 @@
     <string name="back_btn" msgid="7774349944465667391">"Atgal"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Visas ekranas"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"Pateikties dydis"</string>
-    <string name="data_subscription_button_text" msgid="6595983827855035949">"Peržiūrėti planus"</string>
 </resources>

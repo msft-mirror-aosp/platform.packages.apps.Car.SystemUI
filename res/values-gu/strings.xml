@@ -19,7 +19,6 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="voice_recognition_toast" msgid="7579725862117020349">"અવાજની ઓળખ હવે કનેક્ટેડ બ્લૂટૂથ ડિવાઇસ વડે નિયંત્રિત થશે"</string>
     <string name="car_add_user" msgid="6182764665687382136">"પ્રોફાઇલ ઉમેરો"</string>
-    <string name="end_session" msgid="2765206020435441421">"સત્ર સમાપ્ત કરો"</string>
     <string name="car_new_user" msgid="6766334721724989964">"નવી પ્રોફાઇલ"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"નવી પ્રોફાઇલ ઉમેરવી છે?"</string>
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"તમે નવી પ્રોફાઇલ ઉમેરો પછી, એકાઉન્ટ ધારક તેને કસ્ટમાઇઝ કરી શકે છે."</string>
@@ -28,7 +27,6 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{માત્ર એક પ્રોફાઇલ બનાવી શકાય છે.}one{તમે વધુમાં વધુ # પ્રોફાઇલ ઉમેરી શકો છો.}other{તમે વધુમાં વધુ # પ્રોફાઇલ ઉમેરી શકો છો.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"લોડ કરી રહ્યાં છીએ"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"વપરાશકર્તાને લોડ કરી રહ્યાં છીએ (<xliff:g id="FROM_USER">%1$d</xliff:g>માંથી <xliff:g id="TO_USER">%2$d</xliff:g>માં)"</string>
-    <string name="current_profile_subtitle" msgid="7149515449757434139">"વર્તમાન પ્રોફાઇલ"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> બંધ છે."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g>નો ઉપયોગ કરો"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"પરવાનગી ધરાવતી ઍપ માટે"</string>
@@ -123,5 +121,4 @@
     <string name="back_btn" msgid="7774349944465667391">"પાછળ"</string>
     <string name="fullscreen" msgid="7648956467442135844">"પૂર્ણ સ્ક્રીન"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"ડિસ્પ્લે સાઇઝ"</string>
-    <string name="data_subscription_button_text" msgid="6595983827855035949">"પ્લાન જુઓ"</string>
 </resources>

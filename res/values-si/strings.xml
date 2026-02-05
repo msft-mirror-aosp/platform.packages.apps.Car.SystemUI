@@ -19,7 +19,6 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="voice_recognition_toast" msgid="7579725862117020349">"හඬ හැඳුනුම දැන් සම්බන්ධ බ්ලූටූත් උපාංගය මගින් හසුරුවනු ලැබේ"</string>
     <string name="car_add_user" msgid="6182764665687382136">"පැතිකඩක් එක් කරන්න"</string>
-    <string name="end_session" msgid="2765206020435441421">"සැසිය නිමා කරන්න"</string>
     <string name="car_new_user" msgid="6766334721724989964">"නව පැතිකඩ"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"නව පැතිකඩ එක් කරන්නද?"</string>
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"ඔබ නව පැතිකඩක් එක් කළ පසු, ගිණුම් හිමියාට එය අභිරුචිකරණය කළ හැක."</string>
@@ -28,7 +27,6 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{එක් පැතිකඩක් පමණක් තැනිය හැකිය.}one{ඔබට පැතිකඩවල් #ක් දක්වා එක් කළ හැකිය.}other{ඔබට පැතිකඩවල් #ක් දක්වා එක් කළ හැකිය.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"පූරණය වෙමින්"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"පරිශීලකයා පූරණය වෙමින් (<xliff:g id="FROM_USER">%1$d</xliff:g> සිට <xliff:g id="TO_USER">%2$d</xliff:g> වෙත)"</string>
-    <string name="current_profile_subtitle" msgid="7149515449757434139">"වත්මන් පැතිකඩ"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> ක්‍රියාවිරහිතයි."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g> භාවිත කරන්න"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"අවසර ඇති යෙදුම් සඳහා"</string>
@@ -123,5 +121,4 @@
     <string name="back_btn" msgid="7774349944465667391">"ආපසු"</string>
     <string name="fullscreen" msgid="7648956467442135844">"පූර්ණ තිරය"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"සංදර්ශක තරම"</string>
-    <string name="data_subscription_button_text" msgid="6595983827855035949">"සැලසුම් බලන්න"</string>
 </resources>

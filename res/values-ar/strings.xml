@@ -19,7 +19,6 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="voice_recognition_toast" msgid="7579725862117020349">"تتم معالجة التعرّف على الصوت الآن من خلال جهاز بلوتوث متصل."</string>
     <string name="car_add_user" msgid="6182764665687382136">"إضافة ملف شخصي"</string>
-    <string name="end_session" msgid="2765206020435441421">"إنهاء الجلسة"</string>
     <string name="car_new_user" msgid="6766334721724989964">"ملف شخصي جديد"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"هل المطلوب إنشاء ملف شخصي جديد؟"</string>
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"بعد إضافة ملف شخصي جديد، يمكن لصاحب الحساب تخصيصه."</string>
@@ -28,7 +27,6 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{يمكنك إنشاء ملف شخصي واحد فقط.}zero{يمكنك إضافة # ملف شخصي كحد أقصى.}two{يمكنك إضافة ملفين شخصيين كحد أقصى.}few{يمكنك إضافة # ملفات شخصية كحد أقصى.}many{يمكنك إضافة # ملفًا شخصيًا كحد أقصى.}other{يمكنك إضافة # ملف شخصي كحد أقصى.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"جارٍ التحميل"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"جارٍ تحميل الملف الشخصي الجديد للمستخدم (من <xliff:g id="FROM_USER">%1$d</xliff:g> إلى <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
-    <string name="current_profile_subtitle" msgid="7149515449757434139">"الملف الشخصي الحالي"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"تم إيقاف ميزة <xliff:g id="SENSOR">%1$s</xliff:g>."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"استخدام <xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"للتطبيقات التي حصلت على الإذن"</string>
@@ -123,5 +121,4 @@
     <string name="back_btn" msgid="7774349944465667391">"رجوع"</string>
     <string name="fullscreen" msgid="7648956467442135844">"ملء الشاشة"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"حجم العرض"</string>
-    <string name="data_subscription_button_text" msgid="6595983827855035949">"الاطّلاع على الخطط"</string>
 </resources>

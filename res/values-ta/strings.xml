@@ -19,7 +19,6 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="voice_recognition_toast" msgid="7579725862117020349">"இணைக்கப்பட்ட புளூடூத் சாதனத்தால் \'குரல் அறிதல்\' கையாளப்படுகிறது"</string>
     <string name="car_add_user" msgid="6182764665687382136">"புதிய சுயவிவரத்தைச் சேர்த்தல்"</string>
-    <string name="end_session" msgid="2765206020435441421">"அமர்வை நிறைவுசெய்க"</string>
     <string name="car_new_user" msgid="6766334721724989964">"புதிய சுயவிவரம்"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"புதிய சுயவிவரத்தைச் சேர்க்கவா?"</string>
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"நீங்கள் புதிய சுயவிவரத்தைச் சேர்த்த பிறகு அந்தப் பயனர் அதைப் பிரத்தியேகமாக்கலாம்."</string>
@@ -28,7 +27,6 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{ஒரு சுயவிவரத்தை மட்டுமே உருவாக்க முடியும்.}other{# சுயவிவரங்கள் வரை சேர்க்க முடியும்.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"ஏற்றுகிறது"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"பயனர் தகவலை ஏற்றுகிறது (<xliff:g id="FROM_USER">%1$d</xliff:g>லிருந்து <xliff:g id="TO_USER">%2$d</xliff:g> வரை)"</string>
-    <string name="current_profile_subtitle" msgid="7149515449757434139">"தற்போதைய சுயவிவரம்"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> முடக்கப்பட்டுள்ளது."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g> ஐ உபயோகித்தல்"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"அனுமதியுள்ள ஆப்ஸுக்கு"</string>
@@ -123,5 +121,4 @@
     <string name="back_btn" msgid="7774349944465667391">"பின்செல்"</string>
     <string name="fullscreen" msgid="7648956467442135844">"முழுத்திரை"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"டிஸ்ப்ளே அளவு"</string>
-    <string name="data_subscription_button_text" msgid="6595983827855035949">"திட்டங்களைக் காட்டு"</string>
 </resources>

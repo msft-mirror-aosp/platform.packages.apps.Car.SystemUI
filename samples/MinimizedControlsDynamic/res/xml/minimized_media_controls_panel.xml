@@ -17,20 +17,25 @@
 
 <DecorPanel id="minimized_media_controls_panel"  defaultVariant="@id/closed" displayId="0" controller="@xml/minimized_media_controls_controller">
     <Variant id="@id/base">
-        <Bounds
-            left="@dimen/minimized_controls_left"
-            top="@dimen/car_bottom_system_bar_top"
-            right="@dimen/minimized_controls_right"
-            bottom="@dimen/car_bottom_system_bar_bottom"/>
         <Layer layer="101"/>
     </Variant>
 
     <Variant id="@id/open" parent="@id/base">
         <Visibility isVisible="true"/>
+        <Bounds
+            left="@dimen/minimized_controls_left"
+            right="@dimen/minimized_controls_right"
+            bottom="100%"
+            height="@dimen/navigation_bar_height"/>
     </Variant>
 
     <Variant id="@id/closed" parent="@id/base">
         <Visibility isVisible="false"/>
+        <Bounds
+            left="@dimen/minimized_controls_left"
+            top="100%"
+            right="@dimen/minimized_controls_right"
+            height="@dimen/navigation_bar_height"/>
     </Variant>
 
     <Transitions>

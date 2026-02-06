@@ -149,7 +149,7 @@
         systemui:highlightWhenSelected="true"
         systemui:intent="intent:#Intent;action=android.intent.action.MAIN;package=com.android.aaos.studio;component=com.android.aaos.studio/.TokenActivity;end"
         systemui:systemBarDisableFlags="home"
-        systemui:controller="com.android.systemui.car.systembar.AaosStudioButtonController">
+        systemui:controller="com.android.systemui.car.systembar.aaosstudio.AaosStudioButtonController">
         <ImageView
             android:id="@+id/aaos_studio_icon"
             android:layout_width="@dimen/car_quick_controls_icon_drawable_width"

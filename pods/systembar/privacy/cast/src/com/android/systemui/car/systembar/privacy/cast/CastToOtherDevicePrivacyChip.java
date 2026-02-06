@@ -17,9 +17,9 @@
 package com.android.systemui.car.systembar.privacy.cast;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -30,6 +30,9 @@ public class CastToOtherDevicePrivacyChip extends OngoingActivityPrivacyChip {
 
     private static final String ACTIVITY_NAME = "cast-to-other-device";
     private static final String ACTIVITY_NAME_WITH_FIRST_LETTER_CAPITALIZED = "CastToOtherDevice";
+
+    private final Drawable mCastLightIcon;
+    private final Drawable mCastDarkIcon;
 
     public CastToOtherDevicePrivacyChip(@NonNull Context context) {
         this(context, /* attrs= */ null);
@@ -42,16 +45,18 @@ public class CastToOtherDevicePrivacyChip extends OngoingActivityPrivacyChip {
     public CastToOtherDevicePrivacyChip(@NonNull Context context,
             @Nullable AttributeSet attrs, int defStyleAttrs) {
         super(context, attrs, defStyleAttrs);
+        mCastLightIcon = getContext().getDrawable(R.drawable.ic_cast_connected_light);
+        mCastDarkIcon = getContext().getDrawable(R.drawable.ic_cast_connected_dark);
     }
 
     @Override
-    protected @DrawableRes int getLightIconResourceId() {
-        return R.drawable.ic_cast_connected_light;
+    protected Drawable getLightIconDrawable() {
+        return mCastLightIcon;
     }
 
     @Override
-    protected @DrawableRes int getDarkIconResourceId() {
-        return R.drawable.ic_cast_connected_dark;
+    protected Drawable getDarkIconDrawable() {
+        return mCastDarkIcon;
     }
 
     @Override

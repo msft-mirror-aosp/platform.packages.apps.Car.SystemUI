@@ -17,9 +17,9 @@
 package com.android.systemui.car.systembar.privacy.share;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -30,6 +30,9 @@ public class ShareToAppPrivacyChip extends OngoingActivityPrivacyChip {
 
     private static final String ACTIVITY_NAME = "share-to-app";
     private static final String ACTIVITY_NAME_WITH_FIRST_LETTER_CAPITALIZED = "ShareToApp";
+
+    private final Drawable mShareLightIcon;
+    private final Drawable mShareDarkIcon;
 
     public ShareToAppPrivacyChip(@NonNull Context context) {
         this(context, /* attrs= */ null);
@@ -42,16 +45,18 @@ public class ShareToAppPrivacyChip extends OngoingActivityPrivacyChip {
     public ShareToAppPrivacyChip(@NonNull Context context,
             @Nullable AttributeSet attrs, int defStyleAttrs) {
         super(context, attrs, defStyleAttrs);
+        mShareLightIcon = getContext().getDrawable(R.drawable.ic_present_to_all_light);
+        mShareDarkIcon = getContext().getDrawable(R.drawable.ic_present_to_all_dark);
     }
 
     @Override
-    protected @DrawableRes int getLightIconResourceId() {
-        return R.drawable.ic_present_to_all_light;
+    protected Drawable getLightIconDrawable() {
+        return mShareLightIcon;
     }
 
     @Override
-    protected @DrawableRes int getDarkIconResourceId() {
-        return R.drawable.ic_present_to_all_dark;
+    protected Drawable getDarkIconDrawable() {
+        return mShareDarkIcon;
     }
 
     @Override

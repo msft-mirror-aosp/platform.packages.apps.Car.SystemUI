@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar.volume;
 
 import static android.media.AudioAttributes.USAGE_MEDIA;
 import static android.media.AudioManager.FLAG_SHOW_UI;
@@ -23,6 +23,8 @@ import android.car.Car;
 import android.car.media.CarAudioManager;
 import android.content.Context;
 import android.util.AttributeSet;
+
+import com.android.systemui.car.systembar.CarSystemBarButton;
 
 public class VolumeButton extends CarSystemBarButton {
     public VolumeButton(Context context, AttributeSet attrs) {

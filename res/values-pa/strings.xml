@@ -19,7 +19,6 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="voice_recognition_toast" msgid="7579725862117020349">"ਅਵਾਜ਼ ਦੀ ਪਛਾਣ ਨੂੰ ਹੁਣ ਕਨੈਕਟ ਕੀਤਾ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ ਸੰਭਾਲਦਾ ਹੈ"</string>
     <string name="car_add_user" msgid="6182764665687382136">"ਕੋਈ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰੋ"</string>
-    <string name="end_session" msgid="2765206020435441421">"ਸੈਸ਼ਨ ਸਮਾਪਤ ਕਰੋ"</string>
     <string name="car_new_user" msgid="6766334721724989964">"ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"ਕੀ ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰਨਾ ਹੈ?"</string>
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਖਾਤਾ ਧਾਰਕ ਉਸਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰ ਸਕਦਾ ਹੈ।"</string>
@@ -28,7 +27,6 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{ਸਿਰਫ਼ ਇੱਕ ਪ੍ਰੋਫਾਈਲ ਬਣਾਇਆ ਜਾ ਸਕਦਾ ਹੈ।}one{ਤੁਸੀਂ # ਤੱਕ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ।}other{ਤੁਸੀਂ # ਤੱਕ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰ ਸਕਦੇ ਹੋ।}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"ਵਰਤੋਂਕਾਰ ਨੂੰ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ (<xliff:g id="FROM_USER">%1$d</xliff:g> ਤੋਂ <xliff:g id="TO_USER">%2$d</xliff:g> ਤੱਕ)"</string>
-    <string name="current_profile_subtitle" msgid="7149515449757434139">"ਮੌਜੂਦਾ ਪ੍ਰੋਫਾਈਲ"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> ਬੰਦ ਹੈ।"</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g> ਵਰਤੋ"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"ਇਜਾਜ਼ਤ ਵਾਲੀਆਂ ਐਪਾਂ ਲਈ"</string>
@@ -123,5 +121,4 @@
     <string name="back_btn" msgid="7774349944465667391">"ਪਿੱਛੇ"</string>
     <string name="fullscreen" msgid="7648956467442135844">"ਪੂਰੀ ਸਕ੍ਰੀਨ"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"ਡਿਸਪਲੇ ਸਾਈਜ਼"</string>
-    <string name="data_subscription_button_text" msgid="6595983827855035949">"ਪਲਾਨ ਦੇਖੋ"</string>
 </resources>

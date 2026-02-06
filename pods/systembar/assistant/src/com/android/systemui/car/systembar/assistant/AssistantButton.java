@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar;
+package com.android.systemui.car.systembar.assistant;
 
 import static android.service.voice.VoiceInteractionSession.SHOW_SOURCE_ASSIST_GESTURE;
 
@@ -30,6 +30,8 @@ import android.util.Log;
 import com.android.internal.app.AssistUtils;
 import com.android.internal.app.IVoiceInteractionSessionListener;
 import com.android.internal.app.IVoiceInteractionSessionShowCallback;
+import com.android.systemui.car.systembar.CarSystemBarButton;
+import com.android.systemui.car.systembar.SystemBarUtil;
 
 import java.util.Set;
 

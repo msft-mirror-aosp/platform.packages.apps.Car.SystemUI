@@ -107,5 +107,17 @@
             <Event id="_System_EnterImmersiveMode" panel="app_panel"/>
         </Transition>
 
+        <Transition fromVariant="@id/immersive" toVariant="@id/closed">
+            <Event id="_System_TaskOpenEvent" panel="panel_app_grid"/>
+            <Event id="_System_TaskOpenEvent" panel="panel_calm_mode"/>
+            <Event id="_System_TaskPanelEmptyEvent" panel="app_panel"/>
+            <Event id="_System_BeforeUserSwitch"/>
+            <Event id="_System_OnHomeEvent"/>
+        </Transition>
+
+        <Transition fromVariant="@id/immersive" toVariant="@id/opened">
+            <Event id="_System_TaskOpenEvent" panel="app_panel"/>
+        </Transition>
+
     </Transitions>
 </TaskPanel>

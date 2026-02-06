@@ -79,9 +79,14 @@ carsysui_pods = [
     "CarSystemUI-StatusIcon-PhoneCall",
     "CarSystemUI-StatusIcon-Connectivity",
     "CarSystemUI-StatusIcon-Wifi",
+    "CarSystemUI-SystemBar-AaosStudioButton",
     "CarSystemUI-SystemBar-AppGridButton",
+    "CarSystemUI-SystemBar-AssistantButton",
+    "CarSystemUI-SystemBar-ControlCenterButton",
     "CarSystemUI-SystemBar-DebugPanel",
+    "CarSystemUI-SystemBar-Dock",
     "CarSystemUI-SystemBar-HomeButton",
+    "CarSystemUI-SystemBar-NotificationChip",
     "CarSystemUI-SystemBar-Panel",
     "CarSystemUI-SystemBar-PassengerHomeButton",
     "CarSystemUI-SystemBar-PrivacyChip-Base",
@@ -90,6 +95,7 @@ carsysui_pods = [
     "CarSystemUI-SystemBar-PrivacyChip-Mic",
     "CarSystemUI-SystemBar-PrivacyChip-Share",
     "CarSystemUI-SystemBar-UserNamePanel",
+    "CarSystemUI-SystemBar-Volume",
 ]
 
 java_defaults {
@@ -178,6 +184,8 @@ android_library {
     javacflags: [
         "-Adagger.fastInit=enabled",
     ],
+
+    kotlincflags: ["-J-Xmx16384M"],
 
     plugins: ["dagger2-compiler"],
 }

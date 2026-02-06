@@ -38,9 +38,14 @@ import com.android.systemui.car.keyguard.KeyguardSystemBarPresenter;
 import com.android.systemui.car.notification.NotificationButtonController;
 import com.android.systemui.car.qc.datasubscription.DataSubscriptionModule;
 import com.android.systemui.car.shared.R;
+import com.android.systemui.car.systembar.aaosstudio.AaosStudioButtonModule;
 import com.android.systemui.car.systembar.appgrid.AppGridButtonModule;
+import com.android.systemui.car.systembar.assistant.AssistantButtonModule;
+import com.android.systemui.car.systembar.controlcenter.ControlCenterButtonModule;
 import com.android.systemui.car.systembar.debugpanel.DebugPanelModule;
+import com.android.systemui.car.systembar.dock.DockViewModule;
 import com.android.systemui.car.systembar.home.HomeButtonModule;
+import com.android.systemui.car.systembar.notificationchip.PromotedNotificationChipModule;
 import com.android.systemui.car.systembar.panel.PanelModule;
 import com.android.systemui.car.systembar.passengerhome.PassengerHomeButtonModule;
 import com.android.systemui.car.systembar.privacy.camera.PrivacyChipCameraModule;
@@ -48,6 +53,7 @@ import com.android.systemui.car.systembar.privacy.cast.PrivacyChipCastModule;
 import com.android.systemui.car.systembar.privacy.mic.PrivacyChipMicModule;
 import com.android.systemui.car.systembar.privacy.share.PrivacyChipShareModule;
 import com.android.systemui.car.systembar.usernamepanel.UserNamePanelModule;
+import com.android.systemui.car.systembar.volume.VolumeButtonModule;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.wm.scalableui.panel.TaskPanelInfoRepository;
 import com.android.systemui.car.wm.scalableui.systemwindow.SystemUiWindowProvider;
@@ -87,9 +93,13 @@ import java.util.Optional;
  * default system bar class.
  */
 @Module(includes = {
+        AaosStudioButtonModule.class,
         AppGridButtonModule.class,
+        AssistantButtonModule.class,
+        ControlCenterButtonModule.class,
         DebugPanelModule.class,
         DataSubscriptionModule.class,
+        DockViewModule.class,
         ExtensionPanelUpdatesCarSystemBarModule.class,
         FlexibleUiModule.class,
         HomeButtonModule.class,
@@ -99,8 +109,10 @@ import java.util.Optional;
         PrivacyChipCameraModule.class,
         PrivacyChipCastModule.class,
         PrivacyChipShareModule.class,
+        PromotedNotificationChipModule.class,
         SplitCarSystemBarModule.class,
-        UserNamePanelModule.class})
+        UserNamePanelModule.class,
+        VolumeButtonModule.class})
 public abstract class CarSystemBarModule {
 
     @Provides
@@ -218,13 +230,6 @@ public abstract class CarSystemBarModule {
     @Multibinds
     abstract Map<Class<?>, CarSystemBarElementController.Factory> bindEmptyElementFactoryMap();
 
-    /** Injects DockViewControllerWrapper */
-    @Binds
-    @IntoMap
-    @ClassKey(DockViewControllerWrapper.class)
-    public abstract CarSystemBarElementController.Factory bindDockViewControllerWrapper(
-            DockViewControllerWrapper.Factory factory);
-
     /** Injects KeyguardSystemBarPresenter */
     @SysUISingleton
     @Provides
@@ -299,20 +304,6 @@ public abstract class CarSystemBarModule {
     public abstract CarSystemBarElementController.Factory
             bindTemperatureControlViewControllerFactory(
                     TemperatureControlViewController.Factory factory);
-
-    /** Injects ControlCenterButtonController */
-    @Binds
-    @IntoMap
-    @ClassKey(ControlCenterButtonController.class)
-    public abstract CarSystemBarElementController.Factory bindControlCenterButtonControllerFactory(
-            ControlCenterButtonController.Factory factory);
-
-    /** Injects AaosStudioButtonController */
-    @Binds
-    @IntoMap
-    @ClassKey(AaosStudioButtonController.class)
-    public abstract CarSystemBarElementController.Factory bindAaosStudioButtonControllerFactory(
-            AaosStudioButtonController.Factory factory);
 
     @Provides
     @IntoMap

@@ -19,7 +19,6 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="voice_recognition_toast" msgid="7579725862117020349">"ການຈຳແນກສຽງເວົ້າດຽວນີ້ຈັດການໂດຍອຸປະກອນ Bluetooth ທີ່ເຊື່ອມຕໍ່"</string>
     <string name="car_add_user" msgid="6182764665687382136">"ເພີ່ມໂປຣໄຟລ໌"</string>
-    <string name="end_session" msgid="2765206020435441421">"ສິ້ນສຸດເຊດຊັນ"</string>
     <string name="car_new_user" msgid="6766334721724989964">"ໂປຣໄຟລ໌ໃໝ່"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"ເພີ່ມໂປຣໄຟລ໌ໃໝ່ບໍ?"</string>
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"ຫຼັງຈາກທ່ານເພີ່ມໂປຣໄຟລ໌ໃໝ່ແລ້ວ, ເຈົ້າຂອງບັນຊີຈະສາມາດປັບແຕ່ງໄດ້."</string>
@@ -28,7 +27,6 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{ສາມາດສ້າງໄດ້ພຽງໂປຣໄຟລ໌ດຽວເທົ່ານັ້ນ.}other{ທ່ານ​ສາ​ມາດ​ເພີ່ມ​ໄດ້​ເຖິງ # ໂປຣໄຟລ໌.}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"ກຳລັງໂຫຼດ"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"ກຳລັງໂຫຼດຜູ້ໃຊ້ (ຈາກ <xliff:g id="FROM_USER">%1$d</xliff:g> ໄປຍັງ <xliff:g id="TO_USER">%2$d</xliff:g>)"</string>
-    <string name="current_profile_subtitle" msgid="7149515449757434139">"ໂປຣໄຟລ໌ປັດຈຸບັນ"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> ປິດຢູ່."</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"ໃຊ້ <xliff:g id="SENSOR">%1$s</xliff:g>"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"ສຳລັບແອັບທີ່ມີການອະນຸຍາດ"</string>
@@ -123,5 +121,4 @@
     <string name="back_btn" msgid="7774349944465667391">"ກັບຄືນ"</string>
     <string name="fullscreen" msgid="7648956467442135844">"ເຕັມຈໍ"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"ຂະໜາດຂອງການສະແດງຜົນ"</string>
-    <string name="data_subscription_button_text" msgid="6595983827855035949">"ເບິ່ງແພັກເກດ"</string>
 </resources>

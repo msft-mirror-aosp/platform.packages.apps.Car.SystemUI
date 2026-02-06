@@ -19,7 +19,6 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="voice_recognition_toast" msgid="7579725862117020349">"अब ब्लुटुथ मार्फत जोडिएको यन्त्रले आवाज पहिचान गर्ने कार्य सम्हाल्छ"</string>
     <string name="car_add_user" msgid="6182764665687382136">"कुनै प्रोफाइल थप्नुहोस्"</string>
-    <string name="end_session" msgid="2765206020435441421">"सत्र अन्त्य गर्नुहोस्"</string>
     <string name="car_new_user" msgid="6766334721724989964">"नयाँ प्रोफाइल"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"नयाँ प्रोफाइल हाल्ने हो?"</string>
     <string name="user_add_user_message_setup" msgid="1639791240776969175">"तपाईंले नयाँ प्रोफाइल हालेपछि खातावाला उक्त प्रोफाइल कस्टमाइज गर्न सक्नुहुन्छ।"</string>
@@ -28,7 +27,6 @@
     <string name="profile_limit_reached_message" msgid="1534369584753840606">"{count,plural, =1{तपाईं एउटा मात्र प्रोफाइल बनाउन सक्नुहुन्छ।}other{तपाईं बढीमा # वटा प्रोफाइल थप्न सक्नुहुन्छ।}}"</string>
     <string name="car_loading_profile" msgid="458961191993686065">"लोड गरिँदै"</string>
     <string name="car_loading_profile_developer_message" msgid="737810794567935702">"प्रयोगकर्तासम्बन्धी जानकारी लोड गरिँदै (<xliff:g id="FROM_USER">%1$d</xliff:g> बाट <xliff:g id="TO_USER">%2$d</xliff:g> मा)"</string>
-    <string name="current_profile_subtitle" msgid="7149515449757434139">"हालको प्रोफाइल"</string>
     <string name="privacy_chip_off_content" msgid="8406415098507955316">"<xliff:g id="SENSOR">%1$s</xliff:g> अफ छ।"</string>
     <string name="privacy_chip_use_sensor" msgid="7688230720803089653">"<xliff:g id="SENSOR">%1$s</xliff:g> प्रयोग गर्नुहोस्"</string>
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"अनुमति प्राप्त एपहरूका हकमा"</string>
@@ -123,5 +121,4 @@
     <string name="back_btn" msgid="7774349944465667391">"पछाडि"</string>
     <string name="fullscreen" msgid="7648956467442135844">"फुल स्क्रिन"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"डिस्प्लेको आकार"</string>
-    <string name="data_subscription_button_text" msgid="6595983827855035949">"योजनाहरू हेर्नुहोस्"</string>
 </resources>

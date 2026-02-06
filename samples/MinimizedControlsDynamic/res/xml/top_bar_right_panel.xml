@@ -21,7 +21,7 @@
     <Variant id="@+id/base">
         <Bounds
             left="@dimen/car_top_right_system_bar_left"
-            top="@dimen/car_top_system_bar_top"
+            top="0"
             right="@dimen/car_top_right_system_bar_right"
             bottom="@dimen/car_top_system_bar_bottom"/>
     </Variant>

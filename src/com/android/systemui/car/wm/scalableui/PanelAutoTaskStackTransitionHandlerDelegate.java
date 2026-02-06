@@ -172,7 +172,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                     + ", finishTransaction=" + finishTransaction.getId());
         }
 
-        mPanelTransitionCoordinator.reconcileAutoTaskStackState(transition, changedTaskStacks);
+        mPanelTransitionCoordinator.reconcileAutoTaskStackState(transition, changedTaskStacks,
+                preferNotToUse);
         Trace.beginSection(TAG + "#startAnimation");
 
         mPanelTransitionCoordinator.calculateStartTransaction(startTransaction, changedTaskStacks);

@@ -84,6 +84,7 @@ carsysui_pods = [
     "CarSystemUI-SystemBar-AssistantButton",
     "CarSystemUI-SystemBar-ControlCenterButton",
     "CarSystemUI-SystemBar-DebugPanel",
+    "CarSystemUI-SystemBar-Dock",
     "CarSystemUI-SystemBar-HomeButton",
     "CarSystemUI-SystemBar-NotificationChip",
     "CarSystemUI-SystemBar-Panel",

@@ -81,6 +81,7 @@ import dagger.Lazy;
 import kotlinx.coroutines.CoroutineScope;
 
 import java.util.concurrent.Executor;
+import java.util.Optional;
 
 /**
  * Car customizations on top of {@link KeyguardViewMediator}. Please refer to that class for
@@ -179,7 +180,8 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
                 transitionBootInteractor,
                 communalSceneInteractor,
                 communalSettingsInteractor,
-                wmOcclusionManager);
+                wmOcclusionManager,
+                /* uiLatencyStatsManager= */ Optional.empty());
         mContext = context;
         mTrustManager = trustManager;
         mUserTracker = userTracker;

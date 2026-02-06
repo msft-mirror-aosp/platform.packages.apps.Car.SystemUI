@@ -581,7 +581,7 @@ public class PanelTransitionCoordinator {
         Trace.beginSection(TAG + "#playPendingAnimations");
 
         // TODO(b/409121871): resolve potential glitch after stopping previous animation.
-        stopRunningAnimations(transition);
+        stopOtherAnimations(transition);
 
         mRunningAnimatorSet = new AnimatorSet();
         mActiveTransition = transition;
@@ -683,14 +683,13 @@ public class PanelTransitionCoordinator {
     @ShellMainThread
     void mergeAnimation(@NonNull IBinder transition, @NonNull IBinder mergeTarget) {
         if (!isAnimationRunning() || mergeTarget != mActiveTransition) {
-            stopRunningAnimations(mergeTarget);
             return;
         }
         PanelTransaction transactionTransaction = getPendingPanelTransaction(transition);
         PanelTransaction mergeTransaction = getPendingPanelTransaction(mergeTarget);
         if (transactionTransaction == null || mergeTransaction == null
                 || mRunningAnimatorSet == null) {
-            stopRunningAnimations(mergeTarget);
+            stopRunningAnimation(mergeTarget);
             return;
         }
         mRunningAnimatorSet.pause();
@@ -732,6 +731,25 @@ public class PanelTransitionCoordinator {
     }
 
     /**
+     * Stops a running transition if the provided token is the currently running animation.
+     *
+     * @param transition The {@link IBinder} token for the incoming transition request. Used to
+     *                   check if the currently running animation is for the same transition.
+     * @return true if an animation was stopped
+     */
+    boolean stopRunningAnimation(@NonNull IBinder transition) {
+        logIfDebuggable("stopRunningAnimation " + transition);
+        if (isAnimationRunning() && transition == mActiveTransition) {
+            logIfDebuggable("stopRunningAnimation: has running animatorSet "
+                    + mRunningAnimatorSet.getCurrentPlayTime() + ", transition = "
+                    + transition);
+            mRunningAnimatorSet.end();
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Stops any currently running animation if it belongs to a transition different from the
      * provided one.If an animation is running and its associated transition does not match the
      * incoming{@code transition} token, the animation set is immediately advanced to its end
@@ -741,10 +759,10 @@ public class PanelTransitionCoordinator {
      *                   check if the currently running animation is for a different transition.
      * @return true if an animation was stopped
      */
-    boolean stopRunningAnimations(@NonNull IBinder transition) {
-        logIfDebuggable("stopRunningAnimationsIfNeed " + transition);
+    boolean stopOtherAnimations(@NonNull IBinder transition) {
+        logIfDebuggable("stopOtherAnimations " + transition);
         if (isAnimationRunning() && transition != mActiveTransition) {
-            logIfDebuggable("stopRunningAnimations: has running animatorSet "
+            logIfDebuggable("stopOtherAnimations: has running animatorSet "
                     + mRunningAnimatorSet.getCurrentPlayTime() + ", incoming transition = "
                     + transition + ", active transition = " + mActiveTransition);
             mRunningAnimatorSet.end();

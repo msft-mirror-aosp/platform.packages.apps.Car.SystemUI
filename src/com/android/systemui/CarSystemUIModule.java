@@ -26,7 +26,6 @@ import android.window.DisplayAreaOrganizer;
 import com.android.car.datasubscription.DataSubscriptionMessageCreator;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 import com.android.keyguard.KeyguardViewController;
-import com.android.keyguard.dagger.KeyguardDisplayModule;
 import com.android.systemui.accessibility.AccessibilityModule;
 import com.android.systemui.accessibility.data.repository.AccessibilityRepositoryModule;
 import com.android.systemui.biometrics.dagger.BiometricsModule;
@@ -114,7 +113,6 @@ import javax.inject.Provider;
                 HeadsUpEmptyImplModule.class,
                 HvacControllerModule.class,
                 HvacUiModule.class,
-                KeyguardDisplayModule.class,
                 MediaMuteAwaitConnectionCli.StartableModule.class,
                 NearbyMediaDevicesManager.StartableModule.class,
                 NoOpActivityRecognitionModule.class,

@@ -112,12 +112,14 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = false,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon
+            smallIcon = icon,
+            appName = "App"
         )
 
         repository.addPromotedNotification(model)
         testScope.testScheduler.advanceUntilIdle()
 
+        verify(view).setPromotedInfo("Text", "App")
         verify(view).animateIn()
     }
 
@@ -132,11 +134,13 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = false,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon
+            smallIcon = icon,
+            appName = "App"
         )
 
         repository.addPromotedNotification(model)
         testScope.testScheduler.advanceUntilIdle()
+        verify(view).setPromotedInfo("Text", "App")
         verify(view).animateIn()
 
         repository.removePromotedNotification("key")
@@ -154,7 +158,8 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = false,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon
+            smallIcon = icon,
+            appName = "App"
         )
         repository.addPromotedNotification(model)
         testScope.testScheduler.advanceUntilIdle()
@@ -177,7 +182,8 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = false,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon
+            smallIcon = icon,
+            appName = "App"
         )
         repository.addPromotedNotification(model)
         testScope.testScheduler.advanceUntilIdle()
@@ -206,7 +212,8 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = false,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon
+            smallIcon = icon,
+            appName = "App"
         )
         repository.addPromotedNotification(model)
         testScope.testScheduler.advanceUntilIdle()
@@ -241,7 +248,8 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = true,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon
+            smallIcon = icon,
+            appName = "App"
         )
 
         repository.addPromotedNotification(model)
@@ -261,7 +269,8 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = true,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon
+            smallIcon = icon,
+            appName = "App"
         )
         repository.addPromotedNotification(hunModel)
         testScope.testScheduler.advanceUntilIdle()
@@ -273,7 +282,8 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = false,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon
+            smallIcon = icon,
+            appName = "App"
         )
         repository.addPromotedNotification(dismissedModel)
         testScope.testScheduler.advanceUntilIdle()
@@ -292,7 +302,8 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = false,
             postTime = 1000L,
             shortCriticalText = "Old",
-            smallIcon = icon
+            smallIcon = icon,
+            appName = "OldApp"
         )
         repository.addPromotedNotification(oldModel)
         testScope.testScheduler.advanceUntilIdle()
@@ -305,7 +316,8 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = true,
             postTime = 2000L,
             shortCriticalText = "New",
-            smallIcon = icon
+            smallIcon = icon,
+            appName = "NewApp"
         )
         repository.addPromotedNotification(newHunModel)
         testScope.testScheduler.advanceUntilIdle()

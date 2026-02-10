@@ -37,9 +37,46 @@ public class PromotedNotificationChipView extends PrivacyChip {
     private Drawable mCurrentLightIcon;
     private Drawable mCurrentDarkIcon;
 
+    private String mAppName;
+    private String mShortCriticalText;
+
     public PromotedNotificationChipView(@NonNull Context context) {
         super(context);
         init(context);
+    }
+
+    /**
+     * Sets the promoted notification information to be displayed in the chip.
+     */
+    public void setPromotedInfo(@Nullable String shortCriticalText, @Nullable String appName) {
+        mShortCriticalText = shortCriticalText;
+        mAppName = appName;
+    }
+
+    @Override
+    protected void setContentDescription(boolean isSensorOff) {
+        if (isSensorOff) {
+            // This case should never occur as we never set isSensorOff true for promoted
+            // notifs
+            setContentDescription(getContext().getString(
+                    R.string.promoted_notification_chip_off_content));
+            return;
+        }
+
+        if (mAppName != null && mShortCriticalText != null) {
+            setContentDescription(getContext().getString(
+                    R.string.promoted_notification_content_description, mAppName,
+                    mShortCriticalText));
+        } else if (mAppName != null) {
+            setContentDescription(getContext().getString(
+                    R.string.promoted_notification_content_description_app_only, mAppName));
+        } else if (mShortCriticalText != null) {
+            setContentDescription(getContext().getString(
+                    R.string.promoted_notification_content_description_text_only,
+                    mShortCriticalText));
+        } else {
+            super.setContentDescription(isSensorOff);
+        }
     }
 
     public PromotedNotificationChipView(@NonNull Context context,
@@ -93,7 +130,8 @@ public class PromotedNotificationChipView extends PrivacyChip {
 
     @Override
     protected String getSensorName() {
-        return "Promoted Notifications"; // TODO: replace
+        return getContext()
+                        .getString(R.string.promoted_notification_fallback_content_description);
     }
 
     @Override

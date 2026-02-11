@@ -16,7 +16,6 @@
 
 package com.android.systemui.car.minimizedcontrols
 
-import android.os.Handler
 import android.testing.AndroidTestingRunner
 import android.testing.TestableLooper
 import android.view.Display
@@ -24,19 +23,27 @@ import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.test.filters.SmallTest
 import com.android.car.media.common.MediaItemMetadata
+import com.android.car.media.common.browse.MediaItemsRepository
 import com.android.car.media.common.playback.PlaybackViewModel
+import com.android.car.media.common.source.MediaModels
 import com.android.car.media.common.source.MediaSource
+import com.android.car.media.common.ui.PlaybackCardViewModel
 import com.android.car.scalableui.loader.xml.PanelTagXmlParser.VIEW_TAG
 import com.android.car.scalableui.model.PanelControllerMetadata
 import com.android.systemui.CarSysuiTestCase
+import com.android.systemui.ShellSyncExecutor
 import com.android.systemui.car.CarSystemUiTest
+import com.android.systemui.car.minimizedcontrols.MinimizedMediaControlsPanelController.PlaybackCardViewModelFactory
+import com.android.systemui.lifecycle.InstantTaskExecutorRule
 import com.android.wm.shell.sysui.ShellController
 import com.android.wm.shell.sysui.UserChangeListener
 import javax.inject.Provider
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.Mock
 import org.mockito.Mockito.any
 import org.mockito.Mockito.verify
@@ -51,9 +58,25 @@ class MinimizedMediaControlsPanelControllerTest : CarSysuiTestCase() {
 
     @Mock private lateinit var shellController: ShellController
     @Mock private lateinit var viewModel: MinimizedMediaControlsViewModel
+    @Mock private lateinit var playbackCardViewModelFactory: PlaybackCardViewModelFactory
+    @Mock private lateinit var playbackCardViewModel: PlaybackCardViewModel
+    @Mock private lateinit var userContextFactory: UserContextUtils.UserContextFactory
+    @Mock private lateinit var minimizedMediaControlsPlaybackCardControllerFactory:
+        MinimizedMediaControlsPlaybackCardController.Factory
+    @Mock private lateinit var mediaModelsFactory:
+        MinimizedMediaControlsPanelController.MediaModelsFactory
+    @Mock private lateinit var playbackCardController: MinimizedMediaControlsPlaybackCardController
     @Mock private lateinit var view: MinimizedMediaControlsView
     @Mock private lateinit var display: Display
     @Mock private lateinit var playbackViewModel: PlaybackViewModel
+    @Mock private lateinit var mediaModels: MediaModels
+    @Mock private lateinit var mediaItemsRepository: MediaItemsRepository
+    @Mock private lateinit var application: android.app.Application
+
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    private val mainExecutor = ShellSyncExecutor()
 
     // LiveData Mocks
     private val playbackState = MutableLiveData<PlaybackViewModel.PlaybackStateWrapper>()
@@ -72,7 +95,8 @@ class MinimizedMediaControlsPanelControllerTest : CarSysuiTestCase() {
         MockitoAnnotations.openMocks(this)
 
         // Setup View
-        `when`(view.context).thenReturn(mContext)
+        `when`(view.context).thenReturn(application)
+        `when`(application.applicationContext).thenReturn(application)
         `when`(view.display).thenReturn(display)
         `when`(display.displayId).thenReturn(Display.DEFAULT_DISPLAY)
 
@@ -81,6 +105,9 @@ class MinimizedMediaControlsPanelControllerTest : CarSysuiTestCase() {
         `when`(viewModel.metadata).thenReturn(metadata)
         `when`(viewModel.mediaSource).thenReturn(mediaSource)
         `when`(viewModel.playbackViewModel).thenReturn(playbackViewModel)
+        `when`(viewModel.mediaModels).thenReturn(mediaModels)
+        `when`(viewModel.mediaItemsRepository).thenReturn(mediaItemsRepository)
+        `when`(mediaModels.playbackViewModel).thenReturn(playbackViewModel)
 
         // Create Controller
         val map: Map<Class<*>, Provider<View>> =
@@ -92,12 +119,49 @@ class MinimizedMediaControlsPanelControllerTest : CarSysuiTestCase() {
                 .build(),
             map,
             shellController,
-            Handler(TestableLooper.get(this).looper),
-            mContext.mainExecutor
+            mainExecutor,
+            mainExecutor,
+            playbackCardViewModelFactory,
+            userContextFactory,
+            minimizedMediaControlsPlaybackCardControllerFactory,
+            mediaModelsFactory
         )
 
-        // Inject Factory
-        controller.viewModelFactory = { _, _ -> viewModel }
+        // Inject Factory behavior
+        `when`(
+            playbackCardViewModelFactory.create(
+                safeAny(),
+                safeAny(),
+                safeAny()
+            )
+        ).thenReturn(playbackCardViewModel)
+        `when`(userContextFactory.create(safeAny(), anyInt())).thenReturn(application)
+        `when`(
+            minimizedMediaControlsPlaybackCardControllerFactory.create(
+                safeAny(),
+                safeAny(),
+                safeAny(),
+                safeAny(),
+                safeAny()
+            )
+        ).thenReturn(playbackCardController)
+        `when`(
+            mediaModelsFactory.create(
+                safeAny(),
+                safeAny(),
+                safeAny(),
+                org.mockito.Mockito.anyBoolean()
+            )
+        ).thenReturn(mediaModels)
+
+        // Override factory to return mock ViewModel
+        controller.viewModelFactory = { _, _, _ -> viewModel }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T> safeAny(): T {
+        org.mockito.Mockito.any<T>()
+        return null as T
     }
 
     @Test
@@ -108,8 +172,25 @@ class MinimizedMediaControlsPanelControllerTest : CarSysuiTestCase() {
         TestableLooper.get(this).processAllMessages()
 
         // Verify factory was called (implied by viewModel existence, but we can't verify lambda easily)
-        // verify(viewModel).init(TEST_USER_ID) // Removed as init is gone
         verify(shellController).addUserChangeListener(any())
+    }
+
+    @Test
+    fun testUserChange_sameUser_doesNotReinitialize() {
+        `when`(shellController.currentUserId).thenReturn(TEST_USER_ID)
+        controller.view // Trigger init
+        TestableLooper.get(this).processAllMessages()
+
+        // Capture listener
+        val captor = ArgumentCaptor.forClass(UserChangeListener::class.java)
+        verify(shellController).addUserChangeListener(captor.capture())
+
+        // Simulate SAME User Change
+        captor.value.onUserChanged(TEST_USER_ID, mContext)
+        TestableLooper.get(this).processAllMessages()
+
+        // Verify cleanUp was NOT called (meaning no re-initialization)
+        verify(viewModel, org.mockito.Mockito.never()).cleanUp()
     }
 
     @Test
@@ -117,7 +198,6 @@ class MinimizedMediaControlsPanelControllerTest : CarSysuiTestCase() {
         `when`(shellController.currentUserId).thenReturn(TEST_USER_ID)
         controller.view // Trigger getView logic if it was lazy
         TestableLooper.get(this).processAllMessages()
-        // verify(viewModel).init(TEST_USER_ID) // Removed
 
         // Simulate User Change
         val captor = ArgumentCaptor.forClass(UserChangeListener::class.java)
@@ -126,8 +206,6 @@ class MinimizedMediaControlsPanelControllerTest : CarSysuiTestCase() {
         captor.value.onUserChanged(SECONDARY_USER_ID, mContext)
         TestableLooper.get(this).processAllMessages()
 
-        // verify(viewModel).init(SECONDARY_USER_ID) // Removed - we can check if factory called if we mocked it, but lambda is hard.
-        // We can verify cleanUp was called on previous one if we spy it?
         verify(viewModel).cleanUp() // Should be called before creating new one
     }
 
@@ -141,5 +219,33 @@ class MinimizedMediaControlsPanelControllerTest : CarSysuiTestCase() {
 
         verify(viewModel).cleanUp()
         verify(shellController).removeUserChangeListener(any())
+    }
+
+    @Test
+    fun testLifecycle_isAttachedAndResumed() {
+        controller.view // Initialize
+        TestableLooper.get(this).processAllMessages()
+
+        // We can check the controller's lifecycle directly as it implements LifecycleOwner
+        org.junit.Assert.assertEquals(
+            "Lifecycle should be RESUMED",
+            androidx.lifecycle.Lifecycle.State.RESUMED,
+            controller.lifecycle.currentState
+        )
+    }
+
+    @Test
+    fun testDestroy_lifecycleDestroyed() {
+        controller.view
+        TestableLooper.get(this).processAllMessages()
+
+        controller.destroy()
+        TestableLooper.get(this).processAllMessages()
+
+        org.junit.Assert.assertEquals(
+            "Lifecycle should be DESTROYED",
+            androidx.lifecycle.Lifecycle.State.DESTROYED,
+            controller.lifecycle.currentState
+        )
     }
 }

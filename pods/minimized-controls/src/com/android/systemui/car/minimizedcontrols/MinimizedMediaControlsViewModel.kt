@@ -18,6 +18,7 @@ package com.android.systemui.car.minimizedcontrols
 
 import androidx.lifecycle.LiveData
 import com.android.car.media.common.MediaItemMetadata
+import com.android.car.media.common.browse.MediaItemsRepository
 import com.android.car.media.common.playback.PlaybackViewModel
 import com.android.car.media.common.source.MediaModels
 import com.android.car.media.common.source.MediaSource
@@ -27,7 +28,7 @@ import com.android.car.media.common.source.MediaSource
  * Manages [MediaModels] and provides media data to the controller.
  */
 class MinimizedMediaControlsViewModel(
-    private var mediaModels: MediaModels?
+    var mediaModels: MediaModels?
 ) {
 
     val playbackViewModel: PlaybackViewModel?
@@ -41,6 +42,9 @@ class MinimizedMediaControlsViewModel(
 
     val mediaSource: LiveData<MediaSource>?
         get() = mediaModels?.mediaSourceViewModel?.primaryMediaSource
+
+    val mediaItemsRepository: MediaItemsRepository?
+        get() = mediaModels?.mediaItemsRepository
 
     fun cleanUp() {
         mediaModels?.onCleared()

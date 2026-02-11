@@ -66,10 +66,10 @@ import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.shared.R;
 import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
 import com.android.systemui.car.systembar.home.HomeButtonController;
 import com.android.systemui.car.systembar.passengerhome.PassengerHomeButtonController;
+import com.android.systemui.car.tests.baselib.R;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.window.OverlayVisibilityMediator;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
@@ -181,9 +181,11 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
         CarSystemBarWindowSupplier windowSupplier = ctx -> (ViewGroup) inflater.inflate(
                 R.layout.car_top_system_bar, null);
         CarSystemBarViewSupplier bottomViewSupplier = (ctx, isSetUp) ->
-                (ViewGroup) inflater.inflate(R.layout.car_bottom_system_bar, null);
+                (ViewGroup) inflater.inflate(
+                        com.android.systemui.car.systembar.standard.R.layout.car_bottom_system_bar,
+                        null);
         CarSystemBarWindowSupplier bottomWindowSupplier = ctx -> (ViewGroup) inflater.inflate(
-                R.layout.car_bottom_system_bar, null);
+                com.android.systemui.car.systembar.standard.R.layout.car_bottom_system_bar, null);
         mViewSupplierMap.put(TOP_BAR_NAME, viewSupplier);
         mWindowSupplierMap.put(TOP_BAR_NAME, windowSupplier);
         mViewSupplierMap.put(BOTTOM_BAR_NAME, bottomViewSupplier);
@@ -728,7 +730,8 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
         CarSystemBarViewController bottomBar = mCarSystemBarController.getBarViewController(
                 BOTTOM_BAR_NAME, /* isSetUp= */ true);
         View driverHomeButton = bottomBar.getView().findViewById(R.id.home);
-        View passengerHomeButton = bottomBar.getView().findViewById(R.id.passenger_home);
+        View passengerHomeButton = bottomBar.getView().findViewById(
+                com.android.systemui.car.systembar.standard.R.id.passenger_home);
 
         assertThat(driverHomeButton.getVisibility()).isEqualTo(View.VISIBLE);
         assertThat(passengerHomeButton.getVisibility()).isEqualTo(View.GONE);
@@ -744,7 +747,8 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
         CarSystemBarViewController bottomBar = mCarSystemBarController.getBarViewController(
                 BOTTOM_BAR_NAME, /* isSetUp= */ true);
         View driverHomeButton = bottomBar.getView().findViewById(R.id.home);
-        View passengerHomeButton = bottomBar.getView().findViewById(R.id.passenger_home);
+        View passengerHomeButton = bottomBar.getView().findViewById(
+                com.android.systemui.car.systembar.standard.R.id.passenger_home);
 
         assertThat(driverHomeButton.getVisibility()).isEqualTo(View.GONE);
         assertThat(passengerHomeButton.getVisibility()).isEqualTo(View.VISIBLE);
@@ -767,7 +771,8 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
     @Test
     public void testTopLeftPanel_inflatesSuccessfully_andHasRequiredElements() {
         LayoutInflater inflater = LayoutInflater.from(mSpiedContext);
-        View topLeftPanel = inflater.inflate(R.layout.car_top_left_system_bar, null);
+        View topLeftPanel = inflater.inflate(
+                com.android.systemui.car.systembar.split.R.layout.car_top_left_system_bar, null);
 
         View bluetoothPanelButton = topLeftPanel.findViewById(R.id.bluetooth_panel_button);
         assertNotNull(bluetoothPanelButton);
@@ -776,7 +781,8 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
     @Test
     public void testTopRightPanel_inflatesSuccessfully_andHasRequiredElements() {
         LayoutInflater inflater = LayoutInflater.from(mSpiedContext);
-        View topRightPanel = inflater.inflate(R.layout.car_top_right_system_bar, null);
+        View topRightPanel = inflater.inflate(
+                com.android.systemui.car.systembar.split.R.layout.car_top_right_system_bar, null);
 
         assertNotNull(topRightPanel.findViewById(R.id.clock));
         assertNotNull(topRightPanel.findViewById(R.id.notifications));
@@ -789,18 +795,22 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
     @Test
     public void testBottomLeftPanel_inflatesSuccessfully_andHasRequiredElements() {
         LayoutInflater inflater = LayoutInflater.from(mSpiedContext);
-        View bottomLeftPanel = inflater.inflate(R.layout.car_bottom_left_system_bar, null);
+        View bottomLeftPanel = inflater.inflate(
+                com.android.systemui.car.systembar.split.R.layout.car_bottom_left_system_bar, null);
 
-
-        assertNotNull(bottomLeftPanel.findViewById(R.id.driver_hvac));
+        assertNotNull(bottomLeftPanel.findViewById(
+                com.android.systemui.car.hvac.ui.R.id.driver_hvac));
     }
 
     @Test
     public void testBottomCenterPanel_inflatesSuccessfully_andHasRequiredElements() {
         LayoutInflater inflater = LayoutInflater.from(mSpiedContext);
-        View bottomCenterPanel = inflater.inflate(R.layout.car_bottom_center_system_bar, null);
+        View bottomCenterPanel = inflater.inflate(
+                com.android.systemui.car.systembar.split.R.layout.car_bottom_center_system_bar,
+                null);
 
-        assertNotNull(bottomCenterPanel.findViewById(R.id.grid_nav));
+        assertNotNull(bottomCenterPanel.findViewById(
+                com.android.systemui.car.systembar.split.R.id.grid_nav));
         assertNotNull(bottomCenterPanel.findViewById(R.id.dock));
         assertNotNull(bottomCenterPanel.findViewById(R.id.assistant));
     }
@@ -808,9 +818,12 @@ public class CarSystemBarControllerTest extends CarSysuiTestCase {
     @Test
     public void testBottomRightPanel_inflatesSuccessfully_andHasRequiredElements() {
         LayoutInflater inflater = LayoutInflater.from(mSpiedContext);
-        View bottomRightPanel = inflater.inflate(R.layout.car_bottom_right_system_bar, null);
+        View bottomRightPanel = inflater.inflate(
+                com.android.systemui.car.systembar.split.R.layout.car_bottom_right_system_bar,
+                null);
 
-        assertNotNull(bottomRightPanel.findViewById(R.id.passenger_hvac));
+        assertNotNull(bottomRightPanel.findViewById(
+                com.android.systemui.car.systembar.split.R.id.passenger_hvac));
     }
 
     private void clearSystemBarStates() {

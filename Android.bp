@@ -85,6 +85,7 @@ carsysui_pods = [
     "CarSystemUI-SystemBar-ControlCenterButton",
     "CarSystemUI-SystemBar-DebugPanel",
     "CarSystemUI-SystemBar-Dock",
+    "CarSystemUI-SystemBar-Extension",
     "CarSystemUI-SystemBar-HomeButton",
     "CarSystemUI-SystemBar-NotificationChip",
     "CarSystemUI-SystemBar-Panel",
@@ -94,6 +95,8 @@ carsysui_pods = [
     "CarSystemUI-SystemBar-PrivacyChip-Cast",
     "CarSystemUI-SystemBar-PrivacyChip-Mic",
     "CarSystemUI-SystemBar-PrivacyChip-Share",
+    "CarSystemUI-SystemBar-Standard",
+    "CarSystemUI-SystemBar-Split",
     "CarSystemUI-SystemBar-UserNamePanel",
     "CarSystemUI-SystemBar-Volume",
 ]

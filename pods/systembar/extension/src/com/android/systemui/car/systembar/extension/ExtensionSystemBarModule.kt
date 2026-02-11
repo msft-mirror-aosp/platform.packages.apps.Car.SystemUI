@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 The Android Open Source Project
+ * Copyright (C) 2026 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package com.android.systemui.car.systembar
+package com.android.systemui.car.systembar.extension
 
-import com.android.systemui.car.shared.R
+import com.android.systemui.car.systembar.CarSystemBarViewControllerFactory
+import com.android.systemui.car.systembar.CarSystemBarViewControllerImpl
+import com.android.systemui.car.systembar.CarSystemBarViewSupplier
+import com.android.systemui.car.systembar.CarSystemBarViewSupplierUsingLayout
+import com.android.systemui.car.systembar.CarSystemBarWindowSupplier
+import com.android.systemui.car.systembar.CarSystemBarWindowSupplierUsingLayout
+import com.android.systemui.car.systembar.standard.R
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -25,7 +31,7 @@ import dagger.multibindings.StringKey
 
 /** Dagger module for the system bars controlled by Extension Panel updates. */
 @Module
-abstract class ExtensionPanelUpdatesCarSystemBarModule {
+abstract class ExtensionSystemBarModule {
 
     @Binds
     @IntoMap

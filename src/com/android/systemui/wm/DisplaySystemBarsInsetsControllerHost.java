@@ -23,6 +23,7 @@ import android.annotation.Nullable;
 import android.os.Handler;
 import android.os.IBinder;
 import android.view.InsetsController;
+import android.view.InsetsState;
 import android.view.SurfaceControl;
 import android.view.SyncRtSurfaceTransactionApplier;
 import android.view.WindowInsets;
@@ -67,25 +68,30 @@ public class DisplaySystemBarsInsetsControllerHost implements InsetsController.H
     }
 
     @Override
-    public void dispatchWindowInsetsAnimationPrepare(@NonNull WindowInsetsAnimation animation) {
+    public void dispatchWindowInsetsAnimationPrepare(@NonNull WindowInsetsAnimation animation,
+            boolean isUserAnimation, boolean isResizeAnimation, boolean hasAnimationCallback) {
         // no-op
     }
 
     @Override
     public WindowInsetsAnimation.Bounds dispatchWindowInsetsAnimationStart(
             @NonNull WindowInsetsAnimation animation,
-            @NonNull WindowInsetsAnimation.Bounds bounds) {
+            @NonNull WindowInsetsAnimation.Bounds bounds, boolean isUserAnimation,
+            boolean isResizeAnimation, boolean hasAnimationCallback) {
         return null;
     }
 
     @Override
     public WindowInsets dispatchWindowInsetsAnimationProgress(@NonNull WindowInsets insets,
-            @NonNull List<WindowInsetsAnimation> runningAnimations) {
+            @NonNull InsetsState state, @NonNull List<WindowInsetsAnimation> runningAnimations,
+            boolean hasUserAnimation, boolean hasResizeAnimation, boolean hasAnimationCallback,
+            @WindowInsets.Type.InsetsType int hidingTypes) {
         return null;
     }
 
     @Override
-    public void dispatchWindowInsetsAnimationEnd(@NonNull WindowInsetsAnimation animation) {
+    public void dispatchWindowInsetsAnimationEnd(@NonNull WindowInsetsAnimation animation,
+            boolean isUserAnimation, boolean isResizeAnimation, boolean hasAnimationCallback) {
         // no-op
     }
 

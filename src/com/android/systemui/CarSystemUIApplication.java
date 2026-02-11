@@ -23,6 +23,7 @@ import android.annotation.Nullable;
 import android.car.Car;
 import android.car.CarOccupantZoneManager;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.UserHandle;
@@ -109,40 +110,85 @@ public class CarSystemUIApplication extends SystemUIApplicationImpl {
         super.attachBaseContext(base);
     }
 
+    /**
+     * A wrapper that ensures themes are applied and that any contexts derived from this context are
+     * also wrapped.
+     */
+    private class ThemedContextWrapper extends ContextWrapper {
+        ThemedContextWrapper(Context base) {
+            super(base);
+            // Apply the theme immediately upon wrapping
+            applySystemUITheme(base);
+        }
+
+        @NonNull
+        @Override
+        public Context createWindowContext(int type, @Nullable Bundle options) {
+            return new ThemedContextWrapper(super.createWindowContext(type, options));
+        }
+
+        @NonNull
+        @Override
+        public Context createWindowContext(@NonNull Display display, int type,
+                @Nullable Bundle options) {
+            return new ThemedContextWrapper(super.createWindowContext(display, type, options));
+        }
+
+        @NonNull
+        @Override
+        public Context createConfigurationContext(Configuration overrideConfiguration) {
+            return new ThemedContextWrapper(
+                    super.createConfigurationContext(overrideConfiguration));
+        }
+
+        @NonNull
+        @Override
+        public Context createDisplayContext(Display display) {
+            return new ThemedContextWrapper(super.createDisplayContext(display));
+        }
+
+        @NonNull
+        @Override
+        public Context createContextAsUser(UserHandle user, int flags) {
+            return new ThemedContextWrapper(super.createContextAsUser(user, flags));
+        }
+    }
+
+    private Context applySystemUITheme(Context context) {
+        context.getTheme().setTo(getTheme());
+        context.getTheme().rebase();
+        // If OEM tokens need to be applied to every derived context:
+        Token.applyOemTokenStyle(context);
+        return context;
+    }
+
     @Override
     @NonNull
     public Context createContextAsUser(UserHandle user, @CreatePackageOptions int flags) {
-        Context context = super.createContextAsUser(user, flags);
-        context.getTheme().setTo(getTheme());
-        context.getTheme().rebase();
-        return context;
+        return new ThemedContextWrapper(super.createContextAsUser(user, flags));
     }
 
     @Override
     @NonNull
     public Context createWindowContext(@WindowManager.LayoutParams.WindowType int type,
             @Nullable Bundle options) {
-        Context context = super.createWindowContext(type, options);
-        context.getTheme().setTo(getTheme());
-        context.getTheme().rebase();
-        return context;
+        return applySystemUITheme(super.createWindowContext(type, options));
     }
 
     @Override
     @NonNull
     public Context createWindowContext(@NonNull Display display, int type,
             @Nullable Bundle options) {
-        Context context = super.createWindowContext(display, type, options);
-        context.getTheme().setTo(getTheme());
-        context.getTheme().rebase();
-        return context;
+        return applySystemUITheme(super.createWindowContext(display, type, options));
     }
 
     @Override
     public Context createConfigurationContext(Configuration overrideConfiguration) {
-        Context context = super.createConfigurationContext(overrideConfiguration);
-        context.getTheme().setTo(getTheme());
-        context.getTheme().rebase();
-        return context;
+        return new ThemedContextWrapper(super.createConfigurationContext(overrideConfiguration));
+    }
+
+    @Override
+    public Context createDisplayContext(Display display) {
+        return new ThemedContextWrapper(super.createDisplayContext(display));
     }
 }

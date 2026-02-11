@@ -32,4 +32,9 @@
     <color name="pin_pad_icon_color">@color/car_ui_text_color_primary</color>
 
     <color name="overlay_panel_bg_color">#46000000</color>
+
+    <!-- Colors restored from car-resource-common -->
+    <color name="car_rotary_focus_pressed_fill_color">#4d000000</color>
+    <color name="car_rotary_focus_stroke_color">#ff000000</color>
+    <color name="car_rotary_focus_fill_color">#33000000</color>
 </resources>

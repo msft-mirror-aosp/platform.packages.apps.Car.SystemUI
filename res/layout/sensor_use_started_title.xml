@@ -29,7 +29,7 @@
             android:layout_height="@dimen/car_alert_dialog_icon_size"
             android:id="@+id/sensor_use_camera_icon"
             android:src="@*android:drawable/perm_group_camera"
-            android:tint="@color/car_on_surface"
+            android:tint="?oemColorOnSurface"
             android:visibility="gone" />
         <ImageView
             android:layout_width="@dimen/car_alert_dialog_icon_size"

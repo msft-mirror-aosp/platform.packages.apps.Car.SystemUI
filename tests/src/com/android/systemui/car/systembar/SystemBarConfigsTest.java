@@ -135,8 +135,9 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
     @Test
     public void onInit_topNotifPanelViewMediatorUsed_topBarEnabled_doesNotThrowException() {
         when(mResources.getBoolean(R.bool.config_enableTopSystemBar)).thenReturn(true);
-        when(mResources.getString(R.string.config_notificationPanelViewMediator)).thenReturn(
-                TestTopNotificationPanelViewMediator.class.getName());
+        when(mResources.getString(
+                com.android.systemui.car.notification.R.string.config_notificationPanelViewMediator)
+                ).thenReturn(TestTopNotificationPanelViewMediator.class.getName());
 
         mSystemBarConfigs =
                 new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,
@@ -146,8 +147,9 @@ public class SystemBarConfigsTest extends CarSysuiTestCase {
     @Test
     public void onInit_notificationPanelViewMediatorUsed_topBarNotEnabled_doesNotThrowException() {
         when(mResources.getBoolean(R.bool.config_enableTopSystemBar)).thenReturn(false);
-        when(mResources.getString(R.string.config_notificationPanelViewMediator)).thenReturn(
-                NotificationPanelViewMediator.class.getName());
+        when(mResources.getString(
+                com.android.systemui.car.notification.R.string.config_notificationPanelViewMediator)
+                ).thenReturn(NotificationPanelViewMediator.class.getName());
 
         mSystemBarConfigs =
                 new SystemBarConfigsImpl(mContext, mResources, mWindowProvider, mViewSupplierMap,

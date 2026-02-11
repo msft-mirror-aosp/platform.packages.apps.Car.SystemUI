@@ -67,49 +67,12 @@
         to touch the buttons without accidentally expanding the notification panel.-->
     <bool name="config_systemBarButtonsDraggable">false</bool>
 
-    <!--
-    Car SystemUI's notification mediator. Replace with other notification mediators to have
-    the notification panel show from another system bar. The system bar should be enabled to
-    use the mediator with that system bar.
-    Example: config_enableBottomSystemBar=true
-             config_notificationPanelViewMediator=
-                com.android.systemui.car.notification.BottomNotificationPanelViewMediator -->
-    <string name="config_notificationPanelViewMediator" translatable="false">
-        com.android.systemui.car.notification.TopNotificationPanelViewMediator</string>
-
-    <!-- Whether the Notification Panel should be inset by the top system bar. -->
-    <bool name="config_notif_panel_inset_by_top_systembar" translatable="false">false</bool>
-    <!-- Whether the Notification Panel should be inset by the bottom system bar. -->
-    <bool name="config_notif_panel_inset_by_bottom_systembar" translatable="false">true</bool>
-    <!-- Whether the Notification Panel should be inset by the left system bar. -->
-    <bool name="config_notif_panel_inset_by_left_systembar" translatable="false">false</bool>
-    <!-- Whether the Notification Panel should be inset by the right system bar. -->
-    <bool name="config_notif_panel_inset_by_right_systembar" translatable="false">false</bool>
-
     <!-- Whether navigationBar touch events should be consumed before reaching the CarFacetButton \
          when the notification panel is open. -->
     <bool name="config_consumeSystemBarTouchWhenNotificationPanelOpen">false</bool>
 
-    <!-- Whether heads-up notifications should be shown when panel is open. -->
-    <bool name="config_enableHeadsUpNotificationWhenNotificationPanelOpen">true</bool>
-
     <!-- Whether or not the profile panel should be disabled while driving. -->
     <bool name="config_profile_panel_disabled_while_driving">true</bool>
-
-    <!--
-        Initial alpha percent value for the background when the notification
-        panel is open. Should be a number between, and inclusive, 0 and 100.
-        If the number is 0, then the background alpha starts off fully
-        transparent. If the number if 100, then the background alpha starts off
-        fully opaque. -->
-    <integer name="config_initialNotificationBackgroundAlpha">0</integer>
-    <!--
-        Final alpha percent value for the background when the notification
-        panel is fully open. Should be a number between, and inclusive, 0 and
-        100. If this value is smaller than
-        config_initialNotificationBackgroundAlpha, the background will default
-        to a constant alpha percent value using the initial alpha. -->
-    <integer name="config_finalNotificationBackgroundAlpha">100</integer>
 
     <!-- Car System UI's OverlayViewsMediator.
          Whenever a new class is added, make sure to also add that class to OverlayWindowModule. -->
@@ -298,24 +261,6 @@
     -->
     <string-array name="config_registerHvacDragCloseListener" translatable="false">
         <item>TopCarSystemBar</item>
-        <item>BottomCarSystemBar</item>
-        <item>LeftCarSystemBar</item>
-        <item>RightCarSystemBar</item>
-    </string-array>
-
-    <!--
-        List of system bar names that should register NotificationPanelViewController's
-        DragOpenTouchListener
-    -->
-    <string-array name="config_notificationDragOpenListener" translatable="false">
-        <item>TopCarSystemBar</item>
-    </string-array>
-
-    <!--
-        List of system bar names that should register NotificationPanelViewController's
-        DragCloseTouchListener
-    -->
-    <string-array name="config_notificationDragCloseListener" translatable="false">
         <item>BottomCarSystemBar</item>
         <item>LeftCarSystemBar</item>
         <item>RightCarSystemBar</item>

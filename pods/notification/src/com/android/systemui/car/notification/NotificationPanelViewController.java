@@ -50,7 +50,6 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.car.CarServiceProvider.CarServiceOnConnectedListener;
-import com.android.systemui.car.shared.R;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.window.OverlayPanelViewController;
 import com.android.systemui.car.window.OverlayViewController;

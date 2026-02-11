@@ -21,6 +21,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Bundle
 import android.os.IBinder
 import android.os.UserHandle
 import android.testing.AndroidTestingRunner
@@ -112,5 +113,18 @@ class UserContextUtilsTest : CarSysuiTestCase() {
 
         // Since userId=0, userContext IS baseContext
         verify(baseContext).bindServiceAsUser(eq(intent), eq(conn), eq(0), eq(UserHandle.of(0)))
+    }
+
+    @Test
+    fun testStartActivity_callsStartActivityAsUser() {
+        val mixedContext = UserContextUtils.createWrappedUserContext(baseContext, TEST_USER_ID)
+        val intent = Intent("action")
+        val options = Bundle()
+
+        mixedContext.startActivity(intent, options)
+
+        verify(
+            userContext
+        ).startActivityAsUser(eq(intent), eq(options), eq(UserHandle.of(TEST_USER_ID)))
     }
 }

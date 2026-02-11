@@ -16,8 +16,11 @@
 
 package com.android.systemui.car.minimizedcontrols
 
+import android.app.ActivityOptions
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import com.android.car.media.common.MediaItemMetadata
 import com.android.car.media.common.browse.MediaItemsRepository
@@ -37,8 +40,22 @@ class MinimizedMediaControlsPlaybackCardController(
     private val shellExecutor: ShellExecutor
 ) : PlaybackCardController(builder) {
 
+    private companion object {
+        private const val TAG = "MinimizedMediaControlsPlaybackCardController"
+    }
+
     public override fun setupController() {
         super.setupController()
+        val albumArtContainer = mView.findViewById<View>(R.id.minimized_control_album_art_container)
+        albumArtContainer?.setOnClickListener {
+            mDataModel.mediaSource.value?.let { mediaSource ->
+                try {
+                    mediaSource.launchActivity(mContext, ActivityOptions.makeBasic())
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error launching media app", e)
+                }
+            }
+        }
     }
 
     override fun updateMetadata(metadata: MediaItemMetadata?) {

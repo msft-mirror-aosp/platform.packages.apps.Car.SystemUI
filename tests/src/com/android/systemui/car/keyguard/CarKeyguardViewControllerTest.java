@@ -246,10 +246,10 @@ public class CarKeyguardViewControllerTest extends CarSysuiTestCase {
     public void setOccludedFalse_currentlyOccluded_showsKeyguard() {
         setIsSecure(true);
         mCarKeyguardViewController.show(/* options= */ null);
-        mCarKeyguardViewController.setOccluded(/* occluded= */ true, /* animate= */ false);
+        mCarKeyguardViewController.setOccluded(/* occluded= */ true);
         reset(mPrimaryBouncerInteractor);
 
-        mCarKeyguardViewController.setOccluded(/* occluded= */ false, /* animate= */ false);
+        mCarKeyguardViewController.setOccluded(/* occluded= */ false);
         waitForDelayableExecutor();
 
         verify(mPrimaryBouncerInteractor).show(/* isScrimmed= */ true,
@@ -262,11 +262,11 @@ public class CarKeyguardViewControllerTest extends CarSysuiTestCase {
         mCarKeyguardViewController.show(/* options= */ null);
 
         when(mKeyguardStateController.isUnlocked()).thenReturn(true);
-        mCarKeyguardViewController.setOccluded(/* occluded= */ true, /* animate= */ false);
+        mCarKeyguardViewController.setOccluded(/* occluded= */ true);
         verify(mKeyguardSystemBarPresenter, never()).showAllOcclusionButtons();
 
         when(mKeyguardStateController.isUnlocked()).thenReturn(false);
-        mCarKeyguardViewController.setOccluded(/* occluded= */ true, /* animate= */ false);
+        mCarKeyguardViewController.setOccluded(/* occluded= */ true);
         verify(mKeyguardSystemBarPresenter).showAllOcclusionButtons();
     }
 

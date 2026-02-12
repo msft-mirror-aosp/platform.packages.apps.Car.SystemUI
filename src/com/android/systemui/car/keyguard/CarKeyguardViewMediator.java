@@ -226,7 +226,7 @@ public class CarKeyguardViewMediator extends KeyguardViewMediator {
             synchronized (mOcclusionLock) {
                 Log.d(TAG, String.format("%s#onAnimationStart. Set occluded = %b.",
                         mAnimatorType, mOcclude));
-                setOccluded(mOcclude, /* animate= */ false);
+                setOccluded(mOcclude);
                 finishedCallback.onAnimationFinished();
             }
         }

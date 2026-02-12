@@ -15,26 +15,26 @@
   ~ limitations under the License.
   -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
+
     <array name="window_states" android:featureFlag="com.android.car.scalableui.enable_ext_panel_updates">
-        <item>@xml/app_panel</item>
-        <item>@xml/map_panel</item>
+        <item>@xml/floating_app_panel</item>
+        <item>@xml/background_map_panel</item>
         <item>@xml/widget_panel</item>
         <item>@xml/assistant_panel</item>
         <item>@xml/suw_panel</item>
         <item>@xml/unreactive_panel</item>
-        <item>@xml/status_bar</item>
-        <item>@xml/nav_bar</item>
+        <item>@xml/top_bar_left_panel</item>
+        <item>@xml/top_bar_right_panel</item>
+        <item>@xml/bottom_bar_left_panel</item>
+        <item>@xml/bottom_bar_center_panel</item>
+        <item>@xml/bottom_bar_right_panel</item>
+        <item>@xml/minimized_media_controls_panel</item>
         <item>@xml/hun_panel</item>
-        <item>@xml/projected_panel</item>
     </array>
 
-    <array name="window_states">
-        <item>@xml/app_panel</item>
-        <item>@xml/map_panel</item>
-        <item>@xml/widget_panel</item>
-        <item>@xml/assistant_panel</item>
-        <item>@xml/suw_panel</item>
-        <item>@xml/unreactive_panel</item>
-    </array>
+    <bool name="config_enableTopSystemBar" android:featureFlag="com.android.car.scalableui.enable_ext_panel_updates">false</bool>
+    <bool name="config_enableBottomSystemBar" android:featureFlag="com.android.car.scalableui.enable_ext_panel_updates">false</bool>
+    <bool name="config_enableLeftSystemBar" android:featureFlag="com.android.car.scalableui.enable_ext_panel_updates">false</bool>
+    <bool name="config_enableRightSystemBar" android:featureFlag="com.android.car.scalableui.enable_ext_panel_updates">false</bool>
 
 </resources>

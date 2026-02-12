@@ -17,32 +17,27 @@
 
 <resources>
 
-  <!-- Dimensions for the split bottom navigation bar panels (2175x1224) -->
-  <dimen name="car_bottom_system_bar_top">1088px</dimen>
-  <dimen name="car_top_system_bar_bottom">88px</dimen>
-
   <!-- Left Panels -->
-  <dimen name="car_bottom_left_system_bar_left">0px</dimen>
-  <dimen name="car_bottom_left_system_bar_right">277px</dimen>
-  <dimen name="car_top_left_system_bar_left">0px</dimen>
-  <dimen name="car_top_left_system_bar_right">500px</dimen>
+  <dimen name="car_bottom_left_system_bar_width">250px</dimen>
+  <dimen name="car_top_left_system_bar_width">500px</dimen>
 
   <!-- Center Panel -->
-  <dimen name="car_bottom_center_system_bar_left">787px</dimen>
-  <dimen name="car_bottom_center_system_bar_right">1450px</dimen>
+  <dimen name="car_bottom_center_system_bar_left">698px</dimen>
+  <dimen name="car_bottom_center_system_bar_width">525px</dimen>
 
   <!-- Right Panels -->
-  <dimen name="car_bottom_right_system_bar_left">1898px</dimen>
-  <dimen name="car_bottom_right_system_bar_right">2175px</dimen>
-  <dimen name="car_top_right_system_bar_left">1790px</dimen>
-  <dimen name="car_top_right_system_bar_right">2175px</dimen>
+  <dimen name="car_bottom_right_system_bar_width">250px</dimen>
+  <dimen name="car_top_right_system_bar_width">350px</dimen>
 
-  <dimen name="status_bar_height">88px</dimen>
-  <dimen name="navigation_bar_height">136px</dimen>
+  <dimen name="status_bar_height">104px</dimen>
+  <dimen name="navigation_bar_height">144px</dimen>
 
   <!-- Minimized Controls Decor Panel (in between left and center) -->
-  <dimen name="minimized_controls_left">340px</dimen>
-  <dimen name="minimized_controls_right">740px</dimen>
+  <dimen name="minimized_controls_left">299px</dimen>
+  <dimen name="minimized_controls_width">350px</dimen>
+
+  <dimen name="split_system_bar_padding">16px</dimen>
+  <dimen name="minimize_controls_padding">@dimen/split_system_bar_padding</dimen>
 
   <dimen name="floating_app_panel_top_offset">@dimen/status_bar_height</dimen>
   <dimen name="floating_app_panel_bottom_offset">@dimen/navigation_bar_height</dimen>

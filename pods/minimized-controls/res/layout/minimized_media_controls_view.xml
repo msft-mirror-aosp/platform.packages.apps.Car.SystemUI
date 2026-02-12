@@ -20,101 +20,107 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     android:gravity="center"
-    android:weightSum="4"
-    android:background="@drawable/minimized_controls_background"
-    android:paddingStart="@dimen/minimized_controls_padding_horizontal"
-    android:paddingEnd="@dimen/minimized_controls_padding_horizontal">
+    android:padding="@dimen/minimize_controls_padding">
 
-    <!-- Section 1: Album Art and App Icon -->
-    <FrameLayout
-        android:id="@+id/album_art_container"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:clipChildren="false"
-        android:clipToPadding="false">
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="4"
+        android:background="@drawable/minimized_controls_background">
 
-        <!-- Wrapper to keep icon relative to album art -->
+        <!-- Section 1: Album Art and App Icon -->
         <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:id="@+id/minimized_control_album_art_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
             android:clipChildren="false"
             android:clipToPadding="false">
 
-            <ImageView
-                android:id="@+id/album_art"
+            <!-- Wrapper to keep icon relative to album art -->
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <ImageView
+                    android:id="@+id/album_art"
+                    android:layout_width="@dimen/minimized_controls_button_size"
+                    android:layout_height="@dimen/minimized_controls_button_size"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_placeholder" />
+
+                <!-- Icon size 18dp, centered at bottom-end corner (approx) -->
+                <!-- Using translation to shift it 50% out if needed, or just aligning bottom|end if typical badge -->
+                <!-- User said "center is at the bottom end", assuming overlap -->
+                <ImageView
+                    android:id="@+id/media_widget_app_icon"
+                    android:layout_width="@dimen/minimized_controls_app_icon_size"
+                    android:layout_height="@dimen/minimized_controls_app_icon_size"
+                    android:layout_gravity="bottom|end"
+                    android:translationX="9dp"
+                    android:translationY="9dp"
+                    android:background="@drawable/minimized_media_controls_app_icon_background"
+                    android:src="@android:drawable/sym_def_app_icon" />
+            </FrameLayout>
+        </FrameLayout>
+
+        <!-- Section 2: Prev Button -->
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageButton
+                android:id="@+id/playback_action_id1"
                 android:layout_width="@dimen/minimized_controls_button_size"
                 android:layout_height="@dimen/minimized_controls_button_size"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_placeholder" />
-
-            <!-- Icon size 18dp, centered at bottom-end corner (approx) -->
-            <!-- Using translation to shift it 50% out if needed, or just aligning bottom|end if typical badge -->
-            <!-- User said "center is at the bottom end", assuming overlap -->
-            <ImageView
-                android:id="@+id/media_widget_app_icon"
-                android:layout_width="@dimen/minimized_controls_app_icon_size"
-                android:layout_height="@dimen/minimized_controls_app_icon_size"
-                android:layout_gravity="bottom|end"
-                android:translationX="9dp"
-                android:translationY="9dp"
-                android:background="@drawable/minimized_media_controls_app_icon_background"
-                android:src="@android:drawable/sym_def_app_icon" />
+                android:layout_gravity="center"
+                android:background="@drawable/minimized_media_controls_action_item_background"
+                android:scaleType="center"
+                android:contentDescription="@string/minimized_controls_prev_description" />
         </FrameLayout>
-    </FrameLayout>
 
-    <!-- Section 2: Prev Button -->
-    <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
+        <!-- Section 3: Play/Pause Button -->
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-        <ImageButton
-            android:id="@+id/playback_action_id1"
-            android:layout_width="@dimen/minimized_controls_button_size"
-            android:layout_height="@dimen/minimized_controls_button_size"
-            android:layout_gravity="center"
-            android:background="@drawable/minimized_media_controls_action_item_background"
-            android:scaleType="center"
-            android:contentDescription="@string/minimized_controls_prev_description" />
-    </FrameLayout>
+            <ImageButton
+                android:id="@+id/play_pause_button"
+                android:layout_width="@dimen/minimized_controls_button_size"
+                android:layout_height="@dimen/minimized_controls_button_size"
+                android:layout_gravity="center"
+                android:background="@drawable/minimized_media_controls_play_pause_background"
+                android:src="@drawable/minimized_media_controls_play_pause_button"
+                android:scaleType="center"
+                android:contentDescription="@string/minimized_controls_play_description" />
+        </FrameLayout>
 
-    <!-- Section 3: Play/Pause Button -->
-    <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
+        <!-- Section 4: Next Button -->
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-        <ImageButton
-            android:id="@+id/play_pause_button"
-            android:layout_width="@dimen/minimized_controls_button_size"
-            android:layout_height="@dimen/minimized_controls_button_size"
-            android:layout_gravity="center"
-            android:background="@drawable/minimized_media_controls_play_pause_background"
-            android:src="@drawable/minimized_media_controls_play_pause_button"
-            android:scaleType="center"
-            android:contentDescription="@string/minimized_controls_play_description" />
-    </FrameLayout>
+            <ImageButton
+                android:id="@+id/playback_action_id2"
+                android:layout_width="@dimen/minimized_controls_button_size"
+                android:layout_height="@dimen/minimized_controls_button_size"
+                android:layout_gravity="center"
+                android:background="@drawable/minimized_media_controls_action_item_background"
+                android:scaleType="center"
+                android:contentDescription="@string/minimized_controls_next_description" />
+        </FrameLayout>
 
-    <!-- Section 4: Next Button -->
-    <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
-
-        <ImageButton
-            android:id="@+id/playback_action_id2"
-            android:layout_width="@dimen/minimized_controls_button_size"
-            android:layout_height="@dimen/minimized_controls_button_size"
-            android:layout_gravity="center"
-            android:background="@drawable/minimized_media_controls_action_item_background"
-            android:scaleType="center"
-            android:contentDescription="@string/minimized_controls_next_description" />
-    </FrameLayout>
+    </LinearLayout>
 
 </LinearLayout>

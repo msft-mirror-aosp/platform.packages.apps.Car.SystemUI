@@ -20,7 +20,7 @@ import static android.view.WindowInsets.Type.navigationBars;
 import static android.view.WindowInsets.Type.statusBars;
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
 
-import static com.android.systemui.car.systembar.CarSystemBarController.STATUS_BAR;
+import static com.android.systemui.car.systembar.SystemBarConstants.STATUS_BAR;
 import static com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindowKt.HUN_Z_ORDER;
 
 import android.content.Context;

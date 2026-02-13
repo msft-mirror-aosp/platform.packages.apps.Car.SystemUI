@@ -37,7 +37,7 @@ import androidx.test.filters.SmallTest;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.systembar.CarSystemBarController;
+import com.android.systemui.car.systembar.base.CarSystemBarController;
 import com.android.systemui.settings.UserTracker;
 
 import org.junit.Before;

@@ -16,12 +16,12 @@
 
 package com.android.systemui.car.systembar.split
 
-import com.android.systemui.car.systembar.CarSystemBarViewControllerFactory
-import com.android.systemui.car.systembar.CarSystemBarViewControllerImpl
-import com.android.systemui.car.systembar.CarSystemBarViewSupplier
-import com.android.systemui.car.systembar.CarSystemBarViewSupplierUsingLayout
-import com.android.systemui.car.systembar.CarSystemBarWindowSupplier
-import com.android.systemui.car.systembar.CarSystemBarWindowSupplierUsingLayout
+import com.android.systemui.car.systembar.base.CarSystemBarViewControllerFactory
+import com.android.systemui.car.systembar.base.CarSystemBarViewControllerImpl
+import com.android.systemui.car.systembar.base.CarSystemBarViewSupplier
+import com.android.systemui.car.systembar.base.CarSystemBarViewSupplierUsingLayout
+import com.android.systemui.car.systembar.base.CarSystemBarWindowSupplier
+import com.android.systemui.car.systembar.base.CarSystemBarWindowSupplierUsingLayout
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

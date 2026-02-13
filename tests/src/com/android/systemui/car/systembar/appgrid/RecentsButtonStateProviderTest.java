@@ -46,7 +46,7 @@ import androidx.test.filters.SmallTest;
 
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
-import com.android.systemui.car.systembar.CarSystemBarButton;
+import com.android.systemui.car.systembar.base.CarSystemBarButton;
 import com.android.systemui.shared.system.TaskStackChangeListener;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
 

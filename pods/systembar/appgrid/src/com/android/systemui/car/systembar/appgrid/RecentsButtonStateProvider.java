@@ -26,7 +26,7 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.android.systemui.car.systembar.CarSystemBarButton;
+import com.android.systemui.car.systembar.base.CarSystemBarButton;
 import com.android.systemui.shared.system.TaskStackChangeListener;
 import com.android.systemui.shared.system.TaskStackChangeListeners;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;

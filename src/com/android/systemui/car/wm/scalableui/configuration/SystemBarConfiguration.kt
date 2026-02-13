@@ -19,8 +19,8 @@ package com.android.systemui.car.wm.scalableui.configuration
 import android.os.Bundle
 import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser
 import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.TYPE_NAVIGATION
-import com.android.systemui.car.systembar.CarSystemBarController.NAVIGATION_BAR
-import com.android.systemui.car.systembar.CarSystemBarController.STATUS_BAR
+import com.android.systemui.car.systembar.SystemBarConstants.NAVIGATION_BAR
+import com.android.systemui.car.systembar.SystemBarConstants.STATUS_BAR
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
 import com.android.systemui.car.wm.scalableui.systemwindow.HUN_Z_ORDER
 import dagger.assisted.Assisted

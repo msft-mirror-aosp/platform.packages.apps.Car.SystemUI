@@ -22,7 +22,7 @@ import static com.android.systemui.car.notification.NotificationConstants.DRAG_C
 import android.content.Context;
 
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.systembar.CarSystemBarController;
+import com.android.systemui.car.systembar.base.CarSystemBarController;
 import com.android.systemui.car.window.OverlayPanelViewController;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;

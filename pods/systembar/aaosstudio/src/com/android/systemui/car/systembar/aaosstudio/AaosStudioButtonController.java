@@ -22,9 +22,9 @@ import android.content.pm.PackageManager;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.systembar.ButtonSelectionStateController;
-import com.android.systemui.car.systembar.CarSystemBarButton;
-import com.android.systemui.car.systembar.CarSystemBarButtonController;
+import com.android.systemui.car.systembar.base.ButtonSelectionStateController;
+import com.android.systemui.car.systembar.base.CarSystemBarButton;
+import com.android.systemui.car.systembar.base.CarSystemBarButtonController;
 import com.android.systemui.car.wm.scalableui.EventDispatcher;
 import com.android.systemui.settings.UserTracker;
 

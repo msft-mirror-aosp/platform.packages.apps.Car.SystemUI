@@ -16,13 +16,13 @@
 
 package com.android.systemui.car.systembar.standard;
 
-import com.android.systemui.car.systembar.CarSystemBarController;
-import com.android.systemui.car.systembar.CarSystemBarViewControllerFactory;
-import com.android.systemui.car.systembar.CarSystemBarViewControllerImpl;
-import com.android.systemui.car.systembar.CarSystemBarViewSupplier;
-import com.android.systemui.car.systembar.CarSystemBarViewSupplierUsingLayout;
-import com.android.systemui.car.systembar.CarSystemBarWindowSupplier;
-import com.android.systemui.car.systembar.CarSystemBarWindowSupplierUsingLayout;
+import com.android.systemui.car.systembar.SystemBarConstants;
+import com.android.systemui.car.systembar.base.CarSystemBarViewControllerFactory;
+import com.android.systemui.car.systembar.base.CarSystemBarViewControllerImpl;
+import com.android.systemui.car.systembar.base.CarSystemBarViewSupplier;
+import com.android.systemui.car.systembar.base.CarSystemBarViewSupplierUsingLayout;
+import com.android.systemui.car.systembar.base.CarSystemBarWindowSupplier;
+import com.android.systemui.car.systembar.base.CarSystemBarWindowSupplierUsingLayout;
 
 import dagger.Binds;
 import dagger.Module;
@@ -35,34 +35,34 @@ public abstract class StandardSystemBarModule {
     /** Injects CarSystemBarViewController for TOP_BAR_NAME */
     @Binds
     @IntoMap
-    @StringKey(CarSystemBarController.TOP_BAR_NAME)
+    @StringKey(SystemBarConstants.TOP_BAR_NAME)
     public abstract CarSystemBarViewControllerFactory<?> bindTopCarSystemBarViewFactory(
             CarSystemBarViewControllerImpl.Factory factory);
 
     /** Injects CarSystemBarViewController for BOTTOM_BAR_NAME */
     @Binds
     @IntoMap
-    @StringKey(CarSystemBarController.BOTTOM_BAR_NAME)
+    @StringKey(SystemBarConstants.BOTTOM_BAR_NAME)
     public abstract CarSystemBarViewControllerFactory<?> bindBottomCarSystemBarViewFactory(
             CarSystemBarViewControllerImpl.Factory factory);
 
     /** Injects CarSystemBarViewController for LEFT_BAR_NAME */
     @Binds
     @IntoMap
-    @StringKey(CarSystemBarController.LEFT_BAR_NAME)
+    @StringKey(SystemBarConstants.LEFT_BAR_NAME)
     public abstract CarSystemBarViewControllerFactory<?> bindLeftCarSystemBarViewFactory(
             CarSystemBarViewControllerImpl.Factory factory);
 
     /** Injects CarSystemBarViewController for RIGHT_BAR_NAME */
     @Binds
     @IntoMap
-    @StringKey(CarSystemBarController.RIGHT_BAR_NAME)
+    @StringKey(SystemBarConstants.RIGHT_BAR_NAME)
     public abstract CarSystemBarViewControllerFactory<?> bindRightCarSystemBarViewFactory(
             CarSystemBarViewControllerImpl.Factory factory);
 
     @Provides
     @IntoMap
-    @StringKey(CarSystemBarController.TOP_BAR_NAME)
+    @StringKey(SystemBarConstants.TOP_BAR_NAME)
     static CarSystemBarViewSupplier bindTopCarSystemBarViewSupplier() {
         return new CarSystemBarViewSupplierUsingLayout(
                 R.layout.car_top_system_bar,
@@ -71,7 +71,7 @@ public abstract class StandardSystemBarModule {
 
     @Provides
     @IntoMap
-    @StringKey(CarSystemBarController.TOP_BAR_NAME)
+    @StringKey(SystemBarConstants.TOP_BAR_NAME)
     static CarSystemBarWindowSupplier bindTopCarSystemBarWindowSupplier() {
         return new CarSystemBarWindowSupplierUsingLayout(
                 com.android.systemui.res.R.layout.navigation_bar_window,
@@ -80,7 +80,7 @@ public abstract class StandardSystemBarModule {
 
     @Provides
     @IntoMap
-    @StringKey(CarSystemBarController.LEFT_BAR_NAME)
+    @StringKey(SystemBarConstants.LEFT_BAR_NAME)
     static CarSystemBarViewSupplier bindLeftCarSystemBarViewSupplier() {
         return new CarSystemBarViewSupplierUsingLayout(
                 R.layout.car_left_system_bar,
@@ -89,7 +89,7 @@ public abstract class StandardSystemBarModule {
 
     @Provides
     @IntoMap
-    @StringKey(CarSystemBarController.LEFT_BAR_NAME)
+    @StringKey(SystemBarConstants.LEFT_BAR_NAME)
     static CarSystemBarWindowSupplier bindLeftCarSystemBarWindowSupplier() {
         return new CarSystemBarWindowSupplierUsingLayout(
                 com.android.systemui.res.R.layout.navigation_bar_window,
@@ -98,7 +98,7 @@ public abstract class StandardSystemBarModule {
 
     @Provides
     @IntoMap
-    @StringKey(CarSystemBarController.RIGHT_BAR_NAME)
+    @StringKey(SystemBarConstants.RIGHT_BAR_NAME)
     static CarSystemBarViewSupplier bindRightCarSystemBarViewSupplier() {
         return new CarSystemBarViewSupplierUsingLayout(
                 R.layout.car_right_system_bar,
@@ -107,7 +107,7 @@ public abstract class StandardSystemBarModule {
 
     @Provides
     @IntoMap
-    @StringKey(CarSystemBarController.RIGHT_BAR_NAME)
+    @StringKey(SystemBarConstants.RIGHT_BAR_NAME)
     static CarSystemBarWindowSupplier bindRightCarSystemBarWindowSupplier() {
         return new CarSystemBarWindowSupplierUsingLayout(
                 com.android.systemui.res.R.layout.navigation_bar_window,
@@ -116,7 +116,7 @@ public abstract class StandardSystemBarModule {
 
     @Provides
     @IntoMap
-    @StringKey(CarSystemBarController.BOTTOM_BAR_NAME)
+    @StringKey(SystemBarConstants.BOTTOM_BAR_NAME)
     static CarSystemBarViewSupplier bindBottomCarSystemBarViewSupplier() {
         return new CarSystemBarViewSupplierUsingLayout(
                 R.layout.car_bottom_system_bar,
@@ -125,7 +125,7 @@ public abstract class StandardSystemBarModule {
 
     @Provides
     @IntoMap
-    @StringKey(CarSystemBarController.BOTTOM_BAR_NAME)
+    @StringKey(SystemBarConstants.BOTTOM_BAR_NAME)
     static CarSystemBarWindowSupplier bindBottomCarSystemBarWindowSupplier() {
         return new CarSystemBarWindowSupplierUsingLayout(
                 com.android.systemui.res.R.layout.navigation_bar_window,

@@ -22,10 +22,10 @@ android_library {
         "src/**/*.java",
     ],
     static_libs: [
-        "CarSystemUI-Shared",
-        "CarSystemUI-Hvac-Controller",
         "CarSystemUI-FlexibleUI",
-        "androidx-constraintlayout_constraintlayout",
+        "CarSystemUI-Hvac-Controller",
+        "CarSystemUI-Shared",
+        "CarSystemUI-SystemBar-Base",
     ],
     libs: [
         "android.car",

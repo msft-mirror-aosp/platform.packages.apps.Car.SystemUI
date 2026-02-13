@@ -20,7 +20,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
-import com.android.systemui.car.systembar.CarSystemBarButton;
+import com.android.systemui.car.systembar.base.CarSystemBarButton;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
 
 /**

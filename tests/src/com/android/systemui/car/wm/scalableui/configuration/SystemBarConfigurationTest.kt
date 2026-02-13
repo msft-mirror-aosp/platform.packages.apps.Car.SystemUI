@@ -23,7 +23,7 @@ import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser
 import com.android.car.scalableui.model.PanelControllerMetadata
 import com.android.systemui.CarSysuiTestCase
 import com.android.systemui.car.CarSystemUiTest
-import com.android.systemui.car.systembar.CarSystemBarController
+import com.android.systemui.car.systembar.SystemBarConstants
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
 import com.android.systemui.car.wm.scalableui.systemwindow.HUN_Z_ORDER
 import com.google.common.truth.Truth.assertThat
@@ -90,7 +90,7 @@ class SystemBarConfigurationTest : CarSysuiTestCase() {
             INDEX_OFFSET
         )
         assertThat(systemBarConfiguration.type)
-            .isEqualTo(CarSystemBarController.NAVIGATION_BAR)
+            .isEqualTo(SystemBarConstants.NAVIGATION_BAR)
     }
 
     @Test
@@ -105,7 +105,7 @@ class SystemBarConfigurationTest : CarSysuiTestCase() {
             INDEX,
             INDEX_OFFSET
         )
-        assertThat(systemBarConfiguration.type).isEqualTo(CarSystemBarController.STATUS_BAR)
+        assertThat(systemBarConfiguration.type).isEqualTo(SystemBarConstants.STATUS_BAR)
     }
 
     @Test

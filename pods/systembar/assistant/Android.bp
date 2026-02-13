@@ -21,6 +21,7 @@ android_library {
     static_libs: [
         "CarSystemUI-FlexibleUI",
         "CarSystemUI-Shared",
+        "CarSystemUI-SystemBar-Base",
     ],
     plugins: [
         "dagger2-compiler",

@@ -93,10 +93,12 @@ public class ActiveConnectivityStatusIconControllerTest extends CarSysuiTestCase
 
     @Test
     public void onUpdateStatus_wifiDisabled_hotspotDisabled_showsMobileDataIcon() {
-        mActiveConnectivityStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ false));
+        mActiveConnectivityStatusIconController.setWifiIndicators(
+                getWifiIndicator(/* enabled= */ false));
         mActiveConnectivityStatusIconController.setEthernetIndicators(
                 getEthernetIndicator(/* enabled= */  false));
-        mActiveConnectivityStatusIconController.onHotspotChanged(/* enabled= */ false, /* numDevices= */  0);
+        mActiveConnectivityStatusIconController.onHotspotChanged(
+                /* enabled= */ false, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
 
@@ -106,10 +108,12 @@ public class ActiveConnectivityStatusIconControllerTest extends CarSysuiTestCase
 
     @Test
     public void onUpdateStatus_wifiEnabled_hotspotDisabled_showsWifiIcon() {
-        mActiveConnectivityStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ true));
+        mActiveConnectivityStatusIconController.setWifiIndicators(
+                getWifiIndicator(/* enabled= */ true));
         mActiveConnectivityStatusIconController.setEthernetIndicators(
                 getEthernetIndicator(/* enabled= */  false));
-        mActiveConnectivityStatusIconController.onHotspotChanged(/* enabled= */ false, /* numDevices= */  0);
+        mActiveConnectivityStatusIconController.onHotspotChanged(
+                /* enabled= */ false, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
 
@@ -123,7 +127,8 @@ public class ActiveConnectivityStatusIconControllerTest extends CarSysuiTestCase
                 getWifiIndicator(/* enabled= */ false));
         mActiveConnectivityStatusIconController.setEthernetIndicators(
                 getEthernetIndicator(/* enabled= */  false));
-        mActiveConnectivityStatusIconController.onHotspotChanged(/* enabled= */ true, /* numDevices= */  0);
+        mActiveConnectivityStatusIconController.onHotspotChanged(
+                /* enabled= */ true, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
 
@@ -137,7 +142,8 @@ public class ActiveConnectivityStatusIconControllerTest extends CarSysuiTestCase
                 getWifiIndicator(/* enabled= */ true));
         mActiveConnectivityStatusIconController.setEthernetIndicators(
                 getEthernetIndicator(/* enabled= */  false));
-        mActiveConnectivityStatusIconController.onHotspotChanged(/* enabled= */ true, /* numDevices= */  0);
+        mActiveConnectivityStatusIconController.onHotspotChanged(
+                /* enabled= */ true, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
 
@@ -151,7 +157,8 @@ public class ActiveConnectivityStatusIconControllerTest extends CarSysuiTestCase
                 getWifiIndicator(/* enabled= */ true));
         mActiveConnectivityStatusIconController.setEthernetIndicators(
                 getEthernetIndicator(/* enabled= */ true));
-        mActiveConnectivityStatusIconController.onHotspotChanged(/* enabled= */ true, /* numDevices= */  0);
+        mActiveConnectivityStatusIconController.onHotspotChanged(
+                /* enabled= */ true, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
 
@@ -161,10 +168,12 @@ public class ActiveConnectivityStatusIconControllerTest extends CarSysuiTestCase
 
     @Test
     public void onUpdateStatus_wifiEnabled_hotspotDisabled_ethernetEnabled_showsEthernetIcon() {
-        mActiveConnectivityStatusIconController.setWifiIndicators(getWifiIndicator(/* enabled= */ true));
+        mActiveConnectivityStatusIconController.setWifiIndicators(
+                getWifiIndicator(/* enabled= */ true));
         mActiveConnectivityStatusIconController.setEthernetIndicators(
                 getEthernetIndicator(/* enabled= */ true));
-        mActiveConnectivityStatusIconController.onHotspotChanged(/* enabled= */ false, /* numDevices= */  0);
+        mActiveConnectivityStatusIconController.onHotspotChanged(
+                /* enabled= */ false, /* numDevices= */  0);
 
         // onUpdateStatus is called by the events above.
 

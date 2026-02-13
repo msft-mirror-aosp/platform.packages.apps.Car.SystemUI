@@ -30,8 +30,8 @@ import android.util.Log;
 import com.android.internal.app.AssistUtils;
 import com.android.internal.app.IVoiceInteractionSessionListener;
 import com.android.internal.app.IVoiceInteractionSessionShowCallback;
-import com.android.systemui.car.systembar.CarSystemBarButton;
-import com.android.systemui.car.systembar.SystemBarUtil;
+import com.android.systemui.car.systembar.base.CarSystemBarButton;
+import com.android.systemui.car.systembar.base.SystemBarUtil;
 
 import java.util.Set;
 

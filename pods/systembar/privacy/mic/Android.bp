@@ -27,6 +27,7 @@ android_library {
         "CarSystemUI-QC-Base",
         "CarSystemUI-QC-Footer-Base",
         "CarSystemUI-Shared",
+        "CarSystemUI-SystemBar-Base",
         "CarSystemUI-SystemBar-PrivacyChip-Base",
         "CarSystemUI-SystemBar-Panel",
     ],

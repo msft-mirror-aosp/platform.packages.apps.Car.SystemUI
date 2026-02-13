@@ -31,7 +31,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.android.systemui.broadcast.BroadcastDispatcher;
-import com.android.systemui.car.systembar.CarSystemBarController;
+import com.android.systemui.car.systembar.base.CarSystemBarController;
 import com.android.systemui.car.window.OverlayViewMediator;
 import com.android.systemui.dagger.SysUISingleton;
 import com.android.systemui.settings.UserTracker;

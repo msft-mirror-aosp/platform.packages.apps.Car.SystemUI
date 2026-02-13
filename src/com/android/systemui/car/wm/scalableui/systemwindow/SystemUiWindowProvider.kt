@@ -16,8 +16,8 @@
 package com.android.systemui.car.wm.scalableui.systemwindow
 
 import com.android.car.scalableui.manager.StateManager
-import com.android.systemui.car.systembar.CarSystemBarController.NAVIGATION_BAR
-import com.android.systemui.car.systembar.CarSystemBarController.STATUS_BAR
+import com.android.systemui.car.systembar.SystemBarConstants.NAVIGATION_BAR
+import com.android.systemui.car.systembar.SystemBarConstants.STATUS_BAR
 import com.android.systemui.car.wm.scalableui.configuration.SystemUiConfigurationProvider
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelConfigReadStateMonitor
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer

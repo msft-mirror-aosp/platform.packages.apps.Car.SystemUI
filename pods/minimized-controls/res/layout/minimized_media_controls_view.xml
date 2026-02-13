@@ -65,8 +65,8 @@
                     android:layout_width="@dimen/minimized_controls_app_icon_size"
                     android:layout_height="@dimen/minimized_controls_app_icon_size"
                     android:layout_gravity="bottom|end"
-                    android:translationX="9dp"
-                    android:translationY="9dp"
+                    android:translationX="@dimen/minimized_controls_app_icon_offset"
+                    android:translationY="@dimen/minimized_controls_app_icon_offset"
                     android:background="@drawable/minimized_media_controls_app_icon_background"
                     android:src="@android:drawable/sym_def_app_icon" />
             </FrameLayout>

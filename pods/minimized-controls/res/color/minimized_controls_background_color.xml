@@ -14,9 +14,8 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<resources>
-  <dimen name="car_bottom_center_system_bar_left">277px</dimen>
-  <dimen name="app_bottom_offset">288px</dimen>
-  <dimen name="app_bottom_offset_plus_contextual_bar_gap">308px</dimen>
-</resources>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:alpha="0.2"
+        android:color="?oemColorSurfaceContainer" />
+</selector>

@@ -31,7 +31,7 @@ import com.android.systemui.car.flags.FlagManager
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController
 import com.android.systemui.car.notification.NotificationPanelViewController
-import com.android.systemui.graphics.ImageLoader
+import com.android.systemui.graphics.ImageLoaderImpl
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.After
@@ -66,7 +66,7 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val testScope = TestScope(testDispatcher)
-    private val imageLoader = ImageLoader(context, testDispatcher)
+    private val imageLoader = ImageLoaderImpl(context, testDispatcher)
     private lateinit var controller: PromotedNotificationChipViewController
     private lateinit var repository: PromotedNotificationsRepository
 

@@ -24,7 +24,7 @@
         <Visibility isVisible="true"/>
         <Bounds
             left="@dimen/minimized_controls_left"
-            right="@dimen/minimized_controls_right"
+            width="@dimen/minimized_controls_width"
             bottom="100%"
             height="@dimen/navigation_bar_height"/>
     </Variant>
@@ -34,7 +34,7 @@
         <Bounds
             left="@dimen/minimized_controls_left"
             top="100%"
-            right="@dimen/minimized_controls_right"
+            width="@dimen/minimized_controls_width"
             height="@dimen/navigation_bar_height"/>
     </Variant>
 

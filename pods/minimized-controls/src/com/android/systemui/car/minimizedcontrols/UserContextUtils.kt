@@ -20,6 +20,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Bundle
 import android.os.UserHandle
 import android.util.Log
 
@@ -71,6 +72,12 @@ object UserContextUtils {
                     flags,
                     UserHandle.of(userId)
                 )
+            }
+
+            override fun startActivity(intent: Intent?, options: Bundle?) {
+                if (intent != null) {
+                    baseContext.startActivityAsUser(intent, options, UserHandle.of(userId))
+                }
             }
         }
     }

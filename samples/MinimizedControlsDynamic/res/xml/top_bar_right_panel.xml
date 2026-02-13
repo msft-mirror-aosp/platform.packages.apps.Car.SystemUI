@@ -20,10 +20,10 @@
     defaultVariant="@id/open">
     <Variant id="@+id/base">
         <Bounds
-            left="@dimen/car_top_right_system_bar_left"
+            right="100%"
             top="0"
-            right="@dimen/car_top_right_system_bar_right"
-            bottom="@dimen/car_top_system_bar_bottom"/>
+            width="@dimen/car_top_right_system_bar_width"
+            height="@dimen/status_bar_height"/>
     </Variant>
     <Variant id="@+id/open" parent="@id/base">
         <Visibility isVisible="true"/>

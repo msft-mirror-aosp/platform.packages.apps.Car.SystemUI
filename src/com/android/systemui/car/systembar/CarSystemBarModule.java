@@ -16,11 +16,6 @@
 
 package com.android.systemui.car.systembar;
 
-import static com.android.systemui.car.systembar.CarSystemBarController.BOTTOM_BAR_NAME;
-import static com.android.systemui.car.systembar.CarSystemBarController.LEFT_BAR_NAME;
-import static com.android.systemui.car.systembar.CarSystemBarController.RIGHT_BAR_NAME;
-import static com.android.systemui.car.systembar.CarSystemBarController.TOP_BAR_NAME;
-
 import android.content.Context;
 import android.os.Handler;
 import android.view.WindowManager;
@@ -44,6 +39,7 @@ import com.android.systemui.car.systembar.assistant.AssistantButtonModule;
 import com.android.systemui.car.systembar.controlcenter.ControlCenterButtonModule;
 import com.android.systemui.car.systembar.debugpanel.DebugPanelModule;
 import com.android.systemui.car.systembar.dock.DockViewModule;
+import com.android.systemui.car.systembar.extension.ExtensionSystemBarModule;
 import com.android.systemui.car.systembar.home.HomeButtonModule;
 import com.android.systemui.car.systembar.notificationchip.PromotedNotificationChipModule;
 import com.android.systemui.car.systembar.panel.PanelModule;
@@ -52,6 +48,8 @@ import com.android.systemui.car.systembar.privacy.camera.PrivacyChipCameraModule
 import com.android.systemui.car.systembar.privacy.cast.PrivacyChipCastModule;
 import com.android.systemui.car.systembar.privacy.mic.PrivacyChipMicModule;
 import com.android.systemui.car.systembar.privacy.share.PrivacyChipShareModule;
+import com.android.systemui.car.systembar.split.SplitSystemBarModule;
+import com.android.systemui.car.systembar.standard.StandardSystemBarModule;
 import com.android.systemui.car.systembar.usernamepanel.UserNamePanelModule;
 import com.android.systemui.car.systembar.volume.VolumeButtonModule;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
@@ -80,7 +78,6 @@ import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.IntoSet;
 import dagger.multibindings.Multibinds;
-import dagger.multibindings.StringKey;
 
 import java.util.Map;
 import java.util.Optional;
@@ -100,7 +97,7 @@ import java.util.Optional;
         DebugPanelModule.class,
         DataSubscriptionModule.class,
         DockViewModule.class,
-        ExtensionPanelUpdatesCarSystemBarModule.class,
+        ExtensionSystemBarModule.class,
         FlexibleUiModule.class,
         HomeButtonModule.class,
         PanelModule.class,
@@ -110,7 +107,8 @@ import java.util.Optional;
         PrivacyChipCastModule.class,
         PrivacyChipShareModule.class,
         PromotedNotificationChipModule.class,
-        SplitCarSystemBarModule.class,
+        SplitSystemBarModule.class,
+        StandardSystemBarModule.class,
         UserNamePanelModule.class,
         VolumeButtonModule.class})
 public abstract class CarSystemBarModule {
@@ -248,34 +246,6 @@ public abstract class CarSystemBarModule {
     public abstract CarSystemBarViewFactory bindCarSystemBarViewFactory(
             CarSystemBarViewFactoryImpl impl);
 
-    /** Injects CarSystemBarViewController for LEFT_BAR_NAME */
-    @Binds
-    @IntoMap
-    @StringKey(LEFT_BAR_NAME)
-    public abstract CarSystemBarViewControllerFactory<?> bindLeftCarSystemBarViewFactory(
-            CarSystemBarViewControllerImpl.Factory factory);
-
-    /** Injects CarSystemBarViewController for TOP_BAR_NAME */
-    @Binds
-    @IntoMap
-    @StringKey(TOP_BAR_NAME)
-    public abstract CarSystemBarViewControllerFactory<?> bindTopCarSystemBarViewFactory(
-            CarSystemBarViewControllerImpl.Factory factory);
-
-    /** Injects CarSystemBarViewController for RIGHT_BAR_NAME */
-    @Binds
-    @IntoMap
-    @StringKey(RIGHT_BAR_NAME)
-    public abstract CarSystemBarViewControllerFactory<?> bindRightCarSystemBarViewFactory(
-            CarSystemBarViewControllerImpl.Factory factory);
-
-    /** Injects CarSystemBarViewController for BOTTOM_BAR_NAME */
-    @Binds
-    @IntoMap
-    @StringKey(BOTTOM_BAR_NAME)
-    public abstract CarSystemBarViewControllerFactory<?> bindBottomCarSystemBarViewFactory(
-            CarSystemBarViewControllerImpl.Factory factory);
-
     /** Injects CarSystemBarButtonController */
     @Binds
     @IntoMap
@@ -304,74 +274,6 @@ public abstract class CarSystemBarModule {
     public abstract CarSystemBarElementController.Factory
             bindTemperatureControlViewControllerFactory(
                     TemperatureControlViewController.Factory factory);
-
-    @Provides
-    @IntoMap
-    @StringKey(TOP_BAR_NAME)
-    static CarSystemBarViewSupplier bindTopCarSystemBarViewSupplier() {
-        return new CarSystemBarViewSupplierUsingLayout(R.layout.car_top_system_bar,
-                R.layout.car_top_system_bar_unprovisioned);
-    }
-
-    @Provides
-    @IntoMap
-    @StringKey(TOP_BAR_NAME)
-    static CarSystemBarWindowSupplier bindTopCarSystemBarWindowSupplier() {
-        return new CarSystemBarWindowSupplierUsingLayout(
-                com.android.systemui.res.R.layout.navigation_bar_window,
-                R.id.car_top_bar_window);
-    }
-
-    @Provides
-    @IntoMap
-    @StringKey(LEFT_BAR_NAME)
-    static CarSystemBarViewSupplier bindLeftCarSystemBarViewSupplier() {
-        return new CarSystemBarViewSupplierUsingLayout(R.layout.car_left_system_bar,
-                R.layout.car_left_system_bar_unprovisioned);
-    }
-
-    @Provides
-    @IntoMap
-    @StringKey(LEFT_BAR_NAME)
-    static CarSystemBarWindowSupplier bindLeftCarSystemBarWindowSupplier() {
-        return new CarSystemBarWindowSupplierUsingLayout(
-                com.android.systemui.res.R.layout.navigation_bar_window,
-                R.id.car_left_bar_window);
-    }
-
-    @Provides
-    @IntoMap
-    @StringKey(RIGHT_BAR_NAME)
-    static CarSystemBarViewSupplier bindRightCarSystemBarViewSupplier() {
-        return new CarSystemBarViewSupplierUsingLayout(R.layout.car_right_system_bar,
-                R.layout.car_right_system_bar_unprovisioned);
-    }
-
-    @Provides
-    @IntoMap
-    @StringKey(RIGHT_BAR_NAME)
-    static CarSystemBarWindowSupplier bindRightCarSystemBarWindowSupplier() {
-        return new CarSystemBarWindowSupplierUsingLayout(
-                com.android.systemui.res.R.layout.navigation_bar_window,
-                R.id.car_right_bar_window);
-    }
-
-    @Provides
-    @IntoMap
-    @StringKey(BOTTOM_BAR_NAME)
-    static CarSystemBarViewSupplier bindBottomCarSystemBarViewSupplier() {
-        return new CarSystemBarViewSupplierUsingLayout(R.layout.car_bottom_system_bar,
-                R.layout.car_bottom_system_bar_unprovisioned);
-    }
-
-    @Provides
-    @IntoMap
-    @StringKey(BOTTOM_BAR_NAME)
-    static CarSystemBarWindowSupplier bindBottomCarSystemBarWindowSupplier() {
-        return new CarSystemBarWindowSupplierUsingLayout(
-                com.android.systemui.res.R.layout.navigation_bar_window,
-                R.id.car_bottom_bar_window);
-    }
 
     /** Injects SystemBarConfigs */
     @SysUISingleton

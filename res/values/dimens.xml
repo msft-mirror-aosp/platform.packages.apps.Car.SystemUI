@@ -41,6 +41,10 @@
     <dimen name="car_padding_5">64dp</dimen>
     <dimen name="car_padding_6">96dp</dimen>
 
+    <!-- System Bar Panel Offsets -->
+    <dimen name="split_system_bar_padding">0dp</dimen>
+    <dimen name="minimize_controls_padding">0dp</dimen>
+
     <!--
        Note: status bar height and navigation bar heights are defined
        in frameworks/base/core package and thus will have no effect if

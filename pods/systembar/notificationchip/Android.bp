@@ -26,6 +26,7 @@ android_library {
     ],
     static_libs: [
         "CarSystemUI-FlexibleUI",
+        "CarSystemUI-Notification",
         "CarSystemUI-Shared",
         "CarSystemUI-SystemBar-PrivacyChip-Base",
         "CarSystemUI-SystemBar-Panel",

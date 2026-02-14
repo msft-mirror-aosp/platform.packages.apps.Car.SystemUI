@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<com.android.systemui.car.systembar.CarSystemBarView
+<com.android.systemui.car.systembar.base.CarSystemBarView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:systemui="http://schemas.android.com/apk/res-auto"
     android:id="@+id/car_top_bar"
@@ -82,4 +82,4 @@
             android:layout_marginTop="@dimen/car_padding_2"
             />
     </RelativeLayout>
-</com.android.systemui.car.systembar.CarSystemBarView>
+</com.android.systemui.car.systembar.base.CarSystemBarView>

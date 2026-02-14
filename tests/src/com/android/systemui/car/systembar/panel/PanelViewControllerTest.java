@@ -48,7 +48,7 @@ import com.android.systemui.broadcast.BroadcastDispatcher;
 import com.android.systemui.car.CarDeviceProvisionedController;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.shared.R;
-import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
+import com.android.systemui.car.systembar.base.element.CarSystemBarElementInitializer;
 import com.android.systemui.settings.UserTracker;
 import com.android.systemui.statusbar.policy.ConfigurationController;
 

@@ -16,7 +16,7 @@
 ** limitations under the License.
 */
 -->
-<com.android.systemui.car.systembar.CarSystemBarView
+<com.android.systemui.car.systembar.base.CarSystemBarView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:systemui="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
@@ -63,7 +63,7 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <com.android.systemui.car.systembar.CarSystemBarButton
+        <com.android.systemui.car.systembar.base.CarSystemBarButton
             android:id="@+id/maps_nav"
             android:contentDescription="@string/system_bar_maps_label"
             style="@style/SystemBarButton.Vertical"
@@ -73,7 +73,7 @@
             systemui:selectedIcon="@drawable/car_ic_navigation_selected"
             systemui:highlightWhenSelected="true" />
 
-        <com.android.systemui.car.systembar.CarSystemBarButton
+        <com.android.systemui.car.systembar.base.CarSystemBarButton
             android:id="@+id/music_nav"
             android:contentDescription="@string/system_bar_media_label"
             style="@style/SystemBarButton.Vertical"
@@ -84,7 +84,7 @@
             systemui:selectedIcon="@drawable/car_ic_music_selected"
             systemui:highlightWhenSelected="true" />
 
-        <com.android.systemui.car.systembar.CarSystemBarButton
+        <com.android.systemui.car.systembar.base.CarSystemBarButton
             android:id="@+id/phone_nav"
             android:contentDescription="@string/system_bar_phone_label"
             style="@style/SystemBarButton.Vertical"
@@ -105,7 +105,7 @@
         android:layoutDirection="ltr"
         android:orientation="vertical">
 
-        <com.android.systemui.car.systembar.CarSystemBarButton
+        <com.android.systemui.car.systembar.base.CarSystemBarButton
             android:id="@+id/home"
             android:contentDescription="@string/system_bar_home_label"
             style="@style/SystemBarButton.Vertical"
@@ -117,7 +117,7 @@
             systemui:systemBarDisableFlags="home"
             systemui:controller="com.android.systemui.car.systembar.home.HomeButtonController" />
 
-        <com.android.systemui.car.systembar.CarSystemBarButton
+        <com.android.systemui.car.systembar.base.CarSystemBarButton
             android:id="@+id/grid_nav"
             android:contentDescription="@string/system_bar_applications_label"
             style="@style/SystemBarButton.Vertical"
@@ -128,4 +128,4 @@
             systemui:highlightWhenSelected="true"
             systemui:systemBarDisableFlags="home" />
     </LinearLayout>
-</com.android.systemui.car.systembar.CarSystemBarView>
+</com.android.systemui.car.systembar.base.CarSystemBarView>

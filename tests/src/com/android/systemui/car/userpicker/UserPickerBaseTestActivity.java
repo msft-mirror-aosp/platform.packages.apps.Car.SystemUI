@@ -23,7 +23,7 @@ import android.view.Display;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.systemui.car.systembar.element.CarSystemBarElementInitializer;
+import com.android.systemui.car.systembar.base.element.CarSystemBarElementInitializer;
 import com.android.systemui.dump.DumpManager;
 import com.android.systemui.settings.DisplayTracker;
 

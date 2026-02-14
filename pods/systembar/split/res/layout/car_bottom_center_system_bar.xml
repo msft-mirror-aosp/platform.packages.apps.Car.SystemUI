@@ -14,7 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<com.android.systemui.car.systembar.CarSystemBarView
+<com.android.systemui.car.systembar.base.CarSystemBarView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:systemui="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -46,14 +46,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/dock_container_margin"
-            systemui:controller="com.android.systemui.car.systembar.DockViewControllerWrapper">
+            systemui:controller="com.android.systemui.car.systembar.dock.DockViewControllerWrapper">
             <com.android.car.docklib.view.DockView
                 android:id="@+id/dock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </com.android.systemui.car.flexibleui.layout.CarSystemBarFrameLayout>
 
-        <com.android.systemui.car.systembar.CarSystemBarButton
+        <com.android.systemui.car.systembar.base.CarSystemBarButton
             android:id="@+id/control_center_nav"
             android:contentDescription="@string/system_bar_control_center_label"
             style="@style/SystemBarButton"
@@ -71,7 +71,7 @@
             systemui:highlightWhenSelected="true"
             systemui:icon="@drawable/ic_mic_light"/>
 
-        <com.android.systemui.car.systembar.CarSystemBarButton
+        <com.android.systemui.car.systembar.base.CarSystemBarButton
             android:id="@+id/home"
             android:contentDescription="@string/system_bar_home_label"
             style="@style/SystemBarButton"
@@ -86,4 +86,4 @@
 
     </LinearLayout>
 
-</com.android.systemui.car.systembar.CarSystemBarView>
+</com.android.systemui.car.systembar.base.CarSystemBarView>

@@ -29,7 +29,7 @@ import com.android.settingslib.development.DevelopmentSettingsEnabler;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController;
-import com.android.systemui.car.systembar.BuildInfoUtil;
+import com.android.systemui.car.systembar.base.BuildInfoUtil;
 import com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView;
 import com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonViewController;
 import com.android.systemui.car.systembar.panel.PanelContentProvider;

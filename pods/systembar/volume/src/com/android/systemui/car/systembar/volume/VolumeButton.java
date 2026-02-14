@@ -24,7 +24,7 @@ import android.car.media.CarAudioManager;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.android.systemui.car.systembar.CarSystemBarButton;
+import com.android.systemui.car.systembar.base.CarSystemBarButton;
 
 public class VolumeButton extends CarSystemBarButton {
     public VolumeButton(Context context, AttributeSet attrs) {

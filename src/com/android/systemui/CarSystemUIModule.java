@@ -45,7 +45,7 @@ import com.android.systemui.car.notification.NotificationModule;
 import com.android.systemui.car.notification.NotificationShadeWindowControllerImpl;
 import com.android.systemui.car.shared.R;
 import com.android.systemui.car.statusbar.DozeServiceHost;
-import com.android.systemui.car.systembar.SystemBarConfigs;
+import com.android.systemui.car.systembar.base.SystemBarConfigs;
 import com.android.systemui.car.users.CarMultiUserUtilsModule;
 import com.android.systemui.car.volume.CarVolumeModule;
 import com.android.systemui.car.wm.activity.window.ActivityWindowModule;

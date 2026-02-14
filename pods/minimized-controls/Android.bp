@@ -26,6 +26,10 @@ android_library {
     static_libs: [
         "CarSystemUI-Shared",
     ],
+    libs: [
+        "token-shared-lib-prebuilt",
+    ],
+    enforce_uses_libs: false,
     resource_dirs: [
         "res",
     ],

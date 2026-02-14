@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<com.android.systemui.car.systembar.CarSystemBarView
+<com.android.systemui.car.systembar.base.CarSystemBarView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:systemui="http://schemas.android.com/apk/res-auto"
     android:id="@+id/car_top_bar"
@@ -36,7 +36,7 @@
             android:layout_centerVertical="true"
             android:layout_alignParentStart="true" />
 
-        <com.android.systemui.car.systembar.CarSystemBarButton
+        <com.android.systemui.car.systembar.base.CarSystemBarButton
             android:id="@+id/clock_container"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -50,7 +50,7 @@
                 android:singleLine="true"
                 style="@style/SystemBarClockText"
                 systemui:amPmStyle="gone"/>
-        </com.android.systemui.car.systembar.CarSystemBarButton>
+        </com.android.systemui.car.systembar.base.CarSystemBarButton>
 
         <include layout="@layout/camera_privacy_chip"
             android:layout_width="wrap_content"
@@ -70,4 +70,4 @@
             android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
-</com.android.systemui.car.systembar.CarSystemBarView>
+</com.android.systemui.car.systembar.base.CarSystemBarView>

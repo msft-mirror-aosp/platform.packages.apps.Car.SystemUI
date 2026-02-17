@@ -255,7 +255,7 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
                     mFinishTransaction, Collections.emptyList());
         });
 
-        mPanelTransitionCoordinator.stopRunningAnimations(binder2);
+        mPanelTransitionCoordinator.stopOtherAnimations(binder2);
         // onAnimationEnd should still be called when cancelled - wait for a small amount of time
         // and expect animation end callback to execute
         assertThat(latch.await(/* timeout= */ 1, TimeUnit.SECONDS)).isTrue();

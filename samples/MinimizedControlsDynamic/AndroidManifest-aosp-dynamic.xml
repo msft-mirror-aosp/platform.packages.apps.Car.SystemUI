@@ -20,5 +20,6 @@
         android:targetPackage="com.android.systemui"
         android:isStatic="false"
         android:priority="201"
+        android:resourcesMap="@xml/overlays"
          />
 </manifest>

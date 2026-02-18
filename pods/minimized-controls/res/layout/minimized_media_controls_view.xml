@@ -83,8 +83,9 @@
                 android:layout_width="@dimen/minimized_controls_button_size"
                 android:layout_height="@dimen/minimized_controls_button_size"
                 android:layout_gravity="center"
-                android:background="@drawable/minimized_media_controls_action_item_background"
-                android:scaleType="center"
+                android:scaleType="fitCenter"
+                android:padding="@dimen/minimized_controls_icon_padding"
+                android:tint="?oemColorOnSurfaceVariant"
                 android:contentDescription="@string/minimized_controls_prev_description" />
         </FrameLayout>
 
@@ -101,7 +102,9 @@
                 android:layout_gravity="center"
                 android:background="@drawable/minimized_media_controls_play_pause_background"
                 android:src="@drawable/minimized_media_controls_play_pause_button"
-                android:scaleType="center"
+                android:scaleType="fitCenter"
+                android:padding="@dimen/minimized_controls_icon_padding"
+                android:tint="?oemColorSurfaceContainerHigh"
                 android:contentDescription="@string/minimized_controls_play_description" />
         </FrameLayout>
 
@@ -117,7 +120,9 @@
                 android:layout_height="@dimen/minimized_controls_button_size"
                 android:layout_gravity="center"
                 android:background="@drawable/minimized_media_controls_action_item_background"
-                android:scaleType="center"
+                android:scaleType="fitCenter"
+                android:padding="@dimen/minimized_controls_icon_padding"
+                android:tint="?oemColorOnSurfaceVariant"
                 android:contentDescription="@string/minimized_controls_next_description" />
         </FrameLayout>
 

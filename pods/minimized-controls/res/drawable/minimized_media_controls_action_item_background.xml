@@ -15,12 +15,12 @@
   limitations under the License.
   -->
 
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-        android:color="@color/car_ui_ripple_color">
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <shape android:shape="rectangle">
-            <corners android:radius="@dimen/minimized_media_controls_action_item_radius" />
-            <solid android:color="@color/minimized_media_controls_action_item_background" />
+        <shape>
+            <corners android:radius="?oemShapeCornerLarge"/>
+            <solid android:color="?oemColorSurfaceContainerHighest"/>
         </shape>
     </item>
-</ripple>
+    <item android:drawable="@drawable/minimized_controls_button_ripple"/>
+</layer-list>

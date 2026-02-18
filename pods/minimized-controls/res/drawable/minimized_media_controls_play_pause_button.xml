@@ -16,6 +16,7 @@
   -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/ic_pause" android:state_selected="true" />
-    <item android:drawable="@drawable/ic_play_arrow" />
+    <item android:drawable="@drawable/ic_pause" android:state_selected="true" android:state_enabled="true"/>
+    <item android:drawable="@drawable/ic_play_arrow_off" android:state_enabled="false"/>
+    <item android:drawable="@drawable/ic_play_arrow" android:state_enabled="true"/>
 </selector>

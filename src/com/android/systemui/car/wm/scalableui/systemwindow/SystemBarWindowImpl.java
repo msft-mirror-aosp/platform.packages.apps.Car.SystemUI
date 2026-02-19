@@ -24,10 +24,12 @@ import static com.android.systemui.car.systembar.SystemBarConstants.STATUS_BAR;
 import static com.android.systemui.car.wm.scalableui.systemwindow.SystemBarWindowKt.HUN_Z_ORDER;
 
 import android.content.Context;
+import android.graphics.Insets;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.os.Binder;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.InsetsFrameProvider;
 import android.view.WindowManager;
@@ -39,6 +41,9 @@ import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateCons
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An implementation of {@link SystemUiWindow} specifically for system bars.
@@ -73,6 +78,9 @@ public class SystemBarWindowImpl extends SystemUiWindowBase implements SystemBar
     }
 
     private WindowManager.LayoutParams getLayoutParamsFromBounds(Rect bounds) {
+        if (getDisplayMetrics() == null) {
+            return null;
+        }
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                 mapZOrderToBarType(mConfiguration.getZOrder()),
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
@@ -80,22 +88,115 @@ public class SystemBarWindowImpl extends SystemUiWindowBase implements SystemBar
                         | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
                         | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH, PixelFormat.TRANSLUCENT);
         SystemUiWindow.updateLayoutParams(lp, bounds, getDisplayMetrics());
-        lp.setTitle(mConfiguration.getName());
-        lp.providedInsets = new InsetsFrameProvider[]{new InsetsFrameProvider(INSETS_OWNER,
-                mConfiguration.getIndex(),
-                STATUS_BAR == mConfiguration.getType() ? statusBars() : navigationBars()),
-                new InsetsFrameProvider(INSETS_OWNER, getMandatorySystemGesturesIndex(),
-                        mandatorySystemGestures())};
-        lp.setFitInsetsTypes(0);
+
         int panelGravity = mPanelUpdateConsumer.getGravity(getId());
         if (panelGravity != Gravity.NO_GRAVITY) {
             lp.gravity = panelGravity;
         }
+
+
+        // Use insetsFrame, this ensures the system recognizes the bar as a valid inset even
+        // for partial bars
+        Rect insetsFrame = getInsetsFrame(bounds);
+        List<InsetsFrameProvider> providers = new ArrayList<>();
+        // 1. Standard Bar Provider (Nav/Status)
+        providers.add(new InsetsFrameProvider(INSETS_OWNER, mConfiguration.getIndex(),
+                STATUS_BAR == mConfiguration.getType() ? statusBars() : navigationBars())
+                .setArbitraryRectangle(insetsFrame)
+                .setSource(InsetsFrameProvider.SOURCE_ARBITRARY_RECTANGLE)
+                .setInsetsSize(calculateInsetsSize(insetsFrame)));
+
+
+        // 2. Gestures
+        providers.add(new InsetsFrameProvider(INSETS_OWNER, getMandatorySystemGesturesIndex(),
+                mandatorySystemGestures())
+                .setArbitraryRectangle(insetsFrame)
+                .setSource(InsetsFrameProvider.SOURCE_ARBITRARY_RECTANGLE)
+                .setInsetsSize(calculateInsetsSize(insetsFrame)));
+
+        lp.setTitle(mConfiguration.getName());
+        lp.providedInsets = providers.toArray(new InsetsFrameProvider[0]);
+        lp.setFitInsetsTypes(0);
         lp.windowAnimations = 0;
         lp.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
         lp.privateFlags = lp.privateFlags
                 | WindowManager.LayoutParams.PRIVATE_FLAG_INTERCEPT_GLOBAL_DRAG_AND_DROP;
         return lp;
+    }
+
+    /**
+     * Constructs a fake frame spanning the entire width or height of the display based on the
+     * provided bounds.
+     *
+     * <p>WindowInsets requires the source frame to span the entire width (for top/bottom bars) or
+     * height (for left/right bars) to be recognized as a valid side inset. This method expands the
+     * bounds to full width or height to ensure the system correctly identifies the insets.
+     *
+     */
+    private Rect getInsetsFrame(Rect bounds) {
+        Rect insetsFrame = new Rect(bounds);
+        DisplayMetrics dm = getDisplayMetrics();
+        Insets insetsSize = calculateInsetsSize(bounds);
+
+        if (insetsSize.top > 0 || insetsSize.bottom > 0) {
+            // Force full width for top/bottom bars
+            insetsFrame.left = 0;
+            insetsFrame.right = dm.widthPixels;
+        } else if (insetsSize.left > 0 || insetsSize.right > 0) {
+            // Force full height for left/right bars
+            insetsFrame.top = 0;
+            insetsFrame.bottom = dm.heightPixels;
+        }
+        return insetsFrame;
+    }
+
+    /**
+     * Calculates the insets provided by this window based on its bounds relative to the display
+     * edges.
+     *
+     * <p>If the window touches a screen edge (top, bottom, left, or right), it provides an inset
+     * corresponding to its dimension on that side. For example, a bottom bar provides a bottom
+     * inset equal to its height.
+     */
+    private Insets calculateInsetsSize(Rect bounds) {
+        DisplayMetrics dm = getDisplayMetrics();
+        if (dm == null) {
+            return Insets.NONE;
+        }
+
+        // First Check for full width/height scenarios
+        boolean fullWidth = bounds.width() == dm.widthPixels;
+        boolean fullHeight = bounds.height() == dm.heightPixels;
+
+        if (fullWidth && !fullHeight) {
+            if (bounds.top == 0) {
+                return Insets.of(0, bounds.height(), 0, 0);
+            }
+            if (bounds.bottom == dm.heightPixels) {
+                return Insets.of(0, 0, 0, bounds.height());
+            }
+        }
+
+        if (fullHeight && !fullWidth) {
+            if (bounds.left == 0) {
+                return Insets.of(bounds.width(), 0, 0, 0);
+            }
+            if (bounds.right == dm.widthPixels) {
+                return Insets.of(0, 0, bounds.width(), 0);
+            }
+        }
+
+        // For partial bars: calculate insets based on which edge the bounds touch.
+        if (bounds.bottom == dm.heightPixels) {
+            return Insets.of(0, 0, 0, bounds.height());
+        } else if (bounds.top == 0) {
+            return Insets.of(0, bounds.height(), 0, 0);
+        } else if (bounds.left == 0) {
+            return Insets.of(bounds.width(), 0, 0, 0);
+        } else if (bounds.right == dm.widthPixels) {
+            return Insets.of(0, 0, bounds.width(), 0);
+        }
+        return Insets.NONE;
     }
 
     @Override

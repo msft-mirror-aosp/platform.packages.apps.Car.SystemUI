@@ -57,7 +57,7 @@
             android:contentDescription="@string/system_bar_notifications_label"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            style="@style/TopBarButton"
+            style="@style/HorizontalBarButton"
             systemui:highlightWhenSelected="true"
             systemui:icon="@drawable/car_ic_notification_dock"
             systemui:longIntent="intent:#Intent;action=com.android.car.bugreport.action.BUG_REPORT;end"

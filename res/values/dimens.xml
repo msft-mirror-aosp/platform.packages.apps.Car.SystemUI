@@ -393,4 +393,9 @@
     <dimen name="car_toast_margin">24dp</dimen>
     <dimen name="car_toast_icon_size">44dp</dimen>
     <dimen name="car_toast_icon_margin">24dp</dimen>
+
+    <dimen name="horizontal_bar_button_y_offset">10dp</dimen>
+    <dimen name="horizontal_bar_button_x_offset">0dp</dimen>
+    <dimen name="vertical_bar_button_y_offset">@dimen/horizontal_bar_button_x_offset</dimen>
+    <dimen name="vertical_bar_button_x_offset">@dimen/horizontal_bar_button_y_offset</dimen>
 </resources>

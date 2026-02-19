@@ -381,8 +381,14 @@ public final class TaskPanel extends SysUIPanel {
      */
     public boolean hasRestart() {
         PanelState panelState = getPanelState();
-        return mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart) && panelState != null
-                && panelState.getRestart() != null && isVisible();
+        if (panelState == null) {
+            return false;
+        }
+        boolean isVisible = panelState.getCurrentVariant() != null
+                ? panelState.getCurrentVariant().isVisible()
+                : isVisible();
+        return mFlagManager.isEnabled(Flag.ScalableUiTaskAutoRestart)
+                && panelState.getRestart() != null && isVisible;
     }
 
     @Override
@@ -405,9 +411,10 @@ public final class TaskPanel extends SysUIPanel {
         }
         AutoTaskStackTransaction autoTaskStackTransaction = new AutoTaskStackTransaction();
         Variant currentVariant = mPanelUtils.getCurrentVariant(getPanelId());
+        boolean isVisible = currentVariant != null ? currentVariant.isVisible() : isVisible();
         AutoTaskStackState autoTaskStackState = new AutoTaskStackState(
                 currentVariant != null ? currentVariant.getBounds() : getBounds(),
-                currentVariant != null ? currentVariant.isVisible() : isVisible(),
+                isVisible,
                 currentVariant != null ? currentVariant.getLayer() : getLayer());
         autoTaskStackTransaction.setTaskStackState(getRootStack().getId(), autoTaskStackState);
         if (mFlagManager.isEnabled(Flag.DisplayCompatibilityAutoDecorSafeRegion)) {
@@ -417,7 +424,7 @@ public final class TaskPanel extends SysUIPanel {
             setupTaskToolbar(mRootTaskStack,
                     getRelativeBounds(getTaskToolbarBounds(), getBounds()));
         }
-        if (isVisible()) {
+        if (isVisible) {
             setBaseIntent(autoTaskStackTransaction);
         }
         getShellMainExecutor().execute(

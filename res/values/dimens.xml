@@ -385,5 +385,13 @@
     <dimen name="car_bottom_center_system_bar_horizontal_padding">64dp</dimen>
     <dimen name="car_top_right_system_bar_horizontal_padding">16dp</dimen>
 
-
+    <!-- Dimens restored from car-resource-common -->
+    <dimen name="car_rotary_focus_pressed_stroke_width">4dp</dimen>
+    <dimen name="car_rotary_focus_stroke_width">2dp</dimen>
+    <dimen name="car_alert_dialog_padding">32dp</dimen>
+    <dimen name="car_alert_dialog_icon_size">48dp</dimen>
+    <dimen name="car_toast_bottom_margin">124dp</dimen>
+    <dimen name="car_toast_margin">24dp</dimen>
+    <dimen name="car_toast_icon_size">44dp</dimen>
+    <dimen name="car_toast_icon_margin">24dp</dimen>
 </resources>

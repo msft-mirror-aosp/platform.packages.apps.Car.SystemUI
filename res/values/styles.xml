@@ -210,4 +210,9 @@
         <item name="dataSubscriptionPopUpArrowRadius">?oemShapeCornerExtraSmall</item>
         <item name="clearAllButtonRadius">?oemShapeCornerExtraLarge</item>
     </style>
+
+    <!-- Styles restored from car-resource-common -->
+    <style name="TextAppearance.Car.Toast" parent="@android:style/TextAppearance.DeviceDefault.Small">
+        <item name="android:textColor">?oemColorOnSurface</item>
+    </style>
 </resources>

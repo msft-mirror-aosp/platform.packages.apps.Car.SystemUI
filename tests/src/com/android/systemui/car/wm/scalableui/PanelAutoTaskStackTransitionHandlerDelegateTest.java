@@ -185,7 +185,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegateTest extends CarSysuiTes
                 false,
                 mock(SurfaceControl.Transaction.class));
 
-        verify(mPanelTransitionCoordinator).stopRunningAnimations(any());
+        verify(mPanelTransitionCoordinator).stopRunningAnimation(any());
     }
 
     @Test

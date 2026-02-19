@@ -172,7 +172,8 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                     + ", finishTransaction=" + finishTransaction.getId());
         }
 
-        mPanelTransitionCoordinator.reconcileAutoTaskStackState(transition, changedTaskStacks);
+        mPanelTransitionCoordinator.reconcileAutoTaskStackState(transition, changedTaskStacks,
+                preferNotToUse);
         Trace.beginSection(TAG + "#startAnimation");
 
         mPanelTransitionCoordinator.calculateStartTransaction(startTransaction, changedTaskStacks);
@@ -273,7 +274,7 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
                     + ", changedTaskStacks" + changedTaskStacks);
         }
         Trace.beginSection(TAG + "#onTransitionConsumed");
-        boolean stopped = mPanelTransitionCoordinator.stopRunningAnimations(transition);
+        boolean stopped = mPanelTransitionCoordinator.stopRunningAnimation(transition);
         if (!stopped && aborted) {
             // If the transition was aborted and the animation was never run, this transition likely
             // had no shell-related changes. Run the animations now to apply non-shell changes.

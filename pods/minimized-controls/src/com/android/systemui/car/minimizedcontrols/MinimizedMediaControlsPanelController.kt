@@ -107,12 +107,14 @@ class MinimizedMediaControlsPanelController @AssistedInject constructor(
         if (currentView !== view) {
             view = currentView as? MinimizedMediaControlsView
             // Initialize lifecycle registry if needed and attach to view
-            if (lifecycleRegistry == null) {
-                lifecycleRegistry = LifecycleRegistry(this)
+            mainExecutor.execute {
+                if (lifecycleRegistry == null) {
+                    lifecycleRegistry = LifecycleRegistry(this)
+                }
+                lifecycleRegistry?.currentState = Lifecycle.State.CREATED
+                lifecycleRegistry?.currentState = Lifecycle.State.RESUMED
+                currentView.setViewTreeLifecycleOwner(this)
             }
-            lifecycleRegistry?.currentState = Lifecycle.State.CREATED
-            currentView.setViewTreeLifecycleOwner(this)
-            lifecycleRegistry?.currentState = Lifecycle.State.RESUMED
         }
         initMedia()
         return currentView
@@ -184,25 +186,24 @@ class MinimizedMediaControlsPanelController @AssistedInject constructor(
         }
 
     private fun reinitMedia(userId: Int) {
-        if (currentUserId == userId) {
-            Log.d(TAG, "reinitMedia: Skipping re-initialization for same user $userId")
-            return
-        }
-        currentUserId = userId
-
-        val appCtx = view?.context?.applicationContext ?: return
-        Log.d(TAG, "reinitMedia: userId=$userId")
-
-        // Destroy previous lifecycle to clean up observers
-        lifecycleRegistry?.currentState = Lifecycle.State.DESTROYED
-        // Create new lifecycle registry for new user session
-        lifecycleRegistry = LifecycleRegistry(this)
-        lifecycleRegistry?.currentState = Lifecycle.State.CREATED
-        // Re-attach to view
-        view?.let { it.setViewTreeLifecycleOwner(this) }
-
-        // EXECUTE INITIALIZATION ON APP MAIN THREAD
         mainExecutor.execute {
+            if (currentUserId == userId) {
+                Log.d(TAG, "reinitMedia: Skipping re-initialization for same user $userId")
+                return@execute
+            }
+            currentUserId = userId
+
+            val appCtx = view?.context?.applicationContext ?: return@execute
+            Log.d(TAG, "reinitMedia: userId=$userId")
+
+            // Destroy previous lifecycle to clean up observers
+            lifecycleRegistry?.currentState = Lifecycle.State.DESTROYED
+            // Create new lifecycle registry for new user session
+            lifecycleRegistry = LifecycleRegistry(this)
+            lifecycleRegistry?.currentState = Lifecycle.State.CREATED
+            // Re-attach to view
+            view?.let { it.setViewTreeLifecycleOwner(this) }
+
             // Clean up old ViewModel on Main Thread.
             viewModel?.cleanUp()
 
@@ -255,7 +256,12 @@ class MinimizedMediaControlsPanelController @AssistedInject constructor(
 
     override fun destroy() {
         Log.d(TAG, "destroy")
-        lifecycleRegistry?.currentState = Lifecycle.State.DESTROYED
+        val lifecycle = lifecycleRegistry
+        if (lifecycle != null) {
+            mainExecutor.execute {
+                lifecycle.currentState = Lifecycle.State.DESTROYED
+            }
+        }
         super.destroy()
         shellController.removeUserChangeListener(userChangeListener)
         currentUserId = UserHandle.USER_NULL

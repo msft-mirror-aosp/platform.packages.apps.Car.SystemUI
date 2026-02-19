@@ -16,7 +16,9 @@
   -->
 
 <resources>
-  <dimen name="car_bottom_center_system_bar_left">277px</dimen>
+  <dimen name="car_bottom_center_system_bar_left">240px</dimen>
   <dimen name="app_bottom_offset">288px</dimen>
   <dimen name="app_bottom_offset_plus_contextual_bar_gap">308px</dimen>
+  <dimen name="map_bottom_inset">550px</dimen>
+  <dimen name="map_bottom_inset_large">1200px</dimen>
 </resources>

@@ -15,8 +15,8 @@
  */
 package com.android.systemui.car.wm.scalableui.systemevents;
 
-import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_SWITCHING;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKED;
+import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_VISIBLE;
 import static android.content.pm.ActivityInfo.CONFIG_UI_MODE;
 
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.SYSTEM_BEFORE_USER_SWITCH_EVENT_ID;
@@ -46,7 +46,6 @@ import android.view.Display;
 
 import androidx.annotation.NonNull;
 
-
 import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.Event;
 import com.android.car.scalableui.panel.Panel;
@@ -73,6 +72,8 @@ import dagger.Lazy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
@@ -92,6 +93,10 @@ public class SystemEventHandler implements CoreStartable,
         ConfigurationController.ConfigurationListener {
     private static final String TAG = SystemEventHandler.class.getSimpleName();
     private static final boolean DEBUG = Build.IS_DEBUGGABLE;
+    // Flag to track if certain states have already been triggered for a user
+    private static final int USER_FLAG_RESET = 1 << 0;
+    private static final int USER_FLAG_SWITCHED = 1 << 1;
+    private static final int USER_FLAG_SUW_LAUNCHED = 1 << 2;
 
     private final Context mContext;
     private final UserManager mUserManager;
@@ -105,12 +110,11 @@ public class SystemEventHandler implements CoreStartable,
     private final EventDispatcher mEventDispatcher;
     private final FlagManager mFlagManager;
     private final CarUxRestrictionsUtil mCarUxRestrictionsUtil;
+    // Mapping of userId to user flags
+    private final ConcurrentHashMap<Integer, Integer> mUserFlags = new ConcurrentHashMap<>();
 
     private CarUserManager mCarUserManager;
     private boolean mIsUserSetupInProgress;
-    // Flag to track if reset has already been called for this user
-    private boolean mResetCalledForUser = false;
-    private boolean mIsUserSwitching = true;
     private boolean mIsKeyguardShowing;
     private boolean mIsUxrRestricted;
     private Configuration mConfiguration;
@@ -130,10 +134,11 @@ public class SystemEventHandler implements CoreStartable,
                         return;
                     }
 
-                    if (event.getEventType() == USER_LIFECYCLE_EVENT_TYPE_SWITCHING) {
-                        // reset flag when switching
-                        mResetCalledForUser = false;
-                        mIsUserSwitching = true;
+                    if (event.getEventType() == USER_LIFECYCLE_EVENT_TYPE_VISIBLE) {
+                        // Attempt to launch SUW as soon as the user is visible to launch sooner
+                        // should the SUW app be direct boot aware. If it is not available, it will
+                        // be launched after user unlock instead.
+                        handleSuwLaunchIfNecessary(event.getUserId());
                     } else if (event.getEventType() == USER_LIFECYCLE_EVENT_TYPE_UNLOCKED) {
                         handleUserUnlocked(event.getUserHandle());
                     } else {
@@ -168,6 +173,8 @@ public class SystemEventHandler implements CoreStartable,
     private final UserTracker.Callback mUserTrackerCallback = new UserTracker.Callback() {
         @Override
         public void onBeforeUserSwitching(int newUser) {
+            // reset flags for new user when switching
+            mUserFlags.put(newUser, 0);
             mEventDispatcher.executeEvent(
                     getEventWithDisplays(new Event.Builder(SYSTEM_BEFORE_USER_SWITCH_EVENT_ID)));
         }
@@ -186,7 +193,7 @@ public class SystemEventHandler implements CoreStartable,
                     if (isOn && mUserManager.isUserUnlocked(mUserTracker.getUserId())
                             && !mIsKeyguardShowing) {
                         mEventDispatcher.executeEvent(getUserAuthEvent());
-                        mIsUserSwitching = false;
+                        addUserFlag(mUserTracker.getUserId(), USER_FLAG_SWITCHED);
                     }
                 }
             };
@@ -247,7 +254,8 @@ public class SystemEventHandler implements CoreStartable,
             // don't handle headless system user
             return;
         }
-        boolean isUserSetupInProgress = !mCarDeviceProvisionedController.isCurrentUserFullySetup();
+        boolean isUserSetupInProgress =
+                mCarDeviceProvisionedController.isCurrentUserSetupInProgress();
         if (isUserSetupInProgress != mIsUserSetupInProgress || force) {
             logIfDebuggable("User setup state changed setupInProgress=" + isUserSetupInProgress);
             mIsUserSetupInProgress = isUserSetupInProgress;
@@ -256,7 +264,7 @@ public class SystemEventHandler implements CoreStartable,
                     && shouldResetPanels()) {
                 logIfDebuggable("Resetting panels during user setup state change");
                 StateManager.handlePanelReset();
-                mResetCalledForUser = true;
+                addUserFlag(mUserTracker.getUserId(), USER_FLAG_RESET);
             }
         }
     }
@@ -289,7 +297,7 @@ public class SystemEventHandler implements CoreStartable,
     }
 
     private void registerProvisionedStateListener() {
-        mIsUserSetupInProgress = !mCarDeviceProvisionedController.isCurrentUserFullySetup();
+        mIsUserSetupInProgress = mCarDeviceProvisionedController.isCurrentUserSetupInProgress();
         if (mIsUserSetupInProgress) {
             notifySuwStateEvent();
         }
@@ -310,11 +318,10 @@ public class SystemEventHandler implements CoreStartable,
                 homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 ActivityOptions options = ActivityOptions.makeBasic();
                 options.setAvoidMoveToFront();
-                mContext.startActivityAsUser(homeIntent, options.toBundle(),
-                        mUserTracker.getUserHandle());
+                mContext.startActivityAsUser(homeIntent, options.toBundle(), userHandle);
             }
             StateManager.handlePanelReset();
-            mResetCalledForUser = true;
+            addUserFlag(userId, USER_FLAG_RESET);
         } else {
             logIfDebuggable("Received user unlock while user is not setup");
         }
@@ -325,20 +332,28 @@ public class SystemEventHandler implements CoreStartable,
             return;
         }
         mEventDispatcher.executeEvent(getUserAuthEvent());
-        mIsUserSwitching = false;
+        addUserFlag(userId, USER_FLAG_SWITCHED);
     }
 
     private void handleSuwLaunchIfNecessary(int userId) {
         if (!mFlagManager.isEnabled(Flag.ScalableUiNoSuwHome)) {
             return;
         }
+        if (isUserFlagSet(userId, USER_FLAG_SUW_LAUNCHED)) {
+            return;
+        }
         if (!mCarDeviceProvisionedController.isUserSetup(userId)) {
-            logIfDebuggable("Launch SUW intent for non-setup user");
             Intent suwIntent = new Intent(Intent.ACTION_MAIN);
             suwIntent.addCategory(Intent.CATEGORY_SETUP_WIZARD);
             suwIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (!isIntentAvailableForUser(suwIntent, mUserTracker.getUserHandle())) {
+                Log.w(TAG, "SUW not currently available for user " + userId);
+                return;
+            }
+            logIfDebuggable("Launch SUW intent for non-setup user");
             mContext.startActivityAsUser(suwIntent,
                     mUserTracker.getUserHandle());
+            addUserFlag(mUserTracker.getUserId(), USER_FLAG_SUW_LAUNCHED);
         } else if (mIsUserSetupInProgress) {
             // This is an unintended state - send the home event to the SUW
             // to get it to reset itself.
@@ -356,6 +371,14 @@ public class SystemEventHandler implements CoreStartable,
                         mUserTracker.getUserHandle());
             }
         }
+    }
+
+    private boolean isIntentAvailableForUser(Intent intent, UserHandle userHandle) {
+        List<ResolveInfo> resolvedApps = mContext.getPackageManager().queryIntentActivitiesAsUser(
+                intent,
+                /* flags= */ 0,
+                userHandle);
+        return !resolvedApps.isEmpty();
     }
 
     private void registerUserEventListener() {
@@ -398,7 +421,7 @@ public class SystemEventHandler implements CoreStartable,
 
             if (mUserManager.isUserUnlocked(mUserTracker.getUserId())) {
                 eventsToSend.add(getUserAuthEvent());
-                mIsUserSwitching = false;
+                addUserFlag(mUserTracker.getUserId(), USER_FLAG_SWITCHED);
             }
             mEventDispatcher.executeEvents(eventsToSend);
         }
@@ -422,7 +445,7 @@ public class SystemEventHandler implements CoreStartable,
 
     private boolean shouldResetPanels() {
         return mCarDeviceProvisionedController.isUserSetup(mUserTracker.getUserId())
-                && !mResetCalledForUser;
+                && !isUserFlagSet(mUserTracker.getUserId(), USER_FLAG_RESET);
     }
 
     private Event getEventWithDisplays(Event.Builder builder) {
@@ -433,10 +456,23 @@ public class SystemEventHandler implements CoreStartable,
     }
 
     private Event getUserAuthEvent() {
+        boolean isUserSwitching = !isUserFlagSet(mUserTracker.getUserId(), USER_FLAG_SWITCHED);
         return getEventWithDisplays(new Event.Builder(
                 SYSTEM_USER_AUTHENTICATED_EVENT_ID)
                 .addToken(SYSTEM_USER_SWITCH_ON_AUTHENTICATED_TOKEN_ID,
-                        Boolean.toString(mIsUserSwitching)));
+                        Boolean.toString(isUserSwitching)));
+    }
+
+    private void addUserFlag(int userId, int flag) {
+        mUserFlags.compute(userId,
+                (k, v) -> (v == null) ? flag : v | flag);
+    }
+
+    private boolean isUserFlagSet(int userId, int flag) {
+        if (!mUserFlags.containsKey(userId)) {
+            return false;
+        }
+        return (mUserFlags.get(userId) & flag) != 0;
     }
 
     private static void logIfDebuggable(String msg) {

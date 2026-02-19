@@ -224,7 +224,7 @@ public class SystemEventHandlerTest extends CarSysuiTestCase {
     @Test
     public void onUserSetupInProgress_sendsEnterSuwEvent() {
         // Arrange
-        when(mCarDeviceProvisionedController.isCurrentUserFullySetup()).thenReturn(false);
+        when(mCarDeviceProvisionedController.isCurrentUserSetupInProgress()).thenReturn(true);
 
         // Act
         mSystemEventHandler.start();
@@ -239,18 +239,18 @@ public class SystemEventHandlerTest extends CarSysuiTestCase {
     @Test
     public void onUserSetupComplete_sendsExitSuwEvent() {
         // Arrange
-        when(mCarDeviceProvisionedController.isCurrentUserFullySetup()).thenReturn(false);
+        when(mCarDeviceProvisionedController.isCurrentUserSetupInProgress()).thenReturn(true);
         mSystemEventHandler.start();
         simulateCarServiceConnection();
         ArgumentCaptor<CarDeviceProvisionedListener> listenerCaptor =
                 ArgumentCaptor.forClass(CarDeviceProvisionedListener.class);
         verify(mCarDeviceProvisionedController).addCallback(listenerCaptor.capture());
         CarDeviceProvisionedListener listener = listenerCaptor.getValue();
-        when(mCarDeviceProvisionedController.isCurrentUserFullySetup()).thenReturn(true);
+        when(mCarDeviceProvisionedController.isCurrentUserSetupInProgress()).thenReturn(false);
         Mockito.clearInvocations(mEventDispatcher);
 
         // Act
-        listener.onUserSetupChanged();
+        listener.onUserSetupInProgressChanged();
 
         // Assert
         verify(mEventDispatcher).executeEvent(mEventCaptor.capture());

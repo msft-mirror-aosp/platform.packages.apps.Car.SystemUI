@@ -32,5 +32,19 @@ class MinimizedMediaControlsView @JvmOverloads constructor(
 
     init {
         LayoutInflater.from(context).inflate(R.layout.minimized_media_controls_view, this, true)
+
+        findViewById<android.widget.ImageView>(R.id.media_widget_app_icon)?.let { icon ->
+            icon.outlineProvider = OvalOutlineProvider
+            icon.clipToOutline = true
+        }
+    }
+
+    private object OvalOutlineProvider : android.view.ViewOutlineProvider() {
+        override fun getOutline(
+            view: android.view.View,
+            outline: android.graphics.Outline
+        ) {
+            outline.setOval(0, 0, view.width, view.height)
+        }
     }
 }

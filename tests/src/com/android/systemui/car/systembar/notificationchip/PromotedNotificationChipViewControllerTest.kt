@@ -32,6 +32,8 @@ import com.android.systemui.car.flags.Flag
 import com.android.systemui.car.flags.FlagManager
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController
 import com.android.systemui.car.flexibleui.CarSystemBarElementStatusBarDisableController
+import com.android.systemui.car.notification.NotificationPanelViewController
+import com.android.systemui.car.window.OverlayViewController
 import com.android.systemui.graphics.ImageLoaderImpl
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -64,6 +66,9 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
     @Mock
     private lateinit var carNotificationListener: CarNotificationListener
     @Mock
+    private lateinit var notificationPanelViewController: NotificationPanelViewController
+
+    @Mock
     private lateinit var icon: Icon
 
     private val testDispatcher = UnconfinedTestDispatcher()
@@ -87,7 +92,8 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             testScope,
             imageLoader,
             carNotificationListener,
-            flagManager
+            flagManager,
+            notificationPanelViewController
         )
     }
 
@@ -158,5 +164,72 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
         captor.value.onClick(view)
 
         verify(carNotificationListener).showHun("key")
+    }
+
+    @Test
+    fun onPanelExpanded_hidesChip() {
+        `when`(flagManager.isEnabled(Flag.PromotedNotifications)).thenReturn(true)
+        controller.onViewAttached()
+        Mockito.clearInvocations(view)
+
+        val model = PromotedNotificationModel(
+            key = "key",
+            isHeadsUp = false,
+            postTime = 1000L,
+            shortCriticalText = "Text",
+            smallIcon = icon
+        )
+        repository.addPromotedNotification(model)
+        testScope.testScheduler.advanceUntilIdle()
+        verify(view).animateIn()
+
+        // Simulate panel expansion
+        val captor = ArgumentCaptor.forClass(
+            OverlayViewController.OverlayViewStateListener::class.java
+        )
+        verify(notificationPanelViewController).registerViewStateListener(captor.capture())
+
+        captor.value.onVisibilityChanged(true)
+        testScope.testScheduler.advanceUntilIdle()
+
+        verify(view).animateOut()
+    }
+
+    @Test
+    fun onPanelCollapsed_withPromotedNotification_showsChip() {
+        `when`(flagManager.isEnabled(Flag.PromotedNotifications)).thenReturn(true)
+        controller.onViewAttached()
+        Mockito.clearInvocations(view)
+
+        val model = PromotedNotificationModel(
+            key = "key",
+            isHeadsUp = false,
+            postTime = 1000L,
+            shortCriticalText = "Text",
+            smallIcon = icon
+        )
+        repository.addPromotedNotification(model)
+        testScope.testScheduler.advanceUntilIdle()
+
+        // Start with panel expanded and visible notification (so chip is hidden)
+        val captor = ArgumentCaptor.forClass(
+            OverlayViewController.OverlayViewStateListener::class.java
+        )
+        verify(notificationPanelViewController).registerViewStateListener(captor.capture())
+
+        verify(notificationPanelViewController).registerViewStateListener(captor.capture())
+
+        captor.value.onVisibilityChanged(true)
+        testScope.testScheduler.advanceUntilIdle()
+
+        verify(view).animateOut()
+
+        Mockito.clearInvocations(view)
+
+        // Now collapse panel
+        captor.value.onVisibilityChanged(false)
+        testScope.testScheduler.advanceUntilIdle()
+
+        verify(view).animateIn()
     }
 }

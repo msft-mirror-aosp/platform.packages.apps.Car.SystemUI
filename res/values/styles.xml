@@ -15,7 +15,8 @@
   ~ limitations under the License
   -->
 <resources
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:systemui="http://schemas.android.com/apk/res-auto">
 
     <!-- The style for the volume icons in the volume dialog. This style makes the icon scale to
          fit its container since auto wants the icon to be larger. The padding is added to make it
@@ -75,12 +76,19 @@
     </style>
 
     <!--    Todo: update RB to work with these styles -->
-    <style name="TopBarButton">
+    <style name="HorizontalBarButton">
         <item name="android:layout_marginTop">@dimen/car_quick_controls_entry_points_button_margin_top</item>
         <item name="android:layout_marginBottom">@dimen/car_quick_controls_entry_points_button_margin_bottom</item>
         <item name="android:layout_marginStart">@dimen/car_quick_controls_entry_points_button_margin_start</item>
         <item name="android:layout_marginEnd">@dimen/car_quick_controls_entry_points_button_margin_end</item>
         <item name="android:background">@drawable/status_icon_background</item>
+        <item name="systemui:yOffset">@dimen/horizontal_bar_button_y_offset</item>
+        <item name="systemui:xOffset">@dimen/horizontal_bar_button_x_offset</item>
+    </style>
+
+    <style name="VerticalBarButton" parent="HorizontalBarButton">
+        <item name="systemui:yOffset">@dimen/vertical_bar_button_y_offset</item>
+        <item name="systemui:xOffset">@dimen/vertical_bar_button_x_offset</item>
     </style>
 
     <style name="PrivacyChipPadding">

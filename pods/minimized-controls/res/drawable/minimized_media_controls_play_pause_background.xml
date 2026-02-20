@@ -19,8 +19,8 @@
         android:color="@color/car_ui_ripple_color">
     <item>
         <shape android:shape="rectangle">
-            <corners android:radius="@dimen/minimized_media_controls_action_item_radius" />
-            <solid android:color="@color/car_ui_color_accent" />
+            <corners android:radius="?oemShapeCornerLarge" />
+            <solid android:color="?oemColorPrimary" />
         </shape>
     </item>
 </ripple>

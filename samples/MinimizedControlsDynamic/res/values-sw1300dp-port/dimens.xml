@@ -18,9 +18,6 @@
 <resources>
 
   <!-- Center Panel -->
-  <dimen name="car_bottom_center_system_bar_left">375px</dimen>
-
-  <!-- Minimized Controls Decor Panel (in between left and center) -->
-  <dimen name="minimized_controls_left">103px</dimen>
+  <dimen name="car_bottom_center_system_bar_left">450px</dimen>
 
 </resources>

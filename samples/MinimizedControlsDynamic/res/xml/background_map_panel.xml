@@ -22,11 +22,13 @@
         <Bounds
             left="@dimen/background_map_panel_left_bound"
             top="0"
-            topOffset="@dimen/background_map_panel_top_offset"
             bottom="100%"
-            bottomOffset="@dimen/background_map_panel_bottom_offset"
             right="100%" />
-        <Insets left="@dimen/widget_panel_width" top="0" right="0" bottom="0" />
+        <Insets
+            left="@dimen/widget_panel_width"
+            top="@dimen/status_bar_height"
+            right="0"
+            bottom="@dimen/navigation_bar_height" />
         <Corner radius="@dimen/map_corner_radius" />
     </Variant>
     <Variant id="@+id/opened" parent="@id/base">

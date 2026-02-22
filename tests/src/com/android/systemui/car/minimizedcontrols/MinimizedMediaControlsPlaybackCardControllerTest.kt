@@ -16,6 +16,7 @@
 
 package com.android.systemui.car.minimizedcontrols
 
+import android.content.res.Configuration
 import android.testing.AndroidTestingRunner
 import android.testing.TestableLooper
 import android.view.View
@@ -46,6 +47,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mock
+import org.mockito.Mockito.doAnswer
+import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
@@ -82,8 +85,14 @@ class MinimizedMediaControlsPlaybackCardControllerTest : CarSysuiTestCase() {
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
+        doAnswer { invocation ->
+            (invocation.arguments[0] as Runnable).run()
+            null
+        }.`when`(shellExecutor).execute(any())
+
         val context = mContext
         rootView = FrameLayout(context)
+        rootView.id = R.id.card_container
 
         // Container
         albumArtContainer = FrameLayout(context)
@@ -126,12 +135,50 @@ class MinimizedMediaControlsPlaybackCardControllerTest : CarSysuiTestCase() {
     }
 
     @Test
-    fun testAlbumArtClick_launchesActivity() {
+    fun testCardContainerClick_launchesActivity_inPortraitMode() {
+        setUpControllerWithOrientation(Configuration.ORIENTATION_PORTRAIT)
+
+        mediaSourceLiveData.value = mediaSource
+
+        val cardContainer = rootView.findViewById<View>(R.id.card_container)
+        cardContainer?.performClick()
+
+        verify(mediaSource).launchActivity(any(), any())
+    }
+
+    @Test
+    fun testRootViewClick_doesNotLaunchActivity_inLandscapeMode() {
+        setUpControllerWithOrientation(Configuration.ORIENTATION_LANDSCAPE)
+
+        mediaSourceLiveData.value = mediaSource
+
+        // perform click
+        rootView.performClick()
+
+        verify(mediaSource, never()).launchActivity(any(), any())
+    }
+
+    @Test
+    fun testAlbumArtContainerClick_launchesActivity_inLandscapeMode() {
+        setUpControllerWithOrientation(Configuration.ORIENTATION_LANDSCAPE)
+
         mediaSourceLiveData.value = mediaSource
 
         // perform click
         albumArtContainer.performClick()
 
         verify(mediaSource).launchActivity(any(), any())
+    }
+
+    private fun setUpControllerWithOrientation(orientation: Int) {
+        rootView.setOnClickListener(null)
+        albumArtContainer.setOnClickListener(null)
+        mContext.resources.configuration.orientation = orientation
+        val builder = PlaybackCardController.Builder()
+            .setViewGroup(rootView as ViewGroup)
+            .setModels(playbackViewModel, playbackCardViewModel, mediaItemsRepository)
+            .setContext(mContext)
+        controller = MinimizedMediaControlsPlaybackCardController(builder, shellExecutor)
+        controller.setupController()
     }
 }

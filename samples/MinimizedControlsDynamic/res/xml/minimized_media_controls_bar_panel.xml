@@ -38,6 +38,11 @@
             height="@dimen/navigation_bar_height"/>
     </Variant>
 
+    <KeyFrameVariant id="@+id/drag" parent="@id/base">
+        <KeyFrame frame="0" variant="@id/open" />
+        <KeyFrame frame="100" variant="@id/closed" />
+    </KeyFrameVariant>
+
     <Transitions>
         <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=widget_panel" toVariant="@id/closed"/>
         <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=widget_panel" toVariant="@id/open"/>
@@ -46,6 +51,20 @@
         <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=app_panel" toVariant="@id/closed"/>
         <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=panel_app_grid" toVariant="@id/open"/>
         <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=panel_app_grid" toVariant="@id/closed"/>
+
+        <!-- Sync drag with app panel's grip -->
+        <Transition toVariant="@id/drag">
+            <Event id="_Drag_PanelDragEvent" panelId="decor_grip" />
+            <Event id="_Drag_PanelDragEvent" panelId="decor_grip_app" />
+        </Transition>
+        <Transition toVariant="@id/closed">
+            <Event id="_Drag_PanelCloseEvent" panelId="decor_grip" />
+            <Event id="_Drag_PanelCloseEvent" panelId="decor_grip_app" />
+        </Transition>
+        <Transition toVariant="@id/open">
+            <Event id="_Drag_PanelOpenEvent" panelId="decor_grip" />
+            <Event id="_Drag_PanelOpenEvent" panelId="decor_grip_app" />
+        </Transition>
 
         <Transition onEvent="_System_OnHomeEvent" fromVariant="@id/open" toVariant="@id/closed"/>
     </Transitions>

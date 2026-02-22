@@ -25,8 +25,12 @@
     android:paddingTop="@dimen/minimized_controls_button_padding">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/card_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:paddingHorizontal="@dimen/minimized_controls_button_padding"
         android:background="@drawable/minimized_controls_background">
 
@@ -38,9 +42,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
             android:clipChildren="false"
             android:clipToPadding="false">
 

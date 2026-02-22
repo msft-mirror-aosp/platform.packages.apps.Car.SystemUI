@@ -40,6 +40,11 @@
     <Variant id="@+id/userswitch" parent="@id/closed" />
     <Variant id="@+id/suw" parent="@id/closed" />
 
+    <KeyFrameVariant id="@+id/drag" parent="@id/base">
+        <KeyFrame frame="0" variant="@id/closed" />
+        <KeyFrame frame="100" variant="@id/opened" />
+    </KeyFrameVariant>
+
     <Transitions>
         <Transition onEvent="_System_EnterSuwEvent" toVariant="@id/suw"/>
         <Transition onEvent="_System_ExitSuwEvent" toVariant="@id/opened"/>
@@ -57,7 +62,19 @@
         <!-- User Switch -->
         <Transition onEvent="_System_BeforeUserSwitch" toVariant="@id/userswitch"/>
         <Transition onEvent="_System_UserSwitchComplete" fromVariant="@id/userswitch" toVariant="@id/opened"/>
+
+        <!-- Sync drag with app panel's grip -->
+        <Transition toVariant="@id/drag">
+            <Event id="_Drag_PanelDragEvent" panelId="decor_grip" />
+            <Event id="_Drag_PanelDragEvent" panelId="decor_grip_app" />
+        </Transition>
+        <Transition toVariant="@id/opened">
+            <Event id="_Drag_PanelCloseEvent" panelId="decor_grip" />
+            <Event id="_Drag_PanelCloseEvent" panelId="decor_grip_app" />
+        </Transition>
+        <Transition toVariant="@id/closed">
+            <Event id="_Drag_PanelOpenEvent" panelId="decor_grip" />
+            <Event id="_Drag_PanelOpenEvent" panelId="decor_grip_app" />
+        </Transition>
     </Transitions>
-
-
 </TaskPanel>

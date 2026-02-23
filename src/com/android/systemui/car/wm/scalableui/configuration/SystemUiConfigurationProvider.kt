@@ -15,9 +15,9 @@
  */
 package com.android.systemui.car.wm.scalableui.configuration
 
-import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.TYPE_ATTRIBUTE
-import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.TYPE_NAVIGATION
-import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.TYPE_STATUS
+import com.android.car.scalableui.loader.xml.parser.SystemBarParser.TYPE_ATTRIBUTE
+import com.android.car.scalableui.loader.xml.parser.SystemBarParser.TYPE_NAVIGATION
+import com.android.car.scalableui.loader.xml.parser.SystemBarParser.TYPE_STATUS
 import com.android.car.scalableui.panel.PanelPool
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelConfigReadStateMonitor
 import com.android.wm.shell.dagger.WMSingleton

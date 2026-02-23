@@ -17,8 +17,10 @@
 package com.android.systemui.car.wm.scalableui.configuration
 
 import android.os.Bundle
-import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser
-import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.TYPE_NAVIGATION
+import com.android.car.scalableui.loader.xml.parser.SystemBarParser.BAR_Z_ORDER_ATTRIBUTE
+import com.android.car.scalableui.loader.xml.parser.SystemBarParser.HIDE_FOR_KEYBOARD_ATTRIBUTE
+import com.android.car.scalableui.loader.xml.parser.SystemBarParser.TYPE_ATTRIBUTE
+import com.android.car.scalableui.loader.xml.parser.SystemBarParser.TYPE_NAVIGATION
 import com.android.systemui.car.systembar.SystemBarConstants.NAVIGATION_BAR
 import com.android.systemui.car.systembar.SystemBarConstants.STATUS_BAR
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
@@ -54,7 +56,7 @@ data class SystemBarConfiguration(
         /**
          * @return System bar type name
          */
-        get() = when (configuration.getString(SystemBarTagXmlParser.TYPE_ATTRIBUTE)) {
+        get() = when (configuration.getString(TYPE_ATTRIBUTE)) {
             TYPE_NAVIGATION -> {
                 NAVIGATION_BAR
             }
@@ -67,7 +69,7 @@ data class SystemBarConfiguration(
         /**
          * @return the relative Z-order of the SystemBar
          */
-        get() = configuration.getInt(SystemBarTagXmlParser.BAR_Z_ORDER_ATTRIBUTE)
+        get() = configuration.getInt(BAR_Z_ORDER_ATTRIBUTE)
 
     val isAboveHun: Boolean
         /**
@@ -79,7 +81,7 @@ data class SystemBarConfiguration(
         /**
          * @return `true` if this system bar should be hidden when keyboard is visible.
          */
-        get() = configuration.getBoolean(SystemBarTagXmlParser.HIDE_FOR_KEYBOARD_ATTRIBUTE)
+        get() = configuration.getBoolean(HIDE_FOR_KEYBOARD_ATTRIBUTE)
 
     @AssistedFactory
     interface Factory {

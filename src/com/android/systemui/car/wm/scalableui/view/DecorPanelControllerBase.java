@@ -15,7 +15,7 @@
  */
 package com.android.systemui.car.wm.scalableui.view;
 
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.VIEW_TAG;
+import static com.android.car.scalableui.loader.xml.parser.PanelControllerParser.VIEW_TAG;
 
 import android.util.Log;
 import android.view.View;

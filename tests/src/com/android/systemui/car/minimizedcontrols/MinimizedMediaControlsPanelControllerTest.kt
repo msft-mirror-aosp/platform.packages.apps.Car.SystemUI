@@ -28,7 +28,7 @@ import com.android.car.media.common.playback.PlaybackViewModel
 import com.android.car.media.common.source.MediaModels
 import com.android.car.media.common.source.MediaSource
 import com.android.car.media.common.ui.PlaybackCardViewModel
-import com.android.car.scalableui.loader.xml.PanelTagXmlParser.VIEW_TAG
+import com.android.car.scalableui.loader.xml.parser.PanelControllerParser.VIEW_TAG
 import com.android.car.scalableui.model.PanelControllerMetadata
 import com.android.systemui.CarSysuiTestCase
 import com.android.systemui.ShellSyncExecutor

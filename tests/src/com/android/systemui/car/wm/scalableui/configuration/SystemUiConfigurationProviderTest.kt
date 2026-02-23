@@ -18,7 +18,7 @@ package com.android.systemui.car.wm.scalableui.configuration
 import android.os.Bundle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser
+import com.android.car.scalableui.loader.xml.parser.SystemBarParser
 import com.android.car.scalableui.model.PanelControllerMetadata
 import com.android.car.scalableui.model.PanelType
 import com.android.car.scalableui.panel.Panel
@@ -80,12 +80,12 @@ class SystemUiConfigurationProviderTest : CarSysuiTestCase() {
         provider = SystemUiConfigurationProvider(mockFactory, mockMonitor)
 
         statusBundle.putString(
-            SystemBarTagXmlParser.TYPE_ATTRIBUTE,
-            SystemBarTagXmlParser.TYPE_STATUS
+            SystemBarParser.TYPE_ATTRIBUTE,
+            SystemBarParser.TYPE_STATUS
         )
         navBundle.putString(
-            SystemBarTagXmlParser.TYPE_ATTRIBUTE,
-            SystemBarTagXmlParser.TYPE_NAVIGATION
+            SystemBarParser.TYPE_ATTRIBUTE,
+            SystemBarParser.TYPE_NAVIGATION
         )
 
         panelPool.getOrCreatePanel(STATUS_PANEL_ID, PanelType.SYSTEM_BAR)

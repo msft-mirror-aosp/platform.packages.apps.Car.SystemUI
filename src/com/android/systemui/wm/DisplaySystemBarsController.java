@@ -474,7 +474,7 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
             updateImmersiveState(requestedVisibleTypes);
             mWindowRequestedVisibleTypes = requestedVisibleTypes;
             mPackageName = packageName;
-            updateDisplayWindowRequestedVisibleTypes(/* force= */ false);
+            updateDisplayWindowRequestedVisibleTypes(/* force= */ true);
         }
 
         private void updateImmersiveState(@InsetsType int requestedVisibleTypes) {
@@ -509,10 +509,6 @@ public class DisplaySystemBarsController implements DisplayController.OnDisplays
         }
 
         protected void updateDisplayWindowRequestedVisibleTypes(boolean force) {
-            if (mPackageName == null) {
-                return;
-            }
-
             int[] barVisibilities = getBarVisibilities(mImmersiveState);
 
             updateRequestedVisibleTypes(

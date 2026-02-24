@@ -76,6 +76,25 @@ public class BarControlPolicyTest extends CarSysuiTestCase {
     }
 
     @Test
+    @DisableFlags(FLAG_PACKAGE_LEVEL_SYSTEM_BAR_VISIBILITY)
+    public void getBarVisibilities_nullPackageName_showsSystemBars() {
+        BarVisibility visibilities = mBarControlPolicy.getBarVisibilities(null);
+
+        assertThat(visibilities.getShowTypes()).isEqualTo(statusBars() | navigationBars());
+        assertThat(visibilities.getHideTypes()).isEqualTo(0);
+    }
+
+    @Test
+    @EnableFlags(FLAG_PACKAGE_LEVEL_SYSTEM_BAR_VISIBILITY)
+    public void getBarVisibilities2_nullPackageName_showsSystemBars() {
+        BarVisibility visibilities =
+                mBarControlPolicy.getBarVisibilities(null, REQUESTED_VISIBILITY_IRRELEVANT);
+
+        assertThat(visibilities.getShowTypes()).isEqualTo(statusBars() | navigationBars());
+        assertThat(visibilities.getHideTypes()).isEqualTo(0);
+    }
+
+    @Test
     public void reloadFromSetting_notSet_doesNotSetFilters() {
         mBarControlPolicy.reloadFromSetting(mContext);
 

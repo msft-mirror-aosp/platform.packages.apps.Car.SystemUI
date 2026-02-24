@@ -91,7 +91,7 @@ class BarControlPolicy() {
      * @param packageName The name of the package to check against the policy.
      * @return A [BarVisibility] object detailing which bar types to show and hide.
      */
-    fun getBarVisibilities(packageName: String): BarVisibility {
+    fun getBarVisibilities(packageName: String?): BarVisibility {
         check(!packageLevelSystemBarVisibility()) {
             "'package_level_system_bar_visibility' is enabled"
         }
@@ -123,7 +123,7 @@ class BarControlPolicy() {
      * @return A [BarVisibility] object detailing which bar types to show and hide.
      */
     fun getBarVisibilities(
-        packageName: String,
+        packageName: String?,
         @InsetsType requestedVisibleTypes: Int
     ): BarVisibility {
         check(packageLevelSystemBarVisibility()) {
@@ -156,7 +156,7 @@ class BarControlPolicy() {
     private fun getVisibilityForBar(
         @InsetsType barType: Int,
         filter: Filter?,
-        packageName: String,
+        packageName: String?,
         @InsetsType requestedVisibleTypes: Int
     ): Pair<Int, Int> {
         val isControlAllowed = filter?.isControlAllowed(packageName) ?: false
@@ -178,10 +178,10 @@ class BarControlPolicy() {
         }
     }
 
-    private fun matchesStatusFilter(packageName: String): Boolean =
+    private fun matchesStatusFilter(packageName: String?): Boolean =
         immersiveStatusFilter?.matches(packageName) ?: false
 
-    private fun matchesNavigationFilter(packageName: String): Boolean =
+    private fun matchesNavigationFilter(packageName: String?): Boolean =
         immersiveNavigationFilter?.matches(packageName) ?: false
 
     /** Loads values from the setting and updates the filters. Returns true if changed. */

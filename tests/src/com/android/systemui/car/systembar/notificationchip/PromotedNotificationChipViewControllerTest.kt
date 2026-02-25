@@ -217,8 +217,6 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
         )
         verify(notificationPanelViewController).registerViewStateListener(captor.capture())
 
-        verify(notificationPanelViewController).registerViewStateListener(captor.capture())
-
         captor.value.onVisibilityChanged(true)
         testScope.testScheduler.advanceUntilIdle()
 
@@ -231,5 +229,90 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
         testScope.testScheduler.advanceUntilIdle()
 
         verify(view).animateIn()
+    }
+
+    @Test
+    fun onPromotedNotificationAdded_isHeadsUp_doesNotShowChip() {
+        `when`(flagManager.isEnabled(Flag.PromotedNotifications)).thenReturn(true)
+        controller.onViewAttached()
+
+        val model = PromotedNotificationModel(
+            key = "key",
+            isHeadsUp = true,
+            postTime = 1000L,
+            shortCriticalText = "Text",
+            smallIcon = icon
+        )
+
+        repository.addPromotedNotification(model)
+        testScope.testScheduler.advanceUntilIdle()
+
+        verify(view, Mockito.never()).animateIn()
+    }
+
+    @Test
+    fun onPromotedNotification_hunDismissed_showsChip() {
+        `when`(flagManager.isEnabled(Flag.PromotedNotifications)).thenReturn(true)
+        controller.onViewAttached()
+
+        // Initial HUN
+        val hunModel = PromotedNotificationModel(
+            key = "key",
+            isHeadsUp = true,
+            postTime = 1000L,
+            shortCriticalText = "Text",
+            smallIcon = icon
+        )
+        repository.addPromotedNotification(hunModel)
+        testScope.testScheduler.advanceUntilIdle()
+        verify(view, Mockito.never()).animateIn()
+
+        // Simulate HUN dismissal (isHeadsUp becomes false)
+        val dismissedModel = PromotedNotificationModel(
+            key = "key",
+            isHeadsUp = false,
+            postTime = 1000L,
+            shortCriticalText = "Text",
+            smallIcon = icon
+        )
+        repository.addPromotedNotification(dismissedModel)
+        testScope.testScheduler.advanceUntilIdle()
+
+        verify(view).animateIn()
+    }
+
+    @Test
+    fun onNewHun_priorChipRemainsVisible() {
+        `when`(flagManager.isEnabled(Flag.PromotedNotifications)).thenReturn(true)
+        controller.onViewAttached()
+
+        // Initial Promoted Notification (shows chip)
+        val oldModel = PromotedNotificationModel(
+            key = "old",
+            isHeadsUp = false,
+            postTime = 1000L,
+            shortCriticalText = "Old",
+            smallIcon = icon
+        )
+        repository.addPromotedNotification(oldModel)
+        testScope.testScheduler.advanceUntilIdle()
+        verify(view).animateIn()
+        Mockito.clearInvocations(view)
+
+        // New HUN arrives
+        val newHunModel = PromotedNotificationModel(
+            key = "new",
+            isHeadsUp = true,
+            postTime = 2000L,
+            shortCriticalText = "New",
+            smallIcon = icon
+        )
+        repository.addPromotedNotification(newHunModel)
+        testScope.testScheduler.advanceUntilIdle()
+
+        // Should NOT animate out (stays visible with old model)
+        verify(view, Mockito.never()).animateOut()
+        // Should NOT animate in again (no change in displayed notification)
+        verify(view, Mockito.never()).animateIn()
     }
 }

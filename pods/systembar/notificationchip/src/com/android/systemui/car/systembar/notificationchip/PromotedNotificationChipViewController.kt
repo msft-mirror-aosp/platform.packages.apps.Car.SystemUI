@@ -177,7 +177,9 @@ constructor(
     private fun getMostRecentPromotedNotification(
         promotedNotifications: List<PromotedNotificationModel>
     ): PromotedNotificationModel? {
-        return promotedNotifications.maxByOrNull { it.postTime }
+        return promotedNotifications
+            .filter { !it.isHeadsUp }
+            .maxByOrNull { it.postTime }
     }
 
     private companion object {

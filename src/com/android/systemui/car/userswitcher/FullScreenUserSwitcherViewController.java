@@ -98,7 +98,7 @@ public class FullScreenUserSwitcherViewController extends OverlayViewController
         if (isInflated()) return mLayout;
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        mLayout = inflater.inflate(R.layout.car_fullscreen_user_switcher, /* root= */ null,
+        mLayout = inflater.inflate(R.layout.car_fullscreen_user_switcher_wrapper, /* root= */ null,
                 /* attachToRoot= */ false);
         initializeViews();
         return mLayout;

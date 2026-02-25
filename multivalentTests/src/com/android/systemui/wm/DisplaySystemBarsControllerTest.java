@@ -152,4 +152,41 @@ public class DisplaySystemBarsControllerTest extends CarSysuiTestCase {
         verify(mIWindowManager, times(2)).updateDisplayWindowRequestedVisibleTypes(
                 anyInt(), anyInt(), anyInt(), any());
     }
+
+    @Test
+    public void onReady_noPackageName_updatesVisibility() throws Exception {
+        mController.onDisplayAdded(DISPLAY_ID);
+
+        // onReady should trigger an update even if topFocusedWindowChanged was never called
+        // (mPackageName is null)
+        mController.onReady();
+
+        // Verify that the WM service is called
+        verify(mIWindowManager).updateDisplayWindowRequestedVisibleTypes(
+                anyInt(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    public void topFocusedWindowChanged_differentArgs_updatesTwice() throws Exception {
+        mController.onDisplayAdded(DISPLAY_ID);
+
+        ArgumentCaptor<DisplayInsetsController.OnInsetsChangedListener> listenerCaptor =
+                ArgumentCaptor.forClass(DisplayInsetsController.OnInsetsChangedListener.class);
+        verify(mDisplayInsetsController)
+                .addInsetsChangedListener(anyInt(), listenerCaptor.capture());
+        DisplayInsetsController.OnInsetsChangedListener listener = listenerCaptor.getValue();
+
+        ComponentName component = new ComponentName("com.example", "MainActivity");
+
+        // First call
+        listener.topFocusedWindowChanged(component, 1);
+        // Second call with different requested bits.
+        // In non-immersive mode, the final system bar visibility bits will be the same
+        // (default), so force=true is required to trigger the second update.
+        listener.topFocusedWindowChanged(component, 2);
+
+        // Should be called twice due to force = true
+        verify(mIWindowManager, times(2))
+                .updateDisplayWindowRequestedVisibleTypes(anyInt(), anyInt(), anyInt(), any());
+    }
 }

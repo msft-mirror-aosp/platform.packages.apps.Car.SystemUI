@@ -153,6 +153,7 @@ constructor(
                     it
                 )
             }
+            shellTaskOrganizer.restartTaskProcessIfVisible(taskInfo.token)
         }
     }
 

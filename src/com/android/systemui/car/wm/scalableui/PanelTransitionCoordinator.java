@@ -76,6 +76,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -290,7 +291,7 @@ public class PanelTransitionCoordinator {
      */
     void reconcileAutoTaskStackState(@NonNull IBinder transition,
             @NonNull List<TaskStackStateChange> changedTaskStacks,
-            @NonNull TransitionInfo transitionInfo) {
+            @Nullable TransitionInfo transitionInfo) {
         boolean shouldForceEvents = false;
         Map<String, Boolean> conflictingPanelStates = getConflictingPanelStates(changedTaskStacks,
                 transition);
@@ -302,7 +303,8 @@ public class PanelTransitionCoordinator {
         // preemptively trigger a new transition for the task panel empty event.
         // These are applied after the conflict events in the case a conflict close leads to an
         // empty panel.
-        List<String> panelsBecomingEmpty = getPanelsBecomingEmptyIds(changedTaskStacks);
+        List<String> panelsBecomingEmpty = getPanelsBecomingEmptyIds(changedTaskStacks,
+                conflictingPanelStates);
         reconciliationEvents.addAll(getTriggerTaskPanelEmptyEvents(panelsBecomingEmpty));
         List<Event> postAppliedEvents = getPostAppliedEvents(transition);
         if (!postAppliedEvents.isEmpty()) {
@@ -360,7 +362,8 @@ public class PanelTransitionCoordinator {
             Transition panelTransition = transaction != null
                     ? transaction.getPanelTransactionState(tp.getPanelId())
                     : null;
-            if (!isEqual(changedState, tp, panelTransition)) {
+
+            if (hasConflictingState(changedState, tp, panelTransition)) {
                 conflictingPanelStates.put(tp.getPanelId(), changedState.isAboveBarrier());
             }
         }
@@ -385,7 +388,7 @@ public class PanelTransitionCoordinator {
             if (currentState == null) {
                 continue;
             }
-            if (!isEqual(currentState, tp, entry.getValue())) {
+            if (hasConflictingState(currentState, tp, entry.getValue())) {
                 conflictingPanelStates.put(tp.getPanelId(), currentState.isAboveBarrier());
             }
         }
@@ -412,7 +415,7 @@ public class PanelTransitionCoordinator {
             @NonNull Map<String, Boolean> conflictingPanelStates,
             @NonNull List<TaskStackStateChange> changes,
             @NonNull IBinder transition,
-            @NonNull TransitionInfo transitionInfo) {
+            @Nullable TransitionInfo transitionInfo) {
         if (conflictingPanelStates.isEmpty()) {
             return Collections.emptyList();
         }
@@ -477,9 +480,11 @@ public class PanelTransitionCoordinator {
                     .setPanelId(panelId)
                     .build());
         });
-        Event homeEvent = getHomeConflictEvent(transition, transitionInfo);
-        if (homeEvent != null) {
-            conflictEvents.add(homeEvent);
+        if (transitionInfo != null) {
+            Event homeEvent = getHomeConflictEvent(transition, transitionInfo);
+            if (homeEvent != null) {
+                conflictEvents.add(homeEvent);
+            }
         }
         orderedOpenConflictPanelIds.forEach(panelId -> {
             conflictEvents.add(new Event.Builder(SYSTEM_TASK_OPEN_EVENT_ID)
@@ -556,8 +561,12 @@ public class PanelTransitionCoordinator {
      * Note that a panel will not be included if it has indicated that it will handle its own task
      * restart.
      */
-    private List<String> getPanelsBecomingEmptyIds(@NonNull List<TaskStackStateChange> changes) {
-        List<String> taskPanelIds = new ArrayList<>();
+    private List<String> getPanelsBecomingEmptyIds(@NonNull List<TaskStackStateChange> changes,
+            @NonNull Map<String, Boolean> conflictingPanelStates) {
+        // Use LinkedList for more efficient addFirst calls.
+        List<String> taskPanelIds = new LinkedList<>();
+
+        // First, check changes from WM belonging to this transition for empty panels
         for (int i = changes.size() - 1; i >= 0; i--) {
             TaskStackStateChange change = changes.get(i);
 
@@ -570,19 +579,44 @@ public class PanelTransitionCoordinator {
                 taskPanelIds.add(taskPanel.getPanelId());
             }
         }
+
+        // Second, check the conflicting panels to see if there are any panels where no change was
+        // applied because the panel had an open in handleRequest but the Task already finished by
+        // startAnimation.
+        for (Map.Entry<String, Boolean> entry : conflictingPanelStates.entrySet()) {
+            if (taskPanelIds.contains(entry.getKey())) {
+                // Already handled above
+                continue;
+            }
+            TaskPanel taskPanel = mPanelUtils.getTaskPanel(
+                    tp -> tp.getPanelId().equals(entry.getKey()) && !tp.hasRestart());
+            if (taskPanel == null) {
+                continue;
+            }
+            if (taskPanel.isRootTaskEmpty()) {
+                // Because these changes are less-known in order, assume they came earlier than
+                // the known ones.
+                taskPanelIds.addFirst(taskPanel.getPanelId());
+            }
+        }
         return taskPanelIds;
     }
 
-    private boolean isEqual(@NonNull AutoTaskStackState changedState,
+    /**
+     * Returns true if the AutoTaskStackState has a different state than the requested panel
+     * transition (if provided) or the current TaskPanel state if the panel is not known as part
+     * of the transition.
+     */
+    private boolean hasConflictingState(@NonNull AutoTaskStackState changedState,
             @NonNull TaskPanel tp, @Nullable Transition panelTransition) {
         Variant toVariant = panelTransition != null ? panelTransition.getToVariant() : null;
         boolean isVisible = toVariant != null ? toVariant.isVisible() : tp.isVisible();
         int layer = toVariant != null ? toVariant.getLayer() : tp.getLayer();
         Rect bounds = toVariant != null ? toVariant.getBounds() : tp.getBounds();
-        boolean isEqual = changedState.isAboveBarrier() == isVisible
-                && changedState.getLayer() == layer
-                && changedState.getBounds().equals(bounds);
-        if (!isEqual) {
+        boolean hasConflict = changedState.isAboveBarrier() != isVisible
+                || changedState.getLayer() != layer
+                || !changedState.getBounds().equals(bounds);
+        if (hasConflict) {
             String debugString = "Transition conflict found on panel "
                     + tp.getPanelId()
                     + " | changedState: isAboveBarrier="
@@ -593,7 +627,7 @@ public class PanelTransitionCoordinator {
                     + " layer=" + layer + " bounds=" + bounds;
             Log.e(TAG, debugString);
         }
-        return isEqual;
+        return hasConflict;
     }
 
     /**
@@ -1038,7 +1072,12 @@ public class PanelTransitionCoordinator {
                     if (toState != null) {
                         isVisible = toState.getToVariant().isVisible();
                     } else {
-                        isVisible = taskPanel.isVisible();
+                        Variant variant = mPanelUtils.getCurrentVariant(taskPanel.getPanelId());
+                        if (variant != null) {
+                            isVisible = variant.isVisible();
+                        } else {
+                            isVisible = taskPanel.isVisible();
+                        }
                     }
                     if (isVisible) {
                         logIfDebuggable("Focusing TaskPanel=" + taskPanel.getPanelId()

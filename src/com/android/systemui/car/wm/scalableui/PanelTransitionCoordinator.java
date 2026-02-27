@@ -361,7 +361,7 @@ public class PanelTransitionCoordinator {
                     ? transaction.getPanelTransactionState(tp.getPanelId())
                     : null;
             if (!isEqual(changedState, tp, panelTransition)) {
-                conflictingPanelStates.put(tp.getPanelId(), changedState.getChildrenTasksVisible());
+                conflictingPanelStates.put(tp.getPanelId(), changedState.isAboveBarrier());
             }
         }
 
@@ -386,7 +386,7 @@ public class PanelTransitionCoordinator {
                 continue;
             }
             if (!isEqual(currentState, tp, entry.getValue())) {
-                conflictingPanelStates.put(tp.getPanelId(), currentState.getChildrenTasksVisible());
+                conflictingPanelStates.put(tp.getPanelId(), currentState.isAboveBarrier());
             }
         }
 
@@ -432,9 +432,9 @@ public class PanelTransitionCoordinator {
                 continue;
             }
             boolean isChildTaskVisible = conflictingPanelStates.get(panelId);
-            if (isChildTaskVisible && change.getState().getChildrenTasksVisible()) {
+            if (isChildTaskVisible && change.getState().isAboveBarrier()) {
                 orderedOpenConflictPanelIds.addLast(panelId);
-            } else if (!isChildTaskVisible && !change.getState().getChildrenTasksVisible()) {
+            } else if (!isChildTaskVisible && !change.getState().isAboveBarrier()) {
                 orderedCloseConflictPanelIds.addLast(panelId);
             }
         }
@@ -579,14 +579,14 @@ public class PanelTransitionCoordinator {
         boolean isVisible = toVariant != null ? toVariant.isVisible() : tp.isVisible();
         int layer = toVariant != null ? toVariant.getLayer() : tp.getLayer();
         Rect bounds = toVariant != null ? toVariant.getBounds() : tp.getBounds();
-        boolean isEqual = changedState.getChildrenTasksVisible() == isVisible
+        boolean isEqual = changedState.isAboveBarrier() == isVisible
                 && changedState.getLayer() == layer
                 && changedState.getBounds().equals(bounds);
         if (!isEqual) {
             String debugString = "Transition conflict found on panel "
                     + tp.getPanelId()
-                    + " | changedState: getChildrenTasksVisible="
-                    + changedState.getChildrenTasksVisible() + " layer="
+                    + " | changedState: isAboveBarrier="
+                    + changedState.isAboveBarrier() + " layer="
                     + changedState.getLayer() + " bounds="
                     + changedState.getBounds()
                     + " | panelState: isVisible=" + isVisible

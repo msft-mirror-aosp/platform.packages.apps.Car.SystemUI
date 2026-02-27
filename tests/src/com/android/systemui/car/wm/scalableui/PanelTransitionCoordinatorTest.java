@@ -423,7 +423,7 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
         when(mPanelUtils.getTaskPanel(any())).thenReturn(mTaskPanel);
 
         AutoTaskStackState changedState = mock(AutoTaskStackState.class);
-        when(changedState.getChildrenTasksVisible()).thenReturn(false);
+        when(changedState.isAboveBarrier()).thenReturn(false);
         when(changedState.getLayer()).thenReturn(1);
         when(changedState.getBounds()).thenReturn(new Rect(0, 0, 100, 100));
         List<TaskStackStateChange> changedTaskStacks = Collections.singletonList(
@@ -451,7 +451,7 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
         when(mPanelUtils.getTaskPanel(any())).thenReturn(mTaskPanel);
 
         AutoTaskStackState changedState = mock(AutoTaskStackState.class);
-        when(changedState.getChildrenTasksVisible()).thenReturn(false);
+        when(changedState.isAboveBarrier()).thenReturn(false);
         when(changedState.getLayer()).thenReturn(1);
         when(changedState.getBounds()).thenReturn(new Rect(0, 0, 100, 100));
         List<TaskStackStateChange> changedTaskStacks = Collections.singletonList(
@@ -494,7 +494,7 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
 
         // Current state: visible = false
         AutoTaskStackState currentState = mock(AutoTaskStackState.class);
-        when(currentState.getChildrenTasksVisible()).thenReturn(false);
+        when(currentState.isAboveBarrier()).thenReturn(false);
         when(currentState.getLayer()).thenReturn(1);
         when(currentState.getBounds()).thenReturn(new Rect(0, 0, 100, 100));
         when(mAutoTaskStackController.getTaskStackStateMap()).thenReturn(
@@ -539,7 +539,7 @@ public class PanelTransitionCoordinatorTest extends CarSysuiTestCase {
         when(mTaskPanel.getBounds()).thenReturn(new Rect(0, 0, 100, 100));
         when(mPanelUtils.getTaskPanel(any())).thenReturn(mTaskPanel);
         AutoTaskStackState changedState = mock(AutoTaskStackState.class);
-        when(changedState.getChildrenTasksVisible()).thenReturn(false); // trigger conflict
+        when(changedState.isAboveBarrier()).thenReturn(false); // trigger conflict
         when(changedState.getLayer()).thenReturn(1);
         when(changedState.getBounds()).thenReturn(new Rect(0, 0, 100, 100));
         List<TaskStackStateChange> changedTaskStacks = Collections.singletonList(

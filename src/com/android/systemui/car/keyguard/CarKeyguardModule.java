@@ -69,6 +69,7 @@ import com.android.systemui.log.SessionTracker;
 import com.android.systemui.navigationbar.NavigationBarController;
 import com.android.systemui.navigationbar.NavigationModeController;
 import com.android.systemui.process.ProcessWrapper;
+import com.android.systemui.scene.domain.interactor.SceneInteractor;
 import com.android.systemui.settings.DisplayTracker;
 import com.android.systemui.settings.DisplayTrackerImpl;
 import com.android.systemui.settings.UserTracker;
@@ -179,7 +180,8 @@ public interface CarKeyguardModule {
             KeyguardTransitionBootInteractor transitionBootInteractor,
             Lazy<CommunalSceneInteractor> communalSceneInteractor,
             Lazy<CommunalSettingsInteractor> communalSettingsInteractor,
-            WindowManagerOcclusionManager wmOcclusionManager) {
+            WindowManagerOcclusionManager wmOcclusionManager,
+            Lazy<SceneInteractor> sceneInteractor) {
         return new CarKeyguardViewMediator(
                 context,
                 uiEventLogger,
@@ -232,7 +234,8 @@ public interface CarKeyguardModule {
                 transitionBootInteractor,
                 communalSceneInteractor,
                 communalSettingsInteractor,
-                wmOcclusionManager);
+                wmOcclusionManager,
+                sceneInteractor);
     }
 
     /** */

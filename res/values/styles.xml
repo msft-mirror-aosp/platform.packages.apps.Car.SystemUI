@@ -33,11 +33,6 @@
         <item name="android:textFontWeight">500</item>
     </style>
 
-    <style name="SystemBarClockWithSelectionText">
-        <item name="android:textAppearance">?oemTextAppearanceTitleLarge</item>
-        <item name="android:textColor">@color/system_bar_text_color_with_selection</item>
-    </style>
-
     <style name="SystemBarUsernameText">
         <item name="android:textAppearance">?oemTextAppearanceTitleMedium</item>
         <item name="android:textColor">@color/system_bar_text_color_with_selection</item>
@@ -45,13 +40,6 @@
         <item name="android:textColorHint">?oemColorOnSurfaceInverse</item>
         <item name="android:textColorHighlight">?oemColorOnSurfaceInverse</item>
         <item name="android:textColorLink">?oemColorOnSurfaceInverse</item>
-    </style>
-
-    <!-- The style for a Toast. -->
-    <style name="ToastText">
-        <item name="android:textAppearance">?oemTextAppearanceTitleMedium</item>
-        <item name="fontFamily">@*android:string/config_bodyFontFamily</item>
-        <item name="lineHeight">20sp</item>
     </style>
 
     <style name="SystemBarButton">

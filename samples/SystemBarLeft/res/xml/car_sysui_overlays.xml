@@ -37,7 +37,6 @@
     <item
         target="bool/config_showHeadsUpNotificationOnBottom"
         value="@bool/config_showHeadsUpNotificationOnBottom" />
-
     <item
         target="integer/config_topSystemBarType"
         value="@integer/config_topSystemBarType" />
@@ -62,10 +61,6 @@
     <item
         target="integer/config_bottomSystemBarZOrder"
         value="@integer/config_bottomSystemBarZOrder" />
-    <item
-        target="integer/config_statusIconLayoutOrientation"
-        value="@integer/config_statusIconLayoutOrientation" />
-
     <item
         target="string/config_notificationPanelViewMediator"
         value="@string/config_notificationPanelViewMediator" />

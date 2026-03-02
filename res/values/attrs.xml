@@ -154,17 +154,10 @@
         <attr name="layout" format="reference"/>
     </declare-styleable>
 
-    <declare-styleable name="DisplayAreaView">
-        <attr name="displayAreaFeatureId" format="integer" />
-        <attr name="launchTaskDisplayAreaFeatureId" format="integer" />
-        <attr name="cornerRadius" format="integer" />
-    </declare-styleable>
 
-    <attr name="carControlHighlight" format="color|reference"/>
     <attr name="systemBarPillRadius" format="dimension"/>
     <attr name="systemBarPillSelectedRadius" format="dimension"/>
     <attr name="appPanelBackgroundRadius" format="dimension"/>
-    <attr name="carVolumeItemCornerRadius" format="dimension"/>
     <attr name="notificationShadeHandleBarRadius" format="dimension"/>
     <attr name="notificationShadowRadius" format="dimension"/>
     <attr name="carStatusIconPanelBorderRadius" format="dimension"/>

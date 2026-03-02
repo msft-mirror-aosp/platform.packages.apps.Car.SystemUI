@@ -15,9 +15,6 @@
   ~ limitations under the License
   -->
 <resources>
-    <string name="config_statusBarComponent" translatable="false">
-        com.android.systemui.statusbar.car.CarStatusBar
-    </string>
     <!-- How many milliseconds to wait before force hiding the UserSwitchTransitionView -->
     <integer name="config_userSwitchTransitionViewShownTimeoutMs" translatable="false">5000
     </integer>
@@ -142,16 +139,6 @@
     <bool name="config_enablePrivacyChipAnimation">false</bool>
     <!-- show the privacy chip indicator in full screen mode. -->
     <bool name="config_enableImmersivePrivacyChip">true</bool>
-    <!-- enable animation for the privacy chip indicator in full screen mode. -->
-    <bool name="config_enableImmersivePrivacyChipAnimation">true</bool>
-
-
-    <!-- Animation duration (in milliseconds) when dismissing display input lock icon. -->
-    <integer name="config_displayInputLockIconAnimDuration">250</integer>
-    <!-- The number of milliseconds before the display input lock icon auto-dismisses. -->
-    <integer name="config_displayInputLockIconDismissDelay">250</integer>
-    <!-- The number of milliseconds before the initial display input lock notification auto-dismisses. -->
-    <integer name="config_displayInputLockInitialDismissDelay">3000</integer>
 
     <!-- Determines whether the car system UI should register the System UI Proxy with the
      CarService. -->
@@ -197,11 +184,6 @@
     <!-- 2 immersive_with_nav, force show nav bar and hide status bar for SUW -->
     <!-- 3 immersive_with_status, force show status bar and hide nav bar for SUW  -->
     <integer name="config_systemBarSuwBehavior">0</integer>
-
-    <!-- Determines the orientation of the status icon. -->
-    <!-- 0 horizontal. -->
-    <!-- 1 vertical -->
-    <integer name="config_statusIconLayoutOrientation">0</integer>
 
     <!-- Blocking activity feature flag -->
     <bool name="config_enableAppBlockingActivities">true</bool>
@@ -293,7 +275,4 @@
 
     <!-- Settings package name to be used as a default/fallback if no other settings packages are found -->
     <string name="config_defaultSettingsPackage">com.android.car.settings</string>
-
-    <!-- Whether to show the fullscreen button in the task toolbar or not -->
-    <bool name="show_toolbar_fullscreen_button">true</bool>
 </resources>

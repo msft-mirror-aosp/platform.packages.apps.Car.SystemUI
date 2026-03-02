@@ -17,8 +17,6 @@
 <resources>
     <!-- Enable the scalableUI feature. -->
     <bool name="scalable_ui">true</bool>
-    <!-- A flag to enable task focus within the Scalable UI. -->
-    <bool name="scalable_ui_enable_task_focus">true</bool>
     <!-- Controls dispatching events when panel animation ends. -->
     <bool name="enable_animation_end_event">true</bool>
     <!-- Enables the Design Compose-based design for the Scalable UI. -->

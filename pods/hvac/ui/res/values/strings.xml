@@ -20,16 +20,8 @@
     <string name="hvac_temperature_format_fahrenheit" translatable="false">%.0f</string>
     <!-- Format for HVAC temperature in celsius (One decimal place) -->
     <string name="hvac_temperature_format_celsius" translatable="false">%.1f</string>
-    <!-- String to represent lowest setting of an HVAC system [CHAR LIMIT=10]-->
-    <string name="hvac_min_text">Min</string>
-    <!-- String to represent the highest setting of an HVAC system [CHAR LIMIT=10]-->
-    <string name="hvac_max_text">Max</string>
     <!-- String to represent the highest setting of fan speed [CHAR LIMIT=10]-->
     <string name="fan_speed_max">MAX</string>
     <!-- String to represent fan being turned off [CHAR LIMIT=10]-->
     <string name="fan_speed_off">OFF</string>
-    <!-- String to display when no HVAC temperature is available -->
-    <string name="hvac_null_temp_text" translatable="false">--</string>
-    <!-- String to display when the HVAC temperature control is turned off [CHAR LIMIT=10]-->
-    <string name="hvac_temperature_off">OFF</string>
-</resources>
+    </resources>

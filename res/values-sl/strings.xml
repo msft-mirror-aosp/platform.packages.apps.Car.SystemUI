@@ -17,7 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="voice_recognition_toast" msgid="7579725862117020349">"Prepoznavanje glasu zdaj izvaja povezana naprava Bluetooth"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Dodaj profil"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Nov profil"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Želite dodati nov profil?"</string>
@@ -32,21 +31,10 @@
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Za aplikacije z dovoljenjem."</string>
     <string name="privacy_chip_settings" msgid="8028897999244574288">"Nastavitve zasebnosti"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"Aplikacija <xliff:g id="APP">%1$s</xliff:g> uporablja to: <xliff:g id="SENSOR">%2$s</xliff:g>."</string>
-    <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> uporabljajo mikrofon."</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"Aplikacija <xliff:g id="APP">%1$s</xliff:g> je nedavno uporabila to: <xliff:g id="SENSOR">%2$s</xliff:g>."</string>
     <string name="privacy_chip_apps_recently_used_sensor_suffix" msgid="2715537466314464047">"Aplikacija <xliff:g id="APP_0">%1$s</xliff:g> in druge (<xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g>) so nedavno uporabljale to: <xliff:g id="SENSOR">%3$s</xliff:g>."</string>
-    <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"Mikrofon je vklopljen."</string>
-    <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Mikrofon je izklopljen."</string>
-    <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"V redu"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Želite vklopiti mikrofon vozila?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Če želite nadaljevati, vklopite mikrofon informativno-razvedrilnega sistema. S tem bo mikrofon vklopljen za vse aplikacije z dovoljenjem."</string>
-    <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"Aplikacija <xliff:g id="APP">%s</xliff:g> uporablja kamero."</string>
-    <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"<xliff:g id="APP_LIST">%s</xliff:g> uporabljajo kamero."</string>
-    <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"Aplikacija <xliff:g id="APP">%s</xliff:g> je nedavno uporabljala kamero."</string>
-    <string name="camera_privacy_chip_apps_recently_used_camera_suffix" msgid="3094973410349692954">"<xliff:g id="APP_0">%1$s</xliff:g> in še toliko aplikacij je nedavno uporabljalo kamero: <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g>."</string>
-    <string name="camera_privacy_chip_on_toast" msgid="7901274903678512207">"Kamera je vklopljena."</string>
-    <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"Kamera je izklopljena."</string>
-    <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"V redu"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Želite vklopiti kamero vozila?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Če želite nadaljevati, vklopite kamero informativno-razvedrilnega sistema. S tem bo kamera vklopljena za vse aplikacije z dovoljenjem."</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"Začetni zaslon"</string>
@@ -65,11 +53,9 @@
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"Zvišanje temperature"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"Nastavitve zaslona"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"Nastavitve odpravljanja napak"</string>
-    <string name="status_icon_sound_status" msgid="4923149230650995670">"Nastavitve zvoka"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Te funkcije med vožnjo ne morete uporabljati"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Zapri aplikacijo"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Nazaj"</string>
-    <string name="qc_footer_settings" msgid="5471523941092316743">"Nastavitve"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Nastavitve za Bluetooth"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"Nastavitve omrežja in interneta"</string>
     <string name="qc_footer_display_settings" msgid="2950539240110437704">"Nastavitve zaslona"</string>
@@ -118,7 +104,6 @@
     <string name="backspace_key" msgid="5570862528655375412">"Vračalka"</string>
     <string name="enter_key" msgid="747962923921283095">"Tipka Enter"</string>
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
-    <string name="back_btn" msgid="7774349944465667391">"Nazaj"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Celozaslonski način"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"Velikost prikaza"</string>
 </resources>

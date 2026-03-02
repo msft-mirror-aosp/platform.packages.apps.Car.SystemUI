@@ -17,7 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="voice_recognition_toast" msgid="7579725862117020349">"Ձայնի ճանաչումը մշակվում է միացված Bluetooth սարքի կողմից"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Ավելացնել պրոֆիլ"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Նոր պրոֆիլ"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Ավելացնե՞լ նոր պրոֆիլ"</string>
@@ -32,21 +31,10 @@
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Թույլտվություն ունեցող հավելվածների համար"</string>
     <string name="privacy_chip_settings" msgid="8028897999244574288">"Գաղտնիության կարգավորումներ"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"<xliff:g id="APP">%1$s</xliff:g> հավելվածն օգտագործում է <xliff:g id="SENSOR">%2$s</xliff:g>ը"</string>
-    <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> հավելվածներն օգտագործում են խոսափողը"</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"<xliff:g id="APP">%1$s</xliff:g> հավելվածը վերջերս օգտագործել է <xliff:g id="SENSOR">%2$s</xliff:g>ը"</string>
     <string name="privacy_chip_apps_recently_used_sensor_suffix" msgid="2715537466314464047">"<xliff:g id="APP_0">%1$s</xliff:g> հավելվածն ու ևս <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> հավելված վերջերս օգտագործել են <xliff:g id="SENSOR">%3$s</xliff:g>ը"</string>
-    <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"Խոսափողը միացավ"</string>
-    <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Խոսափողն անջատվեց"</string>
-    <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"Եղավ"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Միացնե՞լ մեքենայի խոսափողը"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Շարունակելու համար միացրեք տեղեկատվաժամանցային համակարգի խոսափողը։ Թույլտվություն ունեցող հավելվածների համար խոսափողը նույնպես կմիանա։"</string>
-    <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"<xliff:g id="APP">%s</xliff:g>՝ օգտագործում է տեսախցիկը"</string>
-    <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"<xliff:g id="APP_LIST">%s</xliff:g>՝ օգտագործում են տեսախցիկը"</string>
-    <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"<xliff:g id="APP">%s</xliff:g> հավելվածը վերջերս օգտագործել է տեսախցիկը"</string>
-    <string name="camera_privacy_chip_apps_recently_used_camera_suffix" msgid="3094973410349692954">"<xliff:g id="APP_0">%1$s</xliff:g> հավելվածն ու ևս <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> հավելված վերջերս օգտագործել են տեսախցիկը"</string>
-    <string name="camera_privacy_chip_on_toast" msgid="7901274903678512207">"Տեսախցիկը միացավ"</string>
-    <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"Տեսախցիկն անջատվեց"</string>
-    <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"Եղավ"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Միացնե՞լ ավտոմեքենայի տեսախցիկը"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Շարունակելու համար միացրեք տեղեկատվաժամանցային համակարգի տեսախցիկը։ Այն կմիանա նաև թույլտվություն ունեցող հավելվածների համար։"</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"Հիմնական էկրան"</string>
@@ -65,11 +53,9 @@
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"Բարձրացնել ջերմաստիճանը"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"Էկրանի կարգավորումներ"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"Վրիպազերծման կարգավորումներ"</string>
-    <string name="status_icon_sound_status" msgid="4923149230650995670">"Ձայնի կարգավորումներ"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Դուք չեք կարող օգտագործել այս գործառույթը մեքենա վարելիս"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Փակել հավելվածը"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Հետ"</string>
-    <string name="qc_footer_settings" msgid="5471523941092316743">"Կարգավորումներ"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Bluetooth-ի կարգավորումներ"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"Ցանցի և ինտերնետի կարգավորումներ"</string>
     <string name="qc_footer_display_settings" msgid="2950539240110437704">"Ցուցադրել կարգավորումները"</string>
@@ -118,7 +104,6 @@
     <string name="backspace_key" msgid="5570862528655375412">"Backspace ստեղն"</string>
     <string name="enter_key" msgid="747962923921283095">"Enter ստեղն"</string>
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
-    <string name="back_btn" msgid="7774349944465667391">"Հետ"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Լիաէկրան"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"Ցուցադրման չափս"</string>
 </resources>

@@ -17,7 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="voice_recognition_toast" msgid="7579725862117020349">"Rozpoznávání hlasu teď provádí připojené zařízení Bluetooth"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Přidat profil"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Nový profil"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Přidat nový profil?"</string>
@@ -32,21 +31,10 @@
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Aplikace s oprávněním"</string>
     <string name="privacy_chip_settings" msgid="8028897999244574288">"Nastavení soukromí"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"Aplikace <xliff:g id="APP">%1$s</xliff:g> používá <xliff:g id="SENSOR">%2$s</xliff:g>"</string>
-    <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"Aplikace <xliff:g id="APP_LIST">%s</xliff:g> používají mikrofon"</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"Aplikace <xliff:g id="APP">%1$s</xliff:g> nedávno použila <xliff:g id="SENSOR">%2$s</xliff:g>"</string>
     <string name="privacy_chip_apps_recently_used_sensor_suffix" msgid="2715537466314464047">"Aplikace <xliff:g id="APP_0">%1$s</xliff:g> a další (<xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g>) nedávno používaly <xliff:g id="SENSOR">%3$s</xliff:g>"</string>
-    <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"Mikrofon je zapnutý"</string>
-    <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Mikrofon je vypnutý"</string>
-    <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"OK"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Zapnout mikrofon vozidla?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Pokud chcete pokračovat, zapněte mikrofon informačního a zábavního systému. Mikrofon se zapne pro všechny aplikace, které mají oprávnění."</string>
-    <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"Aplikace <xliff:g id="APP">%s</xliff:g> používá kameru"</string>
-    <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"Aplikace <xliff:g id="APP_LIST">%s</xliff:g> používá kameru"</string>
-    <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"Aplikace <xliff:g id="APP">%s</xliff:g> nedávno použila kameru"</string>
-    <string name="camera_privacy_chip_apps_recently_used_camera_suffix" msgid="3094973410349692954">"Aplikace <xliff:g id="APP_0">%1$s</xliff:g> a další (<xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g>) nedávno používaly kameru"</string>
-    <string name="camera_privacy_chip_on_toast" msgid="7901274903678512207">"Kamera je zapnutá"</string>
-    <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"Kamera je vypnutá"</string>
-    <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"OK"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Zapnout kameru vozidla?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Pokud chcete pokračovat, zapněte fotoaparát informačního a zábavního systému. Zapne se pro všechny aplikace, které mají oprávnění."</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"Plocha"</string>
@@ -65,11 +53,9 @@
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"Zvýšit teplotu"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"Nastavení displeje"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"Nastavení ladění"</string>
-    <string name="status_icon_sound_status" msgid="4923149230650995670">"Nastavení zvuku"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Tuto funkci nelze používat při řízení"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Zavřít aplikaci"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Zpět"</string>
-    <string name="qc_footer_settings" msgid="5471523941092316743">"Nastavení"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Nastavení Bluetooth"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"Nastavení sítě a internetu"</string>
     <string name="qc_footer_display_settings" msgid="2950539240110437704">"Nastavení displeje"</string>
@@ -118,7 +104,6 @@
     <string name="backspace_key" msgid="5570862528655375412">"Klávesa Backspace"</string>
     <string name="enter_key" msgid="747962923921283095">"Klávesa Enter"</string>
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
-    <string name="back_btn" msgid="7774349944465667391">"Zpět"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Celá obrazovka"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"Velikost zobrazení"</string>
 </resources>

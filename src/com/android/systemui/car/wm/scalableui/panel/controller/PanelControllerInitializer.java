@@ -49,14 +49,15 @@ public class PanelControllerInitializer {
             CompatibilityToolbarController.class.getName();
     private final Map<Class<?>, Provider<TaskPanelController.Factory>>
             mTaskPanelControllerMap;
-    private final Map<Class<?>, Provider<DecorPanelController.Factory>> mDecorPanelControllerMap;
+    private final Map<Class<?>, Provider<DecorPanelController.Factory<?>>>
+            mDecorPanelControllerMap;
     private final Map<Class<?>, Provider<TaskToolbarController.Factory>>
             mTaskToolBarControllerMap;
 
     @Inject
     public PanelControllerInitializer(
             Map<Class<?>, Provider<TaskPanelController.Factory>> taskPanelControllerMap,
-            Map<Class<?>, Provider<DecorPanelController.Factory>> decorPanelControllerMap,
+            Map<Class<?>, Provider<DecorPanelController.Factory<?>>> decorPanelControllerMap,
             Map<Class<?>, Provider<TaskToolbarController.Factory>> taskToolBarControllerMap
     ) {
         mTaskPanelControllerMap = taskPanelControllerMap;
@@ -136,7 +137,7 @@ public class PanelControllerInitializer {
                 + metadata.getId());
         try {
             Class<?> clazz = Class.forName(controllerName);
-            Provider<DecorPanelController.Factory> factoryProvider =
+            Provider<DecorPanelController.Factory<?>> factoryProvider =
                     mDecorPanelControllerMap.get(clazz);
             if (factoryProvider != null) {
                 return factoryProvider.get().create(panelId, metadata);

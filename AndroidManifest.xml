@@ -157,5 +157,11 @@
                 <action android:name="android.telecom.InCallService"/>
             </intent-filter>
         </service>
+
+        <provider android:name="com.android.systemui.keyguard.CustomizationProvider"
+            android:authorities="com.android.systemui.car.keyguard.quickaffordance.disabled"
+            android:enabled="false"
+            tools:replace="android:authorities"
+            tools:node="remove" />
     </application>
 </manifest>

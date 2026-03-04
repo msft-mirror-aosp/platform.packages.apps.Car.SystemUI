@@ -21,8 +21,7 @@ import android.view.View;
 
 import com.android.car.scalableui.panel.DecorPanelController;
 import com.android.car.scalableui.panel.TaskPanelController;
-import com.android.systemui.car.minimizedcontrols.MinimizedMediaControlsPanelController;
-import com.android.systemui.car.minimizedcontrols.MinimizedMediaControlsView;
+import com.android.systemui.car.minimizedcontrols.MinimizedControlsPanelModule;
 import com.android.systemui.car.wm.scalableui.view.AppStyledViewController;
 import com.android.systemui.car.wm.scalableui.view.AppStyledViewScrim;
 import com.android.systemui.car.wm.scalableui.view.GripBarViewController;
@@ -40,7 +39,7 @@ import dagger.multibindings.IntoMap;
 /**
  * Module to inject instance related to panel controllers.
  */
-@Module
+@Module(includes = { MinimizedControlsPanelModule.class })
 public abstract class PanelControllerModule {
     /** Binds MapsPanelController.Factory. */
     @Binds
@@ -67,29 +66,23 @@ public abstract class PanelControllerModule {
     @Binds
     @IntoMap
     @ClassKey(GripBarViewController.class)
-    public abstract DecorPanelController.Factory bindGripBarControllerFactory(
+    public abstract DecorPanelController.Factory<?> bindGripBarControllerFactory(
             GripBarViewController.Factory factory);
 
     /** Binds AppStyledViewController.Factory. */
     @Binds
     @IntoMap
     @ClassKey(AppStyledViewController.class)
-    public abstract DecorPanelController.Factory bindAppStyledViewControllerFactory(
+    public abstract DecorPanelController.Factory<?> bindAppStyledViewControllerFactory(
             AppStyledViewController.Factory factory);
 
     /** Binds PanelOverlayController.Factory. */
     @Binds
     @IntoMap
     @ClassKey(PanelOverlayController.class)
-    public abstract DecorPanelController.Factory bindPanelOverlayControllerFactory(
+    public abstract DecorPanelController.Factory<?> bindPanelOverlayControllerFactory(
             PanelOverlayController.Factory factory);
 
-    /** Binds MinimizedMediaControlsPanelController.Factory. */
-    @Binds
-    @IntoMap
-    @ClassKey(MinimizedMediaControlsPanelController.class)
-    public abstract DecorPanelController.Factory bindMinimizedMediaControlsControllerFactory(
-            MinimizedMediaControlsPanelController.Factory factory);
 
     /** Binds TaskToolBarController.Factory. */
     @Binds
@@ -136,12 +129,4 @@ public abstract class PanelControllerModule {
         return new PanelOverlay(context);
     }
 
-    /** Binds {@link MinimizedMediaControlsView} as a decor panel view. */
-    @Provides
-    @IntoMap
-    @ClassKey(MinimizedMediaControlsView.class)
-    @DecorPanelViewMap
-    static View bindMinimizedMediaControlsView(Context context) {
-        return new MinimizedMediaControlsView(context);
-    }
 }

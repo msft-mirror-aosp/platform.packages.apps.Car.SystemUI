@@ -27,8 +27,6 @@
     <bool name="enable_decor">true</bool>
     <!-- Ensures that automatically added decorations for compatibility mode respect the panel's safe region. -->
     <bool name="display_compatibility_auto_decor_safe_region">true</bool>
-    <!-- Controls restarting the task automatically when it is removed by the shell. -->
-    <bool name="scalable_ui_task_auto_restart">true</bool>
     <!-- Enables actions within the Scalable UI. -->
     <bool name="scalable_ui_actions">true</bool>
     <!-- Controls registering to PanelUpdates Consumer. -->

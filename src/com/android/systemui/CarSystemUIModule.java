@@ -88,6 +88,7 @@ import com.android.systemui.statusbar.policy.IndividualSensorPrivacyController;
 import com.android.systemui.statusbar.policy.IndividualSensorPrivacyControllerImpl;
 import com.android.systemui.statusbar.policy.SensorPrivacyController;
 import com.android.systemui.statusbar.policy.SensorPrivacyControllerImpl;
+import com.android.systemui.statusbar.policy.dagger.SmartRepliesInflationModule;
 import com.android.systemui.unfold.SysUIUnfoldStartableModule;
 import com.android.systemui.wallpapers.dagger.NoopWallpaperModule;
 import com.android.systemui.window.dagger.WindowRootViewBlurNotSupportedModule;
@@ -131,6 +132,7 @@ import javax.inject.Provider;
                 ReferenceScreenshotModule.class,
                 ScreenDecorationsModule.class,
                 ShadeEmptyImplModule.class,
+                SmartRepliesInflationModule.class,
                 SysUIUnfoldStartableModule.class,
                 WindowRootViewBlurNotSupportedModule.class
         },

@@ -18,15 +18,15 @@
         <Layer layer="100"/>
     </Variant>
     <Variant id="@+id/opened" parent="@id/base">
-        <Bounds left="0" top="0" topOffset="@*android:dimen/status_bar_height"  width="100%" bottom="100%" bottomOffset="@*android:dimen/navigation_bar_height"/>
-        <SafeBounds left="@dimen/toolbar_width" top="0" topOffset="@*android:dimen/status_bar_height" right="100%" bottom="100%" bottomOffset="@*android:dimen/navigation_bar_height" />
+        <Bounds left="0" top="0" topOffset="@*android:dimen/status_bar_height" width="100%" bottom="100%" bottomOffset="@*android:dimen/navigation_bar_height"/>
+        <SafeBounds left="0" leftOffset="@dimen/toolbar_width" top="0" topOffset="@*android:dimen/status_bar_height" right="100%" bottom="100%" bottomOffset="@*android:dimen/navigation_bar_height" />
         <Visibility isVisible="true"/>
         <Alpha alpha="1.0"/>
         <TaskToolbarBounds left="0" top="0" width="@dimen/toolbar_width" bottom="100%" topOffset="@*android:dimen/status_bar_height" bottomOffset="@*android:dimen/navigation_bar_height" />
     </Variant>
     <Variant id="@+id/closed" parent="@id/base">
-        <Bounds left="100%" top="0" topOffset="@*android:dimen/status_bar_height"  width="100%" bottom="100%" bottomOffset="@*android:dimen/navigation_bar_height"/>
-        <SafeBounds left="@dimen/toolbar_width" top="100%" topOffset="@*android:dimen/status_bar_height" right="100%" bottom="100%" bottomOffset="@*android:dimen/navigation_bar_height" />
+        <Bounds left="100%" top="0" topOffset="@*android:dimen/status_bar_height" width="100%" bottom="100%" bottomOffset="@*android:dimen/navigation_bar_height"/>
+        <SafeBounds left="100%" leftOffset="@dimen/toolbar_width" top="0" topOffset="@*android:dimen/status_bar_height" right="200%" bottom="100%" bottomOffset="@*android:dimen/navigation_bar_height"/>
         <Visibility isVisible="false"/>
         <Alpha alpha="0.0"/>
         <TaskToolbarBounds left="100%" top="0" width="@dimen/toolbar_width" bottom="100%" topOffset="@*android:dimen/status_bar_height" bottomOffset="@*android:dimen/navigation_bar_height" />

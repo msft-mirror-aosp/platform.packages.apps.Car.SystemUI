@@ -16,11 +16,15 @@
   -->
 <!-- todo(b/304320644): update drawable/car_ic_notification -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="30dp"
-    android:viewportWidth="24"
-    android:viewportHeight="30">
-    <path
-        android:pathData="M12,30C13.658,30 15,28.657 15,27H9C9,28.657 10.342,30 12,30ZM21,21V13.5C21,8.887 18.548,5.04 14.25,4.02V3C14.25,1.755 13.245,0.75 12,0.75C10.755,0.75 9.75,1.755 9.75,3V4.02C5.452,5.04 3,8.887 3,13.5V21L0,24V25.5H24V24L21,21Z"
-        android:fillColor="@color/car_nav_icon_fill_color" />
+    android:width="@dimen/system_bar_icon_drawing_size"
+    android:height="@dimen/system_bar_icon_drawing_size"
+    android:viewportWidth="44"
+    android:viewportHeight="44">
+    <group
+        android:translateX="10"
+        android:translateY="7">
+        <path
+            android:pathData="M12,30C13.658,30 15,28.657 15,27H9C9,28.657 10.342,30 12,30ZM21,21V13.5C21,8.887 18.548,5.04 14.25,4.02V3C14.25,1.755 13.245,0.75 12,0.75C10.755,0.75 9.75,1.755 9.75,3V4.02C5.452,5.04 3,8.887 3,13.5V21L0,24V25.5H24V24L21,21Z"
+            android:fillColor="@color/car_nav_icon_fill_color" />
+    </group>
 </vector>

@@ -109,14 +109,6 @@ enum class Flag(
     ),
 
     /**
-     * Checks if the Scalable UI task auto restart feature is enabled.
-     */
-    ScalableUiTaskAutoRestart(
-        "com.android.car.scalableui.Flags.scalableUiTaskAutoRestart",
-        R.bool.scalable_ui_task_auto_restart
-    ),
-
-    /**
      * Checks if the Scalable UI actions feature is enabled.
      */
     ScalableUiActions(

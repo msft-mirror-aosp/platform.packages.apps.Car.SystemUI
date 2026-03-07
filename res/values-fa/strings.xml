@@ -17,7 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="voice_recognition_toast" msgid="7579725862117020349">"اکنون تشخیص صدا را دستگاه بلوتوث متصل کنترل می‌کند"</string>
     <string name="car_add_user" msgid="6182764665687382136">"افزودن یک نمایه"</string>
     <string name="car_new_user" msgid="6766334721724989964">"نمایه جدید"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"نمایه جدید اضافه شود؟"</string>
@@ -32,21 +31,10 @@
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"برای برنامه‌هایی که اجازه دارند"</string>
     <string name="privacy_chip_settings" msgid="8028897999244574288">"تنظیمات حریم خصوصی"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"<xliff:g id="APP">%1$s</xliff:g> درحال استفاده از <xliff:g id="SENSOR">%2$s</xliff:g> است"</string>
-    <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> از میکروفون استفاده می‌کنند"</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"<xliff:g id="APP">%1$s</xliff:g> اخیراً از <xliff:g id="SENSOR">%2$s</xliff:g> استفاده کرده است"</string>
     <string name="privacy_chip_apps_recently_used_sensor_suffix" msgid="2715537466314464047">"<xliff:g id="APP_0">%1$s</xliff:g> و <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> برنامه دیگر اخیراً از <xliff:g id="SENSOR">%3$s</xliff:g> استفاده کرده‌اند"</string>
-    <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"میکروفون روشن شد"</string>
-    <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"میکروفون خاموش شد"</string>
-    <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"تأیید"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"میکروفون خودرو روشن شود؟"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"برای ادامه، میکروفون سیستم اطلاعات-سرگرمی را روشن کنید. با این کار، میکروفون برای همه برنامه‌هایی که اجازه دارند روشن خواهد شد."</string>
-    <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"<xliff:g id="APP">%s</xliff:g> درحال استفاده از دوربین است"</string>
-    <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"<xliff:g id="APP_LIST">%s</xliff:g> درحال استفاده از دوربین هستند"</string>
-    <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"<xliff:g id="APP">%s</xliff:g> اخیراً از دوربین استفاده کرده است"</string>
-    <string name="camera_privacy_chip_apps_recently_used_camera_suffix" msgid="3094973410349692954">"<xliff:g id="APP_0">%1$s</xliff:g> و <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> برنامه دیگر اخیراً از دوربین استفاده کرده‌اند"</string>
-    <string name="camera_privacy_chip_on_toast" msgid="7901274903678512207">"دوربین روشن شد"</string>
-    <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"دوربین خاموش شد"</string>
-    <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"تأیید"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"دوربین خودرو روشن شود؟"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"برای ادامه، دوربین سیستم اطلاعات-سرگرمی را روشن کنید. با این کار، دوربین برای همه برنامه‌هایی که اجازه دارند روشن خواهد شد."</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"صفحه اصلی"</string>
@@ -65,11 +53,9 @@
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"افزایش دما"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"تنظیمات نمایشگر"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"تنظیمات اشکال‌زدایی"</string>
-    <string name="status_icon_sound_status" msgid="4923149230650995670">"تنظیمات صدا"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"هنگام رانندگی نمی‌توانید از این ویژگی استفاده کنید"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"بستن برنامه"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"برگشتن"</string>
-    <string name="qc_footer_settings" msgid="5471523941092316743">"تنظیمات"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"تنظیمات بلوتوث"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"تنظیمات اینترنت و شبکه"</string>
     <string name="qc_footer_display_settings" msgid="2950539240110437704">"تنظیمات نمایش"</string>
@@ -118,7 +104,6 @@
     <string name="backspace_key" msgid="5570862528655375412">"کلید پس‌بَر"</string>
     <string name="enter_key" msgid="747962923921283095">"کلید ورود"</string>
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
-    <string name="back_btn" msgid="7774349944465667391">"برگشتن"</string>
     <string name="fullscreen" msgid="7648956467442135844">"تمام صفحه"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"اندازه نمایش"</string>
 </resources>

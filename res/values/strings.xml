@@ -16,8 +16,6 @@
   -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- Text for voice recognition toast. [CHAR LIMIT=60] -->
-    <string name="voice_recognition_toast">Voice recognition now handled by connected Bluetooth device</string>
     <!-- Title for button that adds a new profile. [CHAR LIMIT=30] -->
     <string name="car_add_user">Add a profile</string>
     <!-- Default name of the new profile created. [CHAR LIMIT=30] -->
@@ -53,37 +51,14 @@
     <string name="privacy_chip_settings">Privacy settings</string>
     <!-- App is using microphone suffix [CHAR LIMIT=32]-->
     <string name="privacy_chip_app_using_sensor_suffix"><xliff:g id="app" example="Assistant">%1$s</xliff:g> is using the <xliff:g id="sensor" example="microphone">%2$s</xliff:g></string>
-    <!-- Apps are using microphone suffix [CHAR LIMIT=32]-->
-    <string name="mic_privacy_chip_apps_using_mic_suffix"><xliff:g id="app_list" example="Assistant &amp; Phone">%s</xliff:g> are using the mic</string>
     <!-- App was using microphone suffix [CHAR LIMIT=50]-->
     <string name="privacy_chip_app_recently_used_sensor_suffix"><xliff:g id="app" example="Assistant">%1$s</xliff:g> used the <xliff:g id="sensor" example="microphone">%2$s</xliff:g> recently</string>
     <!-- Apps were using microphone suffix [CHAR LIMIT=60]-->
     <string name="privacy_chip_apps_recently_used_sensor_suffix"><xliff:g id="app" example="Assistant">%1$s</xliff:g> and <xliff:g id="additional_app_count" example="2">%2$d</xliff:g> more used the <xliff:g id="sensor" example="microphone">%3$s</xliff:g> recently</string>
-    <!-- Microphone turned on toast text [CHAR LIMIT=40]-->
-    <string name="mic_privacy_chip_on_toast">Microphone turned on</string>
-    <!-- Microphone turned off toast text [CHAR LIMIT=42]-->
-    <string name="mic_privacy_chip_off_toast">Microphone turned off</string>
-    <!-- Ok button for dialog that shows which apps have recently used microphone [CHAR LIMIT=10]-->
-    <string name="mic_privacy_chip_dialog_ok">OK</string>
     <!--- Title of dialog triggered if the microphone is disabled but an app tried to access it. [CHAR LIMIT=75] -->
     <string name="sensor_privacy_start_use_mic_dialog_title">Turn on vehicle microphone?</string>
     <!--- Content of dialog triggered if the microphone is disabled but an app tried to access it. [CHAR LIMIT=NONE] -->
     <string name="sensor_privacy_start_use_mic_dialog_content">To continue, turn on the infotainment system microphone. This will turn on the microphone for all apps that have permission.</string>
-
-    <!-- App is using camera suffix [CHAR LIMIT=32]-->
-    <string name="camera_privacy_chip_app_using_camera_suffix"><xliff:g id="app" example="Assistant">%s</xliff:g> is using the camera</string>
-    <!-- Apps are using camera suffix [CHAR LIMIT=32]-->
-    <string name="camera_privacy_chip_apps_using_camera_suffix"><xliff:g id="app_list" example="Assistant &amp; Phone">%s</xliff:g> are using the camera</string>
-    <!-- App was using camera suffix [CHAR LIMIT=50]-->
-    <string name="camera_privacy_chip_app_recently_used_camera_suffix"><xliff:g id="app" example="Assistant">%s</xliff:g> used the camera recently</string>
-    <!-- Apps were using camera suffix [CHAR LIMIT=60]-->
-    <string name="camera_privacy_chip_apps_recently_used_camera_suffix"><xliff:g id="app" example="Assistant">%1$s</xliff:g> and <xliff:g id="additional_app_count" example="2">%2$d</xliff:g> more used the camera recently</string>
-    <!-- Camera turned on toast text [CHAR LIMIT=40]-->
-    <string name="camera_privacy_chip_on_toast">Camera turned on</string>
-    <!-- Camera turned off toast text [CHAR LIMIT=42]-->
-    <string name="camera_privacy_chip_off_toast">Camera turned off</string>
-    <!-- Ok button for dialog that shows which apps have recently used camera [CHAR LIMIT=10]-->
-    <string name="camera_privacy_chip_dialog_ok">OK</string>
     <!--- Title of dialog triggered if the camera is disabled but an app tried to access it. [CHAR LIMIT=75] -->
     <string name="sensor_privacy_start_use_camera_dialog_title">Turn on vehicle camera?</string>
     <!--- Content of dialog triggered if the camera is disabled but an app tried to access it. [CHAR LIMIT=NONE] -->
@@ -120,7 +95,6 @@
     <string name="status_icon_display_status">Display Settings</string>
     <!-- Status icon for debug settings in status bar-->
     <string name="status_icon_debug_status">Debug Settings</string>
-    <string name="status_icon_sound_status">Sound Settings</string>
 
     <!-- Blocking activity: Message to show to user when a feature of current application is not allowed. [CHAR LIMIT=120] -->
     <string name="activity_blocked_text">You can\u2019t use this feature while driving</string>
@@ -130,9 +104,6 @@
     <string name="exit_button_go_back">Back</string>
     <!-- Blocking activity: Text for button that shows debug info in non-user build. -->
     <string name="debug_button_text" translatable="false">Debug Info</string>
-
-    <!-- Quick Controls: Message to be displayed as the footer button to launch the settings application [CHAR LIMIT=45] -->
-    <string name="qc_footer_settings">Settings</string>
     <!-- Quick Controls: Message to be displayed as the footer button to launch bluetooth settings [CHAR LIMIT=45] -->
     <string name="qc_footer_bluetooth_settings">Bluetooth settings</string>
     <!-- Quick Controls: Message to be displayed as the footer button to launch network and internet settings [CHAR LIMIT=45] -->
@@ -254,9 +225,6 @@
         "intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=true;end"
    -->
     <string name="user_tos_activity_intent">intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end</string>
-
-    <!-- DisplayCompat back button [CHAR LIMIT=30] -->
-    <string name="back_btn">Back</string>
     <!-- DisplayCompat fullscreen button [CHAR LIMIT=30] -->
     <string name="fullscreen">Full Screen</string>
     <string name="display_density_button_description">Display size</string>

@@ -17,7 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="voice_recognition_toast" msgid="7579725862117020349">"Reconhecimento de voz agora através do disp. Bluetooth lig."</string>
     <string name="car_add_user" msgid="6182764665687382136">"Adicionar perfil"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Novo perfil"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Adicionar o novo perfil?"</string>
@@ -32,21 +31,10 @@
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Para as apps que têm autorização"</string>
     <string name="privacy_chip_settings" msgid="8028897999244574288">"Definições de privacidade"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"A app <xliff:g id="APP">%1$s</xliff:g> está a usar: <xliff:g id="SENSOR">%2$s</xliff:g>"</string>
-    <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> estão a utilizar o microfone"</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"Recentemente, a app <xliff:g id="APP">%1$s</xliff:g> usou: <xliff:g id="SENSOR">%2$s</xliff:g>"</string>
     <string name="privacy_chip_apps_recently_used_sensor_suffix" msgid="2715537466314464047">"Recentemente, a app <xliff:g id="APP_0">%1$s</xliff:g> e mais <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> usaram: <xliff:g id="SENSOR">%3$s</xliff:g>"</string>
-    <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"Microfone ativado"</string>
-    <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Microfone desativado"</string>
-    <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"OK"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Ativar o microfone do veículo?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Para continuar, ative o microfone do sistema de infoentretenimento. Esta ação irá ativar o microfone para todas as apps que têm autorização."</string>
-    <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"A app <xliff:g id="APP">%s</xliff:g> está a usar a câmara"</string>
-    <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"As apps <xliff:g id="APP_LIST">%s</xliff:g> estão a usar a câmara"</string>
-    <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"A app <xliff:g id="APP">%s</xliff:g> usou a câmara recentemente"</string>
-    <string name="camera_privacy_chip_apps_recently_used_camera_suffix" msgid="3094973410349692954">"A app <xliff:g id="APP_0">%1$s</xliff:g> e mais <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> usaram a câmara recentemente"</string>
-    <string name="camera_privacy_chip_on_toast" msgid="7901274903678512207">"Câmara ativada"</string>
-    <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"Câmara desativada"</string>
-    <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"OK"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Ativar a câmara do veículo?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Para continuar, ative a câmara do sistema de infoentretenimento. Esta ação irá ativar a câmara para todas as apps que têm autorização."</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"Ecrã principal"</string>
@@ -65,11 +53,9 @@
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"Aumentar a temperatura"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"Definições do ecrã"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"Definições de depuração"</string>
-    <string name="status_icon_sound_status" msgid="4923149230650995670">"Definições de som"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Não pode usar esta funcionalidade enquanto conduz"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Fechar app"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Anterior"</string>
-    <string name="qc_footer_settings" msgid="5471523941092316743">"Definições"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Definições de Bluetooth"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"Definições de rede e Internet"</string>
     <string name="qc_footer_display_settings" msgid="2950539240110437704">"Definições do ecrã"</string>
@@ -118,7 +104,6 @@
     <string name="backspace_key" msgid="5570862528655375412">"Tecla de retrocesso"</string>
     <string name="enter_key" msgid="747962923921283095">"Tecla Enter"</string>
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
-    <string name="back_btn" msgid="7774349944465667391">"Anterior"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Ecrã inteiro"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"Tamanho da visualização"</string>
 </resources>

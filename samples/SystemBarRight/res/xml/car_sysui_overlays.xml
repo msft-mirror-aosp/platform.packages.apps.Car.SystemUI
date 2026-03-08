@@ -62,9 +62,6 @@
         target="integer/config_rightSystemBarZOrder"
         value="@integer/config_rightSystemBarZOrder" />
     <item
-        target="integer/config_statusIconLayoutOrientation"
-        value="@integer/config_statusIconLayoutOrientation" />
-    <item
         target="integer/config_bottomSystemBarZOrder"
         value="@integer/config_bottomSystemBarZOrder" />
 

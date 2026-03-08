@@ -17,7 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="voice_recognition_toast" msgid="7579725862117020349">"ხმის ამოცნობა დამუშავდება დაკავშირებული Bluetooth-მოწყობილობით"</string>
     <string name="car_add_user" msgid="6182764665687382136">"პროფილის დამატება"</string>
     <string name="car_new_user" msgid="6766334721724989964">"ახალი პროფილი"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"დაემატოს ახალი პროფილი?"</string>
@@ -32,21 +31,10 @@
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"ნებადართული აპებისთვის"</string>
     <string name="privacy_chip_settings" msgid="8028897999244574288">"კონფიდენციალურობის პარამეტრები"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"<xliff:g id="APP">%1$s</xliff:g> იყენებს <xliff:g id="SENSOR">%2$s</xliff:g>-ს"</string>
-    <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> მიკროფონს იყენებენ"</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"აპმა <xliff:g id="APP">%1$s</xliff:g> ახლახან გამოიყენა <xliff:g id="SENSOR">%2$s</xliff:g>"</string>
     <string name="privacy_chip_apps_recently_used_sensor_suffix" msgid="2715537466314464047">"<xliff:g id="APP_0">%1$s</xliff:g>-მა და კიდევ <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> აპმა ახლახან გამოიყენა <xliff:g id="SENSOR">%3$s</xliff:g>"</string>
-    <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"მიკროფონი ჩართულია"</string>
-    <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"მიკროფონი გამორთულია"</string>
-    <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"კარგი"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"ჩაირთოს ავტომობილის მიკროფონი?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"გასაგრძელებლად ჩართეთ გართობის/საინფორმაციო სისტემის მიკროფონი ეს მოქმედება ყველა ნებადართული აპს მიკროფონს ჩაურთავს."</string>
-    <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"<xliff:g id="APP">%s</xliff:g> კამერას იყენებს"</string>
-    <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"<xliff:g id="APP_LIST">%s</xliff:g> კამერას იყენებს"</string>
-    <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"<xliff:g id="APP">%s</xliff:g>-მა ახლახან გამოიყენა კამერა"</string>
-    <string name="camera_privacy_chip_apps_recently_used_camera_suffix" msgid="3094973410349692954">"<xliff:g id="APP_0">%1$s</xliff:g>-მა და კიდევ <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> აპმა ახლახან გამოიყენა კამერა"</string>
-    <string name="camera_privacy_chip_on_toast" msgid="7901274903678512207">"კამერა ჩართულია"</string>
-    <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"კამერა გამორთულია"</string>
-    <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"კარგი"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"ჩაირთოს ავტომობილის კამერა?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"გასაგრძელებლად ჩართეთ გართობის/საინფორმაციო სისტემის კამერა. ეს მოქმედება ყველა ნებადართულ აპს კამერას ჩაურთავს."</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"მთავარი ეკრანი"</string>
@@ -65,11 +53,9 @@
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"ტემპერატურის აწევა"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"ჩვენების პარამეტრები"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"გამართვის პარამეტრები"</string>
-    <string name="status_icon_sound_status" msgid="4923149230650995670">"ხმის პარამეტრები"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"მანქანის მართვისას ამ ფუნქციას ვერ გამოიყენებთ"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"აპის დახურვა"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"უკან"</string>
-    <string name="qc_footer_settings" msgid="5471523941092316743">"პარამეტრები"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Bluetooth-ის პარამეტრები"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"ქსელის და ინტერნეტის პარამეტრები"</string>
     <string name="qc_footer_display_settings" msgid="2950539240110437704">"ეკრანის პარამეტრები"</string>
@@ -118,7 +104,6 @@
     <string name="backspace_key" msgid="5570862528655375412">"კლავიში backspace"</string>
     <string name="enter_key" msgid="747962923921283095">"კლავიში Enter"</string>
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
-    <string name="back_btn" msgid="7774349944465667391">"უკან"</string>
     <string name="fullscreen" msgid="7648956467442135844">"სრულ ეკრანზე"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"ეკრანის ზომა"</string>
 </resources>

@@ -23,16 +23,4 @@
     <item type="id" name="occlusion_buttons"/>
     <item type="id" name="dock"/>
 
-    <!-- Values assigned to quick control views    -->
-    <item type="id" name="qc_display_status_icon"/>
-    <item type="id" name="qc_bluetooth_status_icon"/>
-    <item type="id" name="qc_signal_status_icon"/>
-    <item type="id" name="qc_sound_status_icon"/>
-    <item type="id" name="qc_location_status_icon"/>
-    <item type="id" name="qc_phone_call_status_icon"/>
-    <item type="id" name="qc_mobile_signal_status_icon"/>
-    <item type="id" name="qc_wifi_signal_status_icon"/>
-    <item type="id" name="qc_media_volume_status_icon"/>
-    <item type="id" name="qc_status_icon_list"/>
-
 </resources>

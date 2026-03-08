@@ -19,6 +19,5 @@
     <dimen name="car_status_icon_panel_default_width">800dp</dimen>
     <dimen name="car_status_icon_panel_padding_top">22dp</dimen>
     <dimen name="car_status_icon_panel_padding_bottom">32dp</dimen>
-    <dimen name="car_status_icon_panel_margin_top">0dp</dimen>
     <dimen name="car_status_icon_panel_dim" format="float">0.5</dimen>
 </resources>

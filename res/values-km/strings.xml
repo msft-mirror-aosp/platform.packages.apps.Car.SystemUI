@@ -17,7 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="voice_recognition_toast" msgid="7579725862117020349">"ឥឡូវនេះ ការសម្គាល់សំឡេងត្រូវបានចាត់ចែងដោយឧបករណ៍ដែលបានភ្ជាប់ប៊្លូធូស"</string>
     <string name="car_add_user" msgid="6182764665687382136">"បញ្ចូល​កម្រងព័ត៌មាន"</string>
     <string name="car_new_user" msgid="6766334721724989964">"កម្រងព័ត៌មាន​ថ្មី"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"បញ្ចូល​កម្រងព័ត៌មានថ្មី​ឬ?"</string>
@@ -32,21 +31,10 @@
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"សម្រាប់កម្មវិធី​ដែលមាន​ការអនុញ្ញាត"</string>
     <string name="privacy_chip_settings" msgid="8028897999244574288">"ការកំណត់​ឯកជនភាព"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"<xliff:g id="APP">%1$s</xliff:g> កំពុងប្រើ <xliff:g id="SENSOR">%2$s</xliff:g>"</string>
-    <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> កំពុងប្រើ​មីក្រូហ្វូន"</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"<xliff:g id="APP">%1$s</xliff:g> បានប្រើ <xliff:g id="SENSOR">%2$s</xliff:g> ថ្មីៗនេះ"</string>
     <string name="privacy_chip_apps_recently_used_sensor_suffix" msgid="2715537466314464047">"<xliff:g id="APP_0">%1$s</xliff:g> និង <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> ទៀតបានប្រើ <xliff:g id="SENSOR">%3$s</xliff:g> ថ្មីៗនេះ"</string>
-    <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"បានបើក​មីក្រូហ្វូន"</string>
-    <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"បានបិទ​មីក្រូហ្វូន"</string>
-    <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"អូខេ"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"បើកមីក្រូហ្វូនរបស់​យានជំនិះឬ?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"ដើម្បីបន្ត សូមបើក​មីក្រូហ្វូន​ប្រព័ន្ធព័ត៌មាន និងកម្សាន្ត។ ការធ្វើបែបនេះ​នឹងបើកមីក្រូហ្វូន​សម្រាប់កម្មវិធីទាំងអស់​ដែលមាន​ការអនុញ្ញាត។"</string>
-    <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"<xliff:g id="APP">%s</xliff:g> កំពុងប្រើកាមេរ៉ា"</string>
-    <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"<xliff:g id="APP_LIST">%s</xliff:g> កំពុងប្រើកាមេរ៉ា"</string>
-    <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"<xliff:g id="APP">%s</xliff:g> បានប្រើកាមេរ៉ាថ្មីៗនេះ"</string>
-    <string name="camera_privacy_chip_apps_recently_used_camera_suffix" msgid="3094973410349692954">"<xliff:g id="APP_0">%1$s</xliff:g> និង <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> ទៀតបានប្រើកាមេរ៉ាថ្មីៗនេះ"</string>
-    <string name="camera_privacy_chip_on_toast" msgid="7901274903678512207">"បានបើក​កាមេរ៉ា"</string>
-    <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"បានបិទ​កាមេរ៉ា"</string>
-    <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"យល់ព្រម"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"បើកកាមេរ៉ាយានជំនិះឬ?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"ដើម្បីបន្ត សូមបើក​កាមេរ៉ា​ប្រព័ន្ធព័ត៌មាន និងកម្សាន្ត។ ការធ្វើបែបនេះ​នឹងបើកកាមេរ៉ា​សម្រាប់កម្មវិធីទាំងអស់​ដែលមាន​ការអនុញ្ញាត។"</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"អេក្រង់ដើម"</string>
@@ -65,11 +53,9 @@
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"បង្កើនសីតុណ្ហភាព"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"ការកំណត់​ផ្ទាំងអេក្រង់"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"ការកំណត់ការជួសជុល"</string>
-    <string name="status_icon_sound_status" msgid="4923149230650995670">"ការកំណត់​សំឡេង"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"អ្នកមិនអាចប្រើ​មុខងារនេះ​បានទេ ខណៈពេលកំពុង​បើកបរ"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"បិទកម្មវិធី"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"ថយក្រោយ"</string>
-    <string name="qc_footer_settings" msgid="5471523941092316743">"ការកំណត់"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"ការកំណត់​ប៊្លូធូស"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"ការកំណត់​អ៊ីនធឺណិត និង​បណ្ដាញ"</string>
     <string name="qc_footer_display_settings" msgid="2950539240110437704">"ការកំណត់​ផ្ទាំងអេក្រង់"</string>
@@ -118,7 +104,6 @@
     <string name="backspace_key" msgid="5570862528655375412">"គ្រាប់ចុច Backspace"</string>
     <string name="enter_key" msgid="747962923921283095">"គ្រាប់ចុច Enter"</string>
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
-    <string name="back_btn" msgid="7774349944465667391">"ថយក្រោយ"</string>
     <string name="fullscreen" msgid="7648956467442135844">"អេក្រង់ពេញ"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"ទំហំ​បង្ហាញ"</string>
 </resources>

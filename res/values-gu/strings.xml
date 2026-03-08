@@ -17,7 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="voice_recognition_toast" msgid="7579725862117020349">"અવાજની ઓળખ હવે કનેક્ટેડ બ્લૂટૂથ ડિવાઇસ વડે નિયંત્રિત થશે"</string>
     <string name="car_add_user" msgid="6182764665687382136">"પ્રોફાઇલ ઉમેરો"</string>
     <string name="car_new_user" msgid="6766334721724989964">"નવી પ્રોફાઇલ"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"નવી પ્રોફાઇલ ઉમેરવી છે?"</string>
@@ -32,21 +31,10 @@
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"પરવાનગી ધરાવતી ઍપ માટે"</string>
     <string name="privacy_chip_settings" msgid="8028897999244574288">"પ્રાઇવસી સેટિંગ"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"<xliff:g id="APP">%1$s</xliff:g>, <xliff:g id="SENSOR">%2$s</xliff:g>નો ઉપયોગ કરી રહ્યું છે"</string>
-    <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> માઇકનો ઉપયોગ કરી રહી છે"</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"<xliff:g id="APP">%1$s</xliff:g> દ્વારા તાજેતરમાં જ <xliff:g id="SENSOR">%2$s</xliff:g>નો ઉપયોગ કરવામાં આવ્યો"</string>
     <string name="privacy_chip_apps_recently_used_sensor_suffix" msgid="2715537466314464047">"<xliff:g id="APP_0">%1$s</xliff:g> અને અન્ય <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> ઍપ દ્વારા તાજેતરમાં <xliff:g id="SENSOR">%3$s</xliff:g>નો ઉપયોગ કરવામાં આવ્યો"</string>
-    <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"માઇક્રોફોન ચાલુ કર્યું"</string>
-    <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"માઇક્રોફોન બંધ કર્યું"</string>
-    <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"ઓકે"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"શું વાહનનો માઇક્રોફોન ચાલુ કરીએ?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"આગળ વધવા માટે, ઇન્ફોટેનમેન્ટ સિસ્ટમનો માઇક્રોફોન ચાલુ કરો. આમ કરવાથી પરવાનગી ધરાવતી બધી ઍપ માટે માઇક્રોફોન ચાલુ થશે."</string>
-    <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"<xliff:g id="APP">%s</xliff:g> કૅમેરાનો ઉપયોગ કરી રહ્યું છે"</string>
-    <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"<xliff:g id="APP_LIST">%s</xliff:g> કૅમેરાનો ઉપયોગ કરી રહ્યાં છે"</string>
-    <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"<xliff:g id="APP">%s</xliff:g> દ્વારા તાજેતરમાં કૅમેરાનો ઉપયોગ કરવામાં આવ્યો"</string>
-    <string name="camera_privacy_chip_apps_recently_used_camera_suffix" msgid="3094973410349692954">"<xliff:g id="APP_0">%1$s</xliff:g> અને અન્ય <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> ઍપ દ્વારા તાજેતરમાં કૅમેરાનો ઉપયોગ કરવામાં આવ્યો"</string>
-    <string name="camera_privacy_chip_on_toast" msgid="7901274903678512207">"કૅમેરા ચાલુ કર્યો"</string>
-    <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"કૅમેરા બંધ કર્યો"</string>
-    <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"ઓકે"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"શું વાહનનો કૅમેરા ચાલુ કરીએ?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"આગળ વધવા માટે, ઇન્ફોટેનમેન્ટ સિસ્ટમનો કૅમેરા ચાલુ કરો. આમ કરવાથી પરવાનગી ધરાવતી બધી ઍપ માટે કૅમેરા ચાલુ થશે."</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"હોમ સ્ક્રીન"</string>
@@ -65,11 +53,9 @@
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"તાપમાન વધારો"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"ડિસ્પ્લેના સેટિંગ"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"ડિબગ સેટિંગ"</string>
-    <string name="status_icon_sound_status" msgid="4923149230650995670">"સાઉન્ડ સેટિંગ"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"ડ્રાઇવ કરતી વખતે તમે આ સુવિધાનો ઉપયોગ કરી શકતા નથી"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"ઍપ બંધ કરો"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"પાછળ"</string>
-    <string name="qc_footer_settings" msgid="5471523941092316743">"સેટિંગ"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"બ્લૂટૂથ સેટિંગ"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"નેટવર્ક અને ઇન્ટરનેટ સેટિંગ"</string>
     <string name="qc_footer_display_settings" msgid="2950539240110437704">"ડિસ્પ્લે સેટિંગ"</string>
@@ -118,7 +104,6 @@
     <string name="backspace_key" msgid="5570862528655375412">"Backspace કી"</string>
     <string name="enter_key" msgid="747962923921283095">"Enter કી"</string>
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
-    <string name="back_btn" msgid="7774349944465667391">"પાછળ"</string>
     <string name="fullscreen" msgid="7648956467442135844">"પૂર્ણ સ્ક્રીન"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"ડિસ્પ્લે સાઇઝ"</string>
 </resources>

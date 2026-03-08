@@ -995,9 +995,7 @@ public class PanelTransitionCoordinator {
             applyAutoTaskStackState(autoTaskStackTransaction, panelId, /* toVariant= */ null);
         }
 
-        if (mFlagManager.isEnabled(Flag.ScalableUiTaskFocus)) {
-            calculateFocusedTaskStack(panelTransaction, autoTaskStackTransaction);
-        }
+        calculateFocusedTaskStack(panelTransaction, autoTaskStackTransaction);
 
         return autoTaskStackTransaction;
     }

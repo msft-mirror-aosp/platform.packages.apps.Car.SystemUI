@@ -17,8 +17,6 @@
 <resources>
     <!-- Enable the scalableUI feature. -->
     <bool name="scalable_ui">true</bool>
-    <!-- A flag to enable task focus within the Scalable UI. -->
-    <bool name="scalable_ui_enable_task_focus">true</bool>
     <!-- Controls dispatching events when panel animation ends. -->
     <bool name="enable_animation_end_event">true</bool>
     <!-- Enables the Design Compose-based design for the Scalable UI. -->
@@ -31,8 +29,6 @@
     <bool name="scalable_ui_actions">true</bool>
     <!-- Controls registering to PanelUpdates Consumer. -->
     <bool name="enable_ext_panel_updates">true</bool>
-    <!-- Controls enabling task focus for ScalableUI. -->
-    <bool name="scalable_ui_task_focus">true</bool>
     <!-- Controls enabling configuration change handling for ScalableUI. -->
     <bool name="scalable_ui_handle_configuration_change">true</bool>
     <!-- Controls enabling display compatibility V2. -->

@@ -53,11 +53,6 @@
          CarHeadsUpNotificationBottomAnimationHelper. -->
     <bool name="config_showHeadsUpNotificationOnBottom">true</bool>
 
-    <!-- Determines the orientation of the status icon. -->
-    <!-- 0 horizontal. -->
-    <!-- 1 vertical -->
-    <integer name="config_statusIconLayoutOrientation">1</integer>
-
     <string name="config_notificationPanelViewMediator" translatable="false">
         com.android.systemui.car.notification.NotificationPanelViewMediator</string>
 

@@ -17,7 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="voice_recognition_toast" msgid="7579725862117020349">"Njohja zanore trajtohet nga pajisja me Bluetooth-in e lidhur"</string>
     <string name="car_add_user" msgid="6182764665687382136">"Shto një profil"</string>
     <string name="car_new_user" msgid="6766334721724989964">"Profili i ri"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"Të shtohet një profil i ri?"</string>
@@ -32,21 +31,10 @@
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"Për aplikacionet që kanë leje"</string>
     <string name="privacy_chip_settings" msgid="8028897999244574288">"Cilësimet e privatësisë"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"<xliff:g id="APP">%1$s</xliff:g> po përdor <xliff:g id="SENSOR">%2$s</xliff:g>"</string>
-    <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"<xliff:g id="APP_LIST">%s</xliff:g> po përdorin mikrofonin"</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"<xliff:g id="APP">%1$s</xliff:g> ka përdorur <xliff:g id="SENSOR">%2$s</xliff:g> së fundi"</string>
     <string name="privacy_chip_apps_recently_used_sensor_suffix" msgid="2715537466314464047">"<xliff:g id="APP_0">%1$s</xliff:g> dhe <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> të tjera përdorën <xliff:g id="SENSOR">%3$s</xliff:g> së fundi"</string>
-    <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"Mikrofoni është aktivizuar"</string>
-    <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"Mikrofoni është çaktivizuar"</string>
-    <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"Në rregull"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Të aktivizohet mikrofoni i automjetit?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Për të vazhduar, aktivizo mikrofonin e sistemit info-argëtues. Kjo do të aktivizojë mikrofonin për të gjitha aplikacionet që kanë leje."</string>
-    <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"<xliff:g id="APP">%s</xliff:g> po përdor kamerën"</string>
-    <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"<xliff:g id="APP_LIST">%s</xliff:g> po përdorin kamerën"</string>
-    <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"<xliff:g id="APP">%s</xliff:g> ka përdorur kamerën së fundi"</string>
-    <string name="camera_privacy_chip_apps_recently_used_camera_suffix" msgid="3094973410349692954">"<xliff:g id="APP_0">%1$s</xliff:g> dhe <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> të tjera përdorën kamerën së fundi"</string>
-    <string name="camera_privacy_chip_on_toast" msgid="7901274903678512207">"Kamera u aktivizua"</string>
-    <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"Kamera u çaktivizua"</string>
-    <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"Në rregull"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Të aktivizohet kamera e automjetit?"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Për të vazhduar, aktivizo kamerën e sistemit info-argëtues. Kjo do të aktivizojë kamerën për të gjitha aplikacionet që kanë leje."</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"Ekrani bazë"</string>
@@ -65,11 +53,9 @@
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"Ngri temperaturën"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"Cilësimet e ekranit"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"Cilësimet e korrigjimit"</string>
-    <string name="status_icon_sound_status" msgid="4923149230650995670">"Cilësimet e zërit"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"Nuk mund ta përdorësh këtë veçori gjatë drejtimit të makinës"</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"Mbyll aplikacionin"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"Pas"</string>
-    <string name="qc_footer_settings" msgid="5471523941092316743">"Cilësimet"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"Cilësimet e Bluetooth-it"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"Cilësimet e rrjetit dhe internetit"</string>
     <string name="qc_footer_display_settings" msgid="2950539240110437704">"Shfaq cilësimet"</string>
@@ -118,7 +104,6 @@
     <string name="backspace_key" msgid="5570862528655375412">"Tasti Backspace"</string>
     <string name="enter_key" msgid="747962923921283095">"Tasti Enter"</string>
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
-    <string name="back_btn" msgid="7774349944465667391">"Pas"</string>
     <string name="fullscreen" msgid="7648956467442135844">"Ekran i plotë"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"Madhësia në ekran"</string>
 </resources>

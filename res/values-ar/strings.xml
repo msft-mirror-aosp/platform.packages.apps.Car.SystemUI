@@ -17,7 +17,6 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="voice_recognition_toast" msgid="7579725862117020349">"تتم معالجة التعرّف على الصوت الآن من خلال جهاز بلوتوث متصل."</string>
     <string name="car_add_user" msgid="6182764665687382136">"إضافة ملف شخصي"</string>
     <string name="car_new_user" msgid="6766334721724989964">"ملف شخصي جديد"</string>
     <string name="user_add_profile_title" msgid="828371911076521952">"هل المطلوب إنشاء ملف شخصي جديد؟"</string>
@@ -32,21 +31,10 @@
     <string name="privacy_chip_use_sensor_subtext" msgid="5655148288310815742">"للتطبيقات التي حصلت على الإذن"</string>
     <string name="privacy_chip_settings" msgid="8028897999244574288">"إعدادات الخصوصية"</string>
     <string name="privacy_chip_app_using_sensor_suffix" msgid="7921315376271490004">"يستخدم تطبيق <xliff:g id="APP">%1$s</xliff:g> ميزة <xliff:g id="SENSOR">%2$s</xliff:g> الآن."</string>
-    <string name="mic_privacy_chip_apps_using_mic_suffix" msgid="6656026041668305817">"تستخدم تطبيقات <xliff:g id="APP_LIST">%s</xliff:g> الميكروفون."</string>
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"استخدَم تطبيق <xliff:g id="APP">%1$s</xliff:g> ميزة <xliff:g id="SENSOR">%2$s</xliff:g> مؤخرًا."</string>
     <string name="privacy_chip_apps_recently_used_sensor_suffix" msgid="2715537466314464047">"استخدَم تطبيق <xliff:g id="APP_0">%1$s</xliff:g> و<xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> تطبيق آخر ميزة <xliff:g id="SENSOR">%3$s</xliff:g> مؤخرًا."</string>
-    <string name="mic_privacy_chip_on_toast" msgid="7003896860896586181">"تم تفعيل الميكروفون."</string>
-    <string name="mic_privacy_chip_off_toast" msgid="8718743873640788032">"تم إيقاف الميكروفون."</string>
-    <string name="mic_privacy_chip_dialog_ok" msgid="2298690833121720237">"حسنًا"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"هل تريد تفعيل ميكروفون السيارة؟"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"للمتابعة، عليك تفعيل الميكروفون لنظام الترفيه والمعلومات. سيؤدي هذا إلى تفعيل الميكروفون لجميع التطبيقات التي حصلت على الإذن."</string>
-    <string name="camera_privacy_chip_app_using_camera_suffix" msgid="2591363552459967509">"يستخدم تطبيق <xliff:g id="APP">%s</xliff:g> الكاميرا الآن."</string>
-    <string name="camera_privacy_chip_apps_using_camera_suffix" msgid="8033118959615498419">"تستخدِم تطبيقات <xliff:g id="APP_LIST">%s</xliff:g> الكاميرا."</string>
-    <string name="camera_privacy_chip_app_recently_used_camera_suffix" msgid="4534950658276502559">"استخدَم تطبيق <xliff:g id="APP">%s</xliff:g> الكاميرا مؤخرًا."</string>
-    <string name="camera_privacy_chip_apps_recently_used_camera_suffix" msgid="3094973410349692954">"استخدَم تطبيق <xliff:g id="APP_0">%1$s</xliff:g> و<xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> تطبيق آخر الكاميرا مؤخرًا."</string>
-    <string name="camera_privacy_chip_on_toast" msgid="7901274903678512207">"تم تفعيل الكاميرا."</string>
-    <string name="camera_privacy_chip_off_toast" msgid="7135472255099347229">"تم إيقاف الكاميرا."</string>
-    <string name="camera_privacy_chip_dialog_ok" msgid="7285467760928137765">"حسنًا"</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"هل تريد تفعيل كاميرا المركبة؟"</string>
     <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"للمتابعة، عليك تفعيل الكاميرا في نظام الترفيه والمعلومات. سيؤدي هذا إلى تفعيل الكاميرا لجميع التطبيقات التي حصلت على الإذن."</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"الشاشة الرئيسية"</string>
@@ -65,11 +53,9 @@
     <string name="hvac_increase_button_label" msgid="2855688290787396792">"رفع درجة الحرارة"</string>
     <string name="status_icon_display_status" msgid="2970020923181359144">"إعدادات الشاشة"</string>
     <string name="status_icon_debug_status" msgid="2503944482699701492">"إعدادات تصحيح الأخطاء"</string>
-    <string name="status_icon_sound_status" msgid="4923149230650995670">"إعدادات الصوت"</string>
     <string name="activity_blocked_text" msgid="5353157279548801554">"لا يمكنك استخدام هذه الميزة أثناء القيادة."</string>
     <string name="exit_button_close_application" msgid="112227710467017144">"إغلاق التطبيق"</string>
     <string name="exit_button_go_back" msgid="7988866855775300902">"رجوع"</string>
-    <string name="qc_footer_settings" msgid="5471523941092316743">"الإعدادات"</string>
     <string name="qc_footer_bluetooth_settings" msgid="2870204430643762847">"إعدادات البلوتوث"</string>
     <string name="qc_footer_network_internet_settings" msgid="2480582764252681575">"إعدادات الشبكة والإنترنت"</string>
     <string name="qc_footer_display_settings" msgid="2950539240110437704">"إعدادات الشاشة"</string>
@@ -118,7 +104,6 @@
     <string name="backspace_key" msgid="5570862528655375412">"مفتاح Backspace"</string>
     <string name="enter_key" msgid="747962923921283095">"مفتاح Enter"</string>
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
-    <string name="back_btn" msgid="7774349944465667391">"رجوع"</string>
     <string name="fullscreen" msgid="7648956467442135844">"ملء الشاشة"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"حجم العرض"</string>
 </resources>

@@ -16,14 +16,6 @@
   -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- Apps are using microphone suffix [CHAR LIMIT=32]-->
-    <string name="mic_privacy_chip_apps_using_mic_suffix"><xliff:g id="app_list" example="Assistant &amp; Phone">%s</xliff:g> are using the mic</string>
-    <!-- Microphone turned on toast text [CHAR LIMIT=40]-->
-    <string name="mic_privacy_chip_on_toast">Microphone turned on</string>
-    <!-- Microphone turned off toast text [CHAR LIMIT=42]-->
-    <string name="mic_privacy_chip_off_toast">Microphone turned off</string>
-    <!-- Ok button for dialog that shows which apps have recently used microphone [CHAR LIMIT=10]-->
-    <string name="mic_privacy_chip_dialog_ok">OK</string>
     <!--- Title of dialog triggered if the microphone is disabled but an app tried to access it. [CHAR LIMIT=75] -->
     <string name="sensor_privacy_start_use_mic_dialog_title">Turn on vehicle microphone?</string>
     <!--- Content of dialog triggered if the microphone is disabled but an app tried to access it. [CHAR LIMIT=NONE] -->

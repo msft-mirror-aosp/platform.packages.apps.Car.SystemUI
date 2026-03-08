@@ -15,7 +15,6 @@
   ~ limitations under the License.
   -->
 <resources>
-    <string name="status_icon_signal_ethernet">Signal Settings: Using Ethernet</string>
     <string name="status_icon_signal_hotspot">Signal Settings: Hotspot On</string>
     <string name="status_icon_signal_mobile">Signal Settings: Using Mobile Data</string>
     <string name="status_icon_signal_wifi">Signal Settings: Using Wi-Fi</string>

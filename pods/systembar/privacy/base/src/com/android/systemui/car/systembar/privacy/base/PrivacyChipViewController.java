@@ -181,15 +181,15 @@ public abstract class PrivacyChipViewController extends CarSystemBarElementContr
                 @Override
                 public int getXOffsetPx() {
                     return -mContext.getResources().getDimensionPixelOffset(
-                            com.android.systemui.car.shared.R.dimen
-                                    .privacy_chip_horizontal_padding);
+                            com.android.systemui.car.shared
+                                    .R.dimen.privacy_chip_horizontal_padding);
                 }
 
                 @Override
                 public int getYOffsetPx() {
                     return mContext.getResources().getDimensionPixelOffset(
-                            com.android.systemui.car.shared.R.dimen
-                                    .privacy_chip_vertical_padding);
+                            com.android.systemui.car.shared
+                                    .R.dimen.privacy_chip_vertical_padding);
                 }
 
                 @Override

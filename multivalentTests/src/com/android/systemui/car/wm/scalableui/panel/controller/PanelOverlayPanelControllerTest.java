@@ -16,8 +16,8 @@
 
 package com.android.systemui.car.wm.scalableui.panel.controller;
 
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.OVERLAY_PANEL_ID_TAG;
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.VIEW_TAG;
+import static com.android.car.scalableui.loader.xml.parser.PanelControllerParser.OVERLAY_PANEL_ID_TAG;
+import static com.android.car.scalableui.loader.xml.parser.PanelControllerParser.VIEW_TAG;
 
 import static com.google.common.truth.Truth.assertThat;
 

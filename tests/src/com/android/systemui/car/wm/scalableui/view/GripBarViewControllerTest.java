@@ -16,10 +16,10 @@
 
 package com.android.systemui.car.wm.scalableui.view;
 
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.EVENT_ID_TAG;
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.ORIENTATION_TAG;
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.SNAPTHREADHOLD_TAG;
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.VIEW_TAG;
+import static com.android.car.scalableui.loader.xml.parser.PanelControllerParser.EVENT_ID_TAG;
+import static com.android.car.scalableui.loader.xml.parser.PanelControllerParser.ORIENTATION_TAG;
+import static com.android.car.scalableui.loader.xml.parser.PanelControllerParser.SNAPTHREADHOLD_TAG;
+import static com.android.car.scalableui.loader.xml.parser.PanelControllerParser.VIEW_TAG;
 import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventConstants.PANEL_DRAG_DIRECTION_ID;
 import static com.android.systemui.car.wm.scalableui.view.GripBarViewController.DRAG_DECREASE;
 import static com.android.systemui.car.wm.scalableui.view.GripBarViewController.DRAG_INCREASE;

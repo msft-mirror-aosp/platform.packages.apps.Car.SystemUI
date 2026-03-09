@@ -26,7 +26,7 @@ import android.util.DisplayMetrics
 import android.view.Display
 import android.view.Gravity
 import androidx.test.filters.SmallTest
-import com.android.car.scalableui.loader.xml.HUN_PANEL_ID
+import com.android.car.scalableui.loader.xml.parser.HunPanelParser
 import com.android.systemui.CarSysuiTestCase
 import com.android.systemui.car.wm.scalableui.EventDispatcher
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
@@ -78,8 +78,8 @@ class HunWindowTest : CarSysuiTestCase() {
     @Test
     fun getLayoutParams_boundsExist_layoutParamsAreReturned() {
         val bounds = Rect(100, 100, 900, 200)
-        whenever(consumer.getBounds(HUN_PANEL_ID)).thenReturn(bounds)
-        whenever(consumer.getGravity(HUN_PANEL_ID)).thenReturn(Gravity.TOP)
+        whenever(consumer.getBounds(HunPanelParser.HUN_PANEL_ID)).thenReturn(bounds)
+        whenever(consumer.getGravity(HunPanelParser.HUN_PANEL_ID)).thenReturn(Gravity.TOP)
 
         val layoutParams = hunWindow.getLayoutParams()
 
@@ -91,7 +91,7 @@ class HunWindowTest : CarSysuiTestCase() {
 
     @Test
     fun getLayoutParams_boundsDontExist_nullIsReturned() {
-        whenever(consumer.getBounds(HUN_PANEL_ID)).thenReturn(null)
+        whenever(consumer.getBounds(HunPanelParser.HUN_PANEL_ID)).thenReturn(null)
 
         val layoutParams = hunWindow.getLayoutParams()
 
@@ -100,7 +100,8 @@ class HunWindowTest : CarSysuiTestCase() {
 
     @Test
     fun getGravity_returnsGravityFromConsumer() {
-        whenever(consumer.getGravity(HUN_PANEL_ID)).thenReturn(Gravity.BOTTOM)
+        whenever(consumer.getGravity(HunPanelParser.HUN_PANEL_ID))
+                .thenReturn(Gravity.BOTTOM)
 
         val gravity = hunWindow.gravity
 

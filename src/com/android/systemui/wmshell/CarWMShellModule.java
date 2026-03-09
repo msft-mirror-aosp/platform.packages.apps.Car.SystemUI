@@ -16,8 +16,6 @@
 
 package com.android.systemui.wmshell;
 
-import static com.android.car.scalableui.loader.xml.HunTagXmlParserKt.HUN_PANEL_ID;
-
 import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.os.Handler;
@@ -27,6 +25,7 @@ import android.view.IWindowManager;
 
 import androidx.annotation.NonNull;
 
+import com.android.car.scalableui.loader.xml.parser.HunPanelParser;
 import com.android.car.scalableui.manager.StateManager;
 import com.android.car.scalableui.model.PanelState;
 import com.android.car.scalableui.panel.PanelUpdatePublisher;
@@ -291,7 +290,7 @@ public abstract class CarWMShellModule {
     static Optional<HunWindow> provideHunWindow(Context context, DisplayManager displayManager,
             Optional<PanelUpdateConsumer> consumer, EventDispatcher dispatcher) {
         if (consumer.isPresent()) {
-            PanelState panelState = StateManager.getPanelState(HUN_PANEL_ID);
+            PanelState panelState = StateManager.getPanelState(HunPanelParser.HUN_PANEL_ID);
             if (panelState == null) {
                 Log.w(TAG, "HunWindow not initialized because PanelState for HUN_PANEL_ID "
                         + "is null.");

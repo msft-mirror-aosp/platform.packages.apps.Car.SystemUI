@@ -20,8 +20,8 @@ import static android.view.WindowInsets.Type.navigationBars;
 import static android.view.WindowInsets.Type.statusBars;
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS;
 
-import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.TYPE_NAVIGATION;
-import static com.android.car.scalableui.loader.xml.SystemBarTagXmlParser.TYPE_STATUS;
+import static com.android.car.scalableui.loader.xml.parser.SystemBarParser.TYPE_NAVIGATION;
+import static com.android.car.scalableui.loader.xml.parser.SystemBarParser.TYPE_STATUS;
 import static com.android.systemui.car.systembar.SystemBarConstants.BOTTOM_BAR_NAME;
 import static com.android.systemui.car.systembar.SystemBarConstants.LEFT_BAR_NAME;
 import static com.android.systemui.car.systembar.SystemBarConstants.NAVIGATION_BAR;
@@ -49,7 +49,7 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser;
+import com.android.car.scalableui.loader.xml.parser.SystemBarParser;
 import com.android.car.scalableui.model.Corner;
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.car.shared.R;
@@ -660,9 +660,9 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
 
         private SystemBarConfiguration build() {
             Bundle bundle = new Bundle();
-            bundle.putInt(SystemBarTagXmlParser.BAR_Z_ORDER_ATTRIBUTE, mZOrder);
-            bundle.putBoolean(SystemBarTagXmlParser.HIDE_FOR_KEYBOARD_ATTRIBUTE, mHideForKeyboard);
-            bundle.putString(SystemBarTagXmlParser.TYPE_ATTRIBUTE,
+            bundle.putInt(SystemBarParser.BAR_Z_ORDER_ATTRIBUTE, mZOrder);
+            bundle.putBoolean(SystemBarParser.HIDE_FOR_KEYBOARD_ATTRIBUTE, mHideForKeyboard);
+            bundle.putString(SystemBarParser.TYPE_ATTRIBUTE,
                     mBarType == STATUS_BAR ? TYPE_STATUS : TYPE_NAVIGATION);
             return new SystemBarConfiguration(bundle, mName, mIndex, mIndexOffset);
         }

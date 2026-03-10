@@ -40,7 +40,7 @@ import com.android.car.qc.QCList;
 import com.android.car.qc.QCRow;
 import com.android.car.qc.provider.BaseLocalQCProvider;
 import com.android.systemui.car.shared.R;
-import com.android.systemui.privacy.PrivacyDialog;
+import com.android.systemui.privacy.PrivacyDialogDelegate;
 
 import java.util.List;
 import java.util.Optional;
@@ -86,14 +86,15 @@ public abstract class SensorQcPanel extends BaseLocalQCProvider
         QCList.Builder listBuilder = new QCList.Builder();
         listBuilder.addRow(createSensorToggleRow(mSensorInfoProvider.isSensorEnabled()));
 
-        List<PrivacyDialog.PrivacyElement> elements = mSensorInfoProvider.getPrivacyElements();
+        List<PrivacyDialogDelegate.PrivacyElement> elements =
+                mSensorInfoProvider.getPrivacyElements();
 
-        List<PrivacyDialog.PrivacyElement> activeElements = elements.stream()
-                .filter(PrivacyDialog.PrivacyElement::getActive)
+        List<PrivacyDialogDelegate.PrivacyElement> activeElements = elements.stream()
+                .filter(PrivacyDialogDelegate.PrivacyElement::getActive)
                 .collect(Collectors.toList());
         addPrivacyElementsToQcList(listBuilder, activeElements);
 
-        List<PrivacyDialog.PrivacyElement> inactiveElements = elements.stream()
+        List<PrivacyDialogDelegate.PrivacyElement> inactiveElements = elements.stream()
                 .filter(privacyElement -> !privacyElement.getActive())
                 .collect(Collectors.toList());
         addPrivacyElementsToQcList(listBuilder, inactiveElements);
@@ -101,7 +102,8 @@ public abstract class SensorQcPanel extends BaseLocalQCProvider
         return listBuilder.build();
     }
 
-    private Optional<ApplicationInfo> getApplicationInfo(PrivacyDialog.PrivacyElement element) {
+    private Optional<ApplicationInfo> getApplicationInfo(
+            PrivacyDialogDelegate.PrivacyElement element) {
         return getApplicationInfo(element.getPackageName(), element.getUserId());
     }
 
@@ -133,9 +135,9 @@ public abstract class SensorQcPanel extends BaseLocalQCProvider
     }
 
     private void addPrivacyElementsToQcList(QCList.Builder listBuilder,
-            List<PrivacyDialog.PrivacyElement> elements) {
+            List<PrivacyDialogDelegate.PrivacyElement> elements) {
         for (int i = 0; i < elements.size(); i++) {
-            PrivacyDialog.PrivacyElement element = elements.get(i);
+            PrivacyDialogDelegate.PrivacyElement element = elements.get(i);
             Optional<ApplicationInfo> applicationInfo = getApplicationInfo(element);
             if (!applicationInfo.isPresent()) continue;
 

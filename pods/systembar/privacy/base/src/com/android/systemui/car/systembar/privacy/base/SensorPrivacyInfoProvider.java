@@ -35,7 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import com.android.systemui.privacy.PrivacyDialog;
+import com.android.systemui.privacy.PrivacyDialogDelegate;
 import com.android.systemui.privacy.PrivacyItem;
 import com.android.systemui.privacy.PrivacyItemController;
 import com.android.systemui.privacy.PrivacyType;
@@ -141,8 +141,9 @@ public abstract class SensorPrivacyInfoProvider {
     }
 
     /** Obtain privacy elements for the privacy type of {@link #getProviderPrivacyType} */
-    public List<PrivacyDialog.PrivacyElement> getPrivacyElements() {
-        List<PrivacyDialog.PrivacyElement> elements = filterAndSort(createPrivacyElements());
+    public List<PrivacyDialogDelegate.PrivacyElement> getPrivacyElements() {
+        List<PrivacyDialogDelegate.PrivacyElement> elements =
+                filterAndSort(createPrivacyElements());
         mPrivacyLogger.logShowDialogContents(elements);
         return elements;
     }
@@ -173,11 +174,11 @@ public abstract class SensorPrivacyInfoProvider {
                 mOnSensorPrivacyChangedListener);
     }
 
-    private List<PrivacyDialog.PrivacyElement> createPrivacyElements() {
+    private List<PrivacyDialogDelegate.PrivacyElement> createPrivacyElements() {
         List<UserInfo> userInfos = mUserTracker.getUserProfiles();
         List<PermissionGroupUsage> permGroupUsages = getPermGroupUsages();
         mPrivacyLogger.logUnfilteredPermGroupUsage(permGroupUsages);
-        List<PrivacyDialog.PrivacyElement> items = new ArrayList<>();
+        List<PrivacyDialogDelegate.PrivacyElement> items = new ArrayList<>();
 
         permGroupUsages.forEach(usage -> {
             PrivacyType type =
@@ -198,7 +199,7 @@ public abstract class SensorPrivacyInfoProvider {
                     : getLabelForPackage(usage.getPackageName(), usage.getUid());
 
             items.add(
-                    new PrivacyDialog.PrivacyElement(
+                    new PrivacyDialogDelegate.PrivacyElement(
                             type,
                             usage.getPackageName(),
                             userId,
@@ -260,8 +261,8 @@ public abstract class SensorPrivacyInfoProvider {
         }
     }
 
-    private List<PrivacyDialog.PrivacyElement> filterAndSort(
-            List<PrivacyDialog.PrivacyElement> list) {
+    private List<PrivacyDialogDelegate.PrivacyElement> filterAndSort(
+            List<PrivacyDialogDelegate.PrivacyElement> list) {
         return list.stream()
                 .filter(it -> it.getType() == getProviderPrivacyType())
                 .sorted(new PrivacyElementComparator())
@@ -269,9 +270,10 @@ public abstract class SensorPrivacyInfoProvider {
     }
 
     private static class PrivacyElementComparator
-            implements Comparator<PrivacyDialog.PrivacyElement> {
+            implements Comparator<PrivacyDialogDelegate.PrivacyElement> {
         @Override
-        public int compare(PrivacyDialog.PrivacyElement it1, PrivacyDialog.PrivacyElement it2) {
+        public int compare(PrivacyDialogDelegate.PrivacyElement it1,
+                PrivacyDialogDelegate.PrivacyElement it2) {
             if (it1.getActive() && !it2.getActive()) {
                 return 1;
             } else if (!it1.getActive() && it2.getActive()) {

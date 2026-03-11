@@ -40,7 +40,7 @@ import com.android.car.qc.QCList;
 import com.android.systemui.CarSysuiTestCase;
 import com.android.systemui.car.CarSystemUiTest;
 import com.android.systemui.car.shared.R;
-import com.android.systemui.privacy.PrivacyDialog;
+import com.android.systemui.privacy.PrivacyDialogDelegate;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -100,7 +100,7 @@ public class CameraQcPanelTest extends CarSysuiTestCase {
     @Test
     public void testGetQCItem_cameraDisabled_noPrivacyItems_returnsOnlyCameraOffRow() {
         when(mCameraSensorInfoProvider.isSensorEnabled()).thenReturn(false);
-        List<PrivacyDialog.PrivacyElement> elements = Collections.emptyList();
+        List<PrivacyDialogDelegate.PrivacyElement> elements = Collections.emptyList();
         when(mCameraSensorInfoProvider.getPrivacyElements()).thenReturn(elements);
 
         QCList list = getQCList();
@@ -112,7 +112,7 @@ public class CameraQcPanelTest extends CarSysuiTestCase {
     @Test
     public void testGetQCItem_cameraEnabled_noPrivacyItems_returnsOnlyCameraOffRow() {
         when(mCameraSensorInfoProvider.isSensorEnabled()).thenReturn(true);
-        List<PrivacyDialog.PrivacyElement> elements = Collections.emptyList();
+        List<PrivacyDialogDelegate.PrivacyElement> elements = Collections.emptyList();
         when(mCameraSensorInfoProvider.getPrivacyElements()).thenReturn(elements);
 
         QCList list = getQCList();
@@ -124,7 +124,7 @@ public class CameraQcPanelTest extends CarSysuiTestCase {
     @Test
     public void testGetQCItem_cameraEnabled_onlyOneActivePrivacyItem_firstRowCameraEnabled() {
         when(mCameraSensorInfoProvider.isSensorEnabled()).thenReturn(true);
-        List<PrivacyDialog.PrivacyElement> elements =
+        List<PrivacyDialogDelegate.PrivacyElement> elements =
                 List.of(getPrivacyElement(/* active=*/ true, /* phoneCall= */ false));
         when(mCameraSensorInfoProvider.getPrivacyElements()).thenReturn(elements);
 
@@ -139,7 +139,7 @@ public class CameraQcPanelTest extends CarSysuiTestCase {
         String expectedTitle = mContext.getString(R.string.privacy_chip_app_using_sensor_suffix,
                 APP_LABEL_ACTIVE, mCameraQcPanel.getSensorShortName());
         when(mCameraSensorInfoProvider.isSensorEnabled()).thenReturn(true);
-        List<PrivacyDialog.PrivacyElement> elements =
+        List<PrivacyDialogDelegate.PrivacyElement> elements =
                 List.of(getPrivacyElement(/* active=*/ true, /* phoneCall= */ false));
         when(mCameraSensorInfoProvider.getPrivacyElements()).thenReturn(elements);
 
@@ -153,7 +153,7 @@ public class CameraQcPanelTest extends CarSysuiTestCase {
     public void
             testGetQCItem_cameraDisabled_onlyOneInactivePhonePrivacyItem_firstRowCameraDisabled() {
         when(mCameraSensorInfoProvider.isSensorEnabled()).thenReturn(false);
-        List<PrivacyDialog.PrivacyElement> elements =
+        List<PrivacyDialogDelegate.PrivacyElement> elements =
                 List.of(getPrivacyElement(/* active=*/ false, /* phoneCall= */ true));
         when(mCameraSensorInfoProvider.getPrivacyElements()).thenReturn(elements);
 
@@ -170,7 +170,7 @@ public class CameraQcPanelTest extends CarSysuiTestCase {
                 mContext.getString(R.string.privacy_chip_app_recently_used_sensor_suffix,
                         mPhoneCallTitle, mCameraQcPanel.getSensorShortName());
         when(mCameraSensorInfoProvider.isSensorEnabled()).thenReturn(false);
-        List<PrivacyDialog.PrivacyElement> elements =
+        List<PrivacyDialogDelegate.PrivacyElement> elements =
                 List.of(getPrivacyElement(/* active=*/ false, /* phoneCall= */ true));
         when(mCameraSensorInfoProvider.getPrivacyElements()).thenReturn(elements);
 
@@ -183,7 +183,7 @@ public class CameraQcPanelTest extends CarSysuiTestCase {
     @Test
     public void testGetQCItem_cameraEnabled_multiplePrivacyItems_firstRowCameraEnabled() {
         when(mCameraSensorInfoProvider.isSensorEnabled()).thenReturn(true);
-        List<PrivacyDialog.PrivacyElement> elements = new ArrayList<>();
+        List<PrivacyDialogDelegate.PrivacyElement> elements = new ArrayList<>();
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ true));
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ false));
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ false));
@@ -203,7 +203,7 @@ public class CameraQcPanelTest extends CarSysuiTestCase {
         String expectedTitle = mContext.getString(R.string.privacy_chip_app_using_sensor_suffix,
                 APP_LABEL_ACTIVE, mCameraQcPanel.getSensorShortName());
         when(mCameraSensorInfoProvider.isSensorEnabled()).thenReturn(true);
-        List<PrivacyDialog.PrivacyElement> elements = new ArrayList<>();
+        List<PrivacyDialogDelegate.PrivacyElement> elements = new ArrayList<>();
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ true));
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ false));
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ false));
@@ -223,7 +223,7 @@ public class CameraQcPanelTest extends CarSysuiTestCase {
         String expectedTitle = mContext.getString(R.string.privacy_chip_app_using_sensor_suffix,
                 mPhoneCallTitle, mCameraQcPanel.getSensorShortName());
         when(mCameraSensorInfoProvider.isSensorEnabled()).thenReturn(true);
-        List<PrivacyDialog.PrivacyElement> elements = new ArrayList<>();
+        List<PrivacyDialogDelegate.PrivacyElement> elements = new ArrayList<>();
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ true));
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ false));
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ false));
@@ -244,7 +244,7 @@ public class CameraQcPanelTest extends CarSysuiTestCase {
                 .getString(R.string.privacy_chip_apps_recently_used_sensor_suffix,
                         mPhoneCallTitle, 2, mCameraQcPanel.getSensorShortName());
         when(mCameraSensorInfoProvider.isSensorEnabled()).thenReturn(true);
-        List<PrivacyDialog.PrivacyElement> elements = new ArrayList<>();
+        List<PrivacyDialogDelegate.PrivacyElement> elements = new ArrayList<>();
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ true));
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ false));
         elements.add(getPrivacyElement(/* active=*/ false, /* phoneCall= */ false));
@@ -266,8 +266,10 @@ public class CameraQcPanelTest extends CarSysuiTestCase {
         return (QCList) item;
     }
 
-    private PrivacyDialog.PrivacyElement getPrivacyElement(boolean active, boolean phoneCall) {
-        PrivacyDialog.PrivacyElement element = mock(PrivacyDialog.PrivacyElement.class);
+    private PrivacyDialogDelegate.PrivacyElement getPrivacyElement(boolean active,
+            boolean phoneCall) {
+        PrivacyDialogDelegate.PrivacyElement element =
+                mock(PrivacyDialogDelegate.PrivacyElement.class);
         when(mApplicationInfo.loadSafeLabel(any(), anyFloat(), anyInt()))
                 .thenReturn(active ? APP_LABEL_ACTIVE : APP_LABEL_INACTIVE);
         when(mPackageManager.getApplicationIcon(mApplicationInfo)).thenReturn(mTestDrawable);

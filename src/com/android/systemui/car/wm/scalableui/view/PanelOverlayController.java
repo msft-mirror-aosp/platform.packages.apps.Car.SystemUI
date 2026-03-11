@@ -15,8 +15,8 @@
  */
 package com.android.systemui.car.wm.scalableui.view;
 
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.BACKGROUND_COLOR_TAG;
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.OVERLAY_PANEL_ID_TAG;
+import static com.android.car.scalableui.loader.xml.parser.PanelControllerParser.BACKGROUND_COLOR_TAG;
+import static com.android.car.scalableui.loader.xml.parser.PanelControllerParser.OVERLAY_PANEL_ID_TAG;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

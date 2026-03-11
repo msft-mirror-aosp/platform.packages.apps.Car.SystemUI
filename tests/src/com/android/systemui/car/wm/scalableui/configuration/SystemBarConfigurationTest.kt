@@ -19,7 +19,7 @@ package com.android.systemui.car.wm.scalableui.configuration
 import android.os.Bundle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import com.android.car.scalableui.loader.xml.SystemBarTagXmlParser
+import com.android.car.scalableui.loader.xml.parser.SystemBarParser
 import com.android.car.scalableui.model.PanelControllerMetadata
 import com.android.systemui.CarSysuiTestCase
 import com.android.systemui.car.CarSystemUiTest
@@ -80,8 +80,8 @@ class SystemBarConfigurationTest : CarSysuiTestCase() {
     @Test
     fun getType_isNavigation() {
         testBundle.putString(
-            SystemBarTagXmlParser.TYPE_ATTRIBUTE,
-            SystemBarTagXmlParser.TYPE_NAVIGATION
+            SystemBarParser.TYPE_ATTRIBUTE,
+            SystemBarParser.TYPE_NAVIGATION
         )
         val systemBarConfiguration = SystemBarConfiguration(
             Optional.of(mockPanelUpdateConsumer),
@@ -96,8 +96,8 @@ class SystemBarConfigurationTest : CarSysuiTestCase() {
     @Test
     fun getType_isStatus() {
         testBundle.putString(
-            SystemBarTagXmlParser.TYPE_ATTRIBUTE,
-            SystemBarTagXmlParser.TYPE_STATUS
+            SystemBarParser.TYPE_ATTRIBUTE,
+            SystemBarParser.TYPE_STATUS
         )
         val systemBarConfiguration = SystemBarConfiguration(
             Optional.of(mockPanelUpdateConsumer),
@@ -111,7 +111,7 @@ class SystemBarConfigurationTest : CarSysuiTestCase() {
     @Test
     fun getZOrder() {
         val zOrder = 10
-        testBundle.putInt(SystemBarTagXmlParser.BAR_Z_ORDER_ATTRIBUTE, zOrder)
+        testBundle.putInt(SystemBarParser.BAR_Z_ORDER_ATTRIBUTE, zOrder)
         val systemBarConfiguration = SystemBarConfiguration(
             Optional.of(mockPanelUpdateConsumer),
             NAME,
@@ -124,7 +124,7 @@ class SystemBarConfigurationTest : CarSysuiTestCase() {
     @Test
     fun isAboveHun_isTrue() {
         testBundle.putInt(
-            SystemBarTagXmlParser.BAR_Z_ORDER_ATTRIBUTE,
+            SystemBarParser.BAR_Z_ORDER_ATTRIBUTE,
             HUN_Z_ORDER + 1
         )
         val systemBarConfiguration = SystemBarConfiguration(
@@ -139,7 +139,7 @@ class SystemBarConfigurationTest : CarSysuiTestCase() {
     @Test
     fun isAboveHun_isFalse() {
         testBundle.putInt(
-            SystemBarTagXmlParser.BAR_Z_ORDER_ATTRIBUTE,
+            SystemBarParser.BAR_Z_ORDER_ATTRIBUTE,
             HUN_Z_ORDER
         )
         val systemBarConfiguration = SystemBarConfiguration(
@@ -153,7 +153,7 @@ class SystemBarConfigurationTest : CarSysuiTestCase() {
 
     @Test
     fun isHiddenForKeyboard() {
-        testBundle.putBoolean(SystemBarTagXmlParser.HIDE_FOR_KEYBOARD_ATTRIBUTE, true)
+        testBundle.putBoolean(SystemBarParser.HIDE_FOR_KEYBOARD_ATTRIBUTE, true)
         val systemBarConfiguration = SystemBarConfiguration(
             Optional.of(mockPanelUpdateConsumer),
             NAME,

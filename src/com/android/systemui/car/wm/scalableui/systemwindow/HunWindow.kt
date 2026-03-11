@@ -20,7 +20,7 @@ import android.graphics.PixelFormat
 import android.hardware.display.DisplayManager
 import android.view.ViewGroup
 import android.view.WindowManager
-import com.android.car.scalableui.loader.xml.HUN_PANEL_ID
+import com.android.car.scalableui.loader.xml.parser.HunPanelParser
 import com.android.systemui.car.wm.scalableui.EventDispatcher
 import com.android.systemui.car.wm.scalableui.panel.panelupdates.PanelUpdateConsumer
 import kotlin.math.min
@@ -39,7 +39,7 @@ class HunWindow(
     displayManager,
     consumer,
     eventDispatcher,
-    HUN_PANEL_ID,
+    HunPanelParser.HUN_PANEL_ID,
     displayId
 ) {
 

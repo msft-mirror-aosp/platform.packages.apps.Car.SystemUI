@@ -15,11 +15,11 @@
  */
 package com.android.systemui.car.wm.scalableui.panel.controller;
 
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.DEFAULT_COMPONENT_TAG;
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.DEFAULT_INTENT_TAG;
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.PERSISTENT_ACTIVITY_TAG;
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.PERSISTENT_PACKAGE_TAG;
-import static com.android.car.scalableui.loader.xml.PanelTagXmlParser.UPDATABLE_INTENT_FILTER_TAG;
+import static com.android.car.scalableui.loader.xml.parser.PanelControllerParser.DEFAULT_COMPONENT_TAG;
+import static com.android.car.scalableui.loader.xml.parser.PanelControllerParser.DEFAULT_INTENT_TAG;
+import static com.android.car.scalableui.loader.xml.parser.PanelControllerParser.PERSISTENT_ACTIVITY_TAG;
+import static com.android.car.scalableui.loader.xml.parser.PanelControllerParser.PERSISTENT_PACKAGE_TAG;
+import static com.android.car.scalableui.loader.xml.parser.PanelControllerParser.UPDATABLE_INTENT_FILTER_TAG;
 
 import android.annotation.NonNull;
 import android.annotation.SuppressLint;

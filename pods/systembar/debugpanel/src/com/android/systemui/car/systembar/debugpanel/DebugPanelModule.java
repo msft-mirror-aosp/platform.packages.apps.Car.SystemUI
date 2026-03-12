@@ -17,7 +17,6 @@
 package com.android.systemui.car.systembar.debugpanel;
 
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
-import com.android.systemui.car.systembar.panel.CarSystemBarPanelButtonView;
 
 import dagger.Binds;
 import dagger.Module;
@@ -33,8 +32,6 @@ public abstract class DebugPanelModule {
     @Binds
     @IntoMap
     @ClassKey(DebugPanelViewController.class)
-    abstract CarSystemBarElementController.Factory<CarSystemBarPanelButtonView,
-            ? extends CarSystemBarElementController<CarSystemBarPanelButtonView>>
-            bindDebugPanelViewControllerFactory(
-                    DebugPanelViewController.Factory factory);
+    abstract CarSystemBarElementController.Factory bindDebugPanelViewControllerFactory(
+            DebugPanelViewController.Factory factory);
 }

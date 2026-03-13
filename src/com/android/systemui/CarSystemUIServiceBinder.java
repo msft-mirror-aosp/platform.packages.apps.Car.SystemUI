@@ -19,13 +19,14 @@ import android.app.Service;
 
 import com.android.car.telephony.calling.InCallServiceManager;
 import com.android.systemui.car.telecom.InCallServiceImpl;
-import com.android.systemui.dagger.SysUISingleton;
 
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.ClassKey;
 import dagger.multibindings.IntoMap;
+
+import javax.inject.Singleton;
 
 /**
  * Provides all injectable services related to Car
@@ -34,7 +35,7 @@ import dagger.multibindings.IntoMap;
 public abstract class CarSystemUIServiceBinder {
 
     @Provides
-    @SysUISingleton
+    @Singleton
     static InCallServiceManager provideInCallServiceManager() {
         return new InCallServiceManager();
     }

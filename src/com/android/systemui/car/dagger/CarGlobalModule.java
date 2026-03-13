@@ -18,6 +18,7 @@ package com.android.systemui.car.dagger;
 
 import android.content.Context;
 
+import com.android.systemui.CarSystemUIServiceBinder;
 import com.android.systemui.car.CarDumpableContext;
 import com.android.systemui.dump.DumpManager;
 
@@ -29,7 +30,9 @@ import javax.inject.Singleton;
 /**
  * Supplies globally scoped instances of default implementations of components of CarSystemUI.
  */
-@Module
+@Module(includes = {
+        CarSystemUIServiceBinder.class
+})
 public class CarGlobalModule {
     @Singleton
     @Provides

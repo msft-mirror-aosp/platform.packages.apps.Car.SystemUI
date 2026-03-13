@@ -24,7 +24,8 @@
             topOffset="@*android:dimen/status_bar_height"
             bottom="100%"
             bottomOffset="@*android:dimen/navigation_bar_height"
-            right="100%" />
+            right="100%"
+            rightOffset="40dp"/>
         <Corner radius="@dimen/map_corner_radius" />
     </Variant>
     <Variant id="@+id/opened" parent="@id/base">

@@ -32,6 +32,7 @@ PRODUCT_PACKAGES += \
     DewdLandAospRRO \
     DewdPortAospRRO \
     DewdDynamicAospRRO \
+    DewdSplitAospRRO \
     MinimizedControlsDynamicRRO \
 
 PRODUCT_PRODUCT_PROPERTIES += \

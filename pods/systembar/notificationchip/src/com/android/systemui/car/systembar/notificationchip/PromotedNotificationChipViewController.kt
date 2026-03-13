@@ -170,6 +170,7 @@ constructor(
                 }
             }
 
+            mView.setPromotedInfo(entry.shortCriticalText, entry.appName)
             mView.animateIn()
         }
     }

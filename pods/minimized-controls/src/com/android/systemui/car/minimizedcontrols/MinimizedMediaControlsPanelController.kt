@@ -25,9 +25,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import androidx.lifecycle.setViewTreeLifecycleOwner
 import com.android.car.media.common.source.MediaModels
 import com.android.car.media.common.source.MediaSessionHelper
 import com.android.car.media.common.ui.PlaybackCardController
@@ -35,7 +33,6 @@ import com.android.car.media.common.ui.PlaybackCardViewModel
 import com.android.car.scalableui.model.PanelControllerMetadata
 import com.android.car.scalableui.panel.DecorPanelController
 import com.android.systemui.car.wm.scalableui.panel.controller.DecorPanelViewMap
-import com.android.systemui.car.wm.scalableui.view.DecorPanelControllerBase
 import com.android.systemui.dagger.qualifiers.Main
 import com.android.wm.shell.common.ShellExecutor
 import com.android.wm.shell.shared.annotations.ShellMainThread
@@ -56,13 +53,18 @@ class MinimizedMediaControlsPanelController @AssistedInject constructor(
     @DecorPanelViewMap decorPanelViewMap: Map<Class<*>, @JvmSuppressWildcards Provider<View>>,
     private val shellController: ShellController,
     @param:ShellMainThread private val shellExecutor: ShellExecutor,
-    @param:Main private val mainExecutor: Executor,
+    @Main mainExecutor: Executor,
     private val playbackCardViewModelFactory: PlaybackCardViewModelFactory,
     private val userContextFactory: UserContextUtils.UserContextFactory,
     private val minimizedMediaControlsPlaybackCardControllerFactory:
         MinimizedMediaControlsPlaybackCardController.Factory,
     private val mediaModelsFactory: MediaModelsFactory
-) : DecorPanelControllerBase(panelId, metadata, decorPanelViewMap), LifecycleOwner {
+) : BaseMinimizedControlsPanelController<MinimizedMediaControlsView>(
+    panelId,
+    metadata,
+    decorPanelViewMap,
+    mainExecutor
+) {
 
     /** Factory for creating [PlaybackCardViewModel]. */
     fun interface PlaybackCardViewModelFactory {
@@ -84,8 +86,6 @@ class MinimizedMediaControlsPanelController @AssistedInject constructor(
     }
 
     private var viewModel: MinimizedMediaControlsViewModel? = null
-
-    private var view: MinimizedMediaControlsView? = null
     private var currentUserId: Int = UserHandle.USER_NULL
 
     private val userChangeListener = object : UserChangeListener {
@@ -96,28 +96,9 @@ class MinimizedMediaControlsPanelController @AssistedInject constructor(
     }
 
     private var playbackCardController: PlaybackCardController? = null
-    private var lifecycleRegistry: LifecycleRegistry? = null
 
-    override val lifecycle: Lifecycle
-        get() = lifecycleRegistry ?: LifecycleRegistry(this).also { lifecycleRegistry = it }
-    override fun getView(): View {
-        val currentView = checkNotNull(super.getView()) {
-            "View could not be loaded for MinimizedMediaControlsPanelController"
-        }
-        if (currentView !== view) {
-            view = currentView as? MinimizedMediaControlsView
-            // Initialize lifecycle registry if needed and attach to view
-            mainExecutor.execute {
-                if (lifecycleRegistry == null) {
-                    lifecycleRegistry = LifecycleRegistry(this)
-                }
-                lifecycleRegistry?.currentState = Lifecycle.State.CREATED
-                lifecycleRegistry?.currentState = Lifecycle.State.RESUMED
-                currentView.setViewTreeLifecycleOwner(this)
-            }
-        }
+    override fun onViewCreated(view: MinimizedMediaControlsView) {
         initMedia()
-        return currentView
     }
 
     private fun initMedia() {
@@ -193,16 +174,11 @@ class MinimizedMediaControlsPanelController @AssistedInject constructor(
             }
             currentUserId = userId
 
-            val appCtx = view?.context?.applicationContext ?: return@execute
+            val appCtx = panelView?.context?.applicationContext ?: return@execute
             Log.d(TAG, "reinitMedia: userId=$userId")
 
-            // Destroy previous lifecycle to clean up observers
-            lifecycleRegistry?.currentState = Lifecycle.State.DESTROYED
-            // Create new lifecycle registry for new user session
-            lifecycleRegistry = LifecycleRegistry(this)
-            lifecycleRegistry?.currentState = Lifecycle.State.CREATED
-            // Re-attach to view
-            view?.let { it.setViewTreeLifecycleOwner(this) }
+            // Destroy previous lifecycle to clean up observers and recreate it
+            resetLifecycle()
 
             // Clean up old ViewModel on Main Thread.
             viewModel?.cleanUp()
@@ -237,7 +213,7 @@ class MinimizedMediaControlsPanelController @AssistedInject constructor(
 
                 // Use factory to create controller
                 val controller = minimizedMediaControlsPlaybackCardControllerFactory.create(
-                    view as ViewGroup,
+                    panelView as ViewGroup,
                     playbackViewModel,
                     playbackCardViewModel,
                     mediaItemsRepository,
@@ -250,20 +226,14 @@ class MinimizedMediaControlsPanelController @AssistedInject constructor(
             }
 
             // Resume lifecycle to start observing
-            lifecycleRegistry?.currentState = Lifecycle.State.RESUMED
+            (lifecycle as? LifecycleRegistry)?.currentState = Lifecycle.State.RESUMED
         }
     }
 
     override fun destroy() {
         Log.d(TAG, "destroy")
-        val lifecycle = lifecycleRegistry
-        if (lifecycle != null) {
-            mainExecutor.execute {
-                lifecycle.currentState = Lifecycle.State.DESTROYED
-            }
-        }
-        super.destroy()
         shellController.removeUserChangeListener(userChangeListener)
+        super.destroy()
         currentUserId = UserHandle.USER_NULL
         mainExecutor.execute {
             viewModel?.cleanUp()

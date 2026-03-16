@@ -30,6 +30,7 @@ import android.view.InputChannel;
 import android.view.InputEvent;
 import android.view.InputEventReceiver;
 import android.view.SurfaceControl;
+import android.view.WindowInputChannelParams;
 import android.view.WindowManagerGlobal;
 import android.window.InputTransferToken;
 
@@ -108,18 +109,17 @@ public final class DisplayInputSink {
         mFocusGrantToken = new InputTransferToken();
         InputChannel inputChannel = null;
         try {
-            inputChannel = mWindowSession.grantInputChannel(
-                    mDisplayId,
-                    mSurfaceControl,
-                    mFakeWindow,
-                    /* hostInputToken= */ null,
-                    FLAG_NOT_FOCUSABLE,
-                    PRIVATE_FLAG_TRUSTED_OVERLAY,
-                    /* inputFeatures= */ 0,
-                    TYPE_INPUT_CONSUMER,
-                    /* windowToken= */ null,
-                    mFocusGrantToken,
-                    "InputListener of " + mSurfaceControl.toString());
+            final WindowInputChannelParams params = new WindowInputChannelParams();
+            params.displayId = mDisplayId;
+            params.clientToken = mFakeWindow;
+            params.inputTransferToken = mFocusGrantToken;
+            params.surface = mSurfaceControl;
+            params.type = TYPE_INPUT_CONSUMER;
+            params.flags = FLAG_NOT_FOCUSABLE;
+            params.privateFlags = PRIVATE_FLAG_TRUSTED_OVERLAY;
+            params.inputHandleName = "InputListener of " + mSurfaceControl.toString();
+
+            inputChannel = mWindowSession.grantInputChannel(params);
         } catch (RemoteException e) {
             e.rethrowFromSystemServer();
         }

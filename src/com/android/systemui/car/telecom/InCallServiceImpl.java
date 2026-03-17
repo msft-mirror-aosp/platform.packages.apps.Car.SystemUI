@@ -16,6 +16,7 @@
 package com.android.systemui.car.telecom;
 
 import android.telecom.Call;
+import android.telecom.CallAudioState;
 import android.telecom.InCallService;
 import android.util.Log;
 
@@ -87,6 +88,14 @@ public class InCallServiceImpl extends InCallService {
     }
 
     @Override
+    public void onCallAudioStateChanged(CallAudioState audioState) {
+        Log.d(TAG, "onCallAudioStateChanged: " + audioState);
+        for (InCallListener listener : mInCallListeners) {
+            listener.onCallAudioStateChanged(audioState);
+        }
+    }
+
+    @Override
     public void onCallAdded(Call call) {
         Log.d(TAG, "onCallAdded: " + call);
         call.registerCallback(mCallStateChangedCallback);
@@ -148,5 +157,11 @@ public class InCallServiceImpl extends InCallService {
          * Called when a conference {@link Call} has children calls added or removed.
          */
         void onChildrenChanged(Call call, List<Call> children);
+
+        /**
+         * Called when the audio state changes.
+         */
+        default void onCallAudioStateChanged(CallAudioState audioState) {
+        }
     }
 }

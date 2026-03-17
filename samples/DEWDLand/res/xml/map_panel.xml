@@ -26,6 +26,7 @@
             bottomOffset="@*android:dimen/navigation_bar_height"
             right="100%" />
         <Corner radius="@dimen/map_corner_radius" />
+        <Focus onTransition="false" />
     </Variant>
     <Variant id="@+id/opened" parent="@id/base">
         <Visibility isVisible="true"/>

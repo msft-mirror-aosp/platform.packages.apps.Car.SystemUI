@@ -168,7 +168,7 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
         verify(view).setOnClickListener(captor.capture())
         captor.value.onClick(view)
 
-        verify(carNotificationListener).showHun("key")
+        verify(carNotificationListener).showHunImmediately("key")
     }
 
     @Test

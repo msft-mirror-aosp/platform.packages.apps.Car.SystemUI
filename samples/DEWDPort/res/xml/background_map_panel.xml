@@ -41,6 +41,7 @@
     <Variant id="@+id/suw" parent="@id/closed" />
     <Variant id="@+id/userswitch" parent="@id/closed" />
     <Variant id="@+id/camera_opened" parent="@id/closed" />
+    <Variant id="@+id/keyguard_opened" parent="@id/closed" />
 
     <Variant id="@+id/camera_appgrid" parent="@id/opened_overlap_app_grid">
         <Visibility isVisible="false"/>
@@ -71,6 +72,10 @@
         <!-- User Switch -->
         <Transition onEvent="_System_BeforeUserSwitch" toVariant="@id/userswitch"/>
         <Transition onEvent="_System_UserSwitchComplete" fromVariant="@id/userswitch" toVariant="@id/opened"/>
+
+        <!-- Keyguard -->
+        <Transition onEvent="_System_KeyguardShown" toVariant="@id/keyguard_opened"/>
+        <Transition onEvent="_System_KeyguardHidden" fromVariant="@id/keyguard_opened" toVariant="@id/opened"/>
 
         <!-- Camera -->
         <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=camera_panel" fromVariant="@id/opened" toVariant="@id/camera_opened"/>

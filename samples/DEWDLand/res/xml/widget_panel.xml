@@ -25,6 +25,7 @@
             topOffset="@*android:dimen/status_bar_height"
             bottom="100%"
             bottomOffset="@*android:dimen/navigation_bar_height" />
+            <Focus onTransition="false" />
     </Variant>
     <Variant id="@+id/opened" parent="@id/base">
         <Visibility isVisible="true"/>
@@ -34,6 +35,7 @@
     </Variant>
     <Variant id="@+id/suw" parent="@id/closed" />
     <Variant id="@+id/userswitch" parent="@id/closed" />
+    <Variant id="@+id/keyguard_opened" parent="@id/closed" />
 
     <Transitions>
         <Transition onEvent="_System_EnterSuwEvent" toVariant="@id/suw"/>
@@ -46,5 +48,8 @@
         <!-- User Switch -->
         <Transition onEvent="_System_BeforeUserSwitch" toVariant="@id/userswitch"/>
         <Transition onEvent="_System_UserSwitchComplete" fromVariant="@id/userswitch" toVariant="@id/opened"/>
+        <!-- Keyguard -->
+        <Transition onEvent="_System_KeyguardShown" toVariant="@id/keyguard_opened"/>
+        <Transition onEvent="_System_KeyguardHidden" fromVariant="@id/keyguard_opened" toVariant="@id/opened"/>
     </Transitions>
 </TaskPanel>

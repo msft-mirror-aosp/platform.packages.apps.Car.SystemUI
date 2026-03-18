@@ -37,6 +37,7 @@
             rightOffset="@dimen/contextual_bar_gap" />
     </Variant>
     <Variant id="@+id/userswitch" parent="@id/closed" />
+    <Variant id="@+id/keyguard_opened" parent="@id/closed" />
     <Variant id="@+id/suw" parent="@id/closed" />
 
     <Transitions>
@@ -46,5 +47,8 @@
         <Transition onEvent="_System_UserSwitchComplete" fromVariant="@id/userswitch" toVariant="@id/opened"/>
         <Transition onEvent="_System_EnterImmersiveMode" toVariant="@id/closed"/>
         <Transition onEvent="_System_ExitImmersiveMode" toVariant="@id/opened"/>
+        <!-- Keyguard -->
+        <Transition onEvent="_System_KeyguardShown" toVariant="@id/keyguard_opened"/>
+        <Transition onEvent="_System_KeyguardHidden" fromVariant="@id/keyguard_opened" toVariant="@id/opened"/>
     </Transitions>
 </TaskPanel>

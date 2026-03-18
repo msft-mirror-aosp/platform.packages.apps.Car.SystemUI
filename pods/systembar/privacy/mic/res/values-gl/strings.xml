@@ -19,6 +19,5 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2249195230538847630">"Queres activar o micrófono do vehículo?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="231805443197748604">"Para continuar, activa o micrófono do sistema de información e entretemento. Con esta acción, activarase o micrófono para todas as aplicacións que teñan permiso."</string>
-    <!-- no translation found for system_bar_mic_privacy_chip (448357698821080133) -->
-    <skip />
+    <string name="system_bar_mic_privacy_chip" msgid="448357698821080133">"Etiqueta de privacidade do micrófono"</string>
 </resources>

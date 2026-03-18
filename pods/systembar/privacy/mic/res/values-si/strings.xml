@@ -19,6 +19,5 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2249195230538847630">"මයික්‍රෆෝනය ක්‍රියාත්මක කරන්නද?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="231805443197748604">"ඉදිරියට යාමට, තොරතුරු විනෝදාස්වාද පද්ධති මයික්‍රෆෝනය ක්‍රියාත්මක කරන්න අවසර ඇති සියලු යෙදුම් සඳහා මෙය මයික්‍රෆෝනය ක්‍රියාත්මක කරනු ඇත."</string>
-    <!-- no translation found for system_bar_mic_privacy_chip (448357698821080133) -->
-    <skip />
+    <string name="system_bar_mic_privacy_chip" msgid="448357698821080133">"මයික් පෞද්ගලිකත්ව චිපය"</string>
 </resources>

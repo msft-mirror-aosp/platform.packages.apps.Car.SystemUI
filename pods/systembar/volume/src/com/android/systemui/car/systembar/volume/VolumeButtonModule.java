@@ -16,7 +16,19 @@
 
 package com.android.systemui.car.systembar.volume;
 
+import com.android.systemui.car.flexibleui.CarSystemBarElementController;
+
+import dagger.Binds;
 import dagger.Module;
+import dagger.multibindings.ClassKey;
+import dagger.multibindings.IntoMap;
 
 @Module
-public abstract class VolumeButtonModule {}
+public abstract class VolumeButtonModule {
+    /** Binds the VolumeButtonController.Factory to the map. */
+    @Binds
+    @IntoMap
+    @ClassKey(VolumeButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindVolumeButtonControllerFactory(
+            VolumeButtonController.Factory factory);
+}

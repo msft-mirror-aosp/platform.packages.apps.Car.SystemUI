@@ -85,18 +85,21 @@ public class CameraPrivacyChipViewController extends PrivacyChipViewController {
         return R.layout.qc_camera_panel;
     }
 
+    // This empty override is required to grant package-private access to the test class.
     @VisibleForTesting
     @Override
     protected void onViewDetached() {
         super.onViewDetached();
     }
 
+    // This empty override is required to grant package-private access to the test class.
     @VisibleForTesting
     @Override
     protected void onViewAttached() {
         super.onViewAttached();
     }
 
+    // This empty override is required to grant package-private access to the test class.
     @VisibleForTesting
     @Override
     protected boolean isSensorEnabled() {

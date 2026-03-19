@@ -19,6 +19,5 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2249195230538847630">"차량 마이크를 사용 설정하시겠습니까?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="231805443197748604">"계속하려면 인포테인먼트 시스템 마이크를 사용 설정하세요. 그러면 권한이 있는 모든 앱에서 마이크가 사용 설정됩니다."</string>
-    <!-- no translation found for system_bar_mic_privacy_chip (448357698821080133) -->
-    <skip />
+    <string name="system_bar_mic_privacy_chip" msgid="448357698821080133">"마이크 개인 정보 보호 칩"</string>
 </resources>

@@ -18,8 +18,6 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="status_icon_signal_hotspot" msgid="1178786188852057104">"Signaaliasetukset: Hotspot päällä"</string>
-    <!-- no translation found for status_icon_signal_mobile (2019107839600021651) -->
-    <skip />
-    <!-- no translation found for status_icon_signal_wifi (8504991368569303991) -->
-    <skip />
+    <string name="status_icon_signal_mobile" msgid="2019107839600021651">"Signaaliasetukset: Mobiilidata käytössä"</string>
+    <string name="status_icon_signal_wifi" msgid="8504991368569303991">"Signaaliasetukset: Wi-Fi käytössä"</string>
 </resources>

@@ -19,6 +19,5 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2249195230538847630">"গাড়ির মাইক্রোফোন চালু করতে চান?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="231805443197748604">"চালিয়ে যাওয়ার জন্য, ইনফোটেইনমেন্ট সিস্টেমের মাইক্রোফোন চালু করুন। এটি অনুমতি আছে এমন সব অ্যাপের জন্য মাইক্রোফোন চালু করবে।"</string>
-    <!-- no translation found for system_bar_mic_privacy_chip (448357698821080133) -->
-    <skip />
+    <string name="system_bar_mic_privacy_chip" msgid="448357698821080133">"মাইকের জন্য গোপনীয়তা চিপ"</string>
 </resources>

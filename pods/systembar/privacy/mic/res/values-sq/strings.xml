@@ -19,6 +19,5 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2249195230538847630">"Të aktivizohet mikrofoni i automjetit?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="231805443197748604">"Për të vazhduar, aktivizo mikrofonin e sistemit info-argëtues. Kjo do të aktivizojë mikrofonin për të gjitha aplikacionet që kanë leje."</string>
-    <!-- no translation found for system_bar_mic_privacy_chip (448357698821080133) -->
-    <skip />
+    <string name="system_bar_mic_privacy_chip" msgid="448357698821080133">"Çipi i privatësisë së mikrofonit"</string>
 </resources>

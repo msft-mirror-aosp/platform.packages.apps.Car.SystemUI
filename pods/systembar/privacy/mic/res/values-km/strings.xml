@@ -19,6 +19,5 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="2249195230538847630">"បើកមីក្រូហ្វូនរបស់​យានជំនិះឬ?"</string>
     <string name="sensor_privacy_start_use_mic_dialog_content" msgid="231805443197748604">"ដើម្បីបន្ត សូមបើក​មីក្រូហ្វូន​ប្រព័ន្ធព័ត៌មាន និងកម្សាន្ត។ ការធ្វើបែបនេះ​នឹងបើកមីក្រូហ្វូន​សម្រាប់កម្មវិធីទាំងអស់​ដែលមាន​ការអនុញ្ញាត។"</string>
-    <!-- no translation found for system_bar_mic_privacy_chip (448357698821080133) -->
-    <skip />
+    <string name="system_bar_mic_privacy_chip" msgid="448357698821080133">"ឈីបមីក្រូហ្វូនឯកជន"</string>
 </resources>

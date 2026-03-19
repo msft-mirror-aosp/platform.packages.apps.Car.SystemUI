@@ -34,9 +34,9 @@
     <string name="privacy_chip_app_recently_used_sensor_suffix" msgid="4632772067170022529">"<xliff:g id="APP">%1$s</xliff:g> a utilisé <xliff:g id="SENSOR">%2$s</xliff:g> récemment"</string>
     <string name="privacy_chip_apps_recently_used_sensor_suffix" msgid="2715537466314464047">"<xliff:g id="APP_0">%1$s</xliff:g> et <xliff:g id="ADDITIONAL_APP_COUNT">%2$d</xliff:g> autres ont utilisé <xliff:g id="SENSOR">%3$s</xliff:g> récemment"</string>
     <string name="sensor_privacy_start_use_mic_dialog_title" msgid="8774244900043105266">"Activer le micro du véhicule ?"</string>
-    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Pour continuer, activez le micro du système d\'infoloisirs. Cela activera le micro pour toutes les applis qui ont l\'autorisation."</string>
+    <string name="sensor_privacy_start_use_mic_dialog_content" msgid="8382980879434990801">"Pour continuer, activez le micro du système d\'infodivertissement. Cela activera le micro pour toutes les applis qui ont l\'autorisation."</string>
     <string name="sensor_privacy_start_use_camera_dialog_title" msgid="4787836783010823885">"Activer la caméra du véhicule ?"</string>
-    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Pour continuer, activez la caméra du système d\'infoloisirs. Elle sera activée pour toutes les applis qui ont l\'autorisation."</string>
+    <string name="sensor_privacy_start_use_camera_dialog_content" msgid="7749639131326657668">"Pour continuer, activez la caméra du système d\'infodivertissement. Elle sera activée pour toutes les applis qui ont l\'autorisation."</string>
     <string name="system_bar_home_label" msgid="8413273833405495948">"Écran d\'accueil"</string>
     <string name="system_bar_phone_label" msgid="5664288201806823777">"Téléphone"</string>
     <string name="system_bar_applications_label" msgid="7081862804211786227">"Applications"</string>

@@ -19,6 +19,7 @@
     <TaskBehavior taskProperties="UNTRIMMABLE"/>
     <Variant id="@+id/base">
         <Layer layer="2"/>
+        <Focus onTransition="false" />
         <Bounds
             left="@dimen/background_map_panel_left_bound"
             top="0"

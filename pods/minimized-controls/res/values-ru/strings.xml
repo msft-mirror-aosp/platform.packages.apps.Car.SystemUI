@@ -17,7 +17,7 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="minimized_controls_prev_description" msgid="8899224648876514463">"К предыдущему контенту"</string>
+    <string name="minimized_controls_prev_description" msgid="8899224648876514463">"Назад"</string>
     <string name="minimized_controls_play_description" msgid="1608806851391883507">"Воспроизвести или приостановить"</string>
-    <string name="minimized_controls_next_description" msgid="609539086708052739">"К следующему контенту"</string>
+    <string name="minimized_controls_next_description" msgid="609539086708052739">"Далее"</string>
 </resources>

@@ -17,9 +17,9 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="promoted_notification_chip_off_content" msgid="571805024505632788">"目前無重點通知"</string>
-    <string name="promoted_notification_content_description" msgid="5752113468257224313">"「%1$s」嘅狀態方塊：%2$s"</string>
-    <string name="promoted_notification_content_description_app_only" msgid="5896204921219380610">"「%1$s」嘅狀態方塊"</string>
-    <string name="promoted_notification_content_description_text_only" msgid="5994999140812141541">"狀態方塊：%1$s"</string>
-    <string name="promoted_notification_fallback_content_description" msgid="2101674684068087193">"狀態方塊"</string>
+    <string name="promoted_notification_chip_off_content" msgid="571805024505632788">"Nuk ka njoftime promocionale në vazhdim"</string>
+    <string name="promoted_notification_content_description" msgid="5752113468257224313">"Çipi i statusit nga %1$s: %2$s"</string>
+    <string name="promoted_notification_content_description_app_only" msgid="5896204921219380610">"Çipi i statusit nga %1$s"</string>
+    <string name="promoted_notification_content_description_text_only" msgid="5994999140812141541">"Çipi i statusit: %1$s"</string>
+    <string name="promoted_notification_fallback_content_description" msgid="2101674684068087193">"Çipi i statusit"</string>
 </resources>

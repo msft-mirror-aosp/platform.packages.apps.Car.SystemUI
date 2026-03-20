@@ -25,7 +25,8 @@ android_library {
     resource_dirs: ["res"],
     static_libs: [
         "CarSystemUI-Shared",
-        "CarSystemUI-SystemBar-Base",
+        "CarSystemUI-SystemBar-Base-Controller",
+        "CarSystemUI-SystemBar-Base-View",
     ],
     manifest: "AndroidManifest.xml",
     plugins: [

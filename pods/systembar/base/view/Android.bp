@@ -19,19 +19,18 @@ package {
 }
 
 android_library {
-    name: "CarSystemUI-SystemBar-Volume",
-    srcs: ["src/**/*.java"],
-    manifest: "AndroidManifest.xml",
+    name: "CarSystemUI-SystemBar-Base-View",
+    srcs: [
+        "src/**/*.java",
+        "src/**/*.kt",
+    ],
     static_libs: [
-        "CarSystemUI-FlexibleUI",
         "CarSystemUI-Shared",
-        "CarSystemUI-SystemBar-Base-Controller",
-        "CarSystemUI-SystemBar-Base-View",
+        "CarSystemUI-FlexibleUI",
     ],
     libs: [
         "android.car",
     ],
-    plugins: [
-        "dagger2-compiler",
-    ],
+    manifest: "AndroidManifest.xml",
+    plugins: ["dagger2-compiler"],
 }

@@ -594,10 +594,7 @@ public class CarSystemBarButton extends LinearLayout implements
 
     @Override
     public Class<?> getElementControllerClass() {
-        if (mElementControllerClassAttr != null) {
-            return mElementControllerClassAttr;
-        }
-        return CarSystemBarButtonController.class;
+        return mElementControllerClassAttr;
     }
 
     @Override

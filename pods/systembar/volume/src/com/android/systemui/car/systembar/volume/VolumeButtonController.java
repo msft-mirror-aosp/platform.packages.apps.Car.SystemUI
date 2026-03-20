@@ -62,7 +62,7 @@ public class VolumeButtonController extends CarSystemBarButtonController {
             mCarAudioManager = car.getCarManager(CarAudioManager.class);
             mVolumeButton.setOnClickListener(v -> {
                 if (mCarAudioManager != null) {
-                    // todo(b/304797002): Use highest priority active group instead of USAGE_MEDIA
+                    // TODO(b/304797002): Use highest priority active group instead of USAGE_MEDIA
                     int groupId = mCarAudioManager.getVolumeGroupIdForUsage(USAGE_MEDIA);
                     mCarAudioManager.setGroupVolume(groupId,
                             mCarAudioManager.getGroupVolume(groupId), FLAG_SHOW_UI);

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
   Copyright (C) 2026 The Android Open Source Project
 
@@ -14,11 +13,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<resources>
-    <string name="minimized_controls_prev_description">Skip to previous</string>
-    <string name="minimized_controls_play_description">Play or Pause</string>
-    <string name="minimized_controls_next_description">Skip to next</string>
-    <string name="minimized_dialer_mute_description">Mute</string>
-    <string name="minimized_dialer_end_call_description">End Call</string>
-    <string name="minimized_dialer_keypad_description">Keypad</string>
-</resources>
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@android:color/transparent" />
+    <stroke
+        android:width="@dimen/minimized_controls_app_icon_outline_thickness"
+        android:color="?oemColorOutlineVariant" />
+</shape>

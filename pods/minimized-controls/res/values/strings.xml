@@ -18,4 +18,7 @@
     <string name="minimized_controls_prev_description">Skip to previous</string>
     <string name="minimized_controls_play_description">Play or Pause</string>
     <string name="minimized_controls_next_description">Skip to next</string>
+    <string name="minimized_dialer_mute_description">Mute</string>
+    <string name="minimized_dialer_end_call_description">End Call</string>
+    <string name="minimized_dialer_keypad_description">Keypad</string>
 </resources>

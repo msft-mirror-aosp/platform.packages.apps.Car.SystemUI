@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
   Copyright (C) 2026 The Android Open Source Project
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,11 +12,12 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-   -->
+  -->
 
-<resources xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="minimized_controls_prev_description" msgid="8899224648876514463">"Назад"</string>
-    <string name="minimized_controls_play_description" msgid="1608806851391883507">"Воспроизвести или приостановить"</string>
-    <string name="minimized_controls_next_description" msgid="609539086708052739">"Далее"</string>
-</resources>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@android:color/transparent" />
+    <stroke
+        android:width="@dimen/minimized_controls_app_icon_outline_thickness"
+        android:color="?oemColorOutlineVariant" />
+</shape>

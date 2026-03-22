@@ -39,6 +39,7 @@
         <item>@xml/bottom_bar_center_panel</item>
         <item>@xml/bottom_bar_right_panel</item>
         <item>@xml/minimized_media_controls_bar_panel</item>
+        <item>@xml/minimized_dialer_controls_bar_panel</item>
     </array>
 
     <bool name="config_enableTopSystemBar" android:featureFlag="com.android.car.scalableui.enable_ext_panel_updates">false</bool>

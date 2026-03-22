@@ -229,4 +229,12 @@
     <string name="fullscreen">Full Screen</string>
     <string name="display_density_button_description">Display size</string>
 
+    <!-- Minimized Dialer Controls -->
+    <!-- Content description for the Keypad button [CHAR LIMIT=30] -->
+    <string name="minimized_dialer_keypad_description">Keypad</string>
+    <!-- Content description for the End Call button [CHAR LIMIT=30] -->
+    <string name="minimized_dialer_end_call_description">End call</string>
+    <!-- Content description for the Mute button [CHAR LIMIT=30] -->
+    <string name="minimized_dialer_mute_description">Mute</string>
+
 </resources>

@@ -127,17 +127,20 @@ class MinimizedDialerControlsPanelController @AssistedInject constructor(
                                     info.initials
                                 }
                                 view.updateAvatar(info.avatarUri, initials, displayName)
+                                view.updateText(displayName, number)
                             }
                         }
                 } else {
                     view.post {
                         view.updateAvatar(null, null, null)
+                        view.updateText(null, null)
                     }
                 }
             } else {
                 view.post {
                     view.updateAppIcon(null)
                     view.updateAvatar(null, null, null)
+                    view.updateText(null, null)
                 }
             }
         }
@@ -147,7 +150,7 @@ class MinimizedDialerControlsPanelController @AssistedInject constructor(
             }
         }
 
-        view.setOnProfileClickListener {
+        view.setPrimaryActionClickListener {
             launchInCallUi(showDialpad = false)
         }
 

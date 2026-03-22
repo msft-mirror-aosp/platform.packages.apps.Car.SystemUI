@@ -44,6 +44,8 @@ class MinimizedDialerControlsView @JvmOverloads constructor(
     private lateinit var dialpadButton: ImageButton
     private lateinit var contactImage: ImageView
     private lateinit var appIcon: ImageView
+    private var displayNameText: android.widget.TextView? = null
+    private var numberText: android.widget.TextView? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.minimized_dialer_controls_view, this, true)
@@ -55,10 +57,9 @@ class MinimizedDialerControlsView @JvmOverloads constructor(
 
         contactImage = findViewById(R.id.dialer_contact_image)
         appIcon = findViewById(R.id.dialer_app_icon)
-    }
 
-    fun setOnProfileClickListener(listener: OnClickListener) {
-        profileContainer.setOnClickListener(listener)
+        displayNameText = findViewById(R.id.dialer_display_name)
+        numberText = findViewById(R.id.dialer_number)
     }
 
     fun setOnMuteClickListener(listener: OnClickListener) {
@@ -91,8 +92,39 @@ class MinimizedDialerControlsView @JvmOverloads constructor(
             .into(contactImage)
     }
 
+    fun updateText(displayName: String?, number: String?) {
+        displayNameText?.text = displayName ?: ""
+        numberText?.text = number ?: ""
+    }
+
     fun updateAudioState(isMuted: Boolean) {
         muteButton.isSelected = isMuted
+    }
+
+    private var primaryActionClickListener: OnClickListener? = null
+
+    fun setPrimaryActionClickListener(listener: OnClickListener) {
+        primaryActionClickListener = listener
+        updateClickListenerForOrientation()
+    }
+
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        updateClickListenerForOrientation()
+    }
+
+    private fun updateClickListenerForOrientation() {
+        val isPortrait = resources.configuration.orientation ==
+            android.content.res.Configuration.ORIENTATION_PORTRAIT
+        val cardContainer = findViewById<View>(R.id.card_container)
+
+        if (isPortrait) {
+            profileContainer.setOnClickListener(null)
+            cardContainer?.setOnClickListener(primaryActionClickListener)
+        } else {
+            cardContainer?.setOnClickListener(null)
+            profileContainer.setOnClickListener(primaryActionClickListener)
+        }
     }
 
     companion object {

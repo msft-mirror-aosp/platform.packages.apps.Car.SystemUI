@@ -29,6 +29,7 @@
         <item>@xml/bottom_bar_center_panel</item>
         <item>@xml/bottom_bar_right_panel</item>
         <item>@xml/minimized_media_controls_panel</item>
+        <item>@xml/minimized_dialer_controls_panel</item>
         <item>@xml/hun_panel</item>
     </array>
 

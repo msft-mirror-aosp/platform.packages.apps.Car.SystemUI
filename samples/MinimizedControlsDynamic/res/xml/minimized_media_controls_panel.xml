@@ -15,7 +15,7 @@
     limitations under the License.
 -->
 
-<DecorPanel id="minimized_media_controls_panel"  defaultVariant="@id/closed" displayId="0" controller="@xml/minimized_media_controls_controller">
+<DecorPanel id="minimized_media_controls_panel"  defaultVariant="@id/media_hidden_by_blocking_panel" displayId="0" controller="@xml/minimized_media_controls_controller">
     <Variant id="@id/base">
         <Layer layer="101"/>
     </Variant>
@@ -38,16 +38,37 @@
             height="@dimen/navigation_bar_height"/>
     </Variant>
 
+    <Variant id="@+id/media_opened" parent="@id/open"/>
+    <Variant id="@+id/media_hidden_by_blocking_panel" parent="@id/closed"/>
+    <Variant id="@+id/media_hidden_by_call" parent="@id/closed"/>
+    <Variant id="@+id/media_hidden_by_both" parent="@id/closed"/>
+
     <Transitions>
-        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=widget_panel" toVariant="@id/closed"/>
-        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=widget_panel" toVariant="@id/open"/>
+        <Transition onEvent="_System_Call_Connected" fromVariant="@id/media_opened" toVariant="@id/media_hidden_by_call"/>
+        <Transition onEvent="_System_Call_Connected" fromVariant="@id/media_hidden_by_blocking_panel" toVariant="@id/media_hidden_by_both"/>
 
-        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=app_panel" toVariant="@id/open"/>
-        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=app_panel" toVariant="@id/closed"/>
+        <Transition onEvent="_System_Call_Disconnected" fromVariant="@id/media_hidden_by_call" toVariant="@id/media_opened"/>
+        <Transition onEvent="_System_Call_Disconnected" fromVariant="@id/media_hidden_by_both" toVariant="@id/media_hidden_by_blocking_panel"/>
 
-        <Transition onEvent="_System_OnHomeEvent" fromVariant="@id/open" toVariant="@id/closed"/>
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=widget_panel" fromVariant="@id/media_opened" toVariant="@id/media_hidden_by_blocking_panel"/>
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=widget_panel" fromVariant="@id/media_hidden_by_call" toVariant="@id/media_hidden_by_both"/>
 
-        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=map_panel" fromVariant="@id/open" toVariant="@id/closed"/>
+        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=widget_panel" fromVariant="@id/media_hidden_by_blocking_panel" toVariant="@id/media_opened"/>
+        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=widget_panel" fromVariant="@id/media_hidden_by_both" toVariant="@id/media_hidden_by_call"/>
 
+        <Transition onEvent="_System_OnHomeEvent" fromVariant="@id/media_opened" toVariant="@id/media_hidden_by_blocking_panel"/>
+        <Transition onEvent="_System_OnHomeEvent" fromVariant="@id/media_hidden_by_call" toVariant="@id/media_hidden_by_both"/>
+
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=map_panel" fromVariant="@id/media_opened" toVariant="@id/media_hidden_by_blocking_panel"/>
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=map_panel" fromVariant="@id/media_hidden_by_call" toVariant="@id/media_hidden_by_both"/>
+
+        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=map_panel" fromVariant="@id/media_hidden_by_blocking_panel" toVariant="@id/media_opened"/>
+        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=map_panel" fromVariant="@id/media_hidden_by_both" toVariant="@id/media_hidden_by_call"/>
+
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=app_panel" fromVariant="@id/media_hidden_by_blocking_panel" toVariant="@id/media_opened"/>
+        <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=app_panel" fromVariant="@id/media_hidden_by_both" toVariant="@id/media_hidden_by_call"/>
+
+        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=app_panel" fromVariant="@id/media_opened" toVariant="@id/media_hidden_by_blocking_panel"/>
+        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=app_panel" fromVariant="@id/media_hidden_by_call" toVariant="@id/media_hidden_by_both"/>
     </Transitions>
 </DecorPanel>

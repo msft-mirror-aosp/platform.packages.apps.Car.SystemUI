@@ -86,9 +86,19 @@ class MinimizedDialerControlsView @JvmOverloads constructor(
 
     fun updateAvatar(avatarUri: Uri?, initials: String?, identifier: String?) {
         val letterTileDrawable = createLetterTile(context, initials, identifier)
+        if (avatarUri == null) {
+            contactImage.setImageDrawable(letterTileDrawable)
+            return
+        }
+
         Glide.with(context.applicationContext)
             .load(avatarUri)
-            .apply(RequestOptions().centerCrop().error(letterTileDrawable))
+            .apply(
+                RequestOptions()
+                .placeholder(letterTileDrawable)
+                .centerCrop()
+                .error(letterTileDrawable)
+            )
             .into(contactImage)
     }
 

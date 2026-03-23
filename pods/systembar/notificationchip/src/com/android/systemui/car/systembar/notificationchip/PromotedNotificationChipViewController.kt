@@ -93,7 +93,7 @@ constructor(
                     return@setOnClickListener
                 }
 
-                carNotificationListener.showHun(it.key)
+                carNotificationListener.showHunImmediately(it.key)
             }
         }
 

@@ -210,7 +210,7 @@ public class CarHeadsUpNotificationSystemContainerTest extends CarSysuiTestCase 
                 mCarDeviceProvisionedController, mOverlayViewGlobalStateController,
                 mSystemUiWindowProvider);
         mCarHeadsUpNotificationSystemContainer.displayNotification(mNotificationView,
-                CarNotificationTypeItem.INBOX);
+                CarNotificationTypeItem.INBOX, false);
         verify(mHunWindow).show();
     }
 
@@ -220,7 +220,7 @@ public class CarHeadsUpNotificationSystemContainerTest extends CarSysuiTestCase 
             mCarDeviceProvisionedController, mOverlayViewGlobalStateController,
             mSystemUiWindowProvider);
         mCarHeadsUpNotificationSystemContainer.displayNotification(mNotificationView,
-                CarNotificationTypeItem.INBOX);
+                CarNotificationTypeItem.INBOX, false);
         mCarHeadsUpNotificationSystemContainer.removeNotification(mNotificationView);
         verify(mHunWindow).hide();
     }
@@ -231,9 +231,9 @@ public class CarHeadsUpNotificationSystemContainerTest extends CarSysuiTestCase 
             mCarDeviceProvisionedController, mOverlayViewGlobalStateController,
             mSystemUiWindowProvider);
         mCarHeadsUpNotificationSystemContainer.displayNotification(mNotificationView,
-                CarNotificationTypeItem.INBOX);
+                CarNotificationTypeItem.INBOX, false);
         mCarHeadsUpNotificationSystemContainer.displayNotification(mNotificationView2,
-                CarNotificationTypeItem.INBOX);
+                CarNotificationTypeItem.INBOX, false);
         reset(mHunWindow);
 
         mCarHeadsUpNotificationSystemContainer.removeNotification(mNotificationView);
@@ -247,7 +247,7 @@ public class CarHeadsUpNotificationSystemContainerTest extends CarSysuiTestCase 
             mCarDeviceProvisionedController, mOverlayViewGlobalStateController,
             mSystemUiWindowProvider);
         mCarHeadsUpNotificationSystemContainer.displayNotification(mNotificationView,
-                CarNotificationTypeItem.INBOX);
+                CarNotificationTypeItem.INBOX, false);
         verify(mHunWindow).show();
     }
 
@@ -258,7 +258,7 @@ public class CarHeadsUpNotificationSystemContainerTest extends CarSysuiTestCase 
             mSystemUiWindowProvider);
         when(mCarDeviceProvisionedController.isCurrentUserFullySetup()).thenReturn(false);
         mCarHeadsUpNotificationSystemContainer.displayNotification(mNotificationView,
-                CarNotificationTypeItem.INBOX);
+                CarNotificationTypeItem.INBOX, false);
         verify(mHunWindow, never()).show();
     }
 
@@ -269,7 +269,7 @@ public class CarHeadsUpNotificationSystemContainerTest extends CarSysuiTestCase 
             mSystemUiWindowProvider);
         when(mOverlayViewGlobalStateController.shouldShowHUN()).thenReturn(false);
         mCarHeadsUpNotificationSystemContainer.displayNotification(mNotificationView,
-                CarNotificationTypeItem.INBOX);
+                CarNotificationTypeItem.INBOX, false);
         verify(mHunWindow, never()).show();
     }
 
@@ -279,7 +279,7 @@ public class CarHeadsUpNotificationSystemContainerTest extends CarSysuiTestCase 
             mCarDeviceProvisionedController, mOverlayViewGlobalStateController,
             mSystemUiWindowProvider);
         mCarHeadsUpNotificationSystemContainer.displayNotification(mNotificationView,
-                CarNotificationTypeItem.INBOX);
+                CarNotificationTypeItem.INBOX, false);
         verify(mHunWindow).show();
     }
 

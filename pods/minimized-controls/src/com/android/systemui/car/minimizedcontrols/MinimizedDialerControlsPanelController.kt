@@ -154,8 +154,9 @@ class MinimizedDialerControlsPanelController @AssistedInject constructor(
             launchInCallUi(showDialpad = false)
         }
 
-        view.setOnDialpadClickListener {
-            launchInCallUi(showDialpad = true)
+        view.setOnDialpadClickListener { v ->
+            v.isSelected = !v.isSelected
+            launchInCallUi(showDialpad = v.isSelected)
         }
 
         view.setOnMuteClickListener {

@@ -169,7 +169,7 @@
                 android:layout_height="match_parent"
                 android:scaleType="fitCenter"
                 android:padding="@dimen/minimized_controls_icon_padding"
-                android:background="@drawable/minimized_dialer_mute_background"
+                android:background="@drawable/minimized_dialer_button_background"
                 android:src="@drawable/minimized_dialer_ic_mic_on"
                 android:contentDescription="@string/minimized_dialer_mute_description" />
         </FrameLayout>

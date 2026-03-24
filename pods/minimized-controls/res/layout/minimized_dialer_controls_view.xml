@@ -92,7 +92,7 @@
                 android:padding="@dimen/minimized_controls_icon_padding"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
-                android:background="@drawable/minimized_dialer_mute_background"
+                android:background="@drawable/minimized_dialer_button_background"
                 android:src="@drawable/minimized_dialer_mute_icon"
                 android:contentDescription="@string/minimized_dialer_mute_description" />
         </FrameLayout>

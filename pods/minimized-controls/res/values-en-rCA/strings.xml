@@ -20,4 +20,7 @@
     <string name="minimized_controls_prev_description" msgid="8899224648876514463">"Skip to previous"</string>
     <string name="minimized_controls_play_description" msgid="1608806851391883507">"Play or Pause"</string>
     <string name="minimized_controls_next_description" msgid="609539086708052739">"Skip to next"</string>
+    <string name="minimized_dialer_mute_description" msgid="2701112552546374215">"Mute"</string>
+    <string name="minimized_dialer_end_call_description" msgid="3800744011470835006">"End Call"</string>
+    <string name="minimized_dialer_keypad_description" msgid="8808459573030474700">"Keypad"</string>
 </resources>

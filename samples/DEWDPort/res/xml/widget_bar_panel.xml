@@ -43,6 +43,7 @@
     <Transitions>
         <Transition onEvent="_System_EnterSuwEvent" toVariant="@id/suw"/>
         <Transition onEvent="_System_ExitSuwEvent" toVariant="@id/opened"/>
+        <Transition onEvent="_System_OnHomeEvent" toVariant="@id/opened"/>
         <Transition onEvent="_System_BeforeUserSwitch" toVariant="@id/userswitch"/>
         <Transition onEvent="_System_UserSwitchComplete" fromVariant="@id/userswitch" toVariant="@id/opened"/>
         <Transition onEvent="_System_EnterImmersiveMode" toVariant="@id/closed"/>

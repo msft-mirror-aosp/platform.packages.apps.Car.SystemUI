@@ -44,7 +44,7 @@
         <Transition onEvent="_System_TaskPanelEmptyEvent" onEventTokens="panelId=app_panel" fromVariant="@id/closed" toVariant="@id/opened"/>
         <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=map_panel" fromVariant="@id/closed" toVariant="@id/opened"/>
         <Transition onEvent="_System_TaskOpenEvent" onEventTokens="panelId=minimized_media_controls_panel" toVariant="@id/closed"/>
-        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=minimized_media_controls_panel" toVariant="@id/open"/>
+        <Transition onEvent="_System_TaskCloseEvent" onEventTokens="panelId=minimized_media_controls_panel" toVariant="@id/opened"/>
 
         <!-- User Switch -->
         <Transition onEvent="_System_BeforeUserSwitch" toVariant="@id/userswitch"/>

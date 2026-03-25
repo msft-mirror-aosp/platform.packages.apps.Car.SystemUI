@@ -34,6 +34,8 @@ import com.android.car.telephony.common.TelecomUtils
 import com.android.systemui.car.wm.scalableui.EventDispatcher
 import com.android.systemui.car.wm.scalableui.panel.controller.DecorPanelViewMap
 import com.android.systemui.dagger.qualifiers.Main
+import com.android.wm.shell.common.ShellExecutor
+import com.android.wm.shell.shared.annotations.ShellMainThread
 import com.android.wm.shell.sysui.ShellController
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -50,6 +52,7 @@ class MinimizedDialerControlsPanelController @AssistedInject constructor(
     @DecorPanelViewMap decorPanelViewMap: Map<Class<*>, @JvmSuppressWildcards Provider<View>>,
     private val inCallServiceManager: InCallServiceManager,
     @Main mainExecutor: Executor,
+    @ShellMainThread private val shellExecutor: ShellExecutor,
     private val shellController: ShellController,
     private val userContextFactory: UserContextUtils.UserContextFactory,
     private val eventDispatcher: EventDispatcher
@@ -103,7 +106,7 @@ class MinimizedDialerControlsPanelController @AssistedInject constructor(
                                 Log.w(TAG, "Failed to load icon for $packageName", e)
                             }
                         }
-                        view.post {
+                        shellExecutor.execute {
                             view.updateAppIcon(icon)
                         }
                     }
@@ -113,31 +116,31 @@ class MinimizedDialerControlsPanelController @AssistedInject constructor(
                 if (!number.isNullOrEmpty()) {
                     TelecomUtils.getPhoneNumberInfo(view.context, number)
                         .thenAccept { info ->
-                            view.post {
-                                val callerDisplayName = call.details?.callerDisplayName
-                                val displayName = if (!callerDisplayName.isNullOrEmpty()) {
-                                    callerDisplayName
-                                } else {
-                                    info.displayName
-                                }
-
-                                val initials = if (info.initials.isNullOrEmpty()) {
-                                    TelecomUtils.getInitials(displayName, info.displayNameAlt)
-                                } else {
-                                    info.initials
-                                }
-                                view.updateAvatar(info.avatarUri, initials, displayName)
-                                view.updateText(displayName, number)
+                        shellExecutor.execute {
+                            val callerDisplayName = call.details?.callerDisplayName
+                            val displayName = if (!callerDisplayName.isNullOrEmpty()) {
+                                callerDisplayName
+                            } else {
+                                info.displayName
                             }
+
+                            val initials = if (info.initials.isNullOrEmpty()) {
+                                TelecomUtils.getInitials(displayName, info.displayNameAlt)
+                            } else {
+                                info.initials
+                            }
+                            view.updateAvatar(info.avatarUri, initials, displayName)
+                            view.updateText(displayName, number)
+                        }
                         }
                 } else {
-                    view.post {
-                        view.updateAvatar(null, null, null)
-                        view.updateText(null, null)
-                    }
+                shellExecutor.execute {
+                    view.updateAvatar(null, null, null)
+                    view.updateText(null, null)
+                }
                 }
             } else {
-                view.post {
+                shellExecutor.execute {
                     view.updateAppIcon(null)
                     view.updateAvatar(null, null, null)
                     view.updateText(null, null)
@@ -145,26 +148,28 @@ class MinimizedDialerControlsPanelController @AssistedInject constructor(
             }
         }
         viewModel.isMutedLiveData?.observe(this) { isMuted ->
-            view.post {
+            shellExecutor.execute {
                 view.updateAudioState(isMuted == true)
             }
         }
 
-        view.setPrimaryActionClickListener {
-            launchInCallUi(showDialpad = false)
-        }
+        shellExecutor.execute {
+            view.setPrimaryActionClickListener {
+                launchInCallUi(showDialpad = false)
+            }
 
-        view.setOnDialpadClickListener { v ->
-            v.isSelected = !v.isSelected
-            launchInCallUi(showDialpad = v.isSelected)
-        }
+            view.setOnDialpadClickListener { v ->
+                v.isSelected = !v.isSelected
+                launchInCallUi(showDialpad = v.isSelected)
+            }
 
-        view.setOnMuteClickListener {
-            viewModel.toggleMute()
-        }
+            view.setOnMuteClickListener {
+                viewModel.toggleMute()
+            }
 
-        view.setOnEndCallClickListener {
-            viewModel.disconnectCall()
+            view.setOnEndCallClickListener {
+                viewModel.disconnectCall()
+            }
         }
     }
 

@@ -23,7 +23,6 @@ import android.util.AttributeSet;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.car.oem.tokens.Token;
 import com.android.systemui.car.systembar.privacy.base.PrivacyChip;
 
 /**
@@ -34,8 +33,7 @@ public class PromotedNotificationChipView extends PrivacyChip {
     private Drawable mDefaultLightIcon;
     private Drawable mDefaultDarkIcon;
 
-    private Drawable mCurrentLightIcon;
-    private Drawable mCurrentDarkIcon;
+    private Drawable mCurrentIcon;
 
     private String mAppName;
     private String mShortCriticalText;
@@ -104,16 +102,16 @@ public class PromotedNotificationChipView extends PrivacyChip {
 
     @Override
     protected Drawable getLightIconDrawable() {
-        if (mCurrentLightIcon != null) {
-            return mCurrentLightIcon;
+        if (mCurrentIcon != null) {
+            return mCurrentIcon;
         }
         return mDefaultLightIcon;
     }
 
     @Override
     protected Drawable getDarkIconDrawable() {
-        if (mCurrentDarkIcon != null) {
-            return mCurrentDarkIcon;
+        if (mCurrentIcon != null) {
+            return mCurrentIcon;
         }
         return mDefaultDarkIcon;
     }
@@ -153,21 +151,7 @@ public class PromotedNotificationChipView extends PrivacyChip {
      * default icon will be used.
      */
     public void updateNotificationIcon(@Nullable Drawable drawable) {
-        if (drawable == null || drawable.getConstantState() == null) {
-            mCurrentLightIcon = null;
-            mCurrentDarkIcon = null;
-            updateIcons();
-            return;
-        }
-        Context oemContext = Token.createOemStyledContext(getContext());
-        mCurrentLightIcon = drawable.getConstantState().newDrawable(
-                getContext().getResources()).mutate();
-        mCurrentLightIcon.setTint(oemContext.getColor(
-                com.android.systemui.car.shared.R.color.privacy_chip_light_icon_color));
-        mCurrentDarkIcon = drawable.getConstantState().newDrawable(
-                getContext().getResources()).mutate();
-        mCurrentDarkIcon.setTint(oemContext.getColor(
-                com.android.systemui.car.shared.R.color.privacy_chip_dark_icon_color));
+        mCurrentIcon = drawable;
         updateIcons();
     }
 }

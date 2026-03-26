@@ -161,7 +161,7 @@ constructor(
             }
 
             if (!isIconSame) {
-                val icon = entry.smallIcon
+                val icon = entry.icon
                 icon?.also {
                     val drawable = imageLoader.loadDrawable(icon, context)
                     mView.updateNotificationIcon(drawable)

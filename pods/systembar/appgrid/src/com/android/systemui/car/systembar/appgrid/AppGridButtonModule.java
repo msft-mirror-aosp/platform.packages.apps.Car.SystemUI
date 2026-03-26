@@ -16,8 +16,19 @@
 
 package com.android.systemui.car.systembar.appgrid;
 
+import com.android.systemui.car.flexibleui.CarSystemBarElementController;
+
+import dagger.Binds;
 import dagger.Module;
+import dagger.multibindings.ClassKey;
+import dagger.multibindings.IntoMap;
 
 @Module
 public abstract class AppGridButtonModule {
+    /** Binds the AppGridButtonController.Factory to the map. */
+    @Binds
+    @IntoMap
+    @ClassKey(AppGridButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindAppGridButtonControllerFactory(
+            AppGridButtonController.Factory factory);
 }

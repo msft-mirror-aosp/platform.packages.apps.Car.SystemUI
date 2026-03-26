@@ -57,6 +57,10 @@ public class CarSystemBarButtonController
         mView.setEventDispatcher(mEventDispatcher);
     }
 
+    protected UserTracker getUserTracker() {
+        return mUserTracker;
+    }
+
     @Override
     protected void onViewAttached() {
         super.onViewAttached();

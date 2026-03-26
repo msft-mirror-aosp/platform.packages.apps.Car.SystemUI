@@ -796,9 +796,6 @@ public class PanelTransitionCoordinator {
     }
 
     private void dispatchAnimationEndEvent(String panelId, String variantId) {
-        if (!mFlagManager.isEnabled(Flag.EnableAnimationEndEvent)) {
-            return;
-        }
         logIfDebuggable("dispatching animation end event for panel " + panelId
                 + " with variant " + variantId);
         PanelTransaction transaction = StateManager.handleEvent(new Event.Builder(
@@ -806,7 +803,9 @@ public class PanelTransitionCoordinator {
                 .setPanelId(panelId)
                 .setToVariantId(variantId)
                 .build());
-        startTransition(transaction);
+        if (transaction != null) {
+            startTransition(transaction);
+        }
     }
 
     @ShellMainThread

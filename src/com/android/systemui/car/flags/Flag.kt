@@ -80,14 +80,6 @@ enum class Flag(
     ),
 
     /**
-     * Checks if the animation end event feature is enabled.
-     */
-    EnableAnimationEndEvent(
-        "com.android.car.scalableui.Flags.enableAnimationEndEvent",
-        R.bool.enable_animation_end_event
-    ),
-
-    /**
      * Checks if the Scalable UI design compose feature is enabled.
      */
     ScalableUiDesignCompose(

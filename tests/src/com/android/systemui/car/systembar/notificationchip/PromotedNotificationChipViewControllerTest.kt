@@ -112,7 +112,7 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = false,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon,
+            icon = icon,
             appName = "App"
         )
 
@@ -134,7 +134,7 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = false,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon,
+            icon = icon,
             appName = "App"
         )
 
@@ -158,7 +158,7 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = false,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon,
+            icon = icon,
             appName = "App"
         )
         repository.addPromotedNotification(model)
@@ -182,7 +182,7 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = false,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon,
+            icon = icon,
             appName = "App"
         )
         repository.addPromotedNotification(model)
@@ -212,7 +212,7 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = false,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon,
+            icon = icon,
             appName = "App"
         )
         repository.addPromotedNotification(model)
@@ -248,7 +248,7 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = true,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon,
+            icon = icon,
             appName = "App"
         )
 
@@ -269,7 +269,7 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = true,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon,
+            icon = icon,
             appName = "App"
         )
         repository.addPromotedNotification(hunModel)
@@ -282,7 +282,7 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = false,
             postTime = 1000L,
             shortCriticalText = "Text",
-            smallIcon = icon,
+            icon = icon,
             appName = "App"
         )
         repository.addPromotedNotification(dismissedModel)
@@ -302,7 +302,7 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = false,
             postTime = 1000L,
             shortCriticalText = "Old",
-            smallIcon = icon,
+            icon = icon,
             appName = "OldApp"
         )
         repository.addPromotedNotification(oldModel)
@@ -316,7 +316,7 @@ class PromotedNotificationChipViewControllerTest : CarSysuiTestCase() {
             isHeadsUp = true,
             postTime = 2000L,
             shortCriticalText = "New",
-            smallIcon = icon,
+            icon = icon,
             appName = "NewApp"
         )
         repository.addPromotedNotification(newHunModel)

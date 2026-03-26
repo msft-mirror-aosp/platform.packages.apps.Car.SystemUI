@@ -260,23 +260,21 @@ class MinimizedDialerControlsPanelController @AssistedInject constructor(
 
             intent?.let { resolvedIntent ->
                 resolvedIntent.setFlags(
-                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
                 )
 
-                if (showDialpad) {
-                    val systemDialerPkg = telecomManager?.systemDialerPackage
-                        ?: CAR_DIALER_PACKAGE_NAME
-                    val targetPackage = resolvedIntent.`package`
-                        ?: resolvedIntent.component?.packageName
-                    if (targetPackage == systemDialerPkg) {
-                        if (targetPackage == CAR_DIALER_PACKAGE_NAME) {
-                            resolvedIntent.component = ComponentName(
-                                CAR_DIALER_PACKAGE_NAME,
-                                CAR_DIALER_INCALL_ACTIVITY
-                            )
-                        }
-                        resolvedIntent.putExtra(EXTRA_SHOW_DIALPAD, true)
+                val systemDialerPkg = telecomManager?.systemDialerPackage
+                    ?: CAR_DIALER_PACKAGE_NAME
+                val targetPackage = resolvedIntent.`package`
+                    ?: resolvedIntent.component?.packageName
+                if (targetPackage == systemDialerPkg) {
+                    if (targetPackage == CAR_DIALER_PACKAGE_NAME) {
+                        resolvedIntent.component = ComponentName(
+                            CAR_DIALER_PACKAGE_NAME,
+                            CAR_DIALER_INCALL_ACTIVITY
+                        )
                     }
+                    resolvedIntent.putExtra(EXTRA_SHOW_DIALPAD, showDialpad)
                 }
 
                 context.startActivityAsUser(resolvedIntent, UserHandle.CURRENT)

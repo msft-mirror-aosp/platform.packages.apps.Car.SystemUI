@@ -19,6 +19,7 @@ package com.android.systemui.car.minimizedcontrols
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.SystemClock
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -45,7 +46,7 @@ class MinimizedDialerControlsView @JvmOverloads constructor(
     private lateinit var contactImage: ImageView
     private lateinit var appIcon: ImageView
     private var displayNameText: android.widget.TextView? = null
-    private var numberText: android.widget.TextView? = null
+    private var durationText: android.widget.Chronometer? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.minimized_dialer_controls_view, this, true)
@@ -59,7 +60,7 @@ class MinimizedDialerControlsView @JvmOverloads constructor(
         appIcon = findViewById(R.id.dialer_app_icon)
 
         displayNameText = findViewById(R.id.dialer_display_name)
-        numberText = findViewById(R.id.dialer_number)
+        durationText = findViewById(R.id.dialer_duration)
     }
 
     fun setOnMuteClickListener(listener: OnClickListener) {
@@ -102,9 +103,16 @@ class MinimizedDialerControlsView @JvmOverloads constructor(
             .into(contactImage)
     }
 
-    fun updateText(displayName: String?, number: String?) {
+    fun updateDisplay(displayName: String?, connectTimeMillis: Long?) {
         displayNameText?.text = displayName ?: ""
-        numberText?.text = number ?: ""
+        if (connectTimeMillis != null) {
+            durationText?.base = connectTimeMillis - System.currentTimeMillis() +
+                SystemClock.elapsedRealtime()
+            durationText?.start()
+        } else {
+            durationText?.stop()
+            durationText?.text = ""
+        }
     }
 
     fun updateAudioState(isMuted: Boolean) {

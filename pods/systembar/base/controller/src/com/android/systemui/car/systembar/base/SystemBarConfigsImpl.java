@@ -412,7 +412,6 @@ public class SystemBarConfigsImpl implements SystemBarConfigs {
             return;
         }
 
-
         mTopNavBarEnabled = mResources.getBoolean(R.bool.config_enableTopSystemBar);
         mBottomNavBarEnabled = mResources.getBoolean(R.bool.config_enableBottomSystemBar);
         mLeftNavBarEnabled = mResources.getBoolean(R.bool.config_enableLeftSystemBar);

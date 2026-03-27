@@ -26,6 +26,8 @@ import androidx.annotation.Nullable;
 import com.android.systemui.car.flexibleui.CarSystemBarElement;
 import com.android.systemui.car.flexibleui.CarSystemBarElementController;
 import com.android.systemui.car.flexibleui.CarSystemBarElementStateController;
+import com.android.systemui.car.systembar.base.CarSystemBarButton;
+import com.android.systemui.car.systembar.base.CarSystemBarButtonController;
 import com.android.systemui.car.systembar.base.CarSystemBarRestartTracker;
 import com.android.systemui.dagger.SysUISingleton;
 
@@ -103,8 +105,11 @@ public class CarSystemBarElementInitializer implements CarSystemBarRestartTracke
         for (int i = 0; i < rootView.getChildCount(); i++) {
             View v = rootView.getChildAt(i);
             if (v instanceof CarSystemBarElement) {
-                info.add(new ElementViewControllerData(v,
-                        ((CarSystemBarElement) v).getElementControllerClass()));
+                Class<?> controllerClass = ((CarSystemBarElement) v).getElementControllerClass();
+                if (controllerClass == null && v instanceof CarSystemBarButton) {
+                    controllerClass = CarSystemBarButtonController.class;
+                }
+                info.add(new ElementViewControllerData(v, controllerClass));
             }
             if (v instanceof ViewGroup) {
                 info.addAll(findSystemBarElements((ViewGroup) v));

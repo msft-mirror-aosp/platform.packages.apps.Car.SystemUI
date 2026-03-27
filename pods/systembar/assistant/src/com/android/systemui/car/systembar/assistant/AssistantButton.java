@@ -22,7 +22,6 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
 import com.android.systemui.car.systembar.base.CarSystemBarButton;
-import com.android.systemui.car.systembar.base.CarSystemBarButtonController;
 
 /**
  * AssistantButton is an UI component that will trigger the Voice Interaction Service.
@@ -36,7 +35,7 @@ public class AssistantButton extends CarSystemBarButton {
     @Override
     public Class<?> getElementControllerClass() {
         Class<?> superClass = super.getElementControllerClass();
-        if (superClass != null && superClass != CarSystemBarButtonController.class) {
+        if (superClass != null) {
             return superClass;
         }
         return AssistantButtonController.class;

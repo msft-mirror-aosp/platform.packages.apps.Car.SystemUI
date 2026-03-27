@@ -48,7 +48,7 @@ import java.util.Set;
  * A CarSystemBarElementController for handling Assistant button interactions.
  */
 public class AssistantButtonController extends CarSystemBarButtonController {
-    private static final String TAG = "AssistantButtonController";
+    private static final String TAG = AssistantButtonController.class.getSimpleName();
 
     private final AssistUtils mAssistUtils;
     private final AssistantButton mAssistantButton;

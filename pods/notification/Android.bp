@@ -26,7 +26,8 @@ android_library {
         "CarNotificationLib",
         "CarSystemUI-FlexibleUI",
         "CarSystemUI-Shared",
-        "CarSystemUI-SystemBar-Base",
+        "CarSystemUI-SystemBar-Base-Controller",
+        "CarSystemUI-SystemBar-Base-View",
     ],
     libs: [
         "android.car",

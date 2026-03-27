@@ -22,7 +22,8 @@ android_library {
         "CarSystemUI-FlexibleUI",
         "CarSystemUI-QC-Base",
         "CarSystemUI-Shared",
-        "CarSystemUI-SystemBar-Base",
+        "CarSystemUI-SystemBar-Base-Controller",
+        "CarSystemUI-SystemBar-Base-View",
     ],
     libs: [
         "android.car",

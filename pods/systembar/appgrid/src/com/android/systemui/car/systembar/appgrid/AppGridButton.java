@@ -20,7 +20,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import com.android.systemui.car.systembar.base.CarSystemBarButton;
-import com.android.systemui.car.systembar.base.CarSystemBarButtonController;
 import com.android.systemui.statusbar.AlphaOptimizedImageView;
 
 /**
@@ -40,7 +39,7 @@ public class AppGridButton extends CarSystemBarButton {
     @Override
     public Class<?> getElementControllerClass() {
         Class<?> superClass = super.getElementControllerClass();
-        if (superClass != null && superClass != CarSystemBarButtonController.class) {
+        if (superClass != null) {
             return superClass;
         }
         return AppGridButtonController.class;

@@ -20,10 +20,7 @@
     <string name="minimized_controls_prev_description" msgid="8899224648876514463">"Անցնել նախորդին"</string>
     <string name="minimized_controls_play_description" msgid="1608806851391883507">"Նվագարկել կամ դադարեցնել"</string>
     <string name="minimized_controls_next_description" msgid="609539086708052739">"Անցնել հաջորդին"</string>
-    <!-- no translation found for minimized_dialer_mute_description (2701112552546374215) -->
-    <skip />
-    <!-- no translation found for minimized_dialer_end_call_description (3800744011470835006) -->
-    <skip />
-    <!-- no translation found for minimized_dialer_keypad_description (8808459573030474700) -->
-    <skip />
+    <string name="minimized_dialer_mute_description" msgid="2701112552546374215">"Անջատել ձայնը"</string>
+    <string name="minimized_dialer_end_call_description" msgid="3800744011470835006">"Ավարտել զանգը"</string>
+    <string name="minimized_dialer_keypad_description" msgid="8808459573030474700">"Թվաշար"</string>
 </resources>

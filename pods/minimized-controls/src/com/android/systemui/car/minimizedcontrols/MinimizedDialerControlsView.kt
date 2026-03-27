@@ -130,9 +130,15 @@ class MinimizedDialerControlsView @JvmOverloads constructor(
 
         if (isPortrait) {
             profileContainer.setOnClickListener(null)
+            profileContainer.isClickable = false
+            profileContainer.isFocusable = false
+            cardContainer?.isFocusable = true
             cardContainer?.setOnClickListener(primaryActionClickListener)
         } else {
             cardContainer?.setOnClickListener(null)
+            cardContainer?.isClickable = false
+            cardContainer?.isFocusable = false
+            profileContainer.isFocusable = true
             profileContainer.setOnClickListener(primaryActionClickListener)
         }
     }

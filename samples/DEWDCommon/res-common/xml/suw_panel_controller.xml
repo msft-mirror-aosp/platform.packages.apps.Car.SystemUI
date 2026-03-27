@@ -16,4 +16,5 @@
 <Controller id="suw_panel_controller">
     <ControllerName>com.android.systemui.car.wm.scalableui.panel.controller.SetupPanelController</ControllerName>
     <PersistentPackage>@string/suw_package</PersistentPackage>
+    <PersistentActivity>@string/suw_entry</PersistentActivity>
 </Controller>

@@ -106,10 +106,7 @@
     <string name="user_tos_activity_intent" msgid="6076292178025090081">"intent:#Intent;action=com.android.car.SHOW_USER_TOS_ACTIVITY;B.show_value_prop=false;end"</string>
     <string name="fullscreen" msgid="7648956467442135844">"全螢幕"</string>
     <string name="display_density_button_description" msgid="5355175016830062352">"顯示大小"</string>
-    <!-- no translation found for minimized_dialer_keypad_description (1710102565075571304) -->
-    <skip />
-    <!-- no translation found for minimized_dialer_end_call_description (6478408726786782271) -->
-    <skip />
-    <!-- no translation found for minimized_dialer_mute_description (3769803627139563243) -->
-    <skip />
+    <string name="minimized_dialer_keypad_description" msgid="1710102565075571304">"撥號鍵盤"</string>
+    <string name="minimized_dialer_end_call_description" msgid="6478408726786782271">"收線"</string>
+    <string name="minimized_dialer_mute_description" msgid="3769803627139563243">"靜音"</string>
 </resources>

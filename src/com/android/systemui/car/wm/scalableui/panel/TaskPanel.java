@@ -709,6 +709,7 @@ public final class TaskPanel extends SysUIPanel {
                 mPersistedActivities.addAll(Arrays.asList(persistedActivities));
             }
         }
+        trySetPersistentActivity();
     }
 
     /**
@@ -777,6 +778,12 @@ public final class TaskPanel extends SysUIPanel {
                     new Rect(0, 0, bounds.width(), bounds.height()));
             autoSurfaceTransaction.setTaskSurfacePosition(taskId, bounds.left,
                     bounds.top);
+            autoSurfaceTransaction.setTaskSurfaceAlpha(taskId,
+                    variant == null ? getAlpha() : variant.getAlpha());
+            autoSurfaceTransaction.setTaskSurfaceVisibility(taskId,
+                    variant == null ? isVisible() : variant.isVisible());
+            autoSurfaceTransaction.setTaskSurfaceTransientLayer(taskId,
+                    variant == null ? getLayer() : variant.getLayer());
             Corner radius = variant == null ? getCornerRadius() : variant.getCornerRadius();
             if (com.android.graphics.surfaceflinger.flags.Flags.setClientDrawnCornerRadii()) {
                 autoSurfaceTransaction.setTaskSurfaceCornerRadius(taskId,

@@ -19,8 +19,6 @@ package com.android.systemui.car.notification;
 import static com.android.systemui.car.notification.NotificationConstants.OVERLAY_TYPE_NOTIFICATION_PANEL;
 
 import android.app.ActivityManager;
-import android.car.Car;
-import android.car.drivingstate.CarUxRestrictionsManager;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -48,8 +46,6 @@ import com.android.car.notification.NotificationViewController;
 import com.android.car.notification.PreprocessingManager;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.car.CarDeviceProvisionedController;
-import com.android.systemui.car.CarServiceProvider;
-import com.android.systemui.car.CarServiceProvider.CarServiceOnConnectedListener;
 import com.android.systemui.car.users.CarSystemUIUserUtil;
 import com.android.systemui.car.window.OverlayPanelViewController;
 import com.android.systemui.car.window.OverlayViewController;
@@ -76,7 +72,6 @@ public class NotificationPanelViewController extends OverlayPanelViewController
 
     private final Context mContext;
     private final Resources mResources;
-    private final CarServiceProvider mCarServiceProvider;
     private final IStatusBarService mBarService;
     private final CommandQueue mCommandQueue;
     private final Executor mUiBgExecutor;
@@ -106,7 +101,6 @@ public class NotificationPanelViewController extends OverlayPanelViewController
     private boolean mIsSwipingVerticallyToClose;
     private boolean mIsNotificationCardSwiping;
     private boolean mImeVisible = false;
-    private boolean mOnConnectListenerAdded;
 
     private OnUnseenCountUpdateListener mUnseenCountUpdateListener;
     private OnNotificationClickListener mOnNotificationClickListener =
@@ -118,25 +112,6 @@ public class NotificationPanelViewController extends OverlayPanelViewController
                 }
             };
 
-    private CarServiceOnConnectedListener mCarConnectedListener =
-            new CarServiceOnConnectedListener() {
-                @Override
-                public void onConnected(Car car) {
-                    CarUxRestrictionsManager carUxRestrictionsManager =
-                            (CarUxRestrictionsManager)
-                                    car.getCarManager(Car.CAR_UX_RESTRICTION_SERVICE);
-                    mCarUxRestrictionManagerWrapper.setCarUxRestrictionsManager(
-                            carUxRestrictionsManager);
-
-                    PreprocessingManager preprocessingManager =
-                            PreprocessingManager.getInstance(mContext);
-                    preprocessingManager.setCarUxRestrictionManagerWrapper(
-                            mCarUxRestrictionManagerWrapper);
-
-                    mNotificationViewController.enable();
-                }
-            };
-
     @Inject
     public NotificationPanelViewController(
             Context context,
@@ -144,10 +119,6 @@ public class NotificationPanelViewController extends OverlayPanelViewController
             OverlayViewGlobalStateController overlayViewGlobalStateController,
             FlingAnimationUtils.Builder flingAnimationUtilsBuilder,
             @UiBackground Executor uiBgExecutor,
-
-            /* Other things */
-            CarServiceProvider carServiceProvider,
-            CarDeviceProvisionedController carDeviceProvisionedController,
 
             /* Things needed for notifications */
             IStatusBarService barService,
@@ -159,13 +130,13 @@ public class NotificationPanelViewController extends OverlayPanelViewController
             NotificationVisibilityLogger notificationVisibilityLogger,
 
             /* Things that need to be replaced */
-            StatusBarStateController statusBarStateController
+            StatusBarStateController statusBarStateController,
+            CarDeviceProvisionedController carDeviceProvisionedController
     ) {
         super(context, resources, overlayViewGlobalStateController,
                 flingAnimationUtilsBuilder, carDeviceProvisionedController);
         mContext = context;
         mResources = resources;
-        mCarServiceProvider = carServiceProvider;
         mBarService = barService;
         mCommandQueue = commandQueue;
         mUiBgExecutor = uiBgExecutor;
@@ -333,10 +304,10 @@ public class NotificationPanelViewController extends OverlayPanelViewController
         if (!isInflated()) return;
 
         mNotificationClickHandlerFactory.unregisterClickListener(mOnNotificationClickListener);
-
-        if (mOnConnectListenerAdded) {
-            mCarServiceProvider.removeListener(mCarConnectedListener);
-            mOnConnectListenerAdded = false;
+        // Disable the old controller before it is replaced to prevent memory leaks from stale
+        // references in singleton services.
+        if (mNotificationViewController != null) {
+            mNotificationViewController.disable();
         }
 
         ViewGroup container = (ViewGroup) getLayout();
@@ -395,11 +366,7 @@ public class NotificationPanelViewController extends OverlayPanelViewController
                 PreprocessingManager.getInstance(mContext),
                 mCarNotificationListener,
                 mCarUxRestrictionManagerWrapper);
-
-        if (!mOnConnectListenerAdded) {
-            mCarServiceProvider.addListener(mCarConnectedListener);
-            mOnConnectListenerAdded = true;
-        }
+        mNotificationViewController.enable();
     }
 
     private void setupNotificationPanel() {

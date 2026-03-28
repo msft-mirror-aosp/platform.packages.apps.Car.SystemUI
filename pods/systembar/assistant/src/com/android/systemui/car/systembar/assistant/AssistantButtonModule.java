@@ -16,8 +16,19 @@
 
 package com.android.systemui.car.systembar.assistant;
 
+import com.android.systemui.car.flexibleui.CarSystemBarElementController;
+
+import dagger.Binds;
 import dagger.Module;
+import dagger.multibindings.ClassKey;
+import dagger.multibindings.IntoMap;
 
 @Module
 public abstract class AssistantButtonModule {
+    /** Binds the AssistantButtonController.Factory to the map. */
+    @Binds
+    @IntoMap
+    @ClassKey(AssistantButtonController.class)
+    public abstract CarSystemBarElementController.Factory bindAssistantButtonControllerFactory(
+            AssistantButtonController.Factory factory);
 }

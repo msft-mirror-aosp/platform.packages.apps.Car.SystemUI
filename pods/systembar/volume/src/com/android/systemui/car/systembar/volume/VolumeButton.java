@@ -16,11 +16,6 @@
 
 package com.android.systemui.car.systembar.volume;
 
-import static android.media.AudioAttributes.USAGE_MEDIA;
-import static android.media.AudioManager.FLAG_SHOW_UI;
-
-import android.car.Car;
-import android.car.media.CarAudioManager;
 import android.content.Context;
 import android.util.AttributeSet;
 
@@ -29,16 +24,14 @@ import com.android.systemui.car.systembar.base.CarSystemBarButton;
 public class VolumeButton extends CarSystemBarButton {
     public VolumeButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        Car car = Car.createCar(context);
-        CarAudioManager carAudioManager = car.getCarManager(CarAudioManager.class);
+    }
 
-        setOnClickListener(v -> {
-            if (carAudioManager != null) {
-                // todo(b/304797002): Use highest priority active group instead of USAGE_MEDIA
-                int groupId = carAudioManager.getVolumeGroupIdForUsage(USAGE_MEDIA);
-                carAudioManager.setGroupVolume(groupId, carAudioManager.getGroupVolume(groupId),
-                        FLAG_SHOW_UI);
-            }
-        });
+    @Override
+    public Class<?> getElementControllerClass() {
+        Class<?> superClass = super.getElementControllerClass();
+        if (superClass != null) {
+            return superClass;
+        }
+        return VolumeButtonController.class;
     }
 }

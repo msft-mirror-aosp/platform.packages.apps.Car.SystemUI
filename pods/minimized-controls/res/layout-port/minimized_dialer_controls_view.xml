@@ -95,12 +95,12 @@
             app:layout_constraintStart_toEndOf="@id/dialer_profile_container"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/dialer_mute_container"
-            app:layout_constraintBottom_toTopOf="@id/dialer_number"
+            app:layout_constraintBottom_toTopOf="@id/dialer_duration"
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintHorizontal_bias="0.0"/>
 
-        <TextView
-            android:id="@+id/dialer_number"
+        <Chronometer
+            android:id="@+id/dialer_duration"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/minimized_controls_button_padding"

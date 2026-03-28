@@ -28,5 +28,6 @@
     <string name="default_map_activity">com.android.car.mapsplaceholder/.MapsPlaceholderActivity</string>
     <string name="projected_package"></string>
     <string name="suw_package"></string>
+    <string name="suw_entry"></string>
     <!-- AOSP packages END -->
 </resources>

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ Copyright (C) 2026 The Android Open Source Project
   ~
@@ -13,8 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<Controller id="suw_panel_controller">
-    <ControllerName>com.android.systemui.car.wm.scalableui.panel.controller.SetupPanelController</ControllerName>
-    <PersistentPackage>@string/suw_package</PersistentPackage>
-    <PersistentActivity>@string/suw_entry</PersistentActivity>
-</Controller>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.android.systemui.car.systembar.base">
+    <uses-sdk android:minSdkVersion="31" android:targetSdkVersion="33" />
+</manifest>

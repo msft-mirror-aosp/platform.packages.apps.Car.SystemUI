@@ -16,6 +16,8 @@
 
 package com.android.systemui.car.notification;
 
+import android.car.Car;
+import android.car.drivingstate.CarUxRestrictionsManager;
 import android.content.Context;
 
 import com.android.car.notification.CarHeadsUpNotificationManager;
@@ -25,6 +27,7 @@ import com.android.car.notification.NotificationClickHandlerFactory;
 import com.android.car.notification.NotificationDataManager;
 import com.android.car.notification.headsup.CarHeadsUpNotificationContainer;
 import com.android.internal.statusbar.IStatusBarService;
+import com.android.systemui.car.CarServiceProvider;
 import com.android.systemui.dagger.SysUISingleton;
 
 import dagger.Binds;
@@ -58,11 +61,18 @@ public abstract class CarNotificationModule {
     @Provides
     @SysUISingleton
     static CarNotificationListener provideCarNotificationListener(Context context,
+            CarServiceProvider carServiceProvider,
             CarUxRestrictionManagerWrapper carUxRestrictionManagerWrapper,
             CarHeadsUpNotificationManager carHeadsUpNotificationManager) {
         CarNotificationListener listener = new CarNotificationListener();
-        listener.registerAsSystemService(context, carUxRestrictionManagerWrapper,
-                carHeadsUpNotificationManager);
+        carServiceProvider.addListener(car -> {
+            CarUxRestrictionsManager carUxRestrictionsManager =
+                    (CarUxRestrictionsManager)
+                            car.getCarManager(Car.CAR_UX_RESTRICTION_SERVICE);
+            carUxRestrictionManagerWrapper.setCarUxRestrictionsManager(carUxRestrictionsManager);
+            listener.registerAsSystemService(context, carUxRestrictionManagerWrapper,
+                    carHeadsUpNotificationManager);
+        });
         return listener;
     }
 

@@ -17,7 +17,6 @@
 package com.android.systemui.car.systembar.appgrid;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.util.AttributeSet;
 
 import com.android.systemui.car.systembar.base.CarSystemBarButton;
@@ -27,35 +26,59 @@ import com.android.systemui.statusbar.AlphaOptimizedImageView;
  * AppGridButton is used to display the app grid and toggle recents.
  */
 public class AppGridButton extends CarSystemBarButton {
-    private RecentsButtonStateProvider mRecentsButtonStateProvider;
+    private boolean mIsRecentsActive;
 
+    /**
+     * @param context the context
+     * @param attrs   the attribute set
+     */
     public AppGridButton(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
     @Override
-    protected void init() {
-        mRecentsButtonStateProvider = new RecentsButtonStateProvider(getContext(), this);
+    public Class<?> getElementControllerClass() {
+        Class<?> superClass = super.getElementControllerClass();
+        if (superClass != null) {
+            return superClass;
+        }
+        return AppGridButtonController.class;
     }
 
-    @Override
-    protected void setUpIntents(TypedArray typedArray) {
-        mRecentsButtonStateProvider.setUpIntents(typedArray, super::setUpIntents);
+    /**
+     * Sets whether the recents activity is active and forces an icon update.
+     *
+     * @param isActive true if recents is active, false otherwise.
+     */
+    public void setIsRecentsActive(boolean isActive) {
+        if (mIsRecentsActive != isActive) {
+            mIsRecentsActive = isActive;
+            setSelected(getSelected()); // Trigger updateImage and refreshIconAlpha
+        }
     }
 
-    @Override
-    protected OnClickListener getButtonClickListener() {
-        return mRecentsButtonStateProvider.getButtonClickListener(super.getButtonClickListener());
+    /**
+     * @return the default click listener
+     */
+    public OnClickListener getDefaultButtonClickListener() {
+        return super.getButtonClickListener();
     }
 
     @Override
     protected void updateImage(AlphaOptimizedImageView icon) {
-        mRecentsButtonStateProvider.updateImage(icon, super::updateImage);
+        if (mIsRecentsActive) {
+            icon.setImageResource(R.drawable.car_ic_recents);
+            return;
+        }
+        super.updateImage(icon);
     }
 
     @Override
     protected void refreshIconAlpha(AlphaOptimizedImageView icon) {
-        mRecentsButtonStateProvider.refreshIconAlpha(icon, super::refreshIconAlpha,
-                getSelectedAlpha());
+        if (mIsRecentsActive) {
+            icon.setAlpha(getSelectedAlpha());
+            return;
+        }
+        super.refreshIconAlpha(icon);
     }
 }

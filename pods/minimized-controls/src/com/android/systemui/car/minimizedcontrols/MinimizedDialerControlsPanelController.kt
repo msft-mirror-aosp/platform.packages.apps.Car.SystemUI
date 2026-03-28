@@ -114,36 +114,50 @@ class MinimizedDialerControlsPanelController @AssistedInject constructor(
 
                 val number = call.details?.handle?.schemeSpecificPart
                 if (!number.isNullOrEmpty()) {
-                    TelecomUtils.getPhoneNumberInfo(view.context, number)
-                        .thenAccept { info ->
-                        shellExecutor.execute {
+                    userContext?.let { uContext ->
+                        TelecomUtils.getPhoneNumberInfo(uContext, number)
+                            .thenAccept { info ->
                             val callerDisplayName = call.details?.callerDisplayName
-                            val displayName = if (!callerDisplayName.isNullOrEmpty()) {
+                            var displayName = if (!callerDisplayName.isNullOrEmpty()) {
                                 callerDisplayName
                             } else {
                                 info.displayName
                             }
+                            displayName = resolveEnterpriseName(
+                                uContext,
+                                number,
+                                displayName
+                            ) ?: displayName
 
+                        shellExecutor.execute {
                             val initials = if (info.initials.isNullOrEmpty()) {
                                 TelecomUtils.getInitials(displayName, info.displayNameAlt)
                             } else {
                                 info.initials
                             }
+                            val connectTimeMillis = if (
+                                call.state == android.telecom.Call.STATE_ACTIVE
+                            ) {
+                                call.details?.connectTimeMillis
+                            } else {
+                                null
+                            }
                             view.updateAvatar(info.avatarUri, initials, displayName)
-                            view.updateText(displayName, number)
+                            view.updateDisplay(displayName, connectTimeMillis)
                         }
                         }
+                    }
                 } else {
                 shellExecutor.execute {
                     view.updateAvatar(null, null, null)
-                    view.updateText(null, null)
+                    view.updateDisplay(null, null)
                 }
                 }
             } else {
                 shellExecutor.execute {
                     view.updateAppIcon(null)
                     view.updateAvatar(null, null, null)
-                    view.updateText(null, null)
+                    view.updateDisplay(null, null)
                 }
             }
         }
@@ -288,5 +302,33 @@ class MinimizedDialerControlsPanelController @AssistedInject constructor(
     ): Intent? {
         val defaultDialerPackage = telecomManager?.systemDialerPackage ?: CAR_DIALER_PACKAGE_NAME
         return pm.getLaunchIntentForPackage(defaultDialerPackage)
+    }
+
+    private fun resolveEnterpriseName(
+        context: Context,
+        number: String,
+        currentName: String?
+    ): String? {
+        if (currentName != number && !currentName.isNullOrEmpty()) return currentName
+
+        val cr = context.contentResolver
+        val uri = android.net.Uri.withAppendedPath(
+            android.provider.ContactsContract.PhoneLookup.ENTERPRISE_CONTENT_FILTER_URI,
+            android.net.Uri.encode(number)
+        )
+        val cursor = cr.query(
+            uri,
+            arrayOf(android.provider.ContactsContract.PhoneLookup.DISPLAY_NAME),
+            null,
+            null,
+            null
+        )
+        var resolvedName = currentName
+
+        if (cursor != null && cursor.moveToFirst()) {
+            resolvedName = cursor.getString(0)
+        }
+        cursor?.close()
+        return resolvedName
     }
 }

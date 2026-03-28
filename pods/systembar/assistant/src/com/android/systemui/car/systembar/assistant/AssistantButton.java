@@ -16,102 +16,29 @@
 
 package com.android.systemui.car.systembar.assistant;
 
-import static android.service.voice.VoiceInteractionSession.SHOW_SOURCE_ASSIST_GESTURE;
-
 import android.app.role.RoleManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.Bundle;
-import android.os.RemoteException;
 import android.util.AttributeSet;
-import android.util.Log;
 
-import com.android.internal.app.AssistUtils;
-import com.android.internal.app.IVoiceInteractionSessionListener;
-import com.android.internal.app.IVoiceInteractionSessionShowCallback;
 import com.android.systemui.car.systembar.base.CarSystemBarButton;
-import com.android.systemui.car.systembar.base.SystemBarUtil;
-
-import java.util.Set;
 
 /**
  * AssistantButton is an UI component that will trigger the Voice Interaction Service.
  */
 public class AssistantButton extends CarSystemBarButton {
-    private static final String TAG = "AssistantButton";
-    private final AssistUtils mAssistUtils;
-    private final IVoiceInteractionSessionShowCallback mShowCallback =
-            new IVoiceInteractionSessionShowCallback.Stub() {
-                @Override
-                public void onFailed() {
-                    Log.w(TAG, "Failed to show VoiceInteractionSession");
-                }
-
-                @Override
-                public void onShown() {
-                    Log.d(TAG, "IVoiceInteractionSessionShowCallback onShown()");
-                }
-            };
 
     public AssistantButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mAssistUtils = new AssistUtils(context);
-        setOnClickListener(v -> showAssistant());
-        mAssistUtils.registerVoiceInteractionSessionListener(
-                new IVoiceInteractionSessionListener.Stub() {
-                    @Override
-                    public void onVoiceSessionShown() throws RemoteException {
-                        assistantSetSelected(/* selected= */ true);
-                    }
-
-                    @Override
-                    public void onVoiceSessionHidden() throws RemoteException {
-                        assistantSetSelected(/* selected= */ false);
-                    }
-
-                    @Override
-                    public void onVoiceSessionWindowVisibilityChanged(boolean visible)
-                            throws RemoteException { }
-
-                    @Override
-                    public void onSetUiHints(Bundle hints) {
-                    }
-
-                    @Override
-                    public void onSetInvocationEffectEnabled(boolean enabled) {
-                    }
-                }
-        );
     }
 
-    void showAssistant() {
-        if (canShowTosAcceptanceFlow()) {
-            SystemBarUtil.INSTANCE.showTosAcceptanceFlow(getContext(), getUserTracker());
-            return;
+    @Override
+    public Class<?> getElementControllerClass() {
+        Class<?> superClass = super.getElementControllerClass();
+        if (superClass != null) {
+            return superClass;
         }
-        final Bundle args = new Bundle();
-        mAssistUtils.showSessionForActiveService(args,
-                SHOW_SOURCE_ASSIST_GESTURE, mShowCallback, /*activityToken=*/ null);
-    }
-
-    /**
-     * Helper method to check if tos acceptance flow can be launched. The tos flow can be launched
-     * when there is no active assistant selected by the system and the default assistant has been
-     * disabled because tos is unaccepted
-     *
-     * @return true if tos flow can be launched, false otherwise
-     */
-    private boolean canShowTosAcceptanceFlow() {
-        ComponentName activeAssistantComponent = mAssistUtils.getActiveServiceComponentName();
-        String defaultAssistantInConfig =
-                getContext().getString(com.android.internal.R.string.config_defaultAssistant);
-        Integer userId = getUserTracker() != null ? getUserTracker().getUserId() : null;
-        Set<String> tosDisabledApps = SystemBarUtil.INSTANCE
-                .getTosDisabledPackages(getContext(), userId);
-        boolean defaultAssistantDisabled = tosDisabledApps.contains(defaultAssistantInConfig);
-
-        return activeAssistantComponent == null && defaultAssistantDisabled;
+        return AssistantButtonController.class;
     }
 
     @Override
@@ -130,7 +57,7 @@ public class AssistantButton extends CarSystemBarButton {
         // the actual voice interaction session.
     }
 
-    private void assistantSetSelected(boolean selected) {
+    void assistantSetSelected(boolean selected) {
         if (hasSelectionState()) {
             getContext().getMainExecutor().execute(
                     () -> AssistantButton.super.setSelected(selected));

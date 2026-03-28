@@ -28,6 +28,7 @@ import android.app.role.RoleManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.UserHandle;
@@ -185,9 +186,46 @@ public class PanelAutoTaskStackTransitionHandlerDelegate implements
         return animationStarted;
     }
 
+    private boolean shouldIgnoreNonCurrentUserTaskWithoutShowForAllUsers(
+            TransitionRequestInfo request) {
+        ActivityManager.RunningTaskInfo triggerTask = request.getTriggerTask();
+        if (DEBUG) {
+            Log.d(TAG, "triggerTask: " + triggerTask);
+        }
+        if (triggerTask == null) {
+            return false;
+        }
+
+        int taskUserId = triggerTask.userId;
+        int currentUserIdForDisplay = mUserHelper.getUserIdForDisplay(triggerTask.displayId);
+        boolean isNonCurrentUser = (taskUserId != currentUserIdForDisplay);
+
+        ActivityInfo topActivityInfo = triggerTask.topActivityInfo;
+        boolean hasShowForAllUsersFlag = topActivityInfo != null
+                && (topActivityInfo.flags & ActivityInfo.FLAG_SHOW_FOR_ALL_USERS) != 0;
+
+        if (DEBUG) {
+            Log.d(TAG, "isNonCurrentUser: " + isNonCurrentUser);
+            Log.d(TAG, "hasShowForAllUsersFlag: " + hasShowForAllUsersFlag);
+        }
+
+        if (isNonCurrentUser && !hasShowForAllUsersFlag) {
+            if (DEBUG) {
+                Log.d(TAG, "Activity launched for non-current user "
+                        + "without FLAG_SHOW_FOR_ALL_USERS");
+            }
+            return true;
+        }
+        return false;
+    }
+
     @VisibleForTesting
     Event calculateEvent(TransitionRequestInfo request) {
         if (!shouldHandleByPanels(request)) {
+            return EMPTY_EVENT;
+        }
+
+        if (shouldIgnoreNonCurrentUserTaskWithoutShowForAllUsers(request)) {
             return EMPTY_EVENT;
         }
 

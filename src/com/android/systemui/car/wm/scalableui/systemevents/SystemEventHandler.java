@@ -15,6 +15,7 @@
  */
 package com.android.systemui.car.wm.scalableui.systemevents;
 
+import static android.app.role.RoleManager.ROLE_HOME;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_UNLOCKED;
 import static android.car.user.CarUserManager.USER_LIFECYCLE_EVENT_TYPE_VISIBLE;
 import static android.content.pm.ActivityInfo.CONFIG_UI_MODE;
@@ -32,6 +33,7 @@ import static com.android.systemui.car.wm.scalableui.systemevents.SystemEventCon
 
 import android.annotation.SuppressLint;
 import android.app.ActivityOptions;
+import android.app.role.RoleManager;
 import android.car.drivingstate.CarUxRestrictions;
 import android.car.user.CarUserManager;
 import android.content.Context;
@@ -112,6 +114,7 @@ public class SystemEventHandler implements CoreStartable,
     private final CarUxRestrictionsUtil mCarUxRestrictionsUtil;
     // Mapping of userId to user flags
     private final ConcurrentHashMap<Integer, Integer> mUserFlags = new ConcurrentHashMap<>();
+    private final RoleManager mRoleManager;
 
     private CarUserManager mCarUserManager;
     private boolean mIsUserSetupInProgress;
@@ -138,7 +141,13 @@ public class SystemEventHandler implements CoreStartable,
                         // Attempt to launch SUW as soon as the user is visible to launch sooner
                         // should the SUW app be direct boot aware. If it is not available, it will
                         // be launched after user unlock instead.
-                        handleSuwLaunchIfNecessary(event.getUserId());
+                        // TODO(b/497823844)Remove the home role check once task routing does
+                        // not depend on home role.
+                        // On user visible, it's possible that home role is not set, cause task
+                        // routing fail to route suw to suw panel. So adding role check here.
+                        if (isHomeRoleExist(event.getUserId())) {
+                            handleSuwLaunchIfNecessary(event.getUserId());
+                        }
                     } else if (event.getEventType() == USER_LIFECYCLE_EVENT_TYPE_UNLOCKED) {
                         handleUserUnlocked(event.getUserHandle());
                     } else {
@@ -243,10 +252,12 @@ public class SystemEventHandler implements CoreStartable,
         mCarUxRestrictionsUtil = carUxRestrictionsUtil;
         // Make a copy of current Configuration
         mConfiguration = new Configuration(mContext.getResources().getConfiguration());
+        mRoleManager = context.getSystemService(RoleManager.class);
     }
 
     /**
      * Update the current user setup state and send relevant events if necessary.
+     *
      * @param force always send event regardless of if anything has changed
      */
     private void updateUserSetupState(boolean force) {
@@ -371,6 +382,17 @@ public class SystemEventHandler implements CoreStartable,
                         mUserTracker.getUserHandle());
             }
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private boolean isHomeRoleExist(int userId) {
+        if (mRoleManager == null) {
+            Log.e(TAG, "RoleManager is null");
+            return false;
+        }
+        List<String> holders = mRoleManager.getRoleHoldersAsUser(ROLE_HOME,
+                UserHandle.of(userId));
+        return !holders.isEmpty();
     }
 
     private boolean isIntentAvailableForUser(Intent intent, UserHandle userHandle) {

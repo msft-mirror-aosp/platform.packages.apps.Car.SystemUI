@@ -17,9 +17,9 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="promoted_notification_chip_off_content" msgid="571805024505632788">"செயலிலுள்ள கட்டண அறிவிப்புகள் எதுவுமில்லை"</string>
+    <string name="promoted_notification_chip_off_content" msgid="571805024505632788">"செயலிலுள்ள விளம்பர அறிவிப்பு எதுவுமில்லை"</string>
     <string name="promoted_notification_content_description" msgid="5752113468257224313">"%1$s இன் நிலை சிப்: %2$s"</string>
-    <string name="promoted_notification_content_description_app_only" msgid="5896204921219380610">"%1$s வழங்கும் நிலை சிப்"</string>
+    <string name="promoted_notification_content_description_app_only" msgid="5896204921219380610">"%1$s இன் நிலை சிப்"</string>
     <string name="promoted_notification_content_description_text_only" msgid="5994999140812141541">"நிலை சிப்: %1$s"</string>
     <string name="promoted_notification_fallback_content_description" msgid="2101674684068087193">"நிலை சிப்"</string>
 </resources>

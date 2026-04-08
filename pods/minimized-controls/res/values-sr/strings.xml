@@ -22,5 +22,5 @@
     <string name="minimized_controls_next_description" msgid="609539086708052739">"Пређи на следеће"</string>
     <string name="minimized_dialer_mute_description" msgid="2701112552546374215">"Искључи звук"</string>
     <string name="minimized_dialer_end_call_description" msgid="3800744011470835006">"Заврши позив"</string>
-    <string name="minimized_dialer_keypad_description" msgid="8808459573030474700">"Тастатура"</string>
+    <string name="minimized_dialer_keypad_description" msgid="8808459573030474700">"Нумеричка тастатура"</string>
 </resources>

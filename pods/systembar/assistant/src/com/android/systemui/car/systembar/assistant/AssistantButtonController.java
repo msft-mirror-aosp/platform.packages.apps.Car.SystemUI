@@ -107,12 +107,12 @@ public class AssistantButtonController extends CarSystemBarButtonController {
     @CallSuper
     protected void onInit() {
         super.onInit();
-        mAssistantButton.setOnClickListener(v -> showAssistant());
     }
 
     @Override
     protected void onViewAttached() {
         super.onViewAttached();
+        mAssistantButton.setOnClickListener(v -> showAssistant());
         mAssistUtils.registerVoiceInteractionSessionListener(mSessionListener);
     }
 

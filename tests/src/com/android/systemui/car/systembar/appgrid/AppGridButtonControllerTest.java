@@ -220,6 +220,7 @@ public class AppGridButtonControllerTest extends CarSysuiTestCase {
                 mDisableController, mStateController, mUserTracker, mEventDispatcher,
                 mButtonSelectionStateController);
         controller.onInit();
+        controller.onViewAttached();
         verify(mAppGridButton, times(2))
                 .setOnLongClickListener(mOnLongClickListenerCaptor.capture());
 

@@ -77,24 +77,41 @@ public class AppGridButtonController extends CarSystemBarButtonController {
     protected void onInit() {
         super.onInit();
 
-        mTaskStackChangeListener = new TaskStackChangeListener() {
-            @Override
-            public void onTaskMovedToFront(ActivityManager.RunningTaskInfo taskInfo) {
-                if (mRecentsComponentName == null) {
-                    return;
-                }
-                ComponentName topComponent =
-                        taskInfo.topActivity != null ? taskInfo.topActivity
-                                : taskInfo.baseIntent.getComponent();
-                if (topComponent != null && mRecentsComponentName.getClassName().equals(
-                        topComponent.getClassName())) {
-                    mIsRecentsActive = true;
-                } else {
-                    mIsRecentsActive = false;
-                }
-                mAppGridButton.setIsRecentsActive(mIsRecentsActive);
-            }
-        };
+        mTaskStackChangeListener =
+                new TaskStackChangeListener() {
+                    @Override
+                    public void onTaskMovedToFront(ActivityManager.RunningTaskInfo taskInfo) {
+                        if (mRecentsComponentName == null) {
+                            return;
+                        }
+                        ComponentName topComponent =
+                                taskInfo.topActivity != null
+                                        ? taskInfo.topActivity
+                                        : taskInfo.baseIntent.getComponent();
+                        if (topComponent != null
+                                && mRecentsComponentName
+                                        .getClassName()
+                                        .equals(topComponent.getClassName())) {
+                            mIsRecentsActive = true;
+                        } else {
+                            mIsRecentsActive = false;
+                        }
+                        mAppGridButton.setIsRecentsActive(mIsRecentsActive);
+                    }
+                };
+    }
+
+    @Override
+    protected void onViewAttached() {
+        super.onViewAttached();
+        registerListeners();
+    }
+
+    private void registerListeners() {
+        if (mTaskStackChangeListener != null) {
+            TaskStackChangeListeners.getInstance()
+                    .registerTaskStackListener(mTaskStackChangeListener);
+        }
 
         View.OnClickListener defaultClickListener = mAppGridButton.getDefaultButtonClickListener();
         mAppGridButton.setOnClickListener(v -> {
@@ -113,15 +130,6 @@ public class AppGridButtonController extends CarSystemBarButtonController {
             }
             return toggleRecents();
         });
-    }
-
-    @Override
-    protected void onViewAttached() {
-        super.onViewAttached();
-        if (mTaskStackChangeListener != null) {
-            TaskStackChangeListeners.getInstance().registerTaskStackListener(
-                    mTaskStackChangeListener);
-        }
     }
 
     @Override
